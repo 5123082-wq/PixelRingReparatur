@@ -78,7 +78,7 @@ const ContactForm = ({ focusField, onSuccess }: ContactFormProps) => {
         name="name"
         required
         placeholder={t('field_name')}
-        className="w-full px-5 py-3.5 bg-[#F6F0E9] border border-[#E7DDD3] rounded-2xl text-[15px] text-[#0E1A2B] placeholder:text-[#72665D]/60 focus:outline-none focus:border-[#C86E4A] focus:ring-1 focus:ring-[#C86E4A]/30 transition-all"
+        className="w-full px-5 py-3.5 bg-[#F7F1E8] border border-[#E7DDD3] rounded-2xl text-[15px] text-[#0E1A2B] placeholder:text-[#72665D]/60 focus:outline-none focus:border-[#B8643E] focus:ring-1 focus:ring-[#B8643E]/30 transition-all"
       />
 
       {/* Contact (phone or email) */}
@@ -87,7 +87,7 @@ const ContactForm = ({ focusField, onSuccess }: ContactFormProps) => {
         name="contact"
         required
         placeholder={t('field_contact')}
-        className="w-full px-5 py-3.5 bg-[#F6F0E9] border border-[#E7DDD3] rounded-2xl text-[15px] text-[#0E1A2B] placeholder:text-[#72665D]/60 focus:outline-none focus:border-[#C86E4A] focus:ring-1 focus:ring-[#C86E4A]/30 transition-all"
+        className="w-full px-5 py-3.5 bg-[#F7F1E8] border border-[#E7DDD3] rounded-2xl text-[15px] text-[#0E1A2B] placeholder:text-[#72665D]/60 focus:outline-none focus:border-[#B8643E] focus:ring-1 focus:ring-[#B8643E]/30 transition-all"
       />
 
       {/* Message */}
@@ -97,7 +97,7 @@ const ContactForm = ({ focusField, onSuccess }: ContactFormProps) => {
         required
         rows={3}
         placeholder={t('field_message')}
-        className="w-full px-5 py-3.5 bg-[#F6F0E9] border border-[#E7DDD3] rounded-2xl text-[15px] text-[#0E1A2B] placeholder:text-[#72665D]/60 focus:outline-none focus:border-[#C86E4A] focus:ring-1 focus:ring-[#C86E4A]/30 transition-all resize-none"
+        className="w-full px-5 py-3.5 bg-[#F7F1E8] border border-[#E7DDD3] rounded-2xl text-[15px] text-[#0E1A2B] placeholder:text-[#72665D]/60 focus:outline-none focus:border-[#B8643E] focus:ring-1 focus:ring-[#B8643E]/30 transition-all resize-none"
       />
 
       {/* Photo upload */}
@@ -113,7 +113,7 @@ const ContactForm = ({ focusField, onSuccess }: ContactFormProps) => {
         />
         <label
           htmlFor="photo-upload"
-          className="flex items-center gap-3 w-full px-5 py-3.5 bg-[#F6F0E9] border border-dashed border-[#E7DDD3] rounded-2xl text-[15px] text-[#72665D] cursor-pointer hover:border-[#C86E4A] hover:text-[#C86E4A] transition-all"
+          className="flex items-center gap-3 w-full px-5 py-3.5 bg-[#F7F1E8] border border-dashed border-[#E7DDD3] rounded-2xl text-[15px] text-[#72665D] cursor-pointer hover:border-[#B8643E] hover:text-[#B8643E] transition-all"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
@@ -126,7 +126,7 @@ const ContactForm = ({ focusField, onSuccess }: ContactFormProps) => {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full px-6 py-4 bg-[#C86E4A] hover:bg-[#B05B3A] disabled:bg-[#C86E4A]/50 text-white text-[16px] font-bold rounded-2xl shadow-lg shadow-[#C86E4A]/20 transition-all flex items-center justify-center gap-2"
+        className="w-full px-6 py-4 bg-[#B8643E] hover:bg-[#A65835] disabled:bg-[#B8643E]/50 text-white text-[16px] font-bold rounded-2xl shadow-lg shadow-[#B8643E]/20 transition-all flex items-center justify-center gap-2"
       >
         {isSubmitting ? (
           <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

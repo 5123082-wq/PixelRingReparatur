@@ -1,10 +1,14 @@
 {
   "HomePage": {
     "title": "PixelRing Onarım",
-    "description": "Reklam tabelalarının onarımı, montajı ve bakımı için güvenilir ortağınız.",
+    "hero_title_prefix": "PixelRing:",
+    "hero_title_accent": "Tabela Onarımı",
+    "hero_title_suffix": "ve Servis, profesyonel, hızlı.",
+    "description": "Bir dakikadan kısa sürede onarım talebinizi başlatın. Fotoğraf yükleyin veya mesaj yazın. Reklam tabelalarınızı yeniden ışıldatacağız — verimli ve zahmetsiz.",
     "cta_primary": "Talebi Başlat",
     "cta_secondary": "Fotoğraf Gönder",
-    "trust_badge": "Gerçek bir servis şirketi, aracı bir pazar yeri değil"
+    "trust_badge": "Gerçek bir servis şirketi, aracı bir pazar yeri değil",
+    "badge_label": "Acil durumlar için tepki süresi"
   },
   "Nav": {
     "services": "Onarım ve Servis",
@@ -22,25 +26,35 @@
     "locations": "Konumlar"
   },
   "Trust": {
-    "title": "Neden Bize Güvenmelisiniz",
-    "bullets": [
-      {
-        "title": "Tek Bir Ortak",
-        "description": "Sorumluluk sahibi tek bir servis şirketi ile çalışırsınız."
+    "title_start": "Neden PixelRing ",
+    "title_accent": "farklı",
+    "title_end": "?",
+    "description": "Teknolojiyi bir araç olarak değil, bir zanaat olarak görüyoruz. Süreçlerimiz maksimum şeffaflık ve teknik mükemmellik için tasarlanmıştır.",
+    "feature1": "Temiz Oda Ortamı",
+    "feature2": "Kesintisiz Dokümantasyon",
+    "feature3": "Kalite Denetimi",
+    "stats": {
+      "turnaround": {
+        "value": "24s",
+        "label": "STANDART TESLİM SÜRESİ",
+        "description": "Çoğu onarım bir iş günü içinde tamamlanır."
       },
-      {
-        "title": "Uçtan Uca Destek",
-        "description": "Talebinizi alır ve tüm süreci bizzat yönetiriz."
+      "warranty": {
+        "value": "24",
+        "label": "AY GARANTİ",
+        "description": "İşimizin arkasındayız. Tüm takılan parçalar için tam kapsam."
       },
-      {
-        "title": "Yapay Zeka Destekli Verimlilik",
-        "description": "Yapay zeka, gereksinimlerinizi daha hızlı netleştirmemize yardımcı olur."
+      "hardware": {
+        "value": "100%",
+        "label": "ORİJİNAL DONANIM",
+        "description": "Taviz yok. Sadece sertifikalı bileşenler kullanıyoruz."
       },
-      {
-        "title": "Konusunda Uzman Kişiler",
-        "description": "Göreviniz, doğrulanmış ağımızdaki kalifiye uzmanlar tarafından yürütülür."
+      "rating": {
+        "value": "4.9",
+        "label": "MÜŞTERİ PUANI",
+        "description": "15.000'den fazla memnun müşteri uzmanlığımıza güveniyor."
       }
-    ]
+    }
   },
   "Intake": {
     "title": "Yolunuzu Seçin",

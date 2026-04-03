@@ -7,7 +7,7 @@ interface LogoProps {
 
 const Logo: React.FC<LogoProps> = ({ className, isDark = true }) => {
   const textColor = isDark ? 'text-[#0E1A2B]' : 'text-white';
-  const ringColor = isDark ? '#C86E4A' : '#FFFFFF'; // Using primary accent color for ring
+  const ringColor = isDark ? '#B8643E' : '#FFFFFF'; // Using primary accent color for ring
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>

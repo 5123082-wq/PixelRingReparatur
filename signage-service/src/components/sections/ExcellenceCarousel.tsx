@@ -29,7 +29,7 @@ const ExcellenceCarousel = () => {
   ];
 
   return (
-    <section className="w-full bg-[#F6F0E9] py-24 overflow-hidden">
+    <section className="w-full bg-[#F4EDE4] py-24 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 flex flex-col gap-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="flex flex-col gap-4">
@@ -70,7 +70,7 @@ const ExcellenceCarousel = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-[#0E1A2BCC] via-[#0E1A2B20] to-transparent" />
               
               <div className="absolute bottom-0 left-0 p-10 flex flex-col gap-4 text-white">
-                <span className="self-start px-4 py-1 bg-[#C86E4A] rounded-full text-[12px] font-bold uppercase tracking-wider">
+                <span className="self-start px-4 py-1 bg-[#B8643E] rounded-full text-[12px] font-bold uppercase tracking-wider">
                   #{item.tag}
                 </span>
                 <div className="flex flex-col gap-2">

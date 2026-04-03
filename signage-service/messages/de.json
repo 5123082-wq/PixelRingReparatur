@@ -1,10 +1,14 @@
 {
   "HomePage": {
     "title": "PixelRing Reparatur",
-    "description": "Ihr zuverlässiger Partner für die Reparatur, Montage und Wartung von Werbeanlagen.",
-    "cta_primary": "Anfrage starten",
+    "hero_title_prefix": "PixelRing:",
+    "hero_title_accent": "Schilder-Reparatur",
+    "hero_title_suffix": "und Service, professionell, schnell.",
+    "description": "Starten Sie Ihre Reparaturanfrage in unter einer Minute. Foto hochladen oder Nachricht schreiben. Wir bringen Ihre Werbeanlagen wieder zum Strahlen – effizient und unkompliziert.",
+    "cta_primary": "Anwendung starten",
     "cta_secondary": "Foto senden",
-    "trust_badge": "Echte Service-Firma, keine Vermittlungsplattform"
+    "trust_badge": "Echte Service-Firma, keine Vermittlungsplattform",
+    "badge_label": "Reaktionszeit für dringende Fälle"
   },
   "Nav": {
     "services": "Reparatur & Service",
@@ -22,25 +26,35 @@
     "locations": "Standorte"
   },
   "Trust": {
-    "title": "Warum Sie uns vertrauen können",
-    "bullets": [
-      {
-        "title": "Ein zentraler Partner",
-        "description": "Sie arbeiten mit einer einzigen, verantwortungsvollen Service-Firma."
+    "title_start": "Warum PixelRing ",
+    "title_accent": "anders",
+    "title_end": " ist.",
+    "description": "Wir betrachten Technik nicht als Werkzeug, sondern als Handwerk. Unsere Prozesse sind auf maximale Transparenz und technische Perfektion ausgelegt.",
+    "feature1": "Reinraum-Umgebung",
+    "feature2": "Lückenlose Dokumentation",
+    "feature3": "Qualitäts-Audit",
+    "stats": {
+      "turnaround": {
+        "value": "24h",
+        "label": "STANDARD-TURNAROUND",
+        "description": "Die meisten Reparaturen werden innerhalb eines Werktages abgeschlossen."
       },
-      {
-        "title": "Komplette Begleitung",
-        "description": "Wir nehmen Ihre Anfrage entgegen und begleiten den gesamten Prozess."
+      "warranty": {
+        "value": "24",
+        "label": "MONATE GARANTIE",
+        "description": "Wir stehen zu unserer Arbeit. Volle Absicherung auf alle verbauten Teile."
       },
-      {
-        "title": "AI-gestützte Effizienz",
-        "description": "Künstliche Intelligenz hilft uns, Ihre Anforderungen schneller zu präzisieren."
+      "hardware": {
+        "value": "100%",
+        "label": "ORIGINAL-HARDWARE",
+        "description": "Keine Kompromisse. Wir nutzen ausschließlich zertifizierte Komponenten."
       },
-      {
-        "title": "Fachspezialisten",
-        "description": "Ihr Auftrag wird von qualifizierten Experten aus unserem Netzwerk ausgeführt."
+      "rating": {
+        "value": "4.9",
+        "label": "KUNDEN-RATING",
+        "description": "Über 15.000 zufriedene Kunden vertrauen auf unsere Expertise."
       }
-    ]
+    }
   },
   "Intake": {
     "title": "Wählen Sie Ihren Weg",

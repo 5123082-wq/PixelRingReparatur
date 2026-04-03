@@ -45,15 +45,15 @@ const Header = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full bg-[#F6F0E9A3] backdrop-blur-[10.5px] border-b border-[#E7DDD3]">
-        <div dir="ltr" className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-2 sm:gap-4">
+      <header className="sticky top-0 z-50 w-full bg-[#EEF3FBA3] backdrop-blur-[10.5px] border-b border-[#E7DDD3]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-2 sm:gap-4">
           {/* Brand/Logo */}
           <div className="flex items-center gap-2 sm:gap-3">
             <Link href="/">
-              <Logo className="scale-[0.85] sm:scale-100 origin-left" />
+              <Logo className="scale-[0.85] sm:scale-100 rtl:origin-right ltr:origin-left" />
             </Link>
-            <div className="hidden sm:flex md:flex px-3 py-1 bg-[#F3E2D5] border border-[#E7DDD3] rounded-full">
-              <span className="text-[12px] font-bold text-[#C86E4A] tracking-[1.4px]">
+            <div className="hidden sm:flex md:flex px-3 py-1 bg-[#EEF3FB] border border-[#E7DDD3] rounded-full">
+              <span className="text-[12px] font-bold text-[#B8643E] tracking-[1.4px]">
                 {t('service_pill')}
               </span>
             </div>
@@ -65,7 +65,7 @@ const Header = () => {
               <Link
                 key={link.name}
                 href={link.href}
-                className="text-[16px] text-[#72665D] hover:text-[#C86E4A] transition-colors relative group"
+                className="text-[16px] text-[#72665D] hover:text-[#B8643E] transition-colors relative group"
               >
                 {link.name}
               </Link>
@@ -79,7 +79,7 @@ const Header = () => {
             
             <button
               onClick={() => setIsModalOpen(true)}
-              className="hidden md:block px-6 py-2.5 bg-[#C86E4A] hover:bg-[#B05B3A] text-[#FFFDF9] text-[16px] font-medium rounded-full shadow-lg shadow-[#0040a133] transition-all"
+              className="hidden md:block px-6 py-2.5 bg-[#B8643E] hover:bg-[#A65835] text-[#FFFDF9] text-[16px] font-medium rounded-full shadow-lg shadow-[#B8643E33] transition-all"
             >
               {t('book')}
             </button>
@@ -113,10 +113,10 @@ const Header = () => {
                   key={link.name}
                   href={link.href}
                   onClick={() => setIsMenuOpen(false)}
-                  className="text-[24px] font-bold text-[#72665D] hover:text-[#C86E4A] transition-colors py-4 border-b border-[#E7DDD3] flex items-center justify-between group"
+                  className="text-[24px] font-bold text-[#72665D] hover:text-[#B8643E] transition-colors py-4 border-b border-[#E7DDD3] flex items-center justify-between group"
                 >
                   <span>{link.name}</span>
-                  <svg className="w-5 h-5 text-[#C86E4A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-[#B8643E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </Link>
@@ -129,7 +129,7 @@ const Header = () => {
                   setIsMenuOpen(false);
                   setIsModalOpen(true);
                 }}
-                className="w-full px-6 py-5 bg-[#C86E4A] text-[#FFFDF9] text-[18px] font-bold rounded-2xl shadow-xl shadow-[#C86E4A33] transition-all active:scale-[0.98]"
+                className="w-full px-6 py-5 bg-[#B8643E] text-[#FFFDF9] text-[18px] font-bold rounded-2xl shadow-xl shadow-[#B8643E33] transition-all active:scale-[0.98]"
               >
                 {t('book')}
               </button>

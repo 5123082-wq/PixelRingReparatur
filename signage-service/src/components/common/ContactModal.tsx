@@ -44,7 +44,7 @@ const ContactModal = ({ isOpen, onClose, focusField = null }: ContactModalProps)
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 w-10 h-10 flex items-center justify-center rounded-full bg-[#F6F0E9] hover:bg-[#E7DDD3] text-[#72665D] transition-colors z-20"
+          className="absolute top-5 ltr:right-5 rtl:left-5 w-10 h-10 flex items-center justify-center rounded-full bg-[#F7F1E8] hover:bg-[#E7DDD3] text-[#72665D] transition-colors z-20"
           aria-label="Close"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -54,7 +54,7 @@ const ContactModal = ({ isOpen, onClose, focusField = null }: ContactModalProps)
 
         <div className="p-8 pt-10 flex flex-col gap-8">
           {/* Title */}
-          <div className="flex flex-col gap-2 pr-10">
+          <div className="flex flex-col gap-2 ltr:pr-10 rtl:pl-10">
             <h3 className="text-[24px] font-bold text-[#0E1A2B]">
               {t('title')}
             </h3>

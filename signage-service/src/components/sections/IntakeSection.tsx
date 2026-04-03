@@ -64,7 +64,7 @@ const IntakeSection = () => {
 
   return (
     <>
-      <section className="w-full bg-[#F6F0E9] py-24 px-6">
+      <section className="w-full bg-[#F7F1E8] py-24 px-6">
         <div className="max-w-7xl mx-auto flex flex-col gap-12 text-center">
           <div className="flex flex-col gap-4 items-center">
             <h2 className="text-[40px] md:text-[48px] font-bold text-[#0E1A2B] leading-tight">
@@ -80,9 +80,9 @@ const IntakeSection = () => {
               <div
                 key={method.id}
                 onClick={() => handleCardClick(method.focus)}
-                className="bg-white p-8 rounded-[40px] shadow-xl shadow-[#0E1A2B08] border border-[#E7DDD3] hover:border-[#C86E4A] hover:translate-y-[-8px] transition-all duration-300 cursor-pointer flex flex-col items-center text-center gap-6 group"
+                className="bg-white p-8 rounded-[40px] shadow-xl shadow-[#0E1A2B08] border border-[#E7DDD3] hover:border-[#B8643E] hover:translate-y-[-8px] transition-all duration-300 cursor-pointer flex flex-col items-center text-center gap-6 group"
               >
-                <div className="w-16 h-16 rounded-3xl bg-[#F3E2D5] flex items-center justify-center text-[#C86E4A] group-hover:bg-[#C86E4A] group-hover:text-white transition-all duration-300">
+                <div className="w-16 h-16 rounded-3xl bg-[#EED8C8] flex items-center justify-center text-[#B8643E] group-hover:bg-[#B8643E] group-hover:text-white transition-all duration-300">
                   {method.icon}
                 </div>
                 <div className="flex flex-col gap-2">

@@ -11,13 +11,13 @@ import FooterCTA from '@/components/sections/FooterCTA';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#F6F0E9]">
+    <div className="min-h-screen flex flex-col bg-[#F7F1E8]">
       <Header />
       <main className="flex-1">
         <HeroSection />
-        <TrustSection />
         <IntakeSection />
         <BentoGridSection />
+        <TrustSection />
         <ExcellenceCarousel />
         <RoadmapSection />
         <FAQSection />

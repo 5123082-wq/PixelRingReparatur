@@ -15,8 +15,8 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="w-full bg-[#F6F0E9] py-12 px-10 border-t border-[#E7DDD3]">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+    <footer className="w-full bg-[#F7F1E8] py-12 px-10 border-t border-[#E7DDD3]">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-start">
         {/* Paragraph section */}
         <div className="flex flex-col gap-4 max-w-sm">
           <span className="text-[20px] font-medium text-[#2B2621] leading-[1.4]">
@@ -33,7 +33,7 @@ const Footer = () => {
             <Link
               key={link.name}
               href={link.href}
-              className="text-[14px] text-[#72665D] hover:text-[#C86E4A] transition-colors leading-[1.42857]"
+              className="text-[14px] text-[#72665D] hover:text-[#B8643E] transition-colors leading-[1.42857]"
             >
               {link.name}
             </Link>
@@ -42,10 +42,10 @@ const Footer = () => {
 
         {/* Action/Social section */}
         <div className="flex items-center justify-center">
-          <div className="w-10 h-10 bg-[#F3E2D5] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#E7DDD3] transition-all">
+          <div className="w-10 h-10 bg-[#EED8C8] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#E7DDD3] transition-all">
             {/* Social Icon placeholder or SVG */}
             <svg
-              className="w-5 h-5 text-[#C86E4A]"
+              className="w-5 h-5 text-[#B8643E]"
               fill="currentColor"
               viewBox="0 0 24 24"
             >

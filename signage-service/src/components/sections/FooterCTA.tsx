@@ -17,7 +17,7 @@ const FooterCTA = () => {
   ];
 
   return (
-    <section className="w-full bg-gradient-to-br from-[#0040a1] to-[#0056d2] py-24 px-6 relative overflow-hidden">
+    <section className="w-full bg-gradient-to-br from-[#0B2A4A] to-[#174A7C] py-24 px-6 relative overflow-hidden">
       {/* Decorative patterns */}
       <div className="absolute inset-0 opacity-10 pointer-events-none">
         <div className="absolute top-10 left-10 w-64 h-64 border border-white rounded-full" />

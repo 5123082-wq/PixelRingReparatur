@@ -1,10 +1,14 @@
 {
   "HomePage": {
     "title": "PixelRing Reparatur",
-    "description": "Unified service for sign repair, installation and maintenance.",
+    "hero_title_prefix": "PixelRing:",
+    "hero_title_accent": "Sign Repair",
+    "hero_title_suffix": "and Service, professional, fast.",
+    "description": "Start your repair request in under a minute. Upload a photo or send a message. We bring your signage back to life — efficiently and without hassle.",
     "cta_primary": "Start Request",
     "cta_secondary": "Send Photo",
-    "trust_badge": "Real service company, not a contractor marketplace"
+    "trust_badge": "Real service company, not a contractor marketplace",
+    "badge_label": "Response time for urgent cases"
   },
   "Nav": {
     "services": "Repair Services",
@@ -22,25 +26,35 @@
     "locations": "Global Locations"
   },
   "Trust": {
-    "title": "Why you can trust us",
-    "bullets": [
-      {
-        "title": "One Unified Partner",
-        "description": "You are dealing with a single, accountable service company."
+    "title_start": "Why PixelRing is ",
+    "title_accent": "different",
+    "title_end": ".",
+    "description": "We don't view technology as a tool, but as a craft. Our processes are designed for maximum transparency and technical perfection.",
+    "feature1": "Cleanroom Environment",
+    "feature2": "Seamless Documentation",
+    "feature3": "Quality Audit",
+    "stats": {
+      "turnaround": {
+        "value": "24h",
+        "label": "STANDARD TURNAROUND",
+        "description": "Most repairs are completed within one business day."
       },
-      {
-        "title": "End-to-End Support",
-        "description": "We personally receive and manage your entire service request."
+      "warranty": {
+        "value": "24",
+        "label": "MONTHS WARRANTY",
+        "description": "We stand by our work. Full coverage on all installed parts."
       },
-      {
-        "title": "AI-Driven Efficiency",
-        "description": "Artificial intelligence helps us categorize and speed up your intake."
+      "hardware": {
+        "value": "100%",
+        "label": "ORIGINAL HARDWARE",
+        "description": "No compromises. We only use certified components."
       },
-      {
-        "title": "Topic-Specific Experts",
-        "description": "Your task is handled by qualified specialists from our verified network."
+      "rating": {
+        "value": "4.9",
+        "label": "CUSTOMER RATING",
+        "description": "Over 15,000 satisfied customers trust our expertise."
       }
-    ]
+    }
   },
   "Intake": {
     "title": "Choose your way",

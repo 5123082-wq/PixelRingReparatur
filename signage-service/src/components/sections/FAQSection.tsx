@@ -15,13 +15,13 @@ const FAQSection = () => {
   ];
 
   return (
-    <section className="w-full bg-[#f8f9fa] py-24 px-6">
+    <section className="w-full bg-[#F9F6F2] py-24 px-6">
       <div className="max-w-3xl mx-auto flex flex-col gap-12">
         <div className="flex flex-col gap-4 text-center">
           <h2 className="text-[36px] md:text-[44px] font-bold text-[#0E1A2B] leading-tight">
             {t('title')}
           </h2>
-          <div className="w-20 h-1 bg-[#C86E4A] rounded-full mx-auto" />
+          <div className="w-20 h-1 bg-[#B8643E] rounded-full mx-auto" />
         </div>
 
         <div className="flex flex-col gap-4">
@@ -32,14 +32,14 @@ const FAQSection = () => {
             >
               <button
                 onClick={() => setActiveIndex(activeIndex === index ? null : index)}
-                className="w-full px-8 py-6 flex items-center justify-between text-left hover:bg-[#F6F0E950] transition-colors"
+                className="w-full px-8 py-6 flex items-center justify-between text-start hover:bg-[#F4EDE450] transition-colors"
                 aria-expanded={activeIndex === index}
               >
                 <span className="text-[18px] font-bold text-[#0E1A2B]">
                   {item.q}
                 </span>
                 <span className={`transform transition-transform duration-300 ${activeIndex === index ? 'rotate-180' : ''}`}>
-                  <svg className="w-6 h-6 text-[#C86E4A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 text-[#B8643E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </span>

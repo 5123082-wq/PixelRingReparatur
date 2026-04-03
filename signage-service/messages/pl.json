@@ -1,10 +1,14 @@
 {
   "HomePage": {
     "title": "Naprawa PixelRing",
-    "description": "Twój niezawodny partner w zakresie naprawy, montażu i konserwacji instalacji reklamowych.",
-    "cta_primary": "Rozpocznij zapytanie",
+    "hero_title_prefix": "PixelRing:",
+    "hero_title_accent": "Naprawa szyldów",
+    "hero_title_suffix": "i serwis, profesjonalnie, szybko.",
+    "description": "Rozpocznij zgłoszenie naprawy w mniej niż minutę. Wyślij zdjęcie lub wiadomość. Przywracamy blask Twoich reklam — sprawnie i bez zbędnych formalności.",
+    "cta_primary": "Rozpocznij zgłoszenie",
     "cta_secondary": "Wyślij zdjęcie",
-    "trust_badge": "Prawdziwa firma serwisowa, a nie platforma pośrednicząca"
+    "trust_badge": "Prawdziwa firma serwisowa, a nie platforma pośrednicząca",
+    "badge_label": "Czas reakcji dla pilnych przypadków"
   },
   "Nav": {
     "services": "Naprawa i Serwis",
@@ -22,25 +26,35 @@
     "locations": "Lokalizacje"
   },
   "Trust": {
-    "title": "Dlaczego warto nam zaufać",
-    "bullets": [
-      {
-        "title": "Jeden partner",
-        "description": "Współpracujesz z jedną, odpowiedzialną firmą serwisową."
+    "title_start": "Dlaczego PixelRing jest ",
+    "title_accent": "inny",
+    "title_end": ".",
+    "description": "Nie traktujemy technologii jako narzędzia, lecz jako rzemiosło. Nasze procesy są zaprojektowane z myślą o maksymalnej przejrzystości i technicznej doskonałości.",
+    "feature1": "Środowisko Cleanroom",
+    "feature2": "Płynna dokumentacja",
+    "feature3": "Audyt jakości",
+    "stats": {
+      "turnaround": {
+        "value": "24h",
+        "label": "STANDARDOWY CZAS",
+        "description": "Większość napraw wykonujemy w ciągu jednego dnia roboczego."
       },
-      {
-        "title": "Pełne wsparcie",
-        "description": "Przyjmujemy Twoje zapytanie i osobiście zarządzamy całym procesem."
+      "warranty": {
+        "value": "24",
+        "label": "MIESIĄCE GWARANCJI",
+        "description": "Ręczymy za naszą pracę. Pełna ochrona wszystkich zainstalowanych części."
       },
-      {
-        "title": "Wydajność dzięki AI",
-        "description": "Sztuczna inteligencja pomaga nam szybciej uściślić Twoje wymagania."
+      "hardware": {
+        "value": "100%",
+        "label": "ORYGINALNY SPRZĘT",
+        "description": "Bez kompromisów. Używamy wyłącznie certyfikowanych komponentów."
       },
-      {
-        "title": "Specjaliści branżowi",
-        "description": "Twoje zlecenie jest realizowane przez wykwalifikowanych ekspertów z naszej sieci."
+      "rating": {
+        "value": "4.9",
+        "label": "OCENA KLIENTÓW",
+        "description": "Ponad 15 000 zadowolonych klientów zaufało naszej wiedzy."
       }
-    ]
+    }
   },
   "Intake": {
     "title": "Wybierz swoją drogę",

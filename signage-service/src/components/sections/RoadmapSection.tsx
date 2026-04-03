@@ -14,13 +14,13 @@ const RoadmapSection = () => {
   ];
 
   return (
-    <section className="w-full bg-[#A8CFF3] py-24 px-6 border-y border-white/20">
+    <section className="w-full bg-[#9FBFE0] py-24 px-6 border-y border-white/20">
       <div className="max-w-7xl mx-auto flex flex-col gap-16">
         <div className="flex flex-col gap-4 text-center">
           <h2 className="text-[36px] md:text-[44px] font-bold text-[#0E1A2B] leading-tight">
             {t('title')}
           </h2>
-          <div className="w-20 h-1 bg-[#0E1A2B] rounded-full mx-auto" />
+          <div className="w-20 h-1 bg-[#B8643E] rounded-full mx-auto" />
         </div>
 
         <div className="relative">
@@ -31,7 +31,7 @@ const RoadmapSection = () => {
             {steps.map((step, index) => (
               <div key={index} className="flex flex-col items-center text-center gap-6 group">
                 {/* Circle Marker */}
-                <div className="w-12 h-12 rounded-full bg-white border-4 border-[#A8CFF3] shadow-lg flex items-center justify-center text-[#0E1A2B] font-bold text-[18px] z-10 group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-full bg-white border-4 border-[#9FBFE0] shadow-lg flex items-center justify-center text-[#0E1A2B] font-bold text-[18px] z-10 group-hover:scale-110 transition-transform">
                   {index + 1}
                 </div>
                 <div className="flex flex-col gap-3">
