@@ -157,6 +157,19 @@
       }
     ]
   },
+  "ContactModal": {
+    "title": "Bize Ulaşın",
+    "subtitle": "Tercih ettiğiniz iletişim kanalını seçin veya talep bırakın.",
+    "messenger_label": "Doğrudan yazın",
+    "divider": "veya talep bırakın",
+    "field_name": "Adınız",
+    "field_contact": "Telefon veya e-posta",
+    "field_message": "Görevinizi açıklayın...",
+    "field_photo": "📎 Fotoğraf ekle",
+    "submit": "Talebi gönder",
+    "success_title": "Talep gönderildi!",
+    "success_message": "15 dakika içinde size geri döneceğiz."
+  },
   "FooterCTA": {
     "title": "Hala Sorularınız mı Var? Bizimle İletişime Geçin.",
     "subtitle": "Ücretsiz ilk değerlendirme için tercih ettiğiniz kanal üzerinden bize ulaşabilirsiniz.",

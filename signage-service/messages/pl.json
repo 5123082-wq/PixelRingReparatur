@@ -157,6 +157,19 @@
       }
     ]
   },
+  "ContactModal": {
+    "title": "Skontaktuj się z nami",
+    "subtitle": "Wybierz preferowany kanał komunikacji lub zostaw zapytanie.",
+    "messenger_label": "Napisz do nas bezpośrednio",
+    "divider": "lub zostaw zapytanie",
+    "field_name": "Twoje imię",
+    "field_contact": "Telefon lub e-mail",
+    "field_message": "Opisz swoje zadanie...",
+    "field_photo": "📎 Załącz zdjęcie",
+    "submit": "Wyślij zapytanie",
+    "success_title": "Zapytanie wysłane!",
+    "success_message": "Odpowiemy w ciągu 15 minut."
+  },
   "FooterCTA": {
     "title": "Masz pytania? Skontaktuj się z nami.",
     "subtitle": "Jesteśmy dostępni za pośrednictwem Twojego preferowanego kanału w celu bezpłatnej wstępnej oceny.",

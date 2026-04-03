@@ -157,6 +157,19 @@
       }
     ]
   },
+  "ContactModal": {
+    "title": "Kontaktieren Sie uns",
+    "subtitle": "Wählen Sie Ihren bevorzugten Kommunikationskanal oder hinterlassen Sie eine Anfrage.",
+    "messenger_label": "Direkt schreiben",
+    "divider": "oder Anfrage hinterlassen",
+    "field_name": "Ihr Name",
+    "field_contact": "Telefon oder E-Mail",
+    "field_message": "Beschreiben Sie Ihre Aufgabe...",
+    "field_photo": "📎 Foto anhängen",
+    "submit": "Anfrage senden",
+    "success_title": "Anfrage gesendet!",
+    "success_message": "Wir melden uns innerhalb von 15 Minuten bei Ihnen."
+  },
   "FooterCTA": {
     "title": "Noch Fragen? Kontaktieren Sie uns.",
     "subtitle": "Wir stehen Ihnen über Ihren bevorzugten Kanal für eine kostenlose Ersteinschätzung zur Verfügung.",

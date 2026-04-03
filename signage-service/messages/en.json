@@ -157,6 +157,19 @@
       }
     ]
   },
+  "ContactModal": {
+    "title": "Get in Touch",
+    "subtitle": "Choose your preferred communication channel or leave a request.",
+    "messenger_label": "Write to us directly",
+    "divider": "or leave a request",
+    "field_name": "Your name",
+    "field_contact": "Phone or email",
+    "field_message": "Describe your task...",
+    "field_photo": "📎 Attach a photo",
+    "submit": "Send request",
+    "success_title": "Request sent!",
+    "success_message": "We'll get back to you within 15 minutes."
+  },
   "FooterCTA": {
     "title": "Still have questions? Contact us.",
     "subtitle": "We are available via your preferred channel for a free initial assessment.",

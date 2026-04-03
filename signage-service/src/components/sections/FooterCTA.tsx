@@ -6,11 +6,14 @@ import { useTranslations } from 'next-intl';
 const FooterCTA = () => {
   const t = useTranslations('FooterCTA');
 
+  const whatsappUrl = process.env.NEXT_PUBLIC_WHATSAPP_URL || 'https://wa.me/message/27UOBFWB7UYCN1';
+  const telegramUrl = process.env.NEXT_PUBLIC_TELEGRAM_URL || 'https://t.me/PixelRing_bot';
+
   const channels = [
-    { id: 'whatsapp', name: t('channels.0.name'), icon: '💬' },
-    { id: 'telegram', name: t('channels.1.name'), icon: '✈️' },
-    { id: 'chat', name: t('channels.2.name'), icon: '👩‍💻' },
-    { id: 'email', name: t('channels.3.name'), icon: '✉️' },
+    { id: 'whatsapp', name: t('channels.0.name'), icon: '💬', href: whatsappUrl },
+    { id: 'telegram', name: t('channels.1.name'), icon: '✈️', href: telegramUrl },
+    { id: 'chat', name: t('channels.2.name'), icon: '👩‍💻', href: '#book' },
+    { id: 'email', name: t('channels.3.name'), icon: '✉️', href: 'mailto:service@pixelring.de' },
   ];
 
   return (
@@ -33,8 +36,11 @@ const FooterCTA = () => {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8">
           {channels.map((channel) => (
-            <div
+            <a
               key={channel.id}
+              href={channel.href}
+              target={channel.id === 'whatsapp' || channel.id === 'telegram' ? '_blank' : undefined}
+              rel={channel.id === 'whatsapp' || channel.id === 'telegram' ? 'noopener noreferrer' : undefined}
               className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-[32px] hover:bg-white/10 hover:translate-y-[-8px] transition-all duration-300 cursor-pointer flex flex-col items-center gap-4 group"
             >
               <div className="text-3xl grayscale group-hover:grayscale-0 transition-all">
@@ -43,7 +49,7 @@ const FooterCTA = () => {
               <span className="text-[16px] font-bold tracking-wide">
                 {channel.name}
               </span>
-            </div>
+            </a>
           ))}
         </div>
       </div>
