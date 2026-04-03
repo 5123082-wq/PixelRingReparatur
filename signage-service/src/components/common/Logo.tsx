@@ -22,8 +22,9 @@ const Logo: React.FC<LogoProps> = ({ className, isDark = true }) => {
           className="absolute w-2 h-2 bg-[#37C7C0] rounded-sm top-[7px] right-[7px]"
         />
       </div>
-      <span className={`text-[34px] font-bold tracking-[0.2px] leading-tight ${textColor}`} style={{ fontFamily: 'Manrope, sans-serif' }}>
-        PixelRing
+      <span className={`text-[24px] sm:text-[34px] font-bold tracking-[0.2px] leading-tight ${textColor}`} style={{ fontFamily: 'Manrope, sans-serif' }}>
+        <span className="hidden sm:inline">PixelRing</span>
+        <span className="sm:hidden">PR service</span>
       </span>
     </div>
   );

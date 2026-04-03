@@ -13,7 +13,7 @@ const MessengerButtons = ({ compact = false }: MessengerButtonsProps) => {
   if (compact) {
     // Header-style compact icons
     return (
-      <div className="flex items-center gap-2">
+      <div className="hidden sm:flex items-center gap-2">
         <a
           href={whatsappUrl}
           target="_blank"
