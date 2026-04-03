@@ -117,7 +117,6 @@
         "description": "Professional installation of large signage on facades."
       },
       {
-        "id": "repair",
         "title": "Neon Repair",
         "tag": "Repair",
         "description": "Precise restoration of classic neon tubes."
@@ -126,6 +125,21 @@
         "title": "High-Rise Maintenance",
         "tag": "Maintenance",
         "description": "Service at dizzying heights with state-of-the-art equipment."
+      },
+      {
+        "title": "Signage Design",
+        "tag": "Design",
+        "description": "Custom signage design from concept to production-ready files."
+      },
+      {
+        "title": "Lightbox Installation",
+        "tag": "Lightbox",
+        "description": "Energy-efficient backlit panels with even light distribution."
+      },
+      {
+        "title": "Safe Dismantling",
+        "tag": "Dismantling",
+        "description": "Careful removal and recycling of old signage structures."
       }
     ]
   },

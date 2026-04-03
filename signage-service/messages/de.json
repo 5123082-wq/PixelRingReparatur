@@ -117,7 +117,6 @@
         "description": "Fachgerechte Installation großer Werbeanlagen an Fassaden."
       },
       {
-        "id": "repair",
         "title": "Neon-Reparatur",
         "tag": "Reparatur",
         "description": "Präzise Instandsetzung von klassischen Leuchtröhren."
@@ -126,6 +125,21 @@
         "title": "Hochhaus-Wartung",
         "tag": "Wartung",
         "description": "Service in schwindelerregender Höhe mit modernster Technik."
+      },
+      {
+        "title": "Schilder-Design",
+        "tag": "Design",
+        "description": "Individuelles Schilderdesign vom Konzept bis zur druckfertigen Datei."
+      },
+      {
+        "title": "Leuchtkasten-Montage",
+        "tag": "Leuchtkasten",
+        "description": "Energieeffiziente hinterleuchtete Paneele mit gleichmäßiger Lichtverteilung."
+      },
+      {
+        "title": "Sicherer Rückbau",
+        "tag": "Rückbau",
+        "description": "Fachgerechte Demontage und Entsorgung alter Werbeanlagen."
       }
     ]
   },

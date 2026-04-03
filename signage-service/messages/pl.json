@@ -117,7 +117,6 @@
         "description": "Profesjonalna instalacja dużych konstrukcji reklamowych na fasadach."
       },
       {
-        "id": "repair",
         "title": "Naprawa neonów",
         "tag": "Naprawa",
         "description": "Precyzyjna renowacja klasycznych rur neonowych."
@@ -126,6 +125,21 @@
         "title": "Konserwacja wysokościowa",
         "tag": "Konserwacja",
         "description": "Serwis na zawrotnych wysokościach przy użyciu nowoczesnego sprzętu."
+      },
+      {
+        "title": "Projektowanie szyldów",
+        "tag": "Projekt",
+        "description": "Indywidualny projekt szyldów od koncepcji po pliki gotowe do produkcji."
+      },
+      {
+        "title": "Montaż kasetonu",
+        "tag": "Kaseton",
+        "description": "Energooszczędne panele podświetlane z równomiernym rozłożeniem światła."
+      },
+      {
+        "title": "Bezpieczny demontaż",
+        "tag": "Demontaż",
+        "description": "Ostrożne usuwanie i recykling starych konstrukcji reklamowych."
       }
     ]
   },

@@ -117,7 +117,6 @@
         "description": "Cephelerdeki büyük reklam tabelalarının profesyonel montajı."
       },
       {
-        "id": "repair",
         "title": "Neon Onarımı",
         "tag": "Onarım",
         "description": "Klasik neon tüplerin hassas restorasyonu."
@@ -126,6 +125,21 @@
         "title": "Yüksek Bakım",
         "tag": "Bakım",
         "description": "Modern ekipmanlarla baş döndürücü yüksekliklerde servis."
+      },
+      {
+        "title": "Tabela Tasarımı",
+        "tag": "Tasarım",
+        "description": "Konseptten üretime hazır dosyalara kadar özel tabela tasarımı."
+      },
+      {
+        "title": "Işıklı Kutu Montajı",
+        "tag": "Işıklı Kutu",
+        "description": "Eşit ışık dağılımıyla enerji tasarruflu arkadan aydınlatmalı paneller."
+      },
+      {
+        "title": "Güvenli Söküm",
+        "tag": "Söküm",
+        "description": "Eski tabela yapılarının dikkatli sökümü ve geri dönüşümü."
       }
     ]
   },
