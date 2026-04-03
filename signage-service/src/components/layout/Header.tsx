@@ -20,7 +20,7 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-[#F6F0E9A3] backdrop-blur-[10.5px] border-b border-[#E7DDD3]">
-      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between gap-4">
+      <div dir="ltr" className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between gap-4">
         {/* Brand/Logo */}
         <div className="flex items-center gap-3">
           <Link href="/">
