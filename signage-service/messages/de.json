@@ -204,6 +204,30 @@
     "connect_label": "SCHNELLER KONTAKT ÜBER MESSENGER",
     "write_us": "Schreiben Sie uns",
     "form_title": "Anfrage senden",
-    "form_subtitle": "Beschreiben Sie Ihre Aufgabe und wir melden uns innerhalb von 15 Minuten."
+    "form_subtitle": "Describe your task, and we'll get back to you within 15 minutes."
+  },
+  "Reviews": {
+    "title": "Kundenerfahrungen",
+    "subtitle": "Was unsere Kunden über das PixelRing-Erlebnis sagen.",
+    "items": [
+      {
+        "name": "Jonas Weber",
+        "role": "Einzelhandelsmanager",
+        "content": "PixelRing hat unser Schaufenster gerettet! Die LED-Anzeige flackerte wochenlang, aber sie wurde in weniger als 24 Stunden repariert. Wirklich professionell.",
+        "rating": 5
+      },
+      {
+        "name": "Karin Müller",
+        "role": "Architektin",
+        "content": "Die Liebe zum technischen Detail unterscheidet sie von anderen. Reparatur auf Reinraum-Niveau für hochwertige Beschilderungen. Sehr empfehlenswert.",
+        "rating": 5
+      },
+      {
+        "name": "Stefan Bauer",
+        "role": "Event-Koordinator",
+        "content": "Schnell, transparent und von hoher Qualität. Die 24-monatige Garantie gibt uns echte Sicherheit für unsere Neon-Installationen.",
+        "rating": 5
+      }
+    ]
   }
 }

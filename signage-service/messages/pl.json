@@ -204,6 +204,30 @@
     "connect_label": "SZYBKI KONTAKT PRZEZ KOMUNIKATORY",
     "write_us": "Napisz do nas",
     "form_title": "Wyślij zgłoszenie",
-    "form_subtitle": "Opisz swoje zadanie, a my skontaktujemy się z Tobą w ciągu 15 minut."
+    "form_subtitle": "Opisz swoje zadanie, a mianowicie skontaktujemy się z Tobą w ciągu 15 minut."
+  },
+  "Reviews": {
+    "title": "Historie klientów",
+    "subtitle": "Co nasi klienci mówią o współpracy z PixelRing.",
+    "items": [
+      {
+        "name": "Adam Wiśniewski",
+        "role": "Manager handlu",
+        "content": "PixelRing uratował naszą witrynę! Szyld LED migał tygodniami, ale naprawili go w mniej niż 24 godziny. Prawdziwi profesjonaliści.",
+        "rating": 5
+      },
+      {
+        "name": "Katarzyna Mazur",
+        "role": "Architekt",
+        "content": "Dbałość o techniczne szczegóły jest tym, co ich wyróżnia. Naprawa w standardzie cleanroom dla ekskluzywnych szyldów. Wysoce zalecane.",
+        "rating": 5
+      },
+      {
+        "name": "Piotr Nowak",
+        "role": "Koordynator eventów",
+        "content": "Szybko, przejrzyście i wysokiej jakości. 24-miesięczna gwarancja daje nam spokój o nasze neonowe instalacje.",
+        "rating": 5
+      }
+    ]
   }
 }

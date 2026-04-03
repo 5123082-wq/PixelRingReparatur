@@ -5,6 +5,7 @@ import TrustSection from '@/components/sections/TrustSection';
 import IntakeSection from '@/components/sections/IntakeSection';
 import BentoGridSection from '@/components/sections/BentoGridSection';
 import ExcellenceCarousel from '@/components/sections/ExcellenceCarousel';
+import ReviewsSection from '@/components/sections/ReviewsSection';
 import RoadmapSection from '@/components/sections/RoadmapSection';
 import FAQSection from '@/components/sections/FAQSection';
 import FooterCTA from '@/components/sections/FooterCTA';
@@ -19,6 +20,7 @@ export default function HomePage() {
         <BentoGridSection />
         <TrustSection />
         <ExcellenceCarousel />
+        <ReviewsSection />
         <RoadmapSection />
         <FAQSection />
         <FooterCTA />

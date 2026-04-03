@@ -205,5 +205,29 @@
     "write_us": "Write to us",
     "form_title": "Submit a Request",
     "form_subtitle": "Describe your task, and we'll get back to you within 15 minutes."
+  },
+  "Reviews": {
+    "title": "Customer Stories",
+    "subtitle": "What our clients say about the PixelRing experience.",
+    "items": [
+      {
+        "name": "Sarah Jenkins",
+        "role": "Retail Manager",
+        "content": "PixelRing saved our storefront! The LED sign was flickering for weeks, but they fixed it in under 24 hours. Truly professional.",
+        "rating": 5
+      },
+      {
+        "name": "Marcus Thorne",
+        "role": "Architect",
+        "content": "The attention to technical detail is what sets them apart. Cleanroom-grade repair for high-end signage. Highly recommended.",
+        "rating": 5
+      },
+      {
+        "name": "Elena Kovacs",
+        "role": "Event Coordinator",
+        "content": "Fast, transparent, and high quality. The 24-month warranty gives us real peace of mind for our neon installations.",
+        "rating": 5
+      }
+    ]
   }
 }

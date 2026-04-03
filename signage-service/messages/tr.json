@@ -204,6 +204,30 @@
     "connect_label": "MESSENGER ÜZERİNDEN HIZLI İLETİŞİM",
     "write_us": "Bize yazın",
     "form_title": "Talep Gönder",
-    "form_subtitle": "Görevinizi açıklayın, 15 dakika içinde size geri dönelim."
+    "form_subtitle": "Görevinizi açıklayın, 15 dakika içinde size geri döneceğiz."
+  },
+  "Reviews": {
+    "title": "Müşteri Hikayeleri",
+    "subtitle": "Müşterilerimizin PixelRing deneyimi hakkındaki yorumları.",
+    "items": [
+      {
+        "name": "Selin Yılmaz",
+        "role": "Mağaza Müdürü",
+        "content": "PixelRing vitrinimizi kurtardı! LED tabela haftalardır yanıp sönüyordu, ancak 24 saatten kısa sürede onardılar. Gerçekten profesyonel.",
+        "rating": 5
+      },
+      {
+        "name": "Ahmet Kaya",
+        "role": "Mimar",
+        "content": "Onları diğerlerinden ayıran şey teknik detaylara gösterilen özen. Üst düzey tabelalar için temiz oda kalitesinde onarım. Kesinlikle tavsiye ederim.",
+        "rating": 5
+      },
+      {
+        "name": "Can Demir",
+        "role": "Etkinlik Koordinatörü",
+        "content": "Hızlı, şeffaf ve yüksek kaliteli. 24 aylık garanti, neon tesisatlarımız için bize gerçek bir huzur veriyor.",
+        "rating": 5
+      }
+    ]
   }
 }
