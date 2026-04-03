@@ -1,0 +1,170 @@
+{
+  "HomePage": {
+    "title": "PixelRing Onarım",
+    "description": "Reklam tabelalarının onarımı, montajı ve bakımı için güvenilir ortağınız.",
+    "cta_primary": "Talebi Başlat",
+    "cta_secondary": "Fotoğraf Gönder",
+    "trust_badge": "Gerçek bir servis şirketi, aracı bir pazar yeri değil"
+  },
+  "Nav": {
+    "services": "Onarım ve Servis",
+    "warranty": "Garanti",
+    "status": "Durum",
+    "support": "Destek",
+    "book": "Onarım Rezerve Et",
+    "service_pill": "SERVİS"
+  },
+  "Footer": {
+    "copyright": "© 2024 PixelRing Technical Atelier. Tüm hakları saklıdır.",
+    "privacy": "Gizlilik Politikası",
+    "terms": "Kullanım Şartları",
+    "compliance": "Uyum",
+    "locations": "Konumlar"
+  },
+  "Trust": {
+    "title": "Neden Bize Güvenmelisiniz",
+    "bullets": [
+      {
+        "title": "Tek Bir Ortak",
+        "description": "Sorumluluk sahibi tek bir servis şirketi ile çalışırsınız."
+      },
+      {
+        "title": "Uçtan Uca Destek",
+        "description": "Talebinizi alır ve tüm süreci bizzat yönetiriz."
+      },
+      {
+        "title": "Yapay Zeka Destekli Verimlilik",
+        "description": "Yapay zeka, gereksinimlerinizi daha hızlı netleştirmemize yardımcı olur."
+      },
+      {
+        "title": "Konusunda Uzman Kişiler",
+        "description": "Göreviniz, doğrulanmış ağımızdaki kalifiye uzmanlar tarafından yürütülür."
+      }
+    ]
+  },
+  "Intake": {
+    "title": "Yolunuzu Seçin",
+    "description": "Talebinizi sizin için en uygun şekilde başlatın. Yapay zekamız hızlı kayda yardımcı olur.",
+    "methods": [
+      {
+        "id": "text",
+        "title": "Metin Açıklaması",
+        "label": "Sorunu açıklayın"
+      },
+      {
+        "id": "photo",
+        "title": "Fotoğraf Gönder",
+        "label": "Görselleri yükleyin"
+      },
+      {
+        "id": "voice",
+        "title": "Sesli Mesaj",
+        "label": "Bizimle konuşun"
+      },
+      {
+        "id": "messenger",
+        "title": "Messenger",
+        "label": "WhatsApp / Telegram"
+      }
+    ]
+  },
+  "Bento": {
+    "title": "Nasıl Çalışır",
+    "steps": [
+      {
+        "title": "Talep Gönder",
+        "description": "Yapay zekamız metninizi, fotoğraflarınızı veya sesli mesajınızı anında yakalar."
+      },
+      {
+        "title": "Detayları Netleştir",
+        "description": "Deneyimli bir proje yöneticisi talebi inceler ve çalışma kapsamını belirler."
+      },
+      {
+        "title": "Uzman Ataması",
+        "description": "Görevinizi ağımızdaki en uygun uzmanla eşleştiririz."
+      },
+      {
+        "title": "Uygulama",
+        "description": "Çalışmalar zamanında ve en yüksek teknik standartlarda gerçekleştirilir."
+      },
+      {
+        "title": "Garanti",
+        "description": "Yapılan tüm işlemler için tam teknik garanti alırsınız."
+      }
+    ]
+  },
+  "Excellence": {
+    "title": "Görünür Mükemmellik",
+    "subtitle": "Tamamlanan projelerimiz her şeyi anlatıyor. Her detayda hassasiyet.",
+    "items": [
+      {
+        "title": "LED Montajı",
+        "tag": "Montaj",
+        "description": "Cephelerdeki büyük reklam tabelalarının profesyonel montajı."
+      },
+      {
+        "id": "repair",
+        "title": "Neon Onarımı",
+        "tag": "Onarım",
+        "description": "Klasik neon tüplerin hassas restorasyonu."
+      },
+      {
+        "title": "Yüksek Bakım",
+        "tag": "Bakım",
+        "description": "Modern ekipmanlarla baş döndürücü yüksekliklerde servis."
+      }
+    ]
+  },
+  "Roadmap": {
+    "title": "Talepten Sonra Ne Olur?",
+    "steps": [
+      {
+        "title": "Onay",
+        "description": "Talebinizin yapay zeka üzerinden anında onaylanması."
+      },
+      {
+        "title": "Atama",
+        "description": "Size 15 dakika içinde özel bir yönetici atanır."
+      },
+      {
+        "title": "Teknik Denetim",
+        "description": "Görevin denetimi ve nihai maliyet hesaplaması."
+      },
+      {
+        "title": "Uygulama",
+        "description": "Uzmanlarımız tarafından yerinde zamanında uygulama."
+      }
+    ]
+  },
+  "FAQ": {
+    "title": "Sıkça Sorulan Sorular",
+    "items": [
+      {
+        "question": "Uzman ne kadar sürede gelir?",
+        "answer": "Talebin onaylanmasından sonra genellikle 24 ila 48 saat içinde yanınızdayız."
+      },
+      {
+        "question": "Hangi garantiyi sunuyorsunuz?",
+        "answer": "Tüm işçilik ve yedek parçalar için 6 ila 12 ay garanti veriyoruz."
+      },
+      {
+        "question": "Bireysel müşterilerle de çalışıyor musunuz?",
+        "answer": "Evet, hem ticari müşterilere hem de bireysel taleplere aynı özenle hizmet veriyoruz."
+      },
+      {
+        "question": "Hangi bölgeleri kapsıyorsunuz?",
+        "answer": "Ülke genelinde bir uzman ağımız bulunmaktadır ve tüm ülkedeki talepleri karşılayabiliriz."
+      }
+    ]
+  },
+  "FooterCTA": {
+    "title": "Hala Sorularınız mı Var? Bizimle İletişime Geçin.",
+    "subtitle": "Ücretsiz ilk değerlendirme için tercih ettiğiniz kanal üzerinden bize ulaşabilirsiniz.",
+    "channels": [
+      { "id": "whatsapp", "name": "WhatsApp" },
+      { "id": "telegram", "name": "Telegram" },
+      { "id": "chat", "name": "Canlı Sohbet" },
+      { "id": "email", "name": "E-posta" }
+    ]
+  }
+}

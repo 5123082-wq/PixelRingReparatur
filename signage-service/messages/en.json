@@ -1,0 +1,170 @@
+{
+  "HomePage": {
+    "title": "PixelRing Reparatur",
+    "description": "Unified service for sign repair, installation and maintenance.",
+    "cta_primary": "Start Request",
+    "cta_secondary": "Send Photo",
+    "trust_badge": "Real service company, not a contractor marketplace"
+  },
+  "Nav": {
+    "services": "Repair Services",
+    "warranty": "Warranty",
+    "status": "Status",
+    "support": "Support",
+    "book": "Book Repair",
+    "service_pill": "SERVICE"
+  },
+  "Footer": {
+    "copyright": "© 2024 PixelRing Technical Atelier. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "compliance": "Compliance",
+    "locations": "Global Locations"
+  },
+  "Trust": {
+    "title": "Why you can trust us",
+    "bullets": [
+      {
+        "title": "One Unified Partner",
+        "description": "You are dealing with a single, accountable service company."
+      },
+      {
+        "title": "End-to-End Support",
+        "description": "We personally receive and manage your entire service request."
+      },
+      {
+        "title": "AI-Driven Efficiency",
+        "description": "Artificial intelligence helps us categorize and speed up your intake."
+      },
+      {
+        "title": "Topic-Specific Experts",
+        "description": "Your task is handled by qualified specialists from our verified network."
+      }
+    ]
+  },
+  "Intake": {
+    "title": "Choose your way",
+    "description": "Start your request in the way that is most convenient for you. Our AI helps with fast capture.",
+    "methods": [
+      {
+        "id": "text",
+        "title": "Text Description",
+        "label": "Describe the issue"
+      },
+      {
+        "id": "photo",
+        "title": "Send Photo",
+        "label": "Upload images"
+      },
+      {
+        "id": "voice",
+        "title": "Voice Message",
+        "label": "Speak to us"
+      },
+      {
+        "id": "messenger",
+        "title": "Messenger",
+        "label": "WhatsApp / Telegram"
+      }
+    ]
+  },
+  "Bento": {
+    "title": "How it works",
+    "steps": [
+      {
+        "title": "Submit Request",
+        "description": "Our AI captures your text, photos, or voice message instantly."
+      },
+      {
+        "title": "Clarify Details",
+        "description": "A dedicated project manager reviews and refines the scope of work."
+      },
+      {
+        "title": "Expert Assignment",
+        "description": "We match your task with the best qualified expert from our network."
+      },
+      {
+        "title": "Execution",
+        "description": "The work is performed on schedule at the highest technical standards."
+      },
+      {
+        "title": "Warranty",
+        "description": "You receive a full technical guarantee on all services rendered."
+      }
+    ]
+  },
+  "Excellence": {
+    "title": "Visible Excellence",
+    "subtitle": "Our completed projects speak for themselves. Precision in every detail.",
+    "items": [
+      {
+        "title": "LED Mounting",
+        "tag": "Mounting",
+        "description": "Professional installation of large signage on facades."
+      },
+      {
+        "id": "repair",
+        "title": "Neon Repair",
+        "tag": "Repair",
+        "description": "Precise restoration of classic neon tubes."
+      },
+      {
+        "title": "High-Rise Maintenance",
+        "tag": "Maintenance",
+        "description": "Service at dizzying heights with state-of-the-art equipment."
+      }
+    ]
+  },
+  "Roadmap": {
+    "title": "What happens after the request?",
+    "steps": [
+      {
+        "title": "Confirmation",
+        "description": "Instant acknowledgement of your request via AI."
+      },
+      {
+        "title": "Assignment",
+        "description": "A dedicated manager is assigned to you within 15 minutes."
+      },
+      {
+        "title": "Technical Audit",
+        "description": "Audit of the task and final cost calculation."
+      },
+      {
+        "title": "Execution",
+        "description": "On-time implementation by our experts on site."
+      }
+    ]
+  },
+  "FAQ": {
+    "title": "Frequently Asked Questions",
+    "items": [
+      {
+        "question": "How fast do you respond?",
+        "answer": "After approval, we are usually on-site within 24 to 48 hours."
+      },
+      {
+        "question": "What is the warranty period?",
+        "answer": "We provide a 6 to 12-month warranty on all labor and replacement parts."
+      },
+      {
+        "question": "Do you work with private clients?",
+        "answer": "Yes, we serve both commercial businesses and private individuals with the same level of care."
+      },
+      {
+        "question": "What areas do you cover?",
+        "answer": "We have a nationwide network of experts and can handle requests across the entire country."
+      }
+    ]
+  },
+  "FooterCTA": {
+    "title": "Still have questions? Contact us.",
+    "subtitle": "We are available via your preferred channel for a free initial assessment.",
+    "channels": [
+      { "id": "whatsapp", "name": "WhatsApp" },
+      { "id": "telegram", "name": "Telegram" },
+      { "id": "chat", "name": "Live Chat" },
+      { "id": "email", "name": "Email" }
+    ]
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "HomePage": {
+    "title": "Naprawa PixelRing",
+    "description": "Twój niezawodny partner w zakresie naprawy, montażu i konserwacji instalacji reklamowych.",
+    "cta_primary": "Rozpocznij zapytanie",
+    "cta_secondary": "Wyślij zdjęcie",
+    "trust_badge": "Prawdziwa firma serwisowa, a nie platforma pośrednicząca"
+  },
+  "Nav": {
+    "services": "Naprawa i Serwis",
+    "warranty": "Gwarancja",
+    "status": "Status",
+    "support": "Pomoc",
+    "book": "Zarezerwuj naprawę",
+    "service_pill": "SERWIS"
+  },
+  "Footer": {
+    "copyright": "© 2024 PixelRing Technical Atelier. Wszelkie prawa zastrzeżone.",
+    "privacy": "Polityka prywatności",
+    "terms": "Warunki użytkowania",
+    "compliance": "Compliance",
+    "locations": "Lokalizacje"
+  },
+  "Trust": {
+    "title": "Dlaczego warto nam zaufać",
+    "bullets": [
+      {
+        "title": "Jeden partner",
+        "description": "Współpracujesz z jedną, odpowiedzialną firmą serwisową."
+      },
+      {
+        "title": "Pełne wsparcie",
+        "description": "Przyjmujemy Twoje zapytanie i osobiście zarządzamy całym procesem."
+      },
+      {
+        "title": "Wydajność dzięki AI",
+        "description": "Sztuczna inteligencja pomaga nam szybciej uściślić Twoje wymagania."
+      },
+      {
+        "title": "Specjaliści branżowi",
+        "description": "Twoje zlecenie jest realizowane przez wykwalifikowanych ekspertów z naszej sieci."
+      }
+    ]
+  },
+  "Intake": {
+    "title": "Wybierz swoją drogę",
+    "description": "Rozpocznij zapytanie w sposób, który jest dla Ciebie najwygodniejszy. Nasze AI pomoże w szybkim zapisie.",
+    "methods": [
+      {
+        "id": "text",
+        "title": "Opis tekstowy",
+        "label": "Opisz problem"
+      },
+      {
+        "id": "photo",
+        "title": "Wyślij zdjęcie",
+        "label": "Prześlij zdjęcia"
+      },
+      {
+        "id": "voice",
+        "title": "Wiadomość głosowa",
+        "label": "Porozmawiaj z nami"
+      },
+      {
+        "id": "messenger",
+        "title": "Messenger",
+        "label": "WhatsApp / Telegram"
+      }
+    ]
+  },
+  "Bento": {
+    "title": "Jak to działa",
+    "steps": [
+      {
+        "title": "Wyślij zapytanie",
+        "description": "Nasze AI natychmiast rejestruje Twoją wiadomość, zdjęcie lub głos."
+      },
+      {
+        "title": "Uściślij szczegóły",
+        "description": "Doświadczony kierownik projektu sprawdza zapytanie i uściśla zakres prac."
+      },
+      {
+        "title": "Dopasowanie eksperta",
+        "description": "Dopasowujemy Twoje zadanie do najlepszego eksperta z naszej sieci."
+      },
+      {
+        "title": "Wykonanie",
+        "description": "Prace są realizowane terminowo i zgodnie z najwyższymi standardami."
+      },
+      {
+        "title": "Gwarancja",
+        "description": "Otrzymujesz pełną gwarancję techniczną na wszystkie wykonane usługi."
+      }
+    ]
+  },
+  "Excellence": {
+    "title": "Widoczna doskonałość",
+    "subtitle": "Nasze ukończone projekty mówią same za siebie. Precyzja w każdym szczególe.",
+    "items": [
+      {
+        "title": "Montaż LED",
+        "tag": "Montaż",
+        "description": "Profesjonalna instalacja dużych konstrukcji reklamowych na fasadach."
+      },
+      {
+        "id": "repair",
+        "title": "Naprawa neonów",
+        "tag": "Naprawa",
+        "description": "Precyzyjna renowacja klasycznych rur neonowych."
+      },
+      {
+        "title": "Konserwacja wysokościowa",
+        "tag": "Konserwacja",
+        "description": "Serwis na zawrotnych wysokościach przy użyciu nowoczesnego sprzętu."
+      }
+    ]
+  },
+  "Roadmap": {
+    "title": "Co dzieje się po wysłaniu zapytania?",
+    "steps": [
+      {
+        "title": "Potwierdzenie",
+        "description": "Natychmiastowe potwierdzenie otrzymania zapytania przez AI."
+      },
+      {
+        "title": "Przypisanie",
+        "description": "Dedykowany menedżer zostanie do Ciebie przypisany w ciągu 15 minut."
+      },
+      {
+        "title": "Audyt techniczny",
+        "description": "Audyt zadania i ostateczna kalkulacja kosztów."
+      },
+      {
+        "title": "Realizacja",
+        "description": "Terminowe wykonanie przez naszych ekspertów na miejscu."
+      }
+    ]
+  },
+  "FAQ": {
+    "title": "Często zadawane pytania",
+    "items": [
+      {
+        "question": "Jak szybko pojawi się fachowiec?",
+        "answer": "Po zatwierdzeniu zapytania zazwyczaj jesteśmy u Ciebie w ciągu 24 do 48 godzin."
+      },
+      {
+        "question": "Jaką gwarancję oferujecie?",
+        "answer": "Udzielamy od 6 do 12 miesięcy gwarancji na wszystkie prace i części zamienne."
+      },
+      {
+        "question": "Czy pracujecie również dla osób prywatnych?",
+        "answer": "Tak, obsługujemy zarówno klientów komercyjnych, jak i prywatnych z taką samą starannością."
+      },
+      {
+        "question": "Jakie regiony obsługujecie?",
+        "answer": "Posiadamy ogólnokrajową sieć ekspertów i możemy obsłużyć zapytania w całym kraju."
+      }
+    ]
+  },
+  "FooterCTA": {
+    "title": "Masz pytania? Skontaktuj się z nami.",
+    "subtitle": "Jesteśmy dostępni za pośrednictwem Twojego preferowanego kanału w celu bezpłatnej wstępnej oceny.",
+    "channels": [
+      { "id": "whatsapp", "name": "WhatsApp" },
+      { "id": "telegram", "name": "Telegram" },
+      { "id": "chat", "name": "Czat na żywo" },
+      { "id": "email", "name": "E-mail" }
+    ]
+  }
+}

@@ -30,3 +30,9 @@ yarn-debug.log*
 
 # TypeScript
 *.tsbuildinfo
+
+# Prototyping
+DesignPrototip/
+
+# Local info and Project docs
+docs/
