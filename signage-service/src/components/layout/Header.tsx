@@ -4,6 +4,7 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import Logo from '../common/Logo';
+import LanguageSwitcher from '../common/LanguageSwitcher';
 import { usePathname } from 'next/navigation';
 
 const Header = () => {
@@ -48,7 +49,8 @@ const Header = () => {
 
         {/* Actions */}
         <div className="flex items-center gap-4">
-          <button className="p-2 text-[#72665D] hover:text-[#C86E4A] transition-colors">
+          <LanguageSwitcher />
+          <button className="hidden sm:block p-2 text-[#72665D] hover:text-[#C86E4A] transition-colors">
             <svg
               className="w-6 h-6"
               fill="none"
