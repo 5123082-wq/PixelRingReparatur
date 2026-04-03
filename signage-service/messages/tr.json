@@ -199,13 +199,11 @@
     "success_message": "15 dakika içinde size geri döneceğiz."
   },
   "FooterCTA": {
-    "title": "Hala Sorularınız mı Var? Bizimle İletişime Geçin.",
-    "subtitle": "Ücretsiz ilk değerlendirme için tercih ettiğiniz kanal üzerinden bize ulaşabilirsiniz.",
-    "channels": [
-      { "id": "whatsapp", "name": "WhatsApp" },
-      { "id": "telegram", "name": "Telegram" },
-      { "id": "chat", "name": "Canlı Sohbet" },
-      { "id": "email", "name": "E-posta" }
-    ]
+    "title": "Hala sorularınız mı var? Projenizi tartışalım.",
+    "subtitle": "Ücretsiz teknik danışmanlık ve ön maliyet değerlendirmesi için her zaman hizmetinizdeyiz.",
+    "connect_label": "MESSENGER ÜZERİNDEN HIZLI İLETİŞİM",
+    "write_us": "Bize yazın",
+    "form_title": "Talep Gönder",
+    "form_subtitle": "Görevinizi açıklayın, 15 dakika içinde size geri dönelim."
   }
 }

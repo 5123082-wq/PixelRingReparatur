@@ -199,13 +199,11 @@
     "success_message": "We'll get back to you within 15 minutes."
   },
   "FooterCTA": {
-    "title": "Still have questions? Contact us.",
-    "subtitle": "We are available via your preferred channel for a free initial assessment.",
-    "channels": [
-      { "id": "whatsapp", "name": "WhatsApp" },
-      { "id": "telegram", "name": "Telegram" },
-      { "id": "chat", "name": "Live Chat" },
-      { "id": "email", "name": "Email" }
-    ]
+    "title": "Still have questions? Let's discuss your project.",
+    "subtitle": "We are always available for a free technical consultation and preliminary cost assessment.",
+    "connect_label": "FAST CONTACT VIA MESSENGERS",
+    "write_us": "Write to us",
+    "form_title": "Submit a Request",
+    "form_subtitle": "Describe your task, and we'll get back to you within 15 minutes."
   }
 }

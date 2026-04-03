@@ -199,13 +199,11 @@
     "success_message": "Wir melden uns innerhalb von 15 Minuten bei Ihnen."
   },
   "FooterCTA": {
-    "title": "Noch Fragen? Kontaktieren Sie uns.",
-    "subtitle": "Wir stehen Ihnen über Ihren bevorzugten Kanal für eine kostenlose Ersteinschätzung zur Verfügung.",
-    "channels": [
-      { "id": "whatsapp", "name": "WhatsApp" },
-      { "id": "telegram", "name": "Telegram" },
-      { "id": "chat", "name": "Live Chat" },
-      { "id": "email", "name": "E-Mail" }
-    ]
+    "title": "Haben Sie noch Fragen? Lassen Sie uns über Ihr Projekt sprechen.",
+    "subtitle": "Wir sind jederzeit für eine kostenlose technische Beratung und vorläufige Kostenkalkulation erreichbar.",
+    "connect_label": "SCHNELLER KONTAKT ÜBER MESSENGER",
+    "write_us": "Schreiben Sie uns",
+    "form_title": "Anfrage senden",
+    "form_subtitle": "Beschreiben Sie Ihre Aufgabe und wir melden uns innerhalb von 15 Minuten."
   }
 }

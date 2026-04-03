@@ -6,10 +6,24 @@ import { useTranslations } from 'next-intl';
 interface ContactFormProps {
   focusField?: 'text' | 'photo' | null;
   onSuccess?: () => void;
+  variant?: 'light' | 'dark';
 }
 
-const ContactForm = ({ focusField, onSuccess }: ContactFormProps) => {
+const ContactForm = ({ focusField, onSuccess, variant = 'light' }: ContactFormProps) => {
   const t = useTranslations('ContactModal');
+  const isDark = variant === 'dark';
+
+  const inputClasses = isDark
+    ? "w-full px-5 py-3.5 bg-white/5 border border-white/10 rounded-2xl text-[15px] text-white placeholder:text-white/40 focus:outline-none focus:border-[#B8643E] focus:ring-1 focus:ring-[#B8643E]/30 transition-all"
+    : "w-full px-5 py-3.5 bg-[#F7F1E8] border border-[#E7DDD3] rounded-2xl text-[15px] text-[#0E1A2B] placeholder:text-[#72665D]/60 focus:outline-none focus:border-[#B8643E] focus:ring-1 focus:ring-[#B8643E]/30 transition-all";
+
+  const textAreaClasses = isDark
+    ? "w-full px-5 py-3.5 bg-white/5 border border-white/10 rounded-2xl text-[15px] text-white placeholder:text-white/40 focus:outline-none focus:border-[#B8643E] focus:ring-1 focus:ring-[#B8643E]/30 transition-all resize-none"
+    : "w-full px-5 py-3.5 bg-[#F7F1E8] border border-[#E7DDD3] rounded-2xl text-[15px] text-[#0E1A2B] placeholder:text-[#72665D]/60 focus:outline-none focus:border-[#B8643E] focus:ring-1 focus:ring-[#B8643E]/30 transition-all resize-none";
+
+  const labelClasses = isDark
+    ? "flex items-center gap-3 w-full px-5 py-3.5 bg-white/5 border border-dashed border-white/20 rounded-2xl text-[15px] text-white/70 cursor-pointer hover:border-[#B8643E] hover:text-[#B8643E] transition-all"
+    : "flex items-center gap-3 w-full px-5 py-3.5 bg-[#F7F1E8] border border-dashed border-[#E7DDD3] rounded-2xl text-[15px] text-[#72665D] cursor-pointer hover:border-[#B8643E] hover:text-[#B8643E] transition-all";
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -64,8 +78,8 @@ const ContactForm = ({ focusField, onSuccess }: ContactFormProps) => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <p className="text-[18px] font-bold text-[#0E1A2B]">{t('success_title')}</p>
-        <p className="text-[14px] text-[#72665D]">{t('success_message')}</p>
+        <p className={`text-[18px] font-bold ${isDark ? 'text-white' : 'text-[#0E1A2B]'}`}>{t('success_title')}</p>
+        <p className={`text-[14px] ${isDark ? 'text-white/70' : 'text-[#72665D]'}`}>{t('success_message')}</p>
       </div>
     );
   }
@@ -78,7 +92,7 @@ const ContactForm = ({ focusField, onSuccess }: ContactFormProps) => {
         name="name"
         required
         placeholder={t('field_name')}
-        className="w-full px-5 py-3.5 bg-[#F7F1E8] border border-[#E7DDD3] rounded-2xl text-[15px] text-[#0E1A2B] placeholder:text-[#72665D]/60 focus:outline-none focus:border-[#B8643E] focus:ring-1 focus:ring-[#B8643E]/30 transition-all"
+        className={inputClasses}
       />
 
       {/* Contact (phone or email) */}
@@ -87,7 +101,7 @@ const ContactForm = ({ focusField, onSuccess }: ContactFormProps) => {
         name="contact"
         required
         placeholder={t('field_contact')}
-        className="w-full px-5 py-3.5 bg-[#F7F1E8] border border-[#E7DDD3] rounded-2xl text-[15px] text-[#0E1A2B] placeholder:text-[#72665D]/60 focus:outline-none focus:border-[#B8643E] focus:ring-1 focus:ring-[#B8643E]/30 transition-all"
+        className={inputClasses}
       />
 
       {/* Message */}
@@ -97,7 +111,7 @@ const ContactForm = ({ focusField, onSuccess }: ContactFormProps) => {
         required
         rows={3}
         placeholder={t('field_message')}
-        className="w-full px-5 py-3.5 bg-[#F7F1E8] border border-[#E7DDD3] rounded-2xl text-[15px] text-[#0E1A2B] placeholder:text-[#72665D]/60 focus:outline-none focus:border-[#B8643E] focus:ring-1 focus:ring-[#B8643E]/30 transition-all resize-none"
+        className={textAreaClasses}
       />
 
       {/* Photo upload */}
@@ -113,7 +127,7 @@ const ContactForm = ({ focusField, onSuccess }: ContactFormProps) => {
         />
         <label
           htmlFor="photo-upload"
-          className="flex items-center gap-3 w-full px-5 py-3.5 bg-[#F7F1E8] border border-dashed border-[#E7DDD3] rounded-2xl text-[15px] text-[#72665D] cursor-pointer hover:border-[#B8643E] hover:text-[#B8643E] transition-all"
+          className={labelClasses}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
