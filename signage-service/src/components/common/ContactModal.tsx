@@ -50,11 +50,6 @@ const ContactModal = ({ isOpen, onClose, onOpenChat }: ContactModalProps) => {
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-3">
               <Logo className="scale-75 origin-left" />
-              <div className="hidden sm:flex px-2.5 py-0.5 bg-[#EEF3FB] border border-[#E7DDD3] rounded-full">
-                <span className="text-[10px] font-bold text-[#B8643E] tracking-[1px]">
-                  {t_nav('service_pill')}
-                </span>
-              </div>
             </div>
             <p className="hidden sm:block text-[13px] text-[#72665D] leading-relaxed">
               {t('sidebar_desc')}
@@ -64,20 +59,29 @@ const ContactModal = ({ isOpen, onClose, onOpenChat }: ContactModalProps) => {
           {/* Interaction Stack */}
           <div className="flex flex-col gap-3 sm:gap-2">
             {/* Chat Button - Always primary */}
-            <button
-              onClick={() => {
-                onOpenChat();
-                onClose();
-              }}
-              className="w-full px-5 py-3 sm:py-3.5 bg-[#0E1A2B] hover:bg-[#1a2e47] text-white rounded-2xl font-bold flex items-center justify-center sm:justify-start gap-3 transition-all active:scale-[0.98]"
-            >
-              <div className="w-6 h-6 flex items-center justify-center bg-white/10 rounded-lg">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            <div className="relative flex-1 sm:w-full">
+              {/* Badge */}
+              <div className="absolute -top-3 right-0 sm:-right-2 px-2 py-0.5 sm:py-1 bg-gradient-to-r from-[#B8643E] to-[#D47E55] text-white text-[9px] sm:text-[10px] font-black tracking-[1px] uppercase rounded-[6px] sm:rounded-[8px] shadow-lg border border-white/20 rotate-3 sm:rotate-6 z-10 whitespace-nowrap flex items-center gap-1 shadow-[#B8643E]/30 pointer-events-none">
+                <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                 </svg>
+                TOP
               </div>
-              <span className="text-[14px]">{t('chat_on_site')}</span>
-            </button>
+              <button
+                onClick={() => {
+                  onOpenChat();
+                  onClose();
+                }}
+                className="w-full h-12 sm:h-auto px-5 py-3 sm:py-3.5 bg-[#0E1A2B] hover:bg-[#1a2e47] text-white rounded-2xl font-bold flex items-center justify-center sm:justify-start gap-3 transition-all active:scale-[0.98]"
+              >
+                <div className="w-6 h-6 flex items-center justify-center bg-white/10 rounded-lg">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                  </svg>
+                </div>
+                <span className="text-[14px]">{t('chat_on_site')}</span>
+              </button>
+            </div>
 
             {/* Other Channels: Icons on mobile, Buttons on desktop */}
             <div className="flex flex-row sm:flex-col gap-2">

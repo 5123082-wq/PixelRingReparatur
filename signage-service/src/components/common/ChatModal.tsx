@@ -88,26 +88,21 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
         className={`relative w-full max-w-4xl h-[580px] bg-[#F7F1E8]/95 backdrop-blur-3xl border border-white/20 rounded-[40px] shadow-3xl overflow-hidden flex flex-col transition-all duration-500 transform ${isOpen ? 'translate-y-0 scale-100' : 'translate-y-8 scale-95'}`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-5 bg-white/80 border-b border-black/5">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between p-5 bg-white/80 border-b border-black/5 gap-2">
+          <div className="flex items-center gap-4 flex-1 overflow-hidden">
+            <div className="flex items-center shrink-0">
               <Logo className="scale-75 origin-left" />
-              <div className="px-2.5 py-0.5 bg-[#EEF3FB] border border-[#E7DDD3] rounded-full">
-                <span className="text-[10px] font-bold text-[#B8643E] tracking-[1px]">
-                  {t_nav('service_pill')}
-                </span>
-              </div>
             </div>
-            <div className="hidden sm:block w-px h-6 bg-black/10 mx-1" />
-            <div>
-              <h3 className="font-black text-[#0E1A2B] text-[15px] tracking-tight leading-none mb-1">Technical Support</h3>
+            <div className="hidden sm:block w-px h-6 bg-black/10 mx-1 shrink-0" />
+            <div className="truncate">
+              <h3 className="font-black text-[#0E1A2B] text-[15px] tracking-tight leading-none mb-1 truncate">Technical Support</h3>
               <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                <span className="text-[9px] text-[#72665D] uppercase font-bold tracking-wider">Online</span>
+                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shrink-0" />
+                <span className="text-[9px] text-[#72665D] uppercase font-bold tracking-wider truncate">Online</span>
               </div>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-black/5 rounded-full transition-colors text-[#0E1A2B]">
+          <button onClick={onClose} className="p-2 hover:bg-black/5 rounded-full transition-colors text-[#0E1A2B] shrink-0 ml-auto">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>

@@ -45,6 +45,13 @@ const Header = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Listen for global openChat events
+  useEffect(() => {
+    const handleOpenChat = () => setIsChatOpen(true);
+    window.addEventListener('openChat', handleOpenChat);
+    return () => window.removeEventListener('openChat', handleOpenChat);
+  }, []);
+
   return (
     <>
       <header className="sticky top-0 z-50 w-full bg-[#EEF3FBA3] backdrop-blur-[10.5px] border-b border-[#E7DDD3]">
