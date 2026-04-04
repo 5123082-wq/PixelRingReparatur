@@ -4,10 +4,11 @@ import React, { useState, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 
 interface ContactFormProps {
-  onSuccess: () => void;
+  onSuccess?: () => void;
+  variant?: 'light' | 'dark';
 }
 
-const ContactForm = ({ onSuccess }: ContactFormProps) => {
+const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
   const t = useTranslations('ContactModal');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -40,7 +41,7 @@ const ContactForm = ({ onSuccess }: ContactFormProps) => {
     setIsSuccess(true);
     
     setTimeout(() => {
-      onSuccess();
+      if (onSuccess) onSuccess();
     }, 2000);
   };
 
