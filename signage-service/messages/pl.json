@@ -191,12 +191,19 @@
     "messenger_label": "Napisz do nas bezpośrednio",
     "divider": "lub zostaw zapytanie",
     "field_name": "Twoje imię",
+    "field_name_company": "Imię oraz fima",
     "field_contact": "Telefon lub e-mail",
     "field_message": "Opisz swoje zadanie...",
     "field_photo": "📎 Załącz zdjęcie",
     "submit": "Wyślij zapytanie",
     "success_title": "Zapytanie wysłane!",
-    "success_message": "Odpowiemy w ciągu 15 minut."
+    "success_message": "Odpowiemy w ciągu 15 minut.",
+    "sidebar_desc": "Skontaktuj się z nami w najwygodniejszy dla Ciebie sposób. Szybkie kanały zostały wyróżnione, a poniższy formularz wymaga tylko niezbędnych danych.",
+    "chat_on_site": "Czat na żywo",
+    "email": "E-mail",
+    "form_title": "Zostaw zapytanie",
+    "attach_photo_btn": "Załącz zdjęcie",
+    "form_footer": "Odpowiemy w godzinach pracy i zasugerujemy najlepszy scenariusz naprawy."
   },
   "FooterCTA": {
     "title": "Masz pytania? Omówmy Twój projekt.",

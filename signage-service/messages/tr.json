@@ -191,12 +191,19 @@
     "messenger_label": "Doğrudan yazın",
     "divider": "veya talep bırakın",
     "field_name": "Adınız",
+    "field_name_company": "Adınız ve Şirketiniz",
     "field_contact": "Telefon veya e-posta",
     "field_message": "Görevinizi açıklayın...",
     "field_photo": "📎 Fotoğraf ekle",
     "submit": "Talebi gönder",
     "success_title": "Talep gönderildi!",
-    "success_message": "15 dakika içinde size geri döneceğiz."
+    "success_message": "15 dakika içinde size geri döneceğiz.",
+    "sidebar_desc": "Bize şu anki en uygun yolla ulaşın. Hızlı kanallar ayrıca belirtilmiştir ve aşağıdaki form sadece gerekli bilgileri ister.",
+    "chat_on_site": "Canlı Sohbet",
+    "email": "E-posta",
+    "form_title": "Talep Gönderin",
+    "attach_photo_btn": "Fotoğraf ekle",
+    "form_footer": "Mesai saatleri içinde size döneceğiz ve onarım için en iyi senaryoyu önereceğiz."
   },
   "FooterCTA": {
     "title": "Hala sorularınız mı var? Projenizi tartışalım.",
