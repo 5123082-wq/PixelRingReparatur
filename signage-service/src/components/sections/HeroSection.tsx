@@ -4,17 +4,17 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import ContactModal from '../common/ContactModal';
+import ChatModal from '../common/ChatModal';
 
 const HeroSection = () => {
   const t = useTranslations('HomePage');
   const [modalOpen, setModalOpen] = useState(false);
-  const [focusField, setFocusField] = useState<'text' | 'photo' | null>(null);
+  const [chatOpen, setChatOpen] = useState(false);
 
   const whatsappUrl = process.env.NEXT_PUBLIC_WHATSAPP_URL || 'https://wa.me/message/27UOBFWB7UYCN1';
   const telegramUrl = process.env.NEXT_PUBLIC_TELEGRAM_URL || 'https://t.me/PixelRing_bot';
 
-  const openModal = (focus: 'text' | 'photo' | null = null) => {
-    setFocusField(focus);
+  const openModal = () => {
     setModalOpen(true);
   };
 
@@ -48,7 +48,7 @@ const HeroSection = () => {
                 {/* Primary CTA */}
                 <button
                   id="hero-cta-primary"
-                  onClick={() => openModal('text')}
+                  onClick={() => openModal()}
                   className="px-7 py-4 bg-[#B8643E] hover:bg-[#A65835] text-white text-[16px] font-semibold rounded-full shadow-lg shadow-[#B8643E]/30 transition-all duration-200 active:scale-95"
                 >
                   {t('cta_primary')}
@@ -85,7 +85,7 @@ const HeroSection = () => {
                   {/* Contact form button */}
                   <button
                     id="hero-cta-form"
-                    onClick={() => openModal('text')}
+                    onClick={() => openModal()}
                     aria-label="Contact form"
                     className="w-11 h-11 flex items-center justify-center rounded-full border border-[#D1D9E6] bg-white hover:bg-[#B8643E]/10 hover:border-[#B8643E]/40 shadow-sm transition-all duration-200"
                   >
@@ -146,7 +146,11 @@ const HeroSection = () => {
       <ContactModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        focusField={focusField}
+        onOpenChat={() => setChatOpen(true)}
+      />
+      <ChatModal
+        isOpen={chatOpen}
+        onClose={() => setChatOpen(false)}
       />
     </>
   );

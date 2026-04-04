@@ -3,11 +3,12 @@
 import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import ContactModal from '../common/ContactModal';
+import ChatModal from '../common/ChatModal';
 
 const IntakeSection = () => {
   const t = useTranslations('Intake');
   const [modalOpen, setModalOpen] = useState(false);
-  const [focusField, setFocusField] = useState<'text' | 'photo' | null>(null);
+  const [chatOpen, setChatOpen] = useState(false);
 
   const methods = [
     {
@@ -57,8 +58,7 @@ const IntakeSection = () => {
     },
   ];
 
-  const handleCardClick = (focus: 'text' | 'photo' | null) => {
-    setFocusField(focus);
+  const handleCardClick = () => {
     setModalOpen(true);
   };
 
@@ -79,7 +79,7 @@ const IntakeSection = () => {
             {methods.map((method) => (
               <div
                 key={method.id}
-                onClick={() => handleCardClick(method.focus)}
+                onClick={() => handleCardClick()}
                 className="bg-white p-8 rounded-[40px] shadow-xl shadow-[#0E1A2B08] border border-[#E7DDD3] hover:border-[#B8643E] hover:translate-y-[-8px] transition-all duration-300 cursor-pointer flex flex-col items-center text-center gap-6 group"
               >
                 <div className="w-16 h-16 rounded-3xl bg-[#EED8C8] flex items-center justify-center text-[#B8643E] group-hover:bg-[#B8643E] group-hover:text-white transition-all duration-300">
@@ -102,7 +102,11 @@ const IntakeSection = () => {
       <ContactModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        focusField={focusField}
+        onOpenChat={() => setChatOpen(true)}
+      />
+      <ChatModal
+        isOpen={chatOpen}
+        onClose={() => setChatOpen(false)}
       />
     </>
   );

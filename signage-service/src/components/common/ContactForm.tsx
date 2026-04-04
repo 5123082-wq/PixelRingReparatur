@@ -4,155 +4,173 @@ import React, { useState, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 
 interface ContactFormProps {
-  focusField?: 'text' | 'photo' | null;
-  onSuccess?: () => void;
-  variant?: 'light' | 'dark';
+  onSuccess: () => void;
 }
 
-const ContactForm = ({ focusField, onSuccess, variant = 'light' }: ContactFormProps) => {
+const ContactForm = ({ onSuccess }: ContactFormProps) => {
   const t = useTranslations('ContactModal');
-  const isDark = variant === 'dark';
-
-  const inputClasses = isDark
-    ? "w-full px-5 py-3.5 bg-white/5 border border-white/10 rounded-2xl text-[15px] text-white placeholder:text-white/40 focus:outline-none focus:border-[#B8643E] focus:ring-1 focus:ring-[#B8643E]/30 transition-all"
-    : "w-full px-5 py-3.5 bg-[#F7F1E8] border border-[#E7DDD3] rounded-2xl text-[15px] text-[#0E1A2B] placeholder:text-[#72665D]/60 focus:outline-none focus:border-[#B8643E] focus:ring-1 focus:ring-[#B8643E]/30 transition-all";
-
-  const textAreaClasses = isDark
-    ? "w-full px-5 py-3.5 bg-white/5 border border-white/10 rounded-2xl text-[15px] text-white placeholder:text-white/40 focus:outline-none focus:border-[#B8643E] focus:ring-1 focus:ring-[#B8643E]/30 transition-all resize-none"
-    : "w-full px-5 py-3.5 bg-[#F7F1E8] border border-[#E7DDD3] rounded-2xl text-[15px] text-[#0E1A2B] placeholder:text-[#72665D]/60 focus:outline-none focus:border-[#B8643E] focus:ring-1 focus:ring-[#B8643E]/30 transition-all resize-none";
-
-  const labelClasses = isDark
-    ? "flex items-center gap-3 w-full px-5 py-3.5 bg-white/5 border border-dashed border-white/20 rounded-2xl text-[15px] text-white/70 cursor-pointer hover:border-[#B8643E] hover:text-[#B8643E] transition-all"
-    : "flex items-center gap-3 w-full px-5 py-3.5 bg-[#F7F1E8] border border-dashed border-[#E7DDD3] rounded-2xl text-[15px] text-[#72665D] cursor-pointer hover:border-[#B8643E] hover:text-[#B8643E] transition-all";
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [fileName, setFileName] = useState<string | null>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [message, setMessage] = useState('');
 
-  // Auto-focus on the right field when modal opens
-  React.useEffect(() => {
-    if (focusField === 'photo' && fileInputRef.current) {
-      fileInputRef.current.click();
-    } else if (focusField === 'text' && textareaRef.current) {
-      textareaRef.current.focus();
+  const adjustHeight = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${Math.min(textarea.scrollHeight, 180)}px`;
     }
-  }, [focusField]);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    setFileName(file ? file.name : null);
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(e.target.value);
+    adjustHeight();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    try {
-      const form = e.currentTarget;
-      const formData = new FormData(form);
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        body: formData,
-      });
+    setIsSubmitting(false);
+    setIsSuccess(true);
+    
+    setTimeout(() => {
+      onSuccess();
+    }, 2000);
+  };
 
-      if (response.ok) {
-        setIsSuccess(true);
-        setTimeout(() => {
-          onSuccess?.();
-        }, 2500);
-      }
-    } catch (error) {
-      console.error('Form submission error:', error);
-    } finally {
-      setIsSubmitting(false);
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   if (isSuccess) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 py-8 animate-in fade-in duration-300">
-        <div className="w-16 h-16 rounded-full bg-[#25D366]/10 flex items-center justify-center">
-          <svg className="w-8 h-8 text-[#25D366]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="flex flex-col items-center justify-center py-8 animate-in fade-in zoom-in duration-500">
+        <div className="w-16 h-16 bg-[#B8643E]/10 rounded-full flex items-center justify-center mb-4">
+          <svg className="w-8 h-8 text-[#B8643E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <p className={`text-[18px] font-bold ${isDark ? 'text-white' : 'text-[#0E1A2B]'}`}>{t('success_title')}</p>
-        <p className={`text-[14px] ${isDark ? 'text-white/70' : 'text-[#72665D]'}`}>{t('success_message')}</p>
+        <h3 className="text-xl font-bold text-[#0E1A2B] mb-2">{t('success_title')}</h3>
+        <p className="text-[#72665D] text-center text-sm">{t('success_message')}</p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      {/* Name */}
-      <input
-        type="text"
-        name="name"
-        required
-        placeholder={t('field_name')}
-        className={inputClasses}
-      />
+    <form onSubmit={handleSubmit} className="flex flex-col flex-1 gap-3 sm:gap-4 overflow-hidden">
+      <div className="flex flex-col gap-3 sm:gap-4 overflow-y-auto pr-1 -mr-1">
+        {/* Name and Company */}
+        <div className="flex flex-col gap-1">
+          <input
+            type="text"
+            required
+            placeholder={t('field_name_company')}
+            className="w-full px-5 sm:px-6 py-3 sm:py-3.5 bg-[#F7F1E8]/60 border border-[#E7DDD3] focus:border-[#B8643E] rounded-2xl text-[#0E1A2B] placeholder-[#72665D]/40 outline-none focus:ring-1 focus:ring-[#B8643E]/30 focus:bg-white transition-all duration-300 text-[14px] sm:text-[15px]"
+          />
+        </div>
 
-      {/* Contact (phone or email) */}
-      <input
-        type="text"
-        name="contact"
-        required
-        placeholder={t('field_contact')}
-        className={inputClasses}
-      />
+        {/* Phone or Email */}
+        <div className="flex flex-col gap-1">
+          <input
+            type="text"
+            required
+            placeholder={t('field_contact')}
+            className="w-full px-5 sm:px-6 py-3 sm:py-3.5 bg-[#F7F1E8]/60 border border-[#E7DDD3] focus:border-[#B8643E] rounded-2xl text-[#0E1A2B] placeholder-[#72665D]/40 outline-none focus:ring-1 focus:ring-[#B8643E]/30 focus:bg-white transition-all duration-300 text-[14px] sm:text-[15px]"
+          />
+        </div>
 
-      {/* Message */}
-      <textarea
-        name="message"
-        ref={textareaRef}
-        required
-        rows={3}
-        placeholder={t('field_message')}
-        className={textAreaClasses}
-      />
+        {/* Message */}
+        <div className="flex flex-col gap-1">
+          <textarea
+            ref={textareaRef}
+            rows={2}
+            required
+            value={message}
+            onChange={handleTextChange}
+            placeholder={t('field_message')}
+            className="w-full px-5 sm:px-6 py-3 sm:py-3.5 bg-[#F7F1E8]/60 border border-[#E7DDD3] focus:border-[#B8643E] rounded-2xl text-[#0E1A2B] placeholder-[#72665D]/40 outline-none focus:ring-1 focus:ring-[#B8643E]/30 focus:bg-white transition-all duration-300 resize-none text-[14px] sm:text-[15px] min-h-[80px]"
+          />
+        </div>
 
-      {/* Photo upload */}
-      <div className="relative">
-        <input
-          type="file"
-          name="photo"
-          ref={fileInputRef}
-          accept="image/*"
-          onChange={handleFileChange}
-          className="hidden"
-          id="photo-upload"
-        />
-        <label
-          htmlFor="photo-upload"
-          className={labelClasses}
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-          </svg>
-          {fileName || t('field_photo')}
-        </label>
+        {imagePreview && (
+          <div className="relative w-12 h-12 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl overflow-hidden animate-in fade-in duration-300 ml-1">
+            <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+            <button
+              onClick={() => setImagePreview(null)}
+              className="absolute top-1 right-1 w-4 h-4 sm:w-5 sm:h-5 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/70 transition-colors text-[10px]"
+            >
+              ×
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Submit */}
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full px-6 py-4 bg-[#B8643E] hover:bg-[#A65835] disabled:bg-[#B8643E]/50 text-white text-[16px] font-bold rounded-2xl shadow-lg shadow-[#B8643E]/20 transition-all flex items-center justify-center gap-2"
-      >
-        {isSubmitting ? (
-          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-        ) : (
-          <>
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
-            {t('submit')}
-          </>
-        )}
-      </button>
+      {/* Action Row - Stays at bottom */}
+      <div className="mt-auto pt-2">
+        <div className="flex items-center gap-2 sm:gap-3 mb-3">
+          {/* Attach Photo Button */}
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="group flex-1 flex items-center justify-center sm:justify-start gap-2 sm:gap-3 px-3 sm:px-5 py-3 sm:py-3.5 bg-[#F7F1E8] hover:bg-[#F0E6D8] border border-black/5 rounded-2xl transition-all active:scale-[0.98]"
+          >
+            <div className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center bg-white rounded-lg shadow-sm group-hover:scale-110 transition-transform">
+              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#72665D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+            <span className="hidden xs:inline text-[13px] sm:text-[14px] font-bold text-[#72665D]">
+              {t('attach_photo_btn')}
+            </span>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImageChange}
+              accept="image/*"
+              className="hidden"
+            />
+          </button>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="group flex-[1.5] flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-6 py-3.5 sm:py-4 bg-[#0E1A2B] hover:bg-[#1a2e47] text-white rounded-2xl font-bold transition-all active:scale-[0.98] disabled:opacity-50 shadow-xl"
+          >
+            {isSubmitting ? (
+              <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+            ) : (
+              <>
+                <span className="text-[13px] sm:text-[14px]">{t('submit')}</span>
+                <div className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center bg-white/10 rounded-lg group-hover:translate-x-1 transition-transform">
+                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </div>
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Footer Text */}
+        <p className="text-[10px] sm:text-[11px] text-[#72665D]/60 leading-relaxed italic border-t border-black/5 pt-2 sm:pt-3">
+          {t('form_footer')}
+        </p>
+      </div>
     </form>
   );
 };

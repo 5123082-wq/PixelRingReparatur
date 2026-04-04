@@ -7,10 +7,12 @@ import Logo from '../common/Logo';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 import MessengerButtons from '../common/MessengerButtons';
 import ContactModal from '../common/ContactModal';
+import ChatModal from '../common/ChatModal';
 
 const Header = () => {
   const t = useTranslations('Nav');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
@@ -148,6 +150,11 @@ const Header = () => {
       <ContactModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        onOpenChat={() => setIsChatOpen(true)}
+      />
+      <ChatModal
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
       />
     </>
   );
