@@ -229,5 +229,27 @@
         "rating": 5
       }
     ]
+  },
+  "Coverage": {
+    "title": "Service in ganz Deutschland",
+    "description": "Unser Hauptsitz in Berlin koordiniert ein breites Netzwerk von Experten. Wir bieten schnellen technischen Service in allen großen Ballungszentren.",
+    "hq": "Hauptsitz",
+    "serviceCity": "Service-Stadt",
+    "cities": {
+      "berlin": "Berlin",
+      "hamburg": "Hamburg",
+      "munich": "München",
+      "cologne": "Köln",
+      "frankfurt": "Frankfurt am Main",
+      "stuttgart": "Stuttgart",
+      "leipzig": "Leipzig",
+      "nuremberg": "Nürnberg"
+    },
+    "features": {
+      "nationwide": "Bundesweites Netzwerk",
+      "express": "Express-Reaktion",
+      "guaranteed": "Service-Garantie",
+      "experts": "Zertifizierte Experten"
+    }
   }
 }

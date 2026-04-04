@@ -208,26 +208,48 @@
   },
   "Reviews": {
     "title": "Müşteri Hikayeleri",
-    "subtitle": "Müşterilerimizin PixelRing deneyimi hakkındaki yorumları.",
+    "subtitle": "Müşterilerimizin PixelRing deneyimi hakkında söyledikleri.",
     "items": [
       {
-        "name": "Selin Yılmaz",
-        "role": "Mağaza Müdürü",
-        "content": "PixelRing vitrinimizi kurtardı! LED tabela haftalardır yanıp sönüyordu, ancak 24 saatten kısa sürede onardılar. Gerçekten profesyonel.",
+        "name": "Sarah Jenkins",
+        "role": "Perakende Müdürü",
+        "content": "PixelRing vitrinimizi kurtardı! LED tabela haftalardır titriyordu ama 24 saatten kısa sürede düzelttiler. Gerçekten profesyonelce.",
         "rating": 5
       },
       {
-        "name": "Ahmet Kaya",
+        "name": "Marcus Thorne",
         "role": "Mimar",
-        "content": "Onları diğerlerinden ayıran şey teknik detaylara gösterilen özen. Üst düzey tabelalar için temiz oda kalitesinde onarım. Kesinlikle tavsiye ederim.",
+        "content": "Teknik detaylara verilen önem onları farklı kılan şeydir. Üst düzey tabelalar için temiz oda standartlarında onarım. Şiddetle tavsiye edilir.",
         "rating": 5
       },
       {
-        "name": "Can Demir",
+        "name": "Elena Kovacs",
         "role": "Etkinlik Koordinatörü",
-        "content": "Hızlı, şeffaf ve yüksek kaliteli. 24 aylık garanti, neon tesisatlarımız için bize gerçek bir huzur veriyor.",
+        "content": "Hızlı, şeffaf ve yüksek kaliteli. 24 aylık garanti, neon kurulumlarımız için bize gerçek bir huzur veriyor.",
         "rating": 5
       }
     ]
+  },
+  "Coverage": {
+    "title": "Almanya Genelinde Servis",
+    "description": "Berlin'deki merkezimiz geniş bir uzman ağını koordine etmektedir. Tüm büyük şehir merkezlerinde hızlı teknik servis sağlıyoruz.",
+    "hq": "Merkez Ofis",
+    "serviceCity": "Servis Şehri",
+    "cities": {
+      "berlin": "Berlin",
+      "hamburg": "Hamburg",
+      "munich": "Münih",
+      "cologne": "Köln",
+      "frankfurt": "Frankfurt",
+      "stuttgart": "Stuttgart",
+      "leipzig": "Leipzig",
+      "nuremberg": "Nürnberg"
+    },
+    "features": {
+      "nationwide": "Ülke Çapında Ağ",
+      "express": "Ekspres Müdahale",
+      "guaranteed": "Servis Garantisi",
+      "experts": "Sertifikalı Uzmanlar"
+    }
   }
 }

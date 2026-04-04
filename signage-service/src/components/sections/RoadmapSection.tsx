@@ -58,50 +58,47 @@ const RoadmapSection = () => {
 
         <div className="relative group/line">
           {/* Connecting Line with Dynamic Glow */}
-          <div className="absolute top-[48px] left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-[#0E1A2B15] to-transparent hidden md:block" />
+          <div className="absolute top-[72px] left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#0E1A2B15] to-transparent hidden md:block" />
           
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-6 relative">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-2 md:gap-6 relative">
             {steps.map((step, index) => (
-              <div key={index} className="flex flex-col items-center text-center gap-8 group">
+              <div key={index} className="flex flex-col group w-full max-w-[320px] mx-auto md:max-w-none">
                 
-                {/* Step Connector Label (Vertical on Mobile) */}
-                <div className="md:hidden absolute top-[-20px] left-1/2 -translate-x-1/2 w-[2px] h-8 bg-[#0E1A2B10]" />
-
-                {/* Circle Marker / Icon Wrapper */}
-                <div className="relative">
-                  {/* Decorative Outer Glow */}
-                  <div className="absolute inset-0 bg-[#B8643E20] rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 scale-150" />
+                {/* Unified Card */}
+                <div className="flex flex-col bg-white/40 backdrop-blur-sm rounded-[32px] border border-white/60 shadow-lg shadow-[#0E1A2B04] group-hover:shadow-2xl group-hover:shadow-[#0E1A2B10] group-hover:-translate-y-2 transition-all duration-500 overflow-hidden flex-grow relative z-10 w-full">
                   
-                  <div className="relative w-24 h-24 rounded-3xl bg-white shadow-[0_20px_50px_rgba(14,26,43,0.08)] border border-black/5 flex items-center justify-center text-[#B8643E] group-hover:bg-[#B8643E] group-hover:text-white transition-all duration-500 group-hover:-translate-y-2 z-20 overflow-hidden">
-                    {/* Index Number Indicator */}
-                    <div className="absolute top-2 right-3 text-[12px] font-bold opacity-30 group-hover:opacity-100 transition-opacity">
+                  {/* Top part: Icon & Number Background */}
+                  <div className="relative p-6 flex flex-col items-center md:items-start justify-center bg-white/60 group-hover:bg-white transition-colors duration-500 border-b border-black/5">
+                    {/* Number */}
+                    <div className="absolute top-4 right-6 text-[44px] font-black text-[#0E1A2B] opacity-[0.03] group-hover:opacity-[0.08] transition-opacity duration-500 pointer-events-none tracking-tighter">
                       0{index + 1}
                     </div>
                     
-                    {/* Icon */}
-                    <div className="scale-125 transform transition-transform group-hover:scale-135 duration-500">
-                      <StepIcon index={index} />
+                    {/* Icon Wrapper */}
+                    <div className="relative w-24 h-24 md:w-20 md:h-20 rounded-3xl bg-white shadow-[0_10px_30px_rgba(14,26,43,0.06)] border border-black/5 flex items-center justify-center text-[#B8643E] group-hover:bg-[#B8643E] group-hover:text-white transition-all duration-500 z-10">
+                      <div className="scale-[1.15] group-hover:scale-[1.25] transition-transform duration-500">
+                        <StepIcon index={index} />
+                      </div>
                     </div>
-
-                    {/* Subtle Internal Reflection */}
-                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/20 pointer-events-none" />
                   </div>
-                </div>
 
-                {/* Content Card */}
-                <div className="flex flex-col gap-4 p-8 pt-6 bg-white/40 backdrop-blur-sm rounded-[32px] border border-white/60 shadow-lg shadow-[#0E1A2B04] group-hover:bg-white group-hover:shadow-2xl group-hover:shadow-[#0E1A2B10] transition-all duration-500 flex-grow w-full max-w-[280px] group-hover:-translate-y-1">
-                  <h3 className="text-[22px] font-bold text-[#0E1A2B] leading-tight">
-                    {step.title}
-                  </h3>
-                  <p className="text-[15px] text-[#0E1A2BA0] leading-relaxed line-clamp-3 group-hover:line-clamp-none transition-all duration-500">
-                    {step.description}
-                  </p>
+                  {/* Bottom part: Text Content */}
+                  <div className="flex flex-col gap-3 p-6 pt-5 bg-transparent flex-grow text-center md:text-left">
+                    <h3 className="text-[20px] font-bold text-[#0E1A2B] leading-tight">
+                      {step.title}
+                    </h3>
+                    <p className="text-[15px] text-[#0E1A2BA0] leading-relaxed line-clamp-3 group-hover:line-clamp-none transition-all duration-500">
+                      {step.description}
+                    </p>
+                  </div>
                 </div>
 
                 {/* Arrow Connector (Mobile Only) */}
                 {index < steps.length - 1 && (
-                  <div className="md:hidden flex flex-col items-center gap-2 text-[#0E1A2B20]">
-                    <div className="w-[2px] h-8 bg-current" />
+                  <div className="md:hidden flex justify-center py-3 text-[#B8643E] opacity-50 transition-opacity group-hover:opacity-100">
+                    <svg className="w-6 h-6 animate-bounce" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 4V20M12 20L6 14M12 20L18 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </div>
                 )}
               </div>

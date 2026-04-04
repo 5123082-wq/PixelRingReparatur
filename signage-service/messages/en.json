@@ -229,5 +229,27 @@
         "rating": 5
       }
     ]
+  },
+  "Coverage": {
+    "title": "Service across Germany",
+    "description": "Our headquarters in Berlin coordinates a broad network of experts. We provide fast technical service in all major urban centers.",
+    "hq": "Headquarters",
+    "serviceCity": "Service City",
+    "cities": {
+      "berlin": "Berlin",
+      "hamburg": "Hamburg",
+      "munich": "Munich",
+      "cologne": "Cologne",
+      "frankfurt": "Frankfurt",
+      "stuttgart": "Stuttgart",
+      "leipzig": "Leipzig",
+      "nuremberg": "Nuremberg"
+    },
+    "features": {
+      "nationwide": "Nationwide Network",
+      "express": "Express Response",
+      "guaranteed": "Service Guarantee",
+      "experts": "Certified Experts"
+    }
   }
 }

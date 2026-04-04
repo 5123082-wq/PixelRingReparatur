@@ -9,6 +9,7 @@ import ReviewsSection from '@/components/sections/ReviewsSection';
 import RoadmapSection from '@/components/sections/RoadmapSection';
 import FAQSection from '@/components/sections/FAQSection';
 import FooterCTA from '@/components/sections/FooterCTA';
+import CoverageMap from '@/components/sections/CoverageMap';
 
 export default function HomePage() {
   return (
@@ -19,6 +20,7 @@ export default function HomePage() {
         <IntakeSection />
         <BentoGridSection />
         <TrustSection />
+        <CoverageMap />
         <ExcellenceCarousel />
         <ReviewsSection />
         <RoadmapSection />

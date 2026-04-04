@@ -208,26 +208,48 @@
   },
   "Reviews": {
     "title": "Historie klientów",
-    "subtitle": "Co nasi klienci mówią o współpracy z PixelRing.",
+    "subtitle": "Co nasi klienci mówią o doświadczeniu z PixelRing.",
     "items": [
       {
-        "name": "Adam Wiśniewski",
-        "role": "Manager handlu",
-        "content": "PixelRing uratował naszą witrynę! Szyld LED migał tygodniami, ale naprawili go w mniej niż 24 godziny. Prawdziwi profesjonaliści.",
+        "name": "Sarah Jenkins",
+        "role": "Kierownik sklepu",
+        "content": "PixelRing uratował naszą witrynę! Szyld LED migotał od tygodni, ale naprawili go w mniej niż 24 godziny. Prawdziwy profesjonalizm.",
         "rating": 5
       },
       {
-        "name": "Katarzyna Mazur",
+        "name": "Marcus Thorne",
         "role": "Architekt",
-        "content": "Dbałość o techniczne szczegóły jest tym, co ich wyróżnia. Naprawa w standardzie cleanroom dla ekskluzywnych szyldów. Wysoce zalecane.",
+        "content": "Dbałość o szczegóły techniczne jest tym, co ich wyróżnia. Naprawa w standardzie cleanroom dla luksusowych szyldów. Gorąco polecam.",
         "rating": 5
       },
       {
-        "name": "Piotr Nowak",
-        "role": "Koordynator eventów",
-        "content": "Szybko, przejrzyście i wysokiej jakości. 24-miesięczna gwarancja daje nam spokój o nasze neonowe instalacje.",
+        "name": "Elena Kovacs",
+        "role": "Koordynator wydarzeń",
+        "content": "Szybko, przejrzyście i wysoka jakość. 24-miesięczna gwarancja daje nam prawdziwy spokój o nasze instalacje neonowe.",
         "rating": 5
       }
     ]
+  },
+  "Coverage": {
+    "title": "Serwis w całych Niemczech",
+    "description": "Nasza siedziba w Berlinie koordynuje szeroką sieć ekspertów. Zapewniamy szybki serwis techniczny we wszystkich głównych ośrodkach miejskich.",
+    "hq": "Siedziba główna",
+    "serviceCity": "Miasto serwisowe",
+    "cities": {
+      "berlin": "Berlin",
+      "hamburg": "Hamburg",
+      "munich": "Monachium",
+      "cologne": "Kolonia",
+      "frankfurt": "Frankfurt nad Menem",
+      "stuttgart": "Stuttgart",
+      "leipzig": "Lipsk",
+      "nuremberg": "Norymberga"
+    },
+    "features": {
+      "nationwide": "Sieć ogólnokrajowa",
+      "express": "Reakcja ekspresowa",
+      "guaranteed": "Gwarancja serwisu",
+      "experts": "Certyfikowani eksperci"
+    }
   }
 }
