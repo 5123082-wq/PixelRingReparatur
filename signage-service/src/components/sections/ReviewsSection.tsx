@@ -2,6 +2,61 @@
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
+import { useInView } from 'framer-motion';
+
+const TypewriterQuote = ({ content, shouldAnimate }: { content: string; shouldAnimate: boolean }) => {
+  const words = content.split(' ');
+  const splitIndex = Math.max(0, words.length - 4); // Animate last 4 words
+  const firstPart = words.slice(0, splitIndex).join(' ');
+  const lastPart = words.slice(splitIndex).join(' ') + '"';
+  
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.5 });
+  const [typedChars, setTypedChars] = useState('');
+  const [isFinished, setIsFinished] = useState(false);
+
+  useEffect(() => {
+    if (!shouldAnimate) return;
+    
+    if (isInView) {
+      // Add a slight delay before typing starts for better effect
+      const timeout = setTimeout(() => {
+        let currentLength = 0;
+        const interval = setInterval(() => {
+          currentLength++;
+          setTypedChars(lastPart.slice(0, currentLength));
+          if (currentLength >= lastPart.length) {
+            clearInterval(interval);
+            setIsFinished(true);
+          }
+        }, 40); // typing speed
+        return () => clearInterval(interval);
+      }, 400);
+      return () => clearTimeout(timeout);
+    }
+  }, [isInView, lastPart, shouldAnimate]);
+
+  if (!shouldAnimate) {
+    return (
+      <blockquote className="text-[26px] md:text-[36px] font-medium text-[#0E1A2B] leading-[1.3] tracking-tight italic">
+        "{content}"
+      </blockquote>
+    );
+  }
+
+  return (
+    <blockquote ref={ref} className="text-[26px] md:text-[36px] font-medium text-[#0E1A2B] leading-[1.3] tracking-tight italic relative">
+      <span className="sr-only">"{content}"</span>
+      <span aria-hidden="true">
+        "{firstPart}{firstPart ? ' ' : ''}
+        {typedChars}
+        {!isFinished && isInView && (
+          <span className="inline-block w-[3px] h-[0.9em] bg-[#B8643E] ml-[2px] align-baseline opacity-70 animate-pulse" />
+        )}
+      </span>
+    </blockquote>
+  );
+};
 
 const ReviewsSection = () => {
   const t = useTranslations('Reviews');
@@ -173,9 +228,10 @@ const ReviewsSection = () => {
                       <path d="M10 8c-3.3 0-6 2.7-6 6v10h10V14H8c0-1.1.9-2 2-2V8zm14 0c-3.3 0-6 2.7-6 6v10h10V14h-6c0-1.1.9-2 2-2V8z" />
                     </svg>
                   </div>
-                  <blockquote className="text-[26px] md:text-[36px] font-medium text-[#0E1A2B] leading-[1.3] tracking-tight italic">
-                    "{t(`items.${idx}.content`)}"
-                  </blockquote>
+                  <TypewriterQuote 
+                    content={t(`items.${idx}.content`)} 
+                    shouldAnimate={idx === 0} 
+                  />
                 </div>
 
                 <div className="flex items-center gap-5 relative z-10 mt-auto">
