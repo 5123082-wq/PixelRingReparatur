@@ -196,15 +196,89 @@
     "divider": "oder Anfrage hinterlassen",
     "form_title": "Anfrage stellen",
     "field_name": "Ihr Name",
-    "field_name_company": "Name und Firma",
+    "field_name_company": "Name und Firma (optional)",
     "field_contact": "Telefon oder E-Mail",
     "field_message": "Beschreiben Sie kurz Ihr Anliegen. Zum Beispiel: Display-Tausch, Diagnose nach Sturz, Gehäuse-Instandsetzung.",
     "field_photo": "📎 Foto anhängen",
-    "attach_photo_btn": "Foto beifügen",
-    "form_footer": "Wir antworten während der Geschäftszeiten und schlagen das beste Reparaturszenario vor, bevor Sie den Service besuchen.",
-    "submit": "Anfrage senden",
-    "success_title": "Anfrage gesendet!",
-    "success_message": "Wir melden uns innerhalb von 15 Minuten bei Ihnen."
+    "attach_photo_btn": "Foto beifügen (optional)",
+    "form_footer": "Wir erstellen die Anfrage, vergeben eine PR-Nummer, und Sie können mit Status weitermachen.",
+    "submit": "Anfrage erstellen",
+    "success_title": "Anfrage erstellt!",
+    "success_number_label": "Ihre PR-Nummer",
+    "success_message": "Nutzen Sie Status mit dieser Nummer, um fortzufahren.",
+    "open_status": "Status öffnen",
+    "error_invalid_contact": "Bitte geben Sie eine gültige Telefonnummer oder E-Mail-Adresse ein.",
+    "error_generic": "Die Anfrage konnte gerade nicht gesendet werden. Bitte versuchen Sie es erneut."
+  },
+  "StatusPage": {
+    "badge": "Statussuche",
+    "title": "Prüfen Sie den Status Ihrer Anfrage",
+    "intro": "Die Anfragenummer ist nur der erste Suchschritt. Zum Schutz der Kundendaten bleibt der Fall privat, bis Sie sich mit der ursprünglichen Telefonnummer oder E-Mail verifizieren oder dasselbe Gerät den Zugriff automatisch wiederherstellt.",
+    "safe_hint_1": "Die Anfragenummer allein reicht nicht aus.",
+    "safe_hint_2": "Nutzen Sie die Telefonnummer oder E-Mail aus der ursprünglichen Anfrage oder dasselbe Gerät, das bereits Zugriff hat.",
+    "safe_hint_3": "Private Notizen, Namen und Nachrichtenverlauf bleiben verborgen, bis die Verifizierung erfolgreich ist.",
+    "restore_hint": "Wenn dieses Gerät bereits eine aktive signierte Sitzung hat, wird die Statuskarte ohne weitere Eingabe wiederhergestellt.",
+    "verified_via": "Verifiziert über {method}",
+    "verified_via_session": "gespeicherte Sitzung",
+    "verified_via_contact": "Telefon/E-Mail",
+    "access_restored": "Der Zugriff wurde über das signierte Cookie auf diesem Gerät wiederhergestellt.",
+    "contact_verified": "Telefon oder E-Mail wurden erfolgreich bestätigt.",
+    "lookup_error": "Die Anfrage kann gerade nicht abgerufen werden.",
+    "lookup_another": "Andere Anfrage prüfen",
+    "request_number_label": "Anfragenummer",
+    "current_stage_label": "Aktueller Status",
+    "activity_label": "Aktivität",
+    "created_at": "Erstellt {date}",
+    "updated_at": "Zuletzt aktualisiert {date}",
+    "privacy_notice": "Private Notizen, Kundennamen und Nachrichtenverlauf bleiben weiterhin verborgen. Diese Ansicht zeigt nur den öffentlichen Status.",
+    "form_title": "Status prüfen",
+    "form_description": "Geben Sie Ihre öffentliche Anfragenummer ein. Bestätigen Sie dann mit der Telefonnummer oder E-Mail, die bei der Erstellung der Anfrage verwendet wurde.",
+    "request_number_field": "Anfragenummer",
+    "request_placeholder": "PR-XXXX-XXXX",
+    "contact_field": "Telefon oder E-Mail",
+    "contact_placeholder": "Zur Formalisierung der Anfrage verwendet",
+    "cookie_restore_hint": "Wenn Sie dieses Gerät bereits zum Erstellen der Anfrage genutzt haben, können Sie die Felder überspringen und den Zugriff über das signierte Cookie wiederherstellen.",
+    "submit": "Status prüfen",
+    "submit_loading": "Wird geprüft...",
+    "use_request_number": "Diese Anfragenummer verwenden",
+    "status_values": {
+      "DRAFT": {
+        "label": "Anfrageentwurf",
+        "description": "Wir haben die ersten Details erhalten und bereiten den Fall vor."
+      },
+      "FORMALIZED": {
+        "label": "Anfrage formalisiert",
+        "description": "Ihre Kontaktdaten sind verknüpft und die Anfrage ist für das Tracking bereit."
+      },
+      "NUMBER_ISSUED": {
+        "label": "Tracking aktiv",
+        "description": "Ihre öffentliche Anfragenummer ist aktiv und der Fall kann jetzt verfolgt werden."
+      },
+      "UNDER_REVIEW": {
+        "label": "In Prüfung",
+        "description": "Ein Spezialist prüft die Anfrage und bereitet den nächsten Schritt vor."
+      },
+      "WAITING_FOR_CUSTOMER": {
+        "label": "Warten auf Ihre Rückmeldung",
+        "description": "Wir benötigen eine Antwort oder eine kurze Klärung, um fortzufahren."
+      },
+      "IN_PROGRESS": {
+        "label": "In Bearbeitung",
+        "description": "Die Arbeit läuft und die Anfrage bewegt sich voran."
+      },
+      "READY_FOR_PICKUP": {
+        "label": "Bereit",
+        "description": "Der Fall ist für Übergabe, Abholung oder den nächsten operativen Schritt bereit."
+      },
+      "COMPLETED": {
+        "label": "Abgeschlossen",
+        "description": "Die Anfrage wurde abgeschlossen und wartet auf den formalen Abschluss."
+      },
+      "CANCELLED": {
+        "label": "Geschlossen",
+        "description": "Die Anfrage ist nicht mehr aktiv."
+      }
+    }
   },
   "FooterCTA": {
     "title": "Haben Sie noch Fragen? Lassen Sie uns über Ihr Projekt sprechen.",

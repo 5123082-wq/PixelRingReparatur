@@ -195,15 +195,89 @@
     "divider": "lub zostaw zapytanie",
     "form_title": "Zostaw zapytanie",
     "field_name": "Twoje imię",
-    "field_name_company": "Imię oraz fima",
+    "field_name_company": "Imię oraz firma (opcjonalnie)",
     "field_contact": "Telefon lub e-mail",
     "field_message": "Opisz swoje zadanie...",
     "field_photo": "📎 Załącz zdjęcie",
-    "attach_photo_btn": "Załącz zdjęcie",
-    "form_footer": "Odpowiemy w godzinach pracy i zasugerujemy najlepszy scenariusz naprawy.",
-    "submit": "Wyślij zapytanie",
-    "success_title": "Zapytanie wysłane!",
-    "success_message": "Odpowiemy w ciągu 15 minut."
+    "attach_photo_btn": "Załącz zdjęcie (opcjonalnie)",
+    "form_footer": "Utworzymy zgłoszenie, nadamy numer PR i możesz kontynuować w Status.",
+    "submit": "Utwórz zgłoszenie",
+    "success_title": "Zgłoszenie utworzone!",
+    "success_number_label": "Twój numer PR",
+    "success_message": "Użyj Status z tym numerem, aby kontynuować.",
+    "open_status": "Otwórz Status",
+    "error_invalid_contact": "Podaj poprawny numer telefonu lub adres e-mail.",
+    "error_generic": "Nie udało się wysłać zgłoszenia. Spróbuj ponownie."
+  },
+  "StatusPage": {
+    "badge": "Wyszukiwanie statusu",
+    "title": "Sprawdź status swojego zgłoszenia",
+    "intro": "Sam numer zgłoszenia to dopiero pierwszy krok wyszukiwania. Aby chronić dane klienta, sprawa pozostaje prywatna, dopóki nie zweryfikujesz się pierwotnym numerem telefonu lub adresem e-mail albo to samo urządzenie nie przywróci dostępu automatycznie.",
+    "safe_hint_1": "Sam numer zgłoszenia nie wystarczy.",
+    "safe_hint_2": "Użyj telefonu lub e-maila z pierwotnego zgłoszenia albo kontynuuj na tym samym urządzeniu, które ma już dostęp.",
+    "safe_hint_3": "Prywatne notatki, nazwiska i historia wiadomości pozostają ukryte, dopóki weryfikacja nie powiedzie się.",
+    "restore_hint": "Jeśli to urządzenie ma już aktywną podpisaną sesję, karta statusu przywróci się bez wpisywania czegokolwiek.",
+    "verified_via": "Zweryfikowano przez {method}",
+    "verified_via_session": "zapisaną sesję",
+    "verified_via_contact": "telefon/e-mail",
+    "access_restored": "Dostęp został przywrócony z podpisanego cookie na tym urządzeniu.",
+    "contact_verified": "Telefon lub e-mail zostały poprawnie potwierdzone.",
+    "lookup_error": "Nie można teraz sprawdzić zgłoszenia.",
+    "lookup_another": "Sprawdź inne zgłoszenie",
+    "request_number_label": "Numer zgłoszenia",
+    "current_stage_label": "Aktualny etap",
+    "activity_label": "Aktywność",
+    "created_at": "Utworzono {date}",
+    "updated_at": "Ostatnia aktualizacja {date}",
+    "privacy_notice": "Prywatne notatki, nazwiska klientów i historia wiadomości są nadal ukryte. Ten widok pokazuje tylko publiczny status.",
+    "form_title": "Sprawdź status",
+    "form_description": "Wpisz publiczny numer zgłoszenia. Następnie potwierdź go numerem telefonu lub adresem e-mail użytym podczas tworzenia zgłoszenia.",
+    "request_number_field": "Numer zgłoszenia",
+    "request_placeholder": "PR-XXXX-XXXX",
+    "contact_field": "Telefon lub e-mail",
+    "contact_placeholder": "Użyte do sformalizowania zgłoszenia",
+    "cookie_restore_hint": "Jeśli to urządzenie było już użyte do utworzenia zgłoszenia, możesz pominąć pola i pozwolić podpisanemu cookie przywrócić dostęp automatycznie.",
+    "submit": "Sprawdź status",
+    "submit_loading": "Sprawdzanie...",
+    "use_request_number": "Użyj tego numeru zgłoszenia",
+    "status_values": {
+      "DRAFT": {
+        "label": "Wersja robocza zgłoszenia",
+        "description": "Otrzymaliśmy wstępne szczegóły i przygotowujemy sprawę."
+      },
+      "FORMALIZED": {
+        "label": "Zgłoszenie sformalizowane",
+        "description": "Dane kontaktowe są powiązane, a zgłoszenie jest gotowe do śledzenia."
+      },
+      "NUMBER_ISSUED": {
+        "label": "Śledzenie aktywne",
+        "description": "Twój publiczny numer zgłoszenia jest już aktywny i sprawę można teraz śledzić."
+      },
+      "UNDER_REVIEW": {
+        "label": "W trakcie analizy",
+        "description": "Specjalista analizuje zgłoszenie i przygotowuje kolejny krok."
+      },
+      "WAITING_FOR_CUSTOMER": {
+        "label": "Czekamy na Twoją odpowiedź",
+        "description": "Potrzebujemy odpowiedzi lub krótkiego doprecyzowania, aby kontynuować."
+      },
+      "IN_PROGRESS": {
+        "label": "W realizacji",
+        "description": "Prace trwają, a zgłoszenie posuwa się naprzód."
+      },
+      "READY_FOR_PICKUP": {
+        "label": "Gotowe",
+        "description": "Sprawa jest gotowa do przekazania, odbioru lub kolejnego kroku operacyjnego."
+      },
+      "COMPLETED": {
+        "label": "Zakończone",
+        "description": "Zgłoszenie zostało zrealizowane i czeka na formalne zamknięcie."
+      },
+      "CANCELLED": {
+        "label": "Zamknięte",
+        "description": "Zgłoszenie nie jest już aktywne."
+      }
+    }
   },
   "FooterCTA": {
     "title": "Masz pytania? Omówmy Twój projekt.",

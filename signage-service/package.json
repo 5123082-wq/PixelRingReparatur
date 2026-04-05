@@ -6,12 +6,22 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:generate": "prisma generate",
+    "db:migrate": "node scripts/migration-manager.mjs create",
+    "db:deploy": "node scripts/migration-manager.mjs apply",
+    "db:baseline": "node scripts/migration-manager.mjs baseline",
+    "db:status": "node scripts/migration-manager.mjs status",
+    "db:studio": "prisma studio",
+    "db:seed:phase1": "node scripts/seed-phase1-fixture.mjs"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.6.0",
+    "@prisma/client": "^7.6.0",
     "framer-motion": "^12.38.0",
     "next": "16.2.1",
     "next-intl": "^4.9.0",
+    "pg": "^8.20.0",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
@@ -20,8 +30,10 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.4.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
+    "prisma": "^7.6.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
