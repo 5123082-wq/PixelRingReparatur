@@ -16,6 +16,7 @@
     "status": "Status",
     "support": "Support",
     "book": "Reparatur buchen",
+    "hilfe": "Hilfe",
     "service_pill": "SERVICE"
   },
   "Footer": {
@@ -258,5 +259,57 @@
       "guaranteed": "Service-Garantie",
       "experts": "Zertifizierte Experten"
     }
+  },
+  "Support": {
+    "hero_title": "Support & Fehlerbehebung",
+    "hero_description": "Finden Sie schnelle Antworten auf typische Probleme mit Werbeanlagen. Wir unterstützen Sie bei der Diagnose, Reparatur und Wartung.",
+    "categories_title": "Problemkategorien",
+    "categories": {
+      "light": {
+        "title": "Lichtwerbung & LED",
+        "description": "Probleme mit Beleuchtung, Trafos und Modulen."
+      },
+      "letters": {
+        "title": "Profilbuchstaben & Kästen",
+        "description": "Defekte an Fronten, Zargen und Befestigungen."
+      },
+      "film": {
+        "title": "Folierung & Glasflächen",
+        "description": "Ablösungen, Ausbleichung oder Neubeschichtung."
+      },
+      "safety": {
+        "title": "Konstruktion & Sicherheit",
+        "description": "Stabilität, Halterungen und Absturzsicherung."
+      },
+      "urgent": {
+        "title": "Dringende Diagnose",
+        "description": "Schnelle Hilfe bei akuten Fehlfunktionen."
+      }
+    },
+    "urgent_cases_title": "Dringende Fälle",
+    "urgent_cases_desc": "Bei Brandgeruch, Funkenbildung oder lockeren Bauteilen schalten Sie die Anlage bitte sofort ab und kontaktieren Sie uns direkt.",
+    "urgent_badge": "Dringliche Sicherheitswarnung",
+    "call_technician": "Techniker anrufen",
+    "send_request": "Anfrage senden",
+    "symptoms_title": "Typische Symptome",
+    "symptoms_desc": "Wählen Sie ein Symptom aus, um detaillierte Informationen zur Ursache und Lösung zu erhalten.",
+    "all_articles": "Alle Artikel",
+    "symptoms": [
+      { "id": "no-light", "title": "Werbeanlage leuchtet nicht" },
+      { "id": "flicking", "title": "Werbeanlage flackert" },
+      { "id": "uneven-light", "title": "Ungleichmäßiges Leuchten der LEDs" },
+      { "id": "letter-out", "title": "Ein einzelner Buchstabe leuchtet nicht" },
+      { "id": "rain-fail", "title": "Werbeanlage schaltet nach Regen ab" },
+      { "id": "peeling-film", "title": "Folie an Schaufenster hat sich gelöst" },
+      { "id": "faded-film", "title": "Folie ist ausgeblichen" },
+      { "id": "shaky-sign", "title": "Werbeanlage wackelt" },
+      { "id": "urgent-repair", "title": "Dringende Reparatur erforderlich" }
+    ],
+    "related_services_title": "Passende Leistungen",
+    "cta_title": "Benötigen Sie Expertenhilfe?",
+    "cta_desc": "Senden Sie uns ein Foto des Problems oder starten Sie direkt eine Reparaturanfrage. Unsere Spezialisten melden sich umgehend.",
+    "cta_primary": "Diagnose starten",
+    "cta_secondary": "Foto hochladen",
+    "internal_links_title": "Beliebte Themen & Lösungen"
   }
 }

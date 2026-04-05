@@ -143,6 +143,58 @@
       }
     ]
   },
+  "Support": {
+    "hero_title": "Support & Troubleshooting",
+    "hero_description": "Find quick answers to typical signage problems. We help you with diagnosis, repair, and maintenance.",
+    "categories_title": "Problem Categories",
+    "categories": {
+      "light": {
+        "title": "Lighting & LED",
+        "description": "Issues with illumination, transformers, and modules."
+      },
+      "letters": {
+        "title": "3D Letters & Boxes",
+        "description": "Defects in faces, returns, and mountings."
+      },
+      "film": {
+        "title": "Vinyl & Glass Surfaces",
+        "description": "Peeling, fading, or re-coating."
+      },
+      "safety": {
+        "title": "Construction & Safety",
+        "description": "Stability, brackets, and fall protection."
+      },
+      "urgent": {
+        "title": "Urgent Diagnosis",
+        "description": "Fast help for acute malfunctions."
+      }
+    },
+    "urgent_cases_title": "Urgent Cases",
+    "urgent_cases_desc": "In case of burning smell, sparking, or loose components, please switch off the system immediately and contact us directly.",
+    "urgent_badge": "Urgent Safety Warning",
+    "call_technician": "Call Technician",
+    "send_request": "Send Request",
+    "symptoms_title": "Typical Symptoms",
+    "symptoms_desc": "Select a symptom to get detailed information on the cause and solution.",
+    "all_articles": "All Articles",
+    "symptoms": [
+      { "id": "no-light", "title": "Sign does not light up" },
+      { "id": "flicking", "title": "Sign is flickering" },
+      { "id": "uneven-light", "title": "Uneven LED illumination" },
+      { "id": "letter-out", "title": "Single letter does not light up" },
+      { "id": "rain-fail", "title": "Sign switches off after rain" },
+      { "id": "peeling-film", "title": "Vinyl on window has peeled off" },
+      { "id": "faded-film", "title": "Vinyl is faded" },
+      { "id": "shaky-sign", "title": "Sign is shaky" },
+      { "id": "urgent-repair", "title": "Urgent repair required" }
+    ],
+    "related_services_title": "Related Services",
+    "cta_title": "Need Expert Help?",
+    "cta_desc": "Send us a photo of the problem or start a repair request directly. Our specialists will get back to you shortly.",
+    "cta_primary": "Start Diagnosis",
+    "cta_secondary": "Upload Photo",
+    "internal_links_title": "Popular Topics & Solutions"
+  },
   "Roadmap": {
     "title": "What happens after the request?",
     "steps": [

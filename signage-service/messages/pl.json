@@ -137,7 +137,7 @@
         "description": "Energooszczędne panele podświetlane z równomiernym rozłożeniem światła."
       },
       {
-        "title": "Bezpieczny demontaż",
+        "title": "Bezpieчный demontaż",
         "tag": "Demontaż",
         "description": "Ostrożne usuwanie i recykling starych konstrukcji reklamowych."
       }
@@ -152,7 +152,7 @@
       },
       {
         "title": "Przypisanie",
-        "description": "Dedykowany menedżer zostanie do Ciebie przypisany w ciągu 15 minut."
+        "description": "Dedykowany menedżer zostanie do Ciebie przypisany в ciągu 15 minut."
       },
       {
         "title": "Audyt techniczny",
@@ -188,22 +188,22 @@
   "ContactModal": {
     "title": "Skontaktuj się z nami",
     "subtitle": "Wybierz preferowany kanał komunikacji lub zostaw zapytanie.",
+    "sidebar_desc": "Skontaktuj się z nami w najwygodniejszy dla Ciebie sposób. Szybkie kanały zostały wyróżnione, a poniższy formularz wymaga tylko niezbędnych danych.",
+    "chat_on_site": "Czat na żywo",
+    "email": "E-mail",
     "messenger_label": "Napisz do nas bezpośrednio",
     "divider": "lub zostaw zapytanie",
+    "form_title": "Zostaw zapytanie",
     "field_name": "Twoje imię",
     "field_name_company": "Imię oraz fima",
     "field_contact": "Telefon lub e-mail",
     "field_message": "Opisz swoje zadanie...",
     "field_photo": "📎 Załącz zdjęcie",
+    "attach_photo_btn": "Załącz zdjęcie",
+    "form_footer": "Odpowiemy w godzinach pracy i zasugerujemy najlepszy scenariusz naprawy.",
     "submit": "Wyślij zapytanie",
     "success_title": "Zapytanie wysłane!",
-    "success_message": "Odpowiemy w ciągu 15 minut.",
-    "sidebar_desc": "Skontaktuj się z nami w najwygodniejszy dla Ciebie sposób. Szybkie kanały zostały wyróżnione, a poniższy formularz wymaga tylko niezbędnych danych.",
-    "chat_on_site": "Czat na żywo",
-    "email": "E-mail",
-    "form_title": "Zostaw zapytanie",
-    "attach_photo_btn": "Załącz zdjęcie",
-    "form_footer": "Odpowiemy w godzinach pracy i zasugerujemy najlepszy scenariusz naprawy."
+    "success_message": "Odpowiemy w ciągu 15 minut."
   },
   "FooterCTA": {
     "title": "Masz pytania? Omówmy Twój projekt.",
@@ -258,5 +258,57 @@
       "guaranteed": "Gwarancja serwisu",
       "experts": "Certyfikowani eksperci"
     }
+  },
+  "Support": {
+    "hero_title": "Wsparcie i Rozwiązywanie Problemów",
+    "hero_description": "Znajdź szybkie odpowiedzi na typowe problemy z reklamami. Pomagamy w diagnozie, naprawie i konserwacji.",
+    "categories_title": "Kategorie Problemów",
+    "categories": {
+      "light": {
+        "title": "Reklama Świetlna & LED",
+        "description": "Problemy z oświetleniem, transformatorami i modułami."
+      },
+      "letters": {
+        "title": "Litery Przestrzenne & Kasetony",
+        "description": "Usterki frontów, boków i mocowań."
+      },
+      "film": {
+        "title": "Folia & Powierzchnie Szklane",
+        "description": "Odklejanie, blaknięcie lub nowa wyklejka."
+      },
+      "safety": {
+        "title": "Konstrukcja & Bezpieczeństwo",
+        "description": "Stabilność, uchwyty i zabezpieczenia."
+      },
+      "urgent": {
+        "title": "Pilna Diagnoza",
+        "description": "Szybka pomoc в nagłych awariach."
+      }
+    },
+    "urgent_cases_title": "Pilne Przypadki",
+    "urgent_cases_desc": "W przypadku zapachu spalenizny, iskrzenia lub luźnych elementów, prosimy o natychmiastowe wyłączenie urządzenia i bezpośredni kontakt.",
+    "urgent_badge": "Pilne Ostrzeżenie Bezpieczeństwa",
+    "call_technician": "Zadzwoń do technika",
+    "send_request": "Wyślij zgłoszenie",
+    "symptoms_title": "Typowe Objawy",
+    "symptoms_desc": "Wybierz objaw, aby uzyskać szczegółowe informacje o przyczynie i rozwiązaniu.",
+    "all_articles": "Wszystkie Artykuły",
+    "symptoms": [
+      { "id": "no-light", "title": "Reklama nie świeci" },
+      { "id": "flicking", "title": "Reklama migocze" },
+      { "id": "uneven-light", "title": "Nierównomierne podświetlenie LED" },
+      { "id": "letter-out", "title": "Pojedyncza litera nie świeci" },
+      { "id": "rain-fail", "title": "Reklama wyłącza się po deszczu" },
+      { "id": "peeling-film", "title": "Folia na witrynie się odkleiła" },
+      { "id": "faded-film", "title": "Folia wyblakła" },
+      { "id": "shaky-sign", "title": "Reklama się chwieje" },
+      { "id": "urgent-repair", "title": "Wymagana pilna naprawa" }
+    ],
+    "related_services_title": "Powiązane Usługi",
+    "cta_title": "Potrzebujesz Pomocy Eksperta?",
+    "cta_desc": "Prześlij nam zdjęcie problemu lub bezpośrednio rozpocznij zgłoszenie naprawy. Nasi specjaliści skontaktują się z Tobą wkrótce.",
+    "cta_primary": "Rozpocznij Diagnozę",
+    "cta_secondary": "Prześlij Zdjęcie",
+    "internal_links_title": "Popularne Tematy i Rozwiązania"
   }
 }

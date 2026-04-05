@@ -17,9 +17,9 @@ const Header = () => {
 
   const navLinks = [
     { name: t('services'), href: '#services' },
+    { name: t('support'), href: '/support' },
     { name: t('warranty'), href: '#warranty' },
     { name: t('status'), href: '#status' },
-    { name: t('support'), href: '#support' },
   ];
 
   // Prevent scrolling when menu is open
