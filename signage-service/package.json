@@ -13,7 +13,8 @@
     "db:baseline": "node scripts/migration-manager.mjs baseline",
     "db:status": "node scripts/migration-manager.mjs status",
     "db:studio": "prisma studio",
-    "db:seed:phase1": "node scripts/seed-phase1-fixture.mjs"
+    "db:seed:phase1": "node scripts/seed-phase1-fixture.mjs",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.6.0",
