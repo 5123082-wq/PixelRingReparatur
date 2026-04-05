@@ -195,15 +195,89 @@
     "divider": "veya talep bırakın",
     "form_title": "Talep Gönderin",
     "field_name": "Adınız",
-    "field_name_company": "Adınız ve Şirketiniz",
+    "field_name_company": "Adınız ve Şirketiniz (isteğe bağlı)",
     "field_contact": "Telefon veya e-posta",
     "field_message": "Görevinizi açıklayın...",
     "field_photo": "📎 Fotoğraf ekle",
-    "attach_photo_btn": "Fotoğraf ekle",
-    "form_footer": "Mesai saatleri içinde size döneceğiz ve onarım için en iyi senaryoyu önereceğiz.",
-    "submit": "Talebi gönder",
-    "success_title": "Talep gönderildi!",
-    "success_message": "15 dakika içinde size geri döneceğiz."
+    "attach_photo_btn": "Fotoğraf ekle (isteğe bağlı)",
+    "form_footer": "Talebi oluşturacağız, bir PR numarası vereceğiz ve Status ile devam edebilirsiniz.",
+    "submit": "Talep oluştur",
+    "success_title": "Talep oluşturuldu!",
+    "success_number_label": "PR numaranız",
+    "success_message": "Devam etmek için bu numarayla Status'u kullanın.",
+    "open_status": "Status'u aç",
+    "error_invalid_contact": "Lütfen geçerli bir telefon numarası veya e-posta adresi girin.",
+    "error_generic": "Talep şu anda gönderilemedi. Lütfen tekrar deneyin."
+  },
+  "StatusPage": {
+    "badge": "Durum araması",
+    "title": "Talep durumunuzu kontrol edin",
+    "intro": "Talep numarası tek başına yalnızca ilk arama adımıdır. Müşteri verilerini korumak için kayıt, orijinal telefon veya e-posta ile doğrulama yapılana ya da aynı cihaz erişimi otomatik olarak geri yükleyene kadar gizli kalır.",
+    "safe_hint_1": "Talep numarası tek başına yeterli değildir.",
+    "safe_hint_2": "İlk talepte kullanılan telefon veya e-postayı kullanın ya da zaten erişimi olan aynı cihazdan devam edin.",
+    "safe_hint_3": "Doğrulama başarılı olana kadar özel notlar, isimler ve mesaj geçmişi gizli kalır.",
+    "restore_hint": "Bu cihazda zaten etkin imzalı bir oturum varsa, durum kartı siz hiçbir şey yazmadan geri yüklenir.",
+    "verified_via": "{method} ile doğrulandı",
+    "verified_via_session": "kayıtlı oturum",
+    "verified_via_contact": "telefon/e-posta",
+    "access_restored": "Bu cihazdaki imzalı cookie ile erişim geri yüklendi.",
+    "contact_verified": "Telefon veya e-posta başarıyla eşleşti.",
+    "lookup_error": "Talep şu anda görüntülenemiyor.",
+    "lookup_another": "Başka bir talebi kontrol et",
+    "request_number_label": "Talep numarası",
+    "current_stage_label": "Geçerli aşama",
+    "activity_label": "Etkinlik",
+    "created_at": "Oluşturuldu {date}",
+    "updated_at": "Son güncelleme {date}",
+    "privacy_notice": "Özel notlar, müşteri isimleri ve mesaj geçmişi hâlâ gizlidir. Bu görünüm yalnızca genel durumu gösterir.",
+    "form_title": "Durumu kontrol et",
+    "form_description": "Genel talep numaranızı girin. Ardından talep oluşturulurken kullanılan telefon veya e-posta ile doğrulayın.",
+    "request_number_field": "Talep numarası",
+    "request_placeholder": "PR-XXXX-XXXX",
+    "contact_field": "Telefon veya e-posta",
+    "contact_placeholder": "Talebi resmileştirmek için kullanıldı",
+    "cookie_restore_hint": "Bu cihazı talebi oluşturmak için zaten kullandıysanız alanları boş bırakabilir ve imzalı cookie'nin erişimi otomatik olarak geri getirmesine izin verebilirsiniz.",
+    "submit": "Durumu kontrol et",
+    "submit_loading": "Kontrol ediliyor...",
+    "use_request_number": "Bu talep numarasını kullan",
+    "status_values": {
+      "DRAFT": {
+        "label": "Talep taslağı",
+        "description": "İlk ayrıntıları aldık ve kaydı hazırlıyoruz."
+      },
+      "FORMALIZED": {
+        "label": "Talep resmileştirildi",
+        "description": "İletişim bilgileriniz bağlandı ve talep takip için hazır."
+      },
+      "NUMBER_ISSUED": {
+        "label": "Takip aktif",
+        "description": "Genel talep numaranız artık aktif ve kayıt şimdi takip edilebilir."
+      },
+      "UNDER_REVIEW": {
+        "label": "İnceleniyor",
+        "description": "Bir uzman talebi inceliyor ve sonraki adımı hazırlıyor."
+      },
+      "WAITING_FOR_CUSTOMER": {
+        "label": "Yanıtınızı bekliyoruz",
+        "description": "Devam edebilmek için bir yanıt veya kısa bir açıklama gerekiyor."
+      },
+      "IN_PROGRESS": {
+        "label": "İşlemde",
+        "description": "Çalışma sürüyor ve talep ilerliyor."
+      },
+      "READY_FOR_PICKUP": {
+        "label": "Hazır",
+        "description": "Kayıt teslim, alım veya sonraki operasyon adımı için hazır."
+      },
+      "COMPLETED": {
+        "label": "Tamamlandı",
+        "description": "Talep tamamlandı ve kapanış işlemini bekliyor."
+      },
+      "CANCELLED": {
+        "label": "Kapalı",
+        "description": "Talep artık aktif değil."
+      }
+    }
   },
   "FooterCTA": {
     "title": "Hala sorularınız mı var? Projenizi tartışalım.",

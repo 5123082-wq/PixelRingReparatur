@@ -247,15 +247,89 @@
     "divider": "or leave a request",
     "form_title": "Leave a Request",
     "field_name": "Your name",
-    "field_name_company": "Name and Company",
+    "field_name_company": "Name and company (optional)",
     "field_contact": "Phone or email",
     "field_message": "Briefly describe the task. For example: display replacement, diagnostics after a fall, body restoration.",
     "field_photo": "📎 Attach a photo",
-    "attach_photo_btn": "Attach photo",
-    "form_footer": "We will respond during business hours and suggest the best repair scenario before visiting the service.",
-    "submit": "Send request",
-    "success_title": "Request sent!",
-    "success_message": "We'll get back to you within 15 minutes."
+    "attach_photo_btn": "Attach photo (optional)",
+    "form_footer": "We will create the request, issue a PR number, and you can continue from Status.",
+    "submit": "Create request",
+    "success_title": "Request created!",
+    "success_number_label": "Your PR number",
+    "success_message": "Use Status with this number to continue.",
+    "open_status": "Open Status",
+    "error_invalid_contact": "Please enter a valid phone number or email address.",
+    "error_generic": "Unable to submit the request right now. Please try again."
+  },
+  "StatusPage": {
+    "badge": "Status search",
+    "title": "Check your request status",
+    "intro": "Request number alone is only the first lookup step. To protect customer data, the case stays private until you verify with the original phone or email, or the same device restores access automatically.",
+    "safe_hint_1": "Request number alone is not enough.",
+    "safe_hint_2": "Use the phone or email from the original request, or continue on the same device that already has access.",
+    "safe_hint_3": "Private notes, names, and message history stay hidden until verification succeeds.",
+    "restore_hint": "If this device already has an active signed session, the status card will restore without you typing anything.",
+    "verified_via": "Verified via {method}",
+    "verified_via_session": "saved session",
+    "verified_via_contact": "phone/email",
+    "access_restored": "Access restored from the signed cookie on this device.",
+    "contact_verified": "The phone or email matched successfully.",
+    "lookup_error": "Unable to look up the request right now.",
+    "lookup_another": "Look up another request",
+    "request_number_label": "Request number",
+    "current_stage_label": "Current stage",
+    "activity_label": "Activity",
+    "created_at": "Created {date}",
+    "updated_at": "Last updated {date}",
+    "privacy_notice": "Private notes, customer names, and message history are still hidden. This view only shows the public status.",
+    "form_title": "Search Status",
+    "form_description": "Enter your public request number. Then verify with the phone or email that was used when the request was created.",
+    "request_number_field": "Request number",
+    "request_placeholder": "PR-XXXX-XXXX",
+    "contact_field": "Phone or email",
+    "contact_placeholder": "Used to formalize the request",
+    "cookie_restore_hint": "If you already used this device to create the request, you can skip the fields and let the signed cookie restore access automatically.",
+    "submit": "Check status",
+    "submit_loading": "Checking...",
+    "use_request_number": "Use this request number",
+    "status_values": {
+      "DRAFT": {
+        "label": "Request draft",
+        "description": "We have received the initial details and are preparing the case."
+      },
+      "FORMALIZED": {
+        "label": "Request formalized",
+        "description": "Your contact details are linked and the request is ready for tracking."
+      },
+      "NUMBER_ISSUED": {
+        "label": "Tracking active",
+        "description": "Your public request number is live and the case can now be tracked."
+      },
+      "UNDER_REVIEW": {
+        "label": "Under review",
+        "description": "A specialist is reviewing the request and preparing the next step."
+      },
+      "WAITING_FOR_CUSTOMER": {
+        "label": "Waiting for your reply",
+        "description": "We need a response or a small clarification to continue."
+      },
+      "IN_PROGRESS": {
+        "label": "In progress",
+        "description": "The work is underway and the request is moving forward."
+      },
+      "READY_FOR_PICKUP": {
+        "label": "Ready",
+        "description": "The case is ready for handoff, pickup, or the next operational step."
+      },
+      "COMPLETED": {
+        "label": "Completed",
+        "description": "The request has been completed and is waiting for closure handling."
+      },
+      "CANCELLED": {
+        "label": "Closed",
+        "description": "The request is no longer active."
+      }
+    }
   },
   "FooterCTA": {
     "title": "Still have questions? Let's discuss your project.",

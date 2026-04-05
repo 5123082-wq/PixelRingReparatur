@@ -1,0 +1,171 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum CaseStatus {
+  DRAFT
+  FORMALIZED
+  NUMBER_ISSUED
+  UNDER_REVIEW
+  WAITING_FOR_CUSTOMER
+  IN_PROGRESS
+  READY_FOR_PICKUP
+  COMPLETED
+  CANCELLED
+}
+
+enum CaseOriginChannel {
+  WEBSITE_CHAT
+  WEBSITE_FORM
+  TELEGRAM
+  WHATSAPP
+  PHONE
+  EMAIL
+  CRM
+  MANUAL
+}
+
+enum PrimaryContactMethod {
+  EMAIL
+  PHONE
+  TELEGRAM
+  WHATSAPP
+}
+
+enum MessageAuthorRole {
+  CUSTOMER
+  OPERATOR
+  SYSTEM
+}
+
+enum AttachmentKind {
+  IMAGE
+  VIDEO
+  DOCUMENT
+  AUDIO
+  OTHER
+}
+
+enum AttachmentStorageProvider {
+  PENDING
+  VERCEL_BLOB
+  S3
+  LOCAL
+}
+
+enum SessionScope {
+  ANONYMOUS_DRAFT
+  CASE_ACCESS
+  PORTAL_AUTH
+}
+
+model Case {
+  id                   String                @id @default(uuid()) @db.Uuid
+  publicRequestNumber  String?               @unique
+  status               CaseStatus            @default(DRAFT)
+  originChannel        CaseOriginChannel
+  customerName         String?
+  customerEmail        String?
+  customerPhone        String?
+  primaryContactMethod PrimaryContactMethod?
+  primaryContactValue  String?
+  summary              String?               @db.Text
+  description          String?               @db.Text
+  locale               String?
+  crmLeadId            String?
+  crmCaseId            String?
+  numberIssuedAt       DateTime?
+  formalizedAt         DateTime?
+  statusUpdatedAt      DateTime?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  messages             Message[]
+  attachments          Attachment[]
+  sessions             Session[]
+
+  @@index([status, updatedAt])
+  @@index([originChannel, createdAt])
+  @@index([customerEmail])
+  @@index([customerPhone])
+  @@index([primaryContactMethod, primaryContactValue])
+  @@map("cases")
+}
+
+model Message {
+  id                String            @id @default(uuid()) @db.Uuid
+  caseId            String?           @db.Uuid
+  sessionId         String?           @db.Uuid
+  channel           CaseOriginChannel
+  authorRole        MessageAuthorRole
+  authorName        String?
+  body              String            @db.Text
+  isCustomerVisible Boolean           @default(true)
+  sentAt            DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  case              Case?             @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  session           Session?          @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  attachments       Attachment[]
+
+  @@index([caseId, createdAt])
+  @@index([sessionId, createdAt])
+  @@index([authorRole, createdAt])
+  @@map("messages")
+}
+
+model Attachment {
+  id                  String                    @id @default(uuid()) @db.Uuid
+  caseId              String?                   @db.Uuid
+  messageId           String?                   @db.Uuid
+  uploadedBySessionId String?                   @db.Uuid
+  kind                AttachmentKind
+  storageProvider     AttachmentStorageProvider @default(PENDING)
+  storageKey          String                    @unique
+  originalFilename    String?
+  mimeType            String
+  byteSize            Int
+  checksumSha256      String?
+  width               Int?
+  height              Int?
+  durationSeconds     Int?
+  isCustomerVisible   Boolean                   @default(true)
+  createdAt           DateTime                  @default(now())
+  updatedAt           DateTime                  @updatedAt
+  case                Case?                     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  message             Message?                  @relation(fields: [messageId], references: [id], onDelete: SetNull)
+  uploadedBySession   Session?                  @relation("SessionUploads", fields: [uploadedBySessionId], references: [id], onDelete: SetNull)
+
+  @@index([caseId, createdAt])
+  @@index([messageId])
+  @@index([uploadedBySessionId])
+  @@map("attachments")
+}
+
+model Session {
+  id            String                @id @default(uuid()) @db.Uuid
+  tokenHash     String                @unique
+  scope         SessionScope          @default(ANONYMOUS_DRAFT)
+  caseId        String?               @db.Uuid
+  contactMethod PrimaryContactMethod?
+  contactValue  String?
+  userAgent     String?
+  ipAddress     String?
+  verifiedAt    DateTime?
+  lastSeenAt    DateTime?
+  expiresAt     DateTime
+  revokedAt     DateTime?
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+  case          Case?                 @relation(fields: [caseId], references: [id], onDelete: SetNull)
+  messages      Message[]
+  uploads       Attachment[]          @relation("SessionUploads")
+
+  @@index([caseId, expiresAt])
+  @@index([expiresAt])
+  @@index([contactMethod, contactValue])
+  @@map("sessions")
+}

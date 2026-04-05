@@ -12,19 +12,30 @@ interface ContactModalProps {
 }
 
 const ContactModal = ({ isOpen, onClose, onOpenChat }: ContactModalProps) => {
-  const t_nav = useTranslations('Nav');
   const t = useTranslations('ContactModal');
   const [isRendered, setIsRendered] = useState(false);
 
   useEffect(() => {
+    let renderTimer: ReturnType<typeof setTimeout> | null = null;
+
     if (isOpen) {
-      setIsRendered(true);
+      renderTimer = setTimeout(() => setIsRendered(true), 0);
       document.body.style.overflow = 'hidden';
     } else {
       const timer = setTimeout(() => setIsRendered(false), 300);
       document.body.style.overflow = '';
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        if (renderTimer) {
+          clearTimeout(renderTimer);
+        }
+      };
     }
+    return () => {
+      if (renderTimer) {
+        clearTimeout(renderTimer);
+      }
+    };
   }, [isOpen]);
 
   if (!isRendered && !isOpen) return null;
@@ -139,7 +150,7 @@ const ContactModal = ({ isOpen, onClose, onOpenChat }: ContactModalProps) => {
             </h2>
           </div>
 
-          <ContactForm onSuccess={onClose} />
+          <ContactForm />
         </div>
 
         {/* Close button */}

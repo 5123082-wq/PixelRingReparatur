@@ -19,7 +19,7 @@ const Header = () => {
     { name: t('services'), href: '#services' },
     { name: t('support'), href: '/support' },
     { name: t('warranty'), href: '#warranty' },
-    { name: t('status'), href: '#status' },
+    { name: t('status'), href: '/status' },
   ];
 
   // Prevent scrolling when menu is open
