@@ -11,6 +11,7 @@ import {
   getCaseSessionExpiryDate,
   hashCaseSessionToken,
 } from './case-session';
+import type { StoredAttachmentInput } from './attachments';
 import { ensurePublicRequestNumberForCase } from './request-number';
 
 export type IntakeContactMethod = 'EMAIL' | 'PHONE';
@@ -28,7 +29,7 @@ export type WebsiteRequestInput = {
   message: string;
   userAgent?: string | null;
   ipAddress?: string | null;
-  hasPhoto?: boolean;
+  attachments?: StoredAttachmentInput[];
 };
 
 export type WebsiteRequestResult = {
@@ -119,6 +120,7 @@ export async function createWebsiteRequest(
   const now = new Date();
   const sessionToken = createCaseSessionToken();
   const sessionTokenHash = hashCaseSessionToken(sessionToken);
+  const attachments = input.attachments ?? [];
 
   return prisma.$transaction(async (tx) => {
     const createdCase = await tx.case.create({
@@ -138,7 +140,7 @@ export async function createWebsiteRequest(
       select: { id: true },
     });
 
-    await tx.message.create({
+    const initialMessage = await tx.message.create({
       data: {
         caseId: createdCase.id,
         channel: CaseOriginChannel.WEBSITE_FORM,
@@ -165,7 +167,7 @@ export async function createWebsiteRequest(
       },
     });
 
-    await tx.session.create({
+    const session = await tx.session.create({
       data: {
         tokenHash: sessionTokenHash,
         scope: SessionScope.CASE_ACCESS,
@@ -180,11 +182,23 @@ export async function createWebsiteRequest(
       select: { id: true },
     });
 
+    if (attachments.length > 0) {
+      await tx.attachment.createMany({
+        data: attachments.map((attachment) => ({
+          ...attachment,
+          caseId: createdCase.id,
+          messageId: initialMessage.id,
+          uploadedBySessionId: session.id,
+          isCustomerVisible: true,
+        })),
+      });
+    }
+
     return {
       caseId: createdCase.id,
       publicRequestNumber,
       sessionToken,
-      photoReceived: Boolean(input.hasPhoto),
+      photoReceived: attachments.length > 0,
     };
   });
 }

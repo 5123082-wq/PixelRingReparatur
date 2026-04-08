@@ -6,7 +6,9 @@ import { useTranslations } from 'next-intl';
 const TrustSection = () => {
   const t = useTranslations('Trust');
 
-  const FeatureIcon = ({ type }: { type: 'reinraum' | 'doc' | 'audit' }) => {
+  type FeatureIconType = 'reinraum' | 'doc' | 'audit';
+
+  const FeatureIcon = ({ type }: { type: FeatureIconType }) => {
     const icons = {
       reinraum: (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -37,6 +39,14 @@ const TrustSection = () => {
   };
 
   const statKeys = ['turnaround', 'warranty', 'hardware', 'rating'] as const;
+  const featureItems: Array<{
+    key: 'feature1' | 'feature2' | 'feature3';
+    icon: FeatureIconType;
+  }> = [
+    { key: 'feature1', icon: 'reinraum' },
+    { key: 'feature2', icon: 'doc' },
+    { key: 'feature3', icon: 'audit' },
+  ];
 
   return (
     <section className="relative w-full bg-[#F9F6F2] py-24 px-6 overflow-hidden">
@@ -56,20 +66,16 @@ const TrustSection = () => {
           </div>
 
           <div className="flex flex-col gap-4">
-            {[
-              { key: 'feature1', icon: 'reinraum' },
-              { key: 'feature2', icon: 'doc' },
-              { key: 'feature3', icon: 'audit' }
-            ].map((feature, idx) => (
+            {featureItems.map((feature) => (
               <div 
-                key={idx} 
+                key={feature.key}
                 className="flex items-center gap-5 p-5 bg-white rounded-2xl shadow-sm border border-black/[0.03] hover:shadow-md transition-all duration-300 group cursor-default"
               >
                 <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-[#B8643E0A] text-[#B8643E] rounded-xl group-hover:bg-[#B8643E] group-hover:text-white transition-colors">
-                  <FeatureIcon type={feature.icon as any} />
+                  <FeatureIcon type={feature.icon} />
                 </div>
                 <span className="text-[18px] font-semibold text-[#0E1A2B]">
-                  {t(feature.key as any)}
+                  {t(feature.key)}
                 </span>
               </div>
             ))}

@@ -4,24 +4,37 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 
+const FALLBACK_SYMPTOM_SLUGS = [
+  'no-light',
+  'flicking',
+  'uneven-light',
+  'letter-out',
+  'rain-fail',
+  'peeling-film',
+  'faded-film',
+  'shaky-sign',
+  'urgent-repair',
+] as const;
+
 interface SymptomClusterProps {
   isCompact?: boolean;
+  items?: {
+    slug: string;
+    title: string;
+    shortAnswer: string | null;
+    sortOrder: number;
+  }[];
 }
 
-const SymptomCluster = ({ isCompact = false }: SymptomClusterProps) => {
+const SymptomCluster = ({ isCompact = false, items }: SymptomClusterProps) => {
   const t = useTranslations('Support');
-
-  const symptomIds = [
-    'no-light',
-    'flicking',
-    'uneven-light',
-    'letter-out',
-    'rain-fail',
-    'peeling-film',
-    'faded-film',
-    'shaky-sign',
-    'urgent-repair'
-  ];
+  const defaultItems = FALLBACK_SYMPTOM_SLUGS.map((slug, index) => ({
+    slug,
+    title: t(`symptoms.${index}.title`),
+    shortAnswer: null,
+    sortOrder: index,
+  }));
+  const sortedItems = [...(items ?? defaultItems)].sort((a, b) => a.sortOrder - b.sortOrder);
 
   const Content = (
     <>
@@ -36,28 +49,38 @@ const SymptomCluster = ({ isCompact = false }: SymptomClusterProps) => {
           </p>
         </div>
         
-        <button className="px-6 py-3 bg-[#EEF3FB] hover:bg-[#E2EAF8] text-[#72665D] text-sm font-bold rounded-2xl border border-[#E7DDD3] transition-all flex items-center gap-3">
+        <a
+          href="#symptoms"
+          className="px-6 py-3 bg-[#EEF3FB] hover:bg-[#E2EAF8] text-[#72665D] text-sm font-bold rounded-2xl border border-[#E7DDD3] transition-all flex items-center gap-3"
+        >
           <svg className="w-4 h-4 text-[#B8643E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
           {t('all_articles')}
-        </button>
+        </a>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-        {symptomIds.map((id, index) => (
+        {sortedItems.map((item, index) => (
           <Link
-            key={id}
-            href={`/support/${id}`}
+            key={item.slug}
+            href={`/support/${item.slug}`}
             className="flex items-center justify-between p-5 bg-white border border-[#EEF3FB] rounded-2xl hover:border-[#B8643E]/30 hover:shadow-lg hover:shadow-[#B8643E]/5 transition-all group"
           >
-            <div className="flex items-center gap-4">
-              <span className="text-[12px] font-bold text-[#B8643E]/40 w-5">
+            <div className="flex items-start gap-4 min-w-0">
+              <span className="text-[12px] font-bold text-[#B8643E]/40 w-5 shrink-0">
                 {(index + 1).toString().padStart(2, '0')}
               </span>
-              <span className="text-[15px] font-bold text-[#72665D] group-hover:text-[#B8643E] transition-colors leading-tight">
-                {t(`symptoms.${index}.title`)}
-              </span>
+              <div className="min-w-0">
+                <span className="block text-[15px] font-bold text-[#72665D] group-hover:text-[#B8643E] transition-colors leading-tight">
+                  {item.title}
+                </span>
+                {item.shortAnswer ? (
+                  <span className="mt-2 block text-[13px] text-[#8B8B8B] leading-relaxed">
+                    {item.shortAnswer}
+                  </span>
+                ) : null}
+              </div>
             </div>
             <svg className="w-4 h-4 text-[#B8643E] opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -99,4 +122,3 @@ const SymptomCluster = ({ isCompact = false }: SymptomClusterProps) => {
 };
 
 export default SymptomCluster;
-

@@ -6,7 +6,6 @@ import ContactForm from '../common/ContactForm';
 
 const FooterCTA = () => {
   const t = useTranslations('FooterCTA');
-  const t_contact = useTranslations('ContactModal');
 
   const whatsappUrl = process.env.NEXT_PUBLIC_WHATSAPP_URL || 'https://wa.me/message/27UOBFWB7UYCN1';
   const telegramUrl = process.env.NEXT_PUBLIC_TELEGRAM_URL || 'https://t.me/PixelRing_bot';

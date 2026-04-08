@@ -265,6 +265,10 @@
         "label": "W realizacji",
         "description": "Prace trwają, a zgłoszenie posuwa się naprzód."
       },
+      "ON_HOLD": {
+        "label": "Wstrzymane",
+        "description": "Czekamy na części lub dodatkową akceptację klienta."
+      },
       "READY_FOR_PICKUP": {
         "label": "Gotowe",
         "description": "Sprawa jest gotowa do przekazania, odbioru lub kolejnego kroku operacyjnego."

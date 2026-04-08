@@ -1,10 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
+import { checkRateLimit, getClientIP, CONTACT_LIMIT } from '@/lib/rate-limit';
 import { createWebsiteRequest } from '@/lib/request-intake';
 import { CASE_SESSION_COOKIE_NAME } from '@/lib/case-session';
+import {
+  AttachmentValidationError,
+  deleteLocalAttachment,
+  storeLocalAttachment,
+  type StoredAttachmentInput,
+} from '@/lib/attachments';
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIP(request);
+  const limit = checkRateLimit(ip, CONTACT_LIMIT);
+  let storedAttachments: StoredAttachmentInput[] = [];
+
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please try again later.' },
+      { status: 429, headers: { 'Retry-After': String(Math.ceil(limit.resetMs / 1000)) } }
+    );
+  }
+
   try {
     const formData = await request.formData();
     const name = String(formData.get('name') ?? '').trim();
@@ -21,6 +39,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (photo && photo.size > 0) {
+      storedAttachments = [await storeLocalAttachment(photo)];
+    }
+
     const result = await createWebsiteRequest(prisma, {
       name,
       contact,
@@ -28,7 +50,7 @@ export async function POST(request: NextRequest) {
       userAgent: request.headers.get('user-agent'),
       ipAddress:
         request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null,
-      hasPhoto: Boolean(photo && photo.size > 0),
+      attachments: storedAttachments,
     });
 
     const text = [
@@ -88,13 +110,23 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error) {
+    await Promise.allSettled(
+      storedAttachments.map((attachment) =>
+        deleteLocalAttachment(attachment.storageKey)
+      )
+    );
+
     console.error('Contact form error:', error);
 
     const message =
       error instanceof Error && error.message
         ? error.message
         : 'Internal server error';
-    const status = message.startsWith('Please provide a valid') ? 400 : 500;
+    const status =
+      message.startsWith('Please provide a valid') ||
+      error instanceof AttachmentValidationError
+        ? 400
+        : 500;
 
     return NextResponse.json({ error: message }, { status });
   }

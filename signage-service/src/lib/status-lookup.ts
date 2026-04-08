@@ -49,40 +49,44 @@ const PUBLIC_STATUS_COPY: Record<
   { label: string; description: string }
 > = {
   DRAFT: {
-    label: 'Request draft',
-    description: 'We have received the initial details and are preparing the case.',
+    label: 'Черновик',
+    description: 'Заявка создана, ожидает завершения оформления.',
   },
   FORMALIZED: {
-    label: 'Request formalized',
-    description: 'Your contact details are linked and the request is ready for tracking.',
+    label: 'Оформлена',
+    description: 'Контактные данные подтверждены, заявка готова к отслеживанию.',
   },
   NUMBER_ISSUED: {
-    label: 'Tracking active',
-    description: 'Your public request number is live and the case can now be tracked.',
+    label: 'Принято',
+    description: 'Номер отслеживания выдан, заявка зарегистрирована в системе.',
   },
   UNDER_REVIEW: {
-    label: 'Under review',
-    description: 'A specialist is reviewing the request and preparing the next step.',
+    label: 'В диагностике',
+    description: 'Мастер проводит первичный осмотр устройства.',
   },
   WAITING_FOR_CUSTOMER: {
-    label: 'Waiting for your reply',
-    description: 'We need a response or a small clarification to continue.',
+    label: 'Ожидает клиента',
+    description: 'Нам нужен ваш ответ или уточнение для продолжения.',
   },
   IN_PROGRESS: {
-    label: 'In progress',
-    description: 'The work is underway and the request is moving forward.',
+    label: 'Ремонт',
+    description: 'Идёт активный процесс ремонта.',
+  },
+  ON_HOLD: {
+    label: 'Отложено',
+    description: 'Ожидание запчастей или дополнительного согласования с клиентом.',
   },
   READY_FOR_PICKUP: {
-    label: 'Ready',
-    description: 'The case is ready for handoff, pickup, or the next operational step.',
+    label: 'Готов',
+    description: 'Ремонт завершён, устройство ожидает выдачи.',
   },
   COMPLETED: {
-    label: 'Completed',
-    description: 'The request has been completed and is waiting for closure handling.',
+    label: 'Выдан / Гарантия',
+    description: 'Устройство выдано клиенту, действует гарантийный период.',
   },
   CANCELLED: {
-    label: 'Closed',
-    description: 'The request is no longer active.',
+    label: 'Отказ',
+    description: 'Клиент отказался от ремонта или ремонт невозможен.',
   },
 };
 

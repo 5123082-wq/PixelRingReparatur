@@ -39,16 +39,16 @@ const TypewriterQuote = ({ content, shouldAnimate }: { content: string; shouldAn
   if (!shouldAnimate) {
     return (
       <blockquote className="text-[26px] md:text-[36px] font-medium text-[#0E1A2B] leading-[1.3] tracking-tight italic">
-        "{content}"
+        &quot;{content}&quot;
       </blockquote>
     );
   }
 
   return (
     <blockquote ref={ref} className="text-[26px] md:text-[36px] font-medium text-[#0E1A2B] leading-[1.3] tracking-tight italic relative">
-      <span className="sr-only">"{content}"</span>
+      <span className="sr-only">&quot;{content}&quot;</span>
       <span aria-hidden="true">
-        "{firstPart}{firstPart ? ' ' : ''}
+        &quot;{firstPart}{firstPart ? ' ' : ''}
         {typedChars}
         {!isFinished && isInView && (
           <span className="inline-block w-[3px] h-[0.9em] bg-[#B8643E] ml-[2px] align-baseline opacity-70 animate-pulse" />
@@ -85,7 +85,9 @@ const ReviewsSection = () => {
     const startPos = reviewsCount * cardWidth;
     
     el.scrollLeft = isRTL ? -startPos : startPos;
-    setIsReady(true);
+    const readyFrame = window.requestAnimationFrame(() => setIsReady(true));
+
+    return () => window.cancelAnimationFrame(readyFrame);
   }, [isRTL, reviewsCount]);
 
   const handleInfiniteScroll = useCallback(() => {
