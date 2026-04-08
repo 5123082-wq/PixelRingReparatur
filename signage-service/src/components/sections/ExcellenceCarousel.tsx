@@ -76,7 +76,9 @@ const ExcellenceCarousel = () => {
     const startPos = itemsCount * cardWidth;
     
     el.scrollLeft = isRTL ? -startPos : startPos;
-    setIsReady(true);
+    const readyFrame = window.requestAnimationFrame(() => setIsReady(true));
+
+    return () => window.cancelAnimationFrame(readyFrame);
   }, [isRTL, itemsCount]);
 
   const handleInfiniteScroll = useCallback(() => {

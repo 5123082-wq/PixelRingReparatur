@@ -265,6 +265,10 @@
         "label": "İşlemde",
         "description": "Çalışma sürüyor ve talep ilerliyor."
       },
+      "ON_HOLD": {
+        "label": "Askıya alındı",
+        "description": "Parçaları veya ek müşteri onayını bekliyoruz."
+      },
       "READY_FOR_PICKUP": {
         "label": "Hazır",
         "description": "Kayıt teslim, alım veya sonraki operasyon adımı için hazır."

@@ -2,9 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { CASE_SESSION_COOKIE_NAME } from '@/lib/case-session';
 import { prisma } from '@/lib/prisma';
+import { checkRateLimit, getClientIP, STATUS_LIMIT } from '@/lib/rate-limit';
 import { lookupPublicCaseStatus } from '@/lib/status-lookup';
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIP(request);
+  const limit = checkRateLimit(ip, STATUS_LIMIT);
+
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { verified: false, message: 'Please try again later.' },
+      { status: 429, headers: { 'Retry-After': String(Math.ceil(limit.resetMs / 1000)) } }
+    );
+  }
+
   try {
     const body = (await request.json().catch(() => null)) as
       | {

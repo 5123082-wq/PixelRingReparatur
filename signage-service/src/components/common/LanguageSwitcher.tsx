@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocale } from 'next-intl';
-import { useRouter, usePathname, routing } from '@/i18n/routing';
+import { useRouter, usePathname } from '@/i18n/routing';
 
 const LanguageSwitcher = () => {
   const locale = useLocale();
@@ -18,9 +18,9 @@ const LanguageSwitcher = () => {
     { code: 'tr', name: 'TR' },
     { code: 'pl', name: 'PL' },
     { code: 'ar', name: 'AR' },
-  ];
+  ] as const;
 
-  const handleLocaleChange = (nextLocale: string) => {
+  const handleLocaleChange = (nextLocale: (typeof languages)[number]['code']) => {
     router.replace(pathname, { locale: nextLocale });
     setIsOpen(false);
   };

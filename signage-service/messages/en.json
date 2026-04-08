@@ -317,6 +317,10 @@
         "label": "In progress",
         "description": "The work is underway and the request is moving forward."
       },
+      "ON_HOLD": {
+        "label": "On hold",
+        "description": "We are waiting for parts or additional customer approval."
+      },
       "READY_FOR_PICKUP": {
         "label": "Ready",
         "description": "The case is ready for handoff, pickup, or the next operational step."

@@ -13,6 +13,7 @@ enum CaseStatus {
   UNDER_REVIEW
   WAITING_FOR_CUSTOMER
   IN_PROGRESS
+  ON_HOLD
   READY_FOR_PICKUP
   COMPLETED
   CANCELLED
@@ -40,6 +41,24 @@ enum MessageAuthorRole {
   CUSTOMER
   OPERATOR
   SYSTEM
+}
+
+enum AdminRole {
+  MANAGER
+  OWNER
+}
+
+enum CmsArticleType {
+  SYMPTOM
+  FAQ
+  PAGE
+  SERVICE
+  CASE
+}
+
+enum CmsArticleStatus {
+  DRAFT
+  PUBLISHED
 }
 
 enum AttachmentKind {
@@ -71,6 +90,8 @@ model Case {
   customerName         String?
   customerEmail        String?
   customerPhone        String?
+  assignedOperator     String?
+  customerProfileId    String?               @db.Uuid
   primaryContactMethod PrimaryContactMethod?
   primaryContactValue  String?
   summary              String?               @db.Text
@@ -86,13 +107,39 @@ model Case {
   messages             Message[]
   attachments          Attachment[]
   sessions             Session[]
+  customerProfile      CustomerProfile?      @relation(fields: [customerProfileId], references: [id], onDelete: SetNull)
+  statusEvents         CaseStatusEvent[]
+  auditLogs            AdminAuditLog[]
 
   @@index([status, updatedAt])
   @@index([originChannel, createdAt])
   @@index([customerEmail])
   @@index([customerPhone])
+  @@index([customerProfileId, updatedAt])
+  @@index([assignedOperator, status])
   @@index([primaryContactMethod, primaryContactValue])
   @@map("cases")
+}
+
+model CustomerProfile {
+  id                     String                @id @default(uuid()) @db.Uuid
+  displayName            String?
+  email                  String?
+  phone                  String?
+  emailNormalized        String?               @unique
+  phoneNormalized        String?               @unique
+  preferredLanguage      String?
+  preferredContactMethod PrimaryContactMethod?
+  companyName            String?
+  serviceAddress         String?               @db.Text
+  consentNotes           String?               @db.Text
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+  cases                  Case[]
+
+  @@index([displayName, updatedAt])
+  @@index([updatedAt])
+  @@map("customer_profiles")
 }
 
 model Message {
@@ -150,6 +197,7 @@ model Session {
   tokenHash     String                @unique
   scope         SessionScope          @default(ANONYMOUS_DRAFT)
   caseId        String?               @db.Uuid
+  operatorTakeover Boolean            @default(false)
   contactMethod PrimaryContactMethod?
   contactValue  String?
   userAgent     String?
@@ -168,4 +216,121 @@ model Session {
   @@index([expiresAt])
   @@index([contactMethod, contactValue])
   @@map("sessions")
+}
+
+model AdminSession {
+  id        String    @id @default(uuid()) @db.Uuid
+  tokenHash String    @unique
+  role      AdminRole @default(MANAGER)
+  label     String?
+  ipAddress String?
+  userAgent String?
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  statusEvents CaseStatusEvent[] @relation("CaseStatusEventActor")
+  auditLogs   AdminAuditLog[]    @relation("AdminAuditLogActor")
+
+  @@index([expiresAt])
+  @@index([role])
+  @@map("admin_sessions")
+}
+
+model CaseStatusEvent {
+  id             String       @id @default(uuid()) @db.Uuid
+  caseId         String       @db.Uuid
+  actorSessionId String?      @db.Uuid
+  actorRole      AdminRole?
+  fromStatus     CaseStatus?
+  toStatus       CaseStatus
+  reason         String?      @db.Text
+  metadata       Json?
+  createdAt      DateTime     @default(now())
+  case           Case         @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  actorSession   AdminSession? @relation("CaseStatusEventActor", fields: [actorSessionId], references: [id], onDelete: SetNull)
+
+  @@index([caseId, createdAt])
+  @@index([actorSessionId, createdAt])
+  @@index([toStatus, createdAt])
+  @@map("case_status_events")
+}
+
+model AdminAuditLog {
+  id             String       @id @default(uuid()) @db.Uuid
+  actorSessionId String?      @db.Uuid
+  actorRole      AdminRole?
+  action         String
+  resourceType   String
+  resourceId     String?
+  caseId         String?      @db.Uuid
+  outcome        String       @default("SUCCESS")
+  reason         String?      @db.Text
+  details        Json?
+  ipAddress      String?
+  userAgent      String?
+  createdAt      DateTime     @default(now())
+  actorSession   AdminSession? @relation("AdminAuditLogActor", fields: [actorSessionId], references: [id], onDelete: SetNull)
+  case           Case?        @relation(fields: [caseId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([action, createdAt])
+  @@index([resourceType, resourceId])
+  @@index([caseId, createdAt])
+  @@index([actorSessionId, createdAt])
+  @@map("admin_audit_logs")
+}
+
+model CmsArticle {
+  id               String           @id @default(uuid()) @db.Uuid
+  locale           String           @default("de")
+  type             CmsArticleType   @default(SYMPTOM)
+  status           CmsArticleStatus @default(DRAFT)
+  slug             String
+  title            String
+  symptomLabel     String?
+  shortAnswer      String?          @db.Text
+  content          String           @db.Text
+  seoTitle         String?
+  seoDescription   String?          @db.Text
+  canonicalUrl     String?
+  relatedSlugs     String[]         @default([])
+  causes           String[]         @default([])
+  safeChecks       String[]         @default([])
+  urgentWarnings   String[]         @default([])
+  serviceProcess   String[]         @default([])
+  workScopeFactors String[]         @default([])
+  ctaLabel         String?
+  ctaHref          String?
+  sortOrder        Int              @default(0)
+  publishedAt      DateTime?
+  lastReviewedAt   DateTime?
+  deletedAt        DateTime?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  @@unique([locale, slug])
+  @@index([locale, type, status, sortOrder])
+  @@index([locale, type, status, publishedAt])
+  @@index([status, updatedAt])
+  @@index([deletedAt])
+  @@map("cms_articles")
+}
+
+model AiConfig {
+  id          String   @id @default(uuid()) @db.Uuid
+  key         String   @unique
+  value       String   @db.Text
+  description String?
+  updatedAt   DateTime @updatedAt
+
+  @@index([key])
+  @@map("ai_configs")
+}
+
+model CmsSeoConfig {
+  key       String   @id
+  value     String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("cms_seo_configs")
 }

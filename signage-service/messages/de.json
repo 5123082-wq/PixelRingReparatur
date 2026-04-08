@@ -266,6 +266,10 @@
         "label": "In Bearbeitung",
         "description": "Die Arbeit läuft und die Anfrage bewegt sich voran."
       },
+      "ON_HOLD": {
+        "label": "Zurückgestellt",
+        "description": "Wir warten auf Ersatzteile oder eine zusätzliche Freigabe des Kunden."
+      },
       "READY_FOR_PICKUP": {
         "label": "Bereit",
         "description": "Der Fall ist für Übergabe, Abholung oder den nächsten operativen Schritt bereit."

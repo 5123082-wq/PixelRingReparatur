@@ -1,17 +1,55 @@
-'use client';
+import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
-import React from 'react';
-import { useTranslations } from 'next-intl';
-import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import SupportHero from '@/components/sections/SupportHero';
-import ProblemCategories from '@/components/sections/ProblemCategories';
-import UrgentCases from '@/components/sections/UrgentCases';
-import SymptomCluster from '@/components/sections/SymptomCluster';
+import Header from '@/components/layout/Header';
 import FooterCTA from '@/components/sections/FooterCTA';
+import ProblemCategories from '@/components/sections/ProblemCategories';
+import SupportHero from '@/components/sections/SupportHero';
+import SymptomCluster from '@/components/sections/SymptomCluster';
+import UrgentCases from '@/components/sections/UrgentCases';
+import {
+  getMergedSupportSymptomCards,
+  getSupportSeoConfig,
+  resolveSupportCanonicalUrl,
+  resolveSupportSeoText,
+} from '@/lib/cms/support-content';
 
-export default function SupportPage() {
-  const t = useTranslations('Support');
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const [t, seoConfig] = await Promise.all([
+    getTranslations({ locale, namespace: 'Support' }),
+    getSupportSeoConfig(),
+  ]);
+
+  const canonical = resolveSupportCanonicalUrl(
+    [seoConfig.indexCanonicalUrl],
+    `/${locale}/support`
+  );
+
+  return {
+    title: resolveSupportSeoText([seoConfig.indexTitle], t('hero_title')) ?? t('hero_title'),
+    description:
+      resolveSupportSeoText([seoConfig.indexDescription], t('hero_description')) ??
+      t('hero_description'),
+    alternates: {
+      canonical,
+    },
+  };
+}
+
+export default async function SupportPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Support' });
+  const symptomCards = await getMergedSupportSymptomCards(locale);
 
   return (
     <div className="bg-[#F7F1E8] min-h-screen flex flex-col relative">
@@ -52,7 +90,7 @@ export default function SupportPage() {
 
               {/* Typical Symptoms */}
               <div id="symptoms">
-                <SymptomCluster isCompact />
+                <SymptomCluster isCompact items={symptomCards} />
               </div>
             </div>
 
@@ -70,5 +108,3 @@ export default function SupportPage() {
     </div>
   );
 }
-
-
