@@ -26,6 +26,14 @@ type StatusLookupResponse =
       message: string;
     };
 
+type StatusCmsContent = {
+  badge?: string;
+  title?: string;
+  intro?: string;
+  safeHints?: string[];
+  restoreHint?: string;
+};
+
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat(undefined, {
     dateStyle: 'medium',
@@ -35,8 +43,10 @@ function formatDate(value: string): string {
 
 export default function StatusLookup({
   initialRequestNumber = '',
+  cmsContent,
 }: {
   initialRequestNumber?: string;
+  cmsContent?: StatusCmsContent | null;
 }) {
   const t = useTranslations('StatusPage');
   const [requestNumber, setRequestNumber] = useState(initialRequestNumber);
@@ -49,7 +59,7 @@ export default function StatusLookup({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [helperMessage, setHelperMessage] = useState('');
-  const safeHints = [
+  const safeHints = cmsContent?.safeHints?.length ? cmsContent.safeHints : [
     t('safe_hint_1'),
     t('safe_hint_2'),
     t('safe_hint_3'),
@@ -149,14 +159,14 @@ export default function StatusLookup({
           <div className="absolute inset-0 opacity-[0.06] pointer-events-none bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.8),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(184,100,62,0.6),_transparent_30%)]" />
           <div className="relative z-10 flex flex-col gap-6">
             <div className="inline-flex w-fit items-center rounded-full border border-white/15 bg-white/5 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.24em] text-white/80">
-              {t('badge')}
+              {cmsContent?.badge ?? t('badge')}
             </div>
             <div className="flex flex-col gap-4 max-w-2xl">
               <h1 className="text-[34px] sm:text-[46px] font-black tracking-tight leading-[1.05]">
-                {t('title')}
+                {cmsContent?.title ?? t('title')}
               </h1>
               <p className="text-white/70 text-[16px] sm:text-[18px] leading-relaxed max-w-xl">
-                {t('intro')}
+                {cmsContent?.intro ?? t('intro')}
               </p>
             </div>
 
@@ -172,7 +182,7 @@ export default function StatusLookup({
             </div>
 
             <div className="rounded-[24px] border border-[#B8643E]/20 bg-[#B8643E]/10 px-5 py-4 text-[14px] text-white/85">
-              {t('restore_hint')}
+              {cmsContent?.restoreHint ?? t('restore_hint')}
             </div>
           </div>
         </div>

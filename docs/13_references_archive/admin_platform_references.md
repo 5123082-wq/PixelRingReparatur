@@ -3,17 +3,17 @@
 ## Internal Project Documents
 
 - `docs/README.md`
-- `docs/03_tech_architecture/request_tracking_and_customer_portal.md`
-- `docs/03_tech_architecture/implementation_blueprint.md`
-- `docs/03_tech_architecture/request_tracking_phases/phase_2_crm_and_external_channels.md`
-- `docs/03_tech_architecture/request_tracking_phases/phase_2b_ai_chat_system.md`
-- `docs/03_tech_architecture/request_tracking_phases/phase_2c_cms_and_crm_split.md`
-- `docs/03_tech_architecture/request_tracking_phases/phase_5_bitrix24_crm_integration.md`
-- `docs/04_content_and_ai/geo_optimization_strategy.md`
-- `docs/04_content_and_ai/troubleshooting_content_plan.md`
-- `docs/04_content_and_ai/troubleshooting_page_template.md`
-- `docs/05_security_and_privacy/security_guardrails.md`
-- `docs/05_security_and_privacy/security_checklist.md`
+- `docs/04_client_portal/request_tracking_and_customer_portal_architecture.md`
+- `docs/13_references_archive/old_request_tracking_implementation_blueprint.md`
+- `docs/13_references_archive/historical_phase_2_crm_and_external_channels.md`
+- `docs/08_ai_assistant/historical_phase_2b_ai_chat_system.md`
+- `docs/13_references_archive/historical_phase_2c_cms_crm_split.md`
+- `docs/06_crm/bitrix24_crm_integration_plan.md`
+- `docs/07_content_ai_seo/geo_optimization_strategy.md`
+- `docs/07_content_ai_seo/troubleshooting_content_plan.md`
+- `docs/07_content_ai_seo/troubleshooting_page_template.md`
+- `docs/10_security_privacy/security_guardrails.md`
+- `docs/10_security_privacy/security_checklist.md`
 
 ## Current Code References
 
@@ -68,4 +68,3 @@
 - NIST SP 800-63B: https://pages.nist.gov/800-63-4/sp800-63b.html
 - NIST SP 800-53 Rev.5: https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final
 - GDPR Article 5: https://eur-lex.europa.eu/eli/reg/2016/679/2016-05-04
-

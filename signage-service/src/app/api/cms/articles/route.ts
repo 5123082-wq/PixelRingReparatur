@@ -318,7 +318,7 @@ function serializeArticle(article: ArticleQueryRecord): ArticleResponse {
 }
 
 function buildArticleWhere(searchParams: URLSearchParams) {
-  const locale = normalizeLocale(searchParams.get('locale'));
+  const locale = normalizeLocale(searchParams.get('locale')) ?? 'de';
   const type = normalizeEnumValue(searchParams.get('type'), ARTICLE_TYPES, 'SYMPTOM');
   const status = normalizeEnumValue(searchParams.get('status'), ARTICLE_STATUSES, 'DRAFT');
   const slug = normalizeSlug(searchParams.get('slug'));
@@ -326,10 +326,6 @@ function buildArticleWhere(searchParams: URLSearchParams) {
     maxLength: MAX_SEARCH_LENGTH,
   });
   const publicOnly = parseBoolean(searchParams.get('publicOnly'));
-
-  if (locale === null || type === null || status === null) {
-    return { error: 'Invalid article query parameters' } as const;
-  }
 
   if (searchParams.has('slug') && searchParams.get('slug')?.trim() && slug === null) {
     return { error: 'Invalid article query parameters' } as const;
@@ -363,7 +359,7 @@ function buildArticleWhere(searchParams: URLSearchParams) {
     ];
   }
 
-  return { where, locale, type, status } as const;
+  return { where, locale, type: type ?? 'SYMPTOM', status: status ?? 'DRAFT' } as const;
 }
 
 export async function GET(request: NextRequest) {

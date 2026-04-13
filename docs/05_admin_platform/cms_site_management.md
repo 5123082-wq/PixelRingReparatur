@@ -116,6 +116,14 @@ Required media behavior:
 - "where used" check before deletion;
 - no mixing public CMS assets with private request attachments.
 
+Current MVP coverage:
+
+- public CMS media rows are stored separately from private attachments;
+- `CmsMedia` model and Phase 4 migrations exist with public URL, checksum, usage type, dimensions/meta, and soft-delete indexes;
+- OWNER-only `/api/cms/media` collection/detail routes implement upload + CRUD with CSRF, UUID id guards, and audit logging;
+- delete is blocked when media is still referenced by CMS article/page content (`where used` check);
+- `/ring-master-config/dashboard/media` and starter media pickers in article/page editors are available for selecting and inserting public CMS media references.
+
 ### SEO And GEO
 
 SEO/GEO controls should include:
@@ -192,5 +200,4 @@ It is:
 - detail article pages;
 - SEO V1 audit;
 - AI context from published CMS articles;
-- basic public media model documented for the next phase.
-
+- basic public media model for the current phase.

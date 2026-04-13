@@ -50,6 +50,17 @@ type ArticleListResponse = {
   pagination: Pagination;
 };
 
+type CmsMedia = {
+  id: string;
+  locale: string | null;
+  usageType: string;
+  title: string | null;
+  alt: string | null;
+  url: string | null;
+  mimeType: string | null;
+  filename: string | null;
+};
+
 type ArticleFormState = {
   locale: string;
   type: CmsArticleType;
@@ -109,6 +120,45 @@ function joinLines(values: string[] | null | undefined): string {
 function toNullable(value: string): string | null {
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed : null;
+}
+
+function asString(value: unknown): string | null {
+  return typeof value === 'string' && value.trim() ? value : null;
+}
+
+function normalizeMediaResponse(value: unknown): CmsMedia[] {
+  const container = value as { media?: unknown; items?: unknown } | null;
+  const rows = Array.isArray(value)
+    ? value
+    : Array.isArray(container?.media)
+      ? container.media
+      : Array.isArray(container?.items)
+        ? container.items
+        : [];
+
+  return rows
+    .filter((row): row is Record<string, unknown> =>
+      Boolean(row && typeof row === 'object' && !Array.isArray(row))
+    )
+    .map((row) => ({
+      id: String(row.id ?? ''),
+      locale: asString(row.locale),
+      usageType: asString(row.usageType) || 'GENERAL',
+      title: asString(row.title),
+      alt: asString(row.alt) || asString(row.altText),
+      url: asString(row.url) || asString(row.publicUrl) || asString(row.storageUrl),
+      mimeType: asString(row.mimeType) || asString(row.mime),
+      filename: asString(row.filename) || asString(row.originalFilename) || asString(row.name),
+    }))
+    .filter((item) => item.id);
+}
+
+function createMarkdownMediaReference(media: CmsMedia): string {
+  const alt = (media.alt || media.title || media.filename || 'CMS media').replace(/[\r\n\]]/g, ' ');
+  const url = media.url || '';
+  const title = media.title ? ` "${media.title.replace(/"/g, '\\"')}"` : '';
+
+  return `\n\n![${alt}](${url}${title})\n<!-- cms-media:${media.id} -->\n`;
 }
 
 function renderDate(value: string | null | undefined): string {
@@ -372,6 +422,9 @@ export default function ArticlesPage() {
   const [form, setForm] = useState<ArticleFormState>(() => createEmptyForm(routeLocale));
   const [formError, setFormError] = useState('');
   const [formSaving, setFormSaving] = useState<CmsArticleStatus | 'DELETE' | ''>('');
+  const [mediaItems, setMediaItems] = useState<CmsMedia[]>([]);
+  const [mediaLoading, setMediaLoading] = useState(false);
+  const [mediaError, setMediaError] = useState('');
 
   const summary = useMemo(() => {
     const total = pagination.total;
@@ -425,6 +478,37 @@ export default function ArticlesPage() {
     void loadArticles();
   }, [loadArticles, refreshVersion]);
 
+  const loadMediaItems = useCallback(async () => {
+    setMediaLoading(true);
+    setMediaError('');
+
+    try {
+      const response = await fetch('/api/cms/media', {
+        method: 'GET',
+        credentials: 'same-origin',
+        cache: 'no-store',
+      });
+      const data = (await response.json().catch(() => null)) as unknown;
+
+      if (!response.ok) {
+        throw new Error(await readApiError(response));
+      }
+
+      setMediaItems(normalizeMediaResponse(data));
+    } catch (error) {
+      setMediaError(error instanceof Error ? error.message : 'Failed to load CMS media.');
+      setMediaItems([]);
+    } finally {
+      setMediaLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (editorOpen) {
+      void loadMediaItems();
+    }
+  }, [editorOpen, loadMediaItems]);
+
   const openCreate = useCallback(() => {
     setEditingArticle(null);
     setForm(createEmptyForm(localeFilter || routeLocale));
@@ -449,6 +533,19 @@ export default function ArticlesPage() {
     setEditingArticle(null);
     setFormError('');
     setFormSaving('');
+  }, []);
+
+  const insertMediaReference = useCallback((media: CmsMedia) => {
+    if (!media.url) {
+      setMediaError('Selected media is missing a public URL.');
+      return;
+    }
+
+    setMediaError('');
+    setForm((current) => ({
+      ...current,
+      content: `${current.content.trimEnd()}${createMarkdownMediaReference(media)}`,
+    }));
   }, []);
 
   const applySearch = useCallback(() => {
@@ -955,6 +1052,58 @@ export default function ArticlesPage() {
                   rows={14}
                 />
               </EditorField>
+
+              <div style={styles.mediaPickerPanel}>
+                <div style={styles.mediaPickerHeader}>
+                  <div>
+                    <h4 style={styles.mediaPickerTitle}>Media picker</h4>
+                    <p style={styles.mediaPickerText}>
+                      Inserts a public CMS media Markdown reference into the article body.
+                    </p>
+                  </div>
+                  <button type="button" onClick={() => void loadMediaItems()} style={styles.secondaryButton}>
+                    Refresh media
+                  </button>
+                </div>
+
+                {mediaError ? <div style={styles.errorBanner}>{mediaError}</div> : null}
+                {mediaLoading ? (
+                  <div style={styles.emptyState}>Loading CMS media...</div>
+                ) : mediaItems.length === 0 ? (
+                  <div style={styles.emptyState}>No public CMS media available yet.</div>
+                ) : (
+                  <div style={styles.mediaPickerGrid}>
+                    {mediaItems.map((media) => (
+                      <button
+                        key={media.id}
+                        type="button"
+                        onClick={() => insertMediaReference(media)}
+                        disabled={!media.url}
+                        style={styles.mediaPickerCard}
+                      >
+                        <span style={styles.mediaPickerThumb}>
+                          {media.url ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={media.url}
+                              alt={media.alt || media.title || ''}
+                              style={styles.mediaPickerImage}
+                            />
+                          ) : (
+                            <span style={styles.mediaPickerNoImage}>No URL</span>
+                          )}
+                        </span>
+                        <span style={styles.mediaPickerName}>
+                          {media.title || media.filename || media.id}
+                        </span>
+                        <span style={styles.mediaPickerMeta}>
+                          {media.locale || '-'} · {media.usageType}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div style={styles.formSection}>
@@ -1468,6 +1617,84 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
     gap: '12px',
+  },
+  mediaPickerPanel: {
+    border: '1px solid #222',
+    borderRadius: '8px',
+    background: '#0b0b0b',
+    padding: '12px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+  },
+  mediaPickerHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: '12px',
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
+  },
+  mediaPickerTitle: {
+    margin: 0,
+    color: '#fff',
+    fontSize: '13px',
+    fontWeight: 700,
+    textTransform: 'uppercase',
+    letterSpacing: '0.04em',
+  },
+  mediaPickerText: {
+    margin: '4px 0 0',
+    color: '#8b8b8b',
+    fontSize: '12px',
+    lineHeight: 1.5,
+  },
+  mediaPickerGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+    gap: '10px',
+  },
+  mediaPickerCard: {
+    border: '1px solid #252525',
+    borderRadius: '8px',
+    background: '#111',
+    color: '#d4d4d8',
+    cursor: 'pointer',
+    padding: '8px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '7px',
+    textAlign: 'left',
+  },
+  mediaPickerThumb: {
+    height: '86px',
+    borderRadius: '6px',
+    background: '#171717',
+    overflow: 'hidden',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mediaPickerImage: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    display: 'block',
+  },
+  mediaPickerNoImage: {
+    color: '#8b8b8b',
+    fontSize: '12px',
+  },
+  mediaPickerName: {
+    color: '#fff',
+    fontSize: '12px',
+    fontWeight: 700,
+    lineHeight: 1.4,
+    wordBreak: 'break-word',
+  },
+  mediaPickerMeta: {
+    color: '#8b8b8b',
+    fontSize: '11px',
+    lineHeight: 1.4,
   },
   metadataPanel: {
     display: 'grid',

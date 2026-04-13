@@ -10,9 +10,107 @@ const methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
 const allowedAuditedStateChangingGets = new Set([
   'src/app/api/admin/attachments/[id]/route.ts',
 ]);
+const requiredRouteContracts = [
+  {
+    relativePath: 'src/app/api/cms/media/route.ts',
+    description: 'CMS media collection route',
+    checks: [
+      {
+        pattern: /requireAdminActor\([\s\S]*CMS_SESSION_COOKIE_NAME[\s\S]*\[\s*'OWNER'\s*\]/,
+        label: '/api/cms/media must require CMS OWNER sessions',
+      },
+    ],
+  },
+  {
+    relativePath: 'src/app/api/cms/media/[id]/route.ts',
+    description: 'CMS media detail route',
+    checks: [
+      {
+        pattern: /requireAdminActor\([\s\S]*CMS_SESSION_COOKIE_NAME[\s\S]*\[\s*'OWNER'\s*\]/,
+        label: '/api/cms/media/:id must require CMS OWNER sessions',
+      },
+      {
+        pattern: /function isUuidLike\(/,
+        label: '/api/cms/media/:id must validate UUID-like ids before object lookup',
+      },
+      {
+        pattern: /if \(!isUuidLike\(id\)\) \{\s*return notFoundResponse\(\);\s*\}/,
+        label: '/api/cms/media/:id must return a safe response for invalid ids',
+      },
+      {
+        pattern: /where:\s*\{\s*id,[\s\S]*deletedAt:\s*null/,
+        label: '/api/cms/media/:id must scope lookups to non-deleted media rows',
+      },
+      {
+        pattern: /data:\s*\{\s*deletedAt:\s*new Date\(\)\s*\}/,
+        label: '/api/cms/media/:id DELETE must soft-delete media',
+      },
+      {
+        pattern: /where\s+used|whereUsed|usedBy|referenc(?:e|ed)By|inUse/i,
+        label: '/api/cms/media/:id DELETE must gate deletion on where-used checks',
+      },
+    ],
+  },
+];
+
+const cmsMediaSchema = readProjectFile('prisma/schema.prisma');
+assertMatches(
+  cmsMediaSchema,
+  /model CmsMedia \{[\s\S]*usageType\s+CmsMediaUsageType[\s\S]*publicUrl\s+String[\s\S]*checksumSha256\s+String[\s\S]*deletedAt\s+DateTime\?[\s\S]*@@index\(\[deletedAt\]\)/,
+  'prisma/schema.prisma must define the CmsMedia model with the public media metadata and soft-delete index'
+);
+
+const cmsMediaMigration = readProjectFile(
+  'prisma/migrations/20260408183000_phase4_cms_media/migration.sql'
+);
+assertMatches(
+  cmsMediaMigration,
+  /CREATE TABLE "cms_media"/,
+  'Phase 4 migration must create the cms_media table'
+);
+assertMatches(
+  cmsMediaMigration,
+  /CREATE UNIQUE INDEX "cms_media_publicUrl_key"/,
+  'Phase 4 migration must enforce unique public media URLs'
+);
+assertMatches(
+  cmsMediaMigration,
+  /CREATE INDEX "cms_media_deletedAt_idx"/,
+  'Phase 4 migration must index soft-deleted media rows'
+);
+
+requireProjectFile(
+  'prisma/migrations/20260408194500_phase4_expand_cms_media_usage_enum/migration.sql',
+  'Phase 4 enum follow-up migration must exist for SERVICE and CASE usage types'
+);
+const cmsMediaEnumMigration = readProjectFile(
+  'prisma/migrations/20260408194500_phase4_expand_cms_media_usage_enum/migration.sql'
+);
+assertMatches(
+  cmsMediaEnumMigration,
+  /ADD VALUE IF NOT EXISTS 'SERVICE'/,
+  'Phase 4 enum migration must add SERVICE usage type'
+);
+assertMatches(
+  cmsMediaEnumMigration,
+  /ADD VALUE IF NOT EXISTS 'CASE'/,
+  'Phase 4 enum migration must add CASE usage type'
+);
 
 function readProjectFile(relativePath) {
   return readFileSync(path.join(projectRoot, relativePath), 'utf8');
+}
+
+function hasProjectFile(relativePath) {
+  try {
+    return statSync(path.join(projectRoot, relativePath)).isFile();
+  } catch {
+    return false;
+  }
+}
+
+function requireProjectFile(relativePath, label) {
+  assert.equal(hasProjectFile(relativePath), true, label);
 }
 
 function walkRouteFiles(relativeDirectory) {
@@ -181,6 +279,10 @@ for (const relativePath of [
   'src/app/api/cms/ai/route.ts',
   'src/app/api/cms/articles/route.ts',
   'src/app/api/cms/articles/[id]/route.ts',
+  'src/app/api/cms/media/route.ts',
+  'src/app/api/cms/media/[id]/route.ts',
+  'src/app/api/cms/pages/route.ts',
+  'src/app/api/cms/pages/[id]/route.ts',
   'src/app/api/cms/seo/route.ts',
 ]) {
   assertMatches(
@@ -220,5 +322,38 @@ assertMatches(
   /data:\s*\{\s*deletedAt:\s*new Date\(\)\s*\}/,
   '/api/cms/articles/:id DELETE must soft-delete articles'
 );
+
+const cmsPageDetail = readProjectFile('src/app/api/cms/pages/[id]/route.ts');
+assertMatches(
+  cmsPageDetail,
+  /function isUuidLike\(/,
+  '/api/cms/pages/:id must validate UUID-like ids before object lookup'
+);
+assertMatches(
+  cmsPageDetail,
+  /if \(!isUuidLike\(id\)\) \{\s*return notFoundResponse\(\);\s*\}/,
+  '/api/cms/pages/:id must return a safe response for invalid ids'
+);
+assertMatches(
+  cmsPageDetail,
+  /where:\s*\{\s*id,[\s\S]*deletedAt:\s*null/,
+  '/api/cms/pages/:id must scope lookups to non-deleted pages'
+);
+assertMatches(
+  cmsPageDetail,
+  /data:\s*\{\s*deletedAt:\s*new Date\(\)\s*\}/,
+  '/api/cms/pages/:id DELETE must soft-delete pages'
+);
+
+for (const { relativePath, description, checks } of requiredRouteContracts) {
+  requireProjectFile(relativePath, `${description} must exist.`);
+  const source = readProjectFile(relativePath);
+
+  for (const { pattern, label } of checks) {
+    assertMatches(source, pattern, label);
+  }
+
+  console.log(`Admin security coverage detected: ${description}.`);
+}
 
 console.log(`Admin security verification passed: ${mutationRoutes.length} mutation routes checked.`);
