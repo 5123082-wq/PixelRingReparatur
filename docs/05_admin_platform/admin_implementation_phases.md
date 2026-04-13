@@ -81,11 +81,12 @@ Objective:
 
 Tasks:
 
-- add `CmsPage` and `CmsBlock` or JSON-block based equivalent;
-- add `SiteSettings` for global contact/CTA/footer data;
+- add `CmsPage` JSON-block based equivalent;
+- use `pageKey: "global"` for global contact/CTA/footer-adjacent starter content instead of adding `SiteSettings` in v1;
 - add `dashboard/pages` UI;
 - support locale-aware content values;
-- add frontend helpers to load page content with safe fallback to existing i18n messages.
+- add frontend helpers to load page content with safe fallback to existing i18n messages;
+- integrate the first low-risk public page while preserving fallback behavior.
 
 Definition of done:
 
@@ -93,7 +94,10 @@ Definition of done:
 - frontend still renders safe typed components;
 - missing CMS content falls back without breaking pages.
 
-Status: NOT STARTED.
+Status: PARTIAL / STARTER DONE.
+Current coverage: `CmsPage` exists with JSON `blocks`, SEO fields, publish/review metadata, soft delete, unique `pageKey + locale`, and indexes for locale/status plus deleted rows. OWNER-only `/api/cms/pages` CRUD exists with CMS session auth, CSRF on mutations, generic hidden-endpoint 404s for unauthorized access, UUID-shaped id prechecks, audit logs for create/update/publish/unpublish/delete, and soft delete. `/ring-master-config/dashboard/pages` provides an internal JSON textarea editor with parsed block summaries, status switching, create/edit, and soft delete. The server helper in `src/lib/cms/pages.ts` normalizes structured blocks and returns `null` on draft, invalid content, missing rows, or recoverable DB errors so public pages can keep using `messages/*.json`.
+Frontend integration: `/[locale]/status` can consume a published `status` page `hero` block while falling back to the existing `StatusPage` translations.
+Remaining Phase 3 gaps: global footer/CTA integration, support/home integration, structured per-block forms, preview/versioning/workflow, and broader route/integration tests remain pending.
 
 ## Phase 4: Media Library
 
@@ -114,7 +118,9 @@ Definition of done:
 - OWNER can upload/select public media for CMS content;
 - private request attachments remain isolated from public CMS media.
 
-Status: NOT STARTED.
+Status: MVP DONE.
+Current coverage: public CMS media is modeled separately from private attachments, `CmsMedia` exists in Prisma with usage type, public URL, checksum, dimensions/meta, and soft-delete indexes, and Phase 4 migrations (`20260408183000_phase4_cms_media`, `20260408194500_phase4_expand_cms_media_usage_enum`) create the public media table and enum updates. OWNER-only `/api/cms/media` CRUD/upload routes are implemented with CMS session auth, CSRF on mutations, hidden-endpoint 404 behavior for unauthorized access, UUID id guards on detail endpoints, audit logs for upload/update/delete and blocked delete attempts, and soft delete. Delete is blocked by a `where used` check against `CmsArticle` and `CmsPage` content references. `/ring-master-config/dashboard/media` provides upload/edit/delete UI and starter media pickers are wired into article/page editors.
+Remaining Phase 4 gaps: scanning/quarantine, responsive derivative generation/image optimization pipeline, richer usage analytics/reporting, and full route/integration tests remain follow-up work.
 
 ## Phase 5: CRM Operations Hardening
 
@@ -163,8 +169,8 @@ Definition of done:
 - authz and IDOR/BOLA checks are tested.
 
 Status: PARTIAL / CMS AUDIT, CSRF STARTER, AND OBJECT-LEVEL AUTHZ TEST STARTER DONE.
-Current coverage: current admin/CMS mutation routes are covered by `validateAdminCsrf`; CRM routes are locked to the CRM session cookie plus `MANAGER`; CMS routes are locked to the CMS session cookie plus `OWNER`; CRM case and CMS article object-id routes now return safe 404s for invalid UUID-shaped IDs before Prisma lookup; attachment download remains CRM-protected and audited for blocked and successful downloads.
-Test starter: `npm run test:admin-security` provides a lightweight static verification pass for CSRF coverage, CRM/CMS cookie separation, role requirements, invalid-id guards, CMS soft delete behavior, and attachment download audit hooks. This is intentionally a low-churn harness because the project does not yet have a route-level test runner.
+Current coverage: current admin/CMS mutation routes are covered by `validateAdminCsrf`; CRM routes are locked to the CRM session cookie plus `MANAGER`; CMS routes are locked to the CMS session cookie plus `OWNER`; CRM case, CMS article, and CMS page object-id routes now return safe 404s for invalid UUID-shaped IDs before Prisma lookup; attachment download remains CRM-protected and audited for blocked and successful downloads.
+Test starter: `npm run test:admin-security` provides a lightweight static verification pass for CSRF coverage, CRM/CMS cookie separation, role requirements, invalid-id guards, CMS soft delete behavior, Phase 4 `CmsMedia` schema/migration and media route coverage, and attachment download audit hooks. This is intentionally a low-churn harness because the project does not yet have a route-level test runner.
 Remaining gaps: MFA/RBAC, distributed rate limiting, upload scanning/quarantine, broader governance, and full route/integration tests are still pending.
 
 ## Phase 7: Advanced CMS Workflow
@@ -192,5 +198,4 @@ Status: NOT STARTED.
 
 1. Phase 6 follow-up: object-level authorization tests and CSRF coverage review.
 2. Phase 3: Page Content CMS.
-3. Phase 4: Media Library.
-4. Phase 6 and Phase 7 as production hardening.
+3. Phase 6 and Phase 7 as production hardening.

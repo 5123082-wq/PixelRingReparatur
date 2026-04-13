@@ -74,6 +74,46 @@ export default function CmsDashboardShell({
           </button>
 
           <button
+            onClick={() =>
+              router.push(
+                withLocalePath(locale, '/ring-master-config/dashboard/pages')
+              )
+            }
+            style={{
+              ...styles.navItem,
+              ...(isLocalizedRouteActive(
+                pathname,
+                locale,
+                '/ring-master-config/dashboard/pages'
+              )
+                ? styles.navItemActive
+                : {}),
+            }}
+          >
+            🧩 Page CMS
+          </button>
+
+          <button
+            onClick={() =>
+              router.push(
+                withLocalePath(locale, '/ring-master-config/dashboard/media')
+              )
+            }
+            style={{
+              ...styles.navItem,
+              ...(isLocalizedRouteActive(
+                pathname,
+                locale,
+                '/ring-master-config/dashboard/media'
+              )
+                ? styles.navItemActive
+                : {}),
+            }}
+          >
+            🖼️ Media Library
+          </button>
+
+          <button
             onClick={() => router.push(withLocalePath(locale, '/ring-master-config/dashboard/ai'))}
             style={{
               ...styles.navItem,

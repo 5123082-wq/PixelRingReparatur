@@ -26,7 +26,7 @@ Implemented now:
 Known gaps:
 
 - no MFA;
-- persistent audit log exists, with CRM starter coverage and CMS article/SEO/AI mutation coverage;
+- persistent audit log exists, with CRM starter coverage and CMS article/page/media/SEO/AI mutation coverage;
 - status event history exists for CRM starter flows, but the full operational story is not finished;
 - object-level authz/static coverage starter exists for current CRM/CMS route split via `npm run test:admin-security`;
 - no granular RBAC matrix;
@@ -84,16 +84,16 @@ Audit logging must cover:
 - operator messages;
 - attachment access/download;
 - article create/update/publish/unpublish/delete;
+- media upload/delete;
 - SEO config changes;
 - AI prompt/model/temperature changes;
-- media upload/delete;
 - role or permission changes;
 - exports and bulk operations.
 
 Current implementation status:
 
 - CRM status changes, assignment changes, operator messages, operator takeover, customer profile sync, and attachment downloads are partially covered.
-- CMS article create/update/publish/unpublish/delete, SEO config updates, and AI config updates are covered in the current starter scope.
+- CMS article/page create/update/publish/unpublish/delete, CMS media upload/update/delete plus blocked-delete audit, SEO config updates, and AI config updates are covered in the current starter scope.
 
 Minimum audit fields:
 

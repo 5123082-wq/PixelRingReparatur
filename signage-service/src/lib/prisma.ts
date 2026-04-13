@@ -14,10 +14,29 @@ if (!connectionString) {
   );
 }
 
+function normalizeConnectionString(value: string): string {
+  try {
+    const url = new URL(value);
+    const sslmode = url.searchParams.get('sslmode');
+
+    if (
+      sslmode &&
+      ['prefer', 'require', 'verify-ca'].includes(sslmode) &&
+      !url.searchParams.has('uselibpqcompat')
+    ) {
+      url.searchParams.set('sslmode', 'verify-full');
+    }
+
+    return url.toString();
+  } catch {
+    return value;
+  }
+}
+
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    adapter: new PrismaPg({ connectionString }),
+    adapter: new PrismaPg({ connectionString: normalizeConnectionString(connectionString) }),
     log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
   });
 

@@ -35,6 +35,31 @@ export default function CmsDashboardPage() {
           </div>
         </div>
 
+        {/* Card: Page Content CMS */}
+        <div
+          onClick={() => router.push(withLocalePath(locale, '/ring-master-config/dashboard/pages'))}
+          style={{ ...styles.card, cursor: 'pointer' }}
+        >
+          <div style={styles.cardIcon}>🧩</div>
+          <h3 style={styles.cardTitle}>Page Content CMS</h3>
+          <p style={styles.cardDesc}>
+            Manage structured JSON blocks for home, support, status, and global starter content.
+          </p>
+        </div>
+
+        {/* Card: Media Library */}
+        <div
+          onClick={() => router.push(withLocalePath(locale, '/ring-master-config/dashboard/media'))}
+          style={{ ...styles.card, cursor: 'pointer' }}
+        >
+          <div style={styles.cardIcon}>🖼️</div>
+          <h3 style={styles.cardTitle}>Media Library</h3>
+          <p style={styles.cardDesc}>
+            Upload and select public CMS images without mixing them with private customer attachments.
+          </p>
+          <div style={styles.badgeNeutral}>Public CMS assets</div>
+        </div>
+
         {/* Card: AI Intelligence */}
         <div 
           onClick={() => router.push(withLocalePath(locale, '/ring-master-config/dashboard/ai'))}
@@ -144,6 +169,18 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 700,
     background: '#4c1d95',
     color: '#c4b5fd',
+    borderRadius: '20px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+  },
+  badgeNeutral: {
+    marginTop: 'auto',
+    alignSelf: 'flex-start',
+    padding: '4px 12px',
+    fontSize: '11px',
+    fontWeight: 700,
+    background: '#172033',
+    color: '#bfdbfe',
     borderRadius: '20px',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',

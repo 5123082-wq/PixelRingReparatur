@@ -61,6 +61,25 @@ enum CmsArticleStatus {
   PUBLISHED
 }
 
+enum CmsMediaUsageType {
+  GENERAL
+  HERO
+  ARTICLE
+  SERVICE
+  CASE
+  PAGE
+  CARD
+  SEO
+  ICON
+}
+
+enum CmsMediaStorageProvider {
+  LOCAL
+  VERCEL_BLOB
+  S3
+  EXTERNAL
+}
+
 enum AttachmentKind {
   IMAGE
   VIDEO
@@ -193,24 +212,24 @@ model Attachment {
 }
 
 model Session {
-  id            String                @id @default(uuid()) @db.Uuid
-  tokenHash     String                @unique
-  scope         SessionScope          @default(ANONYMOUS_DRAFT)
-  caseId        String?               @db.Uuid
-  operatorTakeover Boolean            @default(false)
-  contactMethod PrimaryContactMethod?
-  contactValue  String?
-  userAgent     String?
-  ipAddress     String?
-  verifiedAt    DateTime?
-  lastSeenAt    DateTime?
-  expiresAt     DateTime
-  revokedAt     DateTime?
-  createdAt     DateTime              @default(now())
-  updatedAt     DateTime              @updatedAt
-  case          Case?                 @relation(fields: [caseId], references: [id], onDelete: SetNull)
-  messages      Message[]
-  uploads       Attachment[]          @relation("SessionUploads")
+  id               String                @id @default(uuid()) @db.Uuid
+  tokenHash        String                @unique
+  scope            SessionScope          @default(ANONYMOUS_DRAFT)
+  caseId           String?               @db.Uuid
+  operatorTakeover Boolean               @default(false)
+  contactMethod    PrimaryContactMethod?
+  contactValue     String?
+  userAgent        String?
+  ipAddress        String?
+  verifiedAt       DateTime?
+  lastSeenAt       DateTime?
+  expiresAt        DateTime
+  revokedAt        DateTime?
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  case             Case?                 @relation(fields: [caseId], references: [id], onDelete: SetNull)
+  messages         Message[]
+  uploads          Attachment[]          @relation("SessionUploads")
 
   @@index([caseId, expiresAt])
   @@index([expiresAt])
@@ -219,16 +238,16 @@ model Session {
 }
 
 model AdminSession {
-  id        String    @id @default(uuid()) @db.Uuid
-  tokenHash String    @unique
-  role      AdminRole @default(MANAGER)
-  label     String?
-  ipAddress String?
-  userAgent String?
-  expiresAt DateTime
-  createdAt DateTime  @default(now())
+  id           String            @id @default(uuid()) @db.Uuid
+  tokenHash    String            @unique
+  role         AdminRole         @default(MANAGER)
+  label        String?
+  ipAddress    String?
+  userAgent    String?
+  expiresAt    DateTime
+  createdAt    DateTime          @default(now())
   statusEvents CaseStatusEvent[] @relation("CaseStatusEventActor")
-  auditLogs   AdminAuditLog[]    @relation("AdminAuditLogActor")
+  auditLogs    AdminAuditLog[]   @relation("AdminAuditLogActor")
 
   @@index([expiresAt])
   @@index([role])
@@ -236,16 +255,16 @@ model AdminSession {
 }
 
 model CaseStatusEvent {
-  id             String       @id @default(uuid()) @db.Uuid
-  caseId         String       @db.Uuid
-  actorSessionId String?      @db.Uuid
+  id             String        @id @default(uuid()) @db.Uuid
+  caseId         String        @db.Uuid
+  actorSessionId String?       @db.Uuid
   actorRole      AdminRole?
   fromStatus     CaseStatus?
   toStatus       CaseStatus
-  reason         String?      @db.Text
+  reason         String?       @db.Text
   metadata       Json?
-  createdAt      DateTime     @default(now())
-  case           Case         @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  createdAt      DateTime      @default(now())
+  case           Case          @relation(fields: [caseId], references: [id], onDelete: Cascade)
   actorSession   AdminSession? @relation("CaseStatusEventActor", fields: [actorSessionId], references: [id], onDelete: SetNull)
 
   @@index([caseId, createdAt])
@@ -255,21 +274,21 @@ model CaseStatusEvent {
 }
 
 model AdminAuditLog {
-  id             String       @id @default(uuid()) @db.Uuid
-  actorSessionId String?      @db.Uuid
+  id             String        @id @default(uuid()) @db.Uuid
+  actorSessionId String?       @db.Uuid
   actorRole      AdminRole?
   action         String
   resourceType   String
   resourceId     String?
-  caseId         String?      @db.Uuid
-  outcome        String       @default("SUCCESS")
-  reason         String?      @db.Text
+  caseId         String?       @db.Uuid
+  outcome        String        @default("SUCCESS")
+  reason         String?       @db.Text
   details        Json?
   ipAddress      String?
   userAgent      String?
-  createdAt      DateTime     @default(now())
+  createdAt      DateTime      @default(now())
   actorSession   AdminSession? @relation("AdminAuditLogActor", fields: [actorSessionId], references: [id], onDelete: SetNull)
-  case           Case?        @relation(fields: [caseId], references: [id], onDelete: SetNull)
+  case           Case?         @relation(fields: [caseId], references: [id], onDelete: SetNull)
 
   @@index([createdAt])
   @@index([action, createdAt])
@@ -313,6 +332,55 @@ model CmsArticle {
   @@index([status, updatedAt])
   @@index([deletedAt])
   @@map("cms_articles")
+}
+
+model CmsPage {
+  id             String           @id @default(uuid()) @db.Uuid
+  pageKey        String
+  locale         String           @default("de")
+  status         CmsArticleStatus @default(DRAFT)
+  title          String
+  blocks         Json
+  seoTitle       String?
+  seoDescription String?          @db.Text
+  canonicalUrl   String?
+  publishedAt    DateTime?
+  lastReviewedAt DateTime?
+  deletedAt      DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@unique([pageKey, locale])
+  @@index([locale, status])
+  @@index([deletedAt])
+  @@map("cms_pages")
+}
+
+model CmsMedia {
+  id               String                  @id @default(uuid()) @db.Uuid
+  locale           String                  @default("de")
+  usageType        CmsMediaUsageType       @default(GENERAL)
+  storageProvider  CmsMediaStorageProvider @default(LOCAL)
+  storageKey       String                  @unique
+  publicUrl        String                  @unique
+  originalFilename String?
+  title            String?
+  altText          String?
+  mimeType         String
+  byteSize         Int
+  checksumSha256   String
+  width            Int?
+  height           Int?
+  meta             Json?
+  deletedAt        DateTime?
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+
+  @@index([locale, usageType, updatedAt])
+  @@index([mimeType, updatedAt])
+  @@index([checksumSha256])
+  @@index([deletedAt])
+  @@map("cms_media")
 }
 
 model AiConfig {

@@ -35,6 +35,4 @@ yarn-debug.log*
 DesignPrototip/
 
 # Local info and Project docs
-docs/*
-!docs/07_admin_platform/
-!docs/07_admin_platform/**
+docs/.DS_Store
