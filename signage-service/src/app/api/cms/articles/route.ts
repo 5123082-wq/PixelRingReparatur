@@ -523,6 +523,7 @@ export async function POST(request: NextRequest) {
 
       await createAdminAuditLog(tx, {
         actorSessionId: actor.sessionId,
+        actorAdminUserId: actor.adminUserId,
         actorRole: actor.role,
         action: 'CMS_ARTICLE_CREATED',
         resourceType: 'CMS_ARTICLE',

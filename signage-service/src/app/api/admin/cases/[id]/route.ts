@@ -337,6 +337,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
         await createAdminAuditLog(tx, {
           actorSessionId: actor.sessionId,
+          actorAdminUserId: actor.adminUserId,
           actorRole: actor.role,
           action: 'CASE_OPERATOR_MESSAGE_SENT',
           resourceType: 'CASE',
@@ -365,6 +366,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
         await createAdminAuditLog(tx, {
           actorSessionId: actor.sessionId,
+          actorAdminUserId: actor.adminUserId,
           actorRole: actor.role,
           action: 'CASE_INTERNAL_NOTE_CREATED',
           resourceType: 'CASE',
@@ -391,6 +393,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
         await createAdminAuditLog(tx, {
           actorSessionId: actor.sessionId,
+          actorAdminUserId: actor.adminUserId,
           actorRole: actor.role,
           action: 'CASE_OPERATOR_TAKEOVER_CHANGED',
           resourceType: 'CASE',
@@ -599,6 +602,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
         await createAdminAuditLog(tx, {
           actorSessionId: actor.sessionId,
+          actorAdminUserId: actor.adminUserId,
           actorRole: actor.role,
           action: 'CASE_STATUS_CHANGED',
           resourceType: 'CASE',
@@ -622,6 +626,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       if (nextAssignedOperator !== currentCase.assignedOperator) {
         await createAdminAuditLog(tx, {
           actorSessionId: actor.sessionId,
+          actorAdminUserId: actor.adminUserId,
           actorRole: actor.role,
           action: 'CASE_ASSIGNMENT_CHANGED',
           resourceType: 'CASE',
@@ -664,6 +669,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
       await createAdminAuditLog(tx, {
         actorSessionId: actor.sessionId,
+        actorAdminUserId: actor.adminUserId,
         actorRole: actor.role,
         action: 'CASE_CUSTOMER_PROFILE_SYNCED',
         resourceType: 'CASE',

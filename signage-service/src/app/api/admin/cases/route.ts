@@ -195,6 +195,7 @@ export async function POST(request: NextRequest) {
 
       await createAdminAuditLog(tx, {
         actorSessionId: actor.sessionId,
+        actorAdminUserId: actor.adminUserId,
         actorRole: actor.role,
         action: 'CASE_CREATED',
         resourceType: 'CASE',

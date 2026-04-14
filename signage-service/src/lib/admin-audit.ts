@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 import type { AdminRole, Prisma, PrismaClient } from '@prisma/client';
 
-import { hasRequiredAdminRole, verifyAdminSession } from './admin-auth';
+import { requireAdminSession } from './admin-auth';
 
 export type AdminRequestActor = {
   adminUserId: string;
@@ -48,11 +48,7 @@ export async function requireAdminActor(
   allowedRoles: AdminRole[]
 ): Promise<AdminRequestActor | null> {
   const token = request.cookies.get(cookieName)?.value;
-  const actor = await verifyAdminSession(prisma, token);
-
-  if (!hasRequiredAdminRole(actor, allowedRoles)) {
-    return null;
-  }
+  const actor = await requireAdminSession(prisma, token, allowedRoles);
 
   return {
     adminUserId: actor.adminUserId,

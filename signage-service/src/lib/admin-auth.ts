@@ -367,6 +367,20 @@ export function hasRequiredAdminRole(
   return Boolean(actor && allowedRoles.includes(actor.role));
 }
 
+export async function requireAdminSession(
+  prisma: AdminClient,
+  token: string | null | undefined,
+  allowedRoles: AdminRole[]
+): Promise<VerifiedAdminSession | null> {
+  const actor = await verifyAdminSession(prisma, token);
+
+  if (!hasRequiredAdminRole(actor, allowedRoles)) {
+    return null;
+  }
+
+  return actor;
+}
+
 export async function revokeAdminSession(
   prisma: AdminClient,
   token: string

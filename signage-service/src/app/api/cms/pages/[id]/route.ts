@@ -341,6 +341,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
       await createAdminAuditLog(tx, {
         actorSessionId: actor.sessionId,
+        actorAdminUserId: actor.adminUserId,
         actorRole: actor.role,
         action: auditAction,
         resourceType: 'CMS_PAGE',
@@ -417,6 +418,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
       await createAdminAuditLog(tx, {
         actorSessionId: actor.sessionId,
+        actorAdminUserId: actor.adminUserId,
         actorRole: actor.role,
         action: 'CMS_PAGE_DELETED',
         resourceType: 'CMS_PAGE',
