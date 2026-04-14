@@ -69,6 +69,7 @@
 - 6-language UX;
 - human handoff clarity;
 - заявки не теряются.
+- управляемая админ-панель без code-only публикации контента.
 
 ---
 
@@ -150,6 +151,7 @@
 - lead statuses;
 - assignment controls;
 - notifications.
+- Content Core admin baseline: revisions roadmap, workflow roadmap, preview/scheduling plan.
 
 ### Phase 5 — Integrations
 Результат:
@@ -357,6 +359,8 @@
 - lead statuses
 - contact and legal pages
 - analytics basics
+- admin foundation security baseline (`audit + CSRF + role split`) and stable CMS CRUD for core public content.
+- CMS media boundary enforcement (public media vs private customer attachments) with upload validation and audit baseline.
 
 ### 11.2. P1 — important but can finalize near launch
 - cases page
@@ -365,6 +369,9 @@
 - messenger continuation refinement
 - SLA alerts
 - better admin filters
+- Content Core expansion: revision history, workflow states beyond draft/published, signed preview, scheduled publishing, managed navigation.
+- Assets + Forms expansion: media governance metadata/reporting, image derivative pipeline, configurable request/contact form schemas with server-side validation.
+- Delivery + Integrations hardening: event/webhook outbox flow, deterministic cache revalidation, adapter isolation, retry/idempotency policy for external channels.
 
 ### 11.3. P2 — post-launch improvements
 - advanced voice handling
@@ -372,6 +379,7 @@
 - geo expansion pages
 - business account enhancements
 - more advanced partner tooling
+- hardening + release maturity: named admin users with granular RBAC, MFA/step-up, distributed rate limiting, backup/restore drills, incident runbooks, and stricter release gates.
 
 ---
 
@@ -620,4 +628,3 @@ MVP можно считать успешным, если:
 ---
 
 Конец документа 8.
-

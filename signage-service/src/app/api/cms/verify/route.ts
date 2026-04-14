@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
-import { CRM_SESSION_COOKIE_NAME, verifyAdminSession } from '@/lib/admin-auth';
+import { CMS_SESSION_COOKIE_NAME, verifyAdminSession } from '@/lib/admin-auth';
 
 function notFoundResponse() {
   return NextResponse.json({ error: 'Not found' }, { status: 404 });
@@ -9,10 +9,10 @@ function notFoundResponse() {
 
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get(CRM_SESSION_COOKIE_NAME)?.value;
+    const token = request.cookies.get(CMS_SESSION_COOKIE_NAME)?.value;
     const actor = await verifyAdminSession(prisma, token);
 
-    if (!actor || actor.role !== 'MANAGER') {
+    if (!actor || actor.role !== 'OWNER') {
       return notFoundResponse();
     }
 

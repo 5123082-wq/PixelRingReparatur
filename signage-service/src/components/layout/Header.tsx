@@ -85,7 +85,7 @@ const Header = () => {
           <div className="flex items-center gap-1.5 sm:gap-3">
             <MessengerButtons compact />
             <LanguageSwitcher />
-            
+
             <button
               onClick={() => setIsModalOpen(true)}
               className="hidden md:block px-6 py-2.5 bg-[#B8643E] hover:bg-[#A65835] text-[#FFFDF9] text-[16px] font-medium rounded-full shadow-lg shadow-[#B8643E33] transition-all"
@@ -131,7 +131,7 @@ const Header = () => {
                 </Link>
               ))}
             </div>
-            
+
             <div className="mt-8 mb-12 space-y-8">
               <button
                 onClick={() => {

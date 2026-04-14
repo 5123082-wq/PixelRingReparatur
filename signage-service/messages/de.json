@@ -22,9 +22,25 @@
   "Footer": {
     "copyright": "© 2024 PixelRing Technical Atelier. Alle Rechte vorbehalten.",
     "privacy": "Datenschutzerklärung",
-    "terms": "Nutzungsbedingungen",
+    "terms": "AGB",
     "compliance": "Compliance",
-    "locations": "Standorte"
+    "locations": "Standorte",
+    "impressum": "Impressum",
+    "cancellation": "Widerrufsbelehrung",
+    "cookies": "Cookie-Einstellungen",
+    "services": "Dienstleistungen",
+    "company": "Unternehmen",
+    "support_title": "Hilfe & Support",
+    "social": "Folgen Sie uns",
+    "services_sign_repair": "Schilder-Reparatur",
+    "services_installation": "Montage & Demontage",
+    "services_lighting": "Lichtwerbung & LED",
+    "services_branding": "Branding & Folierung",
+    "services_maintenance": "Wartung & Service",
+    "how_it_works": "Wie es funktioniert",
+    "status_check": "Status-Abfrage",
+    "help_center": "Hilfe Zentrum",
+    "contact": "Kontakt"
   },
   "Trust": {
     "title_start": "Warum PixelRing ",

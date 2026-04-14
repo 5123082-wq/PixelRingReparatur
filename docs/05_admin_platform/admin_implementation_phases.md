@@ -5,6 +5,78 @@
 This document turns the admin platform target into implementable phases.
 
 The plan assumes the current Next.js/Prisma app remains the primary platform.
+UI baseline for admin surfaces: Tabler components/theme.
+
+Use together with:
+
+- `docs/05_admin_platform/admin_platform_overview.md` for target-state architecture decisions;
+- this document for implementation sequence against current project status.
+
+## Foundation Block (Approved)
+
+Approved decisions for Block 1:
+
+- keep `Next.js + Prisma + PostgreSQL` as core platform;
+- use Tabler as UI layer for admin interfaces;
+- migrate from master-key-only access toward user-based access and granular permissions;
+- keep separate CMS and CRM internal zones while sharing common security and audit baseline.
+
+Foundation target outcomes:
+
+1. Named admin users and revocable sessions.
+2. Role-permission model and deny-by-default endpoint checks.
+3. Mandatory audit coverage for high-risk actions.
+4. Security baseline enforcement on admin mutation routes.
+
+## Assets + Forms Block (Approved)
+
+Approved decisions for Block 3:
+
+- keep `CmsMedia` as the public CMS asset registry;
+- keep private customer attachments in a separate domain and policy boundary;
+- use Tabler-based UI for media and form management surfaces;
+- use server-side `zod` validation for configurable form schemas and payload guards;
+- use `sharp`-based image derivative/optimization pipeline for media hardening track;
+- keep current rate-limit starter and move to distributed storage in hardening phase.
+
+Assets + Forms target outcomes:
+
+1. Required metadata and usage visibility for publishable assets.
+2. Auditable form configuration changes without code-only updates.
+3. Hardened media processing path with clear separation from private attachments.
+
+## Delivery + Integrations Block (Approved)
+
+Approved decisions for Block 4:
+
+- keep API layer in current route handlers with typed contracts;
+- implement integration/event reliability with Postgres outbox + dispatcher jobs;
+- keep cache invalidation explicit via revalidation strategy tied to publish/update events;
+- isolate channel/external integrations as adapters (`whatsapp`, `telegram`, `voice`, `bitrix` as needed);
+- add idempotency keys, retry with backoff, and dead-letter visibility for integration failures.
+
+Delivery + Integrations target outcomes:
+
+1. Deterministic publish and notification/event delivery path.
+2. Observable integration failures and controlled retry policy.
+3. Clear boundary between core domain logic and connector-specific behavior.
+
+## Hardening + Release Readiness Block (Approved)
+
+Approved decisions for Block 5:
+
+- migrate admin auth to named users + granular RBAC mappings;
+- add MFA and step-up checks for destructive/sensitive actions;
+- move rate limiting to distributed backing storage;
+- enforce backup/PITR with restore verification drills;
+- establish monitoring/alerting + incident response baseline;
+- enforce staging/UAT/release/rollback gates before production rollout.
+
+Hardening + Release target outcomes:
+
+1. Security baseline reaches production-readiness level.
+2. Data recovery and incident handling are operationally tested.
+3. Releases follow explicit gates with rollback safety.
 
 ## Phase 0: Documentation Alignment
 

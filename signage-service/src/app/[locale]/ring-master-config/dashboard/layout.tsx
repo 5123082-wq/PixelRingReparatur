@@ -13,9 +13,9 @@ export default async function CmsDashboardLayout({
 }) {
   const cookieStore = await cookies();
   const token = cookieStore.get(CMS_SESSION_COOKIE_NAME)?.value;
-  const role = await verifyAdminSession(prisma, token);
+  const actor = await verifyAdminSession(prisma, token);
 
-  if (role !== 'OWNER') {
+  if (!actor || actor.role !== 'OWNER') {
     notFound();
   }
 

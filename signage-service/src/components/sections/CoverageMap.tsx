@@ -134,7 +134,7 @@ const CoverageMap = () => {
         transition={{ duration: 0.8, delay: 0.2 }}
         className="absolute top-8 left-6 md:top-12 md:left-14 z-20 w-[calc(100%-48px)] md:w-auto md:max-w-[380px]"
       >
-        <div className="p-6 md:p-9 bg-white/[0.04] backdrop-blur-xl rounded-[28px] md:rounded-[44px] border border-white/10 shadow-[0_16px_32px_rgba(0,0,0,0.02)] flex flex-col gap-4 md:gap-5">
+        <div className="p-6 md:p-9 bg-gradient-to-br from-white/30 via-[#F7F1E8]/44 to-[#F7F1E8]/58 rounded-[28px] md:rounded-[44px] shadow-[inset_0_1px_0_rgba(255,255,255,0.38),0_16px_32px_rgba(0,0,0,0.02)] flex flex-col gap-4 md:gap-5">
           <div className="flex flex-col gap-1.5">
             <h2 className="text-[30px] md:text-[42px] font-bold text-[#0E1A2B] leading-[1.05] tracking-tight">
               {t('title')}
@@ -154,7 +154,7 @@ const CoverageMap = () => {
         transition={{ duration: 0.8, delay: 0.4 }}
         className="absolute bottom-6 left-6 right-6 md:bottom-10 md:left-14 md:right-14 z-20"
       >
-        <div className="flex flex-wrap lg:flex-nowrap items-center justify-between gap-4 md:gap-6 p-5 md:p-6 bg-white/[0.04] backdrop-blur-xl rounded-[32px] md:rounded-[40px] border border-white/10 shadow-[0_12px_24px_rgba(0,0,0,0.02)]">
+        <div className="flex flex-wrap lg:flex-nowrap items-center justify-between gap-4 md:gap-6 p-5 md:p-6 bg-gradient-to-br from-white/30 via-[#F7F1E8]/44 to-[#F7F1E8]/58 rounded-[32px] md:rounded-[40px] shadow-[inset_0_1px_0_rgba(255,255,255,0.38),0_12px_24px_rgba(0,0,0,0.02)]">
           {[
             { key: 'nationwide' },
             { key: 'express' },
@@ -219,8 +219,13 @@ const CoverageMap = () => {
               {/* Arcs */}
               {isInView && cities.filter(c => !c.isHQ).map((city, idx) => {
                 const hq = cities.find(c => c.isHQ)!;
+                const dx = city.x - hq.x;
+                const dy = city.y - hq.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const arcHeight = Math.min(Math.max(distance * 0.45, 4), 22);
+
                 const cx = (hq.x + city.x) / 2;
-                const cy = (hq.y + city.y) / 2 - 25;
+                const cy = (hq.y + city.y) / 2 - arcHeight;
                 return (
                   <motion.path
                     key={`arc-perf-${city.id}`}

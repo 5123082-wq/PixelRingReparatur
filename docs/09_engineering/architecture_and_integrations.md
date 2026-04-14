@@ -523,6 +523,15 @@ AI должен инициировать handoff, когда:
 - SLA breach alerts;
 - missing data alerts.
 
+### 12.5. Delivery reliability baseline
+Нужно:
+- typed API contracts для внутренних CMS/CRM и интеграционных endpoint'ов;
+- event/outbox слой для надежной доставки publish/integration событий;
+- retry policy с backoff для нестабильных внешних каналов;
+- idempotency keys для повторных доставок и webhook replay;
+- dead-letter/error logging для инцидентов доставки;
+- correlation IDs для трассировки end-to-end.
+
 ---
 
 ## 13. CRM / admin operations layer
@@ -558,6 +567,14 @@ AI должен инициировать handoff, когда:
 - send follow-up
 - flag for review
 - archive
+
+### 13.4. CMS delivery actions
+Нужно:
+- publish/unpublish с событием в delivery pipeline;
+- scheduled publish triggers;
+- preview token lifecycle;
+- cache revalidation triggers (`path/tag`) после публикации/обновления;
+- audit trail для каждой операции, влияющей на публичный рендер.
 
 ### 13.4. Queue filters
 Фильтры:
@@ -774,6 +791,17 @@ Lead не должен “повисать” без owner.
 - analytics покрывает funnel и operations;
 - сайт не зависит от одного канала входа.
 
+### 20.1. Hardening and release readiness criteria
+
+Перед production release дополнительно нужно:
+
+- named admin users + granular RBAC enforcement;
+- MFA/step-up для чувствительных действий;
+- distributed rate limiting for admin and critical intake endpoints;
+- backup/PITR и регулярный restore drill;
+- structured monitoring + alert ownership;
+- staging -> UAT -> release gate with rollback-ready path.
+
 ---
 
 ## 21. Что делать следующим документом
@@ -791,4 +819,3 @@ Lead не должен “повисать” без owner.
 ---
 
 Конец документа 5.
-

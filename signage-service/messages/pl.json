@@ -21,9 +21,16 @@
   "Footer": {
     "copyright": "© 2024 PixelRing Technical Atelier. Wszelkie prawa zastrzeżone.",
     "privacy": "Polityka prywatności",
-    "terms": "Warunki użytkowania",
+    "terms": "Warunki i zasady",
     "compliance": "Compliance",
-    "locations": "Lokalizacje"
+    "locations": "Lokalizacje",
+    "impressum": "Informacja prawna",
+    "cancellation": "Polityka anulowania",
+    "cookies": "Ustawienia plików cookie",
+    "services": "Usługi",
+    "company": "Firma",
+    "support_title": "Pomoc i wsparcie",
+    "social": "Obserwuj nas"
   },
   "Trust": {
     "title_start": "Dlaczego PixelRing jest ",

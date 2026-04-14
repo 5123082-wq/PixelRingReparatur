@@ -9,6 +9,13 @@ Security requirements must apply to both:
 - CMS: `/ring-master-config`;
 - CRM: `/ring-manager-crm`.
 
+Technology and hosting baseline for this phase:
+
+- admin UI layer can use Tabler components/theme;
+- core platform remains `Next.js + Prisma + PostgreSQL`;
+- preferred deployment model is managed hosting + managed PostgreSQL for MVP/early production;
+- self-hosted VPS is an optional path with explicit ops ownership (hardening, backups, monitoring, patching).
+
 ## Current Baseline
 
 Implemented now:
@@ -35,6 +42,7 @@ Known gaps:
 - no upload scanning/quarantine;
 - CSRF coverage is currently reviewed for existing admin/CMS mutation routes and needs to stay enforced as new admin mutation routes are added;
 - no session binding policy for IP/user-agent changes.
+- current access is still centered on role-level master-key entry and needs migration toward named users + granular permissions.
 
 ## Access Control
 
@@ -54,6 +62,7 @@ Target roles:
 - `AUDITOR`: read-only audit and compliance views.
 
 The current schema only has `OWNER` and `MANAGER`; the additional roles are target-state.
+Target-state also requires named admin users and permission-level checks on sensitive actions.
 
 ## Sessions
 
@@ -179,3 +188,13 @@ P1:
 - upload scanning/quarantine;
 - anomaly alerts;
 - periodic access review.
+
+## Release Readiness Controls
+
+Before production release, admin/security readiness must include:
+
+- staging environment verification for admin and CMS mutation flows;
+- UAT checklist with sign-off for high-risk actions (publish, delete, role changes, AI config updates);
+- rollback-ready deployment path for schema and route changes;
+- backup and restore drill evidence for the active database;
+- incident response runbook ownership and escalation contacts.

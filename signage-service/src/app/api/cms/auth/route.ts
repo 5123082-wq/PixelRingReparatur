@@ -3,12 +3,25 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, ADMIN_AUTH_LIMIT } from '@/lib/rate-limit';
 import {
-  validateAdminMasterKey,
-  createAdminSession,
-  revokeAdminSession,
+  authenticateAdminLogin,
   CMS_SESSION_COOKIE_NAME,
+  createAdminSession,
+  getAdminSessionTtlSeconds,
+  markAdminLoginSuccess,
+  parseAdminLoginInput,
+  revokeAdminSession,
+  verifyAdminSession,
 } from '@/lib/admin-auth';
+import { createAdminAuditLog } from '@/lib/admin-audit';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
+
+function getRequestIpAddress(request: NextRequest): string | null {
+  return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null;
+}
+
+function notFoundResponse() {
+  return NextResponse.json({ error: 'Not found' }, { status: 404 });
+}
 
 export async function POST(request: NextRequest) {
   const csrfError = validateAdminCsrf(request);
@@ -18,30 +31,81 @@ export async function POST(request: NextRequest) {
   const limit = checkRateLimit(ip, ADMIN_AUTH_LIMIT);
 
   if (!limit.allowed) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    return notFoundResponse();
   }
 
+  const userAgent = request.headers.get('user-agent');
+  const ipAddress = getRequestIpAddress(request);
+
   try {
-    const body = (await request.json().catch(() => null)) as {
-      masterKey?: string;
-    } | null;
+    const body = await request.json().catch(() => null);
+    const loginInput = parseAdminLoginInput(body);
 
-    if (!body?.masterKey) {
-      return NextResponse.json({ error: 'Key required' }, { status: 404 });
+    if (!loginInput) {
+      await createAdminAuditLog(prisma, {
+        actorRole: 'OWNER',
+        action: 'ADMIN_LOGIN_FAILED',
+        resourceType: 'ADMIN_AUTH',
+        outcome: 'DENIED',
+        details: {
+          zone: 'CMS',
+          reason: 'INVALID_PAYLOAD',
+        },
+        ipAddress,
+        userAgent,
+      });
+
+      return notFoundResponse();
     }
 
-    // CMS Config Login is ONLY allowed for OWNER role
-    if (!validateAdminMasterKey(body.masterKey, 'OWNER')) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    const authResult = await authenticateAdminLogin(prisma, 'OWNER', loginInput);
+
+    if (!authResult) {
+      await createAdminAuditLog(prisma, {
+        actorRole: 'OWNER',
+        action: 'ADMIN_LOGIN_FAILED',
+        resourceType: 'ADMIN_AUTH',
+        outcome: 'DENIED',
+        details: {
+          zone: 'CMS',
+          method: loginInput.mode,
+          email: loginInput.mode === 'password' ? loginInput.email : null,
+        },
+        ipAddress,
+        userAgent,
+      });
+
+      return notFoundResponse();
     }
 
-    const sessionToken = await createAdminSession(prisma, {
-      role: 'OWNER',
-      userAgent: request.headers.get('user-agent'),
-      ipAddress: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null,
+    const sessionToken = await prisma.$transaction(async (tx) => {
+      await markAdminLoginSuccess(tx, authResult.user.id);
+
+      const token = await createAdminSession(tx, {
+        adminUserId: authResult.user.id,
+        role: authResult.user.role,
+        userAgent,
+        ipAddress,
+        label: authResult.method === 'master-key' ? 'CMS Bootstrap Fallback' : 'CMS Password Login',
+      });
+
+      await createAdminAuditLog(tx, {
+        actorAdminUserId: authResult.user.id,
+        actorRole: authResult.user.role,
+        action: 'ADMIN_LOGIN_SUCCEEDED',
+        resourceType: 'ADMIN_AUTH',
+        resourceId: authResult.user.id,
+        details: {
+          zone: 'CMS',
+          method: authResult.method,
+          email: authResult.user.email,
+        },
+        ipAddress,
+        userAgent,
+      });
+
+      return token;
     });
-
-    const ttlHours = Number(process.env.ADMIN_SESSION_TTL_HOURS) || 12;
 
     const response = NextResponse.json({
       success: true,
@@ -55,24 +119,44 @@ export async function POST(request: NextRequest) {
       sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',
       path: '/',
-      maxAge: ttlHours * 60 * 60,
+      maxAge: getAdminSessionTtlSeconds(),
     });
 
     return response;
   } catch (error) {
     console.error('CMS auth error:', error);
-    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    return notFoundResponse();
   }
 }
 
 export async function DELETE(request: NextRequest) {
-  // Shared deletion for the cookie
   const csrfError = validateAdminCsrf(request);
   if (csrfError) return csrfError;
 
   try {
     const token = request.cookies.get(CMS_SESSION_COOKIE_NAME)?.value;
-    if (token) await revokeAdminSession(prisma, token);
+    const actor = await verifyAdminSession(prisma, token);
+
+    if (token) {
+      await revokeAdminSession(prisma, token);
+    }
+
+    if (actor) {
+      await createAdminAuditLog(prisma, {
+        actorSessionId: actor.sessionId,
+        actorAdminUserId: actor.adminUserId,
+        actorRole: actor.role,
+        action: 'ADMIN_LOGOUT',
+        resourceType: 'ADMIN_AUTH',
+        resourceId: actor.adminUserId,
+        details: {
+          zone: 'CMS',
+          email: actor.email,
+        },
+        ipAddress: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null,
+        userAgent: request.headers.get('user-agent'),
+      });
+    }
 
     const response = NextResponse.json({ success: true });
     response.cookies.set({
@@ -88,6 +172,6 @@ export async function DELETE(request: NextRequest) {
     return response;
   } catch (error) {
     console.error('CMS logout error:', error);
-    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    return notFoundResponse();
   }
 }

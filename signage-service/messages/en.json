@@ -21,9 +21,25 @@
   "Footer": {
     "copyright": "© 2024 PixelRing Technical Atelier. All rights reserved.",
     "privacy": "Privacy Policy",
-    "terms": "Terms of Service",
+    "terms": "Terms & Conditions",
     "compliance": "Compliance",
-    "locations": "Global Locations"
+    "locations": "Global Locations",
+    "impressum": "Legal Notice",
+    "cancellation": "Cancellation Policy",
+    "cookies": "Cookie Settings",
+    "services": "Services",
+    "company": "Company",
+    "support_title": "Help & Support",
+    "social": "Follow Us",
+    "services_sign_repair": "Sign Repair",
+    "services_installation": "Installation & Dismantling",
+    "services_lighting": "Light Advertising & LED",
+    "services_branding": "Branding & Wrap",
+    "services_maintenance": "Maintenance & Service",
+    "how_it_works": "How It Works",
+    "status_check": "Status Lookup",
+    "help_center": "Help Center",
+    "contact": "Contact"
   },
   "Trust": {
     "title_start": "Why PixelRing is ",

@@ -59,6 +59,26 @@ assertMatches(
   /model CmsMedia \{[\s\S]*usageType\s+CmsMediaUsageType[\s\S]*publicUrl\s+String[\s\S]*checksumSha256\s+String[\s\S]*deletedAt\s+DateTime\?[\s\S]*@@index\(\[deletedAt\]\)/,
   'prisma/schema.prisma must define the CmsMedia model with the public media metadata and soft-delete index'
 );
+assertMatches(
+  cmsMediaSchema,
+  /enum AdminUserStatus \{[\s\S]*ACTIVE[\s\S]*DISABLED[\s\S]*\}/,
+  'prisma/schema.prisma must define AdminUserStatus'
+);
+assertMatches(
+  cmsMediaSchema,
+  /model AdminUser \{[\s\S]*email\s+String\s+@unique[\s\S]*passwordHash\s+String[\s\S]*role\s+AdminRole[\s\S]*status\s+AdminUserStatus[\s\S]*sessions\s+AdminSession\[\]/,
+  'prisma/schema.prisma must define AdminUser with unique email, password hash, role, status, and sessions'
+);
+assertMatches(
+  cmsMediaSchema,
+  /model AdminSession \{[\s\S]*adminUserId\s+String[\s\S]*lastSeenAt\s+DateTime\?[\s\S]*revokedAt\s+DateTime\?[\s\S]*adminUser\s+AdminUser/,
+  'prisma/schema.prisma must link AdminSession to AdminUser and track lastSeenAt/revokedAt'
+);
+assertMatches(
+  cmsMediaSchema,
+  /model AdminAuditLog \{[\s\S]*actorAdminUserId\s+String\?[\s\S]*actorAdminUser\s+AdminUser\?/,
+  'prisma/schema.prisma must link AdminAuditLog back to the named admin user'
+);
 
 const cmsMediaMigration = readProjectFile(
   'prisma/migrations/20260408183000_phase4_cms_media/migration.sql'
@@ -267,13 +287,21 @@ assertMatches(
 );
 
 const adminAuth = readProjectFile('src/app/api/admin/auth/route.ts');
-assertMatches(adminAuth, /validateAdminMasterKey\([\s\S]*'MANAGER'\)/, 'CRM auth must validate MANAGER keys');
-assertMatches(adminAuth, /role:\s*'MANAGER'/, 'CRM auth must create MANAGER sessions');
+assertMatches(adminAuth, /parseAdminLoginInput\s*\(/, 'CRM auth must parse dual-mode login input');
+assertMatches(adminAuth, /authenticateAdminLogin\s*\(\s*prisma,\s*'MANAGER'/, 'CRM auth must authenticate named MANAGER users');
+assertMatches(adminAuth, /createAdminSession\([\s\S]*adminUserId:\s*authResult\.user\.id[\s\S]*role:\s*authResult\.user\.role/, 'CRM auth must create sessions linked to the named admin user');
+assertMatches(adminAuth, /ADMIN_LOGIN_FAILED/, 'CRM auth must audit failed login attempts');
+assertMatches(adminAuth, /ADMIN_LOGIN_SUCCEEDED/, 'CRM auth must audit successful logins');
 assertMatches(adminAuth, /CRM_SESSION_COOKIE_NAME/, 'CRM auth must use CRM session cookie');
 
 const adminVerify = readProjectFile('src/app/api/admin/verify/route.ts');
 assertMatches(adminVerify, /CRM_SESSION_COOKIE_NAME/, 'CRM verify must use CRM session cookie');
-assertMatches(adminVerify, /role !== 'MANAGER'/, 'CRM verify must reject non-MANAGER roles');
+assertMatches(adminVerify, /actor\.role !== 'MANAGER'/, 'CRM verify must reject non-MANAGER roles');
+
+requireProjectFile('src/app/api/cms/verify/route.ts', 'CMS verify route must exist');
+const cmsVerify = readProjectFile('src/app/api/cms/verify/route.ts');
+assertMatches(cmsVerify, /CMS_SESSION_COOKIE_NAME/, 'CMS verify must use CMS session cookie');
+assertMatches(cmsVerify, /actor\.role !== 'OWNER'/, 'CMS verify must reject non-OWNER roles');
 
 for (const relativePath of [
   'src/app/api/cms/ai/route.ts',
@@ -293,13 +321,16 @@ for (const relativePath of [
 }
 
 const cmsAuth = readProjectFile('src/app/api/cms/auth/route.ts');
-assertMatches(cmsAuth, /validateAdminMasterKey\([\s\S]*'OWNER'\)/, 'CMS auth must validate OWNER keys');
-assertMatches(cmsAuth, /role:\s*'OWNER'/, 'CMS auth must create OWNER sessions');
+assertMatches(cmsAuth, /parseAdminLoginInput\s*\(/, 'CMS auth must parse dual-mode login input');
+assertMatches(cmsAuth, /authenticateAdminLogin\s*\(\s*prisma,\s*'OWNER'/, 'CMS auth must authenticate named OWNER users');
+assertMatches(cmsAuth, /createAdminSession\([\s\S]*adminUserId:\s*authResult\.user\.id[\s\S]*role:\s*authResult\.user\.role/, 'CMS auth must create sessions linked to the named admin user');
+assertMatches(cmsAuth, /ADMIN_LOGIN_FAILED/, 'CMS auth must audit failed login attempts');
+assertMatches(cmsAuth, /ADMIN_LOGIN_SUCCEEDED/, 'CMS auth must audit successful logins');
 assertMatches(cmsAuth, /CMS_SESSION_COOKIE_NAME/, 'CMS auth must use CMS session cookie');
 
 const cmsKnowledgeBase = readProjectFile('src/app/api/cms/knowledge-base/route.ts');
 assertMatches(cmsKnowledgeBase, /CMS_SESSION_COOKIE_NAME/, 'CMS knowledge-base must use CMS session cookie');
-assertMatches(cmsKnowledgeBase, /role === 'OWNER'/, 'CMS knowledge-base must require OWNER sessions');
+assertMatches(cmsKnowledgeBase, /actor\?\.role === 'OWNER'/, 'CMS knowledge-base must require OWNER sessions');
 
 const cmsArticleDetail = readProjectFile('src/app/api/cms/articles/[id]/route.ts');
 assertMatches(

@@ -232,7 +232,22 @@ Still incomplete:
 - private object storage strategy;
 - advanced file access policy;
 - image optimization pipeline;
+- asset governance metadata/reporting workflow;
 - structured customer-facing photo report module.
+
+### Configurable Forms (Admin-Controlled)
+
+Started:
+
+- public intake flows exist in code and APIs (`/api/contact`, request/session flow);
+- validation exists in route logic for current fixed flows.
+
+Still incomplete:
+
+- admin-managed form schema/configuration;
+- schema versioning for form changes;
+- auditable form routing and anti-spam policy changes;
+- unified admin UI for form configuration without code edits.
 
 ### CRM Operations
 
@@ -310,21 +325,35 @@ Recommended near-term priorities:
    - structured block forms;
    - public page integration;
    - preview/versioning decision.
-4. Clean up AI documentation:
+4. Start Assets + Forms expansion:
+   - media governance metadata and usage reporting;
+   - image derivative/optimization pipeline;
+   - configurable request/contact form schemas with server-side validation.
+5. Start Delivery + Integrations hardening:
+   - outbox/event dispatch baseline for publish and operations triggers;
+   - deterministic cache revalidation policy;
+   - adapter boundary for channel/external connectors;
+   - retry/idempotency and failure visibility controls.
+6. Clean up AI documentation:
    - current implementation snapshot;
    - provider decision;
    - safety and handoff boundaries.
-5. Define customer portal identity before implementation:
+7. Define customer portal identity before implementation:
    - individual vs organization accounts;
    - employees/member roles;
    - recovery model;
    - visible request data rules.
-6. Define security baseline before production:
+8. Define security baseline before production:
    - admin identity model;
    - RBAC;
    - MFA;
    - retention/export/deletion;
    - distributed rate limiting.
+9. Enforce hardening + release readiness:
+   - backup/PITR restore drills;
+   - monitoring/alert ownership;
+   - incident response runbooks;
+   - staging/UAT/rollback release gates.
 
 ## Future Platform
 
