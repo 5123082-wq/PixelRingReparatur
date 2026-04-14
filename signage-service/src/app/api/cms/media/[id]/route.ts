@@ -263,6 +263,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
       await createAdminAuditLog(tx, {
         actorSessionId: actor.sessionId,
+        actorAdminUserId: actor.adminUserId,
         actorRole: actor.role,
         action: 'CMS_MEDIA_UPDATED',
         resourceType: 'CMS_MEDIA',
@@ -326,6 +327,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     if (whereUsed.length > 0) {
       await createAdminAuditLog(prisma, {
         actorSessionId: actor.sessionId,
+        actorAdminUserId: actor.adminUserId,
         actorRole: actor.role,
         action: 'CMS_MEDIA_DELETE_BLOCKED_WHERE_USED',
         resourceType: 'CMS_MEDIA',
@@ -357,6 +359,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
       await createAdminAuditLog(tx, {
         actorSessionId: actor.sessionId,
+        actorAdminUserId: actor.adminUserId,
         actorRole: actor.role,
         action: 'CMS_MEDIA_DELETED',
         resourceType: 'CMS_MEDIA',

@@ -69,6 +69,7 @@ async function auditBlockedAttachmentDownload(
 ) {
   await createAdminAuditLog(prisma, {
     actorSessionId: actor.sessionId,
+    actorAdminUserId: actor.adminUserId,
     actorRole: actor.role,
     action,
     resourceType: 'ATTACHMENT',
@@ -216,6 +217,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       if (checksum !== attachment.checksumSha256) {
         await createAdminAuditLog(prisma, {
           actorSessionId: actor.sessionId,
+          actorAdminUserId: actor.adminUserId,
           actorRole: actor.role,
           action: 'ATTACHMENT_DOWNLOAD_BLOCKED_CHECKSUM',
           resourceType: 'ATTACHMENT',
@@ -241,6 +243,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     await createAdminAuditLog(prisma, {
       actorSessionId: actor.sessionId,
+      actorAdminUserId: actor.adminUserId,
       actorRole: actor.role,
       action: 'ATTACHMENT_DOWNLOADED',
       resourceType: 'ATTACHMENT',

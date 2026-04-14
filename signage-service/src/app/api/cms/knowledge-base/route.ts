@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { CMS_SESSION_COOKIE_NAME, verifyAdminSession } from '@/lib/admin-auth';
+import { CMS_SESSION_COOKIE_NAME, requireAdminSession } from '@/lib/admin-auth';
 import {
   KNOWLEDGE_BASE_FILES,
   readKnowledgeBaseFile,
@@ -19,11 +19,9 @@ function extractMarkdownTitle(
   return titleLine?.replace(/^#{1,2}\s+/, '').trim() || filename;
 }
 
-async function requireOwnerSession(request: NextRequest): Promise<boolean> {
+async function requireOwnerSession(request: NextRequest) {
   const token = request.cookies.get(CMS_SESSION_COOKIE_NAME)?.value;
-  const actor = await verifyAdminSession(prisma, token);
-
-  return actor?.role === 'OWNER';
+  return requireAdminSession(prisma, token, ['OWNER']);
 }
 
 export async function GET(request: NextRequest) {

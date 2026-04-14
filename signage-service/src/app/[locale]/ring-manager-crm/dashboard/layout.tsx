@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 
-import { CRM_SESSION_COOKIE_NAME, verifyAdminSession } from '@/lib/admin-auth';
+import { CRM_SESSION_COOKIE_NAME, requireAdminSession } from '@/lib/admin-auth';
 import { prisma } from '@/lib/prisma';
 
 import CrmDashboardShell from './DashboardShell';
@@ -13,9 +13,9 @@ export default async function DashboardLayout({
 }) {
   const cookieStore = await cookies();
   const token = cookieStore.get(CRM_SESSION_COOKIE_NAME)?.value;
-  const actor = await verifyAdminSession(prisma, token);
+  const actor = await requireAdminSession(prisma, token, ['MANAGER']);
 
-  if (!actor || actor.role !== 'MANAGER') {
+  if (!actor) {
     notFound();
   }
 

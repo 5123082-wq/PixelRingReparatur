@@ -296,12 +296,20 @@ assertMatches(adminAuth, /CRM_SESSION_COOKIE_NAME/, 'CRM auth must use CRM sessi
 
 const adminVerify = readProjectFile('src/app/api/admin/verify/route.ts');
 assertMatches(adminVerify, /CRM_SESSION_COOKIE_NAME/, 'CRM verify must use CRM session cookie');
-assertMatches(adminVerify, /actor\.role !== 'MANAGER'/, 'CRM verify must reject non-MANAGER roles');
+assertMatches(
+  adminVerify,
+  /actor\.role !== 'MANAGER'|requireAdminSession\s*\(\s*prisma,\s*token,\s*\[\s*'MANAGER'\s*\]\s*\)/,
+  'CRM verify must reject non-MANAGER roles'
+);
 
 requireProjectFile('src/app/api/cms/verify/route.ts', 'CMS verify route must exist');
 const cmsVerify = readProjectFile('src/app/api/cms/verify/route.ts');
 assertMatches(cmsVerify, /CMS_SESSION_COOKIE_NAME/, 'CMS verify must use CMS session cookie');
-assertMatches(cmsVerify, /actor\.role !== 'OWNER'/, 'CMS verify must reject non-OWNER roles');
+assertMatches(
+  cmsVerify,
+  /actor\.role !== 'OWNER'|requireAdminSession\s*\(\s*prisma,\s*token,\s*\[\s*'OWNER'\s*\]\s*\)/,
+  'CMS verify must reject non-OWNER roles'
+);
 
 for (const relativePath of [
   'src/app/api/cms/ai/route.ts',
@@ -330,7 +338,11 @@ assertMatches(cmsAuth, /CMS_SESSION_COOKIE_NAME/, 'CMS auth must use CMS session
 
 const cmsKnowledgeBase = readProjectFile('src/app/api/cms/knowledge-base/route.ts');
 assertMatches(cmsKnowledgeBase, /CMS_SESSION_COOKIE_NAME/, 'CMS knowledge-base must use CMS session cookie');
-assertMatches(cmsKnowledgeBase, /actor\?\.role === 'OWNER'/, 'CMS knowledge-base must require OWNER sessions');
+assertMatches(
+  cmsKnowledgeBase,
+  /actor\?\.role === 'OWNER'|requireAdminSession\s*\(\s*prisma,\s*token,\s*\[\s*'OWNER'\s*\]\s*\)/,
+  'CMS knowledge-base must require OWNER sessions'
+);
 
 const cmsArticleDetail = readProjectFile('src/app/api/cms/articles/[id]/route.ts');
 assertMatches(

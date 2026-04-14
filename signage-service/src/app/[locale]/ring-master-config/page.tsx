@@ -6,13 +6,9 @@ import { useRouter, useParams } from 'next/navigation';
 import { getLocaleSegment, resolveLocalizedRedirect } from '../admin-route';
 import { adminFetch } from '@/lib/admin-fetch';
 
-type LoginMode = 'password' | 'master-key';
-
 export default function CmsLoginPage() {
-  const [mode, setMode] = useState<LoginMode>('password');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [masterKey, setMasterKey] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -24,21 +20,16 @@ export default function CmsLoginPage() {
     setError('');
     setLoading(true);
 
-    const payload = mode === 'password'
-      ? { email: email.trim(), password }
-      : { masterKey: masterKey.trim() };
-
     try {
       const res = await adminFetch('/api/cms/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ email: email.trim(), password }),
       });
 
       if (!res.ok) {
         setError('Access denied');
         setPassword('');
-        setMasterKey('');
         setLoading(false);
         return;
       }
@@ -59,77 +50,36 @@ export default function CmsLoginPage() {
         <div style={styles.logo}>⚙️</div>
         <h1 style={styles.title}>PixelRing CMS</h1>
         <p style={styles.subtitle}>Owner & Config Access</p>
-
-        <div style={styles.modeRow}>
-          <button
-            type="button"
-            onClick={() => {
-              setMode('password');
-              setError('');
-            }}
-            disabled={loading}
-            style={{ ...styles.modeButton, ...(mode === 'password' ? styles.modeButtonActive : {}) }}
-          >
-            Email Login
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setMode('master-key');
-              setError('');
-            }}
-            disabled={loading}
-            style={{ ...styles.modeButton, ...(mode === 'master-key' ? styles.modeButtonActive : {}) }}
-          >
-            Bootstrap Key
-          </button>
-        </div>
-
-        {mode === 'password' ? (
-          <>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="owner@pixelring.de"
-              autoComplete="username"
-              autoFocus
-              required
-              disabled={loading}
-              style={styles.input}
-            />
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              autoComplete="current-password"
-              required
-              disabled={loading}
-              style={styles.input}
-            />
-          </>
-        ) : (
-          <input
-            type="password"
-            value={masterKey}
-            onChange={(e) => setMasterKey(e.target.value)}
-            placeholder="Owner Bootstrap Key"
-            autoFocus
-            required
-            disabled={loading}
-            style={styles.input}
-          />
-        )}
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="owner@pixelring.de"
+          autoComplete="username"
+          autoFocus
+          required
+          disabled={loading}
+          style={styles.input}
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          autoComplete="current-password"
+          required
+          disabled={loading}
+          style={styles.input}
+        />
 
         {error && <p style={styles.error}>{error}</p>}
 
         <button
           type="submit"
-          disabled={loading || (mode === 'password' ? !email.trim() || !password : !masterKey.trim())}
+          disabled={loading || !email.trim() || !password}
           style={styles.button}
         >
-          {loading ? 'Verifying...' : mode === 'password' ? 'Sign In' : 'Use Bootstrap Key'}
+          {loading ? 'Verifying...' : 'Sign In'}
         </button>
       </form>
     </div>
@@ -171,26 +121,6 @@ const styles: Record<string, React.CSSProperties> = {
     textTransform: 'uppercase',
     letterSpacing: '0.1em',
     textAlign: 'center',
-  },
-  modeRow: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '8px',
-  },
-  modeButton: {
-    padding: '10px 12px',
-    fontSize: '12px',
-    fontWeight: 600,
-    background: '#0a0a0a',
-    color: '#a1a1aa',
-    border: '1px solid #27272a',
-    borderRadius: '8px',
-    cursor: 'pointer',
-  },
-  modeButtonActive: {
-    color: '#fff',
-    borderColor: '#8b5cf6',
-    boxShadow: '0 0 0 1px rgba(139, 92, 246, 0.25) inset',
   },
   input: {
     width: '100%',
