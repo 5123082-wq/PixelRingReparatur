@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import {
-  CMS_SESSION_COOKIE_NAME,
-  verifyAdminSession,
-} from '@/lib/admin-auth';
+import { CMS_SESSION_COOKIE_NAME, verifyAdminSession } from '@/lib/admin-auth';
 import {
   KNOWLEDGE_BASE_FILES,
   readKnowledgeBaseFile,
@@ -24,9 +21,9 @@ function extractMarkdownTitle(
 
 async function requireOwnerSession(request: NextRequest): Promise<boolean> {
   const token = request.cookies.get(CMS_SESSION_COOKIE_NAME)?.value;
-  const role = await verifyAdminSession(prisma, token);
+  const actor = await verifyAdminSession(prisma, token);
 
-  return role === 'OWNER';
+  return actor?.role === 'OWNER';
 }
 
 export async function GET(request: NextRequest) {

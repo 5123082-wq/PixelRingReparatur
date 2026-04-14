@@ -7,51 +7,109 @@ import { Link } from '@/i18n/routing';
 const Footer = () => {
   const t = useTranslations('Footer');
 
-  const links = [
+  const serviceLinks = [
+    { name: t('services_sign_repair'), href: '/services/sign-repair' },
+    { name: t('services_installation'), href: '/services/installation' },
+    { name: t('services_lighting'), href: '/services/light-advertising' },
+    { name: t('services_branding'), href: '/services/branding' },
+    { name: t('services_maintenance'), href: '/services/maintenance' },
+  ];
+
+  const supportLinks = [
+    { name: t('how_it_works'), href: '/#how-it-works' },
+    { name: t('status_check'), href: '/status' },
+    { name: t('help_center'), href: '/support' },
+    { name: t('contact'), href: '/contact' },
+  ];
+
+  const socialLinks = [
+    { name: 'YouTube', href: 'https://youtube.com', icon: 'YT' },
+    { name: 'Telegram', href: 'https://t.me', icon: 'TG' },
+    { name: 'WhatsApp', href: 'https://wa.me', icon: 'WA' },
+  ];
+
+  const legalLinks = [
+    { name: t('impressum'), href: '/impressum' },
     { name: t('privacy'), href: '/privacy' },
     { name: t('terms'), href: '/terms' },
-    { name: t('compliance'), href: '/compliance' },
-    { name: t('locations'), href: '/locations' },
+    { name: t('cancellation'), href: '/cancellation' },
+    { name: t('cookies'), href: '/cookies' },
   ];
 
   return (
-    <footer className="w-full bg-[#F7F1E8] py-12 px-10 border-t border-[#E7DDD3]">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-start">
-        {/* Paragraph section */}
-        <div className="flex flex-col gap-4 max-w-sm">
-          <span className="text-[20px] font-medium text-[#2B2621] leading-[1.4]">
-            PixelRing
+    <footer className="w-full bg-[#F7F1E8] pt-0 pb-10 px-6 sm:px-10 border-t border-[#E7DDD3] relative overflow-hidden">
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="h-12 md:h-16" aria-hidden />
+
+        {/* Middle Section: Links Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-24">
+          {/* Column 1: Services */}
+          <div className="flex flex-col gap-6">
+            <h4 className="text-[14px] font-bold text-black uppercase tracking-widest">{t('services')}</h4>
+            <div className="flex flex-col gap-4">
+              {serviceLinks.map((link) => (
+                <Link key={link.name} href={link.href} className="text-[15px] text-[#72665D] hover:text-black transition-colors">
+                  {link.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Column 2: Support */}
+          <div className="flex flex-col gap-6">
+            <h4 className="text-[14px] font-bold text-black uppercase tracking-widest">{t('support_title')}</h4>
+            <div className="flex flex-col gap-4">
+              {supportLinks.map((link) => (
+                <Link key={link.name} href={link.href} className="text-[15px] text-[#72665D] hover:text-black transition-colors">
+                  {link.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Column 3: Social */}
+          <div className="flex flex-col gap-6">
+            <h4 className="text-[14px] font-bold text-black uppercase tracking-widest">{t('social')}</h4>
+            <div className="flex flex-col gap-4">
+              {socialLinks.map((link) => (
+                <a key={link.name} href={link.href} target="_blank" rel="noopener noreferrer" className="text-[15px] text-[#72665D] hover:text-black transition-colors flex items-center gap-2">
+                  <span>{link.name}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Column 4: Contact/Info */}
+          <div className="flex flex-col gap-6">
+            <h4 className="text-[14px] font-bold text-black uppercase tracking-widest">{t('company')}</h4>
+            <div className="text-[15px] text-[#72665D] leading-relaxed">
+              <p>PixelRing Technical Atelier</p>
+              <p>Berlin, Deutschland</p>
+              <p className="mt-4">Mo — Fr: 09:00 - 18:00</p>
+              <p className="mt-2 font-medium text-black">service@pixelring.de</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Large Brand Background Text - Inspired by L1GROUP */}
+        <div className="absolute right-0 bottom-12 select-none pointer-events-none opacity-[0.03] overflow-hidden whitespace-nowrap">
+          <span className="text-[180px] lg:text-[280px] font-bold tracking-tighter text-black leading-none">
+            PIXELRING
           </span>
-          <p className="text-[14px] text-[#72665D] leading-[1.42857]">
+        </div>
+
+        {/* Bottom Section: Legal & Copyright */}
+        <div className="border-t border-[#E7DDD3] pt-10 flex flex-col lg:flex-row justify-between items-center gap-8">
+          <div className="flex flex-wrap justify-center lg:justify-start gap-x-8 gap-y-4">
+            {legalLinks.map((link) => (
+              <Link key={link.name} href={link.href} className="text-[13px] text-[#72665D] hover:text-black transition-colors font-medium">
+                {link.name}
+              </Link>
+            ))}
+          </div>
+          <p className="text-[13px] text-[#72665D]/60 whitespace-nowrap">
             {t('copyright')}
           </p>
-        </div>
-
-        {/* Links section */}
-        <div className="flex flex-wrap justify-center gap-6">
-          {links.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className="text-[14px] text-[#72665D] hover:text-[#B8643E] transition-colors leading-[1.42857]"
-            >
-              {link.name}
-            </Link>
-          ))}
-        </div>
-
-        {/* Action/Social section */}
-        <div className="flex items-center justify-center">
-          <div className="w-10 h-10 bg-[#EED8C8] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#E7DDD3] transition-all">
-            {/* Social Icon placeholder or SVG */}
-            <svg
-              className="w-5 h-5 text-[#B8643E]"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.151-1.11-1.458-1.11-1.458-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.026 2.747-1.026.546 1.378.202 2.397.099 2.65.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482C19.137 20.164 22 16.417 22 12c0-5.523-4.477-10-10-10z" />
-            </svg>
-          </div>
         </div>
       </div>
     </footer>

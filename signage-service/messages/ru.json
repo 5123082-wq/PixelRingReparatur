@@ -21,9 +21,25 @@
   "Footer": {
     "copyright": "© 2024 PixelRing Technical Atelier. Все права защищены.",
     "privacy": "Политика конфиденциальности",
-    "terms": "Условия использования",
+    "terms": "Условия и положения",
     "compliance": "Комплаенс",
-    "locations": "Локации"
+    "locations": "Локации",
+    "impressum": "Правовая информация",
+    "cancellation": "Политика отмены",
+    "cookies": "Настройка куки",
+    "services": "Услуги",
+    "company": "Компания",
+    "support_title": "Помощь и поддержка",
+    "social": "Мы в соцсетях",
+    "services_sign_repair": "Ремонт вывесок",
+    "services_installation": "Монтаж и демонтаж",
+    "services_lighting": "Световая реклама и LED",
+    "services_branding": "Брендирование и оклейка",
+    "services_maintenance": "Обслуживание и сервис",
+    "how_it_works": "Как это работает",
+    "status_check": "Проверка статуса",
+    "help_center": "Центр помощи",
+    "contact": "Контакты"
   },
   "Trust": {
     "title_start": "Почему PixelRing — это ",

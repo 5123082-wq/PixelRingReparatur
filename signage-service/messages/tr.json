@@ -21,9 +21,16 @@
   "Footer": {
     "copyright": "© 2024 PixelRing Technical Atelier. Tüm hakları saklıdır.",
     "privacy": "Gizlilik Politikası",
-    "terms": "Kullanım Şartları",
-    "compliance": "Uyum",
-    "locations": "Konumlar"
+    "terms": "Şartlar ve Koşullar",
+    "compliance": "Uyumluluk",
+    "locations": "Konumlar",
+    "impressum": "Künye",
+    "cancellation": "İptal Politikası",
+    "cookies": "Çerez Ayarları",
+    "services": "Hizmetler",
+    "company": "Şirket",
+    "support_title": "Yardım ve Destek",
+    "social": "Bizi Takip Edin"
   },
   "Trust": {
     "title_start": "Neden PixelRing ",

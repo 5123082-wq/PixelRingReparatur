@@ -48,6 +48,11 @@ enum AdminRole {
   OWNER
 }
 
+enum AdminUserStatus {
+  ACTIVE
+  DISABLED
+}
+
 enum CmsArticleType {
   SYMPTOM
   FAQ
@@ -237,20 +242,44 @@ model Session {
   @@map("sessions")
 }
 
+model AdminUser {
+  id           String            @id @default(uuid()) @db.Uuid
+  email        String            @unique
+  displayName  String?
+  passwordHash String
+  role         AdminRole         @default(MANAGER)
+  status       AdminUserStatus   @default(ACTIVE)
+  lastLoginAt  DateTime?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  sessions     AdminSession[]
+  auditLogs    AdminAuditLog[]   @relation("AdminAuditLogActorUser")
+
+  @@index([role, status])
+  @@index([status, updatedAt])
+  @@map("admin_users")
+}
+
 model AdminSession {
   id           String            @id @default(uuid()) @db.Uuid
+  adminUserId  String            @db.Uuid
   tokenHash    String            @unique
   role         AdminRole         @default(MANAGER)
   label        String?
   ipAddress    String?
   userAgent    String?
+  lastSeenAt   DateTime?
   expiresAt    DateTime
+  revokedAt    DateTime?
   createdAt    DateTime          @default(now())
+  adminUser    AdminUser         @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
   statusEvents CaseStatusEvent[] @relation("CaseStatusEventActor")
   auditLogs    AdminAuditLog[]   @relation("AdminAuditLogActor")
 
   @@index([expiresAt])
   @@index([role])
+  @@index([adminUserId, expiresAt])
+  @@index([revokedAt])
   @@map("admin_sessions")
 }
 
@@ -274,27 +303,30 @@ model CaseStatusEvent {
 }
 
 model AdminAuditLog {
-  id             String        @id @default(uuid()) @db.Uuid
-  actorSessionId String?       @db.Uuid
-  actorRole      AdminRole?
-  action         String
-  resourceType   String
-  resourceId     String?
-  caseId         String?       @db.Uuid
-  outcome        String        @default("SUCCESS")
-  reason         String?       @db.Text
-  details        Json?
-  ipAddress      String?
-  userAgent      String?
-  createdAt      DateTime      @default(now())
-  actorSession   AdminSession? @relation("AdminAuditLogActor", fields: [actorSessionId], references: [id], onDelete: SetNull)
-  case           Case?         @relation(fields: [caseId], references: [id], onDelete: SetNull)
+  id               String        @id @default(uuid()) @db.Uuid
+  actorSessionId   String?       @db.Uuid
+  actorAdminUserId String?       @db.Uuid
+  actorRole        AdminRole?
+  action           String
+  resourceType     String
+  resourceId       String?
+  caseId           String?       @db.Uuid
+  outcome          String        @default("SUCCESS")
+  reason           String?       @db.Text
+  details          Json?
+  ipAddress        String?
+  userAgent        String?
+  createdAt        DateTime      @default(now())
+  actorSession     AdminSession? @relation("AdminAuditLogActor", fields: [actorSessionId], references: [id], onDelete: SetNull)
+  actorAdminUser   AdminUser?    @relation("AdminAuditLogActorUser", fields: [actorAdminUserId], references: [id], onDelete: SetNull)
+  case             Case?         @relation(fields: [caseId], references: [id], onDelete: SetNull)
 
   @@index([createdAt])
   @@index([action, createdAt])
   @@index([resourceType, resourceId])
   @@index([caseId, createdAt])
   @@index([actorSessionId, createdAt])
+  @@index([actorAdminUserId, createdAt])
   @@map("admin_audit_logs")
 }
 

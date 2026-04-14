@@ -112,3 +112,11 @@ If a useful rule should become active, propose extracting it into `docs/12_agent
 - Do not use phase numbers without context; existing docs contain conflicting phase numbering.
 - When moving or splitting docs, update links and the migration matrix.
 - After documentation changes, check markdown links.
+- Keep a root-level `PROGRESS.md` as the global short development journal.
+- Agent must read `PROGRESS.md` before starting work.
+- Agent must update `PROGRESS.md` after changes.
+- `PROGRESS.md` should stay short: module + current stage/status only.
+- Detailed notes must go into the domain-specific `Progress Log` section inside the corresponding documentation folder.
+- For every new development track, add or update a `Progress Log` section in the main domain execution document (for example, rollout/plan doc in the touched folder).
+- The `Progress Log` must include at least: date, current sprint/block, done, in progress, next action, blockers/risks, and updated documents.
+- Before starting after a long pause, read the latest `Progress Log` entry first and continue from that checkpoint.

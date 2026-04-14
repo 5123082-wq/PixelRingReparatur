@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test:admin-security": "node scripts/verify-admin-security.mjs",
+    "test:admin-auth": "node --experimental-strip-types --experimental-specifier-resolution=node --test scripts/test-admin-auth.test.ts",
+    "admin:bootstrap": "node scripts/bootstrap-admin-users.mjs",
     "db:generate": "prisma generate",
     "db:migrate": "node scripts/migration-manager.mjs create",
     "db:deploy": "node scripts/migration-manager.mjs apply",

@@ -192,6 +192,30 @@ Do not include in Phase 3 v1:
 - `SiteSettings` table;
 - full workflow states beyond `DRAFT` and `PUBLISHED`.
 
+## Next Scope After Phase 3 v1 (Approved Block 2)
+
+After Phase 3 starter stabilization, expand to Content Core:
+
+1. Add `PageRevision`/`ArticleRevision` style history model with restore support.
+2. Expand workflow states to `DRAFT -> IN_REVIEW -> APPROVED -> SCHEDULED -> PUBLISHED -> ARCHIVED`.
+3. Add scheduled publishing path with auditable scheduler jobs.
+4. Add signed preview mode for authenticated admin users.
+5. Add managed navigation entities (`Menu` / `MenuItem`) to remove code-only menu edits.
+6. Keep JSON blocks as content source and avoid drag-and-drop builder complexity.
+
+Technology direction for this expansion:
+
+- backend logic remains in current `Next.js + Prisma + PostgreSQL`;
+- CMS editor/moderation screens use Tabler-based UI components;
+- scheduler uses managed cron in hosted mode, or server cron in self-hosted mode.
+
+Boundary with Block 3 (Assets + Forms):
+
+- page content remains focused on structured page blocks and publishing workflow;
+- media governance and processing pipeline belong to the Assets track;
+- configurable request/contact form schemas belong to the Forms track;
+- integration points between Page CMS and Forms/Assets must stay typed and audit-friendly.
+
 ## Implementation Sequence
 
 1. Add Prisma model and migration for `CmsPage`.

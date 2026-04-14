@@ -6,6 +6,21 @@
 
 It should not expose free-form HTML editing. The CMS should manage structured content that the frontend renders through safe, tested components.
 
+## Existing Entity Baseline
+
+This CMS plan uses the current project entities as the base and extends them in phases.
+
+1. `CmsArticle` -> Content & Wiki area.
+2. `CmsPage` -> Page Content CMS area.
+3. `CmsMedia` -> Media Library area.
+4. `AiConfig` -> AI Brain Config area.
+5. `CmsSeoConfig` -> SEO & Keywords area.
+
+Planning constraint:
+
+- do not replace these entities with a new external CMS model;
+- evolve them with revisions, workflow, permissions, and operations hardening.
+
 ## CMS Areas
 
 ### Dashboard
@@ -115,6 +130,8 @@ Required media behavior:
 - image optimization or derived responsive sizes;
 - "where used" check before deletion;
 - no mixing public CMS assets with private request attachments.
+- asset governance metadata (`alt`, locale, usage, source/copyright) for publication quality.
+- usage reporting baseline for high-impact assets.
 
 Current MVP coverage:
 
@@ -123,6 +140,27 @@ Current MVP coverage:
 - OWNER-only `/api/cms/media` collection/detail routes implement upload + CRUD with CSRF, UUID id guards, and audit logging;
 - delete is blocked when media is still referenced by CMS article/page content (`where used` check);
 - `/ring-master-config/dashboard/media` and starter media pickers in article/page editors are available for selecting and inserting public CMS media references.
+
+### Forms Configuration (New Expansion Track)
+
+Purpose:
+
+- move high-change public request/contact forms away from code-only field edits.
+
+Scope:
+
+- configurable form schemas for approved public flows;
+- server-side validation using strict typed schemas;
+- anti-spam and rate-limit controls per form endpoint;
+- audit logs for form schema and routing changes;
+- compatibility with existing request intake APIs.
+
+Technology direction:
+
+- backend: existing `Next.js + Prisma + PostgreSQL`;
+- validation: `zod` schemas on server;
+- admin UI: Tabler-based forms/tables;
+- storage strategy: keep current flow first, then evolve to dedicated form config entities as needed.
 
 ### SEO And GEO
 
@@ -188,6 +226,13 @@ Production-grade CMS should also support:
 - preview mode with signed token;
 - scheduled publishing;
 - content dependency checks before publishing.
+
+Agreed implementation direction for this workflow block:
+
+- workflow/state and revision logic stay in current `Next.js + Prisma + PostgreSQL` backend;
+- editor and moderation interfaces use Tabler-based admin UI components;
+- scheduled publishing runs through cron (managed-hosting cron first, server cron for self-hosted fallback);
+- no full visual page builder in this phase.
 
 ## First CMS Milestone
 

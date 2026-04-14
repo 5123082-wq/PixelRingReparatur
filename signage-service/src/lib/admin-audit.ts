@@ -1,11 +1,14 @@
 import type { NextRequest } from 'next/server';
 import type { AdminRole, Prisma, PrismaClient } from '@prisma/client';
 
-import { hashAdminToken, verifyAdminSession } from '@/lib/admin-auth';
+import { hasRequiredAdminRole, verifyAdminSession } from './admin-auth';
 
 export type AdminRequestActor = {
+  adminUserId: string;
+  email: string;
+  displayName: string | null;
   role: AdminRole;
-  sessionId: string | null;
+  sessionId: string;
   ipAddress: string | null;
   userAgent: string | null;
 };
@@ -14,6 +17,7 @@ type AuditClient = PrismaClient | Prisma.TransactionClient;
 
 type CreateAdminAuditLogInput = {
   actorSessionId?: string | null;
+  actorAdminUserId?: string | null;
   actorRole?: AdminRole | null;
   action: string;
   resourceType: string;
@@ -44,33 +48,18 @@ export async function requireAdminActor(
   allowedRoles: AdminRole[]
 ): Promise<AdminRequestActor | null> {
   const token = request.cookies.get(cookieName)?.value;
-  const role = await verifyAdminSession(prisma, token);
+  const actor = await verifyAdminSession(prisma, token);
 
-  if (!role || !allowedRoles.includes(role)) {
+  if (!hasRequiredAdminRole(actor, allowedRoles)) {
     return null;
   }
 
-  let sessionId: string | null = null;
-
-  if (token) {
-    const tokenHash = hashAdminToken(token);
-    const session = await prisma.adminSession.findUnique({
-      where: { tokenHash },
-      select: {
-        id: true,
-        expiresAt: true,
-        role: true,
-      },
-    });
-
-    if (session && session.expiresAt > new Date() && session.role === role) {
-      sessionId = session.id;
-    }
-  }
-
   return {
-    role,
-    sessionId,
+    adminUserId: actor.adminUserId,
+    email: actor.email,
+    displayName: actor.displayName,
+    role: actor.role,
+    sessionId: actor.sessionId,
     ipAddress: getRequestIpAddress(request),
     userAgent: getRequestUserAgent(request),
   };
@@ -85,6 +74,7 @@ export async function createAdminAuditLog(
   await client.adminAuditLog.create({
     data: {
       actorSessionId: input.actorSessionId ?? null,
+      actorAdminUserId: input.actorAdminUserId ?? null,
       actorRole: input.actorRole ?? null,
       action: input.action,
       resourceType: input.resourceType,
