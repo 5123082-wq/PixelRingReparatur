@@ -50,6 +50,10 @@ export async function requireAdminActor(
   const token = request.cookies.get(cookieName)?.value;
   const actor = await requireAdminSession(prisma, token, allowedRoles);
 
+  if (!actor) {
+    return null;
+  }
+
   return {
     adminUserId: actor.adminUserId,
     email: actor.email,
