@@ -11,38 +11,34 @@ interface BentoGridSectionProps {
 const BentoGridSection = ({ content }: BentoGridSectionProps) => {
   const t = useTranslations('Bento');
 
-  const steps = [
-    {
-      id: 1,
-      title: content?.steps?.[0]?.title ?? t('steps.0.title'),
-      description: content?.steps?.[0]?.description ?? t('steps.0.description'),
-      className: 'md:col-span-2 lg:col-span-2 bg-white',
-    },
-    {
-      id: 2,
-      title: content?.steps?.[1]?.title ?? t('steps.1.title'),
-      description: content?.steps?.[1]?.description ?? t('steps.1.description'),
-      className: 'bg-white',
-    },
-    {
-      id: 3,
-      title: content?.steps?.[2]?.title ?? t('steps.2.title'),
-      description: content?.steps?.[2]?.description ?? t('steps.2.description'),
-      className: 'bg-white',
-    },
-    {
-      id: 4,
-      title: content?.steps?.[3]?.title ?? t('steps.3.title'),
-      description: content?.steps?.[3]?.description ?? t('steps.3.description'),
-      className: 'md:col-span-2 lg:col-span-3 bg-[#B8643E] text-white',
-    },
-    {
-      id: 5,
-      title: content?.steps?.[4]?.title ?? t('steps.4.title'),
-      description: content?.steps?.[4]?.description ?? t('steps.4.description'),
-      className: 'bg-white',
-    },
-  ];
+  const DEFAULT_STEP_KEYS = [0, 1, 2, 3, 4] as const;
+
+  // Helper: assign span class by position pattern (same visual rhythm as original design)
+  const getCardClass = (idx: number, total: number): string => {
+    // First card always spans 2 columns
+    if (idx === 0) return 'md:col-span-2 lg:col-span-2 bg-white';
+    // For 5-card layout: index 3 (4th card) gets accent wide span
+    if (total === 5 && idx === 3) return 'md:col-span-2 lg:col-span-3 bg-[#B8643E] text-white';
+    // For other layouts: last card gets accent wide span
+    if (idx === total - 1 && total !== 5) return 'md:col-span-2 lg:col-span-3 bg-[#B8643E] text-white';
+    return 'bg-white';
+  };
+
+  // If CMS provides steps — use them dynamically; otherwise fall back to 5 static defaults
+  const steps =
+    content?.steps && content.steps.length > 0
+      ? content.steps.map((cmsStep, idx) => ({
+          id: idx + 1,
+          title: cmsStep.title ?? t(`steps.${DEFAULT_STEP_KEYS[idx % DEFAULT_STEP_KEYS.length]}.title`),
+          description: cmsStep.description ?? t(`steps.${DEFAULT_STEP_KEYS[idx % DEFAULT_STEP_KEYS.length]}.description`),
+          className: getCardClass(idx, content.steps!.length),
+        }))
+      : DEFAULT_STEP_KEYS.map((i) => ({
+          id: i + 1,
+          title: t(`steps.${i}.title`),
+          description: t(`steps.${i}.description`),
+          className: getCardClass(i, DEFAULT_STEP_KEYS.length),
+        }));
 
   return (
     <section className="w-full bg-[#EED8C8] py-24 px-6">
@@ -61,14 +57,14 @@ const BentoGridSection = ({ content }: BentoGridSectionProps) => {
               className={`p-10 rounded-[40px] shadow-xl shadow-[#0E1A2B08] border border-[#E7DDD3] hover:translate-y-[-8px] transition-all duration-300 flex flex-col justify-between gap-8 ${step.className}`}
             >
               <div className="flex flex-col gap-4">
-                <span className={`text-[14px] font-bold uppercase tracking-widest ${step.id === 4 ? 'text-white/70' : 'text-[#B8643E]'}`}>
+                <span className={`text-[14px] font-bold uppercase tracking-widest ${step.className.includes('text-white') ? 'text-white/70' : 'text-[#B8643E]'}`}>
                   Step 0{step.id}
                 </span>
-                <h3 className={`text-[24px] md:text-[28px] font-bold leading-tight ${step.id === 4 ? 'text-white' : 'text-[#0E1A2B]'}`}>
+                <h3 className={`text-[24px] md:text-[28px] font-bold leading-tight ${step.className.includes('text-white') ? 'text-white' : 'text-[#0E1A2B]'}`}>
                   {step.title}
                 </h3>
               </div>
-              <p className={`text-[16px] leading-[1.6] ${step.id === 4 ? 'text-white/90' : 'text-[#72665D]'}`}>
+              <p className={`text-[16px] leading-[1.6] ${step.className.includes('text-white') ? 'text-white/90' : 'text-[#72665D]'}`}>
                 {step.description}
               </p>
             </div>

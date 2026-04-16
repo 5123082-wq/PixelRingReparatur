@@ -6,8 +6,8 @@ import { createWebsiteRequest } from '@/lib/request-intake';
 import { CASE_SESSION_COOKIE_NAME } from '@/lib/case-session';
 import {
   AttachmentValidationError,
-  deleteLocalAttachment,
-  storeLocalAttachment,
+  deleteAttachment,
+  storeAttachment,
   type StoredAttachmentInput,
 } from '@/lib/attachments';
 
@@ -28,7 +28,8 @@ export async function POST(request: NextRequest) {
     const name = String(formData.get('name') ?? '').trim();
     const contact = String(formData.get('contact') ?? '').trim();
     const message = String(formData.get('message') ?? '').trim();
-    const photo = formData.get('photo') as File | null;
+    const issueType = String(formData.get('issueType') ?? '').trim();
+    const location = String(formData.get('location') ?? '').trim();
 
     if (!contact || !message) {
       return NextResponse.json(
@@ -39,19 +40,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (photo && photo.size > 0) {
-      storedAttachments = [await storeLocalAttachment(photo)];
+    const fileEntries = [
+      ...formData.getAll('files'),
+      ...formData.getAll('photo'),
+    ].filter((entry): entry is File => entry instanceof File && entry.size > 0);
+
+    if (fileEntries.length > 0) {
+      storedAttachments = await Promise.all(
+        fileEntries.map((file) => storeAttachment(file))
+      );
     }
+
+    const messageParts = [];
+    if (issueType) messageParts.push(`Тип: ${issueType}`);
+    if (location) messageParts.push(`Локация: ${location}`);
+    
+    const finalMessage = messageParts.length > 0 
+      ? `${messageParts.join(' | ')}\n\n${message}`
+      : message;
 
     const result = await createWebsiteRequest(prisma, {
       name,
       contact,
-      message,
+      message: finalMessage,
       userAgent: request.headers.get('user-agent'),
       ipAddress:
         request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null,
       attachments: storedAttachments,
     });
+
+    const attachmentsText = storedAttachments.length > 0
+      ? `\n📎 *Вложения:*\n${storedAttachments.map((a, i) => 
+          a.storageProvider === 'VERCEL_BLOB' 
+            ? `[Файл ${i + 1}](${a.storageKey})` 
+            : `Файл ${i + 1} (локальный)`
+        ).join('\n')}`
+      : '';
 
     const text = [
       `🔧 *New PixelRing request*`,
@@ -59,9 +83,14 @@ export async function POST(request: NextRequest) {
       `👤 *Имя:* ${name || '—'}`,
       `📞 *Контакт:* ${contact}`,
       `🆔 *PR:* ${result.publicRequestNumber}`,
+      ...(issueType ? [`📋 *Тип:* ${issueType}`] : []),
+      ...(location ? [`🗺 *Локация:* ${location}`] : []),
+      attachmentsText,
       ``,
       `📝 *Сообщение:*`,
       message,
+      ``,
+      `🏢 [View in CRM](https://pixelring.reparatur/de/ring-manager-crm/dashboard/${result.caseId})`,
     ].join('\n');
 
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
@@ -112,7 +141,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     await Promise.allSettled(
       storedAttachments.map((attachment) =>
-        deleteLocalAttachment(attachment.storageKey)
+        deleteAttachment(attachment)
       )
     );
 

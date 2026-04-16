@@ -4,6 +4,8 @@ import crypto from 'node:crypto';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
+import { put, del } from '@vercel/blob';
+
 import { AttachmentKind, AttachmentStorageProvider } from '@prisma/client';
 
 export type StoredAttachmentInput = {
@@ -23,7 +25,7 @@ export class AttachmentValidationError extends Error {
   }
 }
 
-const DEFAULT_MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+const DEFAULT_MAX_UPLOAD_BYTES = 20 * 1024 * 1024; // 20 MB
 const ALLOWED_IMAGE_TYPES = new Set([
   'image/jpeg',
   'image/png',
@@ -32,6 +34,12 @@ const ALLOWED_IMAGE_TYPES = new Set([
   'image/heic',
   'image/heif',
 ]);
+const ALLOWED_VIDEO_TYPES = new Set([
+  'video/mp4',
+  'video/quicktime',
+  'video/webm',
+]);
+const ALLOWED_TYPES = new Set([...ALLOWED_IMAGE_TYPES, ...ALLOWED_VIDEO_TYPES]);
 
 function getMaxUploadBytes(): number {
   const configured = Number(process.env.ATTACHMENT_MAX_UPLOAD_BYTES);
@@ -93,7 +101,7 @@ export function getLocalAttachmentPath(storageKey: string): string {
   return absolutePath;
 }
 
-export async function storeLocalAttachment(file: File): Promise<StoredAttachmentInput> {
+export async function storeAttachment(file: File): Promise<StoredAttachmentInput> {
   if (file.size <= 0) {
     throw new AttachmentValidationError('Attachment file is empty.');
   }
@@ -108,8 +116,8 @@ export async function storeLocalAttachment(file: File): Promise<StoredAttachment
 
   const mimeType = file.type || 'application/octet-stream';
 
-  if (!ALLOWED_IMAGE_TYPES.has(mimeType)) {
-    throw new AttachmentValidationError('Please upload an image file.');
+  if (!ALLOWED_TYPES.has(mimeType)) {
+    throw new AttachmentValidationError('Please upload an image or video file.');
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());
@@ -122,12 +130,31 @@ export async function storeLocalAttachment(file: File): Promise<StoredAttachment
     `${crypto.randomUUID()}-${originalFilename ?? 'upload'}`
   );
   const absolutePath = getLocalAttachmentPath(storageKey);
+  const kind = getAttachmentKind(mimeType);
 
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    const { url } = await put(storageKey, buffer, {
+      access: 'private',
+      contentType: mimeType,
+    });
+    
+    return {
+      kind,
+      storageProvider: AttachmentStorageProvider.VERCEL_BLOB,
+      storageKey: url, // Store the public URL directly
+      originalFilename,
+      mimeType,
+      byteSize: buffer.byteLength,
+      checksumSha256,
+    };
+  }
+
+  // Fallback to local storage
   await fs.mkdir(path.dirname(absolutePath), { recursive: true });
   await fs.writeFile(absolutePath, buffer, { flag: 'wx' });
 
   return {
-    kind: getAttachmentKind(mimeType),
+    kind,
     storageProvider: AttachmentStorageProvider.LOCAL,
     storageKey,
     originalFilename,
@@ -139,6 +166,17 @@ export async function storeLocalAttachment(file: File): Promise<StoredAttachment
 
 export async function readLocalAttachment(storageKey: string): Promise<Buffer> {
   return fs.readFile(getLocalAttachmentPath(storageKey));
+}
+
+export async function deleteAttachment(attachment: StoredAttachmentInput): Promise<void> {
+  if (attachment.storageProvider === AttachmentStorageProvider.VERCEL_BLOB) {
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      await del(attachment.storageKey);
+    }
+    return;
+  }
+  
+  await deleteLocalAttachment(attachment.storageKey);
 }
 
 export async function deleteLocalAttachment(storageKey: string): Promise<void> {

@@ -66,6 +66,20 @@ export async function GET(request: NextRequest) {
     ];
   }
 
+  if (actor.role === 'MANAGER') {
+    const validAssignees = [actor.adminUserId, actor.email];
+    if (actor.displayName) validAssignees.push(actor.displayName);
+
+    where.AND = [
+      {
+        OR: [
+          { assignedOperator: null },
+          ...validAssignees.map(val => ({ assignedOperator: val }))
+        ]
+      }
+    ];
+  }
+
   try {
     const [cases, total] = await Promise.all([
       prisma.case.findMany({

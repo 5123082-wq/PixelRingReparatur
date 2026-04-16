@@ -4,6 +4,7 @@ import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
+import LocationPicker from './LocationPicker';
 
 interface ContactFormProps {
   onSuccess?: (publicRequestNumber: string) => void;
@@ -19,7 +20,10 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
   const [name, setName] = useState('');
   const [contact, setContact] = useState('');
   const [message, setMessage] = useState('');
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [issueType, setIssueType] = useState('');
+  const [location, setLocation] = useState('');
+  const [files, setFiles] = useState<File[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -46,11 +50,12 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
       formData.append('name', name);
       formData.append('contact', contact);
       formData.append('message', message);
+      formData.append('issueType', issueType);
+      formData.append('location', location);
 
-      const photoFile = fileInputRef.current?.files?.[0];
-      if (photoFile) {
-        formData.append('photo', photoFile);
-      }
+      files.forEach((file) => {
+        formData.append('files', file);
+      });
 
       const response = await fetch('/api/contact', {
         method: 'POST',
@@ -79,7 +84,9 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
       setName('');
       setContact('');
       setMessage('');
-      setImagePreview(null);
+      setIssueType('');
+      setLocation('');
+      setFiles([]);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -96,15 +103,16 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
     }
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleFiles = (newFiles: FileList | null) => {
+    if (!newFiles) return;
+    const validFiles = Array.from(newFiles).filter(
+      (f) => f.size > 0 && f.size <= 20 * 1024 * 1024
+    );
+    setFiles((prev) => [...prev, ...validFiles]);
+  };
+
+  const removeFile = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   if (isSuccess) {
@@ -154,7 +162,7 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
       onSubmit={handleSubmit}
       className="flex flex-col flex-1 gap-3 sm:gap-4 overflow-hidden"
     >
-      <div className="flex flex-col gap-3 sm:gap-4 overflow-y-auto pr-1 -mr-1">
+      <div className="flex flex-col gap-3 sm:gap-4 overflow-y-auto pr-1 -mr-1 pb-4">
         <div className="flex flex-col gap-1">
           <input
             type="text"
@@ -187,6 +195,43 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
         </div>
 
         <div className="flex flex-col gap-1">
+          <select
+            value={issueType}
+            onChange={(e) => setIssueType(e.target.value)}
+            className={`w-full px-5 sm:px-6 py-3 sm:py-3.5 border rounded-2xl outline-none focus:ring-1 transition-all duration-300 text-[14px] sm:text-[15px] appearance-none cursor-pointer ${
+              variant === 'dark'
+                ? 'bg-white/10 border-white/10 focus:border-[#B8643E] text-white focus:ring-[#B8643E]/50 focus:bg-white/15'
+                : 'bg-[#F7F1E8]/60 border-[#E7DDD3] focus:border-[#B8643E] text-[#0E1A2B] focus:ring-[#B8643E]/30 focus:bg-white'
+            }`}
+            style={{ 
+              backgroundImage: `url('data:image/svg+xml;utf8,<svg fill="none" class="${variant === 'dark' ? 'stroke-white' : 'stroke-black'}" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>')`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'right 1rem center',
+              backgroundSize: '1rem'
+            }}
+          >
+            <option value="" disabled className={variant === 'dark' ? 'text-black' : ''}>{t('field_issue_type') || 'Typ der Anfrage (optional)'}</option>
+            <option value="Repair" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_repair') || 'Reparatur'}</option>
+            <option value="Installation" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_installation') || 'Montage'}</option>
+            <option value="Maintenance" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_maintenance') || 'Wartung'}</option>
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-1 z-40 relative">
+          <LocationPicker
+            value={location}
+            onChange={setLocation}
+            variant={variant}
+            placeholder={t('field_location') || 'Adresse oder Ort (optional)'}
+            className={`w-full px-5 sm:px-6 py-3 sm:py-3.5 border rounded-2xl outline-none focus:ring-1 transition-all duration-300 text-[14px] sm:text-[15px] ${
+              variant === 'dark'
+                ? 'bg-white/10 border-white/10 focus:border-[#B8643E] text-white placeholder-white/50 focus:ring-[#B8643E]/50 focus:bg-white/15'
+                : 'bg-[#F7F1E8]/60 border-[#E7DDD3] focus:border-[#B8643E] text-[#0E1A2B] placeholder-[#72665D]/40 focus:ring-[#B8643E]/30 focus:bg-white'
+            }`}
+          />
+        </div>
+
+        <div className="flex flex-col gap-1">
           <textarea
             ref={textareaRef}
             rows={2}
@@ -202,80 +247,79 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
           />
         </div>
 
-        {imagePreview && (
-          <div className="relative w-12 h-12 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl overflow-hidden animate-in fade-in duration-300 ml-1">
-            <Image
-              src={imagePreview}
-              alt="Preview"
-              fill
-              unoptimized
-              sizes="64px"
-              className="object-cover"
-            />
-            <button
-              type="button"
-              onClick={() => setImagePreview(null)}
-              className="absolute top-1 right-1 w-4 h-4 sm:w-5 sm:h-5 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/70 transition-colors text-[10px]"
-            >
-              ×
-            </button>
+        {files.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {files.map((f, i) => (
+              <div key={i} className={`relative flex items-center gap-2 pr-2 pl-3 py-1.5 rounded-full border ${variant === 'dark' ? 'border-white/20 bg-white/5' : 'border-black/10 bg-black/5'}`}>
+                <span className={`text-xs truncate max-w-[120px] ${variant === 'dark' ? 'text-white/80' : 'text-[#72665D]'}`}>
+                  {f.name}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => removeFile(i)}
+                  className="w-5 h-5 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/40 text-white text-[10px] transition-colors"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
           </div>
         )}
       </div>
 
-      <div className="mt-auto pt-2">
+      <div className="mt-auto pt-2 border-t border-t-white/5">
         <div className="flex items-center gap-2 sm:gap-3 mb-3">
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className={`group flex-1 flex items-center justify-center sm:justify-start gap-2 sm:gap-3 px-3 sm:px-5 py-3 sm:py-3.5 border rounded-2xl transition-all active:scale-[0.98] ${
-              variant === 'dark'
-                ? 'bg-white/5 hover:bg-white/10 border-white/10'
-                : 'bg-[#F7F1E8] hover:bg-[#F0E6D8] border-black/5'
-            }`}
+          <div
+            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+            onDragLeave={() => setIsDragging(false)}
+            onDrop={(e) => { e.preventDefault(); setIsDragging(false); handleFiles(e.dataTransfer.files); }}
+            className="flex-1 flex"
           >
-            <div
-              className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg shadow-sm group-hover:scale-110 transition-transform ${
-                variant === 'dark' ? 'bg-white/10' : 'bg-white'
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className={`group flex-1 flex items-center justify-center sm:justify-start gap-2 sm:gap-3 px-3 sm:px-5 py-3 sm:py-3.5 border border-dashed rounded-2xl transition-all active:scale-[0.98] ${
+                isDragging
+                  ? variant === 'dark' ? 'border-[#B8643E] bg-[#B8643E]/20' : 'border-[#B8643E] bg-[#B8643E]/10'
+                  : variant === 'dark' ? 'bg-white/5 hover:bg-white/10 border-white/20' : 'bg-[#F7F1E8] hover:bg-[#F0E6D8] border-[#E7DDD3]'
               }`}
             >
-              <svg
-                className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${
-                  variant === 'dark' ? 'text-white' : 'text-[#72665D]'
+              <div
+                className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg shadow-sm group-hover:scale-110 transition-transform ${
+                  variant === 'dark' ? 'bg-white/10' : 'bg-white'
                 }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-            </div>
-            <span
-              className={`hidden xs:inline text-[13px] sm:text-[14px] font-bold ${
-                variant === 'dark' ? 'text-white/80' : 'text-[#72665D]'
-              }`}
-            >
-              {t('attach_photo_btn')}
-            </span>
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleImageChange}
-              accept="image/*"
-              className="hidden"
-            />
-          </button>
+                <svg
+                  className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${
+                    variant === 'dark' ? 'text-white' : 'text-[#72665D]'
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+              </div>
+              <span
+                className={`hidden xs:inline text-[13px] sm:text-[14px] font-bold whitespace-nowrap ${
+                  variant === 'dark' ? 'text-white/80' : 'text-[#72665D]'
+                }`}
+              >
+                {t('attach_photo_btn')}
+              </span>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={(e) => {
+                  handleFiles(e.target.files);
+                  e.target.value = '';
+                }}
+                accept="image/*,video/*"
+                multiple
+                className="hidden"
+              />
+            </button>
+          </div>
 
           <button
             type="submit"

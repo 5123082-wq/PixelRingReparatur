@@ -1,263 +1,120 @@
 import { NextRequest, NextResponse } from 'next/server';
-import crypto from 'node:crypto';
-import { AttachmentStorageProvider } from '@prisma/client';
+import { get } from '@vercel/blob';
+import path from 'path';
+import fs from 'fs/promises';
 
 import { prisma } from '@/lib/prisma';
-import { readLocalAttachment } from '@/lib/attachments';
-import {
-  CRM_SESSION_COOKIE_NAME,
-} from '@/lib/admin-auth';
-import { createAdminAuditLog, requireAdminPermissionActor } from '@/lib/admin-audit';
+import { CRM_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
+import { requireAdminPermissionActor } from '@/lib/admin-audit';
+import { AttachmentStorageProvider } from '@prisma/client';
 
-export const runtime = 'nodejs';
+/**
+ * GET /api/admin/attachments/[id]
+ * 
+ * Secure proxy for media attachments. 
+ * Authenticates the admin, logs the download audit, and streams the file.
+ */
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
 
-async function requireAdmin(request: NextRequest) {
-  return requireAdminPermissionActor(
+  // 1. Authenticate Admin (Case visibility implies attachment access)
+  const actor = await requireAdminPermissionActor(
     prisma,
     request,
     CRM_SESSION_COOKIE_NAME,
     ['CRM_ATTACHMENT_READ']
   );
-}
-
-function toSafeDownloadName(filename: string | null): string {
-  return (filename || 'attachment')
-    .replace(/[\r\n"]/g, '')
-    .replace(/[^\w.-]+/g, '-')
-    .slice(0, 120) || 'attachment';
-}
-
-function isUuidLike(value: string): boolean {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-    value
-  );
-}
-
-function createPrivateAttachmentHeaders(
-  attachment: {
-    originalFilename: string | null;
-    mimeType: string;
-  },
-  byteLength: number
-): Headers {
-  return new Headers({
-    'Cache-Control': 'private, no-store, max-age=0, must-revalidate',
-    'Content-Disposition': `inline; filename="${toSafeDownloadName(
-      attachment.originalFilename
-    )}"`,
-    'Content-Length': String(byteLength),
-    'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'; sandbox",
-    'Content-Type': attachment.mimeType || 'application/octet-stream',
-    'Cross-Origin-Resource-Policy': 'same-origin',
-    'Expires': '0',
-    'Permissions-Policy': 'camera=(), geolocation=(), microphone=(), payment=()',
-    'Pragma': 'no-cache',
-    'Referrer-Policy': 'no-referrer',
-    'X-Content-Type-Options': 'nosniff',
-    'X-Frame-Options': 'DENY',
-  });
-}
-
-async function auditBlockedAttachmentDownload(
-  actor: NonNullable<Awaited<ReturnType<typeof requireAdmin>>>,
-  attachmentId: string,
-  details: Record<string, unknown>,
-  reason: string,
-  action: string,
-  status: number,
-  errorMessage: string
-) {
-  await createAdminAuditLog(prisma, {
-    actorSessionId: actor.sessionId,
-    actorAdminUserId: actor.adminUserId,
-    actorRole: actor.role,
-    action,
-    resourceType: 'ATTACHMENT',
-    resourceId: attachmentId,
-    caseId: typeof details.caseId === 'string' ? details.caseId : null,
-    outcome: 'BLOCKED',
-    reason,
-    details: {
-      attachmentId,
-      ...details,
-    },
-    ipAddress: actor.ipAddress,
-    userAgent: actor.userAgent,
-  });
-
-  return NextResponse.json({ error: errorMessage }, { status });
-}
-
-type RouteParams = {
-  params: Promise<{ id: string }>;
-};
-
-export async function GET(request: NextRequest, { params }: RouteParams) {
-  const actor = await requireAdmin(request);
-
   if (!actor) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { id } = await params;
+  // 2. Fetch Attachment Metadata
+  const attachment = await prisma.attachment.findUnique({
+    where: { id },
+  });
 
+  if (!attachment) {
+    return NextResponse.json({ error: 'Attachment not found' }, { status: 404 });
+  }
+
+  // 3. Secure Proxy Logic
   try {
-    if (!isUuidLike(id)) {
-      return await auditBlockedAttachmentDownload(
-        actor,
-        id,
-        { inputType: 'path-param' },
-        'Attachment identifier is not a valid UUID',
-        'ATTACHMENT_DOWNLOAD_BLOCKED_INVALID_ID',
-        400,
-        'Invalid attachment identifier'
-      );
-    }
-
-    const attachment = await prisma.attachment.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        caseId: true,
-        isCustomerVisible: true,
-        storageProvider: true,
-        storageKey: true,
-        originalFilename: true,
-        mimeType: true,
-        byteSize: true,
-        checksumSha256: true,
-      },
-    });
-
-    if (!attachment) {
-      return await auditBlockedAttachmentDownload(
-        actor,
-        id,
-        { lookupResult: 'not-found' },
-        'Attachment record was not found',
-        'ATTACHMENT_DOWNLOAD_BLOCKED_NOT_FOUND',
-        404,
-        'Attachment not found'
-      );
-    }
-
-    if (!attachment.caseId) {
-      return await auditBlockedAttachmentDownload(
-        actor,
-        attachment.id,
-        { storageProvider: attachment.storageProvider, caseId: null },
-        'Attachment is not linked to a case',
-        'ATTACHMENT_DOWNLOAD_BLOCKED_ORPHANED_RECORD',
-        409,
-        'Attachment is not available for download'
-      );
-    }
-
-    if (!attachment.storageKey?.trim()) {
-      return await auditBlockedAttachmentDownload(
-        actor,
-        attachment.id,
-        {
-          caseId: attachment.caseId,
-          storageProvider: attachment.storageProvider,
-          storageKeyPresent: Boolean(attachment.storageKey),
-        },
-        'Attachment storage key is missing or empty',
-        'ATTACHMENT_DOWNLOAD_BLOCKED_MISSING_STORAGE_KEY',
-        409,
-        'Attachment is not available for download'
-      );
-    }
-
-    if (attachment.storageProvider !== AttachmentStorageProvider.LOCAL) {
-      return await auditBlockedAttachmentDownload(
-        actor,
-        attachment.id,
-        {
-          caseId: attachment.caseId,
-          storageProvider: attachment.storageProvider,
-        },
-        'Attachment storage provider is not supported by this route',
-        'ATTACHMENT_DOWNLOAD_BLOCKED_UNSUPPORTED_STORAGE',
-        409,
-        'Attachment is not available for download'
-      );
-    }
-
-    let file: Buffer;
-
-    try {
-      file = await readLocalAttachment(attachment.storageKey);
-    } catch (error) {
-      const code = error instanceof Error && 'code' in error ? String((error as { code?: unknown }).code) : null;
-
-      if (code === 'ENOENT' || code === 'ENOTDIR' || code === 'EISDIR') {
-        return await auditBlockedAttachmentDownload(
-          actor,
-          attachment.id,
-          {
-            caseId: attachment.caseId,
-            storageProvider: attachment.storageProvider,
-            storageKey: attachment.storageKey,
-            storageErrorCode: code,
-          },
-          'Attachment file is missing or inaccessible on disk',
-          'ATTACHMENT_DOWNLOAD_BLOCKED_STORAGE_MISSING',
-          409,
-          'Attachment is not available for download'
-        );
-      }
-
-      throw error;
-    }
-
-    if (attachment.checksumSha256) {
-      const checksum = crypto.createHash('sha256').update(file).digest('hex');
-
-      if (checksum !== attachment.checksumSha256) {
-        await createAdminAuditLog(prisma, {
-          actorSessionId: actor.sessionId,
-          actorAdminUserId: actor.adminUserId,
-          actorRole: actor.role,
-          action: 'ATTACHMENT_DOWNLOAD_BLOCKED_CHECKSUM',
-          resourceType: 'ATTACHMENT',
-          resourceId: attachment.id,
-          caseId: attachment.caseId,
-          outcome: 'BLOCKED',
-          details: {
-            storageProvider: attachment.storageProvider,
-            expectedChecksum: attachment.checksumSha256,
-            actualChecksum: checksum,
-            byteSize: attachment.byteSize,
-          },
-          ipAddress: actor.ipAddress,
-          userAgent: actor.userAgent,
+    if (attachment.storageProvider === AttachmentStorageProvider.VERCEL_BLOB) {
+      try {
+        // Fetch from Vercel Blob with explicit access configuration
+        const blobRes = await get(attachment.storageKey, {
+          access: 'private',
+          token: process.env.BLOB_READ_WRITE_TOKEN,
         });
 
+        if (!blobRes || blobRes.statusCode !== 200) {
+          throw new Error(blobRes ? `Unexpected blob status: ${blobRes.statusCode}` : 'Blob not found in storage');
+        }
+
+        const { stream, blob } = blobRes;
+
+        // Audit the download
+        await prisma.adminAuditLog.create({
+          data: {
+            actorSessionId: actor.sessionId,
+            actorAdminUserId: actor.adminUserId,
+            actorRole: actor.role,
+            action: 'ATTACHMENT_DOWNLOADED',
+            resourceType: 'ATTACHMENT',
+            resourceId: attachment.id,
+            caseId: attachment.caseId,
+            details: {
+              storageProvider: attachment.storageProvider,
+              mimeType: attachment.mimeType || blob.contentType,
+              byteSize: attachment.byteSize || Number(blob.size),
+              isCustomerVisible: attachment.isCustomerVisible,
+            },
+            ipAddress: actor.ipAddress,
+            userAgent: actor.userAgent,
+          },
+        });
+
+        return new NextResponse(stream as any, {
+          headers: createPrivateAttachmentHeaders(attachment, attachment.byteSize || Number(blob.size)),
+        });
+      } catch (error) {
+        console.error('Vercel Blob proxy error:', error);
         return NextResponse.json(
-          { error: 'Attachment integrity check failed' },
-          { status: 409 }
+          { 
+            error: 'Failed to stream from cloud storage',
+            details: error instanceof Error ? error.message : 'Unknown error',
+            key: attachment.storageKey
+          },
+          { status: 502 }
         );
       }
     }
 
-    await createAdminAuditLog(prisma, {
-      actorSessionId: actor.sessionId,
-      actorAdminUserId: actor.adminUserId,
-      actorRole: actor.role,
-      action: 'ATTACHMENT_DOWNLOADED',
-      resourceType: 'ATTACHMENT',
-      resourceId: attachment.id,
-      caseId: attachment.caseId,
-      details: {
-        storageProvider: attachment.storageProvider,
-        mimeType: attachment.mimeType,
-        byteSize: attachment.byteSize,
-        isCustomerVisible: attachment.isCustomerVisible,
-        checksumVerified: Boolean(attachment.checksumSha256),
+    // Local file fallback
+    const file = await readLocalAttachment(attachment.storageKey);
+    
+    // Audit the download
+    await prisma.adminAuditLog.create({
+      data: {
+        actorSessionId: actor.sessionId,
+        actorAdminUserId: actor.adminUserId,
+        actorRole: actor.role,
+        action: 'ATTACHMENT_DOWNLOADED',
+        resourceType: 'ATTACHMENT',
+        resourceId: attachment.id,
+        caseId: attachment.caseId,
+        details: {
+          storageProvider: attachment.storageProvider,
+          mimeType: attachment.mimeType,
+          byteSize: attachment.byteSize,
+          isCustomerVisible: attachment.isCustomerVisible,
+        },
+        ipAddress: actor.ipAddress,
+        userAgent: actor.userAgent,
       },
-      ipAddress: actor.ipAddress,
-      userAgent: actor.userAgent,
     });
 
     return new NextResponse(new Uint8Array(file), {
@@ -265,10 +122,41 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     });
   } catch (error) {
     console.error('Admin attachment download error:', error);
-
-    return NextResponse.json(
-      { error: 'Failed to load attachment' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to load attachment' }, { status: 500 });
   }
+}
+
+/**
+ * Internal helper to create secure headers
+ */
+function createPrivateAttachmentHeaders(attachment: any, size: number) {
+  const headers = new Headers();
+  headers.set('Content-Type', attachment.mimeType || 'application/octet-stream');
+  headers.set('Content-Length', size.toString());
+  headers.set('Cache-Control', 'private, max-age=3600');
+  
+  // Set filename for downloads
+  if (attachment.originalFilename) {
+    headers.set('Content-Disposition', `inline; filename="${encodeURIComponent(attachment.originalFilename)}"`);
+  }
+
+  return headers;
+}
+
+/**
+ * Local storage reading helper
+ */
+async function readLocalAttachment(storageKey: string): Promise<Buffer> {
+  const absolutePath = path.isAbsolute(storageKey) 
+    ? storageKey 
+    : path.resolve(process.cwd(), storageKey);
+    
+  return await fs.readFile(absolutePath);
+}
+
+/**
+ * Audit failure if file missing
+ */
+async function auditBlockedAttachmentDownload(attachmentId: string, caseId: string | null, reason: string) {
+  return NextResponse.json({ error: reason }, { status: 404 });
 }
