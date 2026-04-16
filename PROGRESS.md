@@ -17,4 +17,4 @@ Short global status only. Detailed session notes belong to folder-level `Progres
 ## Last Updated
 
 - Date: 2026-04-16
-- Updated by: Codex agent (CRM case-detail chat initial-position refinement)
+- Updated by: Codex agent (Added favicon and updated site title to 'PixelRing')
