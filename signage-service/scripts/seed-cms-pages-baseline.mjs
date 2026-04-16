@@ -432,7 +432,38 @@ function buildPageSeeds(locale) {
     buildSupportPageSeed(locale, messages),
     buildStatusPageSeed(locale, messages),
     buildGlobalPageSeed(locale, messages),
+    buildLegalPageSeed(locale, 'impressum'),
+    buildLegalPageSeed(locale, 'privacy'),
   ];
+}
+
+function buildLegalPageSeed(locale, pageKey) {
+  const isImpressum = pageKey === 'impressum';
+  
+  const title = isImpressum ? 'Impressum' : 'Datenschutzerklärung';
+  
+  const description = isImpressum 
+    ? `PixelRing Technical Atelier\nInhaber: [Name des Inhabers]\nMusterstraße 123\n12345 Berlin\nDeutschland\n\nKontakt:\nTelefon: +49 (0) 123 456789\nE-Mail: service@pixelring.de\n\nUmsatzsteuer-Identifikationsnummer gemäß § 27 a Umsatzsteuergesetz:\nDE123456789\n\nPlattform der EU-Kommission zur Online-Streitbeilegung: https://ec.europa.eu/consumers/odr\nWir sind zur Teilnahme an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle weder verpflichtet noch bereit.`
+    : `1. Datenschutz auf einen Blick\nDer Schutz Ihrer persönlichen Daten ist uns ein wichtiges Anliegen. Wir behandeln Ihre personenbezogenen Daten vertraulich und entsprechend der gesetzlichen Datenschutzvorschriften sowie dieser Datenschutzerklärung.\n\n2. Datenerfassung auf unserer Website\nDie Datenverarbeitung auf dieser Website erfolgt durch den Websitebetreiber. Die Kontaktdaten können Sie dem Impressum dieser Website entnehmen.\n\n3. SSL- bzw. TLS-Verschlüsselung\nDiese Seite nutzt aus Sicherheitsgründen und zum Schutz der Übertragung vertraulicher Inhalte eine SSL- bzw. TLS-Verschlüsselung.\n\n4. Ihre Rechte\nSie haben jederzeit das Recht, unentgeltlich Auskunft über Herkunft, Empfänger und Zweck Ihrer gespeicherten personenbezogenen Daten zu erhalten. Sie haben außerdem ein Recht, die Berichtigung, Sperrung oder Löschung dieser Daten zu verlangen.`;
+
+  const blocks = [
+    createBlock('textSection', 'mainContent', 0, {
+      title,
+      description,
+    }),
+  ];
+
+  return {
+    pageKey,
+    locale,
+    // Set to PUBLISHED for 'de', otherwise DRAFT
+    status: locale === 'de' ? 'PUBLISHED' : 'DRAFT',
+    title,
+    blocks,
+    seoTitle: title,
+    seoDescription: null,
+    canonicalUrl: createCanonicalUrl(locale, pageKey),
+  };
 }
 
 function normalizeTimestamp(value) {
@@ -685,7 +716,7 @@ async function main() {
       JSON.stringify(
         {
           success: true,
-          pagesProcessed: SUPPORTED_LOCALES.length * 4,
+          pagesProcessed: SUPPORTED_LOCALES.length * 6,
           ...counters,
         },
         null,

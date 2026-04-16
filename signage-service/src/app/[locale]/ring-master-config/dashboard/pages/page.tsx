@@ -10,7 +10,7 @@ import { adminFetch } from '@/lib/admin-fetch';
 // Types
 // ─────────────────────────────────────────────────────────
 
-type CmsPageKey = 'home' | 'support' | 'status' | 'global';
+type CmsPageKey = 'home' | 'support' | 'status' | 'global' | 'impressum' | 'privacy';
 type CmsPageStatus = 'DRAFT' | 'PUBLISHED';
 type CmsPageBlock = Record<string, unknown> & {
   type?: string;
@@ -83,7 +83,7 @@ type PageGroup = {
 // ─────────────────────────────────────────────────────────
 
 const SUPPORTED_LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'] as const;
-const PAGE_KEYS: CmsPageKey[] = ['home', 'support', 'status', 'global'];
+const PAGE_KEYS: CmsPageKey[] = ['home', 'support', 'status', 'global', 'impressum', 'privacy'];
 
 /** Fields that are locale-specific text for each known block type.
  *  These MUST match the field names that getHomePageCmsContent / frontend components actually read. */

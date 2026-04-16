@@ -7,6 +7,7 @@ import { Link } from '@/i18n/routing';
 type FooterLink = {
   label: string;
   href: string;
+  key?: string;
 };
 
 type FooterContent = {
@@ -57,12 +58,20 @@ const Footer = ({ content }: { content?: FooterContent | null }) => {
   const legalLinks = (content?.legalLinks?.length
     ? content.legalLinks
     : [
-        { label: t('impressum'), href: '/impressum' },
-        { label: t('privacy'), href: '/privacy' },
-        { label: t('terms'), href: '/terms' },
-        { label: t('cancellation'), href: '/cancellation' },
-        { label: t('cookies'), href: '/cookies' },
-      ]).map((link) => ({ name: link.label, href: link.href }));
+        { label: t('impressum'), href: '/impressum', key: 'impressum' },
+        { label: t('privacy'), href: '/privacy', key: 'privacy' },
+        { label: t('terms'), href: '/terms', key: 'terms' },
+        { label: t('cancellation'), href: '/cancellation', key: 'cancellation' },
+        { label: t('cookies'), href: '/cookies', key: 'cookies' },
+      ])
+    .filter(link => {
+      // If we have an explicit key (from fallback), use it
+      if (link.key) return ['impressum', 'privacy'].includes(link.key);
+      // Otherwise fallback to checking the href path
+      const path = link.href.replace(/^\//, '').split('/').pop();
+      return ['impressum', 'privacy'].includes(path || '');
+    })
+    .map((link) => ({ name: link.label, href: link.href }));
 
   const companyLines = content?.companyLines?.length
     ? content.companyLines

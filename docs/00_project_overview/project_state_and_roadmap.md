@@ -354,6 +354,10 @@ Recommended near-term priorities:
    - monitoring/alert ownership;
    - incident response runbooks;
    - staging/UAT/rollback release gates.
+10. Implement Marketing & Analytics Readiness:
+    - Deploy Consent Management Platform (CMP) for GDPR/TTDSG compliance.
+    - Integrate Google Analytics 4 and Facebook Pixel with proper consent gating.
+    - Add localized Cookie Banner with granular consent choices (Statistics, Marketing, Functional).
 
 ## Future Platform
 

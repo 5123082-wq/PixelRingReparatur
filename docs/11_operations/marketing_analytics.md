@@ -653,5 +653,23 @@
 
 ---
 
+## 29. Technical Implementation Guide: Cookie Consent (CMP)
+
+### 29.1. Context
+The project is semi-ready for marketing analytics. When Google Analytics or FB Pixel is activated, a Consent Banner MUST be deployed to comply with GDPR/TTDSG.
+
+### 29.2. Required Cookie Banner Wording (German Reference)
+The following text must be used in the "Details" or "Settings" section of the banner:
+
+> **Wir verwenden Cookies**
+> Cookies sind kleine Textdateien, die von Websites an Ihren Browser gesendet und die in im Browser-Verzeichnis Ihres Computers gespeichert werden. Cookies werden erstellt, wenn Sie Ihren Browser nutzen, um eine Website zu besuchen...
+> [See conversation 2026-04-16 for full text snippet provided by the owner]
+
+### 29.3. Technical Requirements for CMP
+- **Privacy-First:** No analytics scripts (`gtag.js`, `fbevents.js`) should load until `consent=granted`.
+- **Granular Choices:** The banner must offer distinct toggles for Statistics, Marketing, and Functional cookies.
+
+---
+
 Конец документа 10.
 

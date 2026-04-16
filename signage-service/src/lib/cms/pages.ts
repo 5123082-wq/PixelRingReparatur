@@ -2,7 +2,7 @@ import 'server-only';
 
 import { prisma } from '@/lib/prisma';
 
-export const CMS_PAGE_KEYS = ['home', 'support', 'status', 'global'] as const;
+export const CMS_PAGE_KEYS = ['home', 'support', 'status', 'global', 'impressum', 'privacy'] as const;
 export const CMS_PAGE_STATUSES = ['DRAFT', 'PUBLISHED'] as const;
 export const SUPPORTED_CMS_LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'] as const;
 export const CMS_PAGE_BLOCK_TYPES = [
