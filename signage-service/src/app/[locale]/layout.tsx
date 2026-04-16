@@ -21,9 +21,6 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "PixelRing",
   description: "AI-first, multilingual sign repair service",
-  icons: {
-    icon: "/favicon.ico",
-  },
 };
 
 export default async function RootLayout({
@@ -49,9 +46,6 @@ export default async function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} h-full antialiased`}
     >
-      <head>
-        <link rel="icon" href="/favicon.ico" />
-      </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           {children}
