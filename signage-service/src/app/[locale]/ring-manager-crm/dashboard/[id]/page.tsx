@@ -1,11 +1,15 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, use, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import { adminFetch } from '@/lib/admin-fetch';
-
 import { withLocalePath } from '../../../admin-route';
+
+import { Button } from '@/components/admin/ui/Button';
+import { Input, Textarea, Select } from '@/components/admin/ui/Input';
+import { Badge } from '@/components/admin/ui/Badge';
 
 type CaseDetail = {
   id: string;
@@ -22,18 +26,6 @@ type CaseDetail = {
   description: string | null;
   createdAt: string;
   updatedAt: string;
-  statusUpdatedAt: string | null;
-  numberIssuedAt: string | null;
-  formalizedAt: string | null;
-  customerProfile: {
-    id: string;
-    displayName: string | null;
-    email: string | null;
-    phone: string | null;
-    preferredLanguage: string | null;
-    preferredContactMethod: string | null;
-    _count: { cases: number };
-  } | null;
   messages: {
     id: string;
     authorRole: string;
@@ -48,13 +40,11 @@ type CaseDetail = {
     originalFilename: string | null;
     mimeType: string;
     byteSize: number;
-    storageProvider: string;
     createdAt: string;
   }[];
   sessions: {
     id: string;
     operatorTakeover: boolean;
-    lastSeenAt: string | null;
     createdAt: string;
   }[];
   statusEvents: {
@@ -74,1216 +64,419 @@ type CaseDetail = {
   }[];
 };
 
-type RelatedCase = {
-  id: string;
-  publicRequestNumber: string | null;
-  status: string;
-  updatedAt: string;
-  summary: string | null;
-};
-
-type MessageRole = 'CUSTOMER' | 'OPERATOR' | 'SYSTEM';
-
-function isMessageRole(value: string): value is MessageRole {
-  return value === 'CUSTOMER' || value === 'OPERATOR' || value === 'SYSTEM';
-}
-
-function getMessageRole(role: string): MessageRole {
-  return isMessageRole(role) ? role : 'SYSTEM';
-}
-
-const MESSAGE_ROLE_META: Record<
-  MessageRole,
-  {
-    label: string;
-    borderColor: string;
-    badgeBackground: string;
-    badgeColor: string;
-    cardBackground: string;
-  }
-> = {
-  CUSTOMER: {
-    label: '👤 Клиент',
-    borderColor: '#3b82f6',
-    badgeBackground: '#dbeafe',
-    badgeColor: '#1d4ed8',
-    cardBackground: '#0a0a0a',
-  },
-  OPERATOR: {
-    label: '🔧 Оператор',
-    borderColor: '#10b981',
-    badgeBackground: '#d1fae5',
-    badgeColor: '#047857',
-    cardBackground: '#0d1713',
-  },
-  SYSTEM: {
-    label: '🤖 AI',
-    borderColor: '#a855f7',
-    badgeBackground: '#f3e8ff',
-    badgeColor: '#7e22ce',
-    cardBackground: '#111827',
-  },
-};
-
-const STATUS_OPTIONS: { value: string; label: string; color: string }[] = [
-  { value: 'DRAFT', label: 'Черновик', color: '#555' },
-  { value: 'FORMALIZED', label: 'Оформлена', color: '#666' },
-  { value: 'NUMBER_ISSUED', label: 'Принято', color: '#3b82f6' },
-  { value: 'UNDER_REVIEW', label: 'В диагностике', color: '#a855f7' },
-  { value: 'IN_PROGRESS', label: 'Ремонт', color: '#f59e0b' },
-  { value: 'ON_HOLD', label: 'Отложено', color: '#6b7280' },
-  { value: 'WAITING_FOR_CUSTOMER', label: 'Ожидает клиента', color: '#ec4899' },
-  { value: 'READY_FOR_PICKUP', label: 'Готов', color: '#22c55e' },
-  { value: 'COMPLETED', label: 'Выдан / Гарантия', color: '#10b981' },
-  { value: 'CANCELLED', label: 'Отказ', color: '#ef4444' },
+const STATUS_OPTIONS: { value: string; label: string; variant: any }[] = [
+  { value: 'DRAFT', label: 'Черновик', variant: 'neutral' },
+  { value: 'FORMALIZED', label: 'Оформлена', variant: 'neutral' },
+  { value: 'NUMBER_ISSUED', label: 'Принято', variant: 'info' },
+  { value: 'UNDER_REVIEW', label: 'В диагностике', variant: 'warning' },
+  { value: 'IN_PROGRESS', label: 'Ремонт', variant: 'warning' },
+  { value: 'ON_HOLD', label: 'Отложено', variant: 'neutral' },
+  { value: 'WAITING_FOR_CUSTOMER', label: 'Ожидает клиента', variant: 'warning' },
+  { value: 'READY_FOR_PICKUP', label: 'Готов', variant: 'success' },
+  { value: 'COMPLETED', label: 'Выдан / Гарантия', variant: 'success' },
+  { value: 'CANCELLED', label: 'Отказ', variant: 'error' },
 ];
 
-const CHANNEL_LABELS: Record<string, string> = {
-  WEBSITE_CHAT: '💬 Чат',
-  WEBSITE_FORM: '📝 Форма',
-  TELEGRAM: '✈️ Telegram',
-  WHATSAPP: '📱 WhatsApp',
-  PHONE: '📞 Телефон',
-  EMAIL: '📧 Email',
-  CRM: '🏢 CRM',
-  MANUAL: '✋ Вручную',
+const CHANNEL_ICONS: Record<string, string> = {
+  WEBSITE_CHAT: '💬', WEBSITE_FORM: '📝', TELEGRAM: '✈️', WHATSAPP: '📱', PHONE: '📞', EMAIL: '📧', CRM: '🏢', MANUAL: '✋'
 };
 
-const ACTOR_ROLE_LABELS: Record<string, string> = {
-  CUSTOMER: 'Клиент',
-  OPERATOR: 'Оператор',
-  SYSTEM: 'Система',
-  AI: 'AI',
-};
-
-const AUDIT_ACTION_LABELS: Record<string, string> = {
-  CASE_CREATED: 'Заявка создана',
-  CASE_STATUS_CHANGED: 'Статус изменён',
-  CASE_ASSIGNMENT_CHANGED: 'Назначение обновлено',
-  CASE_OPERATOR_MESSAGE_SENT: 'Ответ оператора',
-  CASE_INTERNAL_NOTE_CREATED: 'Внутренняя заметка',
-  CASE_OPERATOR_TAKEOVER_CHANGED: 'Режим AI/takeover изменён',
-  CASE_CUSTOMER_PROFILE_SYNCED: 'Профиль клиента синхронизирован',
-  ATTACHMENT_DOWNLOADED: 'Вложение скачано',
-  ATTACHMENT_DOWNLOAD_BLOCKED_CHECKSUM: 'Скачивание блокировано: checksum',
-};
+const ACTOR_ROLE_LABELS: Record<string, string> = { CUSTOMER: 'Клиент', OPERATOR: 'Оператор', SYSTEM: 'Система', AI: 'AI' };
 
 function formatStatusLabel(status: string | null | undefined) {
-  if (!status) {
-    return '—';
-  }
-
+  if (!status) return '—';
   return STATUS_OPTIONS.find((option) => option.value === status)?.label || status;
 }
 
-function formatActorRole(role: string | null | undefined) {
-  if (!role) {
-    return 'Система';
-  }
-
-  return ACTOR_ROLE_LABELS[role] || role;
-}
-
-function formatAuditAction(action: string | null | undefined) {
-  if (!action) {
-    return 'Событие';
-  }
-
-  return AUDIT_ACTION_LABELS[action] || action.replaceAll('_', ' ').toLowerCase();
-}
-
-export default function CaseDetailPage({
-  params,
-}: {
-  params: Promise<{ locale: string; id: string }>;
-}) {
+export default function CaseDetailPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
   const { id, locale } = use(params);
   const router = useRouter();
+  
   const [caseData, setCaseData] = useState<CaseDetail | null>(null);
-  const [relatedCases, setRelatedCases] = useState<RelatedCase[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
+  
+  // Tabs: 'client' | 'master' | 'history'
+  const [activeTab, setActiveTab] = useState<'client' | 'master' | 'history'>('client');
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom on data load or tab change to 'client'
+  useEffect(() => {
+    if (activeTab === 'client' && scrollRef.current) {
+      // Small timeout to ensure DOM is fully updated after motion animations
+      const timer = setTimeout(() => {
+        if (scrollRef.current) {
+          scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [caseData?.messages.length, activeTab]);
+
+  // Status/Assignment state
   const [updating, setUpdating] = useState(false);
-  const [statusMessage, setStatusMessage] = useState('');
-  const [statusError, setStatusError] = useState('');
+  const [newStatus, setNewStatus] = useState('');
   const [statusReason, setStatusReason] = useState('');
+  const [statusMessage, setStatusMessage] = useState('');
   const [assignedOperatorDraft, setAssignedOperatorDraft] = useState('');
-  const [assignmentMessage, setAssignmentMessage] = useState('');
   const [updatingAssignment, setUpdatingAssignment] = useState(false);
+  
+  // Reply Panel State
+  const [replyMode, setReplyMode] = useState<'customer' | 'internal'>('customer');
   const [replyText, setReplyText] = useState('');
-  const [internalNoteText, setInternalNoteText] = useState('');
-  const [replyMessage, setReplyMessage] = useState('');
-  const [internalNoteMessage, setInternalNoteMessage] = useState('');
-  const [takeoverMessage, setTakeoverMessage] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
-  const [sendingInternalNote, setSendingInternalNote] = useState(false);
   const [updatingTakeover, setUpdatingTakeover] = useState(false);
 
   useEffect(() => {
     fetchCase();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, locale]);
 
   async function fetchCase() {
     setLoading(true);
-    setLoadError('');
-
     try {
       const res = await fetch(`/api/admin/cases/${id}`);
-
       if (!res.ok) {
-        const payload = (await res.json().catch(() => null)) as { error?: string } | null;
-        const errorMessage = payload?.error || 'Не удалось загрузить заявку';
-
-        // Hidden admin auth failure still redirects to CRM login.
-        if (res.status === 404 && errorMessage === 'Not found') {
-          router.push(withLocalePath(locale, '/ring-manager-crm'));
-          return;
-        }
-
-        setCaseData(null);
-        setRelatedCases([]);
-        setLoadError(`${errorMessage} (HTTP ${res.status})`);
+        setLoadError(`Ошибка загрузки: ${res.status}`);
         return;
       }
-
       const data = await res.json();
-
       setCaseData(data.case);
-      setRelatedCases(Array.isArray(data.relatedCases) ? data.relatedCases : []);
       setAssignedOperatorDraft(data.case.assignedOperator || '');
+      setNewStatus(data.case.status);
     } finally {
       setLoading(false);
     }
   }
 
-  async function updateStatus(newStatus: string) {
+  async function updateStatus() {
     setUpdating(true);
-    setStatusMessage('');
-    setStatusError('');
-
     try {
       const res = await adminFetch(`/api/admin/cases/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          status: newStatus,
-          statusReason: statusReason.trim() || undefined,
-        }),
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus, statusReason: statusReason.trim() || undefined }),
       });
-
-      if (res.ok) {
-        setStatusMessage(
-          statusReason.trim()
-            ? `Статус изменён на «${formatStatusLabel(newStatus)}». Причина сохранена.`
-            : `Статус изменён на «${formatStatusLabel(newStatus)}».`
-        );
-        setStatusReason('');
-        await fetchCase();
-      } else {
-        const data = (await res.json().catch(() => null)) as { error?: string } | null;
-        setStatusError(data?.error || 'Не удалось изменить статус.');
-      }
-    } finally {
-      setUpdating(false);
-      setTimeout(() => {
-        setStatusMessage('');
-        setStatusError('');
-      }, 4000);
-    }
+      if (res.ok) { setStatusReason(''); await fetchCase(); }
+    } finally { setUpdating(false); }
   }
 
-  async function sendOperatorReply() {
-    const message = replyText.trim();
-
-    if (!message || sendingReply) {
-      return;
-    }
-
+  async function sendReply() {
+    const text = replyText.trim();
+    if (!text || sendingReply) return;
     setSendingReply(true);
-    setReplyMessage('');
-
     try {
+      const payload = replyMode === 'customer' ? { message: text } : { internalNote: text };
       const res = await adminFetch(`/api/admin/cases/${id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message }),
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
-
-      if (res.ok) {
-        setReplyText('');
-        setReplyMessage('Ответ клиенту сохранён в истории и виден клиенту.');
-        await fetchCase();
-      } else {
-        const data = (await res.json().catch(() => null)) as { error?: string } | null;
-        setReplyMessage(data?.error || 'Не удалось сохранить ответ клиенту.');
-      }
-    } finally {
-      setSendingReply(false);
-    }
-  }
-
-  async function sendInternalNote() {
-    const note = internalNoteText.trim();
-
-    if (!note || sendingInternalNote) {
-      return;
-    }
-
-    setSendingInternalNote(true);
-    setInternalNoteMessage('');
-
-    try {
-      const res = await adminFetch(`/api/admin/cases/${id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ internalNote: note }),
-      });
-
-      if (res.ok) {
-        setInternalNoteText('');
-        setInternalNoteMessage('Внутренняя заметка сохранена и клиенту не видна.');
-        await fetchCase();
-      } else {
-        const data = (await res.json().catch(() => null)) as { error?: string } | null;
-        setInternalNoteMessage(data?.error || 'Не удалось сохранить внутреннюю заметку.');
-      }
-    } finally {
-      setSendingInternalNote(false);
-    }
+      if (res.ok) { setReplyText(''); await fetchCase(); }
+    } finally { setSendingReply(false); }
   }
 
   async function updateAssignment() {
-    if (updatingAssignment) {
-      return;
-    }
-
     setUpdatingAssignment(true);
-    setAssignmentMessage('');
-
     try {
-      const res = await adminFetch(`/api/admin/cases/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          assignedOperator: assignedOperatorDraft,
-        }),
+      await adminFetch(`/api/admin/cases/${id}`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ assignedOperator: assignedOperatorDraft }),
       });
-
-      if (res.ok) {
-        setAssignmentMessage(
-          assignedOperatorDraft.trim()
-            ? `Назначение обновлено: ${assignedOperatorDraft.trim()}.`
-            : 'Назначение очищено.'
-        );
-        await fetchCase();
-      } else {
-        const data = (await res.json().catch(() => null)) as { error?: string } | null;
-        setAssignmentMessage(data?.error || 'Не удалось обновить назначение.');
-      }
-    } finally {
-      setUpdatingAssignment(false);
-    }
+      await fetchCase();
+    } finally { setUpdatingAssignment(false); }
   }
 
-  async function updateOperatorTakeover(nextValue: boolean) {
+  async function updateTakeover(nextValue: boolean) {
     setUpdatingTakeover(true);
-    setTakeoverMessage('');
-
     try {
-      const res = await adminFetch(`/api/admin/cases/${id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      await adminFetch(`/api/admin/cases/${id}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ operatorTakeover: nextValue }),
       });
-
-      if (res.ok) {
-        setTakeoverMessage(
-          nextValue
-            ? 'Перехват оператора включён. AI больше не отвечает в активных сессиях заявки.'
-            : 'Перехват оператора выключен. AI снова может отвечать в активных сессиях заявки.'
-        );
-        await fetchCase();
-      } else {
-        const data = (await res.json().catch(() => null)) as { error?: string } | null;
-        setTakeoverMessage(data?.error || 'Не удалось обновить режим перехвата.');
-      }
-    } finally {
-      setUpdatingTakeover(false);
-    }
+      await fetchCase();
+    } finally { setUpdatingTakeover(false); }
   }
 
-  if (loading) {
-    return <p style={{ color: '#666', textAlign: 'center', padding: '60px' }}>Загрузка...</p>;
-  }
+  if (loading) return <div className="flex h-screen items-center justify-center bg-zinc-950 text-zinc-500 font-medium tracking-tighter animate-pulse">SYSTEM LOADING...</div>;
+  if (loadError) return <div className="flex h-screen items-center justify-center bg-zinc-950 text-red-400 font-mono text-sm">{loadError}</div>;
+  if (!caseData) return null;
 
-  if (loadError) {
-    return (
-      <div style={styles.card}>
-        <h3 style={styles.cardTitle}>Ошибка загрузки заявки</h3>
-        <p style={{ color: '#ef4444', fontSize: '14px', lineHeight: 1.6, margin: 0 }}>
-          {loadError}
-        </p>
-        <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
-          <button
-            type="button"
-            onClick={() => void fetchCase()}
-            style={styles.assignmentBtn}
-          >
-            Повторить
-          </button>
-          <button
-            type="button"
-            onClick={() => router.push(withLocalePath(locale, '/ring-manager-crm/dashboard'))}
-            style={styles.backBtn}
-          >
-            Назад к списку
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (!caseData) {
-    return <p style={{ color: '#666', textAlign: 'center', padding: '60px' }}>Заявка не найдена</p>;
-  }
-
-  const currentStatus = STATUS_OPTIONS.find((s) => s.value === caseData.status);
+  const currentStatusObj = STATUS_OPTIONS.find((s) => s.value === caseData.status);
   const operatorTakeover = caseData.sessions.some((session) => session.operatorTakeover);
   const hasCustomerSession = caseData.sessions.length > 0;
-  const customerVisibleMessages = caseData.messages.filter((message) => message.isCustomerVisible);
-  const internalMessages = caseData.messages.filter((message) => !message.isCustomerVisible);
+
+  const timelineEvents = [
+    ...caseData.messages.map(m => ({ timestamp: new Date(m.createdAt).getTime(), type: m.isCustomerVisible ? 'message' : 'note', data: m })),
+    ...caseData.statusEvents.map(e => ({ timestamp: new Date(e.createdAt).getTime(), type: 'status', data: e }))
+  ].sort((a, b) => a.timestamp - b.timestamp);
 
   return (
-    <div>
-      {/* Back button */}
-      <button
-        onClick={() => router.push(withLocalePath(locale, '/ring-manager-crm/dashboard'))}
-        style={styles.backBtn}
-      >
-        ← Назад к списку
-      </button>
-
-      {/* Header */}
-      <div style={styles.header}>
-        <div>
-          <h1 style={styles.prNumber}>
-            {caseData.publicRequestNumber || 'Без номера'}
-          </h1>
-          <span style={{ color: '#666', fontSize: '13px' }}>
-            {CHANNEL_LABELS[caseData.originChannel] || caseData.originChannel}
-            {' • '}
-            Создана {new Date(caseData.createdAt).toLocaleDateString('de-DE', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
-          </span>
+    <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden bg-zinc-950 font-sans selection:bg-indigo-500/30">
+      
+      {/* Premium Integrated Header */}
+      <header className="shrink-0 flex justify-between items-center bg-zinc-950/40 backdrop-blur-xl px-1 sm:px-8 py-5 border-b border-white/[0.03] z-40">
+        <div className="flex items-center gap-4 sm:gap-10">
+          <button 
+            onClick={() => router.push(withLocalePath(locale, '/ring-manager-crm/dashboard'))}
+            className="flex items-center gap-2 text-[10px] font-bold text-zinc-500 hover:text-white transition-all uppercase tracking-widest px-1"
+          >
+             <span className="text-sm">←</span> <span className="hidden sm:inline">BACK</span>
+          </button>
+          
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col">
+              <h1 className="text-lg sm:text-2xl font-black text-white tracking-tight flex items-center gap-3">
+                {caseData.publicRequestNumber || 'CASE #'+caseData.id.slice(0,6)}
+                {currentStatusObj && (
+                  <Badge variant={currentStatusObj.variant as any} className="text-[9px] uppercase font-black tracking-[0.2em] px-2 py-0.5 rounded-sm line-clamp-1 border-white/5">
+                    {currentStatusObj.label}
+                  </Badge>
+                )}
+              </h1>
+            </div>
+          </div>
         </div>
 
-        <span
-          style={{
-            ...styles.badge,
-            background: currentStatus?.color || '#555',
-          }}
-        >
-          {currentStatus?.label || caseData.status}
-        </span>
-      </div>
-
-      {/* Two columns */}
-      <div style={styles.columns}>
-        {/* Left: Info + Status */}
-        <div style={styles.card}>
-          <h3 style={styles.cardTitle}>Информация о клиенте</h3>
-
-          <div style={styles.infoGrid}>
-            <InfoRow label="Имя" value={caseData.customerName} />
-            <InfoRow label="Email" value={caseData.customerEmail} />
-            <InfoRow label="Телефон" value={caseData.customerPhone} />
-            <InfoRow label="Контакт" value={caseData.primaryContactValue} />
-          </div>
-
-          {caseData.customerProfile ? (
-            <>
-              <h3 style={{ ...styles.cardTitle, marginTop: '24px' }}>Профиль клиента</h3>
-              <div style={styles.infoGrid}>
-                <InfoRow label="Profile ID" value={caseData.customerProfile.id} />
-                <InfoRow
-                  label="Язык"
-                  value={caseData.customerProfile.preferredLanguage || '—'}
-                />
-                <InfoRow
-                  label="Предпочт. контакт"
-                  value={caseData.customerProfile.preferredContactMethod || '—'}
-                />
-                <InfoRow
-                  label="Связанные заявки"
-                  value={String(caseData.customerProfile._count.cases)}
-                />
-              </div>
-            </>
-          ) : null}
-
-          <h3 style={{ ...styles.cardTitle, marginTop: '24px' }}>Назначение</h3>
-          <div style={styles.assignmentRow}>
-            <input
-              value={assignedOperatorDraft}
-              onChange={(event) => setAssignedOperatorDraft(event.target.value)}
-              placeholder="Имя или логин ответственного оператора"
-              style={styles.assignmentInput}
-            />
-            <button
-              type="button"
-              onClick={() => void updateAssignment()}
-              disabled={updatingAssignment}
-              style={styles.assignmentBtn}
-            >
-              {updatingAssignment ? 'Сохранение...' : 'Сохранить'}
-            </button>
-          </div>
-          {assignmentMessage ? (
-            <p style={styles.assignmentMessage}>{assignmentMessage}</p>
-          ) : null}
-
-          <h3 style={{ ...styles.cardTitle, marginTop: '24px' }}>Описание</h3>
-          <p style={styles.description}>
-            {caseData.description || caseData.summary || '—'}
-          </p>
-
-          <h3 style={{ ...styles.cardTitle, marginTop: '24px' }}>Изменить статус</h3>
-          <p style={styles.sectionHint}>
-            При смене статуса укажите причину. Для <strong>Отложено</strong> и <strong>Отказ</strong>{' '}
-            она нужна обязательно, для остальных статусов — для аудита и разбора.
-          </p>
-
-          <div style={styles.statusGrid}>
-            {STATUS_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => updateStatus(opt.value)}
-                disabled={updating || opt.value === caseData.status}
-                style={{
-                  ...styles.statusBtn,
-                  borderColor: opt.value === caseData.status ? opt.color : '#333',
-                  color: opt.value === caseData.status ? opt.color : '#999',
-                  opacity: opt.value === caseData.status ? 1 : 0.8,
-                }}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-
-          <textarea
-            value={statusReason}
-            onChange={(event) => setStatusReason(event.target.value)}
-            rows={2}
-            placeholder="Например: ожидание детали от клиента, повторная диагностика, отказ после согласования"
-            style={styles.statusReasonInput}
-          />
-          <p style={styles.fieldHint}>
-            Причина попадет в историю статусов и поможет сверить решение с последующими действиями.
-          </p>
-
-          {statusMessage && (
-            <p style={{ color: '#22c55e', fontSize: '13px', marginTop: '8px' }}>
-              {statusMessage}
-            </p>
-          )}
-
-          {statusError && (
-            <p style={{ color: '#ef4444', fontSize: '13px', marginTop: '8px' }}>
-              {statusError}
-            </p>
-          )}
-
-          {caseData.statusEvents.length > 0 && (
-            <>
-              <h3 style={{ ...styles.cardTitle, marginTop: '24px' }}>История статусов</h3>
-              <p style={styles.sectionHint}>
-                События показываются в хронологии изменений статуса, чтобы быстро понять, кто и
-                почему перевёл заявку дальше по процессу.
-              </p>
-              <div style={styles.timelineList}>
-                {caseData.statusEvents.map((event) => (
-                  <div key={event.id} style={styles.timelineItem}>
-                    <div style={styles.timelineHeader}>
-                      <span style={styles.timelineStatus}>
-                        {formatStatusLabel(event.fromStatus)} → {formatStatusLabel(event.toStatus)}
-                      </span>
-                      <span style={styles.timelineTime}>
-                        {new Date(event.createdAt).toLocaleString('de-DE')}
-                      </span>
-                    </div>
-                    <p style={styles.timelineMeta}>
-                      Инициатор: {formatActorRole(event.actorRole)}
-                    </p>
-                    {event.reason ? (
-                      <p style={styles.timelineReason}>Причина: {event.reason}</p>
-                    ) : null}
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
+        <div className="flex items-center gap-4">
+           <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all ${hasCustomerSession ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500 shadow-[0_0_15px_-5px_#10b981]' : 'border-zinc-800 text-zinc-600'}`}>
+              <div className={`w-1.5 h-1.5 rounded-full ${hasCustomerSession ? 'bg-emerald-500' : 'bg-zinc-700'}`}></div>
+              {hasCustomerSession ? 'CUSTOMER ACTIVE' : 'OFFLINE'}
+           </div>
         </div>
+      </header>
 
-        {/* Right: Messages + Attachments */}
-        <div style={styles.card}>
-          <h3 style={styles.cardTitle}>
-            Сообщения ({customerVisibleMessages.length})
-          </h3>
-
-          {customerVisibleMessages.length === 0 ? (
-            <p style={{ color: '#555', fontSize: '13px' }}>Нет сообщений</p>
-          ) : (
-            <div style={styles.messageList}>
-              {customerVisibleMessages.map((msg) => {
-                const role = getMessageRole(msg.authorRole);
-                const roleMeta = MESSAGE_ROLE_META[role];
-
-                return (
-                  <div
-                    key={msg.id}
-                    style={{
-                      ...styles.message,
-                      borderLeftColor: roleMeta.borderColor,
-                      background: roleMeta.cardBackground,
-                    }}
-                  >
-                    <div style={styles.msgMeta}>
-                      <span
-                        style={{
-                          ...styles.roleBadge,
-                          background: roleMeta.badgeBackground,
-                          color: roleMeta.badgeColor,
-                        }}
-                      >
-                        {roleMeta.label}
-                      </span>
-                      <span style={styles.msgTime}>
-                        {new Date(msg.createdAt).toLocaleString('de-DE')}
-                      </span>
-                    </div>
-                    {msg.authorName ? <p style={styles.msgAuthor}>{msg.authorName}</p> : null}
-                    <p style={styles.msgBody}>{msg.body}</p>
+      {/* Main Board */}
+      <div className="flex flex-1 overflow-hidden relative">
+        
+        {/* Left Sidebar: Minimalist Context (320px) */}
+        <aside className="w-[320px] shrink-0 border-r border-white/[0.03] bg-zinc-950 flex flex-col z-30 overflow-y-auto no-scrollbar pt-6 px-8 space-y-10">
+          
+          {/* Section: Status & Assignment */}
+          <section className="space-y-6">
+             <div className="space-y-1.5">
+               <h3 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.15em]">Status & Owner</h3>
+               <div className="space-y-4 pt-2">
+                  <Select value={newStatus} onChange={(e) => setNewStatus(e.target.value)} className="bg-transparent border-white/[0.05] h-9 text-xs font-semibold focus:border-indigo-500 transition-all text-white">
+                    {STATUS_OPTIONS.map(opt => <option key={opt.value} value={opt.value} className="bg-zinc-900">{opt.label}</option>)}
+                  </Select>
+                  {newStatus !== caseData.status && (
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-2">
+                       <Textarea value={statusReason} onChange={(e) => setStatusReason(e.target.value)} placeholder="Reason for change..." className="bg-zinc-900/50 border-white/[0.05] text-[11px] min-h-[60px]" />
+                       <Button onClick={updateStatus} disabled={updating} variant="primary" size="sm" className="w-full font-black text-[10px] uppercase h-8 shadow-indigo-500/10 shadow-lg">UPDATE STATUS</Button>
+                    </motion.div>
+                  )}
+                  <div className="flex gap-2 relative">
+                    <Input value={assignedOperatorDraft} onChange={(e) => setAssignedOperatorDraft(e.target.value)} placeholder="Assign operator..." className="bg-transparent border-white/[0.05] h-8 text-[11px] font-semibold" />
+                    <button onClick={updateAssignment} disabled={updatingAssignment} className="absolute right-2 top-1.5 text-[10px] font-black text-indigo-500 hover:text-indigo-400">SAVE</button>
                   </div>
-                );
-              })}
+               </div>
+             </div>
+          </section>
+
+          {/* Section: Customer Context */}
+          <section className="space-y-5">
+            <h3 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.15em]">Customer Info</h3>
+            <div className="space-y-4 pt-1">
+               <div className="flex justify-between items-baseline group border-b border-white/[0.02] pb-2">
+                  <span className="text-[10px] font-bold text-zinc-500 uppercase">Name</span>
+                  <span className="text-xs font-semibold text-zinc-200 group-hover:text-white transition-all">{caseData.customerName || 'None'}</span>
+               </div>
+               <div className="flex justify-between items-baseline group border-b border-white/[0.02] pb-2">
+                  <span className="text-[10px] font-bold text-zinc-500 uppercase">Contact</span>
+                  <span className="text-xs font-semibold text-zinc-200 truncate max-w-[150px] text-right font-mono tracking-tighter" title={caseData.customerEmail || ''}>{caseData.customerEmail || caseData.customerPhone || '—'}</span>
+               </div>
+               <div className="flex justify-between items-baseline group">
+                  <span className="text-[10px] font-bold text-zinc-500 uppercase">Source</span>
+                  <span className="text-xs font-semibold text-zinc-400 italic opacity-60">{CHANNEL_ICONS[caseData.originChannel] || '??'} {caseData.originChannel}</span>
+               </div>
             </div>
-            )}
+          </section>
 
-          <div style={styles.replyPanel}>
-            <div style={styles.takeoverHeader}>
-              <div>
-                <h4 style={styles.replyTitle}>Ответ, внутренние заметки и takeover</h4>
-                <p style={styles.replyHint}>
-                  Ответ клиенту, внутренняя заметка и перехват AI управляются отдельно. Это
-                  помогает не смешивать клиентскую коммуникацию с внутренними действиями.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => void updateOperatorTakeover(!operatorTakeover)}
-                disabled={!hasCustomerSession || updatingTakeover || sendingReply}
-                style={{
-                  ...styles.takeoverBtn,
-                  borderColor: operatorTakeover ? '#10b981' : '#333',
-                  color: operatorTakeover ? '#10b981' : '#999',
-                  opacity: hasCustomerSession ? 1 : 0.5,
-                }}
-              >
-                {operatorTakeover ? 'Возобновить AI' : 'Остановить AI'}
-              </button>
-            </div>
-
-            <div style={styles.takeoverStatusRow}>
-              <span style={styles.takeoverPill}>
-                Перехват: {operatorTakeover ? 'включён' : 'выключен'}
-              </span>
-              <span style={styles.takeoverPill}>
-                Активные сессии: {caseData.sessions.length}
-              </span>
-            </div>
-
-            {!hasCustomerSession ? (
-              <p style={styles.replyHint}>
-                У заявки пока нет активной клиентской сессии. Ответ и заметка сохранятся в
-                истории, а takeover будет доступен после появления сессии.
-              </p>
-            ) : null}
-
-            <textarea
-              value={replyText}
-              onChange={(event) => setReplyText(event.target.value)}
-              placeholder="Ответ клиенту, который должен быть виден в переписке"
-              rows={4}
-              style={styles.replyTextarea}
-            />
-            <button
-              type="button"
-              onClick={() => void sendOperatorReply()}
-              disabled={!replyText.trim() || sendingReply}
-              style={{
-                ...styles.replyBtn,
-                opacity: !replyText.trim() || sendingReply ? 0.5 : 1,
-              }}
-            >
-              {sendingReply ? 'Сохранение ответа...' : 'Сохранить ответ клиенту'}
-            </button>
-
-            <textarea
-              value={internalNoteText}
-              onChange={(event) => setInternalNoteText(event.target.value)}
-              placeholder="Внутренняя заметка для команды (клиент её не видит)"
-              rows={3}
-              style={{ ...styles.replyTextarea, marginTop: '10px' }}
-            />
-            <button
-              type="button"
-              onClick={() => void sendInternalNote()}
-              disabled={!internalNoteText.trim() || sendingInternalNote}
-              style={{
-                ...styles.internalNoteBtn,
-                opacity: !internalNoteText.trim() || sendingInternalNote ? 0.5 : 1,
-              }}
-            >
-              {sendingInternalNote ? 'Сохранение заметки...' : 'Сохранить внутреннюю заметку'}
-            </button>
-
-            {replyMessage ? <p style={styles.replyMessage}>{replyMessage}</p> : null}
-            {internalNoteMessage ? (
-              <p style={{ ...styles.replyMessage, color: '#f59e0b' }}>{internalNoteMessage}</p>
-            ) : null}
-            {takeoverMessage ? (
-              <p style={{ ...styles.replyMessage, color: '#38bdf8' }}>{takeoverMessage}</p>
-            ) : null}
-          </div>
-
-          {internalMessages.length > 0 && (
-            <>
-              <h3 style={{ ...styles.cardTitle, marginTop: '24px' }}>
-                Внутренние заметки ({internalMessages.length})
-              </h3>
-
-              <div style={styles.messageList}>
-                {internalMessages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    style={{
-                      ...styles.message,
-                      borderLeftColor: '#f59e0b',
-                      background: '#17120a',
-                    }}
-                  >
-                    <div style={styles.msgMeta}>
-                      <span
-                        style={{
-                          ...styles.roleBadge,
-                          background: '#fef3c7',
-                          color: '#b45309',
-                        }}
-                      >
-                        📝 Internal
-                      </span>
-                      <span style={styles.msgTime}>
-                        {new Date(msg.createdAt).toLocaleString('de-DE')}
-                      </span>
-                    </div>
-                    {msg.authorName ? <p style={styles.msgAuthor}>{msg.authorName}</p> : null}
-                    <p style={styles.msgBody}>{msg.body}</p>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-
+          {/* Section: Documents */}
           {caseData.attachments.length > 0 && (
-            <>
-              <h3 style={{ ...styles.cardTitle, marginTop: '24px' }}>
-                Вложения ({caseData.attachments.length})
-              </h3>
-
-              <div style={styles.attachmentList}>
-                {caseData.attachments.map((att) => (
-                  <a
-                    key={att.id}
-                    href={`/api/admin/attachments/${att.id}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={styles.attachment}
-                  >
-                    <span>{att.kind === 'IMAGE' ? '🖼️' : att.kind === 'VIDEO' ? '🎥' : '📄'}</span>
-                    <span style={{ fontSize: '13px' }}>{att.originalFilename || 'file'}</span>
-                    <span style={{ color: '#555', fontSize: '11px' }}>
-                      {(att.byteSize / 1024).toFixed(0)} KB
-                    </span>
-                  </a>
-                ))}
-              </div>
-            </>
+             <section className="space-y-5">
+               <h3 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Documents ({caseData.attachments.length})</h3>
+               <div className="space-y-2">
+                 {caseData.attachments.map(att => (
+                   <a key={att.id} href={`/api/admin/attachments/${att.id}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-2 rounded-lg border border-transparent hover:border-white/[0.05] hover:bg-white/[0.02] transition-all group overflow-hidden">
+                      <div className="text-base bg-white/[0.03] w-8 h-8 flex items-center justify-center rounded-md text-zinc-500 group-hover:text-zinc-200 transition-colors">{att.kind === 'IMAGE' ? '📷' : '📦'}</div>
+                      <div className="flex flex-col min-w-0">
+                         <span className="text-[10px] font-bold text-zinc-300 truncate tracking-tight">{att.originalFilename || 'FILE'}</span>
+                         <span className="text-[8px] font-black text-zinc-600 uppercase">{(att.byteSize / 1024).toFixed(0)} KB</span>
+                      </div>
+                   </a>
+                 ))}
+               </div>
+             </section>
           )}
 
-          {caseData.auditLogs.length > 0 && (
-            <>
-              <h3 style={{ ...styles.cardTitle, marginTop: '24px' }}>Журнал аудита</h3>
-              <p style={styles.sectionHint}>
-                Здесь видны служебные операции: смена статуса, назначение, ответы, заметки и
-                takeover. Это помогает быстро восстановить контекст смены.
+          {/* Issue Section */}
+          <section className="space-y-4">
+            <h3 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Original Issue</h3>
+            <div className="bg-white/[0.02] p-4 rounded-xl border border-white/[0.03]">
+              <p className="text-[11px] text-zinc-300 leading-relaxed font-medium whitespace-pre-wrap selection:bg-indigo-500/40">
+                {caseData.description || caseData.summary || 'No description provided.'}
               </p>
-              <div style={styles.auditList}>
-                {caseData.auditLogs.map((log) => (
-                  <div key={log.id} style={styles.auditItem}>
-                    <div style={styles.auditHeader}>
-                      <span style={styles.auditAction}>{formatAuditAction(log.action)}</span>
-                      <span style={styles.auditTime}>
-                        {new Date(log.createdAt).toLocaleString('de-DE')}
-                      </span>
-                    </div>
-                    <p style={styles.auditMeta}>Результат: {log.outcome}</p>
-                    {log.reason ? <p style={styles.auditMeta}>Причина: {log.reason}</p> : null}
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
+            </div>
+          </section>
 
-          {relatedCases.length > 0 ? (
-            <>
-              <h3 style={{ ...styles.cardTitle, marginTop: '24px' }}>
-                Related Requests ({relatedCases.length})
-              </h3>
-              <div style={styles.auditList}>
-                {relatedCases.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() =>
-                      router.push(withLocalePath(locale, `/ring-manager-crm/dashboard/${item.id}`))
-                    }
-                    style={styles.relatedCaseButton}
+          <footer className="h-20 shrink-0"></footer>
+        </aside>
+
+        {/* Right Workspace: System Center (Messenger) */}
+        <main className="flex-1 flex flex-col relative z-10 bg-zinc-950 overflow-hidden">
+          
+          {/* Navigation Tabs */}
+          <div className="shrink-0 flex items-center justify-between h-16 px-8 border-b border-white/[0.03]">
+             <div className="flex gap-10 relative h-full">
+                {['client', 'master', 'history'].map((tid) => (
+                  <button 
+                    key={tid} onClick={() => setActiveTab(tid as any)} 
+                    className={`relative flex items-center px-1 text-[11px] font-black uppercase tracking-[0.2em] transition-all ${activeTab === tid ? 'text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
                   >
-                    <div style={styles.auditHeader}>
-                      <span style={styles.auditAction}>{item.publicRequestNumber || item.id}</span>
-                      <span style={styles.auditTime}>
-                        {new Date(item.updatedAt).toLocaleString('de-DE')}
-                      </span>
-                    </div>
-                    <p style={styles.auditMeta}>Status: {item.status}</p>
-                    {item.summary ? <p style={styles.auditMeta}>{item.summary}</p> : null}
+                    {tid === 'client' ? 'Chat with client' : tid === 'master' ? 'Communication Master' : 'Event Timeline'}
+                    {activeTab === tid && <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500" transition={{ type: "spring", stiffness: 350, damping: 30 }} />}
                   </button>
                 ))}
-              </div>
-            </>
-          ) : null}
-        </div>
+             </div>
+          </div>
+
+          {/* Active Area */}
+          <div className="flex-1 overflow-hidden relative flex flex-col">
+            
+            <AnimatePresence mode="wait">
+              {activeTab === 'client' && (
+                <motion.div key="client" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 flex flex-col overflow-hidden">
+                   
+                   {/* Chat Feed */}
+                   <div 
+                     ref={scrollRef}
+                     className="flex-1 overflow-y-auto px-6 sm:px-12 py-10 scrollbar-none space-y-8 select-auto scroll-smooth"
+                   >
+                      <div className="max-w-3xl mx-auto w-full flex flex-col space-y-12">
+                         {timelineEvents.map((event, idx) => {
+                            if (event.type === 'status') {
+                               const payload = event.data as any;
+                               return (
+                                 <motion.div key={payload.id} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="flex justify-center my-4">
+                                   <div className="flex items-center gap-3 opacity-30 hover:opacity-100 transition-opacity">
+                                      <div className="h-px w-8 bg-white/20"></div>
+                                      <span className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-500">
+                                         {ACTOR_ROLE_LABELS[payload.actorRole] || 'SYSTEM'} CHANGED STATUS TO {formatStatusLabel(payload.toStatus)}
+                                      </span>
+                                      <div className="h-px w-8 bg-white/20"></div>
+                                   </div>
+                                 </motion.div>
+                               );
+                            }
+
+                            if (event.type === 'note') {
+                               const payload = event.data as any;
+                               return (
+                                 <motion.div key={payload.id} initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }} className="flex justify-center">
+                                    <div className="w-full max-w-[85%] border-l-2 border-indigo-500 bg-white/[0.03] p-5 rounded-r-2xl relative overflow-hidden group">
+                                       <div className="absolute top-0 right-0 px-3 py-1 bg-indigo-500 text-[8px] font-black text-white uppercase tracking-widest shadow-lg">INTERNAL NOTE</div>
+                                       <div className="text-xs text-indigo-400 font-bold mb-2 uppercase tracking-wide opacity-80">{payload.authorName || 'OPERATOR'} • {new Date(payload.createdAt).toLocaleTimeString()}</div>
+                                       <div className="text-[13px] text-zinc-100 font-medium leading-relaxed selection:bg-indigo-500/40">{payload.body}</div>
+                                    </div>
+                                 </motion.div>
+                               );
+                            }
+
+                            const payload = event.data as any;
+                            const isCustomer = payload.authorRole === 'CUSTOMER';
+                            return (
+                              <motion.div key={payload.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className={`flex flex-col ${isCustomer ? 'items-start' : 'items-end'} group`}>
+                                 {/* Persistent Author Badge */}
+                                 <div className={`mb-1 px-1 flex items-center gap-1.5 text-[9px] font-black uppercase tracking-[0.1em] ${isCustomer ? 'text-zinc-600' : 'text-indigo-400 opacity-80'}`}>
+                                    <span className={`w-1 h-1 rounded-full ${payload.authorRole === 'AI' ? 'bg-indigo-400 animate-pulse-slow shadow-[0_0_8px_rgba(129,140,248,0.5)]' : isCustomer ? 'bg-zinc-700' : 'bg-indigo-500'}`}></span>
+                                    {payload.authorRole === 'AI' ? 'AI Assistant' : (payload.authorName || (isCustomer ? 'Client' : 'Operator'))}
+                                 </div>
+
+                                 <div className={`
+                                    max-w-[70%] px-5 py-3.5 rounded-2xl text-[14px] font-medium leading-[1.6] shadow-2xl relative transition-all
+                                    ${isCustomer ? 'bg-zinc-900 text-zinc-200 border border-white/5 rounded-tl-sm' : 'bg-indigo-600 text-white rounded-tr-sm shadow-indigo-950/40'}
+                                 `}>
+                                    {payload.body}
+                                 </div>
+                                 <div className={`mt-2 flex items-center gap-2 text-[8px] font-black tracking-widest text-zinc-600 transition-opacity ${isCustomer ? '' : 'flex-row-reverse'}`}>
+                                    <span>{new Date(payload.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                    {!isCustomer && <span className="text-indigo-500 opacity-50">DELIVERED</span>}
+                                 </div>
+                              </motion.div>
+                            );
+                         })}
+                      </div>
+                      <div className="h-32"></div>
+                   </div>
+
+                   {/* Floating Prompt Bar */}
+                   <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-full max-w-2xl px-6 z-50">
+                      <div className={`relative rounded-3xl overflow-hidden transition-all duration-500 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)] border ${replyMode === 'internal' ? 'bg-indigo-950/50 border-indigo-500/30' : 'bg-zinc-900/80 border-white/[0.08]'} backdrop-blur-3xl ring-1 ring-white/5`}>
+                         <div className="flex h-12 border-b border-white/[0.03] px-6 items-center gap-6">
+                            <button onClick={() => setReplyMode('customer')} className={`text-[9px] font-black tracking-widest uppercase transition-all ${replyMode === 'customer' ? 'text-indigo-400' : 'text-zinc-600 hover:text-zinc-400'}`}>REPLY TO CLIENT</button>
+                            <button onClick={() => setReplyMode('internal')} className={`text-[9px] font-black tracking-widest uppercase transition-all ${replyMode === 'internal' ? 'text-indigo-400' : 'text-zinc-600 hover:text-zinc-400'}`}>INTERNAL NOTE</button>
+                            <div className="ml-auto flex items-center gap-3 h-full">
+                               <button onClick={() => updateTakeover(!operatorTakeover)} className={`text-[8px] font-black px-2 py-0.5 rounded border transition-colors ${operatorTakeover ? 'bg-red-500/10 border-red-500/20 text-red-500' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'}`}>
+                                  {operatorTakeover ? 'AI: DISABLED' : 'AI: ACTIVE'}
+                               </button>
+                            </div>
+                         </div>
+                         <div className="relative p-2 h-max min-h-[60px] flex items-end">
+                            <textarea 
+                              value={replyText} onChange={(e) => setReplyText(e.target.value)}
+                              placeholder="Type something meaningful..."
+                              className="flex-1 bg-transparent px-4 py-3 text-sm font-medium text-white outline-none resize-none placeholder:text-zinc-700 min-h-[44px] max-h-[200px]"
+                            />
+                            <button 
+                              onClick={sendReply} disabled={!replyText.trim() || sendingReply}
+                              className={`mb-1.5 mr-1.5 w-8 h-8 rounded-full flex items-center justify-center transition-all ${replyText.trim() ? (replyMode === 'customer' ? 'bg-indigo-600 shadow-lg shadow-indigo-600/30' : 'bg-amber-600 shadow-lg shadow-amber-600/30') : 'bg-zinc-800'}`}
+                            >
+                              {sendingReply ? <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div> : <span className="text-white text-xs">↑</span>}
+                            </button>
+                         </div>
+                      </div>
+                   </div>
+
+                </motion.div>
+              )}
+
+              {activeTab === 'master' && (
+                <motion.div key="master" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 flex flex-col items-center justify-center space-y-6">
+                   <div className="relative">
+                      <div className="w-24 h-24 bg-white/5 rounded-3xl border border-white/5 flex items-center justify-center text-4xl shadow-inner relative z-10">🛠️</div>
+                      <div className="absolute inset-0 bg-indigo-500/10 blur-3xl animate-pulse"></div>
+                   </div>
+                   <div className="text-center space-y-2">
+                      <h3 className="text-sm font-black text-white uppercase tracking-[0.3em]">Master Session Control</h3>
+                      <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest max-w-xs leading-loose">This module is currently initializing. Real-time communication with field masters is coming in next system update.</p>
+                   </div>
+                   <div className="flex gap-2">
+                      <div className="h-1 w-20 bg-white/5 rounded-full overflow-hidden">
+                        <motion.div initial={{ x: '-100%' }} animate={{ x: '100%' }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }} className="w-1/2 h-full bg-indigo-500/40" />
+                      </div>
+                   </div>
+                </motion.div>
+              )}
+
+              {activeTab === 'history' && (
+                <motion.div key="history" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 overflow-y-auto px-12 py-12 space-y-6 scrollbar-none">
+                   <div className="max-w-2xl mx-auto space-y-4">
+                      {caseData.auditLogs.map(log => (
+                        <div key={log.id} className="flex gap-6 items-start group">
+                           <div className="shrink-0 text-[10px] font-black text-zinc-700 w-24 pt-1 font-mono">{new Date(log.createdAt).toLocaleTimeString()}</div>
+                           <div className="flex-1 border-b border-white/[0.02] pb-6 space-y-2">
+                              <div className="text-[10px] font-black text-white uppercase tracking-widest">{log.action.replace(/_/g, ' ')}</div>
+                              <p className="text-[11px] text-zinc-500 font-medium leading-relaxed">{log.outcome}</p>
+                              {log.reason && <div className="text-[9px] bg-white/[0.01] border border-white/[0.03] p-3 rounded-lg text-zinc-600 mt-3 font-mono">REASON: {log.reason}</div>}
+                           </div>
+                        </div>
+                      ))}
+                   </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </main>
       </div>
     </div>
   );
 }
-
-function InfoRow({ label, value }: { label: string; value: string | null }) {
-  return (
-    <div style={styles.infoRow}>
-      <span style={styles.infoLabel}>{label}</span>
-      <span style={styles.infoValue}>{value || '—'}</span>
-    </div>
-  );
-}
-
-const styles: Record<string, React.CSSProperties> = {
-  backBtn: {
-    padding: '8px 16px',
-    fontSize: '13px',
-    background: 'transparent',
-    border: '1px solid #333',
-    borderRadius: '8px',
-    color: '#999',
-    cursor: 'pointer',
-    marginBottom: '20px',
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: '28px',
-  },
-  prNumber: {
-    margin: '0 0 4px',
-    fontSize: '28px',
-    fontWeight: 700,
-    color: '#fff',
-    fontFamily: "'JetBrains Mono', monospace",
-    letterSpacing: '0.03em',
-  },
-  badge: {
-    display: 'inline-block',
-    padding: '6px 14px',
-    borderRadius: '8px',
-    fontSize: '13px',
-    fontWeight: 600,
-    color: '#fff',
-  },
-  columns: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '20px',
-  },
-  card: {
-    background: '#111',
-    border: '1px solid #222',
-    borderRadius: '12px',
-    padding: '24px',
-  },
-  cardTitle: {
-    margin: '0 0 16px',
-    fontSize: '14px',
-    fontWeight: 600,
-    color: '#888',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.05em',
-  },
-  infoGrid: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '10px',
-  },
-  infoRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '8px 0',
-    borderBottom: '1px solid #1a1a1a',
-  },
-  infoLabel: {
-    fontSize: '13px',
-    color: '#666',
-  },
-  infoValue: {
-    fontSize: '13px',
-    color: '#e5e5e5',
-    fontWeight: 500,
-  },
-  assignmentRow: {
-    display: 'flex',
-    gap: '8px',
-    alignItems: 'center',
-  },
-  assignmentInput: {
-    flex: 1,
-    padding: '10px 12px',
-    background: '#0a0a0a',
-    color: '#e5e5e5',
-    border: '1px solid #333',
-    borderRadius: '8px',
-    outline: 'none',
-    fontSize: '13px',
-  },
-  assignmentBtn: {
-    padding: '10px 12px',
-    border: '1px solid #333',
-    borderRadius: '8px',
-    background: '#141414',
-    color: '#d4d4d4',
-    fontSize: '12px',
-    fontWeight: 600,
-    cursor: 'pointer',
-    whiteSpace: 'nowrap' as const,
-  },
-  assignmentMessage: {
-    margin: '8px 0 0',
-    color: '#999',
-    fontSize: '12px',
-    lineHeight: 1.5,
-  },
-  sectionHint: {
-    margin: '0 0 10px',
-    color: '#777',
-    fontSize: '12px',
-    lineHeight: 1.5,
-  },
-  fieldHint: {
-    margin: '8px 0 0',
-    color: '#666',
-    fontSize: '11px',
-    lineHeight: 1.45,
-  },
-  description: {
-    margin: 0,
-    fontSize: '13px',
-    color: '#ccc',
-    lineHeight: 1.6,
-    whiteSpace: 'pre-wrap' as const,
-  },
-  statusGrid: {
-    display: 'flex',
-    flexWrap: 'wrap' as const,
-    gap: '6px',
-  },
-  statusBtn: {
-    padding: '6px 12px',
-    fontSize: '12px',
-    fontWeight: 500,
-    background: '#0a0a0a',
-    border: '1px solid #333',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    transition: 'all 0.15s',
-  },
-  statusReasonInput: {
-    marginTop: '10px',
-    width: '100%',
-    resize: 'vertical' as const,
-    minHeight: '70px',
-    padding: '10px 12px',
-    background: '#0a0a0a',
-    color: '#e5e5e5',
-    border: '1px solid #333',
-    borderRadius: '8px',
-    outline: 'none',
-    fontSize: '13px',
-    lineHeight: 1.5,
-  },
-  timelineList: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '8px',
-    marginTop: '8px',
-  },
-  timelineItem: {
-    border: '1px solid #1f1f1f',
-    borderRadius: '8px',
-    padding: '10px 12px',
-    background: '#0a0a0a',
-  },
-  timelineHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: '8px',
-  },
-  timelineStatus: {
-    fontSize: '12px',
-    color: '#d4d4d4',
-    fontWeight: 600,
-    fontFamily: "'JetBrains Mono', monospace",
-  },
-  timelineTime: {
-    fontSize: '11px',
-    color: '#666',
-    whiteSpace: 'nowrap' as const,
-  },
-  timelineMeta: {
-    margin: '6px 0 0',
-    color: '#888',
-    fontSize: '12px',
-  },
-  timelineReason: {
-    margin: '4px 0 0',
-    color: '#b8b8b8',
-    fontSize: '12px',
-    lineHeight: 1.45,
-  },
-  messageList: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '12px',
-    maxHeight: '400px',
-    overflowY: 'auto' as const,
-  },
-  message: {
-    padding: '12px',
-    background: '#0a0a0a',
-    borderRadius: '8px',
-    borderLeft: '3px solid #3b82f6',
-  },
-  msgMeta: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    marginBottom: '6px',
-    gap: '8px',
-    alignItems: 'center',
-  },
-  roleBadge: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: '4px 8px',
-    borderRadius: '999px',
-    fontSize: '11px',
-    fontWeight: 600,
-    lineHeight: 1,
-  },
-  msgTime: {
-    color: '#555',
-    fontSize: '11px',
-    whiteSpace: 'nowrap' as const,
-  },
-  msgAuthor: {
-    margin: '0 0 6px',
-    fontSize: '12px',
-    color: '#aaa',
-    fontWeight: 500,
-  },
-  msgBody: {
-    margin: 0,
-    fontSize: '13px',
-    color: '#ccc',
-    lineHeight: 1.5,
-    whiteSpace: 'pre-wrap' as const,
-  },
-  replyPanel: {
-    marginTop: '18px',
-    paddingTop: '16px',
-    borderTop: '1px solid #222',
-  },
-  takeoverHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    gap: '12px',
-    alignItems: 'flex-start',
-    marginBottom: '12px',
-  },
-  replyTitle: {
-    margin: '0 0 4px',
-    fontSize: '13px',
-    color: '#e5e5e5',
-    fontWeight: 700,
-  },
-  replyHint: {
-    margin: '0 0 10px',
-    fontSize: '12px',
-    color: '#777',
-    lineHeight: 1.5,
-  },
-  takeoverStatusRow: {
-    display: 'flex',
-    flexWrap: 'wrap' as const,
-    gap: '8px',
-    marginBottom: '12px',
-  },
-  takeoverPill: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: '4px 8px',
-    borderRadius: '999px',
-    background: '#0f172a',
-    border: '1px solid #1f2937',
-    color: '#cbd5e1',
-    fontSize: '11px',
-    fontWeight: 600,
-  },
-  takeoverBtn: {
-    flexShrink: 0,
-    padding: '7px 10px',
-    background: '#0a0a0a',
-    border: '1px solid #333',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '12px',
-    fontWeight: 600,
-  },
-  replyTextarea: {
-    width: '100%',
-    resize: 'vertical' as const,
-    minHeight: '96px',
-    padding: '10px 12px',
-    background: '#0a0a0a',
-    color: '#e5e5e5',
-    border: '1px solid #333',
-    borderRadius: '8px',
-    outline: 'none',
-    fontSize: '13px',
-    lineHeight: 1.5,
-  },
-  replyBtn: {
-    marginTop: '10px',
-    padding: '8px 12px',
-    background: '#10b981',
-    border: '1px solid #10b981',
-    borderRadius: '6px',
-    color: '#04130d',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: 700,
-  },
-  internalNoteBtn: {
-    marginTop: '10px',
-    padding: '8px 12px',
-    background: '#f59e0b',
-    border: '1px solid #f59e0b',
-    borderRadius: '6px',
-    color: '#2a1a00',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: 700,
-  },
-  replyMessage: {
-    margin: '10px 0 0',
-    fontSize: '12px',
-    color: '#10b981',
-    lineHeight: 1.5,
-  },
-  attachmentList: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '8px',
-  },
-  attachment: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '8px 12px',
-    background: '#0a0a0a',
-    borderRadius: '6px',
-    border: '1px solid #222',
-    color: '#d4d4d4',
-    textDecoration: 'none',
-  },
-  auditList: {
-    marginTop: '8px',
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '8px',
-  },
-  auditItem: {
-    border: '1px solid #1f1f1f',
-    borderRadius: '8px',
-    padding: '10px 12px',
-    background: '#0a0a0a',
-  },
-  auditHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: '8px',
-  },
-  auditAction: {
-    fontSize: '12px',
-    color: '#e5e5e5',
-    fontWeight: 600,
-    fontFamily: "'JetBrains Mono', monospace",
-  },
-  auditTime: {
-    fontSize: '11px',
-    color: '#666',
-    whiteSpace: 'nowrap' as const,
-  },
-  auditMeta: {
-    margin: '4px 0 0',
-    color: '#888',
-    fontSize: '12px',
-  },
-  relatedCaseButton: {
-    display: 'block',
-    width: '100%',
-    textAlign: 'left' as const,
-    border: '1px solid #1f1f1f',
-    borderRadius: '8px',
-    padding: '10px 12px',
-    background: '#0a0a0a',
-    cursor: 'pointer',
-  },
-};

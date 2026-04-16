@@ -7,9 +7,10 @@ import {
 import { validateAdminCsrf } from '@/lib/admin-csrf';
 import {
   createAdminAuditLog,
-  requireAdminActor,
+  requireAdminPermissionActor,
   type AdminRequestActor,
 } from '@/lib/admin-audit';
+import { createArticleRevisionSnapshot } from '@/lib/cms/revisions';
 
 const SUPPORTED_LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'] as const;
 const ARTICLE_TYPES = ['SYMPTOM', 'FAQ', 'PAGE', 'SERVICE', 'CASE'] as const;
@@ -265,7 +266,23 @@ function isPrismaUniqueError(error: unknown): boolean {
 async function requireOwnerActor(
   request: NextRequest
 ): Promise<AdminRequestActor | null> {
-  return requireAdminActor(prisma, request, CMS_SESSION_COOKIE_NAME, ['OWNER']);
+  return requireAdminPermissionActor(
+    prisma,
+    request,
+    CMS_SESSION_COOKIE_NAME,
+    ['CMS_ARTICLE_READ']
+  );
+}
+
+async function requireArticleWriteActor(
+  request: NextRequest
+): Promise<AdminRequestActor | null> {
+  return requireAdminPermissionActor(
+    prisma,
+    request,
+    CMS_SESSION_COOKIE_NAME,
+    ['CMS_ARTICLE_WRITE']
+  );
 }
 
 function serializeArticle(article: ArticleQueryRecord): ArticleResponse {
@@ -314,6 +331,14 @@ function serializeArticle(article: ArticleQueryRecord): ArticleResponse {
     deletedAt: toIso(article.deletedAt),
     createdAt: toIso(article.createdAt) ?? new Date(0).toISOString(),
     updatedAt: toIso(article.updatedAt) ?? new Date(0).toISOString(),
+  };
+}
+
+function buildArticleRevisionSnapshot(article: ArticleQueryRecord) {
+  return {
+    schemaVersion: 1,
+    entity: 'CMS_ARTICLE',
+    data: serializeArticle(article),
   };
 }
 
@@ -411,7 +436,7 @@ export async function POST(request: NextRequest) {
   const csrfError = validateAdminCsrf(request);
   if (csrfError) return csrfError;
 
-  const actor = await requireOwnerActor(request);
+  const actor = await requireArticleWriteActor(request);
 
   if (!actor) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
@@ -534,9 +559,19 @@ export async function POST(request: NextRequest) {
           type: createdArticle.type,
           status: createdArticle.status,
           publishedAtPresent: Boolean(createdArticle.publishedAt),
+          revisionSnapshot: buildArticleRevisionSnapshot(createdArticle),
         },
         ipAddress: actor.ipAddress,
         userAgent: actor.userAgent,
+      });
+
+      await createArticleRevisionSnapshot(tx, createdArticle, {
+        sourceAction: 'CREATE',
+        actor: {
+          adminUserId: actor.adminUserId,
+          sessionId: actor.sessionId,
+          role: actor.role,
+        },
       });
 
       return createdArticle;

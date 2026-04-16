@@ -41,6 +41,25 @@ Before a substantial change:
 
 Do not rewrite documents, change application code, delete files, change `.gitignore`, run migrations, or create commits without explicit confirmation.
 
+## Karpathy-Style Execution
+
+Use concise, high-signal execution rules derived from Andrej Karpathy's guidance as an addition to this repository's rules, not a replacement for them.
+
+- Think before coding: state assumptions, surface ambiguity, and ask instead of silently guessing.
+- Simplicity first: prefer the minimum solution that satisfies the request; avoid speculative abstractions and optionality that was not asked for.
+- Surgical changes: touch only what is required for the task; do not refactor, rewrite, or clean up unrelated areas.
+- Goal-driven execution: define clear success criteria and verify them; prefer checks, tests, or other concrete validation over vague completion claims.
+
+These rules must not override the collaboration rule, product guardrails, security constraints, or documentation process in this repository.
+
+## Skill Reference
+
+For detailed operating guidance, use the shared skill document:
+
+- `SKILL.md`
+
+If the skill guidance conflicts with repository instructions, this `AGENTS.md` file wins.
+
 ## Product Guardrails
 
 PixelRing Reparatur is an AI-first, multilingual, one-stop service company for sign repair, installation, light advertising, branding, and related service requests.

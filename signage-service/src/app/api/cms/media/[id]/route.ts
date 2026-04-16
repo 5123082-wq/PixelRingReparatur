@@ -5,7 +5,7 @@ import { CMS_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
 import {
   createAdminAuditLog,
-  requireAdminActor,
+  requireAdminPermissionActor,
   type AdminRequestActor,
 } from '@/lib/admin-audit';
 import {
@@ -46,17 +46,23 @@ type RouteParams = {
 };
 
 function isUuidLike(value: string): boolean {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i.test(value);
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
 
 function notFoundResponse() {
   return NextResponse.json({ error: 'Not found' }, { status: 404 });
 }
 
-async function requireOwnerActor(
+async function requireMediaReadActor(
   request: NextRequest
 ): Promise<AdminRequestActor | null> {
-  return requireAdminActor(prisma, request, CMS_SESSION_COOKIE_NAME, ['OWNER']);
+  return requireAdminPermissionActor(prisma, request, CMS_SESSION_COOKIE_NAME, ['CMS_MEDIA_READ']);
+}
+
+async function requireMediaWriteActor(
+  request: NextRequest
+): Promise<AdminRequestActor | null> {
+  return requireAdminPermissionActor(prisma, request, CMS_SESSION_COOKIE_NAME, ['CMS_MEDIA_WRITE']);
 }
 
 type ParsedPatchPayload = {
@@ -173,7 +179,7 @@ function changedFields(
 }
 
 export async function GET(request: NextRequest, { params }: RouteParams) {
-  if (!(await requireOwnerActor(request))) {
+  if (!(await requireMediaReadActor(request))) {
     return notFoundResponse();
   }
 
@@ -207,7 +213,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   const csrfError = validateAdminCsrf(request);
   if (csrfError) return csrfError;
 
-  const actor = await requireOwnerActor(request);
+  const actor = await requireMediaWriteActor(request);
 
   if (!actor) {
     return notFoundResponse();
@@ -291,7 +297,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
   const csrfError = validateAdminCsrf(request);
   if (csrfError) return csrfError;
 
-  const actor = await requireOwnerActor(request);
+  const actor = await requireMediaWriteActor(request);
 
   if (!actor) {
     return notFoundResponse();

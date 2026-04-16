@@ -107,6 +107,23 @@ Approved in current planning sequence:
 - Block 1: Foundation (approved and documented).
 - Block 2: Content Core (approved and documented).
 
+## Current Implementation Checkpoint
+
+Block 1 Foundation is now implemented in the current starter scope:
+
+- password-only named admin users are active;
+- CRM and CMS use separate HTTP-only session cookies;
+- master-key fallback path has been removed from active auth flows;
+- deny-by-default helper composition is in place for current read-side guards;
+- starter permission guards cover current CRM-sensitive routes plus CMS AI, SEO, knowledge-base, article/page, and media routes;
+- audit logging baseline is active for current high-risk CRM/CMS actions;
+- static admin security verification exists via `npm run test:admin-security`.
+
+Transition point:
+
+- the next delivery block should start from Content Core, not from more open-ended Foundation expansion;
+- only bounded security follow-ups should remain in Block 1 unless a concrete regression is discovered.
+
 ## Content Core Scope (Block 2)
 
 Goal:

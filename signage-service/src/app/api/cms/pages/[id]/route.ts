@@ -2,10 +2,11 @@ import type { Prisma } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { CMS_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
+import { hasAdminPermissions } from '@/lib/admin-permissions';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
 import {
   createAdminAuditLog,
-  requireAdminActor,
+  requireAdminPermissionActor,
   type AdminRequestActor,
 } from '@/lib/admin-audit';
 import {
@@ -20,7 +21,9 @@ import {
   serializeCmsPage,
   type CmsPageStatus,
 } from '@/lib/cms/pages';
+import { createPageRevisionSnapshot } from '@/lib/cms/revisions';
 import { prisma } from '@/lib/prisma';
+import { resolveUuidRouteParam } from '@/lib/route-params';
 
 const CMS_PAGE_SELECT = {
   id: true,
@@ -52,17 +55,9 @@ const CMS_PAGE_AUDIT_FIELDS = [
   'lastReviewedAt',
 ] as const;
 
-type CmsPageQueryRecord = Record<string, unknown>;
-
 type RouteParams = {
   params: Promise<{ id: string }>;
 };
-
-function isUuidLike(value: string): boolean {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i.test(
-    value
-  );
-}
 
 function notFoundResponse() {
   return NextResponse.json({ error: 'Not found' }, { status: 404 });
@@ -80,7 +75,34 @@ function isPrismaUniqueError(error: unknown): boolean {
 async function requireOwnerActor(
   request: NextRequest
 ): Promise<AdminRequestActor | null> {
-  return requireAdminActor(prisma, request, CMS_SESSION_COOKIE_NAME, ['OWNER']);
+  return requireAdminPermissionActor(
+    prisma,
+    request,
+    CMS_SESSION_COOKIE_NAME,
+    ['CMS_PAGE_READ']
+  );
+}
+
+async function requirePageWriteActor(
+  request: NextRequest
+): Promise<AdminRequestActor | null> {
+  return requireAdminPermissionActor(
+    prisma,
+    request,
+    CMS_SESSION_COOKIE_NAME,
+    ['CMS_PAGE_WRITE']
+  );
+}
+
+async function requirePageDeleteActor(
+  request: NextRequest
+): Promise<AdminRequestActor | null> {
+  return requireAdminPermissionActor(
+    prisma,
+    request,
+    CMS_SESSION_COOKIE_NAME,
+    ['CMS_PAGE_DELETE']
+  );
 }
 
 function normalizeOptionalText(
@@ -188,12 +210,20 @@ function valuesEqual(left: unknown, right: unknown): boolean {
 }
 
 function getChangedPageFields(
-  current: CmsPageQueryRecord,
+  current: Parameters<typeof serializeCmsPage>[0],
   nextValues: Record<string, unknown>
 ): string[] {
   return CMS_PAGE_AUDIT_FIELDS.filter(
     (field) => field in nextValues && !valuesEqual(current[field], nextValues[field])
   );
+}
+
+function buildPageRevisionSnapshot(page: Parameters<typeof serializeCmsPage>[0]) {
+  return {
+    schemaVersion: 1,
+    entity: 'CMS_PAGE',
+    data: serializeCmsPage(page),
+  };
 }
 
 export async function GET(request: NextRequest, { params }: RouteParams) {
@@ -202,9 +232,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   }
 
   try {
-    const { id } = await params;
+    const id = await resolveUuidRouteParam(request, params);
 
-    if (!isUuidLike(id)) {
+    if (!id) {
       return notFoundResponse();
     }
 
@@ -231,16 +261,16 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   const csrfError = validateAdminCsrf(request);
   if (csrfError) return csrfError;
 
-  const actor = await requireOwnerActor(request);
+  const actor = await requirePageWriteActor(request);
 
   if (!actor) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
   try {
-    const { id } = await params;
+    const id = await resolveUuidRouteParam(request, params);
 
-    if (!isUuidLike(id)) {
+    if (!id) {
       return notFoundResponse();
     }
 
@@ -318,6 +348,13 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     ) as CmsPageStatus;
     const previousStatus = current.status as CmsPageStatus;
     const nextValues: Record<string, unknown> = { ...updates };
+    const requiresPublishPermission =
+      (previousStatus === 'DRAFT' && nextStatus === 'PUBLISHED') ||
+      (previousStatus === 'PUBLISHED' && nextStatus === 'DRAFT');
+
+    if (requiresPublishPermission && !hasAdminPermissions(actor.role, ['CMS_PAGE_PUBLISH'])) {
+      return notFoundResponse();
+    }
 
     if (nextStatus === 'PUBLISHED' && current.publishedAt === null) {
       nextValues.publishedAt = new Date();
@@ -331,6 +368,12 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         : previousStatus === 'PUBLISHED' && nextStatus === 'DRAFT'
           ? 'CMS_PAGE_UNPUBLISHED'
           : 'CMS_PAGE_UPDATED';
+    const revisionSourceAction =
+      previousStatus === 'DRAFT' && nextStatus === 'PUBLISHED'
+        ? 'PUBLISH'
+        : previousStatus === 'PUBLISHED' && nextStatus === 'DRAFT'
+          ? 'UNPUBLISH'
+          : 'UPDATE';
 
     const page = await prisma.$transaction(async (tx) => {
       const updatedPage = await tx.cmsPage.update({
@@ -353,9 +396,19 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
           previousStatus,
           nextStatus: updatedPage.status,
           blockCount: Array.isArray(updatedPage.blocks) ? updatedPage.blocks.length : 0,
+          revisionSnapshot: buildPageRevisionSnapshot(updatedPage),
         },
         ipAddress: actor.ipAddress,
         userAgent: actor.userAgent,
+      });
+
+      await createPageRevisionSnapshot(tx, updatedPage, {
+        sourceAction: revisionSourceAction,
+        actor: {
+          adminUserId: actor.adminUserId,
+          sessionId: actor.sessionId,
+          role: actor.role,
+        },
       });
 
       return updatedPage;
@@ -379,16 +432,16 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
   const csrfError = validateAdminCsrf(request);
   if (csrfError) return csrfError;
 
-  const actor = await requireOwnerActor(request);
+  const actor = await requirePageDeleteActor(request);
 
   if (!actor) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
   try {
-    const { id } = await params;
+    const id = await resolveUuidRouteParam(request, params);
 
-    if (!isUuidLike(id)) {
+    if (!id) {
       return notFoundResponse();
     }
 

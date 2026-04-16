@@ -3,6 +3,11 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useInView } from 'framer-motion';
+import { ReviewCmsContent } from '@/lib/cms/pages';
+
+interface ReviewsSectionProps {
+  content?: ReviewCmsContent;
+}
 
 const TypewriterQuote = ({ content, shouldAnimate }: { content: string; shouldAnimate: boolean }) => {
   const words = content.split(' ');
@@ -58,15 +63,15 @@ const TypewriterQuote = ({ content, shouldAnimate }: { content: string; shouldAn
   );
 };
 
-const ReviewsSection = () => {
+const ReviewsSection = ({ content }: ReviewsSectionProps) => {
   const t = useTranslations('Reviews');
   const locale = useLocale();
   const isRTL = locale === 'ar';
   const scrollRef = useRef<HTMLDivElement>(null);
   
-  // Original indices [0, 1, 2]
-  const reviewsCount = 3;
-  const originalIndices = [0, 1, 2];
+  // Original indices or items
+  const reviewsCount = content?.items?.length || 3;
+  const originalIndices = Array.from({ length: reviewsCount }, (_, i) => i);
   
   // Triple the indices to create infinite buffers: [0,1,2, 0,1,2, 0,1,2]
   const tripledIndices = [...originalIndices, ...originalIndices, ...originalIndices];
@@ -168,10 +173,10 @@ const ReviewsSection = () => {
 
             <div className="flex flex-col gap-4">
               <h2 className="text-[42px] md:text-[60px] font-bold text-[#0E1A2B] leading-[1.05] tracking-tight">
-                {t('title')}
+                {content?.title ?? t('title')}
               </h2>
               <p className="text-[18px] md:text-[20px] text-[#72665D] max-w-xl leading-relaxed">
-                {t('subtitle')}
+                {content?.subtitle ?? t('subtitle')}
               </p>
             </div>
           </div>
@@ -231,18 +236,18 @@ const ReviewsSection = () => {
                     </svg>
                   </div>
                   <TypewriterQuote 
-                    content={t(`items.${idx}.content`)} 
+                    content={content?.items?.[idx]?.content ?? t(`items.${idx}.content`)} 
                     shouldAnimate={idx === 0} 
                   />
                 </div>
 
                 <div className="flex items-center gap-5 relative z-10 mt-auto">
                   <div className="flex-shrink-0 w-16 h-16 rounded-full bg-gradient-to-br from-[#B8643E] to-[#D47A4E] flex items-center justify-center text-[24px] font-bold text-white shadow-xl shadow-[#B8643E30] transition-transform duration-500 group-hover:rotate-6">
-                    {t(`items.${idx}.name`).charAt(0)}
+                    {(content?.items?.[idx]?.name ?? t(`items.${idx}.name`)).charAt(0)}
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[20px] font-bold text-[#0E1A2B] tracking-tight">{t(`items.${idx}.name`)}</span>
-                    <span className="text-[13px] text-[#B8643E] font-bold uppercase tracking-[0.15em] mt-0.5">{t(`items.${idx}.role`)}</span>
+                    <span className="text-[20px] font-bold text-[#0E1A2B] tracking-tight">{content?.items?.[idx]?.name ?? t(`items.${idx}.name`)}</span>
+                    <span className="text-[13px] text-[#B8643E] font-bold uppercase tracking-[0.15em] mt-0.5">{content?.items?.[idx]?.role ?? t(`items.${idx}.role`)}</span>
                   </div>
                 </div>
               </div>

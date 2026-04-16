@@ -2,8 +2,13 @@
 
 import React from 'react';
 import { useTranslations } from 'next-intl';
+import { RoadmapCmsContent } from '@/lib/cms/pages';
 
-const RoadmapSection = () => {
+interface RoadmapSectionProps {
+  content?: RoadmapCmsContent;
+}
+
+const RoadmapSection = ({ content }: RoadmapSectionProps) => {
   const t = useTranslations('Roadmap');
 
   const StepIcon = ({ index }: { index: number }) => {
@@ -36,10 +41,10 @@ const RoadmapSection = () => {
   };
 
   const steps = [
-    { title: t('steps.0.title'), description: t('steps.0.description') },
-    { title: t('steps.1.title'), description: t('steps.1.description') },
-    { title: t('steps.2.title'), description: t('steps.2.description') },
-    { title: t('steps.3.title'), description: t('steps.3.description') },
+    { title: content?.steps?.[0]?.title ?? t('steps.0.title'), description: content?.steps?.[0]?.description ?? t('steps.0.description') },
+    { title: content?.steps?.[1]?.title ?? t('steps.1.title'), description: content?.steps?.[1]?.description ?? t('steps.1.description') },
+    { title: content?.steps?.[2]?.title ?? t('steps.2.title'), description: content?.steps?.[2]?.description ?? t('steps.2.description') },
+    { title: content?.steps?.[3]?.title ?? t('steps.3.title'), description: content?.steps?.[3]?.description ?? t('steps.3.description') },
   ];
 
   return (
@@ -51,7 +56,7 @@ const RoadmapSection = () => {
       <div className="max-w-7xl mx-auto flex flex-col gap-16 relative z-10">
         <div className="flex flex-col gap-4 text-center">
           <h2 className="text-[40px] md:text-[52px] font-bold text-[#0E1A2B] leading-tight flex flex-col md:block">
-            {t('title')}
+            {content?.title ?? t('title')}
           </h2>
           <div className="w-16 h-1.5 bg-[#B8643E] rounded-full mx-auto" />
         </div>

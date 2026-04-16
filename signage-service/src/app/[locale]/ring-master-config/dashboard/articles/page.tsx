@@ -84,6 +84,19 @@ type ArticleFormState = {
   sortOrder: string;
 };
 
+type CmsArticleRevision = {
+  id: string;
+  createdAt: string;
+  reason: string | null;
+  sourceAction: string | null;
+  actorDisplayName: string | null;
+  actorEmail: string | null;
+  restoredAt: string | null;
+  restoredByDisplayName: string | null;
+  restoredByEmail: string | null;
+  sourceStatus: string | null;
+};
+
 const SUPPORTED_LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'] as const;
 const ARTICLE_TYPES: CmsArticleType[] = ['SYMPTOM', 'FAQ', 'PAGE', 'SERVICE', 'CASE'];
 const STATUS_OPTIONS: CmsArticleStatus[] = ['DRAFT', 'PUBLISHED'];
@@ -126,6 +139,12 @@ function asString(value: unknown): string | null {
   return typeof value === 'string' && value.trim() ? value : null;
 }
 
+function asObject(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
 function normalizeMediaResponse(value: unknown): CmsMedia[] {
   const container = value as { media?: unknown; items?: unknown } | null;
   const rows = Array.isArray(value)
@@ -151,6 +170,51 @@ function normalizeMediaResponse(value: unknown): CmsMedia[] {
       filename: asString(row.filename) || asString(row.originalFilename) || asString(row.name),
     }))
     .filter((item) => item.id);
+}
+
+function normalizeArticleRevisionsResponse(value: unknown): CmsArticleRevision[] {
+  const container = value as { revisions?: unknown; items?: unknown } | null;
+  const rows = Array.isArray(value)
+    ? value
+    : Array.isArray(container?.revisions)
+      ? container.revisions
+      : Array.isArray(container?.items)
+        ? container.items
+        : [];
+
+  return rows
+    .filter((row): row is Record<string, unknown> =>
+      Boolean(row && typeof row === 'object' && !Array.isArray(row))
+    )
+    .map((row) => {
+      const snapshotSummary = asObject(row.snapshotSummary);
+      const actorAdminUserId = asString(row.actorAdminUserId);
+      const actorSessionId = asString(row.actorSessionId);
+
+      return {
+        id: String(row.id ?? row.revisionId ?? ''),
+        createdAt: asString(row.createdAt) || '',
+        reason: asString(row.reason) || asString(row.restoreReason),
+        sourceAction: asString(row.sourceAction),
+        actorDisplayName: asString(row.actorDisplayName) || asString(row.actorName),
+        actorEmail: asString(row.actorEmail) || actorAdminUserId || actorSessionId,
+        restoredAt: asString(row.restoredAt),
+        restoredByDisplayName: asString(row.restoredByDisplayName) || asString(row.restoredByName),
+        restoredByEmail: asString(row.restoredByEmail),
+        sourceStatus:
+          asString(row.sourceStatus) ||
+          asString(row.status) ||
+          asString(snapshotSummary?.status),
+      };
+    })
+    .filter((revision) => revision.id)
+    .sort((left, right) => {
+      const leftDate = Date.parse(left.createdAt || '');
+      const rightDate = Date.parse(right.createdAt || '');
+      const leftValue = Number.isNaN(leftDate) ? 0 : leftDate;
+      const rightValue = Number.isNaN(rightDate) ? 0 : rightDate;
+      return rightValue - leftValue;
+    });
 }
 
 function createMarkdownMediaReference(media: CmsMedia): string {
@@ -425,6 +489,11 @@ export default function ArticlesPage() {
   const [mediaItems, setMediaItems] = useState<CmsMedia[]>([]);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [mediaError, setMediaError] = useState('');
+  const [revisions, setRevisions] = useState<CmsArticleRevision[]>([]);
+  const [revisionsLoading, setRevisionsLoading] = useState(false);
+  const [revisionsError, setRevisionsError] = useState('');
+  const [restoreReason, setRestoreReason] = useState('');
+  const [restoringRevisionId, setRestoringRevisionId] = useState('');
 
   const summary = useMemo(() => {
     const total = pagination.total;
@@ -514,6 +583,10 @@ export default function ArticlesPage() {
     setForm(createEmptyForm(localeFilter || routeLocale));
     setFormError('');
     setFormSaving('');
+    setRevisions([]);
+    setRevisionsError('');
+    setRestoreReason('');
+    setRestoringRevisionId('');
     setEditorOpen(true);
   }, [localeFilter, routeLocale]);
 
@@ -523,6 +596,10 @@ export default function ArticlesPage() {
       setForm(articleToForm(article, localeFilter || routeLocale));
       setFormError('');
       setFormSaving('');
+      setRevisions([]);
+      setRevisionsError('');
+      setRestoreReason('');
+      setRestoringRevisionId('');
       setEditorOpen(true);
     },
     [localeFilter, routeLocale]
@@ -533,7 +610,60 @@ export default function ArticlesPage() {
     setEditingArticle(null);
     setFormError('');
     setFormSaving('');
+    setRevisions([]);
+    setRevisionsError('');
+    setRestoreReason('');
+    setRestoringRevisionId('');
   }, []);
+
+  const loadArticleRevisions = useCallback(async (articleId: string) => {
+    setRevisionsLoading(true);
+    setRevisionsError('');
+
+    try {
+      const response = await fetch(`/api/cms/articles/${articleId}/revisions`, {
+        method: 'GET',
+        credentials: 'same-origin',
+        cache: 'no-store',
+      });
+
+      if (!response.ok) {
+        throw new Error(await readApiError(response));
+      }
+
+      const data = (await response.json().catch(() => null)) as unknown;
+      setRevisions(normalizeArticleRevisionsResponse(data));
+    } catch (error) {
+      setRevisions([]);
+      setRevisionsError(error instanceof Error ? error.message : 'Failed to load article revisions.');
+    } finally {
+      setRevisionsLoading(false);
+    }
+  }, []);
+
+  const refreshEditingArticle = useCallback(
+    async (articleId: string) => {
+      const response = await fetch(`/api/cms/articles/${articleId}`, {
+        method: 'GET',
+        credentials: 'same-origin',
+        cache: 'no-store',
+      });
+
+      if (!response.ok) {
+        throw new Error(await readApiError(response));
+      }
+
+      const data = (await response.json().catch(() => null)) as { article?: CmsArticle } | null;
+
+      if (!data?.article) {
+        throw new Error('Failed to refresh article after restore.');
+      }
+
+      setEditingArticle(data.article);
+      setForm(articleToForm(data.article, localeFilter || routeLocale));
+    },
+    [localeFilter, routeLocale]
+  );
 
   const insertMediaReference = useCallback((media: CmsMedia) => {
     if (!media.url) {
@@ -547,6 +677,66 @@ export default function ArticlesPage() {
       content: `${current.content.trimEnd()}${createMarkdownMediaReference(media)}`,
     }));
   }, []);
+
+  useEffect(() => {
+    if (!editorOpen || !editingArticle) {
+      return;
+    }
+
+    void loadArticleRevisions(editingArticle.id);
+  }, [editorOpen, editingArticle, loadArticleRevisions]);
+
+  const restoreArticleRevision = useCallback(
+    async (revision: CmsArticleRevision) => {
+      if (!editingArticle) {
+        return;
+      }
+
+      const reason = restoreReason.trim();
+      if (!reason) {
+        setRevisionsError('Restore reason is required.');
+        return;
+      }
+
+      const confirmed = window.confirm(
+        `Restore article "${editingArticle.title}" from revision ${renderDate(revision.createdAt)}?`
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      setRestoringRevisionId(revision.id);
+      setRevisionsError('');
+
+      try {
+        const response = await adminFetch(`/api/cms/articles/${editingArticle.id}/restore`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            revisionId: revision.id,
+            reason,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(await readApiError(response));
+        }
+
+        await Promise.all([
+          loadArticleRevisions(editingArticle.id),
+          refreshEditingArticle(editingArticle.id),
+        ]);
+        setRestoreReason('');
+        setRefreshVersion((value) => value + 1);
+      } catch (error) {
+        setRevisionsError(error instanceof Error ? error.message : 'Failed to restore article revision.');
+      } finally {
+        setRestoringRevisionId('');
+      }
+    },
+    [editingArticle, loadArticleRevisions, refreshEditingArticle, restoreReason]
+  );
 
   const applySearch = useCallback(() => {
     setPage(1);
@@ -1188,6 +1378,86 @@ export default function ArticlesPage() {
               </div>
             </div>
 
+            {editingArticle ? (
+              <div style={styles.revisionsPanel}>
+                <div style={styles.revisionsHeader}>
+                  <div>
+                    <h3 style={styles.sectionTitle}>Revisions</h3>
+                    <p style={styles.revisionsSubtitle}>
+                      History is sorted newest first. Restore keeps the content in draft-safe flow.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => void loadArticleRevisions(editingArticle.id)}
+                    disabled={revisionsLoading}
+                    style={styles.secondaryButton}
+                  >
+                    {revisionsLoading ? 'Loading...' : 'Refresh revisions'}
+                  </button>
+                </div>
+
+                <EditorField
+                  label="Restore reason"
+                  hint="Required before restore. Stored in audit logs."
+                >
+                  <TextInput
+                    value={restoreReason}
+                    onChange={setRestoreReason}
+                    placeholder="Explain why this revision is being restored"
+                  />
+                </EditorField>
+
+                {revisionsError ? <div style={styles.errorBanner}>{revisionsError}</div> : null}
+
+                {revisionsLoading ? (
+                  <div style={styles.emptyState}>Loading revisions...</div>
+                ) : revisions.length === 0 ? (
+                  <div style={styles.emptyState}>No revisions found for this article yet.</div>
+                ) : (
+                  <div style={styles.revisionList}>
+                    {revisions.map((revision) => (
+                      <div key={revision.id} style={styles.revisionItem}>
+                        <div style={styles.revisionMeta}>
+                          <span style={styles.revisionDate}>{renderDate(revision.createdAt)}</span>
+                          <span style={styles.revisionActor}>
+                            {revision.actorDisplayName || revision.actorEmail || 'Unknown actor'}
+                          </span>
+                          {revision.sourceAction ? (
+                            <span style={styles.revisionStatusChip}>{revision.sourceAction}</span>
+                          ) : null}
+                          {revision.sourceStatus ? (
+                            <span style={styles.revisionStatusChip}>{revision.sourceStatus}</span>
+                          ) : null}
+                        </div>
+                        {revision.reason ? (
+                          <div style={styles.revisionReason}>Reason: {revision.reason}</div>
+                        ) : null}
+                        {revision.restoredAt ? (
+                          <div style={styles.revisionRestoreMeta}>
+                            Restored on {renderDate(revision.restoredAt)} by{' '}
+                            {revision.restoredByDisplayName ||
+                              revision.restoredByEmail ||
+                              'unknown user'}
+                          </div>
+                        ) : null}
+                        <div style={styles.revisionActions}>
+                          <button
+                            type="button"
+                            onClick={() => void restoreArticleRevision(revision)}
+                            disabled={!restoreReason.trim() || restoringRevisionId === revision.id}
+                            style={styles.warningButton}
+                          >
+                            {restoringRevisionId === revision.id ? 'Restoring...' : 'Restore revision'}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : null}
+
             <div style={styles.modalFooter}>
               <button type="button" onClick={closeEditor} style={styles.secondaryButton}>
                 Cancel
@@ -1709,6 +1979,88 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     flexDirection: 'column',
     gap: '4px',
+  },
+  revisionsPanel: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    padding: '12px',
+    border: '1px solid #222',
+    borderRadius: '8px',
+    background: '#0b0b0b',
+  },
+  revisionsHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: '12px',
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
+  },
+  revisionsSubtitle: {
+    margin: '4px 0 0',
+    color: '#8b8b8b',
+    fontSize: '12px',
+    lineHeight: 1.5,
+  },
+  revisionList: {
+    display: 'grid',
+    gap: '10px',
+  },
+  revisionItem: {
+    border: '1px solid #252525',
+    borderRadius: '8px',
+    background: '#111',
+    padding: '10px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  },
+  revisionMeta: {
+    display: 'flex',
+    gap: '8px',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+  },
+  revisionDate: {
+    color: '#fff',
+    fontSize: '12px',
+    fontWeight: 700,
+  },
+  revisionActor: {
+    color: '#8b8b8b',
+    fontSize: '12px',
+    lineHeight: 1.4,
+  },
+  revisionStatusChip: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: '22px',
+    padding: '2px 8px',
+    borderRadius: '999px',
+    border: '1px solid #333',
+    background: '#161616',
+    color: '#d4d4d8',
+    fontSize: '11px',
+    fontWeight: 700,
+    letterSpacing: '0.02em',
+    textTransform: 'uppercase',
+  },
+  revisionReason: {
+    color: '#d4d4d8',
+    fontSize: '12px',
+    lineHeight: 1.5,
+  },
+  revisionRestoreMeta: {
+    color: '#8b8b8b',
+    fontSize: '12px',
+    lineHeight: 1.5,
+  },
+  revisionActions: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    gap: '8px',
+    flexWrap: 'wrap',
   },
   modalFooter: {
     display: 'flex',

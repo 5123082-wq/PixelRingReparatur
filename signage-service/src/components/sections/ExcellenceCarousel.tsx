@@ -3,8 +3,13 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { useTranslations, useLocale } from 'next-intl';
+import { ExcellenceCmsContent } from '@/lib/cms/pages';
 
-const ExcellenceCarousel = () => {
+interface ExcellenceCarouselProps {
+  content?: ExcellenceCmsContent;
+}
+
+const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
   const t = useTranslations('Excellence');
   const locale = useLocale();
   const isRTL = locale === 'ar';
@@ -12,40 +17,40 @@ const ExcellenceCarousel = () => {
 
   const items = [
     {
-      title: t('items.0.title'),
-      tag: t('items.0.tag'),
-      description: t('items.0.description'),
-      image: '/images/ex-mounting.png',
+      title: content?.items?.[0]?.title ?? t('items.0.title'),
+      tag: content?.items?.[0]?.tag ?? t('items.0.tag'),
+      description: content?.items?.[0]?.description ?? t('items.0.description'),
+      image: content?.items?.[0]?.image ?? '/images/ex-mounting.png',
     },
     {
-      title: t('items.1.title'),
-      tag: t('items.1.tag'),
-      description: t('items.1.description'),
-      image: '/images/ex-repair.png',
+      title: content?.items?.[1]?.title ?? t('items.1.title'),
+      tag: content?.items?.[1]?.tag ?? t('items.1.tag'),
+      description: content?.items?.[1]?.description ?? t('items.1.description'),
+      image: content?.items?.[1]?.image ?? '/images/ex-repair.png',
     },
     {
-      title: t('items.2.title'),
-      tag: t('items.2.tag'),
-      description: t('items.2.description'),
-      image: '/images/ex-maintenance.png',
+      title: content?.items?.[2]?.title ?? t('items.2.title'),
+      tag: content?.items?.[2]?.tag ?? t('items.2.tag'),
+      description: content?.items?.[2]?.description ?? t('items.2.description'),
+      image: content?.items?.[2]?.image ?? '/images/ex-maintenance.png',
     },
     {
-      title: t('items.3.title'),
-      tag: t('items.3.tag'),
-      description: t('items.3.description'),
-      image: '/images/ex-design.png',
+      title: content?.items?.[3]?.title ?? t('items.3.title'),
+      tag: content?.items?.[3]?.tag ?? t('items.3.tag'),
+      description: content?.items?.[3]?.description ?? t('items.3.description'),
+      image: content?.items?.[3]?.image ?? '/images/ex-design.png',
     },
     {
-      title: t('items.4.title'),
-      tag: t('items.4.tag'),
-      description: t('items.4.description'),
-      image: '/images/ex-lightbox.png',
+      title: content?.items?.[4]?.title ?? t('items.4.title'),
+      tag: content?.items?.[4]?.tag ?? t('items.4.tag'),
+      description: content?.items?.[4]?.description ?? t('items.4.description'),
+      image: content?.items?.[4]?.image ?? '/images/ex-lightbox.png',
     },
     {
-      title: t('items.5.title'),
-      tag: t('items.5.tag'),
-      description: t('items.5.description'),
-      image: '/images/ex-dismantling.png',
+      title: content?.items?.[5]?.title ?? t('items.5.title'),
+      tag: content?.items?.[5]?.tag ?? t('items.5.tag'),
+      description: content?.items?.[5]?.description ?? t('items.5.description'),
+      image: content?.items?.[5]?.image ?? '/images/ex-dismantling.png',
     },
   ];
 
@@ -159,10 +164,10 @@ const ExcellenceCarousel = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="flex flex-col gap-4">
             <h2 className="text-[32px] md:text-[44px] font-bold text-[#0E1A2B] leading-tight">
-              {t('title')}
+              {content?.title ?? t('title')}
             </h2>
             <p className="text-[16px] md:text-[18px] text-[#72665D] max-w-xl">
-              {t('subtitle')}
+              {content?.subtitle ?? t('subtitle')}
             </p>
           </div>
 

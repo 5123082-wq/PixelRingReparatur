@@ -66,6 +66,14 @@ enum CmsArticleStatus {
   PUBLISHED
 }
 
+enum CmsRevisionSourceAction {
+  CREATE
+  UPDATE
+  PUBLISH
+  UNPUBLISH
+  RESTORE
+}
+
 enum CmsMediaUsageType {
   GENERAL
   HERO
@@ -357,6 +365,7 @@ model CmsArticle {
   deletedAt        DateTime?
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
+  revisions        CmsArticleRevision[]
 
   @@unique([locale, slug])
   @@index([locale, type, status, sortOrder])
@@ -381,11 +390,50 @@ model CmsPage {
   deletedAt      DateTime?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
+  revisions      CmsPageRevision[]
 
   @@unique([pageKey, locale])
   @@index([locale, status])
   @@index([deletedAt])
   @@map("cms_pages")
+}
+
+model CmsArticleRevision {
+  id               String                  @id @default(uuid()) @db.Uuid
+  articleId        String                  @db.Uuid
+  sourceAction     CmsRevisionSourceAction @default(UPDATE)
+  reason           String?                 @db.Text
+  actorAdminUserId String?                 @db.Uuid
+  actorSessionId   String?                 @db.Uuid
+  actorRole        AdminRole?
+  snapshot         Json
+  createdAt        DateTime                @default(now())
+  article          CmsArticle              @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([articleId, createdAt])
+  @@index([createdAt])
+  @@index([actorAdminUserId, createdAt])
+  @@index([actorSessionId, createdAt])
+  @@map("cms_article_revisions")
+}
+
+model CmsPageRevision {
+  id               String                  @id @default(uuid()) @db.Uuid
+  pageId           String                  @db.Uuid
+  sourceAction     CmsRevisionSourceAction @default(UPDATE)
+  reason           String?                 @db.Text
+  actorAdminUserId String?                 @db.Uuid
+  actorSessionId   String?                 @db.Uuid
+  actorRole        AdminRole?
+  snapshot         Json
+  createdAt        DateTime                @default(now())
+  page             CmsPage                 @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@index([pageId, createdAt])
+  @@index([createdAt])
+  @@index([actorAdminUserId, createdAt])
+  @@index([actorSessionId, createdAt])
+  @@map("cms_page_revisions")
 }
 
 model CmsMedia {

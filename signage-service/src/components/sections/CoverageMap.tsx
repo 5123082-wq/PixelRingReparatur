@@ -3,6 +3,11 @@
 import React, { useRef, useMemo } from 'react';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { useTranslations } from 'next-intl';
+import { CoverageMapCmsContent } from '@/lib/cms/pages';
+
+interface CoverageMapProps {
+  content?: CoverageMapCmsContent;
+}
 
 interface City {
   id: string;
@@ -73,7 +78,7 @@ const cities: City[] = [
   { id: 'nuremberg', nameKey: 'cities.nuremberg', x: 58, y: 72 },
 ];
 
-const CoverageMap = () => {
+const CoverageMap = ({ content }: CoverageMapProps) => {
   const t = useTranslations('Coverage');
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, amount: 0.1 });
@@ -137,12 +142,12 @@ const CoverageMap = () => {
         <div className="p-6 md:p-9 bg-gradient-to-br from-white/30 via-[#F7F1E8]/44 to-[#F7F1E8]/58 rounded-[28px] md:rounded-[44px] shadow-[inset_0_1px_0_rgba(255,255,255,0.38),0_16px_32px_rgba(0,0,0,0.02)] flex flex-col gap-4 md:gap-5">
           <div className="flex flex-col gap-1.5">
             <h2 className="text-[30px] md:text-[42px] font-bold text-[#0E1A2B] leading-[1.05] tracking-tight">
-              {t('title')}
+              {content?.title ?? t('title')}
             </h2>
             <div className="w-12 h-1 bg-[#C86E4A] rounded-full" />
           </div>
           <p className="text-[14px] md:text-[16px] text-[#0E1A2B] leading-relaxed font-semibold opacity-70">
-            {t('description')}
+            {content?.description ?? t('description')}
           </p>
         </div>
       </motion.div>

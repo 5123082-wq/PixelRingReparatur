@@ -7,16 +7,16 @@ import { readLocalAttachment } from '@/lib/attachments';
 import {
   CRM_SESSION_COOKIE_NAME,
 } from '@/lib/admin-auth';
-import { createAdminAuditLog, requireAdminActor } from '@/lib/admin-audit';
+import { createAdminAuditLog, requireAdminPermissionActor } from '@/lib/admin-audit';
 
 export const runtime = 'nodejs';
 
 async function requireAdmin(request: NextRequest) {
-  return requireAdminActor(
+  return requireAdminPermissionActor(
     prisma,
     request,
     CRM_SESSION_COOKIE_NAME,
-    ['MANAGER']
+    ['CRM_ATTACHMENT_READ']
   );
 }
 

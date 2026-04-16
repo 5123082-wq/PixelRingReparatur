@@ -3,6 +3,7 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
+import { SymptomCmsContent } from '@/lib/cms/pages';
 
 const FALLBACK_SYMPTOM_SLUGS = [
   'no-light',
@@ -24,9 +25,10 @@ interface SymptomClusterProps {
     shortAnswer: string | null;
     sortOrder: number;
   }[];
+  content?: SymptomCmsContent;
 }
 
-const SymptomCluster = ({ isCompact = false, items }: SymptomClusterProps) => {
+const SymptomCluster = ({ isCompact = false, items, content }: SymptomClusterProps) => {
   const t = useTranslations('Support');
   const defaultItems = FALLBACK_SYMPTOM_SLUGS.map((slug, index) => ({
     slug,
@@ -42,10 +44,10 @@ const SymptomCluster = ({ isCompact = false, items }: SymptomClusterProps) => {
         <div>
           <h2 className="text-2xl md:text-3xl font-bold text-[#1A1A1A] mb-3 flex items-center gap-4">
             <span className="w-8 h-1 bg-[#B8643E] rounded-full" />
-            {t('symptoms_title')}
+            {content?.title ?? t('symptoms_title')}
           </h2>
           <p className="text-[#8B8B8B] text-base max-w-xl leading-relaxed">
-            {t('symptoms_desc')}
+            {content?.description ?? t('symptoms_desc')}
           </p>
         </div>
         
@@ -56,7 +58,7 @@ const SymptomCluster = ({ isCompact = false, items }: SymptomClusterProps) => {
           <svg className="w-4 h-4 text-[#B8643E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-          {t('all_articles')}
+          {content?.allArticlesLabel ?? t('all_articles')}
         </a>
       </div>
 
@@ -95,7 +97,7 @@ const SymptomCluster = ({ isCompact = false, items }: SymptomClusterProps) => {
           <svg className="w-5 h-5 text-[#B8643E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
           </svg>
-          {t('internal_links_title')}
+          {content?.internalLinksTitle ?? t('internal_links_title')}
         </h3>
         <div className="flex flex-wrap gap-2">
           {['LED Reparatur Berlin', 'Leuchtkasten Wartung', 'Schilder-Service', 'Neon Instandsetzung', 'Folierung Erneuern', 'Werbetechnik Sicherheitstand'].map(tag => (

@@ -2,12 +2,18 @@ import type { NextRequest } from 'next/server';
 import type { AdminRole, Prisma, PrismaClient } from '@prisma/client';
 
 import { requireAdminSession } from './admin-auth';
+import {
+  ALL_ADMIN_ROLES,
+  hasAdminPermissions,
+  type AdminPermission,
+} from './admin-permissions';
 
 export type AdminRequestActor = {
   adminUserId: string;
   email: string;
   displayName: string | null;
   role: AdminRole;
+  expiresAt: Date;
   sessionId: string;
   ipAddress: string | null;
   userAgent: string | null;
@@ -59,6 +65,32 @@ export async function requireAdminActor(
     email: actor.email,
     displayName: actor.displayName,
     role: actor.role,
+    expiresAt: actor.expiresAt,
+    sessionId: actor.sessionId,
+    ipAddress: getRequestIpAddress(request),
+    userAgent: getRequestUserAgent(request),
+  };
+}
+
+export async function requireAdminPermissionActor(
+  prisma: PrismaClient,
+  request: NextRequest,
+  cookieName: string,
+  requiredPermissions: readonly AdminPermission[]
+): Promise<AdminRequestActor | null> {
+  const token = request.cookies.get(cookieName)?.value;
+  const actor = await requireAdminSession(prisma, token, ALL_ADMIN_ROLES);
+
+  if (!actor || !hasAdminPermissions(actor.role, requiredPermissions)) {
+    return null;
+  }
+
+  return {
+    adminUserId: actor.adminUserId,
+    email: actor.email,
+    displayName: actor.displayName,
+    role: actor.role,
+    expiresAt: actor.expiresAt,
     sessionId: actor.sessionId,
     ipAddress: getRequestIpAddress(request),
     userAgent: getRequestUserAgent(request),

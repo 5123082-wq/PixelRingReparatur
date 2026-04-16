@@ -38,31 +38,10 @@ export type VerifiedAdminSession = {
 };
 
 export type AdminLoginInput =
-  | {
-      mode: 'password';
-      email: string;
-      password: string;
-    }
-  | {
-      mode: 'master-key';
-      masterKey: string;
-    };
-
-function getManagerCrmKey(): string {
-  const key = process.env.ADMIN_MASTER_KEY_CRM;
-  if (!key || key.length < 16) {
-    throw new Error('ADMIN_MASTER_KEY_CRM is not configured or too short.');
-  }
-  return key;
-}
-
-function getAdminCmsKey(): string {
-  const key = process.env.ADMIN_MASTER_KEY_CMS;
-  if (!key || key.length < 16) {
-    throw new Error('ADMIN_MASTER_KEY_CMS is not configured or too short.');
-  }
-  return key;
-}
+  {
+    email: string;
+    password: string;
+  };
 
 function getAdminSessionTtlMs(): number {
   const hours = Number(process.env.ADMIN_SESSION_TTL_HOURS) || 12;
@@ -75,23 +54,6 @@ export function getAdminSessionTtlSeconds(): number {
 
 export function normalizeAdminEmail(value: string): string {
   return value.trim().toLowerCase();
-}
-
-export function isMasterKeyFallbackEnabled(): boolean {
-  return process.env.ADMIN_ENABLE_MASTER_KEY_FALLBACK === 'true';
-}
-
-export function getBootstrapAdminEmail(role: AdminRole): string | null {
-  const value = role === 'OWNER'
-    ? process.env.ADMIN_BOOTSTRAP_OWNER_EMAIL
-    : process.env.ADMIN_BOOTSTRAP_MANAGER_EMAIL;
-
-  if (!value) {
-    return null;
-  }
-
-  const normalized = normalizeAdminEmail(value);
-  return normalized.length > 0 ? normalized : null;
 }
 
 function sanitizeAdminUser(user: AdminUserRecord): AuthenticatedAdminUser {
@@ -121,26 +83,6 @@ async function findAdminUserByEmail(
   });
 }
 
-/**
- * Validates the master key for a specific role.
- */
-export function validateAdminMasterKey(candidate: string, role: AdminRole): boolean {
-  try {
-    const expected = role === 'OWNER' ? getAdminCmsKey() : getManagerCrmKey();
-    const candidateBuffer = Buffer.from(candidate);
-    const expectedBuffer = Buffer.from(expected);
-
-    if (candidateBuffer.length !== expectedBuffer.length) {
-      return false;
-    }
-
-    return crypto.timingSafeEqual(candidateBuffer, expectedBuffer);
-  } catch (e) {
-    console.error('Auth error:', e);
-    return false;
-  }
-}
-
 export function createAdminSessionToken(): string {
   return crypto.randomBytes(ADMIN_TOKEN_BYTES).toString('base64url');
 }
@@ -166,76 +108,38 @@ export function parseAdminLoginInput(payload: unknown): AdminLoginInput | null {
 
   const email = typeof body.email === 'string' ? normalizeAdminEmail(body.email) : '';
   const password = typeof body.password === 'string' ? body.password.trim() : '';
-  const masterKey = typeof body.masterKey === 'string' ? body.masterKey.trim() : '';
 
-  const hasPasswordMode = email.length > 0 || password.length > 0;
-  const hasMasterKeyMode = masterKey.length > 0;
-
-  if (hasPasswordMode && hasMasterKeyMode) {
+  if (typeof body.masterKey === 'string' && body.masterKey.trim().length > 0) {
     return null;
   }
 
-  if (hasPasswordMode) {
-    if (!email || !password) {
-      return null;
-    }
-
-    return {
-      mode: 'password',
-      email,
-      password,
-    };
+  if (!email || !password) {
+    return null;
   }
 
-  if (hasMasterKeyMode) {
-    return {
-      mode: 'master-key',
-      masterKey,
-    };
-  }
-
-  return null;
+  return {
+    email,
+    password,
+  };
 }
 
 export async function authenticateAdminLogin(
   prisma: AdminClient,
   role: AdminRole,
   input: AdminLoginInput
-): Promise<{ user: AuthenticatedAdminUser; method: AdminLoginInput['mode'] } | null> {
-  if (input.mode === 'password') {
-    const user = await findAdminUserByEmail(prisma, input.email);
-    if (!user || user.role !== role || user.status !== 'ACTIVE') {
-      return null;
-    }
-
-    const validPassword = await verifyAdminPassword(input.password, user.passwordHash);
-    if (!validPassword) {
-      return null;
-    }
-
-    return {
-      user: sanitizeAdminUser(user),
-      method: 'password',
-    };
-  }
-
-  if (!isMasterKeyFallbackEnabled() || !validateAdminMasterKey(input.masterKey, role)) {
-    return null;
-  }
-
-  const bootstrapEmail = getBootstrapAdminEmail(role);
-  if (!bootstrapEmail) {
-    return null;
-  }
-
-  const user = await findAdminUserByEmail(prisma, bootstrapEmail);
+): Promise<{ user: AuthenticatedAdminUser } | null> {
+  const user = await findAdminUserByEmail(prisma, input.email);
   if (!user || user.role !== role || user.status !== 'ACTIVE') {
+    return null;
+  }
+
+  const validPassword = await verifyAdminPassword(input.password, user.passwordHash);
+  if (!validPassword) {
     return null;
   }
 
   return {
     user: sanitizeAdminUser(user),
-    method: 'master-key',
   };
 }
 

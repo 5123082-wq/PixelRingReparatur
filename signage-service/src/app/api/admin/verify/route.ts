@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
-import { CRM_SESSION_COOKIE_NAME, requireAdminSession } from '@/lib/admin-auth';
+import { CRM_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
+import { requireAdminPermissionActor } from '@/lib/admin-audit';
 
 function notFoundResponse() {
   return NextResponse.json({ error: 'Not found' }, { status: 404 });
@@ -9,8 +10,12 @@ function notFoundResponse() {
 
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get(CRM_SESSION_COOKIE_NAME)?.value;
-    const actor = await requireAdminSession(prisma, token, ['MANAGER']);
+    const actor = await requireAdminPermissionActor(
+      prisma,
+      request,
+      CRM_SESSION_COOKIE_NAME,
+      ['CRM_CASE_READ']
+    );
 
     if (!actor) {
       return notFoundResponse();

@@ -10,24 +10,35 @@ import RoadmapSection from '@/components/sections/RoadmapSection';
 import FAQSection from '@/components/sections/FAQSection';
 import FooterCTA from '@/components/sections/FooterCTA';
 import CoverageMap from '@/components/sections/CoverageMap';
+import { getGlobalPageCmsContent, getHomePageCmsContent } from '@/lib/cms/pages';
 
-export default function HomePage() {
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const [globalCms, homeCms] = await Promise.all([
+    getGlobalPageCmsContent(locale),
+    getHomePageCmsContent(locale),
+  ]);
+
   return (
     <div className="min-h-screen flex flex-col bg-[#F7F1E8]">
-      <Header />
+      <Header content={globalCms?.header} />
       <main className="flex-1">
-        <HeroSection />
-        <IntakeSection />
-        <BentoGridSection />
-        <TrustSection />
-        <CoverageMap />
-        <ExcellenceCarousel />
-        <ReviewsSection />
-        <RoadmapSection />
-        <FAQSection />
-        <FooterCTA />
+        <HeroSection content={homeCms?.hero} />
+        <IntakeSection content={homeCms?.intake} />
+        <BentoGridSection content={homeCms?.bento} />
+        <TrustSection content={homeCms?.trust} />
+        <CoverageMap content={homeCms?.coverage} />
+        <ExcellenceCarousel content={homeCms?.excellence} />
+        <ReviewsSection content={homeCms?.reviews} />
+        <RoadmapSection content={homeCms?.roadmap} />
+        <FAQSection content={homeCms?.faq} />
+        <FooterCTA content={globalCms?.footerCta} />
       </main>
-      <Footer />
+      <Footer content={globalCms?.footer} />
     </div>
   );
 }

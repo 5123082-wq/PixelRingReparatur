@@ -4,8 +4,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 
 import { adminFetch } from '@/lib/admin-fetch';
-
 import { getLocaleSegment, withLocalePath } from '../../admin-route';
+
+import { Button } from '@/components/admin/ui/Button';
+import { Input, Select, Textarea } from '@/components/admin/ui/Input';
+import { Badge } from '@/components/admin/ui/Badge';
 
 type CaseItem = {
   id: string;
@@ -29,17 +32,17 @@ type Pagination = {
   totalPages: number;
 };
 
-const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  DRAFT: { label: 'Черновик', color: '#555' },
-  FORMALIZED: { label: 'Оформлена', color: '#666' },
-  NUMBER_ISSUED: { label: 'Принято', color: '#3b82f6' },
-  UNDER_REVIEW: { label: 'В диагностике', color: '#a855f7' },
-  IN_PROGRESS: { label: 'Ремонт', color: '#f59e0b' },
-  ON_HOLD: { label: 'Отложено', color: '#6b7280' },
-  WAITING_FOR_CUSTOMER: { label: 'Ожидает клиента', color: '#ec4899' },
-  READY_FOR_PICKUP: { label: 'Готов', color: '#22c55e' },
-  COMPLETED: { label: 'Выдан / Гарантия', color: '#10b981' },
-  CANCELLED: { label: 'Отказ', color: '#ef4444' },
+const STATUS_LABELS: Record<string, { label: string; variant: string }> = {
+  DRAFT: { label: 'Черновик', variant: 'default' },
+  FORMALIZED: { label: 'Оформлена', variant: 'default' },
+  NUMBER_ISSUED: { label: 'Принято', variant: 'info' },
+  UNDER_REVIEW: { label: 'В диагностике', variant: 'purple' },
+  IN_PROGRESS: { label: 'Ремонт', variant: 'warning' },
+  ON_HOLD: { label: 'Отложено', variant: 'default' },
+  WAITING_FOR_CUSTOMER: { label: 'Ожидает клиента', variant: 'pink' },
+  READY_FOR_PICKUP: { label: 'Готов', variant: 'success' },
+  COMPLETED: { label: 'Выдан / Гарантия', variant: 'success' },
+  CANCELLED: { label: 'Отказ', variant: 'error' },
 };
 
 const CHANNEL_LABELS: Record<string, string> = {
@@ -101,51 +104,56 @@ export default function AdminDashboardPage() {
   }, [fetchCases]);
 
   return (
-    <div>
+    <div className="flex flex-col gap-6">
       {/* Header */}
-      <div style={styles.header}>
-        <h1 style={styles.title}>Заявки</h1>
-        <button onClick={() => setShowCreateForm(true)} style={styles.addBtn}>
+      <div className="flex justify-between items-center bg-zinc-900 border border-zinc-800 p-6 rounded-xl shadow-sm">
+        <div>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Заявки</h1>
+          <p className="text-sm text-zinc-400 mt-1">Управление заявками и коммуникация CRM</p>
+        </div>
+        <Button onClick={() => setShowCreateForm(true)}>
           + Новая заявка
-        </button>
+        </Button>
       </div>
 
       {/* Filters */}
-      <div style={styles.filters}>
-        <input
-          type="text"
-          placeholder="Поиск по PR, имени, email, телефону..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && fetchCases()}
-          style={styles.searchInput}
-        />
+      <div className="flex flex-wrap gap-4 items-end bg-zinc-900/50 border border-zinc-800/50 p-4 rounded-xl">
+        <div className="flex-1 min-w-[240px]">
+          <Input
+            placeholder="Поиск по PR, имени, email, телефону..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && fetchCases()}
+          />
+        </div>
 
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          style={styles.select}
-        >
-          <option value="">Все статусы</option>
-          {Object.entries(STATUS_LABELS).map(([key, { label }]) => (
-            <option key={key} value={key}>{label}</option>
-          ))}
-        </select>
+        <div className="w-48">
+          <Select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="">Все статусы</option>
+            {Object.entries(STATUS_LABELS).map(([key, { label }]) => (
+              <option key={key} value={key}>{label}</option>
+            ))}
+          </Select>
+        </div>
 
-        <select
-          value={channelFilter}
-          onChange={(e) => setChannelFilter(e.target.value)}
-          style={styles.select}
-        >
-          <option value="">Все каналы</option>
-          {Object.entries(CHANNEL_LABELS).map(([key, label]) => (
-            <option key={key} value={key}>{label}</option>
-          ))}
-        </select>
+        <div className="w-48">
+          <Select
+            value={channelFilter}
+            onChange={(e) => setChannelFilter(e.target.value)}
+          >
+            <option value="">Все каналы</option>
+            {Object.entries(CHANNEL_LABELS).map(([key, label]) => (
+              <option key={key} value={key}>{label}</option>
+            ))}
+          </Select>
+        </div>
 
-        <button onClick={() => fetchCases()} style={styles.filterBtn}>
-          🔍
-        </button>
+        <Button onClick={() => fetchCases()} variant="secondary" className="px-5">
+          Найти
+        </Button>
       </div>
 
       {/* Create form modal */}
@@ -160,97 +168,94 @@ export default function AdminDashboardPage() {
       )}
 
       {/* Table */}
-      {loading ? (
-        <p style={{ color: '#666', textAlign: 'center', padding: '40px' }}>Загрузка...</p>
-      ) : cases.length === 0 ? (
-        <p style={{ color: '#666', textAlign: 'center', padding: '40px' }}>Заявок не найдено</p>
-      ) : (
-        <div style={styles.tableWrapper}>
-          <table style={styles.table}>
-            <thead>
-              <tr>
-                <th style={styles.th}>PR-номер</th>
-                <th style={styles.th}>Клиент</th>
-                <th style={styles.th}>Статус</th>
-                <th style={styles.th}>Канал</th>
-                <th style={styles.th}>Описание</th>
-                <th style={styles.th}>Назначен</th>
-                <th style={styles.th}>Дата</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cases.map((c) => (
-                <tr
-                  key={c.id}
-                  onClick={() =>
-                    router.push(withLocalePath(locale, `/ring-manager-crm/dashboard/${c.id}`))
-                  }
-                  style={styles.tr}
-                >
-                  <td style={styles.td}>
-                    <span style={styles.prNumber}>{c.publicRequestNumber || '—'}</span>
-                  </td>
-                  <td style={styles.td}>
-                    <div style={{ fontWeight: 500 }}>{c.customerName || 'Без имени'}</div>
-                    <div style={{ color: '#666', fontSize: '12px' }}>
-                      {c.customerEmail || c.customerPhone || '—'}
-                    </div>
-                  </td>
-                  <td style={styles.td}>
-                    <span
-                      style={{
-                        ...styles.badge,
-                        background: STATUS_LABELS[c.status]?.color || '#555',
-                      }}
-                    >
-                      {STATUS_LABELS[c.status]?.label || c.status}
-                    </span>
-                  </td>
-                  <td style={styles.td}>
-                    <span style={{ fontSize: '13px' }}>
-                      {CHANNEL_LABELS[c.originChannel] || c.originChannel}
-                    </span>
-                  </td>
-                  <td style={{ ...styles.td, maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {c.summary || '—'}
-                  </td>
-                  <td style={styles.td}>{c.assignedOperator || '—'}</td>
-                  <td style={{ ...styles.td, fontSize: '12px', color: '#666' }}>
-                    {new Date(c.createdAt).toLocaleDateString('de-DE', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: '2-digit',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </td>
+      <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-sm">
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <p className="text-zinc-500 font-medium">Загрузка...</p>
+          </div>
+        ) : cases.length === 0 ? (
+          <div className="flex flex-col justify-center items-center h-64 gap-3">
+            <div className="text-4xl">📭</div>
+            <p className="text-zinc-500 font-medium">Заявок не найдено</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm whitespace-nowrap">
+              <thead className="bg-zinc-950/50 text-xs text-zinc-400 uppercase tracking-wider border-b border-zinc-800">
+                <tr>
+                  <th className="px-6 py-4 font-medium">PR-номер</th>
+                  <th className="px-6 py-4 font-medium">Клиент</th>
+                  <th className="px-6 py-4 font-medium">Статус</th>
+                  <th className="px-6 py-4 font-medium">Канал</th>
+                  <th className="px-6 py-4 font-medium">Описание</th>
+                  <th className="px-6 py-4 font-medium">Назначен</th>
+                  <th className="px-6 py-4 font-medium">Дата</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody className="divide-y divide-zinc-800/50 text-zinc-300">
+                {cases.map((c) => (
+                  <tr
+                    key={c.id}
+                    onClick={() => router.push(withLocalePath(locale, `/ring-manager-crm/dashboard/${c.id}`))}
+                    className="hover:bg-zinc-800/50 cursor-pointer transition-colors"
+                  >
+                    <td className="px-6 py-4">
+                      <span className="font-mono text-blue-400 font-semibold">{c.publicRequestNumber || '—'}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="font-medium text-zinc-100">{c.customerName || 'Без имени'}</div>
+                      <div className="text-xs text-zinc-500 mt-0.5">
+                        {c.customerEmail || c.customerPhone || '—'}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <Badge variant={STATUS_LABELS[c.status]?.variant || 'default'}>
+                        {STATUS_LABELS[c.status]?.label || c.status}
+                      </Badge>
+                    </td>
+                    <td className="px-6 py-4 text-xs">
+                      {CHANNEL_LABELS[c.originChannel] || c.originChannel}
+                    </td>
+                    <td className="px-6 py-4 max-w-[200px] truncate text-xs text-zinc-400">
+                      {c.summary || '—'}
+                    </td>
+                    <td className="px-6 py-4 text-xs font-medium text-zinc-300">{c.assignedOperator || '—'}</td>
+                    <td className="px-6 py-4 text-xs text-zinc-500">
+                      {new Date(c.createdAt).toLocaleDateString('de-DE', {
+                        day: '2-digit', month: '2-digit', year: '2-digit',
+                        hour: '2-digit', minute: '2-digit',
+                      })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
       {/* Pagination */}
       {pagination && pagination.totalPages > 1 && (
-        <div style={styles.pagination}>
-          <button
+        <div className="flex justify-center items-center gap-4 py-8">
+          <Button
+            variant="secondary"
+            size="sm"
             disabled={pagination.page <= 1}
             onClick={() => fetchCases(pagination.page - 1)}
-            style={styles.pageBtn}
           >
             ← Назад
-          </button>
-          <span style={{ color: '#666', fontSize: '13px' }}>
-            {pagination.page} / {pagination.totalPages} ({pagination.total} всего)
+          </Button>
+          <span className="text-sm font-medium text-zinc-400">
+            {pagination.page} / {pagination.totalPages} <span className="text-zinc-600">({pagination.total} всего)</span>
           </span>
-          <button
+          <Button
+            variant="secondary"
+            size="sm"
             disabled={pagination.page >= pagination.totalPages}
             onClick={() => fetchCases(pagination.page + 1)}
-            style={styles.pageBtn}
           >
             Далее →
-          </button>
+          </Button>
         </div>
       )}
     </div>
@@ -291,7 +296,6 @@ function CreateCaseForm({
 
       if (res.ok) {
         const data = await res.json();
-
         setResult(data.case);
       }
     } finally {
@@ -300,83 +304,94 @@ function CreateCaseForm({
   }
 
   return (
-    <div style={styles.overlay} onClick={onClose}>
-      <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <h2 style={{ margin: '0 0 20px', color: '#fff', fontSize: '18px' }}>
-          Новая заявка
-        </h2>
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8 w-full max-w-lg shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <h2 className="text-xl font-bold text-white mb-6">Новая заявка</h2>
 
         {result ? (
-          <div style={{ textAlign: 'center' }}>
-            <p style={{ color: '#22c55e', fontSize: '16px', margin: '0 0 8px' }}>
-              ✅ Заявка создана
-            </p>
-            <p style={styles.prResult}>{result.publicRequestNumber}</p>
-            <p style={{ color: '#666', fontSize: '13px' }}>
-              Отправьте этот номер клиенту
-            </p>
-            <button onClick={onCreated} style={{ ...styles.addBtn, marginTop: '16px' }}>
-              Закрыть
-            </button>
+          <div className="text-center py-6">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-500 mb-4">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <h3 className="text-lg font-semibold text-white mb-2">Заявка успешно создана</h3>
+            <div className="bg-zinc-950 border border-zinc-800 rounded-lg py-4 mb-4">
+              <p className="font-mono text-3xl font-bold text-blue-400 tracking-wider">
+                {result.publicRequestNumber}
+              </p>
+            </div>
+            <p className="text-sm text-zinc-400 mb-8">Скопируйте PR-номер и отправьте его клиенту для отслеживания статуса.</p>
+            
+            <Button onClick={onCreated} className="w-full">
+              Понятно, закрыть
+            </Button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <input
-              placeholder="Имя клиента"
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <Input
+              label="Имя клиента"
+              placeholder="Иван Иванов"
               value={form.customerName}
               onChange={(e) => setForm({ ...form, customerName: e.target.value })}
-              style={styles.formInput}
             />
-            <input
-              placeholder="Email"
-              value={form.customerEmail}
-              onChange={(e) => setForm({ ...form, customerEmail: e.target.value })}
-              style={styles.formInput}
-            />
-            <input
-              placeholder="Телефон"
-              value={form.customerPhone}
-              onChange={(e) => setForm({ ...form, customerPhone: e.target.value })}
-              style={styles.formInput}
-            />
-            <select
-              value={form.originChannel}
-              onChange={(e) => setForm({ ...form, originChannel: e.target.value })}
-              style={styles.formInput}
-            >
-              <option value="MANUAL">✋ Вручную</option>
-              <option value="WHATSAPP">📱 WhatsApp</option>
-              <option value="TELEGRAM">✈️ Telegram</option>
-              <option value="PHONE">📞 Телефон</option>
-              <option value="EMAIL">📧 Email</option>
-            </select>
-            <input
-              placeholder="Назначен оператор (имя/логин)"
-              value={form.assignedOperator}
-              onChange={(e) => setForm({ ...form, assignedOperator: e.target.value })}
-              style={styles.formInput}
-            />
-            <input
-              placeholder="Краткое описание проблемы"
+            
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                label="Email"
+                placeholder="ivan@example.com"
+                value={form.customerEmail}
+                onChange={(e) => setForm({ ...form, customerEmail: e.target.value })}
+              />
+              <Input
+                label="Телефон"
+                placeholder="+49 151 12345678"
+                value={form.customerPhone}
+                onChange={(e) => setForm({ ...form, customerPhone: e.target.value })}
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <Select
+                label="Канал обращения"
+                value={form.originChannel}
+                onChange={(e) => setForm({ ...form, originChannel: e.target.value })}
+              >
+                <option value="MANUAL">✋ Вручную</option>
+                <option value="WHATSAPP">📱 WhatsApp</option>
+                <option value="TELEGRAM">✈️ Telegram</option>
+                <option value="PHONE">📞 Телефон</option>
+                <option value="EMAIL">📧 Email</option>
+              </Select>
+              
+              <Input
+                label="Назначен оператор"
+                placeholder="Логин или Имя"
+                value={form.assignedOperator}
+                onChange={(e) => setForm({ ...form, assignedOperator: e.target.value })}
+              />
+            </div>
+            
+            <Input
+              label="Краткое описание"
+              placeholder="Например: Ремонт светового короба"
               value={form.summary}
               onChange={(e) => setForm({ ...form, summary: e.target.value })}
-              style={styles.formInput}
             />
-            <textarea
-              placeholder="Подробности (необязательно)"
+            
+            <Textarea
+              label="Подробности (необязательно)"
+              placeholder="Дополнительная информация о клиенте или задаче..."
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               rows={3}
-              style={{ ...styles.formInput, resize: 'vertical' as const }}
             />
 
-            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-              <button type="button" onClick={onClose} style={styles.cancelBtn}>
+            <div className="flex gap-3 justify-end mt-4">
+              <Button type="button" variant="ghost" onClick={onClose}>
                 Отмена
-              </button>
-              <button type="submit" disabled={loading} style={styles.addBtn}>
-                {loading ? 'Создание...' : 'Создать и получить PR'}
-              </button>
+              </Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? 'Создание...' : 'Создать заявку'}
+              </Button>
             </div>
           </form>
         )}
@@ -384,168 +399,3 @@ function CreateCaseForm({
     </div>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '24px',
-  },
-  title: {
-    margin: 0,
-    fontSize: '24px',
-    fontWeight: 700,
-    color: '#fff',
-  },
-  addBtn: {
-    padding: '10px 20px',
-    fontSize: '13px',
-    fontWeight: 600,
-    background: '#fff',
-    color: '#000',
-    border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer',
-  },
-  filters: {
-    display: 'flex',
-    gap: '8px',
-    marginBottom: '20px',
-    flexWrap: 'wrap' as const,
-  },
-  searchInput: {
-    flex: 1,
-    minWidth: '200px',
-    padding: '10px 14px',
-    fontSize: '13px',
-    background: '#141414',
-    border: '1px solid #333',
-    borderRadius: '8px',
-    color: '#fff',
-    outline: 'none',
-  },
-  select: {
-    padding: '10px 12px',
-    fontSize: '13px',
-    background: '#141414',
-    border: '1px solid #333',
-    borderRadius: '8px',
-    color: '#ccc',
-    outline: 'none',
-  },
-  filterBtn: {
-    padding: '10px 14px',
-    background: '#222',
-    border: '1px solid #333',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    fontSize: '14px',
-  },
-  tableWrapper: {
-    borderRadius: '12px',
-    border: '1px solid #222',
-    overflow: 'hidden',
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse' as const,
-    fontSize: '13px',
-  },
-  th: {
-    textAlign: 'left' as const,
-    padding: '12px 16px',
-    background: '#141414',
-    color: '#666',
-    fontWeight: 500,
-    fontSize: '12px',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.05em',
-    borderBottom: '1px solid #222',
-  },
-  tr: {
-    cursor: 'pointer',
-    borderBottom: '1px solid #1a1a1a',
-    transition: 'background 0.15s',
-  },
-  td: {
-    padding: '14px 16px',
-    verticalAlign: 'middle' as const,
-  },
-  prNumber: {
-    fontFamily: "'JetBrains Mono', monospace",
-    fontSize: '13px',
-    color: '#3b82f6',
-    fontWeight: 600,
-  },
-  badge: {
-    display: 'inline-block',
-    padding: '4px 10px',
-    borderRadius: '6px',
-    fontSize: '11px',
-    fontWeight: 600,
-    color: '#fff',
-  },
-  pagination: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: '16px',
-    marginTop: '20px',
-    padding: '16px',
-  },
-  pageBtn: {
-    padding: '8px 16px',
-    fontSize: '13px',
-    background: '#1a1a1a',
-    border: '1px solid #333',
-    borderRadius: '6px',
-    color: '#ccc',
-    cursor: 'pointer',
-  },
-  overlay: {
-    position: 'fixed' as const,
-    inset: 0,
-    background: 'rgba(0,0,0,0.7)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 100,
-  },
-  modal: {
-    background: '#141414',
-    border: '1px solid #333',
-    borderRadius: '12px',
-    padding: '32px',
-    width: '460px',
-    maxWidth: '90vw',
-  },
-  formInput: {
-    padding: '10px 14px',
-    fontSize: '13px',
-    background: '#0a0a0a',
-    border: '1px solid #333',
-    borderRadius: '8px',
-    color: '#fff',
-    outline: 'none',
-    width: '100%',
-    boxSizing: 'border-box' as const,
-  },
-  cancelBtn: {
-    padding: '10px 20px',
-    fontSize: '13px',
-    background: 'transparent',
-    border: '1px solid #333',
-    borderRadius: '8px',
-    color: '#999',
-    cursor: 'pointer',
-  },
-  prResult: {
-    fontFamily: "'JetBrains Mono', monospace",
-    fontSize: '28px',
-    fontWeight: 700,
-    color: '#fff',
-    margin: '12px 0',
-    letterSpacing: '0.05em',
-  },
-};

@@ -2,24 +2,36 @@
 
 import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { FaqCmsContent } from '@/lib/cms/pages';
 
-const FAQSection = () => {
+interface FAQSectionProps {
+  content?: FaqCmsContent;
+}
+
+const FAQSection = ({ content }: FAQSectionProps) => {
   const t = useTranslations('FAQ');
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-  const faqItems = [
-    { q: t('items.0.question'), a: t('items.0.answer') },
-    { q: t('items.1.question'), a: t('items.1.answer') },
-    { q: t('items.2.question'), a: t('items.2.answer') },
-    { q: t('items.3.question'), a: t('items.3.answer') },
-  ];
+  const contentItems = content?.items?.length ? content.items : null;
+
+  const faqItems = contentItems
+    ? contentItems.map((item, idx) => ({
+        q: item.question ?? t(`items.${idx}.question`),
+        a: item.answer ?? t(`items.${idx}.answer`),
+      }))
+    : [
+        { q: t('items.0.question'), a: t('items.0.answer') },
+        { q: t('items.1.question'), a: t('items.1.answer') },
+        { q: t('items.2.question'), a: t('items.2.answer') },
+        { q: t('items.3.question'), a: t('items.3.answer') },
+      ];
 
   return (
     <section className="w-full bg-[#F9F6F2] py-24 px-6">
       <div className="max-w-3xl mx-auto flex flex-col gap-12">
         <div className="flex flex-col gap-4 text-center">
           <h2 className="text-[36px] md:text-[44px] font-bold text-[#0E1A2B] leading-tight">
-            {t('title')}
+            {content?.title ?? t('title')}
           </h2>
           <div className="w-20 h-1 bg-[#B8643E] rounded-full mx-auto" />
         </div>

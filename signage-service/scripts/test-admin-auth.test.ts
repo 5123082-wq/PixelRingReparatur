@@ -13,6 +13,7 @@ import {
   verifyAdminSession,
   type AdminRole,
 } from '../src/lib/admin-auth.ts';
+import { hasAdminPermissions } from '../src/lib/admin-permissions.ts';
 import { hashAdminPassword } from '../src/lib/admin-password.ts';
 
 type UserRecord = {
@@ -238,18 +239,14 @@ async function buildFixture() {
   ]);
 }
 
-test('parseAdminLoginInput accepts password and master-key modes and rejects mixed payloads', () => {
+test('parseAdminLoginInput accepts password mode and rejects legacy master-key payloads', () => {
   assert.deepEqual(parseAdminLoginInput({ email: 'Owner@PixelRing.Test', password: 'abc123456789' }), {
-    mode: 'password',
     email: 'owner@pixelring.test',
     password: 'abc123456789',
   });
-  assert.deepEqual(parseAdminLoginInput({ masterKey: ' secret-key ' }), {
-    mode: 'master-key',
-    masterKey: 'secret-key',
-  });
-  assert.equal(parseAdminLoginInput({ email: 'owner@pixelring.test', password: 'x', masterKey: 'y' }), null);
   assert.equal(parseAdminLoginInput({ email: 'owner@pixelring.test' }), null);
+  assert.equal(parseAdminLoginInput({ masterKey: ' secret-key ' }), null);
+  assert.equal(parseAdminLoginInput({ email: 'owner@pixelring.test', password: 'x', masterKey: 'y' }), null);
 });
 
 test('authenticateAdminLogin succeeds for the correct role and rejects wrong-zone access', async () => {
@@ -277,36 +274,20 @@ test('authenticateAdminLogin succeeds for the correct role and rejects wrong-zon
   assert.equal(disabledUser, null);
 });
 
-test('authenticateAdminLogin only allows master-key fallback when explicitly enabled and mapped to a bootstrap user', async (t) => {
+test('authenticateAdminLogin rejects invalid passwords and missing users', async () => {
   const prisma = await buildFixture();
-  const originalEnv = {
-    ADMIN_ENABLE_MASTER_KEY_FALLBACK: process.env.ADMIN_ENABLE_MASTER_KEY_FALLBACK,
-    ADMIN_MASTER_KEY_CMS: process.env.ADMIN_MASTER_KEY_CMS,
-    ADMIN_BOOTSTRAP_OWNER_EMAIL: process.env.ADMIN_BOOTSTRAP_OWNER_EMAIL,
-  };
 
-  t.after(() => {
-    process.env.ADMIN_ENABLE_MASTER_KEY_FALLBACK = originalEnv.ADMIN_ENABLE_MASTER_KEY_FALLBACK;
-    process.env.ADMIN_MASTER_KEY_CMS = originalEnv.ADMIN_MASTER_KEY_CMS;
-    process.env.ADMIN_BOOTSTRAP_OWNER_EMAIL = originalEnv.ADMIN_BOOTSTRAP_OWNER_EMAIL;
+  const wrongPassword = await authenticateAdminLogin(prisma as any, 'OWNER', {
+    email: 'owner@pixelring.test',
+    password: 'WrongPassword123',
   });
+  assert.equal(wrongPassword, null);
 
-  process.env.ADMIN_ENABLE_MASTER_KEY_FALLBACK = 'false';
-  process.env.ADMIN_MASTER_KEY_CMS = '0123456789abcdef0123456789abcdef';
-  process.env.ADMIN_BOOTSTRAP_OWNER_EMAIL = 'owner@pixelring.test';
-
-  assert.equal(
-    await authenticateAdminLogin(prisma as any, 'OWNER', { mode: 'master-key', masterKey: process.env.ADMIN_MASTER_KEY_CMS }),
-    null
-  );
-
-  process.env.ADMIN_ENABLE_MASTER_KEY_FALLBACK = 'true';
-
-  const authResult = await authenticateAdminLogin(prisma as any, 'OWNER', {
-    mode: 'master-key',
-    masterKey: process.env.ADMIN_MASTER_KEY_CMS,
+  const missingUser = await authenticateAdminLogin(prisma as any, 'OWNER', {
+    email: 'missing@pixelring.test',
+    password: 'OwnerPassword123',
   });
-  assert.equal(authResult?.user.email, 'owner@pixelring.test');
+  assert.equal(missingUser, null);
 });
 
 test('verifyAdminSession returns the named actor for valid sessions and enforces role checks', async () => {
@@ -324,6 +305,42 @@ test('verifyAdminSession returns the named actor for valid sessions and enforces
   assert.equal(actor?.email, 'manager@pixelring.test');
   assert.equal(hasRequiredAdminRole(actor, ['MANAGER']), true);
   assert.equal(hasRequiredAdminRole(actor, ['OWNER']), false);
+});
+
+test('hasAdminPermissions grants sensitive CMS permissions to OWNER and denies MANAGER', () => {
+  assert.equal(hasAdminPermissions('OWNER', ['CMS_AI_CONFIG_WRITE']), true);
+  assert.equal(hasAdminPermissions('OWNER', ['CMS_SEO_WRITE']), true);
+  assert.equal(hasAdminPermissions('OWNER', ['CMS_ARTICLE_PUBLISH', 'CMS_ARTICLE_DELETE']), true);
+  assert.equal(hasAdminPermissions('OWNER', ['CMS_ARTICLE_REVISIONS_READ', 'CMS_ARTICLE_RESTORE']), true);
+  assert.equal(hasAdminPermissions('OWNER', ['CMS_PAGE_PUBLISH', 'CMS_PAGE_DELETE']), true);
+  assert.equal(hasAdminPermissions('OWNER', ['CMS_PAGE_REVISIONS_READ', 'CMS_PAGE_RESTORE']), true);
+  assert.equal(
+    hasAdminPermissions('OWNER', ['CMS_ARTICLE_REVISIONS_READ', 'CMS_PAGE_REVISIONS_READ']),
+    true
+  );
+  assert.equal(hasAdminPermissions('OWNER', ['CMS_MEDIA_READ', 'CMS_MEDIA_WRITE']), true);
+  assert.equal(hasAdminPermissions('OWNER', ['CMS_KNOWLEDGE_BASE_READ']), true);
+  assert.equal(hasAdminPermissions('OWNER', ['CRM_CASE_READ']), true);
+  assert.equal(hasAdminPermissions('OWNER', ['CRM_CASE_UPDATE']), false);
+  assert.equal(hasAdminPermissions('OWNER', ['CRM_ATTACHMENT_READ']), false);
+  assert.equal(hasAdminPermissions('MANAGER', ['CMS_AI_CONFIG_WRITE']), false);
+  assert.equal(hasAdminPermissions('MANAGER', ['CMS_ARTICLE_PUBLISH']), false);
+  assert.equal(hasAdminPermissions('MANAGER', ['CMS_ARTICLE_REVISIONS_READ']), false);
+  assert.equal(hasAdminPermissions('MANAGER', ['CMS_ARTICLE_RESTORE']), false);
+  assert.equal(hasAdminPermissions('MANAGER', ['CMS_PAGE_DELETE']), false);
+  assert.equal(hasAdminPermissions('MANAGER', ['CMS_PAGE_REVISIONS_READ']), false);
+  assert.equal(hasAdminPermissions('MANAGER', ['CMS_PAGE_RESTORE']), false);
+  assert.equal(
+    hasAdminPermissions('MANAGER', ['CMS_ARTICLE_REVISIONS_READ', 'CMS_PAGE_REVISIONS_READ']),
+    false
+  );
+  assert.equal(hasAdminPermissions('MANAGER', ['CMS_MEDIA_READ']), false);
+  assert.equal(hasAdminPermissions('MANAGER', ['CMS_KNOWLEDGE_BASE_READ']), false);
+  assert.equal(
+    hasAdminPermissions('MANAGER', ['CRM_CASE_CREATE', 'CRM_CASE_UPDATE', 'CRM_CASE_MESSAGE_WRITE']),
+    true
+  );
+  assert.equal(hasAdminPermissions('MANAGER', ['CRM_CASE_TAKEOVER_WRITE', 'CRM_ATTACHMENT_READ']), true);
 });
 
 test('verifyAdminSession rejects expired, revoked, and disabled-user sessions', async () => {
