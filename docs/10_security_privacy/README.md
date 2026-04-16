@@ -8,11 +8,11 @@ Current migrated documents:
 - `security_guardrails.md`
 - `admin_security_and_governance.md`
 - `security_compliance_operations_plan.md`
+- `rbac_permissions.md`
 
 Planned base documents:
 - `security_overview.md`
 - `auth_and_sessions.md`
-- `rbac_permissions.md`
 - `csrf_and_rate_limits.md`
 - `audit_logging.md`
 - `privacy_and_gdpr.md`

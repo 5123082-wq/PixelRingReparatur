@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { CMS_SESSION_COOKIE_NAME, requireAdminSession } from '@/lib/admin-auth';
+import { CMS_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
+import { requireAdminPermissionActor } from '@/lib/admin-audit';
 import {
   KNOWLEDGE_BASE_FILES,
   readKnowledgeBaseFile,
@@ -20,8 +21,12 @@ function extractMarkdownTitle(
 }
 
 async function requireOwnerSession(request: NextRequest) {
-  const token = request.cookies.get(CMS_SESSION_COOKIE_NAME)?.value;
-  return requireAdminSession(prisma, token, ['OWNER']);
+  return requireAdminPermissionActor(
+    prisma,
+    request,
+    CMS_SESSION_COOKIE_NAME,
+    ['CMS_KNOWLEDGE_BASE_READ']
+  );
 }
 
 export async function GET(request: NextRequest) {

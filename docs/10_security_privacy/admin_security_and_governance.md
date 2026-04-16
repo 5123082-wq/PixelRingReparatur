@@ -20,7 +20,9 @@ Technology and hosting baseline for this phase:
 
 Implemented now:
 
+- password-only named admin users;
 - separate `MANAGER` and `OWNER` roles;
+- starter permission map for CRM case/message/takeover/download actions plus CMS AI, SEO, knowledge-base, article/page, and media actions;
 - separate CRM and CMS cookies;
 - HTTP-only cookies;
 - route-level dashboard guards;
@@ -36,13 +38,13 @@ Known gaps:
 - persistent audit log exists, with CRM starter coverage and CMS article/page/media/SEO/AI mutation coverage;
 - status event history exists for CRM starter flows, but the full operational story is not finished;
 - object-level authz/static coverage starter exists for current CRM/CMS route split via `npm run test:admin-security`;
-- no granular RBAC matrix;
+- no database-backed granular RBAC assignment model;
 - no step-up reauthentication for destructive actions;
 - no distributed rate limit;
 - no upload scanning/quarantine;
 - CSRF coverage is currently reviewed for existing admin/CMS mutation routes and needs to stay enforced as new admin mutation routes are added;
 - no session binding policy for IP/user-agent changes.
-- current access is still centered on role-level master-key entry and needs migration toward named users + granular permissions.
+- current access has moved to named users with a starter permission layer across the current CRM/CMS sensitive routes, but broader route coverage and role expansion are still incomplete.
 
 ## Access Control
 
@@ -63,6 +65,11 @@ Target roles:
 
 The current schema only has `OWNER` and `MANAGER`; the additional roles are target-state.
 Target-state also requires named admin users and permission-level checks on sensitive actions.
+
+Current implementation note:
+
+- the active starter permission map is documented in `docs/10_security_privacy/rbac_permissions.md`;
+- current code source of truth is `signage-service/src/lib/admin-permissions.ts`.
 
 ## Sessions
 

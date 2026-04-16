@@ -2,12 +2,14 @@
 
 import React from 'react';
 import { useTranslations } from 'next-intl';
+import { ProblemCategoryCmsContent } from '@/lib/cms/pages';
 
 interface ProblemCategoriesProps {
   isCompact?: boolean;
+  content?: ProblemCategoryCmsContent;
 }
 
-const ProblemCategories = ({ isCompact = false }: ProblemCategoriesProps) => {
+const ProblemCategories = ({ isCompact = false, content }: ProblemCategoriesProps) => {
   const t = useTranslations('Support');
 
   const categories = [
@@ -72,7 +74,7 @@ const ProblemCategories = ({ isCompact = false }: ProblemCategoriesProps) => {
     <>
       <h2 className="text-2xl md:text-3xl font-bold text-[#1A1A1A] mb-8 flex items-center gap-4">
         <span className="w-8 h-1 bg-[#B8643E] rounded-full" />
-        {t('categories_title')}
+        {content?.title ?? t('categories_title')}
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -4,24 +4,21 @@ import { prisma } from '@/lib/prisma';
 import {
   CMS_SESSION_COOKIE_NAME,
 } from '@/lib/admin-auth';
+import { hasAdminPermissions } from '@/lib/admin-permissions';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
 import {
   createAdminAuditLog,
-  requireAdminActor,
+  requireAdminPermissionActor,
   type AdminRequestActor,
 } from '@/lib/admin-audit';
+import { createArticleRevisionSnapshot } from '@/lib/cms/revisions';
+import { resolveUuidRouteParam } from '@/lib/route-params';
 
 const SUPPORTED_LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'] as const;
 const ARTICLE_TYPES = ['SYMPTOM', 'FAQ', 'PAGE', 'SERVICE', 'CASE'] as const;
 const ARTICLE_STATUSES = ['DRAFT', 'PUBLISHED'] as const;
 const MAX_TEXT_LENGTH = 50_000;
 const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-
-function isUuidLike(value: string): boolean {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i.test(
-    value
-  );
-}
 
 function notFoundResponse() {
   return NextResponse.json({ error: 'Not found' }, { status: 404 });
@@ -253,7 +250,34 @@ function isPrismaUniqueError(error: unknown): boolean {
 async function requireOwnerActor(
   request: NextRequest
 ): Promise<AdminRequestActor | null> {
-  return requireAdminActor(prisma, request, CMS_SESSION_COOKIE_NAME, ['OWNER']);
+  return requireAdminPermissionActor(
+    prisma,
+    request,
+    CMS_SESSION_COOKIE_NAME,
+    ['CMS_ARTICLE_READ']
+  );
+}
+
+async function requireArticleWriteActor(
+  request: NextRequest
+): Promise<AdminRequestActor | null> {
+  return requireAdminPermissionActor(
+    prisma,
+    request,
+    CMS_SESSION_COOKIE_NAME,
+    ['CMS_ARTICLE_WRITE']
+  );
+}
+
+async function requireArticleDeleteActor(
+  request: NextRequest
+): Promise<AdminRequestActor | null> {
+  return requireAdminPermissionActor(
+    prisma,
+    request,
+    CMS_SESSION_COOKIE_NAME,
+    ['CMS_ARTICLE_DELETE']
+  );
 }
 
 const ARTICLE_AUDIT_FIELDS = [
@@ -352,6 +376,14 @@ function serializeArticle(article: ArticleQueryRecord): ArticleResponse {
   };
 }
 
+function buildArticleRevisionSnapshot(article: ArticleQueryRecord) {
+  return {
+    schemaVersion: 1,
+    entity: 'CMS_ARTICLE',
+    data: serializeArticle(article),
+  };
+}
+
 function parsePayload(body: Record<string, unknown>) {
   const locale = body.locale === undefined ? undefined : normalizeLocale(body.locale);
   const type = body.type === undefined ? undefined : normalizeEnumValue(body.type, ARTICLE_TYPES, 'SYMPTOM');
@@ -424,9 +456,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   }
 
   try {
-    const { id } = await params;
+    const id = await resolveUuidRouteParam(request, params);
 
-    if (!isUuidLike(id)) {
+    if (!id) {
       return notFoundResponse();
     }
 
@@ -453,16 +485,16 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   const csrfError = validateAdminCsrf(request);
   if (csrfError) return csrfError;
 
-  const actor = await requireOwnerActor(request);
+  const actor = await requireArticleWriteActor(request);
 
   if (!actor) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
   try {
-    const { id } = await params;
+    const id = await resolveUuidRouteParam(request, params);
 
-    if (!isUuidLike(id)) {
+    if (!id) {
       return notFoundResponse();
     }
 
@@ -564,6 +596,13 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
     const nextStatus = (typeof updates.status === 'string' ? updates.status : current.status) as ArticleStatus;
     const nextValues: Record<string, unknown> = { ...updates };
+    const requiresPublishPermission =
+      (current.status === 'DRAFT' && nextStatus === 'PUBLISHED') ||
+      (current.status === 'PUBLISHED' && nextStatus === 'DRAFT');
+
+    if (requiresPublishPermission && !hasAdminPermissions(actor.role, ['CMS_ARTICLE_PUBLISH'])) {
+      return notFoundResponse();
+    }
 
     if (nextStatus === 'PUBLISHED' && current.publishedAt === null) {
       nextValues.publishedAt = new Date();
@@ -578,6 +617,12 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         : previousStatus === 'PUBLISHED' && nextStatus === 'DRAFT'
           ? 'CMS_ARTICLE_UNPUBLISHED'
           : 'CMS_ARTICLE_UPDATED';
+    const revisionSourceAction =
+      previousStatus === 'DRAFT' && nextStatus === 'PUBLISHED'
+        ? 'PUBLISH'
+        : previousStatus === 'PUBLISHED' && nextStatus === 'DRAFT'
+          ? 'UNPUBLISH'
+          : 'UPDATE';
 
     const article = await prisma.$transaction(async (tx) => {
       const updatedArticle = await tx.cmsArticle.update({
@@ -600,9 +645,19 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
           changedFields,
           previousStatus,
           nextStatus: updatedArticle.status,
+          revisionSnapshot: buildArticleRevisionSnapshot(updatedArticle),
         },
         ipAddress: actor.ipAddress,
         userAgent: actor.userAgent,
+      });
+
+      await createArticleRevisionSnapshot(tx, updatedArticle, {
+        sourceAction: revisionSourceAction,
+        actor: {
+          adminUserId: actor.adminUserId,
+          sessionId: actor.sessionId,
+          role: actor.role,
+        },
       });
 
       return updatedArticle;
@@ -626,16 +681,16 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
   const csrfError = validateAdminCsrf(request);
   if (csrfError) return csrfError;
 
-  const actor = await requireOwnerActor(request);
+  const actor = await requireArticleDeleteActor(request);
 
   if (!actor) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
   try {
-    const { id } = await params;
+    const id = await resolveUuidRouteParam(request, params);
 
-    if (!isUuidLike(id)) {
+    if (!id) {
       return notFoundResponse();
     }
 

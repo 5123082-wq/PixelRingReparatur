@@ -6,13 +6,33 @@ import { useTranslations } from 'next-intl';
 import ContactModal from '../common/ContactModal';
 import ChatModal from '../common/ChatModal';
 
-const HeroSection = () => {
+type HomeHeroContent = {
+  titlePrefix?: string | null;
+  titleAccent?: string | null;
+  titleSuffix?: string | null;
+  intro?: string | null;
+  ctaPrimary?: string | null;
+  trustBadge?: string | null;
+  responseBadge?: string | null;
+  assetUrl?: string | null;
+};
+
+const HeroSection = ({ content }: { content?: HomeHeroContent | null }) => {
   const t = useTranslations('HomePage');
   const [modalOpen, setModalOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
 
   const whatsappUrl = process.env.NEXT_PUBLIC_WHATSAPP_URL || 'https://wa.me/message/27UOBFWB7UYCN1';
   const telegramUrl = process.env.NEXT_PUBLIC_TELEGRAM_URL || 'https://t.me/PixelRing_bot';
+  const titlePrefix = content?.titlePrefix ?? t('hero_title_prefix');
+  const titleAccent = content?.titleAccent ?? t('hero_title_accent');
+  const titleSuffix = content?.titleSuffix ?? t('hero_title_suffix');
+  const intro = content?.intro ?? t('description');
+  const ctaPrimary = content?.ctaPrimary ?? t('cta_primary');
+  const trustBadge = content?.trustBadge ?? t('trust_badge');
+  const responseBadge = content?.responseBadge ?? t('badge_label');
+  const heroImage =
+    content?.assetUrl && content.assetUrl.trim() ? content.assetUrl : '/images/hero-neon.jpg';
 
   const openModal = () => {
     setModalOpen(true);
@@ -32,14 +52,14 @@ const HeroSection = () => {
 
               {/* Headline */}
               <h1 className="text-[40px] md:text-[48px] xl:text-[56px] leading-[1.1] font-extrabold text-[#0D1B2A] tracking-tight">
-                {t('hero_title_prefix')}{' '}
-                <span className="text-[#B8643E]">{t('hero_title_accent')}</span>
-                {' '}{t('hero_title_suffix')}
+                {titlePrefix}{' '}
+                <span className="text-[#B8643E]">{titleAccent}</span>
+                {' '}{titleSuffix}
               </h1>
 
               {/* Description */}
               <p className="text-[17px] md:text-[18px] leading-[1.65] text-[#4A5568] max-w-[480px]">
-                {t('description')}
+                {intro}
               </p>
 
               {/* CTA row */}
@@ -51,7 +71,7 @@ const HeroSection = () => {
                   onClick={() => openModal()}
                   className="px-7 py-4 bg-[#B8643E] hover:bg-[#A65835] text-white text-[16px] font-semibold rounded-full shadow-lg shadow-[#B8643E]/30 transition-all duration-200 active:scale-95"
                 >
-                  {t('cta_primary')}
+                  {ctaPrimary}
                 </button>
 
                 {/* Messenger icon buttons */}
@@ -98,7 +118,7 @@ const HeroSection = () => {
 
               {/* Trust micro-label */}
               <p className="text-[13px] text-[#94A3B8] italic">
-                {t('trust_badge')}
+                {trustBadge}
               </p>
             </div>
 
@@ -115,7 +135,7 @@ const HeroSection = () => {
                 >
                   <div className="relative aspect-[4/3.2]">
                     <Image
-                      src="/images/hero-neon.jpg"
+                      src={heroImage}
                       alt="Neon sign repair — PixelRing"
                       fill
                       className="object-cover"
@@ -133,7 +153,7 @@ const HeroSection = () => {
                 >
                   <p className="text-[24px] font-extrabold text-[#B8643E] leading-none">24h</p>
                   <p className="text-[13px] text-[#64748B] mt-1 leading-snug max-w-[130px]">
-                    {t('badge_label')}
+                    {responseBadge}
                   </p>
                 </div>
               </div>

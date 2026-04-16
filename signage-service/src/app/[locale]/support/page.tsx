@@ -14,6 +14,7 @@ import {
   resolveSupportCanonicalUrl,
   resolveSupportSeoText,
 } from '@/lib/cms/support-content';
+import { getGlobalPageCmsContent, getSupportPageCmsContent } from '@/lib/cms/pages';
 
 export async function generateMetadata({
   params,
@@ -48,12 +49,21 @@ export default async function SupportPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'Support' });
-  const symptomCards = await getMergedSupportSymptomCards(locale);
+  const [t, symptomCards, globalCms, supportCms] = await Promise.all([
+    getTranslations({ locale, namespace: 'Support' }),
+    getMergedSupportSymptomCards(locale),
+    getGlobalPageCmsContent(locale),
+    getSupportPageCmsContent(locale),
+  ]);
+  const supportHeroTitle = supportCms?.hero?.title ?? t('hero_title');
+  const supportHeroTitleParts = supportHeroTitle.split(' ');
+  const supportHeroAccent = supportHeroTitleParts[0] ?? supportHeroTitle;
+  const supportHeroRest = supportHeroTitleParts.slice(1).join(' ');
+  const supportHeroIntro = supportCms?.hero?.intro ?? t('hero_description');
 
   return (
     <div className="bg-[#F7F1E8] min-h-screen flex flex-col relative">
-      <Header />
+      <Header content={globalCms?.header} />
 
       <main className="flex-1 relative">
         {/* Background Accents from SupportHero */}
@@ -73,38 +83,38 @@ export default async function SupportPage({
                 </div>
 
                 <h1 className="text-4xl md:text-6xl font-bold text-[#1A1A1A] leading-[1.1] mb-6">
-                  <span className="text-[#B8643E]">{t('hero_title').split(' ')[0]}</span>{' '}
-                  {t('hero_title').split(' ').slice(1).join(' ')}
+                  <span className="text-[#B8643E]">{supportHeroAccent}</span>
+                  {supportHeroRest ? ` ${supportHeroRest}` : ''}
                 </h1>
 
                 <p className="text-lg md:text-xl text-[#72665D] leading-relaxed mb-4 max-w-2xl">
-                  {t('hero_description')}
+                  {supportHeroIntro}
                 </p>
               </div>
 
               {/* Problem Categories */}
               <div id="categories" className="pt-12">
-                <ProblemCategories isCompact />
+                <ProblemCategories isCompact content={supportCms?.categories} />
               </div>
 
 
               {/* Typical Symptoms */}
               <div id="symptoms">
-                <SymptomCluster isCompact items={symptomCards} />
+                <SymptomCluster isCompact items={symptomCards} content={supportCms?.symptoms} />
               </div>
             </div>
 
             {/* Right side: Urgent cases and quick links */}
             <aside className="lg:col-span-4 lg:sticky lg:top-28 mt-8 lg:mt-0">
-              <UrgentCases isSidebar />
+              <UrgentCases isSidebar content={supportCms?.urgent} />
             </aside>
           </div>
         </div>
 
-        <FooterCTA />
+        <FooterCTA content={globalCms?.footerCta} />
       </main>
 
-      <Footer />
+      <Footer content={globalCms?.footer} />
     </div>
   );
 }

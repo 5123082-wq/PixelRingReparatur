@@ -110,7 +110,7 @@ Implemented:
 - Case status history.
 - Admin audit log starter.
 - Related request lookup through `CustomerProfile`.
-- Separate CRM access using `MANAGER` role and CRM key.
+- Separate CRM access using named admin users, CRM session cookies, and current CRM permissions.
 
 Known implementation shape:
 
@@ -134,7 +134,7 @@ Implemented:
 - CMS Media Library MVP.
 - CMS SEO config API and screen.
 - CMS knowledge-base read route.
-- Separate CMS access using `OWNER` role and CMS key.
+- Separate CMS access using named admin users, CMS session cookies, and current CMS permissions.
 - Persistent admin audit logs for CMS mutations.
 
 Implemented API areas:
@@ -181,11 +181,11 @@ Current provider status:
 
 Implemented:
 
-- Separate CRM and CMS master keys.
+- Password-only named admin login for CRM and CMS.
 - HTTP-only admin cookies.
 - Token hashing for admin sessions.
 - `AdminRole` starter enum with `MANAGER` and `OWNER`.
-- Route-level admin role checks.
+- Route-level admin role checks plus starter permission guards for current CRM/CMS sensitive routes.
 - CSRF header/origin starter guard for admin mutations.
 - In-memory rate limiting for current single-instance flows.
 - Persistent admin audit logs.

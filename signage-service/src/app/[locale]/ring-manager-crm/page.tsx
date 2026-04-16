@@ -5,6 +5,8 @@ import { useRouter, useParams } from 'next/navigation';
 
 import { getLocaleSegment, resolveLocalizedRedirect } from '../admin-route';
 import { adminFetch } from '@/lib/admin-fetch';
+import { Button } from '@/components/admin/ui/Button';
+import { Input } from '@/components/admin/ui/Input';
 
 export default function CrmLoginPage() {
   const [email, setEmail] = useState('');
@@ -45,104 +47,46 @@ export default function CrmLoginPage() {
   }
 
   return (
-    <div style={styles.container}>
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <div style={styles.logo}>📦</div>
-        <h1 style={styles.title}>PixelRing CRM</h1>
-        <p style={styles.subtitle}>Manager Access</p>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="manager@pixelring.de"
-          autoComplete="username"
-          autoFocus
-          required
-          disabled={loading}
-          style={styles.input}
-        />
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-          autoComplete="current-password"
-          required
-          disabled={loading}
-          style={styles.input}
-        />
+    <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-950 font-sans p-4">
+      <form onSubmit={handleSubmit} className="flex flex-col items-stretch gap-6 w-full max-w-sm p-10 bg-zinc-900 border border-zinc-800 rounded-xl shadow-xl">
+        <div className="text-center space-y-2">
+          <div className="text-4xl">📦</div>
+          <h1 className="text-xl font-semibold text-white tracking-tight">PixelRing CRM</h1>
+          <p className="text-xs font-medium text-zinc-500 uppercase tracking-widest">Manager Access</p>
+        </div>
+        
+        <div className="space-y-4 w-full">
+          <Input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="manager@pixelring.de"
+            autoComplete="username"
+            autoFocus
+            required
+            disabled={loading}
+          />
+          <Input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            autoComplete="current-password"
+            required
+            disabled={loading}
+          />
+        </div>
 
-        {error && <p style={styles.error}>{error}</p>}
+        {error && <p className="text-sm text-red-500 text-center font-medium">{error}</p>}
 
-        <button
+        <Button
           type="submit"
           disabled={loading || !email.trim() || !password}
-          style={styles.button}
+          className="w-full mt-2"
         >
           {loading ? 'Verifying...' : 'Sign In'}
-        </button>
+        </Button>
       </form>
     </div>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: '#0a0a0a',
-    fontFamily: "'Inter', sans-serif",
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'stretch',
-    gap: '16px',
-    padding: '48px 40px',
-    background: '#141414',
-    borderRadius: '12px',
-    border: '1px solid #222',
-    minWidth: '340px',
-  },
-  logo: { fontSize: '36px', textAlign: 'center' },
-  title: {
-    margin: 0,
-    fontSize: '20px',
-    fontWeight: 600,
-    color: '#fff',
-    textAlign: 'center',
-  },
-  subtitle: {
-    margin: '-10px 0 0',
-    fontSize: '12px',
-    color: '#666',
-    textTransform: 'uppercase',
-    letterSpacing: '0.1em',
-    textAlign: 'center',
-  },
-  input: {
-    width: '100%',
-    padding: '12px 16px',
-    fontSize: '14px',
-    background: '#0a0a0a',
-    border: '1px solid #333',
-    borderRadius: '8px',
-    color: '#fff',
-    outline: 'none',
-    boxSizing: 'border-box',
-  },
-  error: { margin: 0, fontSize: '13px', color: '#ef4444', textAlign: 'center' },
-  button: {
-    width: '100%',
-    padding: '12px',
-    fontSize: '14px',
-    fontWeight: 600,
-    background: '#fff',
-    color: '#000',
-    border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer',
-  },
-};

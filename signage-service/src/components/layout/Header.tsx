@@ -9,18 +9,34 @@ import MessengerButtons from '../common/MessengerButtons';
 import ContactModal from '../common/ContactModal';
 import ChatModal from '../common/ChatModal';
 
-const Header = () => {
+type HeaderLink = {
+  label: string;
+  href: string;
+};
+
+type HeaderContent = {
+  servicePill?: string | null;
+  bookLabel?: string | null;
+  links?: HeaderLink[];
+};
+
+const Header = ({ content }: { content?: HeaderContent | null }) => {
   const t = useTranslations('Nav');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const navLinks = [
-    { name: t('services'), href: '#services' },
-    { name: t('support'), href: '/support' },
-    { name: t('warranty'), href: '#warranty' },
-    { name: t('status'), href: '/status' },
-  ];
+  const navLinks =
+    content?.links && content.links.length > 0
+      ? content.links.map((link) => ({ name: link.label, href: link.href }))
+      : [
+          { name: t('services'), href: '#services' },
+          { name: t('support'), href: '/support' },
+          { name: t('warranty'), href: '#warranty' },
+          { name: t('status'), href: '/status' },
+        ];
+  const servicePill = content?.servicePill ?? t('service_pill');
+  const bookLabel = content?.bookLabel ?? t('book');
 
   // Prevent scrolling when menu is open
   useEffect(() => {
@@ -63,7 +79,7 @@ const Header = () => {
             </Link>
             <div className="hidden sm:flex md:flex px-3 py-1 bg-[#EEF3FB] border border-[#E7DDD3] rounded-full">
               <span className="text-[12px] font-bold text-[#B8643E] tracking-[1.4px]">
-                {t('service_pill')}
+                {servicePill}
               </span>
             </div>
           </div>
@@ -90,7 +106,7 @@ const Header = () => {
               onClick={() => setIsModalOpen(true)}
               className="hidden md:block px-6 py-2.5 bg-[#B8643E] hover:bg-[#A65835] text-[#FFFDF9] text-[16px] font-medium rounded-full shadow-lg shadow-[#B8643E33] transition-all"
             >
-              {t('book')}
+              {bookLabel}
             </button>
 
             {/* Hamburger Button */}
@@ -140,7 +156,7 @@ const Header = () => {
                 }}
                 className="w-full px-6 py-5 bg-[#B8643E] text-[#FFFDF9] text-[18px] font-bold rounded-2xl shadow-xl shadow-[#B8643E33] transition-all active:scale-[0.98]"
               >
-                {t('book')}
+                {bookLabel}
               </button>
 
               <div className="pt-8 border-t border-[#E7DDD3]">

@@ -6,6 +6,10 @@ import { useParams } from 'next/navigation';
 
 import { adminFetch } from '@/lib/admin-fetch';
 
+// ─────────────────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────────────────
+
 type CmsPageKey = 'home' | 'support' | 'status' | 'global';
 type CmsPageStatus = 'DRAFT' | 'PUBLISHED';
 type CmsPageBlock = Record<string, unknown> & {
@@ -37,54 +41,71 @@ type PagesResponse = {
   error?: string;
 };
 
-type CmsMedia = {
-  id: string;
-  locale: string | null;
-  usageType: string;
-  title: string | null;
-  alt: string | null;
-  url: string | null;
-  mimeType: string | null;
-  filename: string | null;
-  width: number | null;
-  height: number | null;
+/** One unified block: structure is shared, texts per locale. */
+type UnifiedBlock = {
+  type: string;
+  key: string;
+  enabled: boolean;
+  sortOrder: number;
+  /** Non-text fields shared across locales (media, ctaUrl, etc.) */
+  shared: Record<string, unknown>;
+  /** Per-locale text fields: { de: { title, subtitle }, en: { title, subtitle }, … } */
+  texts: Record<string, Record<string, unknown>>;
 };
 
-type PageFormState = {
-  pageKey: CmsPageKey;
-  locale: string;
-  status: CmsPageStatus;
+/** Per-locale page metadata. */
+type LocalePageMeta = {
+  id: string | null; // null → page doesn't exist yet → will POST on save
   title: string;
   seoTitle: string;
   seoDescription: string;
   canonicalUrl: string;
-  blocksJson: string;
+  status: CmsPageStatus;
+  publishedAt: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
 };
+
+/** Unified editor state. */
+type UnifiedFormState = {
+  pageKey: CmsPageKey;
+  blocks: UnifiedBlock[];
+  localeMeta: Record<string, LocalePageMeta>;
+};
+
+type PageGroup = {
+  pageKey: CmsPageKey;
+  pages: Record<string, CmsPage>;
+};
+
+// ─────────────────────────────────────────────────────────
+// Constants
+// ─────────────────────────────────────────────────────────
 
 const SUPPORTED_LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'] as const;
 const PAGE_KEYS: CmsPageKey[] = ['home', 'support', 'status', 'global'];
-const STATUS_OPTIONS: CmsPageStatus[] = ['DRAFT', 'PUBLISHED'];
 
-const DEFAULT_BLOCKS_JSON = JSON.stringify(
-  [
-    {
-      type: 'hero',
-      key: 'hero',
-      enabled: true,
-      title: '',
-      subtitle: '',
-      sortOrder: 0,
-    },
-  ],
-  null,
-  2
-);
+/** Fields that are locale-specific text for each known block type.
+ *  These MUST match the field names that getHomePageCmsContent / frontend components actually read. */
+const BLOCK_TEXT_FIELDS: Record<string, string[]> = {
+  hero: ['titlePrefix', 'titleAccent', 'titleSuffix', 'pretitle', 'intro', 'ctaPrimary', 'ctaSecondary', 'trustBadge', 'responseBadge'],
+  faqList: ['title', 'items'],
+  textSection: ['title', 'description'],
+  reviewList: ['title', 'subtitle'],
+  cardList: ['title', 'titleStart', 'titleAccent', 'titleEnd', 'subtitle', 'description', 'copyright', 'items', 'steps', 'stats', 'features'],
+  cta: ['servicePill', 'bookLabel', 'badge', 'title', 'intro', 'description', 'primaryLabel', 'secondaryLabel', 'links'],
+  footerCta: ['title', 'subtitle', 'connectLabel', 'formTitle', 'formSubtitle'],
+};
+
+/** Structural keys never treated as shared or text — they live at the block root. */
+const STRUCTURAL_KEYS = new Set(['type', 'key', 'enabled', 'sortOrder']);
+
+// ─────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────
 
 function getLocale(value: string | string[] | undefined | null, fallback = 'de'): string {
-  if (Array.isArray(value)) {
-    return value[0] || fallback;
-  }
-
+  if (Array.isArray(value)) return value[0] || fallback;
   return value || fallback;
 }
 
@@ -93,112 +114,15 @@ function toNullable(value: string): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
-function asString(value: unknown): string | null {
-  return typeof value === 'string' && value.trim() ? value : null;
-}
-
-function asNumber(value: unknown): number | null {
-  if (typeof value === 'number' && Number.isFinite(value)) {
-    return value;
-  }
-
-  if (typeof value === 'string' && value.trim()) {
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-
-  return null;
-}
-
-function normalizeMediaResponse(value: unknown): CmsMedia[] {
-  const container = value as { media?: unknown; items?: unknown } | null;
-  const rows = Array.isArray(value)
-    ? value
-    : Array.isArray(container?.media)
-      ? container.media
-      : Array.isArray(container?.items)
-        ? container.items
-        : [];
-
-  return rows
-    .filter((row): row is Record<string, unknown> =>
-      Boolean(row && typeof row === 'object' && !Array.isArray(row))
-    )
-    .map((row) => ({
-      id: String(row.id ?? ''),
-      locale: asString(row.locale),
-      usageType: asString(row.usageType) || 'GENERAL',
-      title: asString(row.title),
-      alt: asString(row.alt) || asString(row.altText),
-      url: asString(row.url) || asString(row.publicUrl) || asString(row.storageUrl),
-      mimeType: asString(row.mimeType) || asString(row.mime),
-      filename: asString(row.filename) || asString(row.originalFilename) || asString(row.name),
-      width: asNumber(row.width),
-      height: asNumber(row.height),
-    }))
-    .filter((item) => item.id);
-}
-
-function createPageMediaBlock(media: CmsMedia, index: number): CmsPageBlock {
-  return {
-    type: 'textSection',
-    key: `media-${media.id.slice(0, 8)}-${index}`,
-    enabled: true,
-    sortOrder: index,
-    title: media.title || media.filename || 'CMS media',
-    body: '',
-    media: {
-      id: media.id,
-      url: media.url || '',
-      title: media.title || '',
-      alt: media.alt || '',
-      width: media.width,
-      height: media.height,
-      usageType: media.usageType,
-    },
-  };
-}
-
 function renderDate(value: string | null | undefined): string {
-  if (!value) {
-    return '-';
-  }
-
+  if (!value) return '-';
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return '-';
-  }
-
-  return new Intl.DateTimeFormat('de-DE', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(date);
+  if (Number.isNaN(date.getTime())) return '-';
+  return new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium', timeStyle: 'short' }).format(date);
 }
 
-function createEmptyForm(locale: string): PageFormState {
-  return {
-    pageKey: 'home',
-    locale,
-    status: 'DRAFT',
-    title: '',
-    seoTitle: '',
-    seoDescription: '',
-    canonicalUrl: '',
-    blocksJson: DEFAULT_BLOCKS_JSON,
-  };
-}
-
-function pageToForm(page: CmsPage, fallbackLocale: string): PageFormState {
-  return {
-    pageKey: page.pageKey,
-    locale: page.locale || fallbackLocale,
-    status: page.status,
-    title: page.title,
-    seoTitle: page.seoTitle || '',
-    seoDescription: page.seoDescription || '',
-    canonicalUrl: page.canonicalUrl || '',
-    blocksJson: JSON.stringify(page.blocks || [], null, 2),
-  };
+function getTextFieldNames(blockType: string): string[] {
+  return BLOCK_TEXT_FIELDS[blockType] || [];
 }
 
 async function readApiError(response: Response): Promise<string> {
@@ -209,91 +133,133 @@ async function readApiError(response: Response): Promise<string> {
 function parseBlocksJson(value: string): { ok: true; blocks: CmsPageBlock[] } | { ok: false; error: string } {
   try {
     const parsed = JSON.parse(value) as unknown;
-
-    if (!Array.isArray(parsed)) {
-      return { ok: false, error: 'Blocks JSON must be an array.' };
-    }
-
-    if (
-      parsed.some(
-        (block) => !block || typeof block !== 'object' || Array.isArray(block)
-      )
-    ) {
+    if (!Array.isArray(parsed)) return { ok: false, error: 'Blocks JSON must be an array.' };
+    if (parsed.some((b) => !b || typeof b !== 'object' || Array.isArray(b))) {
       return { ok: false, error: 'Each block must be a JSON object.' };
     }
-
     return { ok: true, blocks: parsed as CmsPageBlock[] };
   } catch (error) {
-    return {
-      ok: false,
-      error: error instanceof Error ? error.message : 'Blocks JSON is invalid.',
-    };
+    return { ok: false, error: error instanceof Error ? error.message : 'Invalid JSON.' };
   }
 }
 
-function validateForm(form: PageFormState): string | null {
-  if (!PAGE_KEYS.includes(form.pageKey)) {
-    return 'Page key is invalid.';
+// ── Merge / Split ───────────────────────────────────────
+
+function mergeToUnified(allPages: CmsPage[]): {
+  blocks: UnifiedBlock[];
+  localeMeta: Record<string, LocalePageMeta>;
+} {
+  const localeMeta: Record<string, LocalePageMeta> = {};
+  const blocksByKey: Record<string, Record<string, CmsPageBlock>> = {};
+
+  for (const locale of SUPPORTED_LOCALES) {
+    const page = allPages.find((p) => p.locale === locale);
+    localeMeta[locale] = page
+      ? {
+          id: page.id,
+          title: page.title,
+          seoTitle: page.seoTitle || '',
+          seoDescription: page.seoDescription || '',
+          canonicalUrl: page.canonicalUrl || '',
+          status: page.status,
+          publishedAt: page.publishedAt,
+          createdAt: page.createdAt,
+          updatedAt: page.updatedAt,
+        }
+      : {
+          id: null,
+          title: '',
+          seoTitle: '',
+          seoDescription: '',
+          canonicalUrl: '',
+          status: 'DRAFT',
+          publishedAt: null,
+          createdAt: null,
+          updatedAt: null,
+        };
+
+    if (page) {
+      for (const block of page.blocks) {
+        const key = block.key || `${block.type}-anon`;
+        if (!blocksByKey[key]) blocksByKey[key] = {};
+        blocksByKey[key][locale] = block;
+      }
+    }
   }
 
-  if (!SUPPORTED_LOCALES.includes(form.locale as (typeof SUPPORTED_LOCALES)[number])) {
-    return 'Locale is invalid.';
+  // Master locale = DE preferred, fallback to first available
+  const masterPage = allPages.find((p) => p.locale === 'de') || allPages[0];
+  const blocks: UnifiedBlock[] = [];
+
+  if (masterPage) {
+    for (const block of masterPage.blocks) {
+      const key = block.key || `${block.type}-anon`;
+      const type = block.type || '';
+      const textFields = getTextFieldNames(type);
+
+      const shared: Record<string, unknown> = {};
+      for (const [prop, val] of Object.entries(block)) {
+        if (STRUCTURAL_KEYS.has(prop)) continue;
+        if (textFields.includes(prop)) continue;
+        shared[prop] = val;
+      }
+
+      const texts: Record<string, Record<string, unknown>> = {};
+      for (const locale of SUPPORTED_LOCALES) {
+        const lb = blocksByKey[key]?.[locale];
+        const localeTexts: Record<string, unknown> = {};
+        for (const tf of textFields) {
+          localeTexts[tf] = lb ? (lb[tf] ?? '') : '';
+          // Ensure items arrays are deep-cloned
+          if (tf === 'items' && Array.isArray(localeTexts[tf])) {
+            localeTexts[tf] = JSON.parse(JSON.stringify(localeTexts[tf]));
+          }
+        }
+        texts[locale] = localeTexts;
+      }
+
+      blocks.push({ type, key, enabled: block.enabled !== false, sortOrder: block.sortOrder ?? blocks.length, shared, texts });
+    }
   }
 
-  if (!form.title.trim()) {
-    return 'Title is required.';
-  }
-
-  const parsedBlocks = parseBlocksJson(form.blocksJson);
-  if (!parsedBlocks.ok) {
-    return parsedBlocks.error;
-  }
-
-  return null;
+  return { blocks, localeMeta };
 }
 
-function normalizePagePayload(form: PageFormState): Record<string, unknown> {
-  const parsedBlocks = parseBlocksJson(form.blocksJson);
-
-  return {
-    pageKey: form.pageKey,
-    locale: form.locale,
-    status: form.status,
-    title: form.title.trim(),
-    blocks: parsedBlocks.ok ? parsedBlocks.blocks : [],
-    seoTitle: toNullable(form.seoTitle),
-    seoDescription: toNullable(form.seoDescription),
-    canonicalUrl: toNullable(form.canonicalUrl),
-  };
+function splitToLocaleBlocks(blocks: UnifiedBlock[], locale: string): CmsPageBlock[] {
+  return blocks.map((block, index) => ({
+    type: block.type,
+    key: block.key,
+    enabled: block.enabled,
+    sortOrder: index,
+    ...block.shared,
+    ...(block.texts[locale] || {}),
+  }));
 }
 
-function shortText(value: string | null | undefined, maxLength = 150): string {
-  const text = (value || '').trim().replace(/\s+/g, ' ');
+function getLocaleStatus(group: PageGroup, locale: string): 'published' | 'draft' | 'missing' {
+  const page = group.pages[locale];
+  if (!page) return 'missing';
+  return page.status === 'PUBLISHED' ? 'published' : 'draft';
+}
 
-  if (!text) {
-    return '-';
+function latestUpdate(group: PageGroup): string | null {
+  let latest: string | null = null;
+  for (const page of Object.values(group.pages)) {
+    if (!latest || page.updatedAt > latest) latest = page.updatedAt;
   }
-
-  return text.length > maxLength ? `${text.slice(0, maxLength).trim()}...` : text;
+  return latest;
 }
 
-function chipStyle(status: CmsPageStatus) {
-  if (status === 'PUBLISHED') {
-    return { ...styles.chip, background: '#0f241b', color: '#86efac', borderColor: '#14532d' };
-  }
-
-  return { ...styles.chip, background: '#241b0f', color: '#fbbf24', borderColor: '#6a4a16' };
+function blockCount(group: PageGroup): number {
+  const first = Object.values(group.pages)[0];
+  return first ? first.blocks.length : 0;
 }
 
-function EditorField({
-  label,
-  children,
-  hint,
-}: {
-  label: string;
-  children: ReactNode;
-  hint?: string;
-}) {
+// ─────────────────────────────────────────────────────────
+// Sub-components
+// ─────────────────────────────────────────────────────────
+
+function EditorField({ label, children, hint }: { label: string; children: ReactNode; hint?: string }) {
   return (
     <label style={styles.field}>
       <span style={styles.fieldLabel}>{label}</span>
@@ -303,89 +269,84 @@ function EditorField({
   );
 }
 
-function TextInput({
-  value,
-  onChange,
-  placeholder,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-}) {
-  return (
-    <input
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      placeholder={placeholder}
-      style={styles.input}
-    />
-  );
+function TextInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) {
+  return <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} style={styles.input} />;
 }
 
-function SelectInput({
-  value,
-  onChange,
-  children,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  children: ReactNode;
-}) {
+function SelectInput({ value, onChange, children }: { value: string; onChange: (v: string) => void; children: ReactNode }) {
   return (
-    <select value={value} onChange={(event) => onChange(event.target.value)} style={styles.input}>
+    <select value={value} onChange={(e) => onChange(e.target.value)} style={styles.input}>
       {children}
     </select>
   );
 }
 
+// ─────────────────────────────────────────────────────────
+// Main Component
+// ─────────────────────────────────────────────────────────
+
+const EMPTY_FORM: UnifiedFormState = {
+  pageKey: 'home',
+  blocks: [],
+  localeMeta: Object.fromEntries(
+    SUPPORTED_LOCALES.map((loc) => [
+      loc,
+      { id: null, title: '', seoTitle: '', seoDescription: '', canonicalUrl: '', status: 'DRAFT' as CmsPageStatus, publishedAt: null, createdAt: null, updatedAt: null },
+    ])
+  ),
+};
+
 export default function PagesPage() {
   const params = useParams();
   const routeLocale = getLocale(params?.locale);
 
+  // ── Data state ──
   const [pages, setPages] = useState<CmsPage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [refreshVersion, setRefreshVersion] = useState(0);
 
+  // ── Editor state ──
   const [editorOpen, setEditorOpen] = useState(false);
-  const [editingPage, setEditingPage] = useState<CmsPage | null>(null);
-  const [form, setForm] = useState<PageFormState>(() => createEmptyForm(routeLocale));
+  const [form, setForm] = useState<UnifiedFormState>(EMPTY_FORM);
+  const [activeLocale, setActiveLocale] = useState(routeLocale);
   const [formError, setFormError] = useState('');
-  const [formSaving, setFormSaving] = useState<'SAVE' | 'DELETE' | 'STATUS' | ''>('');
-  const [mediaItems, setMediaItems] = useState<CmsMedia[]>([]);
-  const [mediaLoading, setMediaLoading] = useState(false);
-  const [mediaError, setMediaError] = useState('');
+  const [formSaving, setFormSaving] = useState(false);
 
-  const parsedBlocksPreview = useMemo(() => {
-    const parsed = parseBlocksJson(form.blocksJson);
-    return parsed.ok ? parsed.blocks : [];
-  }, [form.blocksJson]);
+  // ── Derived data ──
+  const pageGroups = useMemo((): PageGroup[] => {
+    return PAGE_KEYS.map((pk) => ({
+      pageKey: pk,
+      pages: Object.fromEntries(pages.filter((p) => p.pageKey === pk).map((p) => [p.locale, p])),
+    }));
+  }, [pages]);
 
   const summary = useMemo(() => {
-    const published = pages.filter((page) => page.status === 'PUBLISHED').length;
-    const drafts = pages.filter((page) => page.status === 'DRAFT').length;
+    const published = pages.filter((p) => p.status === 'PUBLISHED').length;
+    const drafts = pages.filter((p) => p.status === 'DRAFT').length;
     return { total: pages.length, published, drafts };
   }, [pages]);
 
+  const saveableLocales = useMemo(() => {
+    return SUPPORTED_LOCALES.filter((locale) => {
+      const meta = form.localeMeta[locale];
+      return meta && (meta.id !== null || meta.title.trim() !== '');
+    });
+  }, [form.localeMeta]);
+
+  const activeMeta = form.localeMeta[activeLocale] || form.localeMeta.de;
+
+  // ── Data loading ──
   const loadPages = useCallback(async () => {
     setLoading(true);
     setError('');
-
     try {
-      const response = await fetch('/api/cms/pages', {
-        method: 'GET',
-        credentials: 'same-origin',
-        cache: 'no-store',
-      });
+      const response = await fetch('/api/cms/pages', { method: 'GET', credentials: 'same-origin', cache: 'no-store' });
       const data = (await response.json().catch(() => ({}))) as PagesResponse;
-
-      if (!response.ok) {
-        throw new Error(data.error || `Failed to load pages (${response.status}).`);
-      }
-
+      if (!response.ok) throw new Error(data.error || `Failed to load pages (${response.status}).`);
       setPages(data.pages || []);
-    } catch (fetchError) {
-      setError(fetchError instanceof Error ? fetchError.message : 'Failed to load pages.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load pages.');
       setPages([]);
     } finally {
       setLoading(false);
@@ -396,208 +357,238 @@ export default function PagesPage() {
     void loadPages();
   }, [loadPages, refreshVersion]);
 
-  const loadMediaItems = useCallback(async () => {
-    setMediaLoading(true);
-    setMediaError('');
-
-    try {
-      const response = await fetch('/api/cms/media', {
-        method: 'GET',
-        credentials: 'same-origin',
-        cache: 'no-store',
-      });
-      const data = (await response.json().catch(() => null)) as unknown;
-
-      if (!response.ok) {
-        throw new Error(await readApiError(response));
-      }
-
-      setMediaItems(normalizeMediaResponse(data));
-    } catch (error) {
-      setMediaError(error instanceof Error ? error.message : 'Failed to load CMS media.');
-      setMediaItems([]);
-    } finally {
-      setMediaLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (editorOpen) {
-      void loadMediaItems();
-    }
-  }, [editorOpen, loadMediaItems]);
-
-  const openCreate = useCallback(() => {
-    setEditingPage(null);
-    setForm(createEmptyForm(routeLocale));
-    setFormError('');
-    setFormSaving('');
-    setEditorOpen(true);
-  }, [routeLocale]);
-
-  const openEdit = useCallback(
-    (page: CmsPage) => {
-      setEditingPage(page);
-      setForm(pageToForm(page, routeLocale));
+  // ── Editor open / close ──
+  const openEditor = useCallback(
+    (pageKey: CmsPageKey) => {
+      const groupPages = pages.filter((p) => p.pageKey === pageKey);
+      const { blocks, localeMeta } = mergeToUnified(groupPages);
+      setForm({ pageKey, blocks, localeMeta });
+      setActiveLocale(routeLocale);
       setFormError('');
-      setFormSaving('');
+      setFormSaving(false);
       setEditorOpen(true);
     },
-    [routeLocale]
+    [pages, routeLocale]
   );
 
   const closeEditor = useCallback(() => {
     setEditorOpen(false);
-    setEditingPage(null);
     setFormError('');
-    setFormSaving('');
+    setFormSaving(false);
   }, []);
 
-  const insertMediaBlock = useCallback((media: CmsMedia) => {
-    if (!media.url) {
-      setMediaError('Selected media is missing a public URL.');
-      return;
+  // ── Block operations ──
+  const moveBlock = useCallback((index: number, direction: 'up' | 'down') => {
+    setForm((curr) => {
+      const next = [...curr.blocks];
+      const target = direction === 'up' ? index - 1 : index + 1;
+      if (target < 0 || target >= next.length) return curr;
+      [next[index], next[target]] = [next[target], next[index]];
+      return { ...curr, blocks: next };
+    });
+  }, []);
+
+  const removeBlock = useCallback((index: number) => {
+    if (!window.confirm('Remove this block from ALL locales?')) return;
+    setForm((curr) => ({ ...curr, blocks: curr.blocks.filter((_, i) => i !== index) }));
+  }, []);
+
+  const addBlock = useCallback((type: string) => {
+    const key = `${type}-${Math.random().toString(36).slice(2, 7)}`;
+    const textFields = getTextFieldNames(type);
+
+    const texts: Record<string, Record<string, unknown>> = {};
+    for (const locale of SUPPORTED_LOCALES) {
+      const lt: Record<string, unknown> = {};
+      for (const tf of textFields) {
+        lt[tf] = tf === 'items' ? [] : '';
+      }
+      texts[locale] = lt;
     }
 
-    const parsed = parseBlocksJson(form.blocksJson);
-    if (!parsed.ok) {
-      setMediaError(`Fix Blocks JSON before inserting media: ${parsed.error}`);
-      return;
-    }
+    const shared: Record<string, unknown> = {};
+    if (type === 'hero') shared.assetUrl = '';
 
-    const nextBlocks = [
-      ...parsed.blocks,
-      createPageMediaBlock(media, parsed.blocks.length),
-    ];
-
-    setMediaError('');
-    setForm((current) => ({
-      ...current,
-      blocksJson: JSON.stringify(nextBlocks, null, 2),
+    setForm((curr) => ({
+      ...curr,
+      blocks: [...curr.blocks, { type, key, enabled: true, sortOrder: curr.blocks.length, shared, texts }],
     }));
-  }, [form.blocksJson]);
-
-  const savePage = useCallback(async () => {
-    const validationError = validateForm(form);
-
-    if (validationError) {
-      setFormError(validationError);
-      return;
-    }
-
-    setFormSaving('SAVE');
-    setFormError('');
-
-    const isEdit = Boolean(editingPage);
-    const url = isEdit ? `/api/cms/pages/${editingPage?.id}` : '/api/cms/pages';
-    const method = isEdit ? 'PATCH' : 'POST';
-
-    try {
-      const response = await adminFetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(normalizePagePayload(form)),
-      });
-
-      if (!response.ok) {
-        throw new Error(await readApiError(response));
-      }
-
-      setEditorOpen(false);
-      setEditingPage(null);
-      setForm(createEmptyForm(routeLocale));
-      setRefreshVersion((value) => value + 1);
-    } catch (saveError) {
-      setFormError(saveError instanceof Error ? saveError.message : 'Failed to save page.');
-    } finally {
-      setFormSaving('');
-    }
-  }, [editingPage, form, routeLocale]);
-
-  const togglePublished = useCallback(async (page: CmsPage) => {
-    const nextStatus: CmsPageStatus = page.status === 'PUBLISHED' ? 'DRAFT' : 'PUBLISHED';
-    setFormSaving('STATUS');
-    setError('');
-
-    try {
-      const response = await adminFetch(`/api/cms/pages/${page.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: nextStatus }),
-      });
-
-      if (!response.ok) {
-        throw new Error(await readApiError(response));
-      }
-
-      setRefreshVersion((value) => value + 1);
-    } catch (toggleError) {
-      setError(toggleError instanceof Error ? toggleError.message : 'Failed to update status.');
-    } finally {
-      setFormSaving('');
-    }
   }, []);
 
-  const deletePage = useCallback(async (page: CmsPage) => {
-    const confirmed = window.confirm(
-      `Soft delete "${page.pageKey}" (${page.locale})? This keeps the row in the database but removes it from CMS lists.`
+  const updateBlockStructure = useCallback((index: number, updates: Partial<Pick<UnifiedBlock, 'enabled'>>) => {
+    setForm((curr) => {
+      const next = [...curr.blocks];
+      next[index] = { ...next[index], ...updates };
+      return { ...curr, blocks: next };
+    });
+  }, []);
+
+  const updateBlockShared = useCallback((index: number, updates: Record<string, unknown>) => {
+    setForm((curr) => {
+      const next = [...curr.blocks];
+      next[index] = { ...next[index], shared: { ...next[index].shared, ...updates } };
+      return { ...curr, blocks: next };
+    });
+  }, []);
+
+  const updateBlockText = useCallback((index: number, locale: string, updates: Record<string, unknown>) => {
+    setForm((curr) => {
+      const next = [...curr.blocks];
+      const block = next[index];
+      next[index] = {
+        ...block,
+        texts: { ...block.texts, [locale]: { ...(block.texts[locale] || {}), ...updates } },
+      };
+      return { ...curr, blocks: next };
+    });
+  }, []);
+
+  /** Add a FAQ item to ALL locales (structure is shared). */
+  const addFaqItem = useCallback((blockIndex: number) => {
+    setForm((curr) => {
+      const next = [...curr.blocks];
+      const block = { ...next[blockIndex], texts: { ...next[blockIndex].texts } };
+      for (const locale of SUPPORTED_LOCALES) {
+        const lt = { ...(block.texts[locale] || {}) };
+        const items = Array.isArray(lt.items) ? [...(lt.items as Record<string, unknown>[])] : [];
+        items.push({ question: '', answer: '' });
+        lt.items = items;
+        block.texts[locale] = lt;
+      }
+      next[blockIndex] = block;
+      return { ...curr, blocks: next };
+    });
+  }, []);
+
+  /** Remove a FAQ item from ALL locales (structure is shared). */
+  const removeFaqItem = useCallback((blockIndex: number, itemIndex: number) => {
+    setForm((curr) => {
+      const next = [...curr.blocks];
+      const block = { ...next[blockIndex], texts: { ...next[blockIndex].texts } };
+      for (const locale of SUPPORTED_LOCALES) {
+        const lt = { ...(block.texts[locale] || {}) };
+        const items = Array.isArray(lt.items) ? [...(lt.items as Record<string, unknown>[])] : [];
+        items.splice(itemIndex, 1);
+        lt.items = items;
+        block.texts[locale] = lt;
+      }
+      next[blockIndex] = block;
+      return { ...curr, blocks: next };
+    });
+  }, []);
+
+  /** Update a single FAQ item's text for the ACTIVE locale only. */
+  const updateFaqItem = useCallback(
+    (blockIndex: number, itemIndex: number, updates: Record<string, string>) => {
+      setForm((curr) => {
+        const next = [...curr.blocks];
+        const block = { ...next[blockIndex] };
+        const lt = { ...(block.texts[activeLocale] || {}) };
+        const items = Array.isArray(lt.items) ? [...(lt.items as Record<string, unknown>[])] : [];
+        items[itemIndex] = { ...items[itemIndex], ...updates };
+        lt.items = items;
+        next[blockIndex] = { ...block, texts: { ...block.texts, [activeLocale]: lt } };
+        return { ...curr, blocks: next };
+      });
+    },
+    [activeLocale]
+  );
+
+  // ── Locale meta updates ──
+  const updateLocaleMeta = useCallback((locale: string, updates: Partial<LocalePageMeta>) => {
+    setForm((curr) => ({
+      ...curr,
+      localeMeta: { ...curr.localeMeta, [locale]: { ...curr.localeMeta[locale], ...updates } },
+    }));
+  }, []);
+
+  // ── Save all locales ──
+  const saveAll = useCallback(async () => {
+    if (saveableLocales.length === 0) {
+      setFormError('No locales have content to save. Enter at least a title for one locale.');
+      return;
+    }
+    setFormSaving(true);
+    setFormError('');
+
+    const results: { locale: string; success: boolean; error?: string }[] = [];
+
+    await Promise.all(
+      saveableLocales.map(async (locale) => {
+        const meta = form.localeMeta[locale];
+        const blocks = splitToLocaleBlocks(form.blocks, locale);
+        const payload = {
+          pageKey: form.pageKey,
+          locale,
+          status: meta.status,
+          title: meta.title.trim() || `${form.pageKey} (${locale})`,
+          blocks,
+          seoTitle: toNullable(meta.seoTitle),
+          seoDescription: toNullable(meta.seoDescription),
+          canonicalUrl: toNullable(meta.canonicalUrl),
+        };
+
+        try {
+          const response = meta.id
+            ? await adminFetch(`/api/cms/pages/${meta.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+              })
+            : await adminFetch('/api/cms/pages', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+              });
+
+          if (!response.ok) {
+            results.push({ locale, success: false, error: await readApiError(response) });
+          } else {
+            results.push({ locale, success: true });
+          }
+        } catch (err) {
+          results.push({ locale, success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+        }
+      })
     );
 
-    if (!confirmed) {
-      return false;
+    const failures = results.filter((r) => !r.success);
+    if (failures.length > 0) {
+      setFormError(
+        `Save failed for: ${failures.map((f) => `${f.locale.toUpperCase()} (${f.error})`).join(', ')}`
+      );
+    } else {
+      setEditorOpen(false);
+      setRefreshVersion((v) => v + 1);
     }
+    setFormSaving(false);
+  }, [form, saveableLocales]);
 
-    setFormSaving('DELETE');
-    setError('');
+  // ── Advanced mode: raw JSON for active locale ──
+  const activeLocaleBlocks = useMemo(() => {
+    return JSON.stringify(splitToLocaleBlocks(form.blocks, activeLocale), null, 2);
+  }, [form.blocks, activeLocale]);
 
-    try {
-      const response = await adminFetch(`/api/cms/pages/${page.id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error(await readApiError(response));
-      }
-
-      setRefreshVersion((value) => value + 1);
-      return true;
-    } catch (deleteError) {
-      setError(deleteError instanceof Error ? deleteError.message : 'Failed to delete page.');
-      return false;
-    } finally {
-      setFormSaving('');
-    }
-  }, []);
-
-  const deleteFromEditor = useCallback(async () => {
-    if (!editingPage) {
-      return;
-    }
-
-    const deleted = await deletePage(editingPage);
-    if (deleted) {
-      closeEditor();
-    }
-  }, [closeEditor, deletePage, editingPage]);
+  // ─────────────────────────────────
+  // Render
+  // ─────────────────────────────────
 
   return (
     <div style={styles.page}>
+      {/* ── Header ── */}
       <div style={styles.header}>
         <div>
           <h1 style={styles.title}>Page Content</h1>
           <p style={styles.subtitle}>
-            Manage structured JSON blocks for home, support, status, and global copy.
+            Unified multi-locale editor. Click <strong>Edit</strong> to open all locales for a page section at once.
           </p>
         </div>
-
-        <button type="button" onClick={openCreate} style={styles.primaryButton}>
-          + New page
-        </button>
       </div>
 
+      {/* ── Stats ── */}
       <div style={styles.statRow}>
         <div style={styles.statCard}>
-          <span style={styles.statLabel}>Records</span>
+          <span style={styles.statLabel}>Total Records</span>
           <span style={styles.statValue}>{summary.total}</span>
         </div>
         <div style={styles.statCard}>
@@ -612,64 +603,58 @@ export default function PagesPage() {
 
       {error ? <div style={styles.errorBanner}>{error}</div> : null}
 
+      {/* ── Table grouped by pageKey ── */}
       {loading ? (
         <div style={styles.emptyState}>Loading pages...</div>
-      ) : pages.length === 0 ? (
-        <div style={styles.emptyState}>No page records found.</div>
       ) : (
         <div style={styles.tableWrap}>
           <table style={styles.table}>
             <thead>
               <tr>
-                <th style={styles.th}>Page key</th>
-                <th style={styles.th}>Locale</th>
-                <th style={styles.th}>Status</th>
-                <th style={styles.th}>Title</th>
+                <th style={styles.th}>Page Section</th>
+                <th style={styles.th}>Locales</th>
                 <th style={styles.th}>Blocks</th>
                 <th style={styles.th}>Updated</th>
                 <th style={styles.th}>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {pages.map((page) => (
-                <tr key={page.id} style={styles.tr}>
+              {pageGroups.map((group) => (
+                <tr key={group.pageKey} style={styles.tr}>
                   <td style={styles.td}>
-                    <strong style={styles.monoValue}>{page.pageKey}</strong>
-                  </td>
-                  <td style={styles.td}>{page.locale}</td>
-                  <td style={styles.td}>
-                    <span style={chipStyle(page.status)}>{page.status}</span>
+                    <strong style={styles.monoValue}>{group.pageKey}</strong>
                   </td>
                   <td style={styles.td}>
-                    <div style={styles.tableTitle}>{page.title}</div>
-                    <div style={styles.tableSubtitle}>
-                      SEO: {shortText(page.seoTitle || page.seoDescription, 80)}
+                    <div style={styles.localeDotsRow}>
+                      {SUPPORTED_LOCALES.map((loc) => {
+                        const st = getLocaleStatus(group, loc);
+                        return (
+                          <span key={loc} style={styles.localeDotWrap} title={`${loc.toUpperCase()}: ${st}`}>
+                            <span
+                              style={{
+                                ...styles.localeDot,
+                                background:
+                                  st === 'published' ? '#86efac' : st === 'draft' ? '#fbbf24' : '#3f3f46',
+                                boxShadow:
+                                  st === 'published'
+                                    ? '0 0 6px rgba(134,239,172,0.4)'
+                                    : st === 'draft'
+                                      ? '0 0 6px rgba(251,191,36,0.3)'
+                                      : 'none',
+                              }}
+                            />
+                            <span style={styles.localeDotLabel}>{loc.toUpperCase()}</span>
+                          </span>
+                        );
+                      })}
                     </div>
                   </td>
-                  <td style={styles.td}>{page.blocks.length}</td>
-                  <td style={styles.td}>{renderDate(page.updatedAt)}</td>
+                  <td style={styles.td}>{blockCount(group)}</td>
+                  <td style={styles.td}>{renderDate(latestUpdate(group))}</td>
                   <td style={styles.td}>
-                    <div style={styles.actionRow}>
-                      <button type="button" onClick={() => openEdit(page)} style={styles.secondaryButton}>
-                        Edit
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => void togglePublished(page)}
-                        disabled={Boolean(formSaving)}
-                        style={page.status === 'PUBLISHED' ? styles.warningButton : styles.successButton}
-                      >
-                        {page.status === 'PUBLISHED' ? 'Unpublish' : 'Publish'}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => void deletePage(page)}
-                        disabled={Boolean(formSaving)}
-                        style={styles.dangerButton}
-                      >
-                        Delete
-                      </button>
-                    </div>
+                    <button type="button" onClick={() => openEditor(group.pageKey)} style={styles.primaryButton}>
+                      Edit
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -678,271 +663,477 @@ export default function PagesPage() {
         </div>
       )}
 
-      {editorOpen ? (
+      {/* ── Unified Editor Modal ── */}
+      {editorOpen && (
         <div style={styles.modalOverlay} onClick={closeEditor}>
-          <div style={styles.modal} onClick={(event) => event.stopPropagation()}>
+          <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
+            {/* ── Editor Header ── */}
             <div style={styles.modalHeader}>
               <div>
                 <h2 style={styles.modalTitle}>
-                  {editingPage ? 'Edit page content' : 'New page content'}
+                  Unified Editor: <span style={styles.monoValue}>{form.pageKey}</span>
                 </h2>
                 <p style={styles.modalSubtitle}>
-                  Store structured JSON only. Unknown types, unsafe keys, or markup are rejected by the API.
+                  Edit all locales at once. Blocks structure is shared. Switch locale tabs to edit texts.
                 </p>
               </div>
-
               <button type="button" onClick={closeEditor} style={styles.closeButton}>
                 Close
               </button>
             </div>
 
+            {/* ── Global Locale Tabs ── */}
+            <div style={styles.localeTabRow}>
+              {SUPPORTED_LOCALES.map((loc) => {
+                const meta = form.localeMeta[loc];
+                const isActive = activeLocale === loc;
+                const isNew = meta?.id === null;
+                const hasContent = (meta?.title?.trim() || '') !== '';
+                return (
+                  <button
+                    key={loc}
+                    type="button"
+                    onClick={() => setActiveLocale(loc)}
+                    style={isActive ? styles.localeTabActive : styles.localeTab}
+                  >
+                    <span
+                      style={{
+                        ...styles.localeTabDot,
+                        background: isNew
+                          ? hasContent
+                            ? '#7c3aed'
+                            : '#3f3f46'
+                          : meta.status === 'PUBLISHED'
+                            ? '#86efac'
+                            : '#fbbf24',
+                      }}
+                    />
+                    {loc.toUpperCase()}
+                    {isNew && <span style={styles.newBadge}>NEW</span>}
+                  </button>
+                );
+              })}
+            </div>
+
             {formError ? <div style={styles.errorBanner}>{formError}</div> : null}
 
-            <div style={styles.formGrid}>
-              <EditorField label="Page key">
-                <SelectInput
-                  value={form.pageKey}
-                  onChange={(value) =>
-                    setForm((current) => ({ ...current, pageKey: value as CmsPageKey }))
-                  }
-                >
-                  {PAGE_KEYS.map((key) => (
-                    <option key={key} value={key}>
-                      {key}
-                    </option>
-                  ))}
-                </SelectInput>
-              </EditorField>
-
-              <EditorField label="Locale">
-                <SelectInput
-                  value={form.locale}
-                  onChange={(value) => setForm((current) => ({ ...current, locale: value }))}
-                >
-                  {SUPPORTED_LOCALES.map((locale) => (
-                    <option key={locale} value={locale}>
-                      {locale}
-                    </option>
-                  ))}
-                </SelectInput>
-              </EditorField>
-
-              <EditorField label="Status">
-                <SelectInput
-                  value={form.status}
-                  onChange={(value) =>
-                    setForm((current) => ({
-                      ...current,
-                      status: value as CmsPageStatus,
-                    }))
-                  }
-                >
-                  {STATUS_OPTIONS.map((status) => (
-                    <option key={status} value={status}>
-                      {status}
-                    </option>
-                  ))}
-                </SelectInput>
-              </EditorField>
-
-              <EditorField label="Title">
-                <TextInput
-                  value={form.title}
-                  onChange={(value) => setForm((current) => ({ ...current, title: value }))}
-                  placeholder="Internal page title"
+            {/* ── Page Meta for active locale ── */}
+            <div style={styles.sectionBox}>
+              <h3 style={styles.sectionTitle}>
+                Page Meta — {activeLocale.toUpperCase()}
+                {activeMeta?.id === null && <span style={styles.newBadge}>NEW</span>}
+              </h3>
+              <div style={styles.formGrid}>
+                <EditorField label="Title">
+                  <TextInput
+                    value={activeMeta?.title || ''}
+                    onChange={(v) => updateLocaleMeta(activeLocale, { title: v })}
+                    placeholder={`Page title (${activeLocale.toUpperCase()})`}
+                  />
+                </EditorField>
+                <EditorField label="Status">
+                  <SelectInput
+                    value={activeMeta?.status || 'DRAFT'}
+                    onChange={(v) => updateLocaleMeta(activeLocale, { status: v as CmsPageStatus })}
+                  >
+                    <option value="DRAFT">DRAFT</option>
+                    <option value="PUBLISHED">PUBLISHED</option>
+                  </SelectInput>
+                </EditorField>
+                <EditorField label="SEO Title">
+                  <TextInput
+                    value={activeMeta?.seoTitle || ''}
+                    onChange={(v) => updateLocaleMeta(activeLocale, { seoTitle: v })}
+                    placeholder="Optional SEO title"
+                  />
+                </EditorField>
+                <EditorField label="Canonical URL">
+                  <TextInput
+                    value={activeMeta?.canonicalUrl || ''}
+                    onChange={(v) => updateLocaleMeta(activeLocale, { canonicalUrl: v })}
+                    placeholder={`/${activeLocale}/${form.pageKey}`}
+                  />
+                </EditorField>
+              </div>
+              <EditorField label="SEO Description">
+                <textarea
+                  value={activeMeta?.seoDescription || ''}
+                  onChange={(e) => updateLocaleMeta(activeLocale, { seoDescription: e.target.value })}
+                  rows={2}
+                  style={styles.textarea}
+                  placeholder="Optional meta description"
                 />
               </EditorField>
-
-              <EditorField label="SEO title">
-                <TextInput
-                  value={form.seoTitle}
-                  onChange={(value) => setForm((current) => ({ ...current, seoTitle: value }))}
-                  placeholder="Optional SEO title"
-                />
-              </EditorField>
-
-              <EditorField label="Canonical URL">
-                <TextInput
-                  value={form.canonicalUrl}
-                  onChange={(value) => setForm((current) => ({ ...current, canonicalUrl: value }))}
-                  placeholder="/de/status"
-                />
-              </EditorField>
+              {activeMeta?.updatedAt && (
+                <span style={styles.fieldHint}>Last updated: {renderDate(activeMeta.updatedAt)}</span>
+              )}
             </div>
 
-            <EditorField label="SEO description">
-              <textarea
-                value={form.seoDescription}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, seoDescription: event.target.value }))
-                }
-                rows={3}
-                style={styles.textarea}
-                placeholder="Optional meta description"
-              />
-            </EditorField>
-
-            <EditorField
-              label="Blocks JSON"
-              hint='Allowed block types: hero, cta, textSection, cardList, faqList, reviewList, footerCta. Use "statusHero" hero block for status-page copy.'
-            >
-              <textarea
-                value={form.blocksJson}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, blocksJson: event.target.value }))
-                }
-                rows={18}
-                spellCheck={false}
-                style={{ ...styles.textarea, ...styles.codeTextarea }}
-              />
-            </EditorField>
-
-            <div style={styles.mediaPickerPanel}>
-              <div style={styles.mediaPickerHeader}>
-                <div>
-                  <h4 style={styles.mediaPickerTitle}>Media picker</h4>
-                  <p style={styles.mediaPickerText}>
-                    Adds a safe `textSection` block containing a public CMS media reference.
-                  </p>
+            {/* ── Blocks Constructor ── */}
+            <div style={styles.blockManager}>
+              <div style={styles.blockManagerHeader}>
+                <h3 style={styles.sectionTitle}>Blocks Constructor</h3>
+                <div style={styles.addBlockRow}>
+                  <button type="button" onClick={() => addBlock('hero')} style={styles.addBlockBtn}>+ Hero</button>
+                  <button type="button" onClick={() => addBlock('faqList')} style={styles.addBlockBtn}>+ FAQ</button>
+                  <button type="button" onClick={() => addBlock('reviewList')} style={styles.addBlockBtn}>+ Reviews</button>
+                  <button type="button" onClick={() => addBlock('textSection')} style={styles.addBlockBtn}>+ Text</button>
+                  <button type="button" onClick={() => addBlock('cardList')} style={styles.addBlockBtn}>+ Card List</button>
+                  <button type="button" onClick={() => addBlock('cta')} style={styles.addBlockBtn}>+ CTA</button>
+                  <button type="button" onClick={() => addBlock('footerCta')} style={styles.addBlockBtn}>+ Footer CTA</button>
                 </div>
-                <button type="button" onClick={() => void loadMediaItems()} style={styles.secondaryButton}>
-                  Refresh media
-                </button>
               </div>
 
-              {mediaError ? <div style={styles.errorBanner}>{mediaError}</div> : null}
-              {mediaLoading ? (
-                <div style={styles.emptyState}>Loading CMS media...</div>
-              ) : mediaItems.length === 0 ? (
-                <div style={styles.emptyState}>No public CMS media available yet.</div>
+              {form.blocks.length === 0 ? (
+                <div style={styles.emptyBlocks}>No blocks. Use the buttons above to add blocks — they apply to all locales.</div>
               ) : (
-                <div style={styles.mediaPickerGrid}>
-                  {mediaItems.map((media) => (
-                    <button
-                      key={media.id}
-                      type="button"
-                      onClick={() => insertMediaBlock(media)}
-                      disabled={!media.url}
-                      style={styles.mediaPickerCard}
-                    >
-                      <span style={styles.mediaPickerThumb}>
-                        {media.url ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={media.url}
-                            alt={media.alt || media.title || ''}
-                            style={styles.mediaPickerImage}
-                          />
-                        ) : (
-                          <span style={styles.mediaPickerNoImage}>No URL</span>
-                        )}
-                      </span>
-                      <span style={styles.mediaPickerName}>
-                        {media.title || media.filename || media.id}
-                      </span>
-                      <span style={styles.mediaPickerMeta}>
-                        {media.locale || '-'} · {media.usageType}
-                      </span>
-                    </button>
-                  ))}
+                <div style={styles.blocksList}>
+                  {form.blocks.map((block, index) => {
+                    const localeTexts = block.texts[activeLocale] || {};
+                    const faqItems = Array.isArray(localeTexts.items) ? (localeTexts.items as Record<string, unknown>[]) : [];
+
+                    return (
+                      <div key={block.key} style={styles.blockCard}>
+                        {/* ── Block header ── */}
+                        <div style={styles.blockCardHeader}>
+                          <div style={styles.blockCardTitle}>
+                            <span style={styles.blockTypeBadge}>{block.type}</span>
+                            <span style={styles.blockKeyLabel}>{block.key}</span>
+                          </div>
+                          <div style={styles.blockCardActions}>
+                            <label style={styles.nodeLabel}>
+                              <input
+                                type="checkbox"
+                                checked={block.enabled}
+                                onChange={(e) => updateBlockStructure(index, { enabled: e.target.checked })}
+                              />
+                              On
+                            </label>
+                            <button type="button" onClick={() => moveBlock(index, 'up')} disabled={index === 0} style={styles.iconBtn}>▲</button>
+                            <button type="button" onClick={() => moveBlock(index, 'down')} disabled={index === form.blocks.length - 1} style={styles.iconBtn}>▼</button>
+                            <button type="button" onClick={() => removeBlock(index)} style={styles.iconBtnDanger}>🗑️</button>
+                          </div>
+                        </div>
+
+                        <div style={styles.blockCardBody}>
+                          {/* ── Shared fields ── */}
+                          {block.type === 'hero' ? (
+                            <div style={styles.sharedFieldsBox}>
+                              <span style={styles.sharedLabel}>Shared (all locales)</span>
+                              <EditorField label="Hero Image URL" hint="Path or URL to the hero image. Leave empty for default.">
+                                <TextInput
+                                  value={String(block.shared.assetUrl || '')}
+                                  onChange={(v) => updateBlockShared(index, { assetUrl: v })}
+                                  placeholder="/images/hero-neon.jpg"
+                                />
+                              </EditorField>
+                            </div>
+                          ) : null}
+
+                          {block.type === 'textSection' && block.shared.media && typeof block.shared.media === 'object' ? (
+                            <div style={styles.sharedFieldsBox}>
+                              <span style={styles.sharedLabel}>Shared media</span>
+                              <span style={styles.fieldHint}>
+                                {String((block.shared.media as Record<string, unknown>).title || (block.shared.media as Record<string, unknown>).url || 'Media attached')}
+                              </span>
+                            </div>
+                          ) : null}
+
+                          {/* ── Locale-specific text fields ── */}
+                          <div style={styles.localeTextSection}>
+                            <span style={styles.localeTextLabel}>{activeLocale.toUpperCase()} texts</span>
+
+                            {/* Hero */}
+                            {block.type === 'hero' ? (
+                              <>
+                                <EditorField label="Pretitle" hint="Small text above the headline (optional).">
+                                  <TextInput value={String(localeTexts.pretitle || '')} onChange={(v) => updateBlockText(index, activeLocale, { pretitle: v })} placeholder="e.g. Ihr Partner" />
+                                </EditorField>
+                                <div style={styles.formGrid}>
+                                  <EditorField label="Title — Prefix" hint="Black text before the accent.">
+                                    <TextInput value={String(localeTexts.titlePrefix || '')} onChange={(v) => updateBlockText(index, activeLocale, { titlePrefix: v })} placeholder="e.g. PixelRing:" />
+                                  </EditorField>
+                                  <EditorField label="Title — Accent" hint="Highlighted (brown) middle part.">
+                                    <TextInput value={String(localeTexts.titleAccent || '')} onChange={(v) => updateBlockText(index, activeLocale, { titleAccent: v })} placeholder="e.g. Ремонт вывесок" />
+                                  </EditorField>
+                                  <EditorField label="Title — Suffix" hint="Black text after the accent.">
+                                    <TextInput value={String(localeTexts.titleSuffix || '')} onChange={(v) => updateBlockText(index, activeLocale, { titleSuffix: v })} placeholder="e.g. и сервис, профессионально, быстро." />
+                                  </EditorField>
+                                </div>
+                                <EditorField label="Intro Text" hint="Description paragraph below the headline.">
+                                  <textarea
+                                    value={String(localeTexts.intro || '')}
+                                    onChange={(e) => updateBlockText(index, activeLocale, { intro: e.target.value })}
+                                    rows={3}
+                                    style={styles.textarea}
+                                    placeholder="Intro / description text..."
+                                  />
+                                </EditorField>
+                                <div style={styles.formGrid}>
+                                  <EditorField label="CTA Primary" hint="Main call-to-action button text.">
+                                    <TextInput value={String(localeTexts.ctaPrimary || '')} onChange={(v) => updateBlockText(index, activeLocale, { ctaPrimary: v })} placeholder="e.g. Jetzt anfragen" />
+                                  </EditorField>
+                                  <EditorField label="CTA Secondary" hint="Secondary button text (optional).">
+                                    <TextInput value={String(localeTexts.ctaSecondary || '')} onChange={(v) => updateBlockText(index, activeLocale, { ctaSecondary: v })} placeholder="e.g. Mehr erfahren" />
+                                  </EditorField>
+                                </div>
+                                <div style={styles.formGrid}>
+                                  <EditorField label="Trust Badge" hint="Italic micro-label below CTA.">
+                                    <TextInput value={String(localeTexts.trustBadge || '')} onChange={(v) => updateBlockText(index, activeLocale, { trustBadge: v })} placeholder="e.g. ISO 9001 zertifiziert" />
+                                  </EditorField>
+                                  <EditorField label="Response Badge" hint="Text inside the '24h' badge card.">
+                                    <TextInput value={String(localeTexts.responseBadge || '')} onChange={(v) => updateBlockText(index, activeLocale, { responseBadge: v })} placeholder="e.g. Reaktionszeit" />
+                                  </EditorField>
+                                </div>
+                              </>
+                            ) : null}
+
+                            {/* FAQ List */}
+                            {block.type === 'faqList' ? (
+                              <>
+                                <EditorField label="Section Title">
+                                  <TextInput value={String(localeTexts.title || '')} onChange={(v) => updateBlockText(index, activeLocale, { title: v })} />
+                                </EditorField>
+                                <div style={styles.faqItemsContainer}>
+                                  <div style={styles.faqItemsHeader}>
+                                    <span style={styles.faqItemsLabel}>Q&amp;A Items ({faqItems.length})</span>
+                                    <button type="button" style={styles.addBlockBtn} onClick={() => addFaqItem(index)}>
+                                      + Add Q&amp;A
+                                    </button>
+                                  </div>
+                                  {faqItems.map((item, fi) => (
+                                    <div key={fi} style={styles.faqItemCard}>
+                                      <div style={styles.faqItemHeader}>
+                                        <span style={styles.faqItemIndex}>#{fi + 1}</span>
+                                        <button type="button" style={styles.iconBtnDanger} onClick={() => removeFaqItem(index, fi)}>🗑️</button>
+                                      </div>
+                                      <EditorField label="Question">
+                                        <TextInput
+                                          value={String(item.question || '')}
+                                          onChange={(v) => updateFaqItem(index, fi, { question: v })}
+                                          placeholder="Question..."
+                                        />
+                                      </EditorField>
+                                      <EditorField label="Answer">
+                                        <textarea
+                                          value={String(item.answer || '')}
+                                          onChange={(e) => updateFaqItem(index, fi, { answer: e.target.value })}
+                                          rows={3}
+                                          style={styles.textarea}
+                                          placeholder="Answer..."
+                                        />
+                                      </EditorField>
+                                    </div>
+                                  ))}
+                                  {faqItems.length === 0 ? (
+                                    <div style={styles.emptyBlocks}>No Q&amp;A items. Click &quot;+ Add Q&amp;A&quot; — items are added to ALL locales.</div>
+                                  ) : null}
+                                </div>
+                              </>
+                            ) : null}
+
+                            {/* Text Section */}
+                            {block.type === 'textSection' ? (
+                              <>
+                                <EditorField label="Section Title">
+                                  <TextInput value={String(localeTexts.title || '')} onChange={(v) => updateBlockText(index, activeLocale, { title: v })} />
+                                </EditorField>
+                                <EditorField label="Description" hint="Section description text.">
+                                  <textarea
+                                    value={String(localeTexts.description || '')}
+                                    onChange={(e) => updateBlockText(index, activeLocale, { description: e.target.value })}
+                                    rows={5}
+                                    style={styles.textarea}
+                                    placeholder="Section description..."
+                                  />
+                                </EditorField>
+                              </>
+                            ) : null}
+
+                            {/* Review List */}
+                            {block.type === 'reviewList' ? (
+                              <>
+                                <EditorField label="Section Title">
+                                  <TextInput value={String(localeTexts.title || '')} onChange={(v) => updateBlockText(index, activeLocale, { title: v })} />
+                                </EditorField>
+                                <EditorField label="Subtitle" hint="Subheading below the section title.">
+                                  <TextInput
+                                    value={String(localeTexts.subtitle || '')}
+                                    onChange={(v) => updateBlockText(index, activeLocale, { subtitle: v })}
+                                    placeholder="e.g. Was unsere Kunden sagen"
+                                  />
+                                </EditorField>
+                              </>
+                            ) : null}
+
+                            {/* Card List — Trust, Bento, Excellence, Roadmap, Footer sections */}
+                            {block.type === 'cardList' ? (
+                              <>
+                                <EditorField label="Section Title" hint="Main section heading.">
+                                  <TextInput value={String(localeTexts.title || '')} onChange={(v) => updateBlockText(index, activeLocale, { title: v })} />
+                                </EditorField>
+                                {/* Three-part colored title (Trust section style) */}
+                                {(localeTexts.titleStart !== undefined || localeTexts.titleAccent !== undefined || localeTexts.titleEnd !== undefined || block.key === 'trustSection') ? (
+                                  <div style={styles.formGrid}>
+                                    <EditorField label="Title — Start" hint="White/dark text before accent.">
+                                      <TextInput value={String(localeTexts.titleStart || '')} onChange={(v) => updateBlockText(index, activeLocale, { titleStart: v })} placeholder="e.g. Warum" />
+                                    </EditorField>
+                                    <EditorField label="Title — Accent" hint="Highlighted (brown) part.">
+                                      <TextInput value={String(localeTexts.titleAccent || '')} onChange={(v) => updateBlockText(index, activeLocale, { titleAccent: v })} placeholder="e.g. PixelRing" />
+                                    </EditorField>
+                                    <EditorField label="Title — End" hint="Text after accent.">
+                                      <TextInput value={String(localeTexts.titleEnd || '')} onChange={(v) => updateBlockText(index, activeLocale, { titleEnd: v })} placeholder="e.g. wählen?" />
+                                    </EditorField>
+                                  </div>
+                                ) : null}
+                                <EditorField label="Subtitle" hint="Optional subheading.">
+                                  <TextInput value={String(localeTexts.subtitle || '')} onChange={(v) => updateBlockText(index, activeLocale, { subtitle: v })} />
+                                </EditorField>
+                                <EditorField label="Description" hint="Section description text.">
+                                  <textarea
+                                    value={String(localeTexts.description || '')}
+                                    onChange={(e) => updateBlockText(index, activeLocale, { description: e.target.value })}
+                                    rows={3}
+                                    style={styles.textarea}
+                                    placeholder="Section description..."
+                                  />
+                                </EditorField>
+                              </>
+                            ) : null}
+
+                            {/* CTA — Navigation, Urgent Cases */}
+                            {block.type === 'cta' ? (
+                              <>
+                                <EditorField label="Title">
+                                  <TextInput value={String(localeTexts.title || '')} onChange={(v) => updateBlockText(index, activeLocale, { title: v })} />
+                                </EditorField>
+                                <div style={styles.formGrid}>
+                                  <EditorField label="Badge" hint="Small badge text (optional).">
+                                    <TextInput value={String(localeTexts.badge || '')} onChange={(v) => updateBlockText(index, activeLocale, { badge: v })} placeholder="e.g. Dringend" />
+                                  </EditorField>
+                                  <EditorField label="Service Pill" hint="Navigation pill text (optional).">
+                                    <TextInput value={String(localeTexts.servicePill || '')} onChange={(v) => updateBlockText(index, activeLocale, { servicePill: v })} />
+                                  </EditorField>
+                                </div>
+                                <EditorField label="Intro / Description" hint="Description or intro paragraph.">
+                                  <textarea
+                                    value={String(localeTexts.intro || localeTexts.description || '')}
+                                    onChange={(e) => updateBlockText(index, activeLocale, { intro: e.target.value })}
+                                    rows={3}
+                                    style={styles.textarea}
+                                    placeholder="Intro text..."
+                                  />
+                                </EditorField>
+                                <div style={styles.formGrid}>
+                                  <EditorField label="Primary Button" hint="Primary CTA button label.">
+                                    <TextInput value={String(localeTexts.primaryLabel || '')} onChange={(v) => updateBlockText(index, activeLocale, { primaryLabel: v })} placeholder="e.g. Jetzt kontaktieren" />
+                                  </EditorField>
+                                  <EditorField label="Secondary Button" hint="Secondary button label (optional).">
+                                    <TextInput value={String(localeTexts.secondaryLabel || '')} onChange={(v) => updateBlockText(index, activeLocale, { secondaryLabel: v })} />
+                                  </EditorField>
+                                  <EditorField label="Book Label" hint="Booking label (navigation, optional).">
+                                    <TextInput value={String(localeTexts.bookLabel || '')} onChange={(v) => updateBlockText(index, activeLocale, { bookLabel: v })} />
+                                  </EditorField>
+                                </div>
+                              </>
+                            ) : null}
+
+                            {/* Footer CTA */}
+                            {block.type === 'footerCta' ? (
+                              <>
+                                <EditorField label="Title" hint="Main footer CTA heading.">
+                                  <TextInput value={String(localeTexts.title || '')} onChange={(v) => updateBlockText(index, activeLocale, { title: v })} />
+                                </EditorField>
+                                <EditorField label="Subtitle" hint="Subheading below the title.">
+                                  <TextInput value={String(localeTexts.subtitle || '')} onChange={(v) => updateBlockText(index, activeLocale, { subtitle: v })} />
+                                </EditorField>
+                                <EditorField label="Connect Label" hint="Text on the connect/contact button.">
+                                  <TextInput value={String(localeTexts.connectLabel || '')} onChange={(v) => updateBlockText(index, activeLocale, { connectLabel: v })} placeholder="e.g. Verbinden" />
+                                </EditorField>
+                                <div style={styles.formGrid}>
+                                  <EditorField label="Form Title" hint="Title inside the contact form modal.">
+                                    <TextInput value={String(localeTexts.formTitle || '')} onChange={(v) => updateBlockText(index, activeLocale, { formTitle: v })} />
+                                  </EditorField>
+                                  <EditorField label="Form Subtitle" hint="Subtitle inside the contact form modal.">
+                                    <TextInput value={String(localeTexts.formSubtitle || '')} onChange={(v) => updateBlockText(index, activeLocale, { formSubtitle: v })} />
+                                  </EditorField>
+                                </div>
+                              </>
+                            ) : null}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
 
-            <div style={styles.previewPanel}>
-              <div style={styles.previewTitle}>Parsed block summary</div>
-              {parsedBlocksPreview.length === 0 ? (
-                <div style={styles.previewEmpty}>No valid blocks parsed yet.</div>
-              ) : (
-                <div style={styles.previewList}>
-                  {parsedBlocksPreview.map((block, index) => (
-                    <div key={`${block.key ?? 'block'}-${index}`} style={styles.previewItem}>
-                      <span style={styles.monoValue}>{String(block.type ?? 'unknown')}</span>
-                      <span>{String(block.key ?? 'missing-key')}</span>
-                      <span>{block.enabled === false ? 'disabled' : 'enabled'}</span>
-                      <span>order {Number(block.sortOrder ?? index)}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            {/* ── Advanced Mode ── */}
+            <details style={styles.advancedBlocks}>
+              <summary style={styles.advancedSummary}>
+                Advanced Mode — Raw JSON ({activeLocale.toUpperCase()})
+              </summary>
+              <div style={{ marginTop: '12px', padding: '0 12px 12px' }}>
+                <EditorField label={`Blocks JSON for ${activeLocale.toUpperCase()}`} hint="Warning: direct edits may break the visual constructor.">
+                  <textarea
+                    value={activeLocaleBlocks}
+                    onChange={(e) => {
+                      const res = parseBlocksJson(e.target.value);
+                      if (res.ok) {
+                        // Rebuild unified blocks from this locale's raw edit
+                        setForm((curr) => {
+                          const newBlocks = curr.blocks.map((ub, i) => {
+                            const raw = res.blocks[i];
+                            if (!raw) return ub;
+                            const textFields = getTextFieldNames(ub.type);
+                            const lt: Record<string, unknown> = {};
+                            for (const tf of textFields) {
+                              lt[tf] = raw[tf] ?? '';
+                            }
+                            const shared: Record<string, unknown> = {};
+                            for (const [k, v] of Object.entries(raw)) {
+                              if (STRUCTURAL_KEYS.has(k) || textFields.includes(k)) continue;
+                              shared[k] = v;
+                            }
+                            return {
+                              ...ub,
+                              enabled: raw.enabled !== false,
+                              shared,
+                              texts: { ...ub.texts, [activeLocale]: lt },
+                            };
+                          });
+                          return { ...curr, blocks: newBlocks };
+                        });
+                      }
+                    }}
+                    rows={14}
+                    spellCheck={false}
+                    style={{ ...styles.textarea, ...styles.codeTextarea }}
+                  />
+                </EditorField>
+              </div>
+            </details>
 
-            <div style={styles.metadataPanel}>
-              <div style={styles.metadataItem}>
-                <span style={styles.cardFieldLabel}>Created</span>
-                <span style={styles.cardFieldValue}>
-                  {editingPage ? renderDate(editingPage.createdAt) : '-'}
-                </span>
-              </div>
-              <div style={styles.metadataItem}>
-                <span style={styles.cardFieldLabel}>Updated</span>
-                <span style={styles.cardFieldValue}>
-                  {editingPage ? renderDate(editingPage.updatedAt) : '-'}
-                </span>
-              </div>
-              <div style={styles.metadataItem}>
-                <span style={styles.cardFieldLabel}>Published</span>
-                <span style={styles.cardFieldValue}>
-                  {editingPage ? renderDate(editingPage.publishedAt) : '-'}
-                </span>
-              </div>
-              <div style={styles.metadataItem}>
-                <span style={styles.cardFieldLabel}>Reviewed</span>
-                <span style={styles.cardFieldValue}>
-                  {editingPage ? renderDate(editingPage.lastReviewedAt) : '-'}
-                </span>
-              </div>
-            </div>
-
+            {/* ── Footer ── */}
             <div style={styles.modalFooter}>
               <button type="button" onClick={closeEditor} style={styles.secondaryButton}>
                 Cancel
               </button>
-              {editingPage ? (
-                <button
-                  type="button"
-                  onClick={() => void deleteFromEditor()}
-                  disabled={Boolean(formSaving)}
-                  style={styles.dangerButton}
-                >
-                  Delete
-                </button>
-              ) : null}
-              <button
-                type="button"
-                onClick={() =>
-                  setForm((current) => ({ ...current, status: 'DRAFT' }))
-                }
-                disabled={Boolean(formSaving)}
-                style={styles.warningButton}
-              >
-                Mark draft
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  setForm((current) => ({ ...current, status: 'PUBLISHED' }))
-                }
-                disabled={Boolean(formSaving)}
-                style={styles.successButton}
-              >
-                Mark published
-              </button>
-              <button
-                type="button"
-                onClick={() => void savePage()}
-                disabled={Boolean(formSaving)}
-                style={styles.primaryButton}
-              >
-                {formSaving === 'SAVE' ? 'Saving...' : 'Save page'}
+              <button type="button" onClick={() => void saveAll()} disabled={formSaving || saveableLocales.length === 0} style={styles.primaryButton}>
+                {formSaving ? 'Saving...' : `Save All (${saveableLocales.length} locales)`}
               </button>
             </div>
           </div>
         </div>
-      ) : null}
+      )}
     </div>
   );
 }
+
+// ─────────────────────────────────────────────────────────
+// Styles
+// ─────────────────────────────────────────────────────────
 
 const styles: Record<string, React.CSSProperties> = {
   page: {
@@ -1030,7 +1221,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   table: {
     width: '100%',
-    minWidth: '900px',
+    minWidth: '700px',
     borderCollapse: 'collapse',
   },
   th: {
@@ -1050,77 +1241,35 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '14px',
     color: '#d4d4d8',
     fontSize: '13px',
-    verticalAlign: 'top',
-  },
-  tableTitle: {
-    color: '#fff',
-    fontSize: '14px',
-    fontWeight: 700,
-    marginBottom: '5px',
-  },
-  tableSubtitle: {
-    color: '#8b8b8b',
-    fontSize: '12px',
-    lineHeight: 1.5,
+    verticalAlign: 'middle',
   },
   monoValue: {
     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
   },
-  chip: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: '4px 8px',
-    borderRadius: '999px',
-    border: '1px solid #333',
-    fontSize: '11px',
-    fontWeight: 700,
-    letterSpacing: '0.02em',
-  },
-  actionRow: {
+  localeDotsRow: {
     display: 'flex',
-    gap: '8px',
+    gap: '10px',
     flexWrap: 'wrap',
   },
-  secondaryButton: {
-    padding: '9px 12px',
-    borderRadius: '8px',
-    border: '1px solid #333',
-    background: '#171717',
-    color: '#fff',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: 700,
+  localeDotWrap: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '3px',
   },
-  successButton: {
-    padding: '9px 12px',
-    borderRadius: '8px',
-    border: '1px solid #14532d',
-    background: '#0f241b',
-    color: '#86efac',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: 700,
+  localeDot: {
+    width: '10px',
+    height: '10px',
+    borderRadius: '50%',
+    display: 'block',
   },
-  warningButton: {
-    padding: '9px 12px',
-    borderRadius: '8px',
-    border: '1px solid #6a4a16',
-    background: '#241b0f',
-    color: '#fbbf24',
-    cursor: 'pointer',
-    fontSize: '13px',
+  localeDotLabel: {
+    fontSize: '9px',
     fontWeight: 700,
+    color: '#71717a',
+    letterSpacing: '0.04em',
   },
-  dangerButton: {
-    padding: '9px 12px',
-    borderRadius: '8px',
-    border: '1px solid #7f1d1d',
-    background: '#2a1111',
-    color: '#fca5a5',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: 700,
-  },
+  // ── Modal ──
   modalOverlay: {
     position: 'fixed',
     inset: 0,
@@ -1133,9 +1282,9 @@ const styles: Record<string, React.CSSProperties> = {
   },
   modal: {
     width: 'min(1120px, 100%)',
-    maxHeight: '92vh',
+    maxHeight: '94vh',
     overflow: 'auto',
-    borderRadius: '8px',
+    borderRadius: '10px',
     border: '1px solid #222',
     background: '#111',
     padding: '20px',
@@ -1173,6 +1322,80 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '13px',
     fontWeight: 700,
   },
+  // ── Locale tabs ──
+  localeTabRow: {
+    display: 'flex',
+    gap: '6px',
+    padding: '4px',
+    background: '#0b0b0b',
+    borderRadius: '10px',
+    border: '1px solid #222',
+    flexWrap: 'wrap',
+  },
+  localeTab: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '8px 14px',
+    fontSize: '12px',
+    fontWeight: 700,
+    background: 'transparent',
+    color: '#8b8b8b',
+    border: 'none',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    transition: 'all 0.15s',
+  },
+  localeTabActive: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '8px 14px',
+    fontSize: '12px',
+    fontWeight: 700,
+    background: '#7c3aed',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    boxShadow: '0 2px 8px rgba(124,58,237,0.3)',
+  },
+  localeTabDot: {
+    width: '7px',
+    height: '7px',
+    borderRadius: '50%',
+    display: 'inline-block',
+  },
+  newBadge: {
+    display: 'inline-block',
+    padding: '1px 5px',
+    fontSize: '9px',
+    fontWeight: 700,
+    background: '#7c3aed',
+    color: '#fff',
+    borderRadius: '4px',
+    marginLeft: '4px',
+    verticalAlign: 'middle',
+    letterSpacing: '0.04em',
+  },
+  // ── Section box ──
+  sectionBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    padding: '16px',
+    border: '1px solid #222',
+    borderRadius: '10px',
+    background: '#0b0b0b',
+  },
+  sectionTitle: {
+    margin: 0,
+    color: '#fff',
+    fontSize: '14px',
+    fontWeight: 700,
+    textTransform: 'uppercase',
+    letterSpacing: '0.04em',
+  },
   formGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
@@ -1181,11 +1404,11 @@ const styles: Record<string, React.CSSProperties> = {
   field: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px',
+    gap: '6px',
   },
   fieldLabel: {
     color: '#d4d4d8',
-    fontSize: '12px',
+    fontSize: '11px',
     fontWeight: 700,
     textTransform: 'uppercase',
     letterSpacing: '0.04em',
@@ -1208,7 +1431,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   textarea: {
     width: '100%',
-    minHeight: '110px',
+    minHeight: '80px',
     padding: '10px 12px',
     borderRadius: '8px',
     border: '1px solid #333',
@@ -1222,143 +1445,233 @@ const styles: Record<string, React.CSSProperties> = {
   },
   codeTextarea: {
     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-    minHeight: '360px',
+    minHeight: '300px',
   },
-  mediaPickerPanel: {
-    border: '1px solid #222',
+  secondaryButton: {
+    padding: '9px 12px',
     borderRadius: '8px',
-    background: '#0b0b0b',
-    padding: '12px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
-  },
-  mediaPickerHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    gap: '12px',
-    alignItems: 'flex-start',
-    flexWrap: 'wrap',
-  },
-  mediaPickerTitle: {
-    margin: 0,
+    border: '1px solid #333',
+    background: '#171717',
     color: '#fff',
+    cursor: 'pointer',
     fontSize: '13px',
     fontWeight: 700,
-    textTransform: 'uppercase',
-    letterSpacing: '0.04em',
   },
-  mediaPickerText: {
-    margin: '4px 0 0',
-    color: '#8b8b8b',
-    fontSize: '12px',
-    lineHeight: 1.5,
-  },
-  mediaPickerGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-    gap: '10px',
-  },
-  mediaPickerCard: {
-    border: '1px solid #252525',
-    borderRadius: '8px',
-    background: '#111',
-    color: '#d4d4d8',
-    cursor: 'pointer',
-    padding: '8px',
+  // ── Block Manager ──
+  blockManager: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '7px',
-    textAlign: 'left',
+    gap: '16px',
+    padding: '16px',
+    border: '1px solid #222',
+    borderRadius: '12px',
+    background: '#0b0b0b',
   },
-  mediaPickerThumb: {
-    height: '86px',
+  blockManagerHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: '12px',
+  },
+  addBlockRow: {
+    display: 'flex',
+    gap: '8px',
+    flexWrap: 'wrap',
+  },
+  addBlockBtn: {
+    padding: '6px 12px',
+    fontSize: '11px',
+    fontWeight: 700,
+    background: '#1a1a1a',
+    color: '#a1a1aa',
+    border: '1px solid #27272a',
     borderRadius: '6px',
-    background: '#171717',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+  },
+  emptyBlocks: {
+    padding: '40px 20px',
+    textAlign: 'center',
+    color: '#71717a',
+    fontSize: '13px',
+    border: '1px dashed #27272a',
+    borderRadius: '8px',
+  },
+  blocksList: {
+    display: 'grid',
+    gap: '12px',
+  },
+  blockCard: {
+    background: '#111',
+    border: '1px solid #27272a',
+    borderRadius: '8px',
     overflow: 'hidden',
+  },
+  blockCardHeader: {
+    padding: '10px 12px',
+    background: '#18181b',
+    borderBottom: '1px solid #27272a',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  blockCardTitle: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
+  blockTypeBadge: {
+    padding: '2px 6px',
+    background: '#3f3f46',
+    color: '#fff',
+    borderRadius: '4px',
+    fontSize: '10px',
+    fontWeight: 700,
+    textTransform: 'uppercase',
+  },
+  blockKeyLabel: {
+    color: '#71717a',
+    fontSize: '11px',
+    fontFamily: 'monospace',
+  },
+  blockCardActions: {
+    display: 'flex',
+    gap: '6px',
+    alignItems: 'center',
+  },
+  nodeLabel: {
+    fontSize: '11px',
+    color: '#a1a1aa',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    cursor: 'pointer',
+    marginRight: '8px',
+  },
+  iconBtn: {
+    width: '28px',
+    height: '28px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  mediaPickerImage: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    display: 'block',
-  },
-  mediaPickerNoImage: {
-    color: '#8b8b8b',
-    fontSize: '12px',
-  },
-  mediaPickerName: {
-    color: '#fff',
-    fontSize: '12px',
-    fontWeight: 700,
-    lineHeight: 1.4,
-    wordBreak: 'break-word',
-  },
-  mediaPickerMeta: {
-    color: '#8b8b8b',
+    background: '#27272a',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
     fontSize: '11px',
-    lineHeight: 1.4,
+    color: '#a1a1aa',
   },
-  previewPanel: {
-    padding: '12px',
-    border: '1px solid #222',
-    borderRadius: '8px',
-    background: '#0b0b0b',
-  },
-  previewTitle: {
-    color: '#fff',
-    fontSize: '13px',
-    fontWeight: 700,
-    marginBottom: '10px',
-  },
-  previewEmpty: {
-    color: '#8b8b8b',
-    fontSize: '13px',
-  },
-  previewList: {
-    display: 'grid',
-    gap: '8px',
-  },
-  previewItem: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-    gap: '8px',
-    color: '#d4d4d8',
+  iconBtnDanger: {
+    width: '28px',
+    height: '28px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: '#450a0a',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
     fontSize: '12px',
   },
-  metadataPanel: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-    gap: '12px',
+  blockCardBody: {
     padding: '12px',
-    border: '1px solid #222',
-    borderRadius: '8px',
-    background: '#0b0b0b',
-  },
-  metadataItem: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '4px',
+    gap: '12px',
   },
-  cardFieldLabel: {
-    color: '#8b8b8b',
-    fontSize: '11px',
+  // ── Shared / Locale sections within block ──
+  sharedFieldsBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+    padding: '10px',
+    border: '1px solid #27272a',
+    borderRadius: '6px',
+    background: '#18181b',
+  },
+  sharedLabel: {
+    fontSize: '10px',
+    fontWeight: 700,
+    color: '#7c3aed',
+    textTransform: 'uppercase',
+    letterSpacing: '0.06em',
+  },
+  localeTextSection: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
+  },
+  localeTextLabel: {
+    fontSize: '10px',
+    fontWeight: 700,
+    color: '#86efac',
+    textTransform: 'uppercase',
+    letterSpacing: '0.06em',
+  },
+  // ── FAQ items ──
+  faqItemsContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
+    padding: '12px',
+    border: '1px solid #27272a',
+    borderRadius: '8px',
+    background: '#18181b',
+  },
+  faqItemsHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  faqItemsLabel: {
+    fontSize: '12px',
+    fontWeight: 700,
+    color: '#a1a1aa',
     textTransform: 'uppercase',
     letterSpacing: '0.04em',
   },
-  cardFieldValue: {
-    color: '#fff',
-    fontSize: '13px',
-    lineHeight: 1.5,
-    wordBreak: 'break-word',
+  faqItemCard: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
+    padding: '10px',
+    border: '1px solid #27272a',
+    borderRadius: '6px',
+    background: '#111',
   },
+  faqItemHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  faqItemIndex: {
+    fontSize: '11px',
+    fontWeight: 700,
+    color: '#71717a',
+    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+  },
+  // ── Advanced mode ──
+  advancedBlocks: {
+    border: '1px solid #222',
+    borderRadius: '8px',
+    background: '#0b0b0b',
+  },
+  advancedSummary: {
+    padding: '10px 12px',
+    fontSize: '12px',
+    fontWeight: 700,
+    color: '#71717a',
+    cursor: 'pointer',
+    userSelect: 'none',
+  },
+  // ── Footer ──
   modalFooter: {
     display: 'flex',
     justifyContent: 'flex-end',
     gap: '8px',
     flexWrap: 'wrap',
+    paddingTop: '4px',
+    borderTop: '1px solid #222',
   },
 };

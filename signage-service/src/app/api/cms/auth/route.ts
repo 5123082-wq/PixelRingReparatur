@@ -68,8 +68,7 @@ export async function POST(request: NextRequest) {
         outcome: 'DENIED',
         details: {
           zone: 'CMS',
-          method: loginInput.mode,
-          email: loginInput.mode === 'password' ? loginInput.email : null,
+          email: loginInput.email,
         },
         ipAddress,
         userAgent,
@@ -86,7 +85,7 @@ export async function POST(request: NextRequest) {
         role: authResult.user.role,
         userAgent,
         ipAddress,
-        label: authResult.method === 'master-key' ? 'CMS Bootstrap Fallback' : 'CMS Password Login',
+        label: 'CMS Password Login',
       });
 
       await createAdminAuditLog(tx, {
@@ -97,7 +96,6 @@ export async function POST(request: NextRequest) {
         resourceId: authResult.user.id,
         details: {
           zone: 'CMS',
-          method: authResult.method,
           email: authResult.user.email,
         },
         ipAddress,

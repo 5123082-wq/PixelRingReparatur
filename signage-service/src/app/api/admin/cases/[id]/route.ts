@@ -6,7 +6,8 @@ import {
   CRM_SESSION_COOKIE_NAME,
 } from '@/lib/admin-auth';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
-import { createAdminAuditLog, requireAdminActor } from '@/lib/admin-audit';
+import { createAdminAuditLog, requireAdminPermissionActor } from '@/lib/admin-audit';
+import type { AdminPermission } from '@/lib/admin-permissions';
 import {
   canTransitionCaseStatus,
   normalizeTransitionReason,
@@ -19,7 +20,7 @@ const MAX_OPERATOR_MESSAGE_LENGTH = 4000;
 const MAX_INTERNAL_NOTE_LENGTH = 2000;
 
 function isUuidLike(value: string): boolean {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i.test(
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
     value
   );
 }
@@ -28,12 +29,33 @@ function notFoundResponse() {
   return NextResponse.json({ error: 'Not found' }, { status: 404 });
 }
 
-async function requireAdmin(request: NextRequest) {
-  return requireAdminActor(
+async function requireCaseReadActor(request: NextRequest) {
+  return requireAdminPermissionActor(
     prisma,
     request,
     CRM_SESSION_COOKIE_NAME,
-    ['MANAGER']
+    ['CRM_CASE_READ']
+  );
+}
+
+async function requireCaseUpdateActor(request: NextRequest) {
+  return requireAdminPermissionActor(
+    prisma,
+    request,
+    CRM_SESSION_COOKIE_NAME,
+    ['CRM_CASE_UPDATE']
+  );
+}
+
+async function requireCaseConversationActor(
+  request: NextRequest,
+  requiredPermissions: readonly AdminPermission[]
+) {
+  return requireAdminPermissionActor(
+    prisma,
+    request,
+    CRM_SESSION_COOKIE_NAME,
+    requiredPermissions
   );
 }
 
@@ -74,7 +96,7 @@ function resolveCaseDetailReadError(error: unknown): {
 }
 
 export async function GET(request: NextRequest, { params }: RouteParams) {
-  const actor = await requireAdmin(request);
+  const actor = await requireCaseReadActor(request);
 
   if (!actor) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
@@ -240,12 +262,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   const csrfError = validateAdminCsrf(request);
   if (csrfError) return csrfError;
 
-  const actor = await requireAdmin(request);
-
-  if (!actor) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 });
-  }
-
   const { id } = await params;
 
   if (!isUuidLike(id)) {
@@ -271,6 +287,22 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         { error: 'Message, internalNote, or operatorTakeover is required' },
         { status: 400 }
       );
+    }
+
+    const requiredPermissions: AdminPermission[] = [];
+
+    if (hasMessage || hasInternalNote) {
+      requiredPermissions.push('CRM_CASE_MESSAGE_WRITE');
+    }
+
+    if (hasTakeoverUpdate && !hasMessage) {
+      requiredPermissions.push('CRM_CASE_TAKEOVER_WRITE');
+    }
+
+    const actor = await requireCaseConversationActor(request, requiredPermissions);
+
+    if (!actor) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
     if (message.length > MAX_OPERATOR_MESSAGE_LENGTH) {
@@ -433,7 +465,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   const csrfError = validateAdminCsrf(request);
   if (csrfError) return csrfError;
 
-  const actor = await requireAdmin(request);
+  const actor = await requireCaseUpdateActor(request);
 
   if (!actor) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });

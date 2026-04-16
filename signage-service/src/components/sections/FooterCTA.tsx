@@ -4,7 +4,15 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import ContactForm from '../common/ContactForm';
 
-const FooterCTA = () => {
+type FooterCtaContent = {
+  title?: string | null;
+  subtitle?: string | null;
+  connectLabel?: string | null;
+  formTitle?: string | null;
+  formSubtitle?: string | null;
+};
+
+const FooterCTA = ({ content }: { content?: FooterCtaContent | null }) => {
   const t = useTranslations('FooterCTA');
 
   const whatsappUrl = process.env.NEXT_PUBLIC_WHATSAPP_URL || 'https://wa.me/message/27UOBFWB7UYCN1';
@@ -32,16 +40,16 @@ const FooterCTA = () => {
           <div className="flex flex-col justify-between gap-12 lg:gap-0 lg:py-6">
             <div className="flex flex-col gap-6 ltr:text-left rtl:text-right">
               <h2 className="text-[36px] md:text-[44px] xl:text-[56px] font-extrabold text-white leading-[1.1] tracking-tight">
-                {t('title')}
+                {content?.title ?? t('title')}
               </h2>
               <p className="text-[17px] md:text-[19px] text-white/70 max-w-xl leading-relaxed">
-                {t('subtitle')}
+                {content?.subtitle ?? t('subtitle')}
               </p>
             </div>
 
             <div className="flex flex-col gap-3 lg:gap-4 w-full">
               <p className="text-[13px] font-bold text-white/40 uppercase tracking-[2px] ltr:text-left rtl:text-right mb-1">
-                {t('connect_label')}
+                {content?.connectLabel ?? t('connect_label')}
               </p>
               <div className="flex flex-col gap-4 w-full">
                 {/* Live-Chat */}
@@ -105,10 +113,10 @@ const FooterCTA = () => {
             <div className="flex flex-col gap-8 relative z-10">
               <div className="flex flex-col gap-3 ltr:text-left rtl:text-right">
                 <h3 className="text-[28px] md:text-[32px] font-bold text-white tracking-tight leading-tight">
-                  {t('form_title')}
+                  {content?.formTitle ?? t('form_title')}
                 </h3>
                 <p className="text-[16px] text-white/60 leading-relaxed max-w-[340px]">
-                  {t('form_subtitle')}
+                  {content?.formSubtitle ?? t('form_subtitle')}
                 </p>
               </div>
               

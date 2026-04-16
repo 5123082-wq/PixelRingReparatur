@@ -1,7 +1,7 @@
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import StatusLookup from '@/components/status/StatusLookup';
-import { getStatusPageCmsContent } from '@/lib/cms/pages';
+import { getGlobalPageCmsContent, getStatusPageCmsContent } from '@/lib/cms/pages';
 
 export default async function StatusPage({
   params,
@@ -12,15 +12,18 @@ export default async function StatusPage({
 }) {
   const { locale } = await params;
   const query = await Promise.resolve(searchParams ?? {});
-  const cmsContent = await getStatusPageCmsContent(locale);
+  const [cmsContent, globalCms] = await Promise.all([
+    getStatusPageCmsContent(locale),
+    getGlobalPageCmsContent(locale),
+  ]);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F7F1E8]">
-      <Header />
+      <Header content={globalCms?.header} />
       <main className="flex-1">
         <StatusLookup initialRequestNumber={query?.request ?? ''} cmsContent={cmsContent} />
       </main>
-      <Footer />
+      <Footer content={globalCms?.footer} />
     </div>
   );
 }

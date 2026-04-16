@@ -13,6 +13,7 @@ import {
   resolveSupportSeoText,
   type SupportArticleDetail,
 } from '@/lib/cms/support-content';
+import { getGlobalPageCmsContent } from '@/lib/cms/pages';
 
 function renderParagraphs(content: string) {
   return content
@@ -119,9 +120,10 @@ export default async function SupportArticlePage({
   params: Promise<{ locale: string; slug: string }>;
 }) {
   const { locale, slug } = await params;
-  const [article, seoConfig] = await Promise.all([
+  const [article, seoConfig, globalCms] = await Promise.all([
     getSupportArticleDetail(locale, slug),
     getSupportSeoConfig(),
+    getGlobalPageCmsContent(locale),
   ]);
 
   if (!article) {
@@ -156,7 +158,7 @@ export default async function SupportArticlePage({
 
   return (
     <div className="bg-[#F7F1E8] min-h-screen flex flex-col">
-      <Header />
+      <Header content={globalCms?.header} />
 
       <main className="flex-1">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 md:py-16">
@@ -301,7 +303,7 @@ export default async function SupportArticlePage({
         </div>
       </main>
 
-      <Footer />
+      <Footer content={globalCms?.footer} />
 
       <script
         type="application/ld+json"

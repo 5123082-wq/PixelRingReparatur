@@ -4,37 +4,71 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 
-const Footer = () => {
+type FooterLink = {
+  label: string;
+  href: string;
+};
+
+type FooterContent = {
+  servicesTitle?: string | null;
+  supportTitle?: string | null;
+  socialTitle?: string | null;
+  companyTitle?: string | null;
+  copyright?: string | null;
+  serviceLinks?: FooterLink[];
+  supportLinks?: FooterLink[];
+  socialLinks?: FooterLink[];
+  legalLinks?: FooterLink[];
+  companyLines?: string[];
+  hours?: string | null;
+  email?: string | null;
+};
+
+const Footer = ({ content }: { content?: FooterContent | null }) => {
   const t = useTranslations('Footer');
 
-  const serviceLinks = [
-    { name: t('services_sign_repair'), href: '/services/sign-repair' },
-    { name: t('services_installation'), href: '/services/installation' },
-    { name: t('services_lighting'), href: '/services/light-advertising' },
-    { name: t('services_branding'), href: '/services/branding' },
-    { name: t('services_maintenance'), href: '/services/maintenance' },
-  ];
+  const serviceLinks = (content?.serviceLinks?.length
+    ? content.serviceLinks
+    : [
+        { label: t('services_sign_repair'), href: '/services/sign-repair' },
+        { label: t('services_installation'), href: '/services/installation' },
+        { label: t('services_lighting'), href: '/services/light-advertising' },
+        { label: t('services_branding'), href: '/services/branding' },
+        { label: t('services_maintenance'), href: '/services/maintenance' },
+      ]).map((link) => ({ name: link.label, href: link.href }));
 
-  const supportLinks = [
-    { name: t('how_it_works'), href: '/#how-it-works' },
-    { name: t('status_check'), href: '/status' },
-    { name: t('help_center'), href: '/support' },
-    { name: t('contact'), href: '/contact' },
-  ];
+  const supportLinks = (content?.supportLinks?.length
+    ? content.supportLinks
+    : [
+        { label: t('how_it_works'), href: '/#how-it-works' },
+        { label: t('status_check'), href: '/status' },
+        { label: t('help_center'), href: '/support' },
+        { label: t('contact'), href: '/contact' },
+      ]).map((link) => ({ name: link.label, href: link.href }));
 
-  const socialLinks = [
-    { name: 'YouTube', href: 'https://youtube.com', icon: 'YT' },
-    { name: 'Telegram', href: 'https://t.me', icon: 'TG' },
-    { name: 'WhatsApp', href: 'https://wa.me', icon: 'WA' },
-  ];
+  const socialLinks = (content?.socialLinks?.length
+    ? content.socialLinks
+    : [
+        { label: 'YouTube', href: 'https://youtube.com' },
+        { label: 'Telegram', href: 'https://t.me' },
+        { label: 'WhatsApp', href: 'https://wa.me' },
+      ]).map((link) => ({ name: link.label, href: link.href }));
 
-  const legalLinks = [
-    { name: t('impressum'), href: '/impressum' },
-    { name: t('privacy'), href: '/privacy' },
-    { name: t('terms'), href: '/terms' },
-    { name: t('cancellation'), href: '/cancellation' },
-    { name: t('cookies'), href: '/cookies' },
-  ];
+  const legalLinks = (content?.legalLinks?.length
+    ? content.legalLinks
+    : [
+        { label: t('impressum'), href: '/impressum' },
+        { label: t('privacy'), href: '/privacy' },
+        { label: t('terms'), href: '/terms' },
+        { label: t('cancellation'), href: '/cancellation' },
+        { label: t('cookies'), href: '/cookies' },
+      ]).map((link) => ({ name: link.label, href: link.href }));
+
+  const companyLines = content?.companyLines?.length
+    ? content.companyLines
+    : ['PixelRing Technical Atelier', 'Berlin, Deutschland'];
+  const companyHours = content?.hours ?? 'Mo — Fr: 09:00 - 18:00';
+  const companyEmail = content?.email ?? 'service@pixelring.de';
 
   return (
     <footer className="w-full bg-[#F7F1E8] pt-0 pb-10 px-6 sm:px-10 border-t border-[#E7DDD3] relative overflow-hidden">
@@ -45,7 +79,9 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-24">
           {/* Column 1: Services */}
           <div className="flex flex-col gap-6">
-            <h4 className="text-[14px] font-bold text-black uppercase tracking-widest">{t('services')}</h4>
+            <h4 className="text-[14px] font-bold text-black uppercase tracking-widest">
+              {content?.servicesTitle ?? t('services')}
+            </h4>
             <div className="flex flex-col gap-4">
               {serviceLinks.map((link) => (
                 <Link key={link.name} href={link.href} className="text-[15px] text-[#72665D] hover:text-black transition-colors">
@@ -57,7 +93,9 @@ const Footer = () => {
 
           {/* Column 2: Support */}
           <div className="flex flex-col gap-6">
-            <h4 className="text-[14px] font-bold text-black uppercase tracking-widest">{t('support_title')}</h4>
+            <h4 className="text-[14px] font-bold text-black uppercase tracking-widest">
+              {content?.supportTitle ?? t('support_title')}
+            </h4>
             <div className="flex flex-col gap-4">
               {supportLinks.map((link) => (
                 <Link key={link.name} href={link.href} className="text-[15px] text-[#72665D] hover:text-black transition-colors">
@@ -69,7 +107,9 @@ const Footer = () => {
 
           {/* Column 3: Social */}
           <div className="flex flex-col gap-6">
-            <h4 className="text-[14px] font-bold text-black uppercase tracking-widest">{t('social')}</h4>
+            <h4 className="text-[14px] font-bold text-black uppercase tracking-widest">
+              {content?.socialTitle ?? t('social')}
+            </h4>
             <div className="flex flex-col gap-4">
               {socialLinks.map((link) => (
                 <a key={link.name} href={link.href} target="_blank" rel="noopener noreferrer" className="text-[15px] text-[#72665D] hover:text-black transition-colors flex items-center gap-2">
@@ -81,12 +121,15 @@ const Footer = () => {
 
           {/* Column 4: Contact/Info */}
           <div className="flex flex-col gap-6">
-            <h4 className="text-[14px] font-bold text-black uppercase tracking-widest">{t('company')}</h4>
+            <h4 className="text-[14px] font-bold text-black uppercase tracking-widest">
+              {content?.companyTitle ?? t('company')}
+            </h4>
             <div className="text-[15px] text-[#72665D] leading-relaxed">
-              <p>PixelRing Technical Atelier</p>
-              <p>Berlin, Deutschland</p>
-              <p className="mt-4">Mo — Fr: 09:00 - 18:00</p>
-              <p className="mt-2 font-medium text-black">service@pixelring.de</p>
+              {companyLines.map((line) => (
+                <p key={line}>{line}</p>
+              ))}
+              <p className="mt-4">{companyHours}</p>
+              <p className="mt-2 font-medium text-black">{companyEmail}</p>
             </div>
           </div>
         </div>
@@ -108,7 +151,7 @@ const Footer = () => {
             ))}
           </div>
           <p className="text-[13px] text-[#72665D]/60 whitespace-nowrap">
-            {t('copyright')}
+            {content?.copyright ?? t('copyright')}
           </p>
         </div>
       </div>

@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
 import { useTranslations } from 'next-intl';
+import { TrustCmsContent } from '@/lib/cms/pages';
 
-const TrustSection = () => {
+const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
   const t = useTranslations('Trust');
 
   type FeatureIconType = 'reinraum' | 'doc' | 'audit';
@@ -38,35 +38,64 @@ const TrustSection = () => {
     return icons[type] || null;
   };
 
-  const statKeys = ['turnaround', 'warranty', 'hardware', 'rating'] as const;
+  const stats = [
+    {
+      id: 1,
+      value: content?.stats?.[0]?.value ?? t('stats.turnaround.value'),
+      label: content?.stats?.[0]?.label ?? t('stats.turnaround.label'),
+      desc: content?.stats?.[0]?.description ?? t('stats.turnaround.description'),
+    },
+    {
+      id: 2,
+      value: content?.stats?.[1]?.value ?? t('stats.warranty.value'),
+      label: content?.stats?.[1]?.label ?? t('stats.warranty.label'),
+      desc: content?.stats?.[1]?.description ?? t('stats.warranty.description'),
+    },
+    {
+      id: 3,
+      value: content?.stats?.[2]?.value ?? t('stats.hardware.value'),
+      label: content?.stats?.[2]?.label ?? t('stats.hardware.label'),
+      desc: content?.stats?.[2]?.description ?? t('stats.hardware.description'),
+    },
+    {
+      id: 4,
+      value: content?.stats?.[3]?.value ?? t('stats.rating.value'),
+      label: content?.stats?.[3]?.label ?? t('stats.rating.label'),
+      desc: content?.stats?.[3]?.description ?? t('stats.rating.description'),
+    },
+  ];
+
   const featureItems: Array<{
-    key: 'feature1' | 'feature2' | 'feature3';
+    key: string;
     icon: FeatureIconType;
   }> = [
-    { key: 'feature1', icon: 'reinraum' },
-    { key: 'feature2', icon: 'doc' },
-    { key: 'feature3', icon: 'audit' },
+    { key: content?.features?.[0]?.label ?? t('feature1'), icon: 'reinraum' },
+    { key: content?.features?.[1]?.label ?? t('feature2'), icon: 'doc' },
+    { key: content?.features?.[2]?.label ?? t('feature3'), icon: 'audit' },
   ];
 
   return (
-    <section className="relative w-full bg-[#F9F6F2] py-24 px-6 overflow-hidden">
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-stretch relative z-10">
-        
-        {/* Left Column: Vision & Features */}
-        <div className="flex flex-col gap-10">
-          <div className="flex flex-col gap-6 max-w-xl">
-            <h2 className="text-[40px] md:text-[56px] font-bold text-[#0E1A2B] leading-[1.1] tracking-tight">
-              {t('title_start')}
-              <span className="text-[#B8643E]">{t('title_accent')}</span>
-              {t('title_end')}
+    <section className="w-full bg-[#1A1A1A] py-32 px-6 overflow-hidden relative">
+      {/* Background Decorative Grid */}
+      <div className="absolute inset-0 opacity-[0.03] bg-[length:32px_32px]" 
+           style={{ backgroundImage: 'radial-gradient(circle at center, white 1px, transparent 1px)' }} />
+
+      <div className="max-w-7xl mx-auto flex flex-col gap-20 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="flex flex-col gap-6">
+            <h2 className="text-[44px] md:text-[56px] font-bold text-white leading-[1.1]">
+              {content?.titleStart ?? t('title_start')} <br />
+              <span className="text-[#B8643E]">{content?.titleAccent ?? t('title_accent')}</span> <br />
+              {content?.titleEnd ?? t('title_end')}
             </h2>
-            <p className="text-[18px] md:text-[20px] text-[#4A5568] leading-[1.6]">
-              {t('description')}
+            <div className="w-24 h-1 bg-[#EEF3FB]/20 rounded-full my-2" />
+            <p className="text-[18px] text-white/60 leading-relaxed max-w-lg">
+              {content?.description ?? t('description')}
             </p>
           </div>
 
           <div className="flex flex-col gap-4">
-            {featureItems.map((feature) => (
+            {featureItems.map((feature, index) => (
               <div 
                 key={feature.key}
                 className="flex items-center gap-5 p-5 bg-white rounded-2xl shadow-sm border border-black/[0.03] hover:shadow-md transition-all duration-300 group cursor-default"
@@ -75,7 +104,7 @@ const TrustSection = () => {
                   <FeatureIcon type={feature.icon} />
                 </div>
                 <span className="text-[18px] font-semibold text-[#0E1A2B]">
-                  {t(feature.key)}
+                  {feature.key}
                 </span>
               </div>
             ))}
@@ -86,17 +115,17 @@ const TrustSection = () => {
         <div className="w-full flex flex-col">
           <div className="bg-white rounded-[40px] shadow-2xl shadow-[#0E1A2B08] border border-black/[0.04] p-10 md:p-14 h-full flex flex-col justify-center">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
-              {statKeys.map((key) => (
-                <div key={key} className="flex flex-col gap-3">
+              {stats.map((stat) => (
+                <div key={stat.id} className="flex flex-col gap-3">
                   <div className="text-[44px] md:text-[52px] font-bold text-[#B8643E] leading-none tracking-tight">
-                    {t(`stats.${key}.value`)}
+                    {stat.value}
                   </div>
                   <div className="flex flex-col gap-2">
                     <h3 className="text-[14px] font-black text-[#0E1A2B] tracking-widest uppercase">
-                      {t(`stats.${key}.label`)}
+                      {stat.label}
                     </h3>
                     <p className="text-[15px] leading-[1.5] text-[#718096]">
-                      {t(`stats.${key}.description`)}
+                      {stat.desc}
                     </p>
                   </div>
                 </div>

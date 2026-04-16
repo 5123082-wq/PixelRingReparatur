@@ -6,7 +6,7 @@ import {
   CRM_SESSION_COOKIE_NAME,
 } from '@/lib/admin-auth';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
-import { createAdminAuditLog, requireAdminActor } from '@/lib/admin-audit';
+import { createAdminAuditLog, requireAdminPermissionActor } from '@/lib/admin-audit';
 import { syncCaseCustomerProfile } from '@/lib/customer-profiles';
 import { findAvailablePublicRequestNumber } from '@/lib/request-number';
 
@@ -14,17 +14,26 @@ const VALID_STATUSES = Object.values(CaseStatus);
 const VALID_CHANNELS = Object.values(CaseOriginChannel);
 const DEFAULT_PAGE_SIZE = 25;
 
-async function requireAdmin(request: NextRequest) {
-  return requireAdminActor(
+async function requireCaseReadActor(request: NextRequest) {
+  return requireAdminPermissionActor(
     prisma,
     request,
     CRM_SESSION_COOKIE_NAME,
-    ['MANAGER']
+    ['CRM_CASE_READ']
+  );
+}
+
+async function requireCaseCreateActor(request: NextRequest) {
+  return requireAdminPermissionActor(
+    prisma,
+    request,
+    CRM_SESSION_COOKIE_NAME,
+    ['CRM_CASE_CREATE']
   );
 }
 
 export async function GET(request: NextRequest) {
-  const actor = await requireAdmin(request);
+  const actor = await requireCaseReadActor(request);
 
   if (!actor) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
@@ -112,7 +121,7 @@ export async function POST(request: NextRequest) {
   const csrfError = validateAdminCsrf(request);
   if (csrfError) return csrfError;
 
-  const actor = await requireAdmin(request);
+  const actor = await requireCaseCreateActor(request);
 
   if (!actor) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });

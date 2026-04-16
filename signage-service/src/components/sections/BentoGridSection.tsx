@@ -2,39 +2,44 @@
 
 import React from 'react';
 import { useTranslations } from 'next-intl';
+import { BentoGridCmsContent } from '@/lib/cms/pages';
 
-const BentoGridSection = () => {
+interface BentoGridSectionProps {
+  content?: BentoGridCmsContent;
+}
+
+const BentoGridSection = ({ content }: BentoGridSectionProps) => {
   const t = useTranslations('Bento');
 
   const steps = [
     {
       id: 1,
-      title: t('steps.0.title'),
-      description: t('steps.0.description'),
+      title: content?.steps?.[0]?.title ?? t('steps.0.title'),
+      description: content?.steps?.[0]?.description ?? t('steps.0.description'),
       className: 'md:col-span-2 lg:col-span-2 bg-white',
     },
     {
       id: 2,
-      title: t('steps.1.title'),
-      description: t('steps.1.description'),
+      title: content?.steps?.[1]?.title ?? t('steps.1.title'),
+      description: content?.steps?.[1]?.description ?? t('steps.1.description'),
       className: 'bg-white',
     },
     {
       id: 3,
-      title: t('steps.2.title'),
-      description: t('steps.2.description'),
+      title: content?.steps?.[2]?.title ?? t('steps.2.title'),
+      description: content?.steps?.[2]?.description ?? t('steps.2.description'),
       className: 'bg-white',
     },
     {
       id: 4,
-      title: t('steps.3.title'),
-      description: t('steps.3.description'),
+      title: content?.steps?.[3]?.title ?? t('steps.3.title'),
+      description: content?.steps?.[3]?.description ?? t('steps.3.description'),
       className: 'md:col-span-2 lg:col-span-3 bg-[#B8643E] text-white',
     },
     {
       id: 5,
-      title: t('steps.4.title'),
-      description: t('steps.4.description'),
+      title: content?.steps?.[4]?.title ?? t('steps.4.title'),
+      description: content?.steps?.[4]?.description ?? t('steps.4.description'),
       className: 'bg-white',
     },
   ];
@@ -44,7 +49,7 @@ const BentoGridSection = () => {
       <div className="max-w-7xl mx-auto flex flex-col gap-12">
         <div className="flex flex-col gap-4">
           <h2 className="text-[40px] md:text-[48px] font-bold text-[#0E1A2B] leading-tight">
-            {t('title')}
+            {content?.title ?? t('title')}
           </h2>
           <div className="w-20 h-1 bg-[#B8643E] rounded-full" />
         </div>

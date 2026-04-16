@@ -5,7 +5,7 @@ import { CMS_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
 import {
   createAdminAuditLog,
-  requireAdminActor,
+  requireAdminPermissionActor,
   type AdminRequestActor,
 } from '@/lib/admin-audit';
 import {
@@ -19,6 +19,7 @@ import {
   normalizeCmsPageTitle,
   serializeCmsPage,
 } from '@/lib/cms/pages';
+import { createPageRevisionSnapshot } from '@/lib/cms/revisions';
 import { prisma } from '@/lib/prisma';
 
 const MAX_SEARCH_LENGTH = 200;
@@ -52,7 +53,23 @@ function isPrismaUniqueError(error: unknown): boolean {
 async function requireOwnerActor(
   request: NextRequest
 ): Promise<AdminRequestActor | null> {
-  return requireAdminActor(prisma, request, CMS_SESSION_COOKIE_NAME, ['OWNER']);
+  return requireAdminPermissionActor(
+    prisma,
+    request,
+    CMS_SESSION_COOKIE_NAME,
+    ['CMS_PAGE_READ']
+  );
+}
+
+async function requirePageWriteActor(
+  request: NextRequest
+): Promise<AdminRequestActor | null> {
+  return requireAdminPermissionActor(
+    prisma,
+    request,
+    CMS_SESSION_COOKIE_NAME,
+    ['CMS_PAGE_WRITE']
+  );
 }
 
 function normalizeOptionalText(
@@ -134,6 +151,14 @@ function buildPageWhere(searchParams: URLSearchParams) {
   return { where } as const;
 }
 
+function buildPageRevisionSnapshot(page: Parameters<typeof serializeCmsPage>[0]) {
+  return {
+    schemaVersion: 1,
+    entity: 'CMS_PAGE',
+    data: serializeCmsPage(page),
+  };
+}
+
 export async function GET(request: NextRequest) {
   if (!(await requireOwnerActor(request))) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
@@ -163,7 +188,7 @@ export async function POST(request: NextRequest) {
   const csrfError = validateAdminCsrf(request);
   if (csrfError) return csrfError;
 
-  const actor = await requireOwnerActor(request);
+  const actor = await requirePageWriteActor(request);
 
   if (!actor) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
@@ -243,9 +268,19 @@ export async function POST(request: NextRequest) {
           status: createdPage.status,
           blockCount: Array.isArray(createdPage.blocks) ? createdPage.blocks.length : 0,
           publishedAtPresent: Boolean(createdPage.publishedAt),
+          revisionSnapshot: buildPageRevisionSnapshot(createdPage),
         },
         ipAddress: actor.ipAddress,
         userAgent: actor.userAgent,
+      });
+
+      await createPageRevisionSnapshot(tx, createdPage, {
+        sourceAction: 'CREATE',
+        actor: {
+          adminUserId: actor.adminUserId,
+          sessionId: actor.sessionId,
+          role: actor.role,
+        },
       });
 
       return createdPage;

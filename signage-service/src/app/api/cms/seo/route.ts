@@ -4,7 +4,7 @@ import { CMS_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
 import {
   createAdminAuditLog,
-  requireAdminActor,
+  requireAdminPermissionActor,
   type AdminRequestActor,
 } from '@/lib/admin-audit';
 import { prisma } from '@/lib/prisma';
@@ -43,7 +43,23 @@ function extractConfigPayload(body: unknown): SeoConfigPayload | null {
 async function requireOwnerActor(
   request: NextRequest
 ): Promise<AdminRequestActor | null> {
-  return requireAdminActor(prisma, request, CMS_SESSION_COOKIE_NAME, ['OWNER']);
+  return requireAdminPermissionActor(
+    prisma,
+    request,
+    CMS_SESSION_COOKIE_NAME,
+    ['CMS_SEO_READ']
+  );
+}
+
+async function requireOwnerWriteActor(
+  request: NextRequest
+): Promise<AdminRequestActor | null> {
+  return requireAdminPermissionActor(
+    prisma,
+    request,
+    CMS_SESSION_COOKIE_NAME,
+    ['CMS_SEO_WRITE']
+  );
 }
 
 export async function GET(request: NextRequest) {
@@ -90,7 +106,7 @@ export async function POST(request: NextRequest) {
   const csrfError = validateAdminCsrf(request);
   if (csrfError) return csrfError;
 
-  const actor = await requireOwnerActor(request);
+  const actor = await requireOwnerWriteActor(request);
 
   if (!actor) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
