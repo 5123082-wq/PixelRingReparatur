@@ -13,6 +13,22 @@ Planned base documents:
 
 ## Progress Log
 
+### 2026-04-16
+**Sprint 1B: CRM Modernization**
+- **Status**: Complete (chat usability hotfix)
+- **Done**:
+  - Restored vertical scrolling in the CRM case-detail chat by fixing the flex/min-height chain on the right-side conversation panel.
+  - Changed case opening behavior so the chat lands on the latest message instead of the first message in the thread.
+  - Limited that positioning to the initial open of a case, without forced re-scroll on later data refreshes inside the same case.
+  - Moved the reply composer back into the normal layout flow so recent messages are no longer visually trapped behind the floating input block.
+- **In Progress**:
+  - None.
+- **Next Action**:
+  - Verify the same conversation behavior with longer real-world threads and future Communication Master integration.
+- **Blockers/Risks**:
+  - No automated browser verification was run in this patch; behavior was validated structurally in code and will benefit from manual UI confirmation.
+- **Updated Documents**: `docs/06_crm/README.md`, `PROGRESS.md`
+
 ### 2026-04-15
 **Sprint 1B: CRM Modernization**
 - **Status**: Complete (UI/UX Layer)

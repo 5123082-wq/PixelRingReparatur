@@ -15,44 +15,33 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
   const isRTL = locale === 'ar';
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const items = [
-    {
-      title: content?.items?.[0]?.title ?? t('items.0.title'),
-      tag: content?.items?.[0]?.tag ?? t('items.0.tag'),
-      description: content?.items?.[0]?.description ?? t('items.0.description'),
-      image: content?.items?.[0]?.image ?? '/images/ex-mounting.png',
-    },
-    {
-      title: content?.items?.[1]?.title ?? t('items.1.title'),
-      tag: content?.items?.[1]?.tag ?? t('items.1.tag'),
-      description: content?.items?.[1]?.description ?? t('items.1.description'),
-      image: content?.items?.[1]?.image ?? '/images/ex-repair.png',
-    },
-    {
-      title: content?.items?.[2]?.title ?? t('items.2.title'),
-      tag: content?.items?.[2]?.tag ?? t('items.2.tag'),
-      description: content?.items?.[2]?.description ?? t('items.2.description'),
-      image: content?.items?.[2]?.image ?? '/images/ex-maintenance.png',
-    },
-    {
-      title: content?.items?.[3]?.title ?? t('items.3.title'),
-      tag: content?.items?.[3]?.tag ?? t('items.3.tag'),
-      description: content?.items?.[3]?.description ?? t('items.3.description'),
-      image: content?.items?.[3]?.image ?? '/images/ex-design.png',
-    },
-    {
-      title: content?.items?.[4]?.title ?? t('items.4.title'),
-      tag: content?.items?.[4]?.tag ?? t('items.4.tag'),
-      description: content?.items?.[4]?.description ?? t('items.4.description'),
-      image: content?.items?.[4]?.image ?? '/images/ex-lightbox.png',
-    },
-    {
-      title: content?.items?.[5]?.title ?? t('items.5.title'),
-      tag: content?.items?.[5]?.tag ?? t('items.5.tag'),
-      description: content?.items?.[5]?.description ?? t('items.5.description'),
-      image: content?.items?.[5]?.image ?? '/images/ex-dismantling.png',
-    },
+  // Default fallback images aligned to static translation order
+  const DEFAULT_IMAGES = [
+    '/images/ex-mounting.png',
+    '/images/ex-repair.png',
+    '/images/ex-maintenance.png',
+    '/images/ex-design.png',
+    '/images/ex-lightbox.png',
+    '/images/ex-dismantling.png',
   ];
+
+  const DEFAULT_ITEM_KEYS = [0, 1, 2, 3, 4, 5] as const;
+
+  // If CMS provides items — use them dynamically; otherwise fall back to 6 static defaults
+  const items =
+    content?.items && content.items.length > 0
+      ? content.items.map((cmsItem, idx) => ({
+          title: cmsItem.title ?? t(`items.${DEFAULT_ITEM_KEYS[idx % DEFAULT_ITEM_KEYS.length]}.title`),
+          tag: cmsItem.tag ?? t(`items.${DEFAULT_ITEM_KEYS[idx % DEFAULT_ITEM_KEYS.length]}.tag`),
+          description: cmsItem.description ?? t(`items.${DEFAULT_ITEM_KEYS[idx % DEFAULT_ITEM_KEYS.length]}.description`),
+          image: cmsItem.image ?? DEFAULT_IMAGES[idx % DEFAULT_IMAGES.length],
+        }))
+      : DEFAULT_ITEM_KEYS.map((i) => ({
+          title: t(`items.${i}.title`),
+          tag: t(`items.${i}.tag`),
+          description: t(`items.${i}.description`),
+          image: DEFAULT_IMAGES[i],
+        }));
 
   const itemsCount = items.length;
   const tripledItems = [...items, ...items, ...items];

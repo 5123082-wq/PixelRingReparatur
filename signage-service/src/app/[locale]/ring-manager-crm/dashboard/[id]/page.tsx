@@ -20,8 +20,6 @@ type CaseDetail = {
   customerEmail: string | null;
   customerPhone: string | null;
   assignedOperator: string | null;
-  primaryContactMethod: string | null;
-  primaryContactValue: string | null;
   summary: string | null;
   description: string | null;
   createdAt: string;
@@ -91,41 +89,25 @@ function formatStatusLabel(status: string | null | undefined) {
 export default function CaseDetailPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
   const { id, locale } = use(params);
   const router = useRouter();
-  
+
   const [caseData, setCaseData] = useState<CaseDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
-  
-  // Tabs: 'client' | 'master' | 'history'
+
   const [activeTab, setActiveTab] = useState<'client' | 'master' | 'history'>('client');
   const scrollRef = useRef<HTMLDivElement>(null);
+  const bottomAnchorRef = useRef<HTMLDivElement>(null);
+  const initialScrollCaseIdRef = useRef<string | null>(null);
 
-  // Auto-scroll to bottom on data load or tab change to 'client'
-  useEffect(() => {
-    if (activeTab === 'client' && scrollRef.current) {
-      // Small timeout to ensure DOM is fully updated after motion animations
-      const timer = setTimeout(() => {
-        if (scrollRef.current) {
-          scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-        }
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [caseData?.messages.length, activeTab]);
-
-  // Status/Assignment state
   const [updating, setUpdating] = useState(false);
   const [newStatus, setNewStatus] = useState('');
   const [statusReason, setStatusReason] = useState('');
-  const [statusMessage, setStatusMessage] = useState('');
   const [assignedOperatorDraft, setAssignedOperatorDraft] = useState('');
   const [updatingAssignment, setUpdatingAssignment] = useState(false);
-  
-  // Reply Panel State
+
   const [replyMode, setReplyMode] = useState<'customer' | 'internal'>('customer');
   const [replyText, setReplyText] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
-  const [updatingTakeover, setUpdatingTakeover] = useState(false);
 
   useEffect(() => {
     fetchCase();
@@ -143,6 +125,8 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
       setCaseData(data.case);
       setAssignedOperatorDraft(data.case.assignedOperator || '');
       setNewStatus(data.case.status);
+    } catch (e) {
+      setLoadError('Failed to connect to API');
     } finally {
       setLoading(false);
     }
@@ -185,18 +169,35 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
   }
 
   async function updateTakeover(nextValue: boolean) {
-    setUpdatingTakeover(true);
     try {
       await adminFetch(`/api/admin/cases/${id}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ operatorTakeover: nextValue }),
       });
       await fetchCase();
-    } finally { setUpdatingTakeover(false); }
+    } catch (e) {}
   }
 
-  if (loading) return <div className="flex h-screen items-center justify-center bg-zinc-950 text-zinc-500 font-medium tracking-tighter animate-pulse">SYSTEM LOADING...</div>;
-  if (loadError) return <div className="flex h-screen items-center justify-center bg-zinc-950 text-red-400 font-mono text-sm">{loadError}</div>;
+  const caseId = caseData?.id;
+  useEffect(() => {
+    if (activeTab !== 'client' || !caseId) {
+      return;
+    }
+
+    if (initialScrollCaseIdRef.current === caseId) {
+      return;
+    }
+
+    const frameId = requestAnimationFrame(() => {
+      bottomAnchorRef.current?.scrollIntoView({ block: 'end' });
+      initialScrollCaseIdRef.current = caseId;
+    });
+
+    return () => cancelAnimationFrame(frameId);
+  }, [activeTab, caseId]);
+
+  if (loading) return <div className="flex h-screen items-center justify-center bg-zinc-950 text-zinc-500 font-medium tracking-tighter animate-pulse uppercase">System Loading...</div>;
+  if (loadError) return <div className="flex h-screen items-center justify-center bg-zinc-950 text-red-400 font-mono text-xs uppercase p-10 text-center">{loadError}</div>;
   if (!caseData) return null;
 
   const currentStatusObj = STATUS_OPTIONS.find((s) => s.value === caseData.status);
@@ -208,265 +209,237 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
     ...caseData.statusEvents.map(e => ({ timestamp: new Date(e.createdAt).getTime(), type: 'status', data: e }))
   ].sort((a, b) => a.timestamp - b.timestamp);
 
+  // Extract metadata (Robust regex for Тип/Type and Локация/Location)
+  const firstCustomerMessage = caseData.messages.find(m => m.authorRole === 'CUSTOMER')?.body || '';
+  const typeMatch = firstCustomerMessage.match(/(?:Тип|Type):\s*(.*?)(?:\s*\||$)/i);
+  const locMatch = firstCustomerMessage.match(/(?:Локация|Location):\s*(.*?)(?:\s*\||$|\n)/i);
+  const detectedType = typeMatch ? typeMatch[1].trim() : null;
+  const detectedLocation = locMatch ? locMatch[1].trim() : null;
+
   return (
     <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden bg-zinc-950 font-sans selection:bg-indigo-500/30">
       
-      {/* Premium Integrated Header */}
-      <header className="shrink-0 flex justify-between items-center bg-zinc-950/40 backdrop-blur-xl px-1 sm:px-8 py-5 border-b border-white/[0.03] z-40">
-        <div className="flex items-center gap-4 sm:gap-10">
-          <button 
+      <header className="shrink-0 flex justify-between items-center bg-zinc-950/40 backdrop-blur-xl px-4 sm:px-8 py-4 border-b border-white/[0.03] z-40">
+        <div className="flex items-center gap-6">
+          <button
             onClick={() => router.push(withLocalePath(locale, '/ring-manager-crm/dashboard'))}
-            className="flex items-center gap-2 text-[10px] font-bold text-zinc-500 hover:text-white transition-all uppercase tracking-widest px-1"
+            className="flex items-center gap-2 text-[10px] font-bold text-zinc-500 hover:text-white transition-all uppercase tracking-widest"
           >
              <span className="text-sm">←</span> <span className="hidden sm:inline">BACK</span>
           </button>
           
-          <div className="flex items-center gap-4">
-            <div className="flex flex-col">
-              <h1 className="text-lg sm:text-2xl font-black text-white tracking-tight flex items-center gap-3">
-                {caseData.publicRequestNumber || 'CASE #'+caseData.id.slice(0,6)}
-                {currentStatusObj && (
-                  <Badge variant={currentStatusObj.variant as any} className="text-[9px] uppercase font-black tracking-[0.2em] px-2 py-0.5 rounded-sm line-clamp-1 border-white/5">
-                    {currentStatusObj.label}
-                  </Badge>
-                )}
-              </h1>
-            </div>
-          </div>
+          <h1 className="text-lg sm:text-2xl font-black text-white tracking-tight flex items-center gap-3">
+            {caseData.publicRequestNumber || 'CASE #'+caseData.id.slice(0,6)}
+            {currentStatusObj && (
+              <Badge variant={currentStatusObj.variant as any} className="text-[9px] uppercase font-black tracking-[0.2em] px-2 py-0.5 rounded-sm border-white/5">
+                {currentStatusObj.label}
+              </Badge>
+            )}
+          </h1>
         </div>
 
-        <div className="flex items-center gap-4">
-           <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all ${hasCustomerSession ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500 shadow-[0_0_15px_-5px_#10b981]' : 'border-zinc-800 text-zinc-600'}`}>
-              <div className={`w-1.5 h-1.5 rounded-full ${hasCustomerSession ? 'bg-emerald-500' : 'bg-zinc-700'}`}></div>
-              {hasCustomerSession ? 'CUSTOMER ACTIVE' : 'OFFLINE'}
-           </div>
+        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all ${hasCustomerSession ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500 shadow-[0_0_15px_-5px_#10b981]' : 'border-zinc-800 text-zinc-600'}`}>
+           <div className={`w-1.5 h-1.5 rounded-full ${hasCustomerSession ? 'bg-emerald-500' : 'bg-zinc-700'}`}></div>
+           {hasCustomerSession ? 'CUSTOMER ACTIVE' : 'OFFLINE'}
         </div>
       </header>
 
-      {/* Main Board */}
-      <div className="flex flex-1 overflow-hidden relative">
-        
-        {/* Left Sidebar: Minimalist Context (320px) */}
-        <aside className="w-[320px] shrink-0 border-r border-white/[0.03] bg-zinc-950 flex flex-col z-30 overflow-y-auto no-scrollbar pt-6 px-8 space-y-10">
-          
-          {/* Section: Status & Assignment */}
-          <section className="space-y-6">
-             <div className="space-y-1.5">
-               <h3 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.15em]">Status & Owner</h3>
-               <div className="space-y-4 pt-2">
-                  <Select value={newStatus} onChange={(e) => setNewStatus(e.target.value)} className="bg-transparent border-white/[0.05] h-9 text-xs font-semibold focus:border-indigo-500 transition-all text-white">
-                    {STATUS_OPTIONS.map(opt => <option key={opt.value} value={opt.value} className="bg-zinc-900">{opt.label}</option>)}
-                  </Select>
-                  {newStatus !== caseData.status && (
-                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-2">
-                       <Textarea value={statusReason} onChange={(e) => setStatusReason(e.target.value)} placeholder="Reason for change..." className="bg-zinc-900/50 border-white/[0.05] text-[11px] min-h-[60px]" />
-                       <Button onClick={updateStatus} disabled={updating} variant="primary" size="sm" className="w-full font-black text-[10px] uppercase h-8 shadow-indigo-500/10 shadow-lg">UPDATE STATUS</Button>
-                    </motion.div>
-                  )}
-                  <div className="flex gap-2 relative">
-                    <Input value={assignedOperatorDraft} onChange={(e) => setAssignedOperatorDraft(e.target.value)} placeholder="Assign operator..." className="bg-transparent border-white/[0.05] h-8 text-[11px] font-semibold" />
-                    <button onClick={updateAssignment} disabled={updatingAssignment} className="absolute right-2 top-1.5 text-[10px] font-black text-indigo-500 hover:text-indigo-400">SAVE</button>
-                  </div>
-               </div>
+      <div className="flex flex-1 overflow-hidden">
+
+        <aside className="w-[320px] shrink-0 border-r border-white/[0.03] bg-zinc-950 flex flex-col z-30 overflow-y-auto no-scrollbar pb-20 pt-8 px-8 space-y-10">
+
+          {/* Section: Project Context (DETECTED) */}
+          {(detectedType || detectedLocation) && (
+            <section className="space-y-4">
+              <h3 className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.15em] flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse"></span>
+                Project Context
+              </h3>
+              <div className="space-y-4 bg-white/[0.01] border border-white/[0.03] rounded-lg p-3">
+                 {detectedType && (
+                   <div className="flex justify-between items-baseline">
+                      <span className="text-[10px] font-bold text-zinc-500 uppercase">Type</span>
+                      <span className="text-xs font-semibold text-white">{detectedType}</span>
+                   </div>
+                 )}
+                 {detectedLocation && (
+                   <div className="flex justify-between items-baseline">
+                      <span className="text-[10px] font-bold text-zinc-500 uppercase">Location</span>
+                      <span className="text-xs font-semibold text-indigo-300 font-mono">{detectedLocation}</span>
+                   </div>
+                 )}
+              </div>
+            </section>
+          )}
+
+          <section className="space-y-5">
+             <h3 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.15em]">Control Panel</h3>
+             <div className="space-y-4">
+                <Select value={newStatus} onChange={(e) => setNewStatus(e.target.value)} className="bg-transparent border-white/[0.05] h-9 text-xs font-semibold text-white">
+                  {STATUS_OPTIONS.map(opt => <option key={opt.value} value={opt.value} className="bg-zinc-900">{opt.label}</option>)}
+                </Select>
+                {newStatus !== caseData.status && (
+                  <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-2">
+                     <Textarea value={statusReason} onChange={(e) => setStatusReason(e.target.value)} placeholder="Reason for change..." className="bg-zinc-900/50 border-white/[0.05] text-[11px] min-h-[60px]" />
+                     <Button onClick={updateStatus} disabled={updating} variant="primary" size="sm" className="w-full font-black text-[10px] h-8 uppercase">Update Status</Button>
+                  </motion.div>
+                )}
+                <div className="relative">
+                  <Input value={assignedOperatorDraft} onChange={(e) => setAssignedOperatorDraft(e.target.value)} placeholder="Assign operator..." className="bg-transparent border-white/[0.05] h-8 text-[11px] pr-12" />
+                  <button onClick={updateAssignment} disabled={updatingAssignment} className="absolute right-2 top-1.5 text-[10px] font-black text-indigo-500 uppercase">Save</button>
+                </div>
              </div>
           </section>
 
-          {/* Section: Customer Context */}
           <section className="space-y-5">
             <h3 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.15em]">Customer Info</h3>
-            <div className="space-y-4 pt-1">
-               <div className="flex justify-between items-baseline group border-b border-white/[0.02] pb-2">
-                  <span className="text-[10px] font-bold text-zinc-500 uppercase">Name</span>
-                  <span className="text-xs font-semibold text-zinc-200 group-hover:text-white transition-all">{caseData.customerName || 'None'}</span>
-               </div>
-               <div className="flex justify-between items-baseline group border-b border-white/[0.02] pb-2">
-                  <span className="text-[10px] font-bold text-zinc-500 uppercase">Contact</span>
-                  <span className="text-xs font-semibold text-zinc-200 truncate max-w-[150px] text-right font-mono tracking-tighter" title={caseData.customerEmail || ''}>{caseData.customerEmail || caseData.customerPhone || '—'}</span>
-               </div>
-               <div className="flex justify-between items-baseline group">
-                  <span className="text-[10px] font-bold text-zinc-500 uppercase">Source</span>
-                  <span className="text-xs font-semibold text-zinc-400 italic opacity-60">{CHANNEL_ICONS[caseData.originChannel] || '??'} {caseData.originChannel}</span>
-               </div>
+            <div className="space-y-4">
+               {[
+                 { label: 'Name', value: caseData.customerName || 'None' },
+                 { label: 'Contact', value: caseData.customerEmail || caseData.customerPhone || '—', mono: true },
+                 { label: 'Source', value: `${CHANNEL_ICONS[caseData.originChannel] || '??'} ${caseData.originChannel}` }
+               ].map((item, idx) => (
+                 <div key={idx} className="flex justify-between items-baseline border-b border-white/[0.02] pb-2">
+                    <span className="text-[10px] font-bold text-zinc-500 uppercase">{item.label}</span>
+                    <span className={`text-xs font-semibold text-zinc-200 truncate max-w-[160px] ${item.mono ? 'font-mono' : ''}`}>{item.value}</span>
+                 </div>
+               ))}
             </div>
           </section>
 
-          {/* Section: Documents */}
           {caseData.attachments.length > 0 && (
-             <section className="space-y-5">
-               <h3 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Documents ({caseData.attachments.length})</h3>
-               <div className="space-y-2">
-                 {caseData.attachments.map(att => (
-                   <a key={att.id} href={`/api/admin/attachments/${att.id}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-2 rounded-lg border border-transparent hover:border-white/[0.05] hover:bg-white/[0.02] transition-all group overflow-hidden">
-                      <div className="text-base bg-white/[0.03] w-8 h-8 flex items-center justify-center rounded-md text-zinc-500 group-hover:text-zinc-200 transition-colors">{att.kind === 'IMAGE' ? '📷' : '📦'}</div>
-                      <div className="flex flex-col min-w-0">
-                         <span className="text-[10px] font-bold text-zinc-300 truncate tracking-tight">{att.originalFilename || 'FILE'}</span>
-                         <span className="text-[8px] font-black text-zinc-600 uppercase">{(att.byteSize / 1024).toFixed(0)} KB</span>
+             <section className="space-y-4">
+               <h3 className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Media ({caseData.attachments.length})</h3>
+               <div className="grid grid-cols-1 gap-3">
+                 {caseData.attachments.map(att => {
+                    const isVideo = att.kind === 'VIDEO' || att.mimeType.startsWith('video/');
+                    const isImage = att.kind === 'IMAGE' || att.mimeType.startsWith('image/');
+                    const url = `/api/admin/attachments/${att.id}`;
+                    return (
+                      <div key={att.id} className="group overflow-hidden rounded-xl border border-white/[0.05] bg-white/[0.01]">
+                        {isImage ? (
+                          <a href={url} target="_blank" rel="noreferrer" className="block aspect-video bg-black overflow-hidden hover:opacity-90 transition-opacity">
+                            <img src={url} alt="" className="w-full h-full object-cover" />
+                          </a>
+                        ) : isVideo ? (
+                          <video src={url} controls className="w-full max-h-[250px] bg-black" />
+                        ) : (
+                          <a href={url} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-3 hover:bg-white/[0.02]">
+                            <span className="text-xl">📄</span>
+                            <span className="text-[11px] font-semibold text-zinc-300 truncate">{att.originalFilename || 'Document'}</span>
+                          </a>
+                        )}
+                        <div className="px-3 py-2 flex justify-between items-center text-[9px] font-bold text-zinc-500">
+                           <span className="truncate max-w-[120px]">{att.originalFilename || 'File'}</span>
+                           <span className="font-black">{(att.byteSize / 1024 / 1024).toFixed(2)}MB</span>
+                        </div>
                       </div>
-                   </a>
-                 ))}
+                    );
+                  })}
                </div>
              </section>
           )}
 
-          {/* Issue Section */}
           <section className="space-y-4">
-            <h3 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Original Issue</h3>
-            <div className="bg-white/[0.02] p-4 rounded-xl border border-white/[0.03]">
-              <p className="text-[11px] text-zinc-300 leading-relaxed font-medium whitespace-pre-wrap selection:bg-indigo-500/40">
-                {caseData.description || caseData.summary || 'No description provided.'}
-              </p>
+            <h3 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Description</h3>
+            <div className="bg-white/[0.02] p-4 rounded-xl border border-white/[0.03] text-[11px] text-zinc-300 leading-relaxed whitespace-pre-wrap">
+              {caseData.description || caseData.summary || 'No description provided.'}
             </div>
           </section>
-
-          <footer className="h-20 shrink-0"></footer>
         </aside>
 
-        {/* Right Workspace: System Center (Messenger) */}
-        <main className="flex-1 flex flex-col relative z-10 bg-zinc-950 overflow-hidden">
-          
-          {/* Navigation Tabs */}
-          <div className="shrink-0 flex items-center justify-between h-16 px-8 border-b border-white/[0.03]">
-             <div className="flex gap-10 relative h-full">
-                {['client', 'master', 'history'].map((tid) => (
-                  <button 
-                    key={tid} onClick={() => setActiveTab(tid as any)} 
-                    className={`relative flex items-center px-1 text-[11px] font-black uppercase tracking-[0.2em] transition-all ${activeTab === tid ? 'text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
-                  >
-                    {tid === 'client' ? 'Chat with client' : tid === 'master' ? 'Communication Master' : 'Event Timeline'}
-                    {activeTab === tid && <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500" transition={{ type: "spring", stiffness: 350, damping: 30 }} />}
-                  </button>
-                ))}
-             </div>
-          </div>
+        <main className="flex flex-1 min-h-0 flex-col bg-zinc-950 overflow-hidden">
+          <nav className="shrink-0 flex items-center h-16 px-8 border-b border-white/[0.03] gap-10">
+             {['client', 'master', 'history'].map((tid) => (
+               <button
+                 key={tid} onClick={() => setActiveTab(tid as any)}
+                 className={`relative h-full flex items-center text-[10px] font-black uppercase tracking-[0.2em] transition-all ${activeTab === tid ? 'text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
+               >
+                 {tid === 'client' ? 'Chat with client' : tid === 'master' ? 'Communication Master' : 'Event Timeline'}
+                 {activeTab === tid && <motion.div layoutId="nav-line" className="absolute bottom-0 left-0 right-0 h-[2px] bg-indigo-500" />}
+               </button>
+             ))}
+          </nav>
 
-          {/* Active Area */}
-          <div className="flex-1 overflow-hidden relative flex flex-col">
-            
+          <div className="flex flex-1 min-h-0 flex-col overflow-hidden">
             <AnimatePresence mode="wait">
               {activeTab === 'client' && (
-                <motion.div key="client" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 flex flex-col overflow-hidden">
-                   
-                   {/* Chat Feed */}
-                   <div 
-                     ref={scrollRef}
-                     className="flex-1 overflow-y-auto px-6 sm:px-12 py-10 scrollbar-none space-y-8 select-auto scroll-smooth"
-                   >
-                      <div className="max-w-3xl mx-auto w-full flex flex-col space-y-12">
-                         {timelineEvents.map((event, idx) => {
+                <motion.div key="chat" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-1 min-h-0 flex-col">
+                   <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-6 sm:px-12 py-10 no-scrollbar scroll-smooth">
+                      <div className="max-w-3xl mx-auto w-full space-y-10">
+                         {timelineEvents.map((event) => {
                             if (event.type === 'status') {
-                               const payload = event.data as any;
+                               const e = event.data as any;
                                return (
-                                 <motion.div key={payload.id} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="flex justify-center my-4">
-                                   <div className="flex items-center gap-3 opacity-30 hover:opacity-100 transition-opacity">
-                                      <div className="h-px w-8 bg-white/20"></div>
-                                      <span className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-500">
-                                         {ACTOR_ROLE_LABELS[payload.actorRole] || 'SYSTEM'} CHANGED STATUS TO {formatStatusLabel(payload.toStatus)}
-                                      </span>
-                                      <div className="h-px w-8 bg-white/20"></div>
-                                   </div>
-                                 </motion.div>
+                                 <div key={e.id} className="flex items-center justify-center gap-4 opacity-20">
+                                    <div className="h-px w-6 bg-white"></div>
+                                    <span className="text-[8px] font-black uppercase tracking-[0.4em]">{ACTOR_ROLE_LABELS[e.actorRole] || 'SYSTEM'} → {formatStatusLabel(e.toStatus)}</span>
+                                    <div className="h-px w-6 bg-white"></div>
+                                 </div>
                                );
                             }
-
-                            if (event.type === 'note') {
-                               const payload = event.data as any;
-                               return (
-                                 <motion.div key={payload.id} initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }} className="flex justify-center">
-                                    <div className="w-full max-w-[85%] border-l-2 border-indigo-500 bg-white/[0.03] p-5 rounded-r-2xl relative overflow-hidden group">
-                                       <div className="absolute top-0 right-0 px-3 py-1 bg-indigo-500 text-[8px] font-black text-white uppercase tracking-widest shadow-lg">INTERNAL NOTE</div>
-                                       <div className="text-xs text-indigo-400 font-bold mb-2 uppercase tracking-wide opacity-80">{payload.authorName || 'OPERATOR'} • {new Date(payload.createdAt).toLocaleTimeString()}</div>
-                                       <div className="text-[13px] text-zinc-100 font-medium leading-relaxed selection:bg-indigo-500/40">{payload.body}</div>
-                                    </div>
-                                 </motion.div>
-                               );
-                            }
-
-                            const payload = event.data as any;
-                            const isCustomer = payload.authorRole === 'CUSTOMER';
+                            const m = event.data as any;
+                            const isNote = event.type === 'note';
+                            const isCustomer = m.authorRole === 'CUSTOMER';
                             return (
-                              <motion.div key={payload.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className={`flex flex-col ${isCustomer ? 'items-start' : 'items-end'} group`}>
-                                 {/* Persistent Author Badge */}
-                                 <div className={`mb-1 px-1 flex items-center gap-1.5 text-[9px] font-black uppercase tracking-[0.1em] ${isCustomer ? 'text-zinc-600' : 'text-indigo-400 opacity-80'}`}>
-                                    <span className={`w-1 h-1 rounded-full ${payload.authorRole === 'AI' ? 'bg-indigo-400 animate-pulse-slow shadow-[0_0_8px_rgba(129,140,248,0.5)]' : isCustomer ? 'bg-zinc-700' : 'bg-indigo-500'}`}></span>
-                                    {payload.authorRole === 'AI' ? 'AI Assistant' : (payload.authorName || (isCustomer ? 'Client' : 'Operator'))}
+                              <div key={m.id} className={`flex flex-col ${isCustomer ? 'items-start' : 'items-end'}`}>
+                                 <div className={`mb-1 px-1 flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest ${isNote ? 'text-amber-500' : isCustomer ? 'text-zinc-600' : 'text-indigo-400 opacity-80'}`}>
+                                    <span className={`w-1 h-1 rounded-full ${m.authorRole === 'AI' ? 'bg-indigo-400 animate-pulse' : isNote ? 'bg-amber-500' : isCustomer ? 'bg-zinc-700' : 'bg-indigo-500'}`} />
+                                    {isNote ? 'INTERNAL NOTE' : m.authorRole === 'AI' ? 'AI ASSISTANT' : (m.authorName || (isCustomer ? 'CLIENT' : 'OPERATOR'))}
                                  </div>
-
-                                 <div className={`
-                                    max-w-[70%] px-5 py-3.5 rounded-2xl text-[14px] font-medium leading-[1.6] shadow-2xl relative transition-all
-                                    ${isCustomer ? 'bg-zinc-900 text-zinc-200 border border-white/5 rounded-tl-sm' : 'bg-indigo-600 text-white rounded-tr-sm shadow-indigo-950/40'}
-                                 `}>
-                                    {payload.body}
+                                 <div className={`max-w-[80%] px-5 py-3.5 rounded-2xl text-[14px] leading-relaxed ${isNote ? 'bg-amber-500/10 border border-amber-500/20 text-amber-200' : isCustomer ? 'bg-zinc-900 text-zinc-300 border border-white/5' : 'bg-indigo-600 text-white shadow-xl shadow-indigo-950/20'}`}>
+                                    {m.body}
                                  </div>
-                                 <div className={`mt-2 flex items-center gap-2 text-[8px] font-black tracking-widest text-zinc-600 transition-opacity ${isCustomer ? '' : 'flex-row-reverse'}`}>
-                                    <span>{new Date(payload.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                                    {!isCustomer && <span className="text-indigo-500 opacity-50">DELIVERED</span>}
-                                 </div>
-                              </motion.div>
+                                 <span className="mt-2 text-[8px] font-bold text-zinc-700 uppercase tracking-widest">{new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                              </div>
                             );
                          })}
+                         <div ref={bottomAnchorRef} className="h-px" />
                       </div>
-                      <div className="h-32"></div>
                    </div>
 
-                   {/* Floating Prompt Bar */}
-                   <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-full max-w-2xl px-6 z-50">
-                      <div className={`relative rounded-3xl overflow-hidden transition-all duration-500 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)] border ${replyMode === 'internal' ? 'bg-indigo-950/50 border-indigo-500/30' : 'bg-zinc-900/80 border-white/[0.08]'} backdrop-blur-3xl ring-1 ring-white/5`}>
-                         <div className="flex h-12 border-b border-white/[0.03] px-6 items-center gap-6">
-                            <button onClick={() => setReplyMode('customer')} className={`text-[9px] font-black tracking-widest uppercase transition-all ${replyMode === 'customer' ? 'text-indigo-400' : 'text-zinc-600 hover:text-zinc-400'}`}>REPLY TO CLIENT</button>
-                            <button onClick={() => setReplyMode('internal')} className={`text-[9px] font-black tracking-widest uppercase transition-all ${replyMode === 'internal' ? 'text-indigo-400' : 'text-zinc-600 hover:text-zinc-400'}`}>INTERNAL NOTE</button>
-                            <div className="ml-auto flex items-center gap-3 h-full">
-                               <button onClick={() => updateTakeover(!operatorTakeover)} className={`text-[8px] font-black px-2 py-0.5 rounded border transition-colors ${operatorTakeover ? 'bg-red-500/10 border-red-500/20 text-red-500' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'}`}>
-                                  {operatorTakeover ? 'AI: DISABLED' : 'AI: ACTIVE'}
-                               </button>
-                            </div>
+                   <div className="shrink-0 px-6 pb-6 pt-4">
+                     <div className="mx-auto w-full max-w-2xl">
+                      <div className={`rounded-3xl border ${replyMode === 'internal' ? 'bg-amber-950/30 border-amber-500/20' : 'bg-zinc-900 border-white/5'} backdrop-blur-3xl overflow-hidden shadow-2xl`}>
+                         <div className="flex h-10 border-b border-white/5 px-6 items-center gap-6">
+                            {['customer', 'internal'].map(m => (
+                              <button key={m} onClick={() => setReplyMode(m as any)} className={`text-[8px] font-black tracking-widest uppercase ${replyMode === m ? 'text-indigo-500' : 'text-zinc-600'}`}>
+                                 {m === 'customer' ? 'Reply to client' : 'Internal Note'}
+                              </button>
+                            ))}
+                            <button onClick={() => updateTakeover(!operatorTakeover)} className={`ml-auto text-[8px] font-black px-2 py-0.5 rounded border ${operatorTakeover ? 'border-red-500/30 text-red-500' : 'border-emerald-500/30 text-emerald-500'} uppercase`}>
+                               AI: {operatorTakeover ? 'OFF' : 'ON'}
+                            </button>
                          </div>
-                         <div className="relative p-2 h-max min-h-[60px] flex items-end">
+                         <div className="flex items-end p-2 gap-2">
                             <textarea 
-                              value={replyText} onChange={(e) => setReplyText(e.target.value)}
-                              placeholder="Type something meaningful..."
-                              className="flex-1 bg-transparent px-4 py-3 text-sm font-medium text-white outline-none resize-none placeholder:text-zinc-700 min-h-[44px] max-h-[200px]"
+                               value={replyText} onChange={(e) => setReplyText(e.target.value)}
+                               placeholder="Type your message..."
+                               className="flex-1 bg-transparent px-4 py-3 text-sm text-white outline-none resize-none min-h-[44px] max-h-[200px]"
                             />
                             <button 
-                              onClick={sendReply} disabled={!replyText.trim() || sendingReply}
-                              className={`mb-1.5 mr-1.5 w-8 h-8 rounded-full flex items-center justify-center transition-all ${replyText.trim() ? (replyMode === 'customer' ? 'bg-indigo-600 shadow-lg shadow-indigo-600/30' : 'bg-amber-600 shadow-lg shadow-amber-600/30') : 'bg-zinc-800'}`}
+                               onClick={sendReply} disabled={!replyText.trim() || sendingReply}
+                               className={`w-9 h-9 shrink-0 flex items-center justify-center rounded-full transition-all ${replyText.trim() ? (replyMode === 'customer' ? 'bg-indigo-600' : 'bg-amber-600') : 'bg-zinc-800'}`}
                             >
-                              {sendingReply ? <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div> : <span className="text-white text-xs">↑</span>}
+                               {sendingReply ? <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <span className="text-white text-lg">↑</span>}
                             </button>
                          </div>
                       </div>
-                   </div>
-
-                </motion.div>
-              )}
-
-              {activeTab === 'master' && (
-                <motion.div key="master" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 flex flex-col items-center justify-center space-y-6">
-                   <div className="relative">
-                      <div className="w-24 h-24 bg-white/5 rounded-3xl border border-white/5 flex items-center justify-center text-4xl shadow-inner relative z-10">🛠️</div>
-                      <div className="absolute inset-0 bg-indigo-500/10 blur-3xl animate-pulse"></div>
-                   </div>
-                   <div className="text-center space-y-2">
-                      <h3 className="text-sm font-black text-white uppercase tracking-[0.3em]">Master Session Control</h3>
-                      <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest max-w-xs leading-loose">This module is currently initializing. Real-time communication with field masters is coming in next system update.</p>
-                   </div>
-                   <div className="flex gap-2">
-                      <div className="h-1 w-20 bg-white/5 rounded-full overflow-hidden">
-                        <motion.div initial={{ x: '-100%' }} animate={{ x: '100%' }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }} className="w-1/2 h-full bg-indigo-500/40" />
-                      </div>
+                     </div>
                    </div>
                 </motion.div>
               )}
 
               {activeTab === 'history' && (
-                <motion.div key="history" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 overflow-y-auto px-12 py-12 space-y-6 scrollbar-none">
-                   <div className="max-w-2xl mx-auto space-y-4">
+                <motion.div key="history" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 overflow-y-auto px-12 py-12 no-scrollbar">
+                   <div className="max-w-2xl mx-auto space-y-8">
                       {caseData.auditLogs.map(log => (
-                        <div key={log.id} className="flex gap-6 items-start group">
-                           <div className="shrink-0 text-[10px] font-black text-zinc-700 w-24 pt-1 font-mono">{new Date(log.createdAt).toLocaleTimeString()}</div>
-                           <div className="flex-1 border-b border-white/[0.02] pb-6 space-y-2">
-                              <div className="text-[10px] font-black text-white uppercase tracking-widest">{log.action.replace(/_/g, ' ')}</div>
+                        <div key={log.id} className="flex gap-8 group">
+                           <span className="shrink-0 text-[10px] font-bold text-zinc-700 w-20 pt-1 font-mono tracking-tighter uppercase">{new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+                           <div className="flex-1 border-l border-white/5 pl-8 pb-8 space-y-2">
+                              <h4 className="text-[10px] font-black text-white uppercase tracking-widest">{log.action.replace(/_/g, ' ')}</h4>
                               <p className="text-[11px] text-zinc-500 font-medium leading-relaxed">{log.outcome}</p>
-                              {log.reason && <div className="text-[9px] bg-white/[0.01] border border-white/[0.03] p-3 rounded-lg text-zinc-600 mt-3 font-mono">REASON: {log.reason}</div>}
+                              {log.reason && <p className="text-[9px] font-mono text-zinc-600 bg-white/[0.01] p-2 rounded">Reason: {log.reason}</p>}
                            </div>
                         </div>
                       ))}

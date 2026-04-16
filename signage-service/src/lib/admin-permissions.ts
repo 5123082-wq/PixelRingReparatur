@@ -51,6 +51,7 @@ const ADMIN_ROLE_PERMISSION_MAP: Record<AdminRole, readonly AdminPermission[]> =
     'CMS_MEDIA_WRITE',
     'CMS_KNOWLEDGE_BASE_READ',
     'CRM_CASE_READ',
+    'CRM_ATTACHMENT_READ',
   ],
   MANAGER: [
     'CRM_CASE_READ',

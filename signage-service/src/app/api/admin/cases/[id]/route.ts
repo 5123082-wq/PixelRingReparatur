@@ -223,6 +223,16 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       return notFoundResponse();
     }
 
+    if (
+      actor.role === 'MANAGER' &&
+      caseRecord.assignedOperator !== null &&
+      caseRecord.assignedOperator !== actor.adminUserId &&
+      caseRecord.assignedOperator !== actor.email &&
+      caseRecord.assignedOperator !== actor.displayName
+    ) {
+      return NextResponse.json({ error: 'Forbidden. Case is not assigned to you.' }, { status: 403 });
+    }
+
     const relatedCases =
       caseRecord.customerProfile?.id
         ? await prisma.case.findMany({
@@ -322,7 +332,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const [caseRecord, activeSessionCount, takeoverEnabledCount] = await Promise.all([
       prisma.case.findUnique({
         where: { id },
-        select: { id: true },
+        select: { id: true, assignedOperator: true },
       }),
       prisma.session.count({
         where: {
@@ -341,6 +351,16 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     if (!caseRecord) {
       return notFoundResponse();
+    }
+
+    if (
+      actor.role === 'MANAGER' &&
+      caseRecord.assignedOperator !== null &&
+      caseRecord.assignedOperator !== actor.adminUserId &&
+      caseRecord.assignedOperator !== actor.email &&
+      caseRecord.assignedOperator !== actor.displayName
+    ) {
+      return NextResponse.json({ error: 'Forbidden. Case is not assigned to you.' }, { status: 403 });
     }
 
     const now = new Date();
@@ -520,6 +540,16 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
     if (!currentCase) {
       return notFoundResponse();
+    }
+
+    if (
+      actor.role === 'MANAGER' &&
+      currentCase.assignedOperator !== null &&
+      currentCase.assignedOperator !== actor.adminUserId &&
+      currentCase.assignedOperator !== actor.email &&
+      currentCase.assignedOperator !== actor.displayName
+    ) {
+      return NextResponse.json({ error: 'Forbidden. Case is not assigned to you.' }, { status: 403 });
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

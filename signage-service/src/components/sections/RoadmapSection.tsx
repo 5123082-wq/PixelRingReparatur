@@ -37,15 +37,22 @@ const RoadmapSection = ({ content }: RoadmapSectionProps) => {
         <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     ];
-    return icons[index];
+    return icons[index % icons.length];
   };
 
-  const steps = [
-    { title: content?.steps?.[0]?.title ?? t('steps.0.title'), description: content?.steps?.[0]?.description ?? t('steps.0.description') },
-    { title: content?.steps?.[1]?.title ?? t('steps.1.title'), description: content?.steps?.[1]?.description ?? t('steps.1.description') },
-    { title: content?.steps?.[2]?.title ?? t('steps.2.title'), description: content?.steps?.[2]?.description ?? t('steps.2.description') },
-    { title: content?.steps?.[3]?.title ?? t('steps.3.title'), description: content?.steps?.[3]?.description ?? t('steps.3.description') },
-  ];
+  const DEFAULT_STEP_KEYS = [0, 1, 2, 3] as const;
+
+  // If CMS provides steps — use them dynamically; otherwise fall back to 4 static defaults
+  const steps =
+    content?.steps && content.steps.length > 0
+      ? content.steps.map((cmsStep, idx) => ({
+          title: cmsStep.title ?? t(`steps.${DEFAULT_STEP_KEYS[idx % DEFAULT_STEP_KEYS.length]}.title`),
+          description: cmsStep.description ?? t(`steps.${DEFAULT_STEP_KEYS[idx % DEFAULT_STEP_KEYS.length]}.description`),
+        }))
+      : DEFAULT_STEP_KEYS.map((i) => ({
+          title: t(`steps.${i}.title`),
+          description: t(`steps.${i}.description`),
+        }));
 
   return (
     <section className="relative w-full bg-[#F5F8FA] py-24 px-6 overflow-hidden">
@@ -65,7 +72,12 @@ const RoadmapSection = ({ content }: RoadmapSectionProps) => {
           {/* Connecting Line with Dynamic Glow */}
           <div className="absolute top-[72px] left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#0E1A2B15] to-transparent hidden md:block" />
           
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-2 md:gap-6 relative">
+          <div className={`grid grid-cols-1 gap-2 md:gap-6 relative ${
+              steps.length === 3 ? 'md:grid-cols-3' :
+              steps.length === 4 ? 'md:grid-cols-4' :
+              steps.length === 2 ? 'md:grid-cols-2' :
+              'md:grid-cols-4'
+            }`}>
             {steps.map((step, index) => (
               <div key={index} className="flex flex-col group w-full max-w-[320px] mx-auto md:max-w-none">
                 

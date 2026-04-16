@@ -91,7 +91,7 @@ const BLOCK_TEXT_FIELDS: Record<string, string[]> = {
   hero: ['titlePrefix', 'titleAccent', 'titleSuffix', 'pretitle', 'intro', 'ctaPrimary', 'ctaSecondary', 'trustBadge', 'responseBadge'],
   faqList: ['title', 'items'],
   textSection: ['title', 'description'],
-  reviewList: ['title', 'subtitle'],
+  reviewList: ['title', 'subtitle', 'items'],
   cardList: ['title', 'titleStart', 'titleAccent', 'titleEnd', 'subtitle', 'description', 'copyright', 'items', 'steps', 'stats', 'features'],
   cta: ['servicePill', 'bookLabel', 'badge', 'title', 'intro', 'description', 'primaryLabel', 'secondaryLabel', 'links'],
   footerCta: ['title', 'subtitle', 'connectLabel', 'formTitle', 'formSubtitle'],
@@ -281,6 +281,43 @@ function SelectInput({ value, onChange, children }: { value: string; onChange: (
   );
 }
 
+function ListEditor({
+  label,
+  items,
+  onAdd,
+  onRemove,
+  renderItem,
+}: {
+  label: string;
+  items: Record<string, unknown>[];
+  onAdd: () => void;
+  onRemove: (index: number) => void;
+  renderItem: (item: Record<string, unknown>, index: number) => ReactNode;
+}) {
+  return (
+    <div style={styles.faqItemsContainer}>
+      <div style={styles.faqItemsHeader}>
+        <span style={styles.faqItemsLabel}>{label} ({items.length})</span>
+        <button type="button" style={styles.addBlockBtn} onClick={onAdd}>
+          + Add Item
+        </button>
+      </div>
+      {items.map((item, i) => (
+        <div key={i} style={styles.faqItemCard}>
+          <div style={styles.faqItemHeader}>
+            <span style={styles.faqItemIndex}>#{i + 1}</span>
+            <button type="button" style={styles.iconBtnDanger} onClick={() => onRemove(i)}>🗑️</button>
+          </div>
+          {renderItem(item, i)}
+        </div>
+      ))}
+      {items.length === 0 ? (
+        <div style={styles.emptyBlocks}>No items. Click &quot;+ Add Item&quot; — items are added to ALL locales.</div>
+      ) : null}
+    </div>
+  );
+}
+
 // ─────────────────────────────────────────────────────────
 // Main Component
 // ─────────────────────────────────────────────────────────
@@ -408,6 +445,9 @@ export default function PagesPage() {
 
     const shared: Record<string, unknown> = {};
     if (type === 'hero') shared.assetUrl = '';
+    if (type === 'cta' || type === 'footerCta') {
+      shared.primaryHref = '';
+    }
 
     setForm((curr) => ({
       ...curr,
@@ -434,25 +474,38 @@ export default function PagesPage() {
   const updateBlockText = useCallback((index: number, locale: string, updates: Record<string, unknown>) => {
     setForm((curr) => {
       const next = [...curr.blocks];
-      const block = next[index];
-      next[index] = {
-        ...block,
-        texts: { ...block.texts, [locale]: { ...(block.texts[locale] || {}), ...updates } },
-      };
+      const block = { ...next[index], texts: { ...next[index].texts } };
+
+      // Identify if we are updating a field that should be synchronized across locales
+      const syncedFields = ['primaryHref', 'href', 'url', 'image', 'icon'];
+      const isSyncing = syncedFields.some((f) => f in updates);
+
+      if (isSyncing) {
+        for (const loc of SUPPORTED_LOCALES) {
+          if (loc === locale) continue;
+          const locTexts = { ...(block.texts[loc] || {}) };
+          for (const f of syncedFields) {
+            if (f in updates) locTexts[f] = updates[f];
+          }
+          block.texts[loc] = locTexts;
+        }
+      }
+
+      block.texts[locale] = { ...(block.texts[locale] || {}), ...updates };
+      next[index] = block;
       return { ...curr, blocks: next };
     });
   }, []);
 
-  /** Add a FAQ item to ALL locales (structure is shared). */
-  const addFaqItem = useCallback((blockIndex: number) => {
+  const addListItem = useCallback((blockIndex: number, field: string, defaultItem: Record<string, unknown>) => {
     setForm((curr) => {
       const next = [...curr.blocks];
       const block = { ...next[blockIndex], texts: { ...next[blockIndex].texts } };
       for (const locale of SUPPORTED_LOCALES) {
         const lt = { ...(block.texts[locale] || {}) };
-        const items = Array.isArray(lt.items) ? [...(lt.items as Record<string, unknown>[])] : [];
-        items.push({ question: '', answer: '' });
-        lt.items = items;
+        const items = Array.isArray(lt[field]) ? [...(lt[field] as Record<string, unknown>[])] : [];
+        items.push({ ...defaultItem });
+        lt[field] = items;
         block.texts[locale] = lt;
       }
       next[blockIndex] = block;
@@ -460,16 +513,15 @@ export default function PagesPage() {
     });
   }, []);
 
-  /** Remove a FAQ item from ALL locales (structure is shared). */
-  const removeFaqItem = useCallback((blockIndex: number, itemIndex: number) => {
+  const removeListItem = useCallback((blockIndex: number, field: string, itemIndex: number) => {
     setForm((curr) => {
       const next = [...curr.blocks];
       const block = { ...next[blockIndex], texts: { ...next[blockIndex].texts } };
       for (const locale of SUPPORTED_LOCALES) {
         const lt = { ...(block.texts[locale] || {}) };
-        const items = Array.isArray(lt.items) ? [...(lt.items as Record<string, unknown>[])] : [];
+        const items = Array.isArray(lt[field]) ? [...(lt[field] as Record<string, unknown>[])] : [];
         items.splice(itemIndex, 1);
-        lt.items = items;
+        lt[field] = items;
         block.texts[locale] = lt;
       }
       next[blockIndex] = block;
@@ -477,21 +529,61 @@ export default function PagesPage() {
     });
   }, []);
 
-  /** Update a single FAQ item's text for the ACTIVE locale only. */
-  const updateFaqItem = useCallback(
-    (blockIndex: number, itemIndex: number, updates: Record<string, string>) => {
+  const updateListItem = useCallback(
+    (blockIndex: number, field: string, itemIndex: number, updates: Record<string, unknown>) => {
       setForm((curr) => {
         const next = [...curr.blocks];
-        const block = { ...next[blockIndex] };
+        const block = { ...next[blockIndex], texts: { ...next[blockIndex].texts } };
+
+        // Identify if we are updating a field that should be synchronized across locales
+        const syncedFields = ['href', 'image', 'icon'];
+        const isSyncing = syncedFields.some((f) => f in updates);
+
+        if (isSyncing) {
+          for (const loc of SUPPORTED_LOCALES) {
+            if (loc === activeLocale) continue;
+            const locTexts = { ...(block.texts[loc] || {}) };
+            const locItems = Array.isArray(locTexts[field]) ? [...(locTexts[field] as Record<string, unknown>[])] : [];
+            if (locItems[itemIndex]) {
+              locItems[itemIndex] = { ...locItems[itemIndex] };
+              for (const f of syncedFields) {
+                if (f in updates) locItems[itemIndex][f] = updates[f];
+              }
+            }
+            locTexts[field] = locItems;
+            block.texts[loc] = locTexts;
+          }
+        }
+
         const lt = { ...(block.texts[activeLocale] || {}) };
-        const items = Array.isArray(lt.items) ? [...(lt.items as Record<string, unknown>[])] : [];
+        const items = Array.isArray(lt[field]) ? [...(lt[field] as Record<string, unknown>[])] : [];
         items[itemIndex] = { ...items[itemIndex], ...updates };
-        lt.items = items;
-        next[blockIndex] = { ...block, texts: { ...block.texts, [activeLocale]: lt } };
+        lt[field] = items;
+        block.texts[activeLocale] = lt;
+        
+        next[blockIndex] = block;
         return { ...curr, blocks: next };
       });
     },
     [activeLocale]
+  );
+
+  /** Add a FAQ item to ALL locales (structure is shared). */
+  const addFaqItem = useCallback((blockIndex: number) => {
+    addListItem(blockIndex, 'items', { question: '', answer: '' });
+  }, [addListItem]);
+
+  /** Remove a FAQ item from ALL locales (structure is shared). */
+  const removeFaqItem = useCallback((blockIndex: number, itemIndex: number) => {
+    removeListItem(blockIndex, 'items', itemIndex);
+  }, [removeListItem]);
+
+  /** Update a single FAQ item's text for the ACTIVE locale only. */
+  const updateFaqItem = useCallback(
+    (blockIndex: number, itemIndex: number, updates: Record<string, string>) => {
+      updateListItem(blockIndex, 'items', itemIndex, updates);
+    },
+    [updateListItem]
   );
 
   // ── Locale meta updates ──
@@ -820,11 +912,24 @@ export default function PagesPage() {
                           {block.type === 'hero' ? (
                             <div style={styles.sharedFieldsBox}>
                               <span style={styles.sharedLabel}>Shared (all locales)</span>
-                              <EditorField label="Hero Image URL" hint="Path or URL to the hero image. Leave empty for default.">
+                              <EditorField label="Hero Image URL 🔗" hint="Path or URL to the hero image. Leave empty for default.">
                                 <TextInput
                                   value={String(block.shared.assetUrl || '')}
                                   onChange={(v) => updateBlockShared(index, { assetUrl: v })}
                                   placeholder="/images/hero-neon.jpg"
+                                />
+                              </EditorField>
+                            </div>
+                          ) : null}
+
+                          {(block.type === 'cta' || block.type === 'footerCta') ? (
+                            <div style={styles.sharedFieldsBox}>
+                              <span style={styles.sharedLabel}>Shared (all locales)</span>
+                              <EditorField label="Primary Href 🔗" hint="Path or URL for the primary button. Shared across all locales.">
+                                <TextInput
+                                  value={String(block.shared.primaryHref || '')}
+                                  onChange={(v) => updateBlockShared(index, { primaryHref: v })}
+                                  placeholder="/de/kontakt"
                                 />
                               </EditorField>
                             </div>
@@ -894,19 +999,13 @@ export default function PagesPage() {
                                 <EditorField label="Section Title">
                                   <TextInput value={String(localeTexts.title || '')} onChange={(v) => updateBlockText(index, activeLocale, { title: v })} />
                                 </EditorField>
-                                <div style={styles.faqItemsContainer}>
-                                  <div style={styles.faqItemsHeader}>
-                                    <span style={styles.faqItemsLabel}>Q&amp;A Items ({faqItems.length})</span>
-                                    <button type="button" style={styles.addBlockBtn} onClick={() => addFaqItem(index)}>
-                                      + Add Q&amp;A
-                                    </button>
-                                  </div>
-                                  {faqItems.map((item, fi) => (
-                                    <div key={fi} style={styles.faqItemCard}>
-                                      <div style={styles.faqItemHeader}>
-                                        <span style={styles.faqItemIndex}>#{fi + 1}</span>
-                                        <button type="button" style={styles.iconBtnDanger} onClick={() => removeFaqItem(index, fi)}>🗑️</button>
-                                      </div>
+                                <ListEditor
+                                  label="Q&A Items"
+                                  items={faqItems}
+                                  onAdd={() => addFaqItem(index)}
+                                  onRemove={(fi) => removeFaqItem(index, fi)}
+                                  renderItem={(item, fi) => (
+                                    <>
                                       <EditorField label="Question">
                                         <TextInput
                                           value={String(item.question || '')}
@@ -923,12 +1022,9 @@ export default function PagesPage() {
                                           placeholder="Answer..."
                                         />
                                       </EditorField>
-                                    </div>
-                                  ))}
-                                  {faqItems.length === 0 ? (
-                                    <div style={styles.emptyBlocks}>No Q&amp;A items. Click &quot;+ Add Q&amp;A&quot; — items are added to ALL locales.</div>
-                                  ) : null}
-                                </div>
+                                    </>
+                                  )}
+                                />
                               </>
                             ) : null}
 
@@ -963,6 +1059,33 @@ export default function PagesPage() {
                                     placeholder="e.g. Was unsere Kunden sagen"
                                   />
                                 </EditorField>
+                                <ListEditor
+                                  label="Reviews"
+                                  items={Array.isArray(localeTexts.items) ? (localeTexts.items as Record<string, unknown>[]) : []}
+                                  onAdd={() => addListItem(index, 'items', { content: '', name: '', role: '' })}
+                                  onRemove={(fi) => removeListItem(index, 'items', fi)}
+                                  renderItem={(item, fi) => (
+                                    <>
+                                      <EditorField label="Content">
+                                        <textarea
+                                          value={String(item.content || '')}
+                                          onChange={(e) => updateListItem(index, 'items', fi, { content: e.target.value })}
+                                          rows={3}
+                                          style={styles.textarea}
+                                          placeholder="Review text..."
+                                        />
+                                      </EditorField>
+                                      <div style={styles.formGrid}>
+                                        <EditorField label="Author Name">
+                                          <TextInput value={String(item.name || '')} onChange={(v) => updateListItem(index, 'items', fi, { name: v })} />
+                                        </EditorField>
+                                        <EditorField label="Author Role">
+                                          <TextInput value={String(item.role || '')} onChange={(v) => updateListItem(index, 'items', fi, { role: v })} />
+                                        </EditorField>
+                                      </div>
+                                    </>
+                                  )}
+                                />
                               </>
                             ) : null}
 
@@ -998,6 +1121,104 @@ export default function PagesPage() {
                                     placeholder="Section description..."
                                   />
                                 </EditorField>
+
+                                {/* Generic items editor (Excellence/Portfolio) */}
+                                {(block.key === 'excellenceSection' || localeTexts.items) && (
+                                  <ListEditor
+                                    label="Carousel Items"
+                                    items={Array.isArray(localeTexts.items) ? (localeTexts.items as Record<string, unknown>[]) : []}
+                                    onAdd={() => addListItem(index, 'items', { title: '', tag: '', description: '', image: '' })}
+                                    onRemove={(fi) => removeListItem(index, 'items', fi)}
+                                    renderItem={(item, fi) => (
+                                      <>
+                                        <div style={styles.formGrid}>
+                                          <EditorField label="Title">
+                                            <TextInput value={String(item.title || '')} onChange={(v) => updateListItem(index, 'items', fi, { title: v })} />
+                                          </EditorField>
+                                          <EditorField label="Tag/Label">
+                                            <TextInput value={String(item.tag || '')} onChange={(v) => updateListItem(index, 'items', fi, { tag: v })} />
+                                          </EditorField>
+                                        </div>
+                                        <EditorField label="Description">
+                                          <TextInput value={String(item.description || '')} onChange={(v) => updateListItem(index, 'items', fi, { description: v })} />
+                                        </EditorField>
+                                        <EditorField label="Image Path/URL 🔗">
+                                          <TextInput value={String(item.image || '')} onChange={(v) => updateListItem(index, 'items', fi, { image: v })} />
+                                        </EditorField>
+                                      </>
+                                    )}
+                                  />
+                                )}
+
+                                {/* Stats editor (Trust section) */}
+                                {(block.key === 'trustSection' || localeTexts.stats) && (
+                                  <ListEditor
+                                    label="Stats"
+                                    items={Array.isArray(localeTexts.stats) ? (localeTexts.stats as Record<string, unknown>[]) : []}
+                                    onAdd={() => addListItem(index, 'stats', { value: '', label: '', description: '' })}
+                                    onRemove={(fi) => removeListItem(index, 'stats', fi)}
+                                    renderItem={(item, fi) => (
+                                      <>
+                                        <div style={styles.formGrid}>
+                                          <EditorField label="Value">
+                                            <TextInput value={String(item.value || '')} onChange={(v) => updateListItem(index, 'stats', fi, { value: v })} placeholder="e.g. 500+" />
+                                          </EditorField>
+                                          <EditorField label="Label">
+                                            <TextInput value={String(item.label || '')} onChange={(v) => updateListItem(index, 'stats', fi, { label: v })} placeholder="e.g. Projekte" />
+                                          </EditorField>
+                                        </div>
+                                        <EditorField label="Description">
+                                          <TextInput value={String(item.description || '')} onChange={(v) => updateListItem(index, 'stats', fi, { description: v })} />
+                                        </EditorField>
+                                      </>
+                                    )}
+                                  />
+                                )}
+
+                                {/* Features editor (Trust section) */}
+                                {(block.key === 'trustSection' || localeTexts.features) && (
+                                  <ListEditor
+                                    label="Features"
+                                    items={Array.isArray(localeTexts.features) ? (localeTexts.features as Record<string, unknown>[]) : []}
+                                    onAdd={() => addListItem(index, 'features', { icon: '', label: '' })}
+                                    onRemove={(fi) => removeListItem(index, 'features', fi)}
+                                    renderItem={(item, fi) => (
+                                      <div style={styles.formGrid}>
+                                        <EditorField label="Icon (SVG/Path) 🔗">
+                                          <TextInput value={String(item.icon || '')} onChange={(v) => updateListItem(index, 'features', fi, { icon: v })} />
+                                        </EditorField>
+                                        <EditorField label="Label">
+                                          <TextInput value={String(item.label || '')} onChange={(v) => updateListItem(index, 'features', fi, { label: v })} />
+                                        </EditorField>
+                                      </div>
+                                    )}
+                                  />
+                                )}
+
+                                {/* Steps editor (Roadmap/Bento) */}
+                                {(block.key === 'roadmapSection' || block.key === 'bentoSection' || localeTexts.steps) && (
+                                  <ListEditor
+                                    label="Process Steps"
+                                    items={Array.isArray(localeTexts.steps) ? (localeTexts.steps as Record<string, unknown>[]) : []}
+                                    onAdd={() => addListItem(index, 'steps', { title: '', description: '' })}
+                                    onRemove={(fi) => removeListItem(index, 'steps', fi)}
+                                    renderItem={(item, fi) => (
+                                      <>
+                                        <EditorField label="Step Title">
+                                          <TextInput value={String(item.title || '')} onChange={(v) => updateListItem(index, 'steps', fi, { title: v })} />
+                                        </EditorField>
+                                        <EditorField label="Step Description">
+                                          <textarea
+                                            value={String(item.description || '')}
+                                            onChange={(e) => updateListItem(index, 'steps', fi, { description: e.target.value })}
+                                            rows={2}
+                                            style={styles.textarea}
+                                          />
+                                        </EditorField>
+                                      </>
+                                    )}
+                                  />
+                                )}
                               </>
                             ) : null}
 
@@ -1025,16 +1246,36 @@ export default function PagesPage() {
                                   />
                                 </EditorField>
                                 <div style={styles.formGrid}>
-                                  <EditorField label="Primary Button" hint="Primary CTA button label.">
+                                  <EditorField label="Primary Button Label" hint="Primary CTA button label.">
                                     <TextInput value={String(localeTexts.primaryLabel || '')} onChange={(v) => updateBlockText(index, activeLocale, { primaryLabel: v })} placeholder="e.g. Jetzt kontaktieren" />
                                   </EditorField>
-                                  <EditorField label="Secondary Button" hint="Secondary button label (optional).">
+                                  <EditorField label="Secondary Button Label" hint="Secondary button label (optional).">
                                     <TextInput value={String(localeTexts.secondaryLabel || '')} onChange={(v) => updateBlockText(index, activeLocale, { secondaryLabel: v })} />
                                   </EditorField>
                                   <EditorField label="Book Label" hint="Booking label (navigation, optional).">
                                     <TextInput value={String(localeTexts.bookLabel || '')} onChange={(v) => updateBlockText(index, activeLocale, { bookLabel: v })} />
                                   </EditorField>
                                 </div>
+
+                                <ListEditor
+                                  label="Navigation Links"
+                                  items={Array.isArray(localeTexts.links) ? (localeTexts.links as Record<string, unknown>[]) : []}
+                                  onAdd={() => addListItem(index, 'links', { label: '', href: '' })}
+                                  onRemove={(fi) => removeListItem(index, 'links', fi)}
+                                  renderItem={(item, fi) => (
+                                    <div style={styles.formGrid}>
+                                      <EditorField label="Link Label">
+                                        <TextInput value={String(item.label || '')} onChange={(v) => updateListItem(index, 'links', fi, { label: v })} />
+                                      </EditorField>
+                                      <EditorField label="Link URL 🔗">
+                                        <TextInput
+                                          value={String(item.href || '')}
+                                          onChange={(v) => updateListItem(index, 'links', fi, { href: v })}
+                                        />
+                                      </EditorField>
+                                    </div>
+                                  )}
+                                />
                               </>
                             ) : null}
 
