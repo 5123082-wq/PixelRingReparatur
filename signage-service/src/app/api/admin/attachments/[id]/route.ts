@@ -45,10 +45,16 @@ export async function GET(
     if (attachment.storageProvider === AttachmentStorageProvider.VERCEL_BLOB) {
       try {
         // Fetch from Vercel Blob with explicit access configuration
-        const { stream, blob } = await get(attachment.storageKey, {
+        const blobRes = await get(attachment.storageKey, {
           access: 'private',
           token: process.env.BLOB_READ_WRITE_TOKEN,
         });
+
+        if (!blobRes || blobRes.statusCode !== 200) {
+          throw new Error(blobRes ? `Unexpected blob status: ${blobRes.statusCode}` : 'Blob not found in storage');
+        }
+
+        const { stream, blob } = blobRes;
 
         // Audit the download
         await prisma.adminAuditLog.create({
