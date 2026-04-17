@@ -33,35 +33,45 @@
     "social": "Obserwuj nas"
   },
   "Trust": {
-    "title_start": "Dlaczego PixelRing jest ",
-    "title_accent": "inny",
-    "title_end": ".",
-    "description": "Nie traktujemy technologii jako narzędzia, lecz jako rzemiosło. Nasze procesy są zaprojektowane z myślą o maksymalnej przejrzystości i technicznej doskonałości.",
-    "feature1": "Środowisko Cleanroom",
-    "feature2": "Płynna dokumentacja",
-    "feature3": "Audyt jakości",
-    "stats": {
-      "turnaround": {
-        "value": "24h",
-        "label": "STANDARDOWY CZAS",
-        "description": "Większość napraw wykonujemy w ciągu jednego dnia roboczego."
+    "titleStart": "Dość skomplikowanych",
+    "titleAccent": "portali i pośredników",
+    "titleEnd": "My po prostu naprawiamy.",
+    "description": "Najkrótsza droga między usterką a lśniącą fasadą. Bezpośrednia realizacja przez nasze atelier techniczne – bez zbędnych marż platform sprzedażowych.",
+    "cta_label": "Poproś o bezpłatną konsultację",
+    "cta_subtext": "Odpowiedź zazwyczaj w ciągu 15 minut.",
+    "stats": [
+      {
+        "label": "Bezpośredni serwis",
+        "value": "Bez pośredników",
+        "description": "Nie jesteśmy platformą ani marketplacem. Rozmawiasz bezpośrednio z technikami, którzy naprawiają Twoją reklamę. Oszczędzaj czas i do 30% na prowizjach."
       },
-      "warranty": {
-        "value": "24",
-        "label": "MIESIĄCE GWARANCJI",
-        "description": "Ręczymy za naszą pracę. Pełna ochrona wszystkich zainstalowanych części."
+      {
+        "label": "Rzemiosło",
+        "value": "Standard Atelier",
+        "description": "Każda naprawa odbywa się zgodnie z naszą zasadą atelier: precyzja w każdym detalu, aby Twoja reklama lśniła jak nowa przez lata."
       },
-      "hardware": {
-        "value": "100%",
-        "label": "ORYGINALNY SPRZĘT",
-        "description": "Bez kompromisów. Używamy wyłącznie certyfikowanych komponentów."
+      {
+        "label": "Budżet",
+        "value": "Oszczędność przez naprawę",
+        "description": "Po co kupować nowe? Ratujemy 90% uszkodzonych systemów. Naprawa jest nie tylko bardziej ekologiczna, ale też znacznie tańsza niż wymiana."
       },
-      "rating": {
-        "value": "4.9",
-        "label": "OCENA KLIENTÓW",
-        "description": "Ponad 15 000 zadowolonych klientów zaufało naszej wiedzy."
+      {
+        "label": "Jasność",
+        "value": "Status online",
+        "description": "Koniec z niepewnością. Śledź postępy naprawy w dowolnym momencie online za pośrednictwem swojego osobistego panelu statusu."
+      },
+      {
+        "label": "Ekspres",
+        "value": "Reakcja 24h",
+        "description": "W przypadku krytycznych awarii jesteśmy na miejscu natychmiast. Gwarantujemy: Twoja lokalizacja nie zostanie w ciemności."
       }
-    }
+    ],
+    "features": [
+      { "label": "Własna produkcja", "icon": "factory" },
+      { "label": "Certyfikowani technicy", "icon": "verified" },
+      { "label": "Przejrzyste ceny", "icon": "money" },
+      { "label": "Materiały premium", "icon": "diamond" }
+    ]
   },
   "Intake": {
     "title": "Wybierz swoją drogę",

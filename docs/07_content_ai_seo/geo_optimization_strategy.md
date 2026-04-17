@@ -386,4 +386,24 @@ Hub усиливает:
 - коммерческой конверсией в заявку.
 
 ---
-*Updated: 2026-04-05*
+---
+
+## 13. Progress Log
+
+### 2026-04-16 | CMS Localization Workspace (Stage 3)
+**Done:**
+- Refactored CMS Article Editor into a **Dual-Canonical Workspace**.
+- Implemented **Split-View UI** allowing side-by-side editing of target content vs Reference Master (DE/EN).
+- Added **Reference Tabs** to switch between German Master and English AI Master for source material.
+- Integrated **Sync Tools**: One-click "Copy from Master" for technical fields (slugs, links, order).
+- Launched **AI Translation API**: Field-level translation endpoint with technical context for PixelRing brand voice.
+- Updated `EditorField` to show "Copy" and "AI" helpers only in split-view mode.
+
+**Tech Details:**
+- UI: `display: grid` with dynamic width adjustment (1440px max).
+- Backend: `/api/cms/articles/translate-field` with OpenAI (gpt-4o-mini).
+- Consistency: Form joins/splits arrays automatically for synchronized multi-line field editing.
+
+**Next Action:**
+- Monitor GPT-4o translation quality for Arabic (RTL) and Polish technical terms.
+- Proceed with bulk content population using the new efficiency tools.

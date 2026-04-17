@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useMemo } from 'react';
-import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { CoverageMapCmsContent } from '@/lib/cms/pages';
 
@@ -11,7 +11,7 @@ interface CoverageMapProps {
 
 interface City {
   id: string;
-  nameKey: string;
+  name: string;
   x: number;
   y: number;
   isHQ?: boolean;
@@ -68,35 +68,28 @@ const isPointInPolygon = (x: number, y: number, polygon: [number, number][]) => 
 };
 
 const cities: City[] = [
-  { id: 'berlin', nameKey: 'cities.berlin', x: 74, y: 35, isHQ: true },
-  { id: 'hamburg', nameKey: 'cities.hamburg', x: 38, y: 20 },
-  { id: 'munich', nameKey: 'cities.munich', x: 65, y: 85 },
-  { id: 'cologne', nameKey: 'cities.cologne', x: 15, y: 52 },
-  { id: 'frankfurt', nameKey: 'cities.frankfurt', x: 32, y: 64 },
-  { id: 'stuttgart', nameKey: 'cities.stuttgart', x: 34, y: 82 },
-  { id: 'leipzig', nameKey: 'cities.leipzig', x: 66, y: 48 },
-  { id: 'nuremberg', nameKey: 'cities.nuremberg', x: 58, y: 72 },
+  { id: 'berlin', name: 'Berlin', x: 74, y: 35, isHQ: true },
+  { id: 'hamburg', name: 'Hamburg', x: 38, y: 20 },
+  { id: 'munich', name: 'München', x: 65, y: 85 },
+  { id: 'cologne', name: 'Köln', x: 15, y: 52 },
+  { id: 'frankfurt', name: 'Frankfurt am Main', x: 32, y: 64 },
+  { id: 'stuttgart', name: 'Stuttgart', x: 34, y: 82 },
+  { id: 'leipzig', name: 'Leipzig', x: 66, y: 48 },
+  { id: 'nuremberg', name: 'Nürnberg', x: 58, y: 72 },
 ];
 
 const CoverageMap = ({ content }: CoverageMapProps) => {
   const t = useTranslations('Coverage');
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, amount: 0.1 });
-  
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"]
-  });
-
-  // Balanced Isometric Angle for compact vertical view
-  const rotateX = useTransform(scrollYProgress, [0, 0.5, 1], [62, 58, 54]);
-  const rotateZ = useTransform(scrollYProgress, [0, 0.5, 1], [-22, -20, -18]);
-  
-  const rotateXInverse = useTransform(scrollYProgress, [0, 0.5, 1], [-62, -58, -54]);
-  const rotateZInverse = useTransform(scrollYProgress, [0, 0.5, 1], [22, 20, 18]);
+  // Static isometric angle (final settled pose from previous scroll-based motion)
+  const rotateX = 64;
+  const rotateZ = -18;
+  const rotateXInverse = -64;
+  const rotateZInverse = 18;
 
   // ULTRA PERFORMANCE: Single Path rendering logic
-  const { mainMatrixPath, depthMatrixPath } = useMemo(() => {
+  const { mainMatrixPath } = useMemo(() => {
     const polygon: [number, number][] = GERMANY_PATH
       .replace(/[MLZ]/g, '')
       .split(' ')
@@ -117,9 +110,8 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
         }
       }
     }
-    return { 
-      mainMatrixPath: mainD,
-      depthMatrixPath: mainD
+    return {
+      mainMatrixPath: mainD
     };
   }, []);
 
@@ -142,12 +134,12 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
         <div className="p-6 md:p-9 bg-gradient-to-br from-white/30 via-[#F7F1E8]/44 to-[#F7F1E8]/58 rounded-[28px] md:rounded-[44px] shadow-[inset_0_1px_0_rgba(255,255,255,0.38),0_16px_32px_rgba(0,0,0,0.02)] flex flex-col gap-4 md:gap-5">
           <div className="flex flex-col gap-1.5">
             <h2 className="text-[30px] md:text-[42px] font-bold text-[#0E1A2B] leading-[1.05] tracking-tight">
-              {content?.title ?? t('title')}
+              {content?.title || ''}
             </h2>
             <div className="w-12 h-1 bg-[#C86E4A] rounded-full" />
           </div>
           <p className="text-[14px] md:text-[16px] text-[#0E1A2B] leading-relaxed font-semibold opacity-70">
-            {content?.description ?? t('description')}
+            {content?.description || ''}
           </p>
         </div>
       </motion.div>
@@ -181,6 +173,7 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
       {/* 3D MAP SCENE */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <motion.div 
+          initial={false}
           style={{ 
             rotateX, 
             rotateZ,
@@ -193,13 +186,6 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
           <div className="absolute inset-x-0 bottom-0 top-1/2 bg-[#0E1A2B03] blur-[100px] translate-y-24 -translate-z-[100px] scale-x-[1.3] scale-y-[0.7] rounded-full pointer-events-none" />
 
           <div className="relative w-full h-full" style={{ transformStyle: "preserve-3d" }}>
-            {/* Depth/Extrusion Layer */}
-            <div className="absolute inset-0 -translate-z-6" style={{ transformStyle: "preserve-3d" }}>
-              <svg viewBox="0 0 100 100" className="w-full h-full opacity-20 blur-[0.3px]">
-                <path d={depthMatrixPath} stroke="#0E1A2B" strokeWidth="0.8" strokeLinecap="round" />
-              </svg>
-            </div>
-
             {/* Main Matrix Surface */}
             <svg 
               viewBox="0 0 100 100" 
@@ -275,14 +261,18 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
             {cities.map((city) => (
               <motion.div
                 key={`label-perf-${city.id}`}
-                className="absolute"
+                className="absolute pointer-events-none"
+                initial={false}
                 style={{ 
                   left: `${city.x}%`, 
                   top: `${city.y}%`,
-                  transform: `rotateZ(${rotateZInverse.get()}deg) rotateX(${rotateXInverse.get()}deg)`,
+                  rotateX: rotateXInverse,
+                  rotateZ: rotateZInverse,
                   translateZ: "30px",
                   x: "-50%",
-                  y: "-180%"
+                  y: "-180%",
+                  transformStyle: "preserve-3d",
+                  willChange: "transform"
                 }}
               >
                 <div className="flex flex-col items-center gap-0.5 whitespace-nowrap">
@@ -297,7 +287,7 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
-                    {t(city.nameKey)}
+                    {city.name}
                   </span>
                   {city.isHQ && (
                     <span className="text-[9px] font-black uppercase tracking-widest text-[#C86E4A]">HQ</span>

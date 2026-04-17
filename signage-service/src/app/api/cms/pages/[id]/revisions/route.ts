@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-
 import { CMS_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
 import { createAdminAuditLog, requireAdminPermissionActor } from '@/lib/admin-audit';
+import { NextRequest, NextResponse } from 'next/server';
+
 import { listPageRevisions } from '@/lib/cms/revisions';
 import { prisma } from '@/lib/prisma';
 import { resolveUuidRouteParam } from '@/lib/route-params';

@@ -1,8 +1,7 @@
+import { CMS_SESSION_COOKIE_NAME, requireAdminSession } from '@/lib/admin-auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
-import { CMS_SESSION_COOKIE_NAME, requireAdminSession } from '@/lib/admin-auth';
-
 function notFoundResponse() {
   return NextResponse.json({ error: 'Not found' }, { status: 404 });
 }

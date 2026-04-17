@@ -43,35 +43,45 @@
     "contact": "Kontakt"
   },
   "Trust": {
-    "title_start": "Warum PixelRing ",
-    "title_accent": "anders",
-    "title_end": " ist.",
-    "description": "Wir betrachten Technik nicht als Werkzeug, sondern als Handwerk. Unsere Prozesse sind auf maximale Transparenz und technische Perfektion ausgelegt.",
-    "feature1": "Reinraum-Umgebung",
-    "feature2": "Lückenlose Dokumentation",
-    "feature3": "Qualitäts-Audit",
-    "stats": {
-      "turnaround": {
-        "value": "24h",
-        "label": "STANDARD-TURNAROUND",
-        "description": "Die meisten Reparaturen werden innerhalb eines Werktages abgeschlossen."
+    "titleStart": "Schluss mit",
+    "titleAccent": "komplizierten Portalen",
+    "titleEnd": "Wir reparieren einfach.",
+    "description": "Der kürzeste Weg zwischen einem Defekt und einer leuchtenden Fassade. Direkte Umsetzung durch unser technisches Atelier – ohne Umwege über Verkaufsplattformen.",
+    "cta_label": "Kostenlose Beratung anfordern",
+    "cta_subtext": "Antwort in der Regel innerhalb von 15 Min.",
+    "stats": [
+      {
+        "label": "Direktservice",
+        "value": "Keine Vermittler",
+        "description": "Wir sind keine Plattform. Sie sprechen direkt mit den Technikern, die Ihre Anlage reparieren. Sparen Sie Zeit und bis zu 30% Gebühren."
       },
-      "warranty": {
-        "value": "24",
-        "label": "MONATE GARANTIE",
-        "description": "Wir stehen zu unserer Arbeit. Volle Absicherung auf alle verbauten Teile."
+      {
+        "label": "Handwerk",
+        "value": "Meister-Standard",
+        "description": "Jede Reparatur folgt unserem Atelier-Prinzip: Präzision bis ins kleinste Detail, damit Ihre Werbung jahrelang wie neu strahlt."
       },
-      "hardware": {
-        "value": "100%",
-        "label": "ORIGINAL-HARDWARE",
-        "description": "Keine Kompromisse. Wir nutzen ausschließlich zertifizierte Komponenten."
+      {
+        "label": "Budget-Check",
+        "value": "Sparen durch Erhalt",
+        "description": "Warum neu kaufen? Wir retten 90% der defekten Anlagen. Reparatur ist nicht nur nachhaltiger, sondern schont massiv Ihr Budget."
       },
-      "rating": {
-        "value": "4.9",
-        "label": "KUNDEN-RATING",
-        "description": "Über 15.000 zufriedene Kunden vertrauen auf unsere Expertise."
+      {
+        "label": "Klarheit",
+        "value": "Live Status-Check",
+        "description": "Keine Ungewissheit mehr. Verfolgen Sie den Fortschritt Ihrer Reparatur jederzeit online über Ihr persönliches Dashboard."
+      },
+      {
+        "label": "Express",
+        "value": "24h Reaktion",
+        "description": "Bei kritischen Ausfällen sind wir sofort zur Stelle. Wir lassen Ihren Standort nicht im Dunkeln stehen – garantiert."
       }
-    }
+    ],
+    "features": [
+      { "label": "Eigene Produktion", "icon": "factory" },
+      { "label": "Zertifizierte Techniker", "icon": "verified" },
+      { "label": "Transparente Preise", "icon": "money" },
+      { "label": "Premium Materialien", "icon": "diamond" }
+    ]
   },
   "Intake": {
     "title": "Wählen Sie Ihren Weg",

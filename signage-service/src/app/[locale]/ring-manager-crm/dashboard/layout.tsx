@@ -1,7 +1,7 @@
+import { CRM_SESSION_COOKIE_NAME, requireAdminSession } from '@/lib/admin-auth';
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 
-import { CRM_SESSION_COOKIE_NAME, requireAdminSession } from '@/lib/admin-auth';
 import { prisma } from '@/lib/prisma';
 
 import CrmDashboardShell from './DashboardShell';

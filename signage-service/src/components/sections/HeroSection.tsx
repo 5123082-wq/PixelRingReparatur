@@ -24,15 +24,15 @@ const HeroSection = ({ content }: { content?: HomeHeroContent | null }) => {
 
   const whatsappUrl = process.env.NEXT_PUBLIC_WHATSAPP_URL || 'https://wa.me/message/27UOBFWB7UYCN1';
   const telegramUrl = process.env.NEXT_PUBLIC_TELEGRAM_URL || 'https://t.me/PixelRing_bot';
-  const titlePrefix = content?.titlePrefix ?? t('hero_title_prefix');
-  const titleAccent = content?.titleAccent ?? t('hero_title_accent');
-  const titleSuffix = content?.titleSuffix ?? t('hero_title_suffix');
-  const intro = content?.intro ?? t('description');
-  const ctaPrimary = content?.ctaPrimary ?? t('cta_primary');
-  const trustBadge = content?.trustBadge ?? t('trust_badge');
-  const responseBadge = content?.responseBadge ?? t('badge_label');
+  const titlePrefix = content?.titlePrefix || '';
+  const titleAccent = content?.titleAccent || '';
+  const titleSuffix = content?.titleSuffix || '';
+  const intro = content?.intro || '';
+  const ctaPrimary = content?.ctaPrimary || '';
+  const trustBadge = content?.trustBadge || '';
+  const responseBadge = content?.responseBadge || '';
   const heroImage =
-    content?.assetUrl && content.assetUrl.trim() ? content.assetUrl : '/images/hero-neon.jpg';
+    content?.assetUrl && content.assetUrl.trim() ? content.assetUrl : '';
 
   const openModal = () => {
     setModalOpen(true);
@@ -40,7 +40,7 @@ const HeroSection = ({ content }: { content?: HomeHeroContent | null }) => {
 
   return (
     <>
-      <section className="relative w-full bg-[#EEF3FB] pt-24 pb-20 overflow-hidden">
+      <section className="relative w-full bg-[#EEF3FB] py-24 overflow-hidden">
         {/* Subtle top-right glow */}
         <div className="absolute top-0 right-0 w-[700px] h-[500px] bg-white/60 rounded-full blur-[120px] -translate-y-1/3 translate-x-1/4 pointer-events-none" />
 
@@ -138,6 +138,7 @@ const HeroSection = ({ content }: { content?: HomeHeroContent | null }) => {
                       src={heroImage}
                       alt="Neon sign repair — PixelRing"
                       fill
+                      sizes="100vw"
                       className="object-cover"
                       priority
                     />

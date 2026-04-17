@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-
 import { CMS_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
 import { requireAdminPermissionActor } from '@/lib/admin-audit';
+import { NextRequest, NextResponse } from 'next/server';
+
 import {
   KNOWLEDGE_BASE_FILES,
   readKnowledgeBaseFile,

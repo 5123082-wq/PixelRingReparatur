@@ -13,6 +13,8 @@ export const CMS_PAGE_BLOCK_TYPES = [
   'faqList',
   'reviewList',
   'footerCta',
+  'trustSection',
+  'excellence',
 ] as const;
 
 const DEFAULT_LOCALE = 'de';
@@ -165,6 +167,8 @@ export type TrustCmsContent = {
   titleAccent?: string;
   titleEnd?: string;
   description?: string;
+  cta_label?: string;
+  cta_subtext?: string;
   stats?: { value?: string; label?: string; description?: string }[];
   features?: { icon?: string; label?: string }[];
 };
@@ -401,13 +405,9 @@ export function normalizeCmsPageBlocks(value: unknown): CmsPageBlock[] | null {
     return null;
   }
 
-  const blocks = value.map(normalizeBlock);
+  const blocks = value.map(normalizeBlock).filter((block): block is CmsPageBlock => block !== null);
 
-  if (blocks.some((block) => block === null)) {
-    return null;
-  }
-
-  return blocks as CmsPageBlock[];
+  return blocks;
 }
 
 export function normalizeCmsPageKey(value: unknown): CmsPageKey | null {
@@ -810,7 +810,7 @@ export async function getHomePageCmsContent(
   const intake = getEnabledBlock(page, 'textSection', ['intakeSection']);
   const bento = getEnabledBlock(page, 'cardList', ['bentoSection']);
   const trust = getEnabledBlock(page, 'cardList', ['trustSection']);
-  const coverage = getEnabledBlock(page, 'textSection', ['coverageSection']);
+  const coverage = getEnabledBlock(page, 'cardList', ['coverageSection']);
   const excellence = getEnabledBlock(page, 'cardList', ['excellenceSection']);
   const reviews = getEnabledBlock(page, 'reviewList', ['reviewsSection']);
   const roadmap = getEnabledBlock(page, 'cardList', ['roadmapSection']);
@@ -854,6 +854,8 @@ export async function getHomePageCmsContent(
           titleAccent: getBlockText(trust, 'titleAccent'),
           titleEnd: getBlockText(trust, 'titleEnd'),
           description: getBlockText(trust, 'description'),
+          cta_label: getBlockText(trust, 'cta_label'),
+          cta_subtext: getBlockText(trust, 'cta_subtext'),
           stats: getBlockObjectList(trust, 'stats')?.map(s => ({
             value: typeof s.value === 'string' ? s.value : undefined,
             label: typeof s.label === 'string' ? s.label : undefined,
@@ -914,20 +916,17 @@ export async function getHomePageCmsContent(
       : undefined,
   };
 
-  const hasHeroContent = Object.values(content.hero ?? {}).some(Boolean);
-  const hasIntakeContent =
-    Boolean(content.intake?.title) ||
-    Boolean(content.intake?.description) ||
-    Boolean(content.intake?.methods?.length);
-  const hasBento = Boolean(content.bento?.title);
-  const hasTrust = Boolean(content.trust?.titleStart);
-  const hasCoverage = Boolean(content.coverage?.title);
-  const hasExcellence = Boolean(content.excellence?.title);
-  const hasReviews = Boolean(content.reviews?.title);
-  const hasRoadmap = Boolean(content.roadmap?.title);
-  const hasFaq = Boolean(content.faq?.title);
+  const hasHero = !!hero;
+  const hasIntake = !!intake;
+  const hasBento = !!bento;
+  const hasTrust = !!trust;
+  const hasCoverage = !!coverage;
+  const hasExcellence = !!excellence;
+  const hasReviews = !!reviews;
+  const hasRoadmap = !!roadmap;
+  const hasFaq = !!faq;
 
-  return hasHeroContent || hasIntakeContent || hasBento || hasTrust || hasCoverage || hasExcellence || hasReviews || hasRoadmap || hasFaq ? content : null;
+  return hasHero || hasIntake || hasBento || hasTrust || hasCoverage || hasExcellence || hasReviews || hasRoadmap || hasFaq ? content : null;
 }
 
 export async function getSupportPageCmsContent(
