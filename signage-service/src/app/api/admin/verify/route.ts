@@ -1,9 +1,8 @@
+import { CRM_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
+import { requireAdminPermissionActor } from '@/lib/admin-audit';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
-import { CRM_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
-import { requireAdminPermissionActor } from '@/lib/admin-audit';
-
 function notFoundResponse() {
   return NextResponse.json({ error: 'Not found' }, { status: 404 });
 }

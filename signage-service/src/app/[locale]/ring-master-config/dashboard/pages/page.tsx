@@ -430,8 +430,8 @@ export default function PagesPage() {
     setForm((curr) => ({ ...curr, blocks: curr.blocks.filter((_, i) => i !== index) }));
   }, []);
 
-  const addBlock = useCallback((type: string) => {
-    const key = `${type}-${Math.random().toString(36).slice(2, 7)}`;
+  const addBlock = useCallback((type: string, customKey?: string) => {
+    const key = customKey || `${type}-${Math.random().toString(36).slice(2, 7)}`;
     const textFields = getTextFieldNames(type);
 
     const texts: Record<string, Record<string, unknown>> = {};
@@ -455,7 +455,7 @@ export default function PagesPage() {
     }));
   }, []);
 
-  const updateBlockStructure = useCallback((index: number, updates: Partial<Pick<UnifiedBlock, 'enabled'>>) => {
+  const updateBlockStructure = useCallback((index: number, updates: Partial<Pick<UnifiedBlock, 'enabled' | 'key'>>) => {
     setForm((curr) => {
       const next = [...curr.blocks];
       next[index] = { ...next[index], ...updates };
@@ -866,13 +866,25 @@ export default function PagesPage() {
               <div style={styles.blockManagerHeader}>
                 <h3 style={styles.sectionTitle}>Blocks Constructor</h3>
                 <div style={styles.addBlockRow}>
-                  <button type="button" onClick={() => addBlock('hero')} style={styles.addBlockBtn}>+ Hero</button>
-                  <button type="button" onClick={() => addBlock('faqList')} style={styles.addBlockBtn}>+ FAQ</button>
-                  <button type="button" onClick={() => addBlock('reviewList')} style={styles.addBlockBtn}>+ Reviews</button>
-                  <button type="button" onClick={() => addBlock('textSection')} style={styles.addBlockBtn}>+ Text</button>
-                  <button type="button" onClick={() => addBlock('cardList')} style={styles.addBlockBtn}>+ Card List</button>
-                  <button type="button" onClick={() => addBlock('cta')} style={styles.addBlockBtn}>+ CTA</button>
-                  <button type="button" onClick={() => addBlock('footerCta')} style={styles.addBlockBtn}>+ Footer CTA</button>
+                  <button type="button" onClick={() => addBlock('hero', 'hero')} style={styles.addBlockBtnPreset}>+ Hero</button>
+                  <button type="button" onClick={() => addBlock('cardList', 'trustSection')} style={styles.addBlockBtnPreset}>+ Trust</button>
+                  <button type="button" onClick={() => addBlock('cardList', 'bentoSection')} style={styles.addBlockBtnPreset}>+ Bento</button>
+                  <button type="button" onClick={() => addBlock('cardList', 'excellenceSection')} style={styles.addBlockBtnPreset}>+ Excellence</button>
+                  <button type="button" onClick={() => addBlock('cardList', 'roadmapSection')} style={styles.addBlockBtnPreset}>+ Roadmap</button>
+                  <button type="button" onClick={() => addBlock('faqList', 'faqSection')} style={styles.addBlockBtnPreset}>+ FAQ</button>
+                  <button type="button" onClick={() => addBlock('reviewList', 'reviewsSection')} style={styles.addBlockBtnPreset}>+ Reviews</button>
+                  <button type="button" onClick={() => addBlock('textSection', 'coverageSection')} style={styles.addBlockBtnPreset}>+ Coverage</button>
+                  <button type="button" onClick={() => addBlock('cta', 'urgentCases')} style={styles.addBlockBtnPreset}>+ CTA</button>
+                  <button type="button" onClick={() => addBlock('footerCta', 'globalFooterCta')} style={styles.addBlockBtnPreset}>+ Footer CTA</button>
+                </div>
+                <div style={{ ...styles.addBlockRow, marginTop: '8px' }}>
+                  <span style={{ fontSize: '11px', color: '#666', marginRight: '8px' }}>Generic:</span>
+                  <button type="button" onClick={() => addBlock('hero')} style={styles.addBlockBtn}>Hero</button>
+                  <button type="button" onClick={() => addBlock('faqList')} style={styles.addBlockBtn}>FAQ</button>
+                  <button type="button" onClick={() => addBlock('reviewList')} style={styles.addBlockBtn}>Reviews</button>
+                  <button type="button" onClick={() => addBlock('textSection')} style={styles.addBlockBtn}>Text</button>
+                  <button type="button" onClick={() => addBlock('cardList')} style={styles.addBlockBtn}>Card List</button>
+                  <button type="button" onClick={() => addBlock('cta')} style={styles.addBlockBtn}>CTA</button>
                 </div>
               </div>
 
@@ -890,7 +902,15 @@ export default function PagesPage() {
                         <div style={styles.blockCardHeader}>
                           <div style={styles.blockCardTitle}>
                             <span style={styles.blockTypeBadge}>{block.type}</span>
-                            <span style={styles.blockKeyLabel}>{block.key}</span>
+                            <div style={styles.keyEditBox}>
+                              <span style={styles.keyLabel}>Key:</span>
+                              <input
+                                value={block.key}
+                                onChange={(e) => updateBlockStructure(index, { key: e.target.value })}
+                                style={styles.keyInput}
+                                placeholder="Block key (e.g. trustSection)"
+                              />
+                            </div>
                           </div>
                           <div style={styles.blockCardActions}>
                             <label style={styles.nodeLabel}>
@@ -1731,6 +1751,17 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
     transition: 'all 0.2s',
   },
+  addBlockBtnPreset: {
+    padding: '6px 12px',
+    fontSize: '11px',
+    fontWeight: 700,
+    background: '#27272a',
+    color: '#fff',
+    border: '1px solid #3f3f46',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+  },
   emptyBlocks: {
     padding: '40px 20px',
     textAlign: 'center',
@@ -1775,6 +1806,30 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#71717a',
     fontSize: '11px',
     fontFamily: 'monospace',
+  },
+  keyEditBox: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    background: '#09090b',
+    padding: '2px 8px',
+    borderRadius: '4px',
+    border: '1px solid #27272a',
+  },
+  keyLabel: {
+    fontSize: '10px',
+    color: '#52525b',
+    fontWeight: 700,
+    textTransform: 'uppercase',
+  },
+  keyInput: {
+    background: 'transparent',
+    border: 'none',
+    color: '#a1a1aa',
+    fontSize: '11px',
+    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+    outline: 'none',
+    width: '160px',
   },
   blockCardActions: {
     display: 'flex',

@@ -33,35 +33,45 @@
     "social": "Bizi Takip Edin"
   },
   "Trust": {
-    "title_start": "Neden PixelRing ",
-    "title_accent": "farklı",
-    "title_end": "?",
-    "description": "Teknolojiyi bir araç olarak değil, bir zanaat olarak görüyoruz. Süreçlerimiz maksimum şeffaflık ve teknik mükemmellik için tasarlanmıştır.",
-    "feature1": "Temiz Oda Ortamı",
-    "feature2": "Kesintisiz Dokümantasyon",
-    "feature3": "Kalite Denetimi",
-    "stats": {
-      "turnaround": {
-        "value": "24s",
-        "label": "STANDART TESLİM SÜRESİ",
-        "description": "Çoğu onarım bir iş günü içinde tamamlanır."
+    "titleStart": "Karmaşık portallara",
+    "titleAccent": "ve aracılara son",
+    "titleEnd": "Biz sadece tamir ediyoruz.",
+    "description": "Arıza ile parlayan bir cephe arasındaki en kısa yol. Teknik atölyemiz tarafından doğrudan uygulama – satış platformları üzerinden dolambaçlı yollar yok.",
+    "cta_label": "Ücretsiz Danışmanlık Alın",
+    "cta_subtext": "Genellikle 15 dk içinde yanıtlanır.",
+    "stats": [
+      {
+        "label": "Doğrudan Servis",
+        "value": "Aracı Yok",
+        "description": "Biz bir pazar yeri veya platform değiliz. Sisteminizi tamir eden uzmanlarla doğrudan konuşursunuz. Zamandan ve %30'a varan komisyonlardan tasarruf edin."
       },
-      "warranty": {
-        "value": "24",
-        "label": "AY GARANTİ",
-        "description": "İşimizin arkasındayız. Tüm takılan parçalar için tam kapsam."
+      {
+        "label": "Ustalık",
+        "value": "Atölye Standartı",
+        "description": "Her tamir atölye prensibimizi takip eder: Reklamınızın yıllarca yeni gibi parlamasını sağlamak için en küçük ayrıntıya kadar hassasiyet."
       },
-      "hardware": {
-        "value": "100%",
-        "label": "ORİJİNAL DONANIM",
-        "description": "Taviz yok. Sadece sertifikalı bileşenler kullanıyoruz."
+      {
+        "label": "Bütçe",
+        "value": "Onararak Tasarruf Et",
+        "description": "Neden yeni almalı? Arızalı sistemlerin %90'ını kurtarıyoruz. Tamir sadece daha sürdürülebilir değil, aynı zamanda bütçenizi de korur."
       },
-      "rating": {
-        "value": "4.9",
-        "label": "MÜŞTERİ PUANI",
-        "description": "15.000'den fazla memnun müşteri uzmanlığımıza güveniyor."
+      {
+        "label": "Netlik",
+        "value": "Canlı Durum Takibi",
+        "description": "Artık belirsizlik yok. Tamirinizin ilerlemesini kişisel paneliniz üzerinden istediğiniz zaman çevrimiçi olarak takip edin."
+      },
+      {
+        "label": "Ekspres",
+        "value": "24 Saat Tepki",
+        "description": "Kritik arızalarda hemen yanınızdayız. Lokasyonunuzu karanlıkta bırakmayacağız – garanti ediyoruz."
       }
-    }
+    ],
+    "features": [
+      { "label": "Kendi üretimi", "icon": "factory" },
+      { "label": "Sertifikalı teknisyenler", "icon": "verified" },
+      { "label": "Şeffaf fiyatlandırma", "icon": "money" },
+      { "label": "Premium malzemeler", "icon": "diamond" }
+    ]
   },
   "Intake": {
     "title": "Yolunuzu Seçin",

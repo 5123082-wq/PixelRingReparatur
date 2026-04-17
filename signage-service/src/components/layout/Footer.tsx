@@ -28,56 +28,29 @@ type FooterContent = {
 const Footer = ({ content }: { content?: FooterContent | null }) => {
   const t = useTranslations('Footer');
 
-  const serviceLinks = (content?.serviceLinks?.length
-    ? content.serviceLinks
-    : [
-        { label: t('services_sign_repair'), href: '/services/sign-repair' },
-        { label: t('services_installation'), href: '/services/installation' },
-        { label: t('services_lighting'), href: '/services/light-advertising' },
-        { label: t('services_branding'), href: '/services/branding' },
-        { label: t('services_maintenance'), href: '/services/maintenance' },
-      ]).map((link) => ({ name: link.label, href: link.href }));
+  const serviceLinks = (content?.serviceLinks || []).map((link) => ({
+    name: link.label,
+    href: link.href,
+  }));
 
-  const supportLinks = (content?.supportLinks?.length
-    ? content.supportLinks
-    : [
-        { label: t('how_it_works'), href: '/#how-it-works' },
-        { label: t('status_check'), href: '/status' },
-        { label: t('help_center'), href: '/support' },
-        { label: t('contact'), href: '/contact' },
-      ]).map((link) => ({ name: link.label, href: link.href }));
+  const supportLinks = (content?.supportLinks || []).map((link) => ({
+    name: link.label,
+    href: link.href,
+  }));
 
-  const socialLinks = (content?.socialLinks?.length
-    ? content.socialLinks
-    : [
-        { label: 'YouTube', href: 'https://youtube.com' },
-        { label: 'Telegram', href: 'https://t.me' },
-        { label: 'WhatsApp', href: 'https://wa.me' },
-      ]).map((link) => ({ name: link.label, href: link.href }));
+  const socialLinks = (content?.socialLinks || []).map((link) => ({
+    name: link.label,
+    href: link.href,
+  }));
 
-  const legalLinks = (content?.legalLinks?.length
-    ? content.legalLinks
-    : [
-        { label: t('impressum'), href: '/impressum', key: 'impressum' },
-        { label: t('privacy'), href: '/privacy', key: 'privacy' },
-        { label: t('terms'), href: '/terms', key: 'terms' },
-        { label: t('cancellation'), href: '/cancellation', key: 'cancellation' },
-        { label: t('cookies'), href: '/cookies', key: 'cookies' },
-      ])
-    .filter(link => {
-      // If we have an explicit key (from fallback), use it
-      if (link.key) return ['impressum', 'privacy'].includes(link.key);
-      // Otherwise fallback to checking the href path
-      const path = link.href.replace(/^\//, '').split('/').pop();
-      return ['impressum', 'privacy'].includes(path || '');
-    })
-    .map((link) => ({ name: link.label, href: link.href }));
+  const legalLinks = (content?.legalLinks || []).map((link) => ({
+    name: link.label,
+    href: link.href,
+  }));
 
-  const companyLines = content?.companyLines?.length
-    ? content.companyLines
-    : ['PixelRing Technical Atelier', 'Berlin, Deutschland'];
-  const companyHours = content?.hours ?? 'Mo — Fr: 09:00 - 18:00';
-  const companyEmail = content?.email ?? 'service@pixelring.de';
+  const companyLines = content?.companyLines || [];
+  const companyHours = content?.hours || '';
+  const companyEmail = content?.email || '';
 
   return (
     <footer className="w-full bg-[#F7F1E8] pt-0 pb-10 px-6 sm:px-10 border-t border-[#E7DDD3] relative overflow-hidden">
@@ -89,7 +62,7 @@ const Footer = ({ content }: { content?: FooterContent | null }) => {
           {/* Column 1: Services */}
           <div className="flex flex-col gap-6">
             <h4 className="text-[14px] font-bold text-black uppercase tracking-widest">
-              {content?.servicesTitle ?? t('services')}
+              {content?.servicesTitle || ''}
             </h4>
             <div className="flex flex-col gap-4">
               {serviceLinks.map((link) => (
@@ -103,7 +76,7 @@ const Footer = ({ content }: { content?: FooterContent | null }) => {
           {/* Column 2: Support */}
           <div className="flex flex-col gap-6">
             <h4 className="text-[14px] font-bold text-black uppercase tracking-widest">
-              {content?.supportTitle ?? t('support_title')}
+              {content?.supportTitle || ''}
             </h4>
             <div className="flex flex-col gap-4">
               {supportLinks.map((link) => (
@@ -117,7 +90,7 @@ const Footer = ({ content }: { content?: FooterContent | null }) => {
           {/* Column 3: Social */}
           <div className="flex flex-col gap-6">
             <h4 className="text-[14px] font-bold text-black uppercase tracking-widest">
-              {content?.socialTitle ?? t('social')}
+              {content?.socialTitle || ''}
             </h4>
             <div className="flex flex-col gap-4">
               {socialLinks.map((link) => (
@@ -131,7 +104,7 @@ const Footer = ({ content }: { content?: FooterContent | null }) => {
           {/* Column 4: Contact/Info */}
           <div className="flex flex-col gap-6">
             <h4 className="text-[14px] font-bold text-black uppercase tracking-widest">
-              {content?.companyTitle ?? t('company')}
+              {content?.companyTitle || ''}
             </h4>
             <div className="text-[15px] text-[#72665D] leading-relaxed">
               {companyLines.map((line) => (
@@ -160,7 +133,7 @@ const Footer = ({ content }: { content?: FooterContent | null }) => {
             ))}
           </div>
           <p className="text-[13px] text-[#72665D]/60 whitespace-nowrap">
-            {content?.copyright ?? t('copyright')}
+            {content?.copyright || ''}
           </p>
         </div>
       </div>

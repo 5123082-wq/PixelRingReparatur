@@ -33,8 +33,8 @@ const IntakeSection = ({ content }: { content?: IntakeSectionContent | null }) =
 
     return {
       id,
-      title: cmsMethod?.title ?? t(`methods.${index}.title`),
-      label: cmsMethod?.label ?? t(`methods.${index}.label`),
+      title: cmsMethod?.title || '',
+      label: cmsMethod?.label || '',
       focus:
         id === 'photo' ? ('photo' as const) : id === 'messenger' ? null : ('text' as const),
       icon:
@@ -69,10 +69,10 @@ const IntakeSection = ({ content }: { content?: IntakeSectionContent | null }) =
         <div className="max-w-7xl mx-auto flex flex-col gap-12 text-center">
           <div className="flex flex-col gap-4 items-center">
             <h2 className="text-[40px] md:text-[48px] font-bold text-[#0E1A2B] leading-tight">
-              {content?.title ?? t('title')}
+              {content?.title || ''}
             </h2>
             <p className="text-[18px] text-[#72665D] max-w-2xl leading-[1.6]">
-              {content?.description ?? t('description')}
+              {content?.description || ''}
             </p>
           </div>
 

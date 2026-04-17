@@ -42,17 +42,10 @@ const RoadmapSection = ({ content }: RoadmapSectionProps) => {
 
   const DEFAULT_STEP_KEYS = [0, 1, 2, 3] as const;
 
-  // If CMS provides steps — use them dynamically; otherwise fall back to 4 static defaults
-  const steps =
-    content?.steps && content.steps.length > 0
-      ? content.steps.map((cmsStep, idx) => ({
-          title: cmsStep.title ?? t(`steps.${DEFAULT_STEP_KEYS[idx % DEFAULT_STEP_KEYS.length]}.title`),
-          description: cmsStep.description ?? t(`steps.${DEFAULT_STEP_KEYS[idx % DEFAULT_STEP_KEYS.length]}.description`),
-        }))
-      : DEFAULT_STEP_KEYS.map((i) => ({
-          title: t(`steps.${i}.title`),
-          description: t(`steps.${i}.description`),
-        }));
+  const steps = (content?.steps || []).map((cmsStep, idx) => ({
+    title: cmsStep.title || '',
+    description: cmsStep.description || '',
+  }));
 
   return (
     <section className="relative w-full bg-[#F5F8FA] py-24 px-6 overflow-hidden">
@@ -63,7 +56,7 @@ const RoadmapSection = ({ content }: RoadmapSectionProps) => {
       <div className="max-w-7xl mx-auto flex flex-col gap-16 relative z-10">
         <div className="flex flex-col gap-4 text-center">
           <h2 className="text-[40px] md:text-[52px] font-bold text-[#0E1A2B] leading-tight flex flex-col md:block">
-            {content?.title ?? t('title')}
+            {content?.title || ''}
           </h2>
           <div className="w-16 h-1.5 bg-[#B8643E] rounded-full mx-auto" />
         </div>

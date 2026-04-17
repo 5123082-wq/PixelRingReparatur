@@ -42,35 +42,45 @@
     "contact": "Contact"
   },
   "Trust": {
-    "title_start": "Why PixelRing is ",
-    "title_accent": "different",
-    "title_end": ".",
-    "description": "We don't view technology as a tool, but as a craft. Our processes are designed for maximum transparency and technical perfection.",
-    "feature1": "Cleanroom Environment",
-    "feature2": "Seamless Documentation",
-    "feature3": "Quality Audit",
-    "stats": {
-      "turnaround": {
-        "value": "24h",
-        "label": "STANDARD TURNAROUND",
-        "description": "Most repairs are completed within one business day."
+    "titleStart": "Enough with",
+    "titleAccent": "complicated portals",
+    "titleEnd": "We make repairs simple.",
+    "description": "The shortest path between a defect and a glowing facade. Direct execution by our technical atelier – no detours through sales platforms.",
+    "cta_label": "Request Free Consultation",
+    "cta_subtext": "Response usually within 15 min.",
+    "stats": [
+      {
+        "label": "Direct Service",
+        "value": "No Middlemen",
+        "description": "We are not a platform. You speak directly with the technicians repairing your system. Save time and up to 30% in fees."
       },
-      "warranty": {
-        "value": "24",
-        "label": "MONTHS WARRANTY",
-        "description": "We stand by our work. Full coverage on all installed parts."
+      {
+        "label": "Craftsmanship",
+        "value": "Atelier Standard",
+        "description": "Every repair follows our atelier principle: precision down to the smallest detail, ensuring your signage shines like new for years."
       },
-      "hardware": {
-        "value": "100%",
-        "label": "ORIGINAL HARDWARE",
-        "description": "No compromises. We only use certified components."
+      {
+        "label": "Budget Check",
+        "value": "Save by Restoring",
+        "description": "Why buy new? We rescue 90% of defective systems. Repair is not only more sustainable but also significantly protects your budget."
       },
-      "rating": {
-        "value": "4.9",
-        "label": "CUSTOMER RATING",
-        "description": "Over 15,000 satisfied customers trust our expertise."
+      {
+        "label": "Clarity",
+        "value": "Live Status Check",
+        "description": "No more uncertainty. Track the progress of your repair anytime online via your personal dashboard."
+      },
+      {
+        "label": "Express",
+        "value": "24h Reaction",
+        "description": "In case of critical failures, we are there immediately. We won't leave your location in the dark – guaranteed."
       }
-    }
+    ],
+    "features": [
+      { "label": "In-house production", "icon": "factory" },
+      { "label": "Certified technicians", "icon": "verified" },
+      { "label": "Transparent pricing", "icon": "money" },
+      { "label": "Premium materials", "icon": "diamond" }
+    ]
   },
   "Intake": {
     "title": "Choose your way",

@@ -1,18 +1,9 @@
+import { authenticateAdminLogin, createAdminSession, CRM_SESSION_COOKIE_NAME, getAdminSessionTtlSeconds, markAdminLoginSuccess, parseAdminLoginInput, revokeAdminSession, verifyAdminSession } from '@/lib/admin-auth';
+import { createAdminAuditLog } from '@/lib/admin-audit';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, ADMIN_AUTH_LIMIT } from '@/lib/rate-limit';
-import {
-  authenticateAdminLogin,
-  createAdminSession,
-  CRM_SESSION_COOKIE_NAME,
-  getAdminSessionTtlSeconds,
-  markAdminLoginSuccess,
-  parseAdminLoginInput,
-  revokeAdminSession,
-  verifyAdminSession,
-} from '@/lib/admin-auth';
-import { createAdminAuditLog } from '@/lib/admin-audit';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
 
 function getRequestIpAddress(request: NextRequest): string | null {

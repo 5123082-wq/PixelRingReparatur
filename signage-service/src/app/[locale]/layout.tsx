@@ -36,6 +36,7 @@ export default async function RootLayout({
     notFound();
   }
 
+  // NextIntl 4.x + Next.js 15 pattern
   const messages = await getMessages();
   const dir = locale === 'ar' ? 'rtl' : 'ltr';
 
@@ -47,7 +48,7 @@ export default async function RootLayout({
       className={`${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider messages={messages} locale={locale}>
           {children}
         </NextIntlClientProvider>
       </body>

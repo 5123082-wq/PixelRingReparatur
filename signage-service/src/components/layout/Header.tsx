@@ -26,17 +26,12 @@ const Header = ({ content }: { content?: HeaderContent | null }) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const navLinks =
-    content?.links && content.links.length > 0
-      ? content.links.map((link) => ({ name: link.label, href: link.href }))
-      : [
-          { name: t('services'), href: '#services' },
-          { name: t('support'), href: '/support' },
-          { name: t('warranty'), href: '#warranty' },
-          { name: t('status'), href: '/status' },
-        ];
-  const servicePill = content?.servicePill ?? t('service_pill');
-  const bookLabel = content?.bookLabel ?? t('book');
+  const navLinks = (content?.links || []).map((link) => ({
+    name: link.label,
+    href: link.href,
+  }));
+  const servicePill = content?.servicePill || '';
+  const bookLabel = content?.bookLabel || 'Anfragen';
 
   // Prevent scrolling when menu is open
   useEffect(() => {

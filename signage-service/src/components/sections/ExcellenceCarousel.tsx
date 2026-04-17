@@ -27,21 +27,12 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
 
   const DEFAULT_ITEM_KEYS = [0, 1, 2, 3, 4, 5] as const;
 
-  // If CMS provides items — use them dynamically; otherwise fall back to 6 static defaults
-  const items =
-    content?.items && content.items.length > 0
-      ? content.items.map((cmsItem, idx) => ({
-          title: cmsItem.title ?? t(`items.${DEFAULT_ITEM_KEYS[idx % DEFAULT_ITEM_KEYS.length]}.title`),
-          tag: cmsItem.tag ?? t(`items.${DEFAULT_ITEM_KEYS[idx % DEFAULT_ITEM_KEYS.length]}.tag`),
-          description: cmsItem.description ?? t(`items.${DEFAULT_ITEM_KEYS[idx % DEFAULT_ITEM_KEYS.length]}.description`),
-          image: cmsItem.image ?? DEFAULT_IMAGES[idx % DEFAULT_IMAGES.length],
-        }))
-      : DEFAULT_ITEM_KEYS.map((i) => ({
-          title: t(`items.${i}.title`),
-          tag: t(`items.${i}.tag`),
-          description: t(`items.${i}.description`),
-          image: DEFAULT_IMAGES[i],
-        }));
+  const items = (content?.items || []).map((cmsItem, idx) => ({
+    title: cmsItem.title || '',
+    tag: cmsItem.tag || '',
+    description: cmsItem.description || '',
+    image: cmsItem.image || DEFAULT_IMAGES[idx % DEFAULT_IMAGES.length],
+  }));
 
   const itemsCount = items.length;
   const tripledItems = [...items, ...items, ...items];
@@ -147,16 +138,16 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
   const handleMouseUp = () => setIsDragging(false);
 
   return (
-    <section className="w-full bg-[#F4EDE4] py-20 md:py-24 overflow-hidden relative" dir={isRTL ? 'rtl' : 'ltr'}>
+    <section className="w-full bg-[#F4EDE4] py-24 overflow-hidden relative" dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="max-w-7xl mx-auto px-6 flex flex-col gap-10">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="flex flex-col gap-4">
             <h2 className="text-[32px] md:text-[44px] font-bold text-[#0E1A2B] leading-tight">
-              {content?.title ?? t('title')}
+              {content?.title || ''}
             </h2>
             <p className="text-[16px] md:text-[18px] text-[#72665D] max-w-xl">
-              {content?.subtitle ?? t('subtitle')}
+              {content?.subtitle || ''}
             </p>
           </div>
 
@@ -240,6 +231,7 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
                   src={item.image}
                   alt={item.title}
                   fill
+                  sizes="100vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0E1A2BDD] via-[#0E1A2B30] to-transparent" />

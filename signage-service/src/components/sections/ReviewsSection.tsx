@@ -173,10 +173,10 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
 
             <div className="flex flex-col gap-4">
               <h2 className="text-[42px] md:text-[60px] font-bold text-[#0E1A2B] leading-[1.05] tracking-tight">
-                {content?.title ?? t('title')}
+                {content?.title || ''}
               </h2>
               <p className="text-[18px] md:text-[20px] text-[#72665D] max-w-xl leading-relaxed">
-                {content?.subtitle ?? t('subtitle')}
+                {content?.subtitle || ''}
               </p>
             </div>
           </div>
@@ -236,18 +236,18 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
                     </svg>
                   </div>
                   <TypewriterQuote 
-                    content={content?.items?.[idx]?.content ?? t(`items.${idx}.content`)} 
+                    content={content?.items?.[idx]?.content || ''} 
                     shouldAnimate={idx === 0} 
                   />
                 </div>
 
                 <div className="flex items-center gap-5 relative z-10 mt-auto">
                   <div className="flex-shrink-0 w-16 h-16 rounded-full bg-gradient-to-br from-[#B8643E] to-[#D47A4E] flex items-center justify-center text-[24px] font-bold text-white shadow-xl shadow-[#B8643E30] transition-transform duration-500 group-hover:rotate-6">
-                    {(content?.items?.[idx]?.name ?? t(`items.${idx}.name`)).charAt(0)}
+                    {(content?.items?.[idx]?.name || '').charAt(0)}
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[20px] font-bold text-[#0E1A2B] tracking-tight">{content?.items?.[idx]?.name ?? t(`items.${idx}.name`)}</span>
-                    <span className="text-[13px] text-[#B8643E] font-bold uppercase tracking-[0.15em] mt-0.5">{content?.items?.[idx]?.role ?? t(`items.${idx}.role`)}</span>
+                    <span className="text-[20px] font-bold text-[#0E1A2B] tracking-tight">{content?.items?.[idx]?.name || ''}</span>
+                    <span className="text-[13px] text-[#B8643E] font-bold uppercase tracking-[0.15em] mt-0.5">{content?.items?.[idx]?.role || ''}</span>
                   </div>
                 </div>
               </div>

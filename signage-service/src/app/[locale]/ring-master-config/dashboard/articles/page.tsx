@@ -368,17 +368,52 @@ function EditorField({
   label,
   children,
   hint,
+  onCopy,
+  onTranslate,
+  isTranslating,
+  hasReference,
 }: {
   label: string;
   children: ReactNode;
   hint?: string;
+  onCopy?: () => void;
+  onTranslate?: () => void;
+  isTranslating?: boolean;
+  hasReference?: boolean;
 }) {
   return (
-    <label style={styles.field}>
-      <span style={styles.fieldLabel}>{label}</span>
+    <div style={styles.field}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+        <span style={styles.fieldLabel}>{label}</span>
+        {hasReference && (
+          <div style={{ display: 'flex', gap: '4px' }}>
+            <button
+              type="button"
+              onClick={onCopy}
+              title="Copy from Reference"
+              style={styles.fieldActionButton}
+            >
+              Copy
+            </button>
+            <button
+              type="button"
+              onClick={onTranslate}
+              disabled={isTranslating}
+              title="Translate from Reference via AI"
+              style={{
+                ...styles.fieldActionButton,
+                color: isTranslating ? '#666' : '#8b5cf6',
+                borderColor: isTranslating ? '#333' : '#4c1d95',
+              }}
+            >
+              {isTranslating ? '...' : 'AI'}
+            </button>
+          </div>
+        )}
+      </div>
       {children}
       {hint ? <span style={styles.fieldHint}>{hint}</span> : null}
-    </label>
+    </div>
   );
 }
 
@@ -486,6 +521,13 @@ export default function ArticlesPage() {
   const [form, setForm] = useState<ArticleFormState>(() => createEmptyForm(routeLocale));
   const [formError, setFormError] = useState('');
   const [formSaving, setFormSaving] = useState<CmsArticleStatus | 'DELETE' | ''>('');
+  
+  const [referenceDe, setReferenceDe] = useState<CmsArticle | null>(null);
+  const [referenceEn, setReferenceEn] = useState<CmsArticle | null>(null);
+  const [activeRefLocale, setActiveRefLocale] = useState<'de' | 'en'>('de');
+  const [isSplitMode, setIsSplitMode] = useState(false);
+  const [isTranslating, setIsTranslating] = useState<string | null>(null);
+
   const [mediaItems, setMediaItems] = useState<CmsMedia[]>([]);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [mediaError, setMediaError] = useState('');
@@ -578,6 +620,27 @@ export default function ArticlesPage() {
     }
   }, [editorOpen, loadMediaItems]);
 
+  const loadReferenceArticles = useCallback(async (slug: string) => {
+    try {
+      const [deRes, enRes] = await Promise.all([
+        fetch(`/api/cms/articles?slug=${slug}&locale=de`),
+        fetch(`/api/cms/articles?slug=${slug}&locale=en`)
+      ]);
+      
+      if (deRes.ok) {
+        const data = await deRes.json();
+        setReferenceDe(data.articles?.[0] || null);
+      }
+      
+      if (enRes.ok) {
+        const data = await enRes.json();
+        setReferenceEn(data.articles?.[0] || null);
+      }
+    } catch (error) {
+      console.error('Failed to load reference articles', error);
+    }
+  }, []);
+
   const openCreate = useCallback(() => {
     setEditingArticle(null);
     setForm(createEmptyForm(localeFilter || routeLocale));
@@ -601,8 +664,18 @@ export default function ArticlesPage() {
       setRestoreReason('');
       setRestoringRevisionId('');
       setEditorOpen(true);
+      
+      // Load DE and EN references for parallel editing
+      void loadReferenceArticles(article.slug);
+      
+      // Auto-enable split view for non-master locales or if explicitly desired
+      if (article.locale !== 'de' && article.locale !== 'en') {
+        setIsSplitMode(true);
+      } else {
+        setIsSplitMode(false);
+      }
     },
-    [localeFilter, routeLocale]
+    [loadReferenceArticles, localeFilter, routeLocale]
   );
 
   const closeEditor = useCallback(() => {
@@ -610,11 +683,67 @@ export default function ArticlesPage() {
     setEditingArticle(null);
     setFormError('');
     setFormSaving('');
+    setReferenceDe(null);
+    setReferenceEn(null);
     setRevisions([]);
     setRevisionsError('');
     setRestoreReason('');
     setRestoringRevisionId('');
   }, []);
+
+  const handleCopyField = useCallback((fieldName: keyof ArticleFormState) => {
+    const activeRef = activeRefLocale === 'de' ? referenceDe : referenceEn;
+    if (!activeRef) return;
+
+    let value = '';
+    // Manual mapping for fields that are arrays in DB but strings in Form
+    if (fieldName === 'causes') value = joinLines(activeRef.causes);
+    else if (fieldName === 'safeChecks') value = joinLines(activeRef.safeChecks);
+    else if (fieldName === 'urgentWarnings') value = joinLines(activeRef.urgentWarnings);
+    else if (fieldName === 'serviceProcess') value = joinLines(activeRef.serviceProcess);
+    else if (fieldName === 'workScopeFactors') value = joinLines(activeRef.workScopeFactors);
+    else if (fieldName === 'relatedSlugs') value = joinLines(activeRef.relatedSlugs);
+    else {
+      // Direct string mapping
+      const refVal = activeRef[fieldName as keyof CmsArticle];
+      value = typeof refVal === 'string' ? refVal : String(refVal ?? '');
+    }
+
+    setForm((prev) => ({ ...prev, [fieldName]: value }));
+  }, [activeRefLocale, referenceDe, referenceEn]);
+
+  const handleAiTranslateField = useCallback(async (fieldName: keyof ArticleFormState) => {
+    const activeRef = activeRefLocale === 'de' ? referenceDe : referenceEn;
+    if (!activeRef) return;
+
+    const sourceText = activeRef[fieldName as keyof CmsArticle];
+    if (!sourceText || (Array.isArray(sourceText) && sourceText.length === 0)) return;
+
+    setIsTranslating(fieldName);
+    
+    try {
+      // This uses a generic AI completion endpoint to translate the specific field
+      const response = await adminFetch('/api/cms/articles/translate-field', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: Array.isArray(sourceText) ? joinLines(sourceText) : sourceText,
+          targetLocale: form.locale,
+          sourceLocale: activeRef.locale,
+          fieldName
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setForm(prev => ({ ...prev, [fieldName]: data.translatedText }));
+      }
+    } catch (error) {
+      console.error('Translation failed', error);
+    } finally {
+      setIsTranslating(null);
+    }
+  }, [activeRefLocale, referenceDe, referenceEn, form.locale]);
 
   const loadArticleRevisions = useCallback(async (articleId: string) => {
     setRevisionsLoading(true);
@@ -1083,165 +1212,309 @@ export default function ArticlesPage() {
 
       {editorOpen ? (
         <div style={styles.modalOverlay} onClick={closeEditor}>
-          <div style={styles.modal} onClick={(event) => event.stopPropagation()}>
+          <div
+            style={{
+              ...styles.modal,
+              width: isSplitMode ? 'min(1440px, 100%)' : 'min(1120px, 100%)',
+            }}
+            onClick={(event) => event.stopPropagation()}
+          >
             <div style={styles.modalHeader}>
               <div>
                 <h2 style={styles.modalTitle}>
                   {editingArticle ? 'Edit article' : 'New article'}
                 </h2>
-                <p style={styles.modalSubtitle}>
-                  Save a draft, publish it, or keep the content ready for the support flow.
-                </p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
+                  <p style={{ ...styles.modalSubtitle, margin: 0 }}>
+                    Save a draft, publish it, or keep the content ready for the support flow.
+                  </p>
+                  {editingArticle && (
+                    <button
+                      type="button"
+                      onClick={() => setIsSplitMode(!isSplitMode)}
+                      style={{
+                        ...styles.secondaryButton,
+                        borderColor: isSplitMode ? '#8b5cf6' : '#333',
+                        color: isSplitMode ? '#8b5cf6' : '#fff',
+                        padding: '4px 10px',
+                        fontSize: '11px',
+                      }}
+                    >
+                      {isSplitMode ? 'Hide Parallel View' : 'Show Parallel View'}
+                    </button>
+                  )}
+                </div>
               </div>
 
-              <button type="button" onClick={closeEditor} style={styles.closeButton}>
-                Close
-              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button type="button" onClick={closeEditor} style={styles.closeButton}>
+                  Close
+                </button>
+              </div>
             </div>
 
             {formError ? <div style={styles.errorBanner}>{formError}</div> : null}
 
-            <div style={styles.formGrid}>
-              <EditorField label="Locale">
-                <SelectInput
-                  value={form.locale}
-                  onChange={(value) => setForm((current) => ({ ...current, locale: value }))}
+              <div style={isSplitMode ? styles.splitWorkspace : {}}>
+                {isSplitMode && (
+                  <div style={styles.referencePane}>
+                    <div style={styles.referenceHeader}>
+                      <div style={styles.referenceTabs}>
+                        {(['de', 'en'] as const).map((loc) => (
+                          <button
+                            key={loc}
+                            type="button"
+                            onClick={() => setActiveRefLocale(loc)}
+                            style={{
+                              ...styles.referenceTab,
+                              background: activeRefLocale === loc ? '#8b5cf6' : 'transparent',
+                              color: activeRefLocale === loc ? '#fff' : '#888',
+                            }}
+                          >
+                            {loc.toUpperCase()} {loc === 'de' ? 'MASTER' : 'AI MASTER'}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div style={styles.referenceContent}>
+                      {activeRefLocale === 'de' && !referenceDe && (
+                        <div style={styles.referenceEmpty}>No German version found for this slug.</div>
+                      )}
+                      {activeRefLocale === 'en' && !referenceEn && (
+                        <div style={styles.referenceEmpty}>No English version found for this slug.</div>
+                      )}
+                      
+                      {((activeRefLocale === 'de' && referenceDe) || (activeRefLocale === 'en' && referenceEn)) ? (
+                        (() => {
+                          const ref = activeRefLocale === 'de' ? referenceDe : referenceEn;
+                          if (!ref) return null;
+                          
+                          return (
+                            <>
+                              <div style={styles.cardField}>
+                                <span style={styles.cardFieldLabel}>Title</span>
+                                <div style={styles.cardFieldValue}>{ref.title}</div>
+                              </div>
+                              <div style={styles.cardField}>
+                                <span style={styles.cardFieldLabel}>Short Answer</span>
+                                <div style={styles.cardFieldValue}>{ref.shortAnswer}</div>
+                              </div>
+                              <div style={styles.cardField}>
+                                <span style={styles.cardFieldLabel}>Main Content</span>
+                                <div style={{ ...styles.cardFieldValue, whiteSpace: 'pre-wrap', maxHeight: '300px', overflow: 'auto', background: '#000', padding: '10px', borderRadius: '4px' }}>
+                                  {ref.content}
+                                </div>
+                              </div>
+                              {/* SEO Items */}
+                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                                <div style={styles.cardField}>
+                                  <span style={styles.cardFieldLabel}>SEO Title</span>
+                                  <div style={styles.cardFieldValue}>{ref.seoTitle}</div>
+                                </div>
+                                <div style={styles.cardField}>
+                                  <span style={styles.cardFieldLabel}>CTA Link</span>
+                                  <div style={styles.cardFieldValue}>{ref.ctaHref}</div>
+                                </div>
+                              </div>
+                            </>
+                          );
+                        })()
+                      ) : null}
+                    </div>
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={styles.formSection}>
+
+                <EditorField label="Locale">
+                  <SelectInput
+                    value={form.locale}
+                    onChange={(value) => setForm((current) => ({ ...current, locale: value }))}
+                  >
+                    {SUPPORTED_LOCALES.map((locale) => (
+                      <option key={locale} value={locale}>
+                        {locale}
+                      </option>
+                    ))}
+                  </SelectInput>
+                </EditorField>
+
+                <EditorField label="Type">
+                  <SelectInput
+                    value={form.type}
+                    onChange={(value) =>
+                      setForm((current) => ({ ...current, type: value as CmsArticleType }))
+                    }
+                  >
+                    {ARTICLE_TYPES.map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
+                    ))}
+                  </SelectInput>
+                </EditorField>
+
+                <EditorField label="Status">
+                  <SelectInput
+                    value={form.status}
+                    onChange={(value) =>
+                      setForm((current) => ({
+                        ...current,
+                        status: value as CmsArticleStatus,
+                      }))
+                    }
+                  >
+                    {STATUS_OPTIONS.map((status) => (
+                      <option key={status} value={status}>
+                        {status}
+                      </option>
+                    ))}
+                  </SelectInput>
+                </EditorField>
+
+                <EditorField label="Sort order"
+                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
+                  onCopy={() => handleCopyField('sortOrder')}
                 >
-                  {SUPPORTED_LOCALES.map((locale) => (
-                    <option key={locale} value={locale}>
-                      {locale}
-                    </option>
-                  ))}
-                </SelectInput>
-              </EditorField>
+                  <TextInput
+                    type="number"
+                    value={form.sortOrder}
+                    onChange={(value) => setForm((current) => ({ ...current, sortOrder: value }))}
+                    placeholder="0"
+                  />
+                </EditorField>
 
-              <EditorField label="Type">
-                <SelectInput
-                  value={form.type}
-                  onChange={(value) =>
-                    setForm((current) => ({ ...current, type: value as CmsArticleType }))
-                  }
+                <EditorField label="Slug" hint="Lowercase letters, numbers, hyphens only"
+                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
+                  onCopy={() => handleCopyField('slug')}
                 >
-                  {ARTICLE_TYPES.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </SelectInput>
-              </EditorField>
+                  <TextInput
+                    value={form.slug}
+                    onChange={(value) => setForm((current) => ({ ...current, slug: value }))}
+                    placeholder="sign-not-lighting"
+                  />
+                </EditorField>
 
-              <EditorField label="Status">
-                <SelectInput
-                  value={form.status}
-                  onChange={(value) =>
-                    setForm((current) => ({
-                      ...current,
-                      status: value as CmsArticleStatus,
-                    }))
-                  }
+                <EditorField label="Title"
+                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
+                  onCopy={() => handleCopyField('title')}
+                  onTranslate={() => handleAiTranslateField('title')}
+                  isTranslating={isTranslating === 'title'}
                 >
-                  {STATUS_OPTIONS.map((status) => (
-                    <option key={status} value={status}>
-                      {status}
-                    </option>
-                  ))}
-                </SelectInput>
-              </EditorField>
+                  <TextInput
+                    value={form.title}
+                    onChange={(value) => setForm((current) => ({ ...current, title: value }))}
+                    placeholder="Why the sign does not light up"
+                  />
+                </EditorField>
 
-              <EditorField label="Sort order">
-                <TextInput
-                  type="number"
-                  value={form.sortOrder}
-                  onChange={(value) => setForm((current) => ({ ...current, sortOrder: value }))}
-                  placeholder="0"
-                />
-              </EditorField>
+                <EditorField label="Symptom label"
+                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
+                  onCopy={() => handleCopyField('symptomLabel')}
+                  onTranslate={() => handleAiTranslateField('symptomLabel')}
+                  isTranslating={isTranslating === 'symptomLabel'}
+                >
+                  <TextInput
+                    value={form.symptomLabel}
+                    onChange={(value) => setForm((current) => ({ ...current, symptomLabel: value }))}
+                    placeholder="Optional internal label"
+                  />
+                </EditorField>
 
-              <EditorField label="Slug" hint="Lowercase letters, numbers, hyphens only">
-                <TextInput
-                  value={form.slug}
-                  onChange={(value) => setForm((current) => ({ ...current, slug: value }))}
-                  placeholder="sign-not-lighting"
-                />
-              </EditorField>
+                <EditorField label="Short answer"
+                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
+                  onCopy={() => handleCopyField('shortAnswer')}
+                  onTranslate={() => handleAiTranslateField('shortAnswer')}
+                  isTranslating={isTranslating === 'shortAnswer'}
+                >
+                  <TextArea
+                    value={form.shortAnswer}
+                    onChange={(value) => setForm((current) => ({ ...current, shortAnswer: value }))}
+                    placeholder="1-3 sentence answer for list cards and detail intro"
+                    rows={4}
+                  />
+                </EditorField>
 
-              <EditorField label="Title">
-                <TextInput
-                  value={form.title}
-                  onChange={(value) => setForm((current) => ({ ...current, title: value }))}
-                  placeholder="Why the sign does not light up"
-                />
-              </EditorField>
+                <EditorField label="Canonical URL"
+                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
+                  onCopy={() => handleCopyField('canonicalUrl')}
+                >
+                  <TextInput
+                    value={form.canonicalUrl}
+                    onChange={(value) => setForm((current) => ({ ...current, canonicalUrl: value }))}
+                    placeholder="/de/support/sign-not-lighting"
+                  />
+                </EditorField>
 
-              <EditorField label="Symptom label">
-                <TextInput
-                  value={form.symptomLabel}
-                  onChange={(value) => setForm((current) => ({ ...current, symptomLabel: value }))}
-                  placeholder="Optional internal label"
-                />
-              </EditorField>
+                <EditorField label="SEO title"
+                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
+                  onCopy={() => handleCopyField('seoTitle')}
+                  onTranslate={() => handleAiTranslateField('seoTitle')}
+                  isTranslating={isTranslating === 'seoTitle'}
+                >
+                  <TextInput
+                    value={form.seoTitle}
+                    onChange={(value) => setForm((current) => ({ ...current, seoTitle: value }))}
+                    placeholder="SEO title"
+                  />
+                </EditorField>
 
-              <EditorField label="Short answer">
-                <TextArea
-                  value={form.shortAnswer}
-                  onChange={(value) => setForm((current) => ({ ...current, shortAnswer: value }))}
-                  placeholder="1-3 sentence answer for list cards and detail intro"
-                  rows={4}
-                />
-              </EditorField>
+                <EditorField label="SEO description"
+                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
+                  onCopy={() => handleCopyField('seoDescription')}
+                  onTranslate={() => handleAiTranslateField('seoDescription')}
+                  isTranslating={isTranslating === 'seoDescription'}
+                >
+                  <TextArea
+                    value={form.seoDescription}
+                    onChange={(value) => setForm((current) => ({ ...current, seoDescription: value }))}
+                    placeholder="Meta description"
+                    rows={4}
+                  />
+                </EditorField>
 
-              <EditorField label="Canonical URL">
-                <TextInput
-                  value={form.canonicalUrl}
-                  onChange={(value) => setForm((current) => ({ ...current, canonicalUrl: value }))}
-                  placeholder="/de/support/sign-not-lighting"
-                />
-              </EditorField>
+                <EditorField label="CTA label"
+                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
+                  onCopy={() => handleCopyField('ctaLabel')}
+                  onTranslate={() => handleAiTranslateField('ctaLabel')}
+                  isTranslating={isTranslating === 'ctaLabel'}
+                >
+                  <TextInput
+                    value={form.ctaLabel}
+                    onChange={(value) => setForm((current) => ({ ...current, ctaLabel: value }))}
+                    placeholder="Send photo"
+                  />
+                </EditorField>
 
-              <EditorField label="SEO title">
-                <TextInput
-                  value={form.seoTitle}
-                  onChange={(value) => setForm((current) => ({ ...current, seoTitle: value }))}
-                  placeholder="SEO title"
-                />
-              </EditorField>
+                <EditorField label="CTA href"
+                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
+                  onCopy={() => handleCopyField('ctaHref')}
+                >
+                  <TextInput
+                    value={form.ctaHref}
+                    onChange={(value) => setForm((current) => ({ ...current, ctaHref: value }))}
+                    placeholder="/de/contact"
+                  />
+                </EditorField>
+              </div>
 
-              <EditorField label="SEO description">
-                <TextArea
-                  value={form.seoDescription}
-                  onChange={(value) => setForm((current) => ({ ...current, seoDescription: value }))}
-                  placeholder="Meta description"
-                  rows={4}
-                />
-              </EditorField>
-
-              <EditorField label="CTA label">
-                <TextInput
-                  value={form.ctaLabel}
-                  onChange={(value) => setForm((current) => ({ ...current, ctaLabel: value }))}
-                  placeholder="Send photo"
-                />
-              </EditorField>
-
-              <EditorField label="CTA href">
-                <TextInput
-                  value={form.ctaHref}
-                  onChange={(value) => setForm((current) => ({ ...current, ctaHref: value }))}
-                  placeholder="/de/contact"
-                />
-              </EditorField>
-            </div>
-
-            <div style={styles.formSection}>
-              <h3 style={styles.sectionTitle}>Content</h3>
-              <EditorField label="Markdown body" hint="Required">
-                <TextArea
-                  value={form.content}
-                  onChange={(value) => setForm((current) => ({ ...current, content: value }))}
-                  placeholder="Markdown content"
-                  rows={14}
-                />
-              </EditorField>
+              <div style={styles.formSection}>
+                <h3 style={styles.sectionTitle}>Content</h3>
+                <EditorField label="Markdown body" hint="Required"
+                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
+                  onCopy={() => handleCopyField('content')}
+                  onTranslate={() => handleAiTranslateField('content')}
+                  isTranslating={isTranslating === 'content'}
+                >
+                  <TextArea
+                    value={form.content}
+                    onChange={(value) => setForm((current) => ({ ...current, content: value }))}
+                    placeholder="Markdown content"
+                    rows={14}
+                  />
+                </EditorField>
 
               <div style={styles.mediaPickerPanel}>
                 <div style={styles.mediaPickerHeader}>
@@ -1299,7 +1572,10 @@ export default function ArticlesPage() {
             <div style={styles.formSection}>
               <h3 style={styles.sectionTitle}>Arrays</h3>
               <div style={styles.arrayGrid}>
-                <EditorField label="Related slugs" hint="One slug per line">
+                <EditorField label="Related slugs" hint="One slug per line"
+                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
+                  onCopy={() => handleCopyField('relatedSlugs')}
+                >
                   <TextArea
                     value={form.relatedSlugs}
                     onChange={(value) =>
@@ -1309,7 +1585,12 @@ export default function ArticlesPage() {
                   />
                 </EditorField>
 
-                <EditorField label="Causes" hint="One line per item">
+                <EditorField label="Causes" hint="One line per item"
+                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
+                  onCopy={() => handleCopyField('causes')}
+                  onTranslate={() => handleAiTranslateField('causes')}
+                  isTranslating={isTranslating === 'causes'}
+                >
                   <TextArea
                     value={form.causes}
                     onChange={(value) => setForm((current) => ({ ...current, causes: value }))}
@@ -1317,7 +1598,12 @@ export default function ArticlesPage() {
                   />
                 </EditorField>
 
-                <EditorField label="Safe checks" hint="One line per item">
+                <EditorField label="Safe checks" hint="One line per item"
+                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
+                  onCopy={() => handleCopyField('safeChecks')}
+                  onTranslate={() => handleAiTranslateField('safeChecks')}
+                  isTranslating={isTranslating === 'safeChecks'}
+                >
                   <TextArea
                     value={form.safeChecks}
                     onChange={(value) => setForm((current) => ({ ...current, safeChecks: value }))}
@@ -1325,7 +1611,12 @@ export default function ArticlesPage() {
                   />
                 </EditorField>
 
-                <EditorField label="Urgent warnings" hint="One line per item">
+                <EditorField label="Urgent warnings" hint="One line per item"
+                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
+                  onCopy={() => handleCopyField('urgentWarnings')}
+                  onTranslate={() => handleAiTranslateField('urgentWarnings')}
+                  isTranslating={isTranslating === 'urgentWarnings'}
+                >
                   <TextArea
                     value={form.urgentWarnings}
                     onChange={(value) =>
@@ -1335,7 +1626,12 @@ export default function ArticlesPage() {
                   />
                 </EditorField>
 
-                <EditorField label="Service process" hint="One line per item">
+                <EditorField label="Service process" hint="One line per item"
+                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
+                  onCopy={() => handleCopyField('serviceProcess')}
+                  onTranslate={() => handleAiTranslateField('serviceProcess')}
+                  isTranslating={isTranslating === 'serviceProcess'}
+                >
                   <TextArea
                     value={form.serviceProcess}
                     onChange={(value) =>
@@ -1345,7 +1641,12 @@ export default function ArticlesPage() {
                   />
                 </EditorField>
 
-                <EditorField label="Work scope factors" hint="One line per item">
+                <EditorField label="Work scope factors" hint="One line per item"
+                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
+                  onCopy={() => handleCopyField('workScopeFactors')}
+                  onTranslate={() => handleAiTranslateField('workScopeFactors')}
+                  isTranslating={isTranslating === 'workScopeFactors'}
+                >
                   <TextArea
                     value={form.workScopeFactors}
                     onChange={(value) =>
@@ -1491,7 +1792,9 @@ export default function ArticlesPage() {
             </div>
           </div>
         </div>
-      ) : null}
+      </div>
+    </div>
+    ) : null}
     </div>
   );
 }
@@ -1803,6 +2106,61 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     flexDirection: 'column',
     gap: '16px',
+    transition: 'width 0.3s ease-in-out',
+  },
+  splitWorkspace: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '24px',
+    alignItems: 'stretch',
+  },
+  referencePane: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    background: '#0a0a0a',
+    border: '1px solid #222',
+    borderRadius: '8px',
+    overflow: 'hidden',
+    height: 'fit-content',
+    position: 'sticky' as const,
+    top: 0,
+  },
+  referenceHeader: {
+    padding: '8px 12px',
+    background: '#141414',
+    borderBottom: '1px solid #222',
+  },
+  referenceTabs: {
+    display: 'flex',
+    gap: '2px',
+    padding: '2px',
+    background: '#000',
+    borderRadius: '6px',
+  },
+  referenceTab: {
+    flex: 1,
+    padding: '6px',
+    fontSize: '11px',
+    fontWeight: 700,
+    borderRadius: '4px',
+    border: 'none',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+  },
+  referenceContent: {
+    padding: '16px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+    maxHeight: '600px',
+    overflowY: 'auto' as const,
+  },
+  referenceEmpty: {
+    padding: '32px 16px',
+    textAlign: 'center' as const,
+    color: '#666',
+    fontSize: '13px',
   },
   modalHeader: {
     display: 'flex',

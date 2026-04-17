@@ -24,28 +24,19 @@ const BentoGridSection = ({ content }: BentoGridSectionProps) => {
     return 'bg-white';
   };
 
-  // If CMS provides steps — use them dynamically; otherwise fall back to 5 static defaults
-  const steps =
-    content?.steps && content.steps.length > 0
-      ? content.steps.map((cmsStep, idx) => ({
-          id: idx + 1,
-          title: cmsStep.title ?? t(`steps.${DEFAULT_STEP_KEYS[idx % DEFAULT_STEP_KEYS.length]}.title`),
-          description: cmsStep.description ?? t(`steps.${DEFAULT_STEP_KEYS[idx % DEFAULT_STEP_KEYS.length]}.description`),
-          className: getCardClass(idx, content.steps!.length),
-        }))
-      : DEFAULT_STEP_KEYS.map((i) => ({
-          id: i + 1,
-          title: t(`steps.${i}.title`),
-          description: t(`steps.${i}.description`),
-          className: getCardClass(i, DEFAULT_STEP_KEYS.length),
-        }));
+  const steps = (content?.steps || []).map((cmsStep, idx) => ({
+    id: idx + 1,
+    title: cmsStep.title || '',
+    description: cmsStep.description || '',
+    className: getCardClass(idx, content?.steps?.length || 0),
+  }));
 
   return (
     <section className="w-full bg-[#EED8C8] py-24 px-6">
       <div className="max-w-7xl mx-auto flex flex-col gap-12">
         <div className="flex flex-col gap-4">
           <h2 className="text-[40px] md:text-[48px] font-bold text-[#0E1A2B] leading-tight">
-            {content?.title ?? t('title')}
+            {content?.title || ''}
           </h2>
           <div className="w-20 h-1 bg-[#B8643E] rounded-full" />
         </div>

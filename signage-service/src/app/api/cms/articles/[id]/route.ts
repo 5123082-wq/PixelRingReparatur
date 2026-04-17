@@ -1,16 +1,10 @@
+import { CMS_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
+import { createAdminAuditLog, requireAdminPermissionActor, type AdminRequestActor } from '@/lib/admin-audit';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
-import {
-  CMS_SESSION_COOKIE_NAME,
-} from '@/lib/admin-auth';
 import { hasAdminPermissions } from '@/lib/admin-permissions';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
-import {
-  createAdminAuditLog,
-  requireAdminPermissionActor,
-  type AdminRequestActor,
-} from '@/lib/admin-audit';
 import { createArticleRevisionSnapshot } from '@/lib/cms/revisions';
 import { resolveUuidRouteParam } from '@/lib/route-params';
 
