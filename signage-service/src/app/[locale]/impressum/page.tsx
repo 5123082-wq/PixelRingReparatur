@@ -2,8 +2,16 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import TextSection from '@/components/sections/TextSection';
 import { getGlobalPageCmsContent, getPublishedCmsPage } from '@/lib/cms/pages';
-import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
+
+const LEGAL_NOTICE_BY_LOCALE: Record<string, string> = {
+  de: 'Dieses Dokument ist rechtlich bindend in seiner deutschen Fassung.',
+  en: 'This document is legally binding in its German version. The original German text is shown below.',
+  ru: 'Этот документ имеет юридическую силу только в немецкой версии. Ниже показан оригинальный немецкий текст.',
+  tr: 'Bu belge yalnizca Almanca surumunde hukuken baglayicidir. Asagida orijinal Almanca metin gosterilmektedir.',
+  pl: 'Ten dokument jest prawnie wiazacy wylacznie w wersji niemieckiej. Ponizej pokazano oryginalny tekst niemiecki.',
+  ar: 'هذا المستند ملزم قانونيا فقط بنسخته الالمانية. يعرض ادناه النص الالماني الاصلي.',
+};
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -20,6 +28,7 @@ export default async function ImpressumPage({
 }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'Footer' });
+  const legalNotice = LEGAL_NOTICE_BY_LOCALE[locale] ?? LEGAL_NOTICE_BY_LOCALE.en;
   
   const [globalCms, legalCms] = await Promise.all([
     getGlobalPageCmsContent(locale),
@@ -33,9 +42,7 @@ export default async function ImpressumPage({
       <main className="flex-1">
         <div className="pt-24 pb-12 px-6 sm:px-10 max-w-7xl mx-auto">
            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-amber-800 text-sm mb-8">
-             {locale === 'de' ? 
-               'Dieses Dokument ist rechtlich bindend in seiner deutschen Fassung.' : 
-               'This document is legally binding in its German version only. Displaying German content.'}
+             {legalNotice}
            </div>
         </div>
         

@@ -11,6 +11,7 @@ Short global status only. Detailed session notes belong to folder-level `Progres
 - CRM Modernization (Sprint 1B): complete; case-detail chat scrolling restored and case open lands on latest message without forced re-scroll on later updates
 - [x] Assets + Forms (Block 3): complete; multi-file photo/video upload, location picker, Vercel Blob integration, and CRM media gallery implemented
 - [x] Legal Compliance (Germany/EU): complete; Impressum and Privacy Policy pages implemented with localized disclaimers and mandatory German content fallback; Footer links refined.
+- [x] Legal Compliance (Germany/EU): update complete; footer legal links now limited to active pages (`Impressum`, `Datenschutzerklaerung`) with German labels across locales; legal notice banners localized per interface language while showing German legal content; baseline CMS legal texts expanded and structured, including technical-cookies section in Datenschutzerklaerung.
 - [x] Redesign TrustSection with premium glassmorphism and dynamic stats.
 - [x] Populate multi-lingual baseline content for all 6 locales (DE, EN, RU, TR, PL, AR).
 - [x] Standardize CMS data structures (camelCase + Arrays for lists).
@@ -27,4 +28,4 @@ Short global status only. Detailed session notes belong to folder-level `Progres
 ## Last Updated
 
 - Date: 2026-04-17
-- Updated by: Codex (CoverageMap layering cleanup)
+- Updated by: Codex (legal footer and legal document baseline refinement)

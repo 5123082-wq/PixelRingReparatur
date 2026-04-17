@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 
 type FooterLink = {
@@ -25,9 +24,14 @@ type FooterContent = {
   email?: string | null;
 };
 
-const Footer = ({ content }: { content?: FooterContent | null }) => {
-  const t = useTranslations('Footer');
+const LEGAL_LABELS_DE: Record<string, string> = {
+  '/impressum': 'Impressum',
+  '/privacy': 'Datenschutzerklärung',
+};
 
+const ACTIVE_LEGAL_HREFS = new Set(Object.keys(LEGAL_LABELS_DE));
+
+const Footer = ({ content }: { content?: FooterContent | null }) => {
   const serviceLinks = (content?.serviceLinks || []).map((link) => ({
     name: link.label,
     href: link.href,
@@ -43,10 +47,12 @@ const Footer = ({ content }: { content?: FooterContent | null }) => {
     href: link.href,
   }));
 
-  const legalLinks = (content?.legalLinks || []).map((link) => ({
-    name: link.label,
-    href: link.href,
-  }));
+  const legalLinks = (content?.legalLinks || [])
+    .filter((link) => ACTIVE_LEGAL_HREFS.has(link.href))
+    .map((link) => ({
+      name: LEGAL_LABELS_DE[link.href] ?? link.label,
+      href: link.href,
+    }));
 
   const companyLines = content?.companyLines || [];
   const companyHours = content?.hours || '';
