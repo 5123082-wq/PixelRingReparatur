@@ -965,13 +965,14 @@ export default function ArticlesPage() {
 
       const payload = normalizeArticlePayload(form, nextStatus);
       const normalizedFormLocale = form.locale.trim() || 'de';
-      const isEdit = Boolean(editingArticle);
+      const sourceArticle = editingArticle;
+      const isEdit = sourceArticle !== null;
       const isTranslationCreate =
-        Boolean(editingArticle) && normalizedFormLocale !== editingArticle.locale;
+        sourceArticle !== null && normalizedFormLocale !== sourceArticle.locale;
       const useCreatePath = !isEdit || isTranslationCreate;
       const url = useCreatePath
         ? '/api/cms/articles'
-        : `/api/cms/articles/${editingArticle?.id}`;
+        : `/api/cms/articles/${sourceArticle?.id}`;
       const method = useCreatePath ? 'POST' : 'PATCH';
 
       try {
@@ -990,7 +991,7 @@ export default function ArticlesPage() {
         setForm(createEmptyForm(localeFilter || routeLocale));
         if (isTranslationCreate) {
           setDraftSavedNotice(
-            `New ${normalizedFormLocale.toUpperCase()} locale article created from source locale ${editingArticle?.locale.toUpperCase()}. Original article was kept unchanged.`
+            `New ${normalizedFormLocale.toUpperCase()} locale article created from source locale ${sourceArticle?.locale.toUpperCase()}. Original article was kept unchanged.`
           );
         } else if (nextStatus === 'DRAFT') {
           const slug = normalizeSlug(form.slug);
