@@ -1,7 +1,7 @@
 import { CRM_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
 import { createAdminAuditLog, requireAdminPermissionActor } from '@/lib/admin-audit';
 import { NextRequest, NextResponse } from 'next/server';
-import { CaseOriginChannel, CaseStatus, MessageAuthorRole, Prisma } from '@prisma/client';
+import { CaseOriginChannel, CaseStatus, MessageAuthorRole } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
@@ -61,35 +61,13 @@ type RouteParams = {
   params: Promise<{ id: string }>;
 };
 
-function resolveCaseDetailReadError(error: unknown): {
+function resolveCaseDetailReadError(): {
   status: number;
   message: string;
-  details?: string;
 } {
-  if (error instanceof Prisma.PrismaClientKnownRequestError) {
-    if (error.code === 'P2021' || error.code === 'P2022') {
-      return {
-        status: 503,
-        message:
-          'CRM detail is unavailable because database schema is outdated. Run npm run db:deploy, then restart the dev server.',
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined,
-      };
-    }
-  }
-
-  if (error instanceof Prisma.PrismaClientValidationError) {
-    return {
-      status: 503,
-      message:
-        'CRM detail is unavailable because Prisma Client is out of sync. Run npm run db:generate and restart the dev server.',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined,
-    };
-  }
-
   return {
     status: 500,
     message: 'Internal error',
-    details: process.env.NODE_ENV === 'development' && error instanceof Error ? error.message : undefined,
   };
 }
 
@@ -228,7 +206,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       caseRecord.assignedOperator !== actor.email &&
       caseRecord.assignedOperator !== actor.displayName
     ) {
-      return NextResponse.json({ error: 'Forbidden. Case is not assigned to you.' }, { status: 403 });
+      return notFoundResponse();
     }
 
     const relatedCases =
@@ -254,12 +232,11 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   } catch (error) {
     console.error('Admin case detail error:', error);
 
-    const resolvedError = resolveCaseDetailReadError(error);
+    const resolvedError = resolveCaseDetailReadError();
 
     return NextResponse.json(
       {
         error: resolvedError.message,
-        ...(resolvedError.details ? { details: resolvedError.details } : {}),
       },
       { status: resolvedError.status }
     );
@@ -358,7 +335,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       caseRecord.assignedOperator !== actor.email &&
       caseRecord.assignedOperator !== actor.displayName
     ) {
-      return NextResponse.json({ error: 'Forbidden. Case is not assigned to you.' }, { status: 403 });
+      return notFoundResponse();
     }
 
     const now = new Date();
@@ -547,7 +524,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       currentCase.assignedOperator !== actor.email &&
       currentCase.assignedOperator !== actor.displayName
     ) {
-      return NextResponse.json({ error: 'Forbidden. Case is not assigned to you.' }, { status: 403 });
+      return notFoundResponse();
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

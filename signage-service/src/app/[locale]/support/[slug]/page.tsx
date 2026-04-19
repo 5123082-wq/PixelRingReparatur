@@ -191,8 +191,8 @@ export default async function SupportArticlePage({
                     Was das meistens bedeutet
                   </h2>
                   <ul className="space-y-2">
-                    {article.causes.map((item) => (
-                      <li key={item} className="text-[#72665D] leading-relaxed">
+                    {article.causes.map((item, index) => (
+                      <li key={`${item}-${index}`} className="text-[#72665D] leading-relaxed">
                         {item}
                       </li>
                     ))}
@@ -206,8 +206,8 @@ export default async function SupportArticlePage({
                     Was Sie sicher prüfen können
                   </h2>
                   <ul className="space-y-2">
-                    {article.safeChecks.map((item) => (
-                      <li key={item} className="text-[#72665D] leading-relaxed">
+                    {article.safeChecks.map((item, index) => (
+                      <li key={`${item}-${index}`} className="text-[#72665D] leading-relaxed">
                         {item}
                       </li>
                     ))}
@@ -221,8 +221,8 @@ export default async function SupportArticlePage({
                     Wann es dringend ist
                   </h2>
                   <ul className="space-y-2">
-                    {article.urgentWarnings.map((item) => (
-                      <li key={item} className="text-[#72665D] leading-relaxed">
+                    {article.urgentWarnings.map((item, index) => (
+                      <li key={`${item}-${index}`} className="text-[#72665D] leading-relaxed">
                         {item}
                       </li>
                     ))}
@@ -236,8 +236,8 @@ export default async function SupportArticlePage({
                     Wie wir die Ursache eingrenzen
                   </h2>
                   <ol className="space-y-2 list-decimal list-inside">
-                    {article.serviceProcess.map((item) => (
-                      <li key={item} className="text-[#72665D] leading-relaxed">
+                    {article.serviceProcess.map((item, index) => (
+                      <li key={`${item}-${index}`} className="text-[#72665D] leading-relaxed">
                         {item}
                       </li>
                     ))}
@@ -251,8 +251,8 @@ export default async function SupportArticlePage({
                     Wovon der Aufwand abhängt
                   </h2>
                   <ul className="space-y-2">
-                    {article.workScopeFactors.map((item) => (
-                      <li key={item} className="text-[#72665D] leading-relaxed">
+                    {article.workScopeFactors.map((item, index) => (
+                      <li key={`${item}-${index}`} className="text-[#72665D] leading-relaxed">
                         {item}
                       </li>
                     ))}

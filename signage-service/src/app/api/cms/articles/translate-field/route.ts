@@ -5,6 +5,10 @@ import { prisma } from '@/lib/prisma';
 import { getAiRuntimeConfig } from '@/lib/ai/config';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
 
+function notFoundResponse() {
+  return NextResponse.json({ error: 'Not found' }, { status: 404 });
+}
+
 export async function POST(request: NextRequest) {
   const csrfError = validateAdminCsrf(request);
   if (csrfError) return csrfError;
@@ -17,7 +21,7 @@ export async function POST(request: NextRequest) {
   );
 
   if (!actor) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return notFoundResponse();
   }
 
   try {

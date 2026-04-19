@@ -9,7 +9,7 @@ It translates approved decisions into delivery order, dependencies, and release 
 ## Approved Blocks
 
 1. Foundation: auth, sessions, RBAC baseline, audit, security baseline
-2. Content Core: revisions, workflow, preview, scheduling, managed navigation
+2. Content Core: revisions, workflow, managed navigation
 3. Assets + Forms: media governance/pipeline, configurable form schemas
 4. Delivery + Integrations: outbox, adapters, cache revalidation, reliability controls
 5. Hardening + Release Readiness: MFA/step-up, distributed rate limiting, backup/restore drills, incident/release gates
@@ -20,6 +20,7 @@ It translates approved decisions into delivery order, dependencies, and release 
 - Use Tabler as admin UI layer.
 - Evolve existing entities (`CmsArticle`, `CmsPage`, `CmsMedia`, `AiConfig`, `CmsSeoConfig`) instead of replacing them.
 - No big-bang rewrite; incremental production-safe rollout.
+- Fix critical vulnerabilities inside the current delivery stage as mandatory hotfix work, then continue the planned stage sequence.
 
 ## Dependency Order
 
@@ -53,8 +54,7 @@ Exit criteria:
 
 - revisions for pages/articles;
 - workflow state expansion;
-- signed preview;
-- scheduled publish;
+- simple publication lifecycle (`draft -> internal admin review -> publish`);
 - managed navigation entities.
 
 Exit criteria:
@@ -136,6 +136,177 @@ Entries are in **reverse chronological order** — newest entry is always at the
 - Documents updated in this session:
 
 ### Latest Entry
+
+- Date: 2026-04-19
+- Current sprint: Owner checkpoint and track pause
+- Current block: Finalization Track (accepted baseline freeze)
+- Done: Owner accepted the current admin finalization baseline for active MVP usage and paused this track for now. Confirmed implemented baseline includes article lifecycle (`draft -> publish -> unpublish -> restore -> re-publish`), locale-safe translation save, and runtime media validation checks in the smoke contour. Updated handoff/prompt docs to stop further staged execution until explicit reopen.
+- In progress: No active implementation in admin finalization track (pause mode).
+- Next action: Move execution to the next owner-selected block outside admin finalization.
+- Blockers/risks: Deferred Stage 5/6/7 hardening scope remains for future reopen (media pipeline hardening, delivery reliability, release-level security hardening).
+- Documents updated in this session: `docs/05_admin_platform/admin_rollout_execution_plan.md`, `docs/05_admin_platform/next_agent_handoff.md`, `docs/05_admin_platform/admin_finalization_prompt_pack.md`, `PROGRESS.md`
+
+- Date: 2026-04-19
+- Current sprint: Media-validation runtime path stabilization
+- Current block: Finalization Track Stage 3+ (`CmsArticle` verification contour hardening)
+- Done: Stabilized media upload validation checks inside project runtime by extending `scripts/test-admin-e2e-smoke.test.ts` with direct API assertions against `POST /api/cms/media` under active Next dev runtime. Added negative-path coverage for (1) oversized upload -> `413`, (2) unsupported MIME type -> `415`, and (3) invalid checksum format -> `400`. This removes dependence on standalone `node --test scripts/test-cms-media-upload-validation.test.ts`, which fails in isolation because `src/lib/cms/media.ts` imports `server-only`. Revalidated mandatory commands successfully: `npm run test:admin-runtime`, `npm run test:admin-e2e-smoke`.
+- In progress: Runtime/API smoke contour now includes locale-switch integrity + media upload validation negative paths in one stable harness.
+- Next action: Clean up old standalone media-validation script usage notes and align handoff/verification docs to point at the stable runtime contour only.
+- Blockers/risks: `node --test scripts/test-cms-media-upload-validation.test.ts` still fails if run directly outside Next runtime due to unresolved `server-only`; this is now an acknowledged non-canonical path.
+- Documents updated in this session: `docs/05_admin_platform/admin_rollout_execution_plan.md`, `PROGRESS.md`
+
+- Date: 2026-04-19
+- Current sprint: Locale-switch regression coverage hardening
+- Current block: Finalization Track Stage 3+ (`CmsArticle` simple publication flow verification)
+- Done: Added explicit locale-switch regression checks to `scripts/test-admin-e2e-smoke.test.ts` for the owner-approved multilingual save model: source article is edited in `de`, locale-switched save is executed through create path (`POST /api/cms/articles`) to `en`, test asserts a new article id is created, source `de` article stays unchanged, and direct locale mutation on update path (`PATCH /api/cms/articles/[id]` with different locale) is rejected with `400`. Re-ran mandatory verification commands successfully: `npm run test:admin-runtime`, `npm run test:admin-e2e-smoke`.
+- In progress: Stage 3+ lifecycle verification line remains stable with locale-switch regression coverage included.
+- Next action: Add stable project-runtime execution path for media upload validation checks currently relying on standalone script execution constraints.
+- Blockers/risks: Runtime checks still emit non-blocking Node warning about typeless package module parsing in test scripts; no functional failure observed.
+- Documents updated in this session: `docs/05_admin_platform/admin_rollout_execution_plan.md`, `PROGRESS.md`
+
+- Date: 2026-04-19
+- Current sprint: Multilingual save integrity hotfix
+- Current block: Finalization Track Stage 3+ (`CmsArticle` locale-safe editorial flow)
+- Done: Fixed locale-overwrite defect in articles editor/save flow where editing an existing source-locale article and switching locale in form could rewrite the original record. UI save logic now uses create path (`POST /api/cms/articles`) when locale differs from the edited source article, so translation saves create a new locale article. Server guard added in `PATCH /api/cms/articles/[id]` to block direct locale mutation of existing records and force create-path behavior for new locale entries.
+- In progress: Locale-safe multilingual article flow is active in editor/API.
+- Next action: Add explicit regression coverage for locale-switch create-path behavior in smoke/runtime tests to prevent accidental reintroduction.
+- Blockers/risks: Existing records already overwritten before this fix must be restored manually from revisions where available.
+- Documents updated in this session: `docs/05_admin_platform/admin_rollout_execution_plan.md`, `PROGRESS.md`, `docs/05_admin_platform/next_agent_handoff.md`
+
+- Date: 2026-04-19
+- Current sprint: Today execution batch (automation + UX + media validation)
+- Current block: Finalization Track Stage 3+ (`CmsArticle` simple publication flow + adjacent hardening)
+- Done: Implemented the full today plan slice in code: (1) expanded automated lifecycle smoke coverage for articles to explicitly include `draft -> publish -> unpublish (with reason) -> restore -> re-publish` in `scripts/test-admin-e2e-smoke.test.ts`; (2) improved articles dashboard UX with clear post-draft guidance (`Show drafts`) and a dedicated review queue view (`IN_REVIEW` + `APPROVED`); (3) tightened CMS media upload validation (configurable size limit with bounds, stricter signature checks, checksum format validation, buffer-size integrity check, extreme image-dimension guard) plus clearer API status mapping (`400/413/415`) and added focused upload-validation tests.
+- In progress: Stage 3+ lifecycle line is stable; adjacent UX and media-validation hardening for today is complete.
+- Next action: Keep strengthening route/integration/e2e verification around the same lifecycle path and add equivalent stable test execution for the new media-validation script inside the project runtime harness.
+- Blockers/risks: Standalone `node --test` execution for the new media-validation script can fail outside Next runtime because of `server-only` module resolution; lifecycle status enum still contains `SCHEDULED` even though scheduling execution is intentionally disabled by owner decision.
+- Documents updated in this session: `docs/05_admin_platform/admin_rollout_execution_plan.md`, `PROGRESS.md`
+
+- Date: 2026-04-19
+- Current sprint: Stage 3 lifecycle verification closeout
+- Current block: Finalization Track Stage 3+ (`CmsArticle` simple publication flow)
+- Done: Completed manual end-to-end verification of the active article lifecycle in admin and public surfaces: draft save, publish, unpublish with reason, revision restore, and re-publish. Confirmed the simplified owner-approved flow works without preview/scheduling scope.
+- In progress: Stage 3+ line is stable on the simplified publication model.
+- Next action: Continue with targeted route/integration/e2e verification hardening for the same lifecycle path and keep docs/test notes aligned.
+- Blockers/risks: Transition reason is currently required when moving from non-draft statuses to `DRAFT`; this is expected by current policy but remains a UX friction point if owner policy changes later.
+- Documents updated in this session: `docs/05_admin_platform/admin_rollout_execution_plan.md`, `PROGRESS.md`
+
+- Date: 2026-04-19
+- Current sprint: Workflow scope simplification by owner decision
+- Current block: Finalization Track Stage 3+ (`CmsArticle`-first scope lock)
+- Done: Documented owner decision to cancel signed preview and scheduled publish/unpublish in the current track. Fixed active plan docs to keep the editorial lifecycle simple for now: draft -> internal review in admin -> publish (or unpublish when needed). Preserved existing Stage 3 workflow-state implementation and article-first scope lock.
+- In progress: Stage 3 lifecycle line remains active with the simplified publication path.
+- Next action: Continue with route/integration/e2e verification of the current `CmsArticle` workflow and publication flow (without preview/scheduling scope).
+- Blockers/risks: `CmsArticleStatus` enum still includes `SCHEDULED`, but scheduling execution remains intentionally disabled in this track by owner decision; `CmsPage` publication workflow expansion is still deferred to scaling.
+- Documents updated in this session: `docs/05_admin_platform/admin_rollout_execution_plan.md`, `docs/05_admin_platform/admin_implementation_phases.md`, `docs/00_project_overview/project_state_and_roadmap.md`, `docs/05_admin_platform/admin_finalization_prompt_pack.md`, `PROGRESS.md`
+
+- Date: 2026-04-18
+- Current sprint: Stage 3 workflow-state expansion
+- Current block: Finalization Track Stage 3 (`CmsArticle`-first scope lock)
+- Done: Expanded `CmsArticleStatus` with `IN_REVIEW`, `APPROVED`, `SCHEDULED`, and `ARCHIVED` (Prisma schema + migration `20260418153000_stage3_article_workflow_states`); added centralized article workflow transition machine (`src/lib/cms/article-workflow.ts`) with allowed transition matrix and transition-reason policy; integrated transition validation into `PATCH /api/cms/articles/[id]` (invalid transition guard, reason-required guard where applicable, publish-permission check generalized for any transition involving `PUBLISHED`, and transition reason persisted into audit + revision records); aligned admin article UI with new statuses and transition-reason input in editor; added focused workflow rule tests (`npm run test:cms-article-workflow`).
+- In progress: Stage 3 implementation is complete for the scoped `CmsArticle` lifecycle line.
+- Next action: Start Stage 4 for `CmsArticle`: signed preview tokens (TTL + audit) and scheduled publish/unpublish execution path with idempotency/retry safeguards.
+- Blockers/risks: `CmsArticleStatus` enum is shared by `CmsPage`, so DB-level enum values are now broader while `CmsPage` workflow logic remains intentionally unchanged (still functionally draft/published in current APIs/UI); full runtime route smoke (`test:admin-runtime` / `test:admin-e2e-smoke`) was not rerun in this Stage 3 pass because these checks depend on external DB/dev-server availability.
+- Documents updated in this session: `docs/05_admin_platform/admin_rollout_execution_plan.md`, `PROGRESS.md`
+
+- Date: 2026-04-18
+- Current sprint: Stage 2 runtime + API smoke closeout
+- Current block: Finalization Track Stage 2
+- Done: Added API-level smoke coverage command `npm run test:admin-e2e-smoke` (`scripts/test-admin-e2e-smoke.test.ts`) with real route flow: CMS login, verify, article draft edit, publish/unpublish, revisions read, restore, and media delete-block check when content references exist. Kept and revalidated runtime integration baseline (`npm run test:admin-runtime`). Full baseline checks now pass: `npm run test:admin-e2e-smoke`, `npm run test:admin-runtime`, `npm run test:admin-security`, `npm run test:admin-auth`, `npm run build`.
+- In progress: Stage 2 execution is complete for the current baseline scope.
+- Next action: Start Stage 3 `CmsArticle` workflow-state expansion (`IN_REVIEW`, `APPROVED`, `SCHEDULED`, `ARCHIVED`) with transition-rule enforcement and focused tests.
+- Blockers/risks: E2E smoke currently depends on local dev-server process management and external DB connectivity in the execution environment; keep this in mind for CI/container rollout.
+- Documents updated in this session: `docs/05_admin_platform/admin_rollout_execution_plan.md`, `PROGRESS.md`
+
+- Date: 2026-04-18
+- Current sprint: Stage 2 runtime test contour upgrade (baseline slice)
+- Current block: Finalization Track Stage 2
+- Done: Added a runtime integration test command (`npm run test:admin-runtime`) with `scripts/test-admin-runtime.test.ts`. The new coverage verifies owner session/auth runtime (`verifyAdminSession` + `requireAdminSession`), article lifecycle transitions in the current model (draft edit, publish, unpublish) with revision trail checks and restore-data application from publish snapshot, plus media where-used protection logic against CMS references. Revalidated baseline checks with `npm run test:admin-runtime` (requires external DB access), `npm run test:admin-security`, `npm run test:admin-auth`, and `npm run build`.
+- In progress: Stage 2 remains active; current runtime baseline covers core server-side flows but not browser-driven UI smoke.
+- Next action: Add minimum browser smoke for login -> edit article -> save draft -> publish/unpublish -> restore once execution environment allows reliable local server binding in the test harness; then proceed to Stage 3 (`CmsArticle` workflow-state expansion).
+- Blockers/risks: Sandbox restrictions block local server bind inside node-test runtime (`listen EPERM`), so current Stage 2 slice is server-runtime/database-level and not browser-route level yet.
+- Documents updated in this session: `docs/05_admin_platform/admin_rollout_execution_plan.md`, `PROGRESS.md`
+
+- Date: 2026-04-18
+- Current sprint: Workflow scope lock for next agent (owner decision)
+- Current block: Block 2/Phase 7 continuation planning
+- Done: Locked the next implementation scope to `CmsArticle` publication workflow only (states/transitions, preview, scheduling). Deferred publication-workflow expansion for other CMS entities (`CmsPage`, home visual-content blocks such as `ExcellenceCarousel`) to the scaling phase.
+- In progress: Preparing the next execution pass with article-first workflow tasks only.
+- Next action: Start Phase 7 article-focused implementation (status model + transition rules), then preview/scheduling for articles.
+- Blockers/risks: Deferred multi-entity publication flow remains a known future task; this is intentional and accepted for the current stage.
+- Documents updated in this session: `docs/05_admin_platform/admin_finalization_prompt_pack.md`, `docs/05_admin_platform/admin_implementation_phases.md`, `docs/05_admin_platform/admin_rollout_execution_plan.md`, `PROGRESS.md`
+
+- Date: 2026-04-18
+- Current sprint: Stage 1 Security P0 (scope freeze by owner decision)
+- Current block: Finalization Track Stage 1
+- Done: Product owner decision recorded: do not continue deeper hardening of manager-scope security/testing in the current MVP iteration because operationally only one manager is planned at this stage.
+- In progress: Security P0 remains at the current stabilized baseline without additional expansion work on this line.
+- Next action: Move focus to the next roadmap topics outside this security line.
+- Blockers/risks: Residual risk accepted for current stage; expansion of this line is deferred until scaling trigger (more than one active manager role or explicit production hardening phase).
+- Documents updated in this session: `docs/05_admin_platform/admin_rollout_execution_plan.md`, `docs/05_admin_platform/admin_implementation_phases.md`, `PROGRESS.md`
+
+- Date: 2026-04-18
+- Current sprint: Stage 1 Security P0 (sub-agent findings closure slice)
+- Current block: Finalization Track Stage 1
+- Done: Closed the active Stage 1 audit findings from delegated review by hardening `/api/admin/attachments/[id]` (removed storage key/backend detail leakage, switched local reads to root-bound shared helper, added explicit `ATTACHMENT_DOWNLOAD_BLOCKED` audit writes on denied branches) and reducing CRM case-detail external error leakage to generic responses; aligned `verify-admin-security.mjs` with stricter assertions for audited deny paths, non-leaking attachment responses, and shared safe local-reader usage.
+- In progress: Stage 1 route-level authz/IDOR review remains active with static checks green.
+- Next action: Continue Security P0 with runtime-oriented negative-path coverage planning for Stage 2 (manager foreign case/attachment, denied audit evidence, invalid id paths).
+- Blockers/risks: Static checks are stronger but still non-runtime; integration/E2E remains the main residual gap.
+- Documents updated in this session: `docs/05_admin_platform/admin_implementation_phases.md`, `docs/05_admin_platform/admin_rollout_execution_plan.md`, `docs/10_security_privacy/admin_security_and_governance.md`, `PROGRESS.md`
+
+- Date: 2026-04-18
+- Current sprint: Stage 1 Security P0 (hidden-scope response hardening slice)
+- Current block: Finalization Track Stage 1
+- Done: Updated `/api/admin/cases/[id]` manager assignment denials to safe 404 responses (removed explicit forbidden-scope leak); extended static regression checks to forbid assignment-scope leakage text in CRM case-detail route; revalidated `npm run test:admin-security`, `npm run test:admin-auth`, and `npm run build` in `signage-service/`.
+- In progress: Stage 1 route-level authz/IDOR review remains active.
+- Next action: Continue targeted Security P0 review on remaining admin/cms read/write paths for object-scope consistency and hidden-route behavior.
+- Blockers/risks: Static checks remain non-runtime; integration/E2E coverage is still a gap for Stage 2.
+- Documents updated in this session: `docs/05_admin_platform/admin_implementation_phases.md`, `docs/05_admin_platform/admin_rollout_execution_plan.md`, `docs/10_security_privacy/admin_security_and_governance.md`, `PROGRESS.md`
+
+- Date: 2026-04-18
+- Current sprint: Stage 1 Security P0 (route-level object-access hardening slice)
+- Current block: Finalization Track Stage 1
+- Done: Hardened `/api/admin/attachments/[id]` with manager-level case-assignment object checks and hidden not-found behavior for unauthorized access; aligned `/api/cms/articles/translate-field` unauthorized response to hidden not-found strategy; expanded `scripts/verify-admin-security.mjs` with regression assertions for attachment assignment checks and hidden unauthorized behavior on the translation helper route.
+- In progress: Stage 1 route-level authz/IDOR review continues with static checks green.
+- Next action: Continue auditing remaining admin/cms routes for object-scope mismatches and preserve hidden 404 strategy where applicable.
+- Blockers/risks: Remaining risk is runtime coverage depth; current security script is still a static contract checker.
+- Documents updated in this session: `docs/05_admin_platform/admin_implementation_phases.md`, `docs/05_admin_platform/admin_rollout_execution_plan.md`, `docs/10_security_privacy/admin_security_and_governance.md`, `PROGRESS.md`
+
+- Date: 2026-04-18
+- Current sprint: Stage 1 Security P0 (hotfix-first baseline stabilization)
+- Current block: Finalization Track Stage 1
+- Done: Patched `GET /api/admin/attachments/[id]` with UUID-like id prevalidation and safe not-found response path to realign with the security contract checker; updated admin auth permission test expectations to match the current role map (`OWNER` includes `CRM_ATTACHMENT_READ`); reran `npm run test:admin-security`, `npm run test:admin-auth`, and `npm run build` from `signage-service/` successfully.
+- In progress: Stage 1 route-level authz/IDOR review continues from a green static baseline.
+- Next action: Continue Security P0 route audit and close any remaining runtime guard gaps before Stage 2 test contour expansion.
+- Blockers/risks: Static checks are green again, but they are contract-level only and do not replace route integration/E2E coverage.
+- Documents updated in this session: `docs/05_admin_platform/admin_implementation_phases.md`, `docs/05_admin_platform/admin_rollout_execution_plan.md`, `docs/10_security_privacy/admin_security_and_governance.md`, `docs/00_project_overview/project_state_and_roadmap.md`, `PROGRESS.md`
+
+- Date: 2026-04-18
+- Current sprint: Stage 0 re-baseline refresh (code-vs-doc verification)
+- Current block: Finalization Track pre-Stage 1 validation
+- Done: Re-ran Stage 0 factual audit against code and scripts; synced docs to reflect active RBAC route coverage details (including `/api/cms/articles/translate-field` currently guarded by `CMS_AI_CONFIG_WRITE`) and current check baseline reality; captured that local `npm run test:admin-security` and `npm run test:admin-auth` are currently failing and must be treated as active drift before Security P0 can be considered complete.
+- In progress: Stage 1 prep updated to start from failing-check baseline, not from stale "all green" assumption.
+- Next action: Execute Stage 1 hotfix-first slice to resolve attachment id-guard contract drift and permission-test expectation drift, then rerun `npm run test:admin-security` and `npm run test:admin-auth` before moving to Stage 2.
+- Blockers/risks: Static security contract drift is already present (`/api/admin/attachments/[id]` id-validation expectation mismatch); permission test expectations drift from current role map (`OWNER` includes `CRM_ATTACHMENT_READ` in code).
+- Documents updated in this session: `docs/05_admin_platform/admin_implementation_phases.md`, `docs/05_admin_platform/admin_rollout_execution_plan.md`, `docs/10_security_privacy/admin_security_and_governance.md`, `docs/10_security_privacy/rbac_permissions.md`, `docs/00_project_overview/project_state_and_roadmap.md`, `PROGRESS.md`
+
+- Date: 2026-04-17
+- Current sprint: Finalization Track initialization (agent handoff pack)
+- Current block: Cross-block execution alignment (`Block 2/4/5` planning sync)
+- Done: Added a dedicated agent prompt-pack document for staged admin-panel completion with a mandatory DUTY block requiring code-first implementation audit before execution; added stage-by-stage prompts (0-7), emergency hotfix protocol, and sub-agent orchestration guidance so operators can hand one file to agents and preserve sequential delivery.
+- In progress: Stage 1 security P0 execution preparation using the new handoff pack.
+- Next action: Start Stage 1 with route-level authz/IDOR review and runtime guard verification, then proceed to Stage 2 tests.
+- Blockers/risks: No blocker for execution handoff; main risk remains insufficient runtime integration/E2E coverage until Stage 2 is complete.
+- Documents updated in this session: `docs/05_admin_platform/admin_finalization_prompt_pack.md`, `PROGRESS.md`, `docs/05_admin_platform/admin_rollout_execution_plan.md`
+
+- Date: 2026-04-17
+- Current sprint: Finalization Track initialization (docs + sequence sync)
+- Current block: Cross-block execution alignment (`Block 2/4/5` planning sync)
+- Done: Re-baselined admin execution planning to current code reality; confirmed Phase 7 has started in practice via revision/restore runtime for articles/pages and updated implementation docs accordingly; locked a sequential completion track where critical vulnerabilities are fixed inside the active stage instead of out-of-band derailments.
+- In progress: Documentation sync across admin/security/overview docs for permissions, test-contour expectations, and final-stage sequencing.
+- Next action: Execute Stage 1 security P0 scope (route-level authz/IDOR checks, CSRF coverage review, attachment controls, session timeout policy), then Stage 2 test contour upgrade (integration + E2E smoke) before workflow-state expansion.
+- Blockers/risks: Main operational risk is relying only on static security verification without enough runtime integration/E2E coverage on critical admin paths.
+- Documents updated in this session: `PROGRESS.md`, `docs/05_admin_platform/admin_rollout_execution_plan.md`, `docs/05_admin_platform/admin_implementation_phases.md`, `docs/05_admin_platform/page_content_cms_plan.md`, `docs/10_security_privacy/admin_security_and_governance.md`, `docs/10_security_privacy/rbac_permissions.md`, `docs/00_project_overview/project_state_and_roadmap.md`
 
 - Date: 2026-04-16
 - Current sprint: Sprint 2 Content Core (CMS editor field mapping audit + full block type coverage)

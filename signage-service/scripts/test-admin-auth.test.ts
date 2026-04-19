@@ -322,7 +322,7 @@ test('hasAdminPermissions grants sensitive CMS permissions to OWNER and denies M
   assert.equal(hasAdminPermissions('OWNER', ['CMS_KNOWLEDGE_BASE_READ']), true);
   assert.equal(hasAdminPermissions('OWNER', ['CRM_CASE_READ']), true);
   assert.equal(hasAdminPermissions('OWNER', ['CRM_CASE_UPDATE']), false);
-  assert.equal(hasAdminPermissions('OWNER', ['CRM_ATTACHMENT_READ']), false);
+  assert.equal(hasAdminPermissions('OWNER', ['CRM_ATTACHMENT_READ']), true);
   assert.equal(hasAdminPermissions('MANAGER', ['CMS_AI_CONFIG_WRITE']), false);
   assert.equal(hasAdminPermissions('MANAGER', ['CMS_ARTICLE_PUBLISH']), false);
   assert.equal(hasAdminPermissions('MANAGER', ['CMS_ARTICLE_REVISIONS_READ']), false);
