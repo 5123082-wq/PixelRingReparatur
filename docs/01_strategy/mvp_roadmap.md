@@ -19,6 +19,11 @@
 - launch readiness;
 - post-launch optimization.
 
+### 1.1. Текущая фиксация (2026-04-19)
+- Админ-панель для текущего MVP считается реализованной на принятом baseline и используется в работе.
+- Линия `Admin Finalization` поставлена на паузу до отдельного решения owner.
+- Следующий этап выполнения переводится на другой продуктовый блок.
+
 ---
 
 ## 2. Принцип запуска
@@ -151,7 +156,7 @@
 - lead statuses;
 - assignment controls;
 - notifications.
-- Content Core admin baseline: revisions roadmap, workflow roadmap, preview/scheduling plan.
+- Content Core admin baseline: revisions roadmap, workflow roadmap, simple publication path (`draft -> internal admin review -> publish`).
 
 ### Phase 5 — Integrations
 Результат:
@@ -369,9 +374,10 @@
 - messenger continuation refinement
 - SLA alerts
 - better admin filters
-- Content Core expansion: revision history, workflow states beyond draft/published, signed preview, scheduled publishing, managed navigation.
+- Content Core expansion: revision history, workflow states beyond draft/published, simple publication flow hardening, managed navigation.
 - Assets + Forms expansion: media governance metadata/reporting, image derivative pipeline, configurable request/contact form schemas with server-side validation.
 - Delivery + Integrations hardening: event/webhook outbox flow, deterministic cache revalidation, adapter isolation, retry/idempotency policy for external channels.
+- Owner decision (2026-04-19): no signed preview and no scheduled publishing in the current CMS track; use `draft -> internal admin review -> publish`.
 
 ### 11.3. P2 — post-launch improvements
 - advanced voice handling
@@ -380,6 +386,15 @@
 - business account enhancements
 - more advanced partner tooling
 - hardening + release maturity: named admin users with granular RBAC, MFA/step-up, distributed rate limiting, backup/restore drills, incident runbooks, and stricter release gates.
+
+### 11.4. Простой чек-лист публикации в CMS (текущая политика)
+1. Открыть статью в админке и проверить язык, тип и `slug`.
+2. Сохранить как черновик после правок и перечитать текст прямо в редакторе админки.
+3. Проверить обязательные поля: заголовок, краткий ответ, основной текст.
+4. Проверить служебные поля перед публикацией: адрес канонической страницы, поля для поиска, кнопка действия.
+5. При необходимости перевести статью в промежуточный статус (`IN_REVIEW`/`APPROVED`) и указать причину перехода.
+6. Нажать публикацию и проверить, что статья открывается на публичной странице поддержки.
+7. Если после публикации найден дефект: снять с публикации, восстановить нужную версию из истории, снова опубликовать.
 
 ---
 

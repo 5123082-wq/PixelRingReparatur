@@ -42,6 +42,9 @@ Known gaps:
 - no step-up reauthentication for destructive actions;
 - no distributed rate limit;
 - no upload scanning/quarantine;
+- route-level integration tests and browser E2E coverage for admin critical paths are still limited;
+- current `npm run test:admin-security` is a static contract checker and does not replace runtime integration/E2E verification;
+- as of 2026-04-18 Stage 1 hotfix baseline, `npm run test:admin-security` and `npm run test:admin-auth` pass again after aligning attachment id validation and permission expectations;
 - CSRF coverage is currently reviewed for existing admin/CMS mutation routes and needs to stay enforced as new admin mutation routes are added;
 - no session binding policy for IP/user-agent changes.
 - current access has moved to named users with a starter permission layer across the current CRM/CMS sensitive routes, but broader route coverage and role expansion are still incomplete.
@@ -110,6 +113,10 @@ Current implementation status:
 
 - CRM status changes, assignment changes, operator messages, operator takeover, customer profile sync, and attachment downloads are partially covered.
 - CMS article/page create/update/publish/unpublish/delete, CMS media upload/update/delete plus blocked-delete audit, SEO config updates, and AI config updates are covered in the current starter scope.
+- `/api/admin/attachments/[id]` now applies UUID-like id prevalidation and manager assignment checks with safe 404 responses for denied object-level access.
+- `/api/admin/cases/[id]` manager assignment-scope denials now use safe 404 responses instead of explicit forbidden responses.
+- `/api/admin/attachments/[id]` no longer exposes storage keys or backend error details in API responses and now uses the shared root-bound local attachment reader from `src/lib/attachments.ts`.
+- denied attachment-download attempts now write `ATTACHMENT_DOWNLOAD_BLOCKED` audit records (including hidden unauthorized/object-scope denials).
 
 Minimum audit fields:
 
@@ -185,6 +192,8 @@ P0 before production:
 - keep CSRF coverage review running for all admin mutation routes as the route surface grows;
 - stricter attachment download controls;
 - session timeout review;
+- route/integration tests for high-risk admin mutation paths;
+- minimum browser E2E smoke checks for login + publish/unpublish + restore flows;
 - soft delete for CMS content and destructive CRM operations.
 
 P1:

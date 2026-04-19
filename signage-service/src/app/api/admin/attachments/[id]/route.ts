@@ -2,11 +2,36 @@ import { CRM_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
 import { requireAdminPermissionActor } from '@/lib/admin-audit';
 import { NextRequest, NextResponse } from 'next/server';
 import { get } from '@vercel/blob';
-import path from 'path';
-import fs from 'fs/promises';
 
 import { prisma } from '@/lib/prisma';
 import { AttachmentStorageProvider } from '@prisma/client';
+import { readLocalAttachment as readSafeLocalAttachment } from '@/lib/attachments';
+
+const UUID_LIKE_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function isUuidLike(value: string): boolean {
+  return UUID_LIKE_PATTERN.test(value);
+}
+
+function notFoundResponse() {
+  return NextResponse.json({ error: 'Not found' }, { status: 404 });
+}
+
+function isActorAssignedToCase(
+  actor: { adminUserId: string; email: string; displayName: string | null },
+  assignedOperator: string | null
+): boolean {
+  if (assignedOperator === null) {
+    return true;
+  }
+
+  return (
+    assignedOperator === actor.adminUserId ||
+    assignedOperator === actor.email ||
+    assignedOperator === actor.displayName
+  );
+}
 
 /**
  * GET /api/admin/attachments/[id]
@@ -20,6 +45,10 @@ export async function GET(
 ) {
   const { id } = await params;
 
+  if (!isUuidLike(id)) {
+    return notFoundResponse();
+  }
+
   // 1. Authenticate Admin (Case visibility implies attachment access)
   const actor = await requireAdminPermissionActor(
     prisma,
@@ -28,16 +57,54 @@ export async function GET(
     ['CRM_ATTACHMENT_READ']
   );
   if (!actor) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return await auditBlockedAttachmentDownload({
+      attachmentId: id,
+      caseId: null,
+      reason: 'Unauthorized attachment access',
+    });
   }
 
   // 2. Fetch Attachment Metadata
   const attachment = await prisma.attachment.findUnique({
     where: { id },
+    select: {
+      id: true,
+      caseId: true,
+      kind: true,
+      storageProvider: true,
+      storageKey: true,
+      originalFilename: true,
+      mimeType: true,
+      byteSize: true,
+      checksumSha256: true,
+      width: true,
+      height: true,
+      durationSeconds: true,
+      isCustomerVisible: true,
+      case: {
+        select: {
+          assignedOperator: true,
+        },
+      },
+    },
   });
 
   if (!attachment) {
-    return NextResponse.json({ error: 'Attachment not found' }, { status: 404 });
+    return await auditBlockedAttachmentDownload({
+      attachmentId: id,
+      caseId: null,
+      reason: 'Attachment metadata not found',
+      actor,
+    });
+  }
+
+  if (actor.role === 'MANAGER' && !isActorAssignedToCase(actor, attachment.case?.assignedOperator ?? null)) {
+    return await auditBlockedAttachmentDownload({
+      attachmentId: id,
+      caseId: attachment.caseId,
+      reason: 'Case is not assigned to the current manager',
+      actor,
+    });
   }
 
   // 3. Secure Proxy Logic
@@ -82,19 +149,12 @@ export async function GET(
         });
       } catch (error) {
         console.error('Vercel Blob proxy error:', error);
-        return NextResponse.json(
-          { 
-            error: 'Failed to stream from cloud storage',
-            details: error instanceof Error ? error.message : 'Unknown error',
-            key: attachment.storageKey
-          },
-          { status: 502 }
-        );
+        return NextResponse.json({ error: 'Failed to load attachment' }, { status: 500 });
       }
     }
 
     // Local file fallback
-    const file = await readLocalAttachment(attachment.storageKey);
+    const file = await readSafeLocalAttachment(attachment.storageKey);
     
     // Audit the download
     await prisma.adminAuditLog.create({
@@ -144,19 +204,35 @@ function createPrivateAttachmentHeaders(attachment: any, size: number) {
 }
 
 /**
- * Local storage reading helper
- */
-async function readLocalAttachment(storageKey: string): Promise<Buffer> {
-  const absolutePath = path.isAbsolute(storageKey) 
-    ? storageKey 
-    : path.resolve(process.cwd(), storageKey);
-    
-  return await fs.readFile(absolutePath);
-}
-
-/**
  * Audit failure if file missing
  */
-async function auditBlockedAttachmentDownload(attachmentId: string, caseId: string | null, reason: string) {
-  return NextResponse.json({ error: reason }, { status: 404 });
+async function auditBlockedAttachmentDownload(input: {
+  attachmentId: string;
+  caseId: string | null;
+  reason: string;
+  actor?: {
+    sessionId: string;
+    adminUserId: string;
+    role: 'MANAGER' | 'OWNER';
+    ipAddress: string | null;
+    userAgent: string | null;
+  };
+}) {
+  await prisma.adminAuditLog.create({
+    data: {
+      actorSessionId: input.actor?.sessionId ?? null,
+      actorAdminUserId: input.actor?.adminUserId ?? null,
+      actorRole: input.actor?.role ?? null,
+      action: 'ATTACHMENT_DOWNLOAD_BLOCKED',
+      resourceType: 'ATTACHMENT',
+      resourceId: input.attachmentId,
+      caseId: input.caseId,
+      outcome: 'DENIED',
+      reason: input.reason,
+      ipAddress: input.actor?.ipAddress ?? null,
+      userAgent: input.actor?.userAgent ?? null,
+    },
+  });
+
+  return notFoundResponse();
 }

@@ -54,16 +54,21 @@ Current code-level grants:
 - `CMS_SEO_WRITE`
 - `CMS_ARTICLE_READ`
 - `CMS_ARTICLE_WRITE`
+- `CMS_ARTICLE_REVISIONS_READ`
+- `CMS_ARTICLE_RESTORE`
 - `CMS_ARTICLE_PUBLISH`
 - `CMS_ARTICLE_DELETE`
 - `CMS_PAGE_READ`
 - `CMS_PAGE_WRITE`
+- `CMS_PAGE_REVISIONS_READ`
+- `CMS_PAGE_RESTORE`
 - `CMS_PAGE_PUBLISH`
 - `CMS_PAGE_DELETE`
 - `CMS_MEDIA_READ`
 - `CMS_MEDIA_WRITE`
 - `CMS_KNOWLEDGE_BASE_READ`
 - `CRM_CASE_READ`
+- `CRM_ATTACHMENT_READ`
 
 ### `MANAGER`
 
@@ -86,7 +91,7 @@ Current code-level grants:
 ### CMS Config
 
 - `CMS_AI_CONFIG_READ`: read AI config state from `/api/cms/ai`
-- `CMS_AI_CONFIG_WRITE`: update AI config via `POST /api/cms/ai`
+- `CMS_AI_CONFIG_WRITE`: update AI config via `POST /api/cms/ai`; currently also guards `POST /api/cms/articles/translate-field` (AI-powered CMS helper endpoint)
 - `CMS_SEO_READ`: read SEO config/audit from `/api/cms/seo`
 - `CMS_SEO_WRITE`: update SEO config via `POST /api/cms/seo`
 
@@ -94,10 +99,14 @@ Current code-level grants:
 
 - `CMS_ARTICLE_READ`: read article collection/detail admin routes
 - `CMS_ARTICLE_WRITE`: create/update article content in admin routes
+- `CMS_ARTICLE_REVISIONS_READ`: read article revision history
+- `CMS_ARTICLE_RESTORE`: restore article content from a stored revision
 - `CMS_ARTICLE_PUBLISH`: publish or unpublish article status transitions
 - `CMS_ARTICLE_DELETE`: soft-delete articles
 - `CMS_PAGE_READ`: read page collection/detail admin routes
 - `CMS_PAGE_WRITE`: create/update page content in admin routes
+- `CMS_PAGE_REVISIONS_READ`: read page revision history
+- `CMS_PAGE_RESTORE`: restore page content from a stored revision
 - `CMS_PAGE_PUBLISH`: publish or unpublish page status transitions
 - `CMS_PAGE_DELETE`: soft-delete pages
 - `CMS_MEDIA_READ`: reserved current public media read scope for CMS admin
@@ -128,8 +137,13 @@ The following routes already use explicit permission guards instead of only coar
 - `/api/cms/media/[id]`
 - `/api/cms/articles`
 - `/api/cms/articles/[id]`
+- `/api/cms/articles/[id]/revisions`
+- `/api/cms/articles/[id]/restore`
+- `/api/cms/articles/translate-field`
 - `/api/cms/pages`
 - `/api/cms/pages/[id]`
+- `/api/cms/pages/[id]/revisions`
+- `/api/cms/pages/[id]/restore`
 
 Important detail:
 
@@ -143,6 +157,9 @@ Important detail:
 - article/page detail `PATCH` routes require write permission for normal edits;
 - publish or unpublish transitions inside those same `PATCH` routes require separate publish permission;
 - article/page `DELETE` routes require separate delete permission.
+- article/page revision list routes require separate revisions-read permissions.
+- article/page restore routes require separate restore permissions and CSRF validation.
+- article translation helper route (`POST /api/cms/articles/translate-field`) currently requires `CMS_AI_CONFIG_WRITE`.
 
 The following routes are still effectively coarse-role protected today:
 

@@ -31,7 +31,28 @@ export const ALLOWED_CMS_MEDIA_MIME_TYPES = [
   'image/gif',
 ] as const;
 
-export const CMS_MEDIA_MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+const DEFAULT_CMS_MEDIA_MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+const MIN_CMS_MEDIA_MAX_UPLOAD_BYTES = 1 * 1024 * 1024;
+const ABSOLUTE_CMS_MEDIA_MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
+const CMS_MEDIA_MAX_IMAGE_DIMENSION = 12_000;
+const CMS_MEDIA_MAX_IMAGE_PIXELS = 40_000_000;
+
+function resolveCmsMediaMaxUploadBytes(): number {
+  const configured = Number(process.env.CMS_MEDIA_MAX_UPLOAD_BYTES);
+
+  if (
+    Number.isFinite(configured) &&
+    Number.isInteger(configured) &&
+    configured >= MIN_CMS_MEDIA_MAX_UPLOAD_BYTES &&
+    configured <= ABSOLUTE_CMS_MEDIA_MAX_UPLOAD_BYTES
+  ) {
+    return configured;
+  }
+
+  return DEFAULT_CMS_MEDIA_MAX_UPLOAD_BYTES;
+}
+
+export const CMS_MEDIA_MAX_UPLOAD_BYTES = resolveCmsMediaMaxUploadBytes();
 
 const CMS_MEDIA_PUBLIC_DIRECTORY = path.join(process.cwd(), 'public', 'uploads', 'cms-media');
 const CMS_MEDIA_PUBLIC_URL_PREFIX = '/uploads/cms-media';
@@ -382,7 +403,7 @@ function startsWithBytes(buffer: Buffer, bytes: number[]): boolean {
 }
 
 function detectImageMimeBySignature(buffer: Buffer): string | null {
-  if (startsWithBytes(buffer, [0x89, 0x50, 0x4e, 0x47])) {
+  if (startsWithBytes(buffer, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) {
     return 'image/png';
   }
 
@@ -390,7 +411,10 @@ function detectImageMimeBySignature(buffer: Buffer): string | null {
     return 'image/jpeg';
   }
 
-  if (startsWithBytes(buffer, [0x47, 0x49, 0x46, 0x38])) {
+  if (
+    startsWithBytes(buffer, [0x47, 0x49, 0x46, 0x38, 0x37, 0x61]) ||
+    startsWithBytes(buffer, [0x47, 0x49, 0x46, 0x38, 0x39, 0x61])
+  ) {
     return 'image/gif';
   }
 
@@ -515,7 +539,9 @@ export async function validateCmsMediaUploadFile(input: {
   }
 
   if (file.size <= 0 || file.size > CMS_MEDIA_MAX_UPLOAD_BYTES) {
-    throw new CmsMediaValidationError('Media size exceeds allowed limit');
+    throw new CmsMediaValidationError(
+      `Media size exceeds allowed limit (${Math.floor(CMS_MEDIA_MAX_UPLOAD_BYTES / 1024 / 1024)} MB max)`
+    );
   }
 
   const mimeType = file.type?.trim().toLowerCase();
@@ -526,11 +552,18 @@ export async function validateCmsMediaUploadFile(input: {
       mimeType as (typeof ALLOWED_CMS_MEDIA_MIME_TYPES)[number]
     )
   ) {
-    throw new CmsMediaValidationError('Unsupported media MIME type');
+    throw new CmsMediaValidationError(
+      `Unsupported media MIME type (allowed: ${ALLOWED_CMS_MEDIA_MIME_TYPES.join(', ')})`
+    );
   }
 
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
+
+  if (buffer.byteLength !== file.size) {
+    throw new CmsMediaValidationError('Invalid media payload');
+  }
+
   const detectedMime = detectImageMimeBySignature(buffer);
 
   if (!detectedMime || detectedMime !== mimeType) {
@@ -540,11 +573,25 @@ export async function validateCmsMediaUploadFile(input: {
   const checksumSha256 = crypto.createHash('sha256').update(buffer).digest('hex');
   const providedChecksum = input.checksumSha256?.trim().toLowerCase() || null;
 
+  if (providedChecksum && !/^[a-f0-9]{64}$/.test(providedChecksum)) {
+    throw new CmsMediaValidationError('Invalid checksum format');
+  }
+
   if (providedChecksum && providedChecksum !== checksumSha256) {
     throw new CmsMediaValidationError('Checksum mismatch');
   }
 
   const dimensions = detectImageDimensions(buffer, mimeType);
+
+  if (
+    dimensions &&
+    (dimensions.width > CMS_MEDIA_MAX_IMAGE_DIMENSION ||
+      dimensions.height > CMS_MEDIA_MAX_IMAGE_DIMENSION ||
+      dimensions.width * dimensions.height > CMS_MEDIA_MAX_IMAGE_PIXELS)
+  ) {
+    throw new CmsMediaValidationError('Media dimensions exceed allowed limit');
+  }
+
   const extension = FILE_EXTENSION_BY_MIME[mimeType] ?? 'bin';
 
   return {

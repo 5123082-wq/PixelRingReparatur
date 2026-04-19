@@ -251,16 +251,27 @@ export async function POST(request: NextRequest) {
     }
 
     if (error instanceof Error) {
-      const validationErrors = new Set([
+      const message = error.message;
+      const badRequestErrors = new Set([
         'Invalid media payload',
-        'Media size exceeds allowed limit',
-        'Unsupported media MIME type',
-        'MIME does not match file signature',
+        'Invalid checksum format',
         'Checksum mismatch',
+        'Media dimensions exceed allowed limit',
       ]);
 
-      if (validationErrors.has(error.message)) {
-        return NextResponse.json({ error: error.message }, { status: 400 });
+      if (badRequestErrors.has(message)) {
+        return NextResponse.json({ error: message }, { status: 400 });
+      }
+
+      if (message.startsWith('Media size exceeds allowed limit')) {
+        return NextResponse.json({ error: message }, { status: 413 });
+      }
+
+      if (
+        message.startsWith('Unsupported media MIME type') ||
+        message === 'MIME does not match file signature'
+      ) {
+        return NextResponse.json({ error: message }, { status: 415 });
       }
     }
 

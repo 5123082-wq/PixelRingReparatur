@@ -4,11 +4,12 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
+import { CMS_ARTICLE_WORKFLOW_STATUSES } from '@/lib/cms/article-workflow';
 import { createArticleRevisionSnapshot } from '@/lib/cms/revisions';
 
 const SUPPORTED_LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'] as const;
 const ARTICLE_TYPES = ['SYMPTOM', 'FAQ', 'PAGE', 'SERVICE', 'CASE'] as const;
-const ARTICLE_STATUSES = ['DRAFT', 'PUBLISHED'] as const;
+const ARTICLE_STATUSES = CMS_ARTICLE_WORKFLOW_STATUSES;
 const DEFAULT_PAGE_SIZE = 25;
 const MAX_PAGE_SIZE = 100;
 const MAX_SEARCH_LENGTH = 200;

@@ -5,12 +5,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { hasAdminPermissions } from '@/lib/admin-permissions';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
+import {
+  canTransitionArticleStatus,
+  CMS_ARTICLE_WORKFLOW_STATUSES,
+  parseArticleTransitionReason,
+  requiresArticleTransitionReason,
+} from '@/lib/cms/article-workflow';
 import { createArticleRevisionSnapshot } from '@/lib/cms/revisions';
 import { resolveUuidRouteParam } from '@/lib/route-params';
 
 const SUPPORTED_LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'] as const;
 const ARTICLE_TYPES = ['SYMPTOM', 'FAQ', 'PAGE', 'SERVICE', 'CASE'] as const;
-const ARTICLE_STATUSES = ['DRAFT', 'PUBLISHED'] as const;
+const ARTICLE_STATUSES = CMS_ARTICLE_WORKFLOW_STATUSES;
 const MAX_TEXT_LENGTH = 50_000;
 const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -415,6 +421,8 @@ function parsePayload(body: Record<string, unknown>) {
   const ctaLabel = body.ctaLabel === undefined ? undefined : normalizeText(body.ctaLabel, { maxLength: 120 });
   const ctaHref = body.ctaHref === undefined ? undefined : normalizeLink(body.ctaHref);
   const sortOrder = body.sortOrder === undefined ? undefined : parseInteger(body.sortOrder);
+  const statusReasonResult =
+    body.statusReason === undefined ? undefined : parseArticleTransitionReason(body.statusReason);
 
   return {
     locale,
@@ -437,6 +445,7 @@ function parsePayload(body: Record<string, unknown>) {
     ctaLabel,
     ctaHref,
     sortOrder,
+    statusReasonResult,
   };
 }
 
@@ -523,7 +532,17 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       'workScopeFactors',
     ]);
 
+    const statusReasonResult = parsed.statusReasonResult;
+
+    if (statusReasonResult && !statusReasonResult.valid) {
+      return NextResponse.json({ error: 'Invalid transition reason' }, { status: 400 });
+    }
+
     for (const [key, value] of Object.entries(parsed)) {
+      if (key === 'statusReasonResult') {
+        continue;
+      }
+
       if (value === undefined) {
         continue;
       }
@@ -567,6 +586,16 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'No valid article fields provided' }, { status: 400 });
     }
 
+    if (typeof updates.locale === 'string' && updates.locale !== current.locale) {
+      return NextResponse.json(
+        {
+          error:
+            'Article locale is immutable for existing records. Create a new locale article instead.',
+        },
+        { status: 400 }
+      );
+    }
+
     const nextLocale = typeof updates.locale === 'string' ? updates.locale : String(current.locale ?? 'de');
     const nextSlug = typeof updates.slug === 'string' ? updates.slug : String(current.slug);
 
@@ -589,10 +618,32 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     }
 
     const nextStatus = (typeof updates.status === 'string' ? updates.status : current.status) as ArticleStatus;
+    const previousStatus = current.status as ArticleStatus;
+    const statusChanged = previousStatus !== nextStatus;
+    const transitionReason = statusReasonResult?.value ?? null;
+
+    if (statusChanged && !canTransitionArticleStatus(previousStatus, nextStatus)) {
+      return NextResponse.json(
+        { error: `Invalid status transition: ${previousStatus} -> ${nextStatus}` },
+        { status: 400 }
+      );
+    }
+
+    if (
+      statusChanged &&
+      requiresArticleTransitionReason(previousStatus, nextStatus) &&
+      !transitionReason
+    ) {
+      return NextResponse.json(
+        { error: 'Transition reason is required for this status transition' },
+        { status: 400 }
+      );
+    }
+
     const nextValues: Record<string, unknown> = { ...updates };
     const requiresPublishPermission =
-      (current.status === 'DRAFT' && nextStatus === 'PUBLISHED') ||
-      (current.status === 'PUBLISHED' && nextStatus === 'DRAFT');
+      statusChanged &&
+      (previousStatus === 'PUBLISHED' || nextStatus === 'PUBLISHED');
 
     if (requiresPublishPermission && !hasAdminPermissions(actor.role, ['CMS_ARTICLE_PUBLISH'])) {
       return notFoundResponse();
@@ -603,18 +654,24 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       updates.publishedAt = nextValues.publishedAt;
     }
 
+    if (nextStatus !== 'PUBLISHED' && current.publishedAt !== null) {
+      nextValues.publishedAt = null;
+      updates.publishedAt = null;
+    }
+
     const changedFields = getChangedArticleFields(current, nextValues);
-    const previousStatus = current.status as ArticleStatus;
     const auditAction =
-      previousStatus === 'DRAFT' && nextStatus === 'PUBLISHED'
+      statusChanged && nextStatus === 'PUBLISHED'
         ? 'CMS_ARTICLE_PUBLISHED'
-        : previousStatus === 'PUBLISHED' && nextStatus === 'DRAFT'
+        : statusChanged && previousStatus === 'PUBLISHED' && nextStatus !== 'PUBLISHED'
           ? 'CMS_ARTICLE_UNPUBLISHED'
+          : statusChanged
+            ? 'CMS_ARTICLE_STATUS_CHANGED'
           : 'CMS_ARTICLE_UPDATED';
     const revisionSourceAction =
-      previousStatus === 'DRAFT' && nextStatus === 'PUBLISHED'
+      statusChanged && nextStatus === 'PUBLISHED'
         ? 'PUBLISH'
-        : previousStatus === 'PUBLISHED' && nextStatus === 'DRAFT'
+        : statusChanged && previousStatus === 'PUBLISHED' && nextStatus !== 'PUBLISHED'
           ? 'UNPUBLISH'
           : 'UPDATE';
 
@@ -632,6 +689,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         action: auditAction,
         resourceType: 'CMS_ARTICLE',
         resourceId: updatedArticle.id,
+        reason: transitionReason,
         details: {
           locale: updatedArticle.locale,
           slug: updatedArticle.slug,
@@ -639,6 +697,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
           changedFields,
           previousStatus,
           nextStatus: updatedArticle.status,
+          transitionReason,
           revisionSnapshot: buildArticleRevisionSnapshot(updatedArticle),
         },
         ipAddress: actor.ipAddress,
@@ -647,6 +706,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
       await createArticleRevisionSnapshot(tx, updatedArticle, {
         sourceAction: revisionSourceAction,
+        reason: transitionReason,
         actor: {
           adminUserId: actor.adminUserId,
           sessionId: actor.sessionId,

@@ -124,6 +124,11 @@ Current route:
 
 - `/ring-master-config`
 
+Execution note (2026-04-19):
+
+- current admin finalization baseline is accepted for MVP usage and paused for further expansion;
+- next active delivery focus should move to a non-admin block until this track is explicitly reopened.
+
 Implemented:
 
 - CMS protected route.
@@ -141,6 +146,7 @@ Implemented API areas:
 
 - `/api/cms/articles`
 - `/api/cms/articles/[id]`
+- `/api/cms/articles/translate-field`
 - `/api/cms/pages`
 - `/api/cms/pages/[id]`
 - `/api/cms/media`
@@ -212,7 +218,7 @@ Still incomplete:
 
 - broad public page integration;
 - structured per-block editing forms;
-- preview/versioning/publishing workflow;
+- versioning/publishing workflow;
 - content workflow governance;
 - full multilingual page governance.
 
@@ -302,7 +308,6 @@ Started:
 
 Still incomplete:
 
-- named admin users;
 - MFA;
 - full RBAC matrix;
 - object-level policy model;
@@ -315,46 +320,50 @@ Still incomplete:
 
 Recommended near-term priorities:
 
-1. Stabilize CRM/CMS/security before adding large new product areas.
-2. Finish CRM hardening:
-   - object-level authorization checks;
-   - route/integration tests;
-   - audit coverage review;
-   - attachment access review.
-3. Continue Page Content CMS:
-   - structured block forms;
-   - public page integration;
-   - preview/versioning decision.
-4. Start Assets + Forms expansion:
+1. Documentation re-baseline and status sync to current code (admin/security/workflow reality).
+2. Security P0 completion:
+   - route-level object authorization checks;
+   - CSRF coverage review for all admin mutation routes;
+   - attachment access hardening;
+   - session timeout policy review.
+3. Test contour upgrade:
+   - runtime integration tests for high-risk admin routes;
+   - minimum browser E2E smoke for login/publish/unpublish/restore.
+   - keep current static check baseline green (`npm run test:admin-security` and `npm run test:admin-auth`; restored to passing in Stage 1 hotfix run on 2026-04-18).
+4. Phase 7 workflow expansion:
+   - workflow status model beyond `DRAFT`/`PUBLISHED`;
+   - server-side transition rules and audit reasons.
+5. Editorial flow simplification (owner decision, 2026-04-19):
+   - no signed preview path in the current track;
+   - no scheduled publish/unpublish execution in the current track;
+   - use simple lifecycle: draft -> internal review in admin -> publish (or unpublish).
+6. Assets + Forms hardening:
    - media governance metadata and usage reporting;
    - image derivative/optimization pipeline;
+   - scanning/quarantine for upload safety;
    - configurable request/contact form schemas with server-side validation.
-5. Start Delivery + Integrations hardening:
+7. Delivery + Integrations hardening:
    - outbox/event dispatch baseline for publish and operations triggers;
    - deterministic cache revalidation policy;
    - adapter boundary for channel/external connectors;
    - retry/idempotency and failure visibility controls.
-6. Clean up AI documentation:
-   - current implementation snapshot;
-   - provider decision;
-   - safety and handoff boundaries.
-7. Define customer portal identity before implementation:
+8. Define customer portal identity before implementation:
    - individual vs organization accounts;
    - employees/member roles;
    - recovery model;
    - visible request data rules.
-8. Define security baseline before production:
+9. Define security baseline before production:
    - admin identity model;
    - RBAC;
    - MFA;
    - retention/export/deletion;
    - distributed rate limiting.
-9. Enforce hardening + release readiness:
+10. Enforce hardening + release readiness:
    - backup/PITR restore drills;
    - monitoring/alert ownership;
    - incident response runbooks;
    - staging/UAT/rollback release gates.
-10. Implement Marketing & Analytics Readiness:
+11. Implement Marketing & Analytics Readiness:
     - Deploy Consent Management Platform (CMP) for GDPR/TTDSG compliance.
     - Integrate Google Analytics 4 and Facebook Pixel with proper consent gating.
     - Add localized Cookie Banner with granular consent choices (Statistics, Marketing, Functional).

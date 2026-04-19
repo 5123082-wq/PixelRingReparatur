@@ -7,7 +7,13 @@ import { useParams } from 'next/navigation';
 import { adminFetch } from '@/lib/admin-fetch';
 
 type CmsArticleType = 'SYMPTOM' | 'FAQ' | 'PAGE' | 'SERVICE' | 'CASE';
-type CmsArticleStatus = 'DRAFT' | 'PUBLISHED';
+type CmsArticleStatus =
+  | 'DRAFT'
+  | 'IN_REVIEW'
+  | 'APPROVED'
+  | 'SCHEDULED'
+  | 'PUBLISHED'
+  | 'ARCHIVED';
 
 type CmsArticle = {
   id: string;
@@ -65,6 +71,7 @@ type ArticleFormState = {
   locale: string;
   type: CmsArticleType;
   status: CmsArticleStatus;
+  statusReason: string;
   slug: string;
   title: string;
   symptomLabel: string;
@@ -99,8 +106,16 @@ type CmsArticleRevision = {
 
 const SUPPORTED_LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'] as const;
 const ARTICLE_TYPES: CmsArticleType[] = ['SYMPTOM', 'FAQ', 'PAGE', 'SERVICE', 'CASE'];
-const STATUS_OPTIONS: CmsArticleStatus[] = ['DRAFT', 'PUBLISHED'];
+const STATUS_OPTIONS: CmsArticleStatus[] = [
+  'DRAFT',
+  'IN_REVIEW',
+  'APPROVED',
+  'SCHEDULED',
+  'PUBLISHED',
+  'ARCHIVED',
+];
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
+type ArticleListView = 'ALL' | 'REVIEW_QUEUE';
 
 function getLocale(value: string | string[] | undefined | null, fallback = 'de'): string {
   if (Array.isArray(value)) {
@@ -255,6 +270,7 @@ function createEmptyForm(locale: string): ArticleFormState {
     locale,
     type: 'SYMPTOM',
     status: 'DRAFT',
+    statusReason: '',
     slug: '',
     title: '',
     symptomLabel: '',
@@ -280,6 +296,7 @@ function articleToForm(article: CmsArticle, fallbackLocale: string): ArticleForm
     locale: article.locale || fallbackLocale,
     type: article.type,
     status: article.status,
+    statusReason: '',
     slug: article.slug,
     title: article.title,
     symptomLabel: article.symptomLabel || '',
@@ -339,6 +356,7 @@ function normalizeArticlePayload(
     locale: form.locale.trim() || 'de',
     type: form.type,
     status: nextStatus,
+    statusReason: toNullable(form.statusReason),
     slug: normalizeSlug(form.slug),
     title: form.title.trim(),
     symptomLabel: toNullable(form.symptomLabel),
@@ -493,6 +511,30 @@ function chipStyle(kind: 'draft' | 'published' | 'type' | 'locale') {
   return { ...styles.chip, background: '#181818', color: '#d4d4d8', borderColor: '#333' };
 }
 
+function statusChipStyle(status: CmsArticleStatus) {
+  if (status === 'PUBLISHED') {
+    return chipStyle('published');
+  }
+
+  if (status === 'ARCHIVED') {
+    return { ...styles.chip, background: '#25131c', color: '#fda4af', borderColor: '#6b213d' };
+  }
+
+  if (status === 'IN_REVIEW') {
+    return { ...styles.chip, background: '#1a152b', color: '#c4b5fd', borderColor: '#4c1d95' };
+  }
+
+  if (status === 'APPROVED') {
+    return { ...styles.chip, background: '#10251a', color: '#86efac', borderColor: '#166534' };
+  }
+
+  if (status === 'SCHEDULED') {
+    return { ...styles.chip, background: '#1a1f2e', color: '#93c5fd', borderColor: '#1d4ed8' };
+  }
+
+  return chipStyle('draft');
+}
+
 export default function ArticlesPage() {
   const params = useParams();
   const routeLocale = getLocale(params?.locale);
@@ -515,6 +557,8 @@ export default function ArticlesPage() {
   const [localeFilter, setLocaleFilter] = useState(routeLocale);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
+  const [listView, setListView] = useState<ArticleListView>('ALL');
+  const [draftSavedNotice, setDraftSavedNotice] = useState('');
 
   const [editorOpen, setEditorOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<CmsArticle | null>(null);
@@ -541,8 +585,15 @@ export default function ArticlesPage() {
     const total = pagination.total;
     const published = articles.filter((article) => article.status === 'PUBLISHED').length;
     const drafts = articles.filter((article) => article.status === 'DRAFT').length;
+    const inWorkflow = articles.filter(
+      (article) =>
+        article.status === 'IN_REVIEW' ||
+        article.status === 'APPROVED' ||
+        article.status === 'SCHEDULED' ||
+        article.status === 'ARCHIVED'
+    ).length;
 
-    return { total, published, drafts };
+    return { total, published, drafts, inWorkflow };
   }, [articles, pagination.total]);
 
   const loadArticles = useCallback(async () => {
@@ -872,6 +923,34 @@ export default function ArticlesPage() {
     setSearchQuery(searchInput);
   }, [searchInput]);
 
+  const showDrafts = useCallback(() => {
+    setListView('ALL');
+    setStatusFilter('DRAFT');
+    setPage(1);
+  }, []);
+
+  const showReviewQueue = useCallback(() => {
+    setListView('REVIEW_QUEUE');
+    setStatusFilter('');
+    setPage(1);
+  }, []);
+
+  const clearListView = useCallback(() => {
+    setListView('ALL');
+    setStatusFilter('');
+    setPage(1);
+  }, []);
+
+  const visibleArticles = useMemo(() => {
+    if (listView !== 'REVIEW_QUEUE') {
+      return articles;
+    }
+
+    return articles.filter(
+      (article) => article.status === 'IN_REVIEW' || article.status === 'APPROVED'
+    );
+  }, [articles, listView]);
+
   const saveArticle = useCallback(
     async (nextStatus: CmsArticleStatus) => {
       const validationError = validateForm(form);
@@ -885,9 +964,16 @@ export default function ArticlesPage() {
       setFormSaving(nextStatus);
 
       const payload = normalizeArticlePayload(form, nextStatus);
-      const isEdit = Boolean(editingArticle);
-      const url = isEdit ? `/api/cms/articles/${editingArticle?.id}` : '/api/cms/articles';
-      const method = isEdit ? 'PATCH' : 'POST';
+      const normalizedFormLocale = form.locale.trim() || 'de';
+      const sourceArticle = editingArticle;
+      const isEdit = sourceArticle !== null;
+      const isTranslationCreate =
+        sourceArticle !== null && normalizedFormLocale !== sourceArticle.locale;
+      const useCreatePath = !isEdit || isTranslationCreate;
+      const url = useCreatePath
+        ? '/api/cms/articles'
+        : `/api/cms/articles/${sourceArticle?.id}`;
+      const method = useCreatePath ? 'POST' : 'PATCH';
 
       try {
         const response = await adminFetch(url, {
@@ -903,6 +989,21 @@ export default function ArticlesPage() {
         setEditorOpen(false);
         setEditingArticle(null);
         setForm(createEmptyForm(localeFilter || routeLocale));
+        if (isTranslationCreate) {
+          setDraftSavedNotice(
+            `New ${normalizedFormLocale.toUpperCase()} locale article created from source locale ${sourceArticle?.locale.toUpperCase()}. Original article was kept unchanged.`
+          );
+        } else if (nextStatus === 'DRAFT') {
+          const slug = normalizeSlug(form.slug);
+          const title = form.title.trim();
+          setDraftSavedNotice(
+            title
+              ? `Draft saved: "${title}". Use "Show drafts" to find it quickly.`
+              : `Draft saved: "${slug}". Use "Show drafts" to find it quickly.`
+          );
+        } else {
+          setDraftSavedNotice('');
+        }
         setRefreshVersion((value) => value + 1);
       } catch (saveError) {
         setFormError(saveError instanceof Error ? saveError.message : 'Failed to save article.');
@@ -911,32 +1012,6 @@ export default function ArticlesPage() {
       }
     },
     [editingArticle, form, localeFilter, routeLocale]
-  );
-
-  const togglePublished = useCallback(
-    async (article: CmsArticle) => {
-      const nextStatus: CmsArticleStatus = article.status === 'PUBLISHED' ? 'DRAFT' : 'PUBLISHED';
-      setFormSaving(nextStatus);
-
-      try {
-        const response = await adminFetch(`/api/cms/articles/${article.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status: nextStatus }),
-        });
-
-        if (!response.ok) {
-          throw new Error(await readApiError(response));
-        }
-
-        setRefreshVersion((value) => value + 1);
-      } catch (toggleError) {
-        setError(toggleError instanceof Error ? toggleError.message : 'Failed to update status.');
-      } finally {
-        setFormSaving('');
-      }
-    },
-    []
   );
 
   const deleteArticle = useCallback(async (article: CmsArticle) => {
@@ -983,9 +1058,8 @@ export default function ArticlesPage() {
 
   const articleCards = useMemo(
     () =>
-      articles.map((article) => {
-        const isPublished = article.status === 'PUBLISHED';
-        const statusChip = isPublished ? chipStyle('published') : chipStyle('draft');
+      visibleArticles.map((article) => {
+        const statusChip = statusChipStyle(article.status);
         const typeChip = chipStyle('type');
         const localeChip = chipStyle('locale');
 
@@ -1031,14 +1105,6 @@ export default function ArticlesPage() {
               </button>
               <button
                 type="button"
-                onClick={() => void togglePublished(article)}
-                disabled={formSaving === 'PUBLISHED' || formSaving === 'DRAFT'}
-                style={isPublished ? styles.warningButton : styles.successButton}
-              >
-                {isPublished ? 'Unpublish' : 'Publish'}
-              </button>
-              <button
-                type="button"
                 onClick={() => void deleteArticle(article)}
                 disabled={formSaving === 'DELETE'}
                 style={styles.dangerButton}
@@ -1049,7 +1115,7 @@ export default function ArticlesPage() {
           </article>
         );
       }),
-    [articles, deleteArticle, formSaving, openEdit, togglePublished]
+    [deleteArticle, formSaving, openEdit, visibleArticles]
   );
 
   return (
@@ -1079,6 +1145,10 @@ export default function ArticlesPage() {
         <div style={styles.statCard}>
           <span style={styles.statLabel}>On page drafts</span>
           <span style={styles.statValue}>{summary.drafts}</span>
+        </div>
+        <div style={styles.statCard}>
+          <span style={styles.statLabel}>Workflow / archived</span>
+          <span style={styles.statValue}>{summary.inWorkflow}</span>
         </div>
       </div>
 
@@ -1127,6 +1197,7 @@ export default function ArticlesPage() {
           <SelectInput
             value={statusFilter}
             onChange={(value) => {
+              setListView('ALL');
               setStatusFilter(value);
               setPage(1);
             }}
@@ -1176,13 +1247,40 @@ export default function ArticlesPage() {
         </label>
       </div>
 
+      <div style={styles.viewRow}>
+        <button
+          type="button"
+          onClick={showReviewQueue}
+          style={{
+            ...styles.viewButton,
+            ...(listView === 'REVIEW_QUEUE' ? styles.viewButtonActive : {}),
+          }}
+        >
+          Review queue (IN_REVIEW + APPROVED)
+        </button>
+        <button type="button" onClick={clearListView} style={styles.viewButton}>
+          Reset view
+        </button>
+      </div>
+
+      {draftSavedNotice ? (
+        <div style={styles.infoBanner}>
+          <span>{draftSavedNotice}</span>
+          <button type="button" onClick={showDrafts} style={styles.inlineActionButton}>
+            Show drafts
+          </button>
+        </div>
+      ) : null}
+
       {error ? <div style={styles.errorBanner}>{error}</div> : null}
 
       {loading ? (
         <div style={styles.emptyState}>Loading articles...</div>
-      ) : articles.length === 0 ? (
+      ) : visibleArticles.length === 0 ? (
         <div style={styles.emptyState}>
-          No articles found for the current filters.
+          {listView === 'REVIEW_QUEUE'
+            ? 'No items in review queue on this page.'
+            : 'No articles found for the current filters.'}
         </div>
       ) : (
         <div style={styles.articleGrid}>{articleCards}</div>
@@ -1372,6 +1470,20 @@ export default function ArticlesPage() {
                       </option>
                     ))}
                   </SelectInput>
+                </EditorField>
+
+                <EditorField label="Transition reason" hint="Required for archive and publish rollback transitions.">
+                  <TextArea
+                    value={form.statusReason}
+                    onChange={(value) =>
+                      setForm((current) => ({
+                        ...current,
+                        statusReason: value,
+                      }))
+                    }
+                    placeholder="Why this status change is needed"
+                    rows={3}
+                  />
                 </EditorField>
 
                 <EditorField label="Sort order"
@@ -1783,11 +1895,15 @@ export default function ArticlesPage() {
               </button>
               <button
                 type="button"
-                onClick={() => void saveArticle('PUBLISHED')}
+                onClick={() => void saveArticle(form.status)}
                 disabled={Boolean(formSaving)}
-                style={styles.successButton}
+                style={form.status === 'PUBLISHED' ? styles.successButton : styles.primaryButton}
               >
-                {formSaving === 'PUBLISHED' ? 'Publishing...' : 'Publish'}
+                {formSaving === form.status
+                  ? 'Saving...'
+                  : form.status === 'PUBLISHED'
+                    ? 'Publish'
+                    : `Save as ${form.status}`}
               </button>
             </div>
           </div>
@@ -1910,6 +2026,50 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#fff',
     cursor: 'pointer',
     fontSize: '13px',
+  },
+  viewRow: {
+    display: 'flex',
+    gap: '8px',
+    flexWrap: 'wrap',
+  },
+  viewButton: {
+    padding: '9px 12px',
+    borderRadius: '8px',
+    border: '1px solid #333',
+    background: '#171717',
+    color: '#d4d4d8',
+    cursor: 'pointer',
+    fontSize: '12px',
+    fontWeight: 700,
+  },
+  viewButtonActive: {
+    border: '1px solid #4c1d95',
+    background: '#1a152b',
+    color: '#c4b5fd',
+  },
+  infoBanner: {
+    padding: '12px 14px',
+    border: '1px solid #1f3a5b',
+    borderRadius: '8px',
+    background: '#112033',
+    color: '#bfdbfe',
+    fontSize: '13px',
+    lineHeight: 1.5,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '12px',
+    flexWrap: 'wrap',
+  },
+  inlineActionButton: {
+    padding: '7px 10px',
+    borderRadius: '8px',
+    border: '1px solid #1d4ed8',
+    background: '#0f1f33',
+    color: '#93c5fd',
+    cursor: 'pointer',
+    fontSize: '12px',
+    fontWeight: 700,
   },
   errorBanner: {
     padding: '12px 14px',

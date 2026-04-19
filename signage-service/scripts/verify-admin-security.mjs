@@ -517,6 +517,11 @@ assertMatches(
   /requireCaseUpdateActor\(/,
   'PATCH /api/admin/cases/:id must require CRM case update permission'
 );
+assertDoesNotInclude(
+  adminCaseDetail,
+  'Forbidden. Case is not assigned to you.',
+  '/api/admin/cases/:id must not leak assignment scope via explicit forbidden responses'
+);
 
 const adminAttachments = readProjectFile('src/app/api/admin/attachments/[id]/route.ts');
 assertMatches(
@@ -531,13 +536,48 @@ assertMatches(
 );
 assertMatches(
   adminAttachments,
-  /auditBlockedAttachmentDownload\(/,
-  '/api/admin/attachments/:id must audit blocked downloads'
+  /actor\.role === 'MANAGER'[\s\S]*isActorAssignedToCase/,
+  '/api/admin/attachments/:id must enforce manager-level case assignment checks'
+);
+assertMatches(
+  adminAttachments,
+  /if \(!actor\) \{\s*return await auditBlockedAttachmentDownload\(/,
+  '/api/admin/attachments/:id must keep unauthorized responses hidden via audited deny path'
+);
+assertMatches(
+  adminAttachments,
+  /return await auditBlockedAttachmentDownload\(/,
+  '/api/admin/attachments/:id must call blocked-download audit on denied access branches'
 );
 assertMatches(
   adminAttachments,
   /ATTACHMENT_DOWNLOADED/,
   '/api/admin/attachments/:id must audit successful downloads'
+);
+assertMatches(
+  adminAttachments,
+  /ATTACHMENT_DOWNLOAD_BLOCKED/,
+  '/api/admin/attachments/:id must record blocked attachment-download audit actions'
+);
+assertDoesNotInclude(
+  adminAttachments,
+  'key: attachment.storageKey',
+  '/api/admin/attachments/:id must not expose storage keys in API responses'
+);
+assertDoesNotInclude(
+  adminAttachments,
+  'details: error instanceof Error',
+  '/api/admin/attachments/:id must not expose backend error details in API responses'
+);
+assertMatches(
+  adminAttachments,
+  /readSafeLocalAttachment/,
+  '/api/admin/attachments/:id must use the shared root-bound local attachment reader'
+);
+assertDoesNotInclude(
+  adminAttachments,
+  'async function readLocalAttachment(',
+  '/api/admin/attachments/:id must not define a route-local unbounded file reader'
 );
 
 const adminAuth = readProjectFile('src/app/api/admin/auth/route.ts');
@@ -621,6 +661,18 @@ const cmsAi = readProjectFile('src/app/api/cms/ai/route.ts');
 assertMatches(cmsAi, /requireAdminPermissionActor\(/, 'CMS AI route must use the admin permission guard');
 assertMatches(cmsAi, /CMS_AI_CONFIG_READ/, 'CMS AI route must require explicit AI read permission');
 assertMatches(cmsAi, /CMS_AI_CONFIG_WRITE/, 'CMS AI route must require explicit AI write permission');
+
+const cmsArticleTranslate = readProjectFile('src/app/api/cms/articles/translate-field/route.ts');
+assertMatches(
+  cmsArticleTranslate,
+  /requireAdminPermissionActor\([\s\S]*CMS_SESSION_COOKIE_NAME[\s\S]*CMS_AI_CONFIG_WRITE/,
+  'CMS article translate helper must require explicit AI write permission'
+);
+assertMatches(
+  cmsArticleTranslate,
+  /if \(!actor\) \{\s*return notFoundResponse\(\);\s*\}/,
+  'CMS article translate helper must keep unauthorized responses hidden'
+);
 
 const cmsSeo = readProjectFile('src/app/api/cms/seo/route.ts');
 assertMatches(cmsSeo, /requireAdminPermissionActor\(/, 'CMS SEO route must use the admin permission guard');

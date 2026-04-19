@@ -173,7 +173,7 @@ Definition of done:
 Status: DONE.
 Current coverage: `CmsPage` exists with JSON `blocks`, SEO fields, publish/review metadata, soft delete, unique `pageKey + locale`, and indexes for locale/status plus deleted rows. OWNER-only `/api/cms/pages` CRUD exists with CMS session auth, CSRF on mutations, generic hidden-endpoint 404s for unauthorized access, UUID-shaped id prechecks, audit logs for create/update/publish/unpublish/delete, and soft delete. `/ring-master-config/dashboard/pages` provides an internal JSON textarea editor with parsed block summaries, status switching, create/edit, and soft delete. The server helper in `src/lib/cms/pages.ts` normalizes structured blocks and returns `null` on draft, invalid content, missing rows, or recoverable DB errors so public pages can keep using `messages/*.json`. Baseline multi-locale page records for `home`, `support`, `status`, and `global` are now backfilled across `de`, `en`, `ru`, `tr`, `pl`, and `ar` from the current live content sources.
 Frontend integration: Functional integration for `home`, `support`, `status`, and `global` blocks is complete across all 6 locales. Legacy `/hilfe` route has been removed and redirected (308) to `/support`.
-Remaining Phase 3 gaps: the admin page editor is still a raw JSON editor; structured per-block forms, preview/versioning/workflow, and broader route/integration tests remain pending.
+Remaining Phase 3 gaps: the admin page editor is still a raw JSON editor; structured per-block forms, versioning/workflow, and broader route/integration tests remain pending.
 
 ## Phase 4: Media Library
 
@@ -245,8 +245,10 @@ Definition of done:
 - authz and IDOR/BOLA checks are tested.
 
 Status: PARTIAL / CMS AUDIT, CSRF STARTER, AND OBJECT-LEVEL AUTHZ TEST STARTER DONE.
-Current coverage: current admin/CMS mutation routes are covered by `validateAdminCsrf`; CRM routes are locked to the CRM session cookie plus explicit case/message/takeover/download permissions; CMS routes are locked to the CMS session cookie plus `OWNER` and, for sensitive surfaces, explicit CMS permissions; CRM case, CMS article, and CMS page object-id routes now return safe 404s for invalid UUID-shaped IDs before Prisma lookup; attachment download remains CRM-protected and audited for blocked and successful downloads.
+Current coverage: current admin/CMS mutation routes are covered by `validateAdminCsrf`; CRM routes are locked to the CRM session cookie plus explicit case/message/takeover/download permissions; CMS routes are locked to the CMS session cookie plus `OWNER` and, for sensitive surfaces, explicit CMS permissions; CRM case, CMS article, and CMS page object-id routes now return safe 404s for invalid UUID-shaped IDs before Prisma lookup; CRM case and attachment object-scope denials for manager-assignment checks now follow hidden 404 behavior; attachment download enforces manager-level case-assignment checks, uses a root-bound local file reader, avoids leaking storage/back-end error details, and audits both blocked and successful download paths.
 Test starter: `npm run test:admin-security` provides a lightweight static verification pass for CSRF coverage, CRM/CMS cookie separation, role and permission requirements, invalid-id guards, CMS soft delete behavior, Phase 4 `CmsMedia` schema/migration and media route coverage, and attachment download audit hooks. This is intentionally a low-churn harness because the project does not yet have a route-level test runner.
+Baseline note (2026-04-18): Stage 1 hotfix-first slice resolved the two detected static-check drifts (attachment id-validation contract and permission expectation mismatch). Local `npm run test:admin-security`, `npm run test:admin-auth`, and `npm run build` now pass.
+Scope decision note (2026-04-18): by product-owner decision, deeper expansion of this security line is paused for the current MVP stage because only one manager is planned. Advanced manager-scope negative-path expansion is deferred until a scaling trigger (multi-manager operations or explicit production-hardening checkpoint).
 Remaining gaps: MFA/RBAC, distributed rate limiting, upload scanning/quarantine, broader governance, and full route/integration tests are still pending.
 
 ## Phase 7: Advanced CMS Workflow
@@ -257,9 +259,8 @@ Objective:
 
 Tasks:
 
-- add version history;
-- add preview mode;
-- add scheduled publishing;
+- add lifecycle workflow states beyond `DRAFT`/`PUBLISHED` (`IN_REVIEW`, `APPROVED`, `SCHEDULED`, `ARCHIVED`);
+- keep a simple publication path in this track: draft/internal review in admin/publish;
 - add review workflow;
 - add locale publish status;
 - add `/hilfe/{category}/{slug}` GEO hub if still aligned with product strategy.
@@ -268,10 +269,18 @@ Definition of done:
 
 - content publishing can scale beyond one owner editing a few pages manually.
 
-Status: NOT STARTED.
+Status: STARTED / PARTIAL.
+Current coverage: revision history and restore API/runtime exist for `CmsArticle` and `CmsPage` (`/revisions`, `/restore`) with dedicated permissions, CSRF on restore, and audit logging.
+Current scope lock (2026-04-19): workflow development in this iteration must target `CmsArticle` publication flow only, with no signed preview and no scheduled publishing in this track by owner decision. `CmsPage` publication expansion is deferred to the scaling phase, including analogous workflow rollout for home visual blocks (for example the `ExcellenceCarousel` content path).
+Remaining gaps: locale publish-readiness controls, and route/integration/e2e verification for the full editorial lifecycle.
 
 ## Recommended Immediate Sequence
 
-1. Phase 6 follow-up: object-level authorization tests and CSRF coverage review.
-2. Phase 3: Page Content CMS.
-3. Phase 6 and Phase 7 as production hardening.
+1. Phase 0 documentation re-baseline and status sync with current code.
+2. Phase 6 security P0: route-level authz/IDOR coverage, CSRF review, attachment controls, session timeout policy.
+3. Test contour upgrade: integration tests for critical admin routes plus minimum E2E smoke flow.
+4. Phase 7 workflow expansion (CmsArticle-first): status model and server-side transition rules.
+5. Phase 7 workflow simplification freeze (CmsArticle-first): draft/internal review in admin/publish as the active lifecycle line.
+6. Phase 4 hardening: media scanning/quarantine and derivatives/optimization pipeline.
+7. Block 4 implementation: outbox, retry/idempotency, dead-letter visibility.
+8. Block 5 closeout: MFA/step-up, distributed rate limiting, release readiness gates.

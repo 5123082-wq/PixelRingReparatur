@@ -121,6 +121,12 @@ Public pages must continue to render from current `messages/*.json` values when:
 
 CMS content overrides i18n only when a published page and valid block data are available.
 
+Approved implementation note:
+
+- not every `home` section must have a hard i18n fallback render path;
+- selected `home` sections are intentionally rendered only when a matching CMS block exists;
+- this is a product decision and should be preserved unless explicitly changed.
+
 ## API Surface
 
 Add OWNER-only CMS endpoints:
