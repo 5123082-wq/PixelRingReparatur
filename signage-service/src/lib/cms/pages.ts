@@ -2,7 +2,7 @@ import 'server-only';
 
 import { prisma } from '@/lib/prisma';
 
-export const CMS_PAGE_KEYS = ['home', 'support', 'status', 'global', 'impressum', 'privacy', 'leistungen'] as const;
+export const CMS_PAGE_KEYS = ['home', 'support', 'status', 'global', 'impressum', 'privacy', 'leistungen', 'business'] as const;
 export const CMS_PAGE_STATUSES = ['DRAFT', 'PUBLISHED'] as const;
 export const SUPPORTED_CMS_LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'] as const;
 export const CMS_PAGE_BLOCK_TYPES = [
@@ -1029,6 +1029,37 @@ export async function getLeistungenPageCmsContent(
 
   const content: LeistungenPageCmsContent = {
     heroSlides: hero ? getLeistungenHeroSlides(hero) : undefined,
+  };
+
+  return Object.values(content).some(Boolean) ? content : null;
+}
+
+export type BusinessHeroCmsContent = {
+  title?: string;
+  description?: string;
+  image?: string;
+  cta?: string;
+};
+
+export type BusinessPageCmsContent = {
+  hero?: BusinessHeroCmsContent;
+};
+
+export async function getBusinessPageCmsContent(
+  locale: string
+): Promise<BusinessPageCmsContent | null> {
+  const page = await getPublishedCmsPage('business', locale);
+  const hero = getEnabledBlock(page, 'hero', ['businessHero', 'hero']);
+
+  const content: BusinessPageCmsContent = {
+    hero: hero
+      ? {
+          title: getBlockText(hero, 'title'),
+          description: getBlockText(hero, 'description') ?? getBlockText(hero, 'intro'),
+          image: getBlockText(hero, 'image') ?? getBlockText(hero, 'assetUrl'),
+          cta: getBlockText(hero, 'cta') ?? getBlockText(hero, 'ctaPrimary'),
+        }
+      : undefined,
   };
 
   return Object.values(content).some(Boolean) ? content : null;
