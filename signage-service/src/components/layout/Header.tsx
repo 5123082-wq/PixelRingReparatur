@@ -111,7 +111,9 @@ const Header = ({ content }: { content?: HeaderContent | null }) => {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full bg-[#EEF3FBA3] backdrop-blur-[10.5px] border-b border-[#E7DDD3]">
+      {/* Placeholder to prevent layout shift when header becomes fixed */}
+      <div className="h-[72px] lg:h-[112px] w-full shrink-0" />
+      <header className="fixed top-0 z-50 w-full bg-[#EEF3FBA3] backdrop-blur-[10.5px] border-b border-[#E7DDD3]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex min-h-[72px] items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-2 sm:gap-3">
