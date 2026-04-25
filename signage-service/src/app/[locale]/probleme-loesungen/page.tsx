@@ -5,13 +5,32 @@ import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
 import ProblemKnowledgeGrid from '@/components/probleme-loesungen/ProblemKnowledgeGrid';
 import ProblemRequestButton from '@/components/probleme-loesungen/ProblemRequestButton';
-import {
-  type ProblemIntent,
-} from '@/lib/content/problem-knowledge';
+import { type ProblemIntent } from '@/lib/content/problem-knowledge';
 import {
   getGlobalPageCmsContent,
   getProblemeLoesungenPageCmsContent,
 } from '@/lib/cms/pages';
+import { getPublishedSymptomArticles } from '@/lib/cms/articles';
+
+/**
+ * Maps CmsArticle.slug (set in the DB / Admin) to the card `id` used in this page.
+ * The card `id` is the key in knowledgeBySlug so ProblemKnowledgeGrid can look it up.
+ * To add a new language: same slugs work for all locales (slug is locale-agnostic).
+ *
+ * DB slugs (left) come from seed-cms-support-articles.mjs.
+ * Card ids (right) come from the `problems` arrays in the CONTENT constant below.
+ */
+const SLUG_TO_PROBLEM_ID: Record<string, string> = {
+  'no-light': 'no-light',
+  'flicking': 'flicker',
+  'uneven-light': 'uneven-led',
+  'letter-out': 'letter-out',
+  'rain-fail': 'rain-fail',
+  'peeling-film': 'peeling-film',
+  'faded-film': 'faded-film',
+  'shaky-sign': 'loose-sign',
+  'urgent-repair': 'urgent',
+};
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
 
@@ -541,9 +560,10 @@ export default async function ProblemeLoesungenPage({
   const { locale } = await params;
   const supportContactHref = process.env.NEXT_PUBLIC_SUPPORT_PHONE_HREF || 'mailto:support@pixelring.de';
   const baseContent = getContent(locale);
-  const [globalCms, cmsContent] = await Promise.all([
+  const [globalCms, cmsContent, symptomArticles] = await Promise.all([
     getGlobalPageCmsContent(locale),
     getProblemeLoesungenPageCmsContent(locale),
+    getPublishedSymptomArticles(locale),
   ]);
   const content = {
     ...baseContent,
@@ -552,8 +572,58 @@ export default async function ProblemeLoesungenPage({
     primaryCta: cmsContent?.hero?.cta ?? baseContent.primaryCta,
   };
 
+  // Build a Map<cardId, knowledge> from CMS articles.
+  // Keyed by card id (not DB slug) so ProblemKnowledgeGrid can look up by problem.id.
+  const knowledgeBySlug = new Map(
+    symptomArticles
+      .map((article) => {
+        const cardId = SLUG_TO_PROBLEM_ID[article.slug];
+        if (!cardId) return null;
+        return [
+          cardId,
+          {
+            shortAnswer: article.shortAnswer,
+            causes: article.causes,
+            safeChecks: article.safeChecks,
+            urgentWarnings: article.urgentWarnings,
+            serviceProcess: article.serviceProcess,
+            workScopeFactors: article.workScopeFactors,
+          },
+        ] as const;
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
+  );
+
+  // JSON-LD FAQPage schema — enables Google AI Overviews, Featured Snippets,
+  // and structured GEO signals. Sourced from CMS shortAnswer fields.
+  const faqSchemaItems = symptomArticles
+    .filter((a) => a.shortAnswer)
+    .map((a) => ({
+      '@type': 'Question',
+      name: a.symptomLabel ?? a.title,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: a.shortAnswer,
+      },
+    }));
+
+  const faqSchema =
+    faqSchemaItems.length > 0
+      ? JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: faqSchemaItems,
+        })
+      : null;
+
   return (
     <div className="min-h-screen bg-[#F7F1E8] text-[#15202A]">
+      {faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: faqSchema }}
+        />
+      )}
       <Header content={globalCms?.header} />
       <main>
         <section className="relative overflow-hidden bg-[#0E1A2B] text-white">
@@ -627,7 +697,11 @@ export default async function ProblemeLoesungenPage({
               </h2>
               <p className="mt-5 text-lg leading-8 text-[#4A5568]">{content.problemIntro}</p>
             </div>
-            <ProblemKnowledgeGrid locale={locale} problems={content.problems} />
+            <ProblemKnowledgeGrid
+              locale={locale}
+              problems={content.problems}
+              knowledgeBySlug={knowledgeBySlug}
+            />
           </div>
         </section>
 
