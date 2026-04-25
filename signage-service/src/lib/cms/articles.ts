@@ -17,6 +17,35 @@ export type AiCmsArticle = {
   updatedAt: Date;
 };
 
+/**
+ * Structured knowledge for a single symptom card on /probleme-loesungen.
+ * All fields map directly to CmsArticle columns in the DB.
+ * These are also used as structured data for GEO (AI search snippets) and SEO (FAQPage schema).
+ */
+export type PublicSymptomArticle = {
+  slug: string;
+  title: string;
+  symptomLabel: string | null;
+  /** Short, authoritative answer — rendered as AI snippet / FAQ answer */
+  shortAnswer: string | null;
+  /** Markdown body — full article text visible to bots at SSR */
+  content: string;
+  /** Bullet list: likely technical root causes */
+  causes: string[];
+  /** Bullet list: safe self-checks the customer can do */
+  safeChecks: string[];
+  /** Bullet list: signals that require urgent professional action */
+  urgentWarnings: string[];
+  /** Bullet list: PixelRing service process steps */
+  serviceProcess: string[];
+  /** Bullet list: factors affecting work scope / estimate */
+  workScopeFactors: string[];
+  seoTitle: string | null;
+  seoDescription: string | null;
+  canonicalUrl: string | null;
+  sortOrder: number;
+};
+
 const AI_CONTEXT_TYPES: CmsArticleType[] = [
   CmsArticleType.SYMPTOM,
   CmsArticleType.FAQ,
@@ -67,4 +96,42 @@ export function buildAiCmsArticleBlock(article: AiCmsArticle): string {
   ]
     .filter(Boolean)
     .join('\n');
+}
+
+/**
+ * Loads all PUBLISHED SYMPTOM articles for a given locale.
+ * Used by /probleme-loesungen page to populate expanded card knowledge.
+ *
+ * Indexed by slug — the caller maps slug → ProblemIntent via SLUG_TO_INTENT.
+ */
+export async function getPublishedSymptomArticles(
+  locale: string
+): Promise<PublicSymptomArticle[]> {
+  const rows = await prisma.cmsArticle.findMany({
+    where: {
+      locale,
+      type: CmsArticleType.SYMPTOM,
+      status: 'PUBLISHED',
+      deletedAt: null,
+    },
+    select: {
+      slug: true,
+      title: true,
+      symptomLabel: true,
+      shortAnswer: true,
+      content: true,
+      causes: true,
+      safeChecks: true,
+      urgentWarnings: true,
+      serviceProcess: true,
+      workScopeFactors: true,
+      seoTitle: true,
+      seoDescription: true,
+      canonicalUrl: true,
+      sortOrder: true,
+    },
+    orderBy: [{ sortOrder: 'asc' }, { updatedAt: 'desc' }],
+  });
+
+  return rows;
 }
