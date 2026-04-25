@@ -707,7 +707,7 @@ export default async function LeistungenPage({
     <div className="min-h-screen bg-[#F7F1E8] text-[#15202A]">
       <Header content={globalCms?.header} />
       <main>
-        <LeistungenHero slides={content.heroSlides} locale={locale} />
+        <LeistungenHero slides={content.heroSlides} />
 
         <section id="reparatur-diagnose-montage" className="bg-white py-14 sm:py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
