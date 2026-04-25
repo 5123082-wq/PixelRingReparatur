@@ -84,7 +84,7 @@ const LocationPicker = ({ value, onChange, placeholder, className, variant = 'li
     return 'bg-white border text-[#0E1A2B] shadow-lg';
   };
   
-  const getItemClass = (index: number) => {
+  const getItemClass = () => {
      let c = 'px-4 py-2.5 cursor-pointer text-sm transition-colors ';
      if (variant === 'dark') {
         c += 'hover:bg-white/10 border-b border-white/5 last:border-0';
@@ -117,7 +117,7 @@ const LocationPicker = ({ value, onChange, placeholder, className, variant = 'li
              const secondary = [p.postcode, p.city, p.country].filter(Boolean).join(', ');
              
              return (
-              <div key={i} onClick={() => handleSelect(feature)} className={getItemClass(i)}>
+              <div key={i} onClick={() => handleSelect(feature)} className={getItemClass()}>
                 <div className="font-semibold text-[14px] leading-tight">{primary} {p.name ? '' : p.housenumber}</div>
                 {(secondary && secondary !== primary) && (
                   <div className={`text-[12px] truncate mt-0.5 ${variant === 'dark' ? 'text-white/60' : 'text-[#72665D]'}`}>

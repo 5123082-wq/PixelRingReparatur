@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { useTranslations } from 'next-intl';
 import ContactModal from '../common/ContactModal';
 import ChatModal from '../common/ChatModal';
 
@@ -18,7 +17,6 @@ type HomeHeroContent = {
 };
 
 const HeroSection = ({ content }: { content?: HomeHeroContent | null }) => {
-  const t = useTranslations('HomePage');
   const [modalOpen, setModalOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
 

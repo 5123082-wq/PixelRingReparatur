@@ -253,21 +253,18 @@ test('authenticateAdminLogin succeeds for the correct role and rejects wrong-zon
   const prisma = await buildFixture();
 
   const ownerLogin = await authenticateAdminLogin(prisma as any, 'OWNER', {
-    mode: 'password',
     email: 'owner@pixelring.test',
     password: 'OwnerPassword123',
   });
   assert.equal(ownerLogin?.user.role, 'OWNER');
 
   const wrongZone = await authenticateAdminLogin(prisma as any, 'OWNER', {
-    mode: 'password',
     email: 'manager@pixelring.test',
     password: 'ManagerPassword123',
   });
   assert.equal(wrongZone, null);
 
   const disabledUser = await authenticateAdminLogin(prisma as any, 'OWNER', {
-    mode: 'password',
     email: 'disabled@pixelring.test',
     password: 'DisabledPassword123',
   });

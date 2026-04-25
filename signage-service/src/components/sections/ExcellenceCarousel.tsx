@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import { useTranslations, useLocale } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { ExcellenceCmsContent } from '@/lib/cms/pages';
 
 interface ExcellenceCarouselProps {
@@ -10,7 +10,6 @@ interface ExcellenceCarouselProps {
 }
 
 const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
-  const t = useTranslations('Excellence');
   const locale = useLocale();
   const isRTL = locale === 'ar';
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -24,8 +23,6 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
     '/images/ex-lightbox.png',
     '/images/ex-dismantling.png',
   ];
-
-  const DEFAULT_ITEM_KEYS = [0, 1, 2, 3, 4, 5] as const;
 
   const items = (content?.items || []).map((cmsItem, idx) => ({
     title: cmsItem.title || '',

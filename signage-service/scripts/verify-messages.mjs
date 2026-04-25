@@ -13,7 +13,7 @@ async function testImports() {
       console.log(`  - JSON.parse: OK`);
       
       // Mimic the import behavior
-      const imported = await import(`file://${filePath}`, { assert: { type: 'json' } }).catch(e => {
+      await import(`file://${filePath}`, { assert: { type: 'json' } }).catch(() => {
          // Fallback for older node or different loader
          return JSON.parse(content);
       });

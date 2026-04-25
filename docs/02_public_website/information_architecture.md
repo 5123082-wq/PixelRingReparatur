@@ -295,6 +295,24 @@ Primary: start lead intake
 - Next action: implement `leistungen` CMS/page-key support and public route, then build the visual service landing page from the approved plan
 - Blockers/risks: final German microcopy and visual assets still need implementation-level review; service-intent persistence into CRM is planned but should not block first route launch
 - Updated documents: `docs/02_public_website/page_plan_leistungen.md`, `docs/02_public_website/page_brief_services.md`, `docs/02_public_website/README.md`, `docs/02_public_website/information_architecture.md`, `PROGRESS.md`
+
+### 2026-04-25 — Probleme & Loesungen Page Plan Approved
+
+- Current sprint/block: Public Website, second dedicated header-linked page rollout
+- Done: owner approved the SEO/IA direction for the current `Solutions` slot: German menu label `Probleme & Loesungen`, route `/probleme-loesungen`, SEO title `Probleme mit Werbeanlagen? Typische Schaeden & Loesungen | PixelRing`, H1 `Typische Probleme mit Werbeanlagen erkennen und richtig loesen`, and FAQ as a page section rather than the page identity
+- In progress: developer handoff before implementation
+- Next action: implement the dedicated multilingual `/[locale]/probleme-loesungen` page and replace temporary `/support#symptoms` navigation links without changing existing support articles
+- Blockers/risks: active CMS global navigation records may still contain `/support#symptoms` and may require a data update after code/seed changes
+- Updated documents: `docs/02_public_website/page_plan_solutions.md`, `docs/02_public_website/page_brief_solutions.md`, `docs/02_public_website/README.md`, `docs/02_public_website/information_architecture.md`, `PROGRESS.md`
+
+### 2026-04-25 — Probleme & Loesungen MVP Implemented
+
+- Current sprint/block: Public Website, second dedicated header-linked page rollout
+- Done: route `/[locale]/probleme-loesungen` implemented for all MVP locales; header now uses the approved label and route; stale CMS global navigation links to `/support#symptoms` are normalized at read time; CMS/admin page key and baseline seed support added; existing support articles were not changed
+- In progress: visual QA and future CMS editor refinement for page-specific blocks
+- Next action: inspect the page in browser across desktop/mobile and decide whether to seed/update live CMS global navigation data
+- Blockers/risks: current lint command still reports pre-existing unrelated issues in older files; production/staging CMS data may still need a seed/data update for stored records even though runtime navigation is normalized
+- Updated documents: `PROGRESS.md`, `docs/02_public_website/page_plan_solutions.md`, `docs/02_public_website/information_architecture.md`
 Secondary: go to messaging channel / service page / how it works
 
 ### 8.3. Ключевые сообщения страницы

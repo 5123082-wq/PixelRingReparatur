@@ -34,7 +34,7 @@ const Header = ({ content }: { content?: HeaderContent | null }) => {
 
   const fallbackNavLinks = [
     { name: t('services'), href: '/leistungen' },
-    { name: t('solutions'), href: '/support#symptoms' },
+    { name: t('solutions'), href: '/probleme-loesungen' },
     { name: t('for_business'), href: '/business' },
     { name: t('references'), href: '/' },
     { name: t('about'), href: '/' },
@@ -53,9 +53,17 @@ const Header = ({ content }: { content?: HeaderContent | null }) => {
         !link.name.startsWith('Nav.')
     );
 
-  const navLinks = (hasValidCmsNavLinks ? cmsNavLinks : fallbackNavLinks).map((link, index) =>
-    index === 0 ? { ...link, href: '/leistungen' } : link
-  );
+  const navLinks = (hasValidCmsNavLinks ? cmsNavLinks : fallbackNavLinks).map((link, index) => {
+    if (index === 0) {
+      return { ...link, href: '/leistungen' };
+    }
+
+    if (index === 1) {
+      return { ...link, name: t('solutions'), href: '/probleme-loesungen' };
+    }
+
+    return link;
+  });
   const servicePill = content?.servicePill || '';
   const accountStatusLabel =
     content?.accountStatusLabel && !content.accountStatusLabel.startsWith('Nav.')

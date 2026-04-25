@@ -49,15 +49,16 @@ export default async function HomePage({
         <Footer content={globalCms?.footer} />
       </div>
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('HomePage Render Error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown Error';
     // Absolute fallback if everything crashes
     return (
       <div className="min-h-screen flex flex-col bg-[#F7F1E8] p-20">
         <h1 className="text-2xl font-bold text-red-600 mb-4">Error loading page</h1>
         <p className="text-gray-600">We are currently experiencing technical difficulties. Please try again later.</p>
         <div className="mt-8 p-4 bg-gray-100 rounded text-xs font-mono">
-          {error?.message || 'Unknown Error'}
+          {errorMessage}
         </div>
       </div>
     );

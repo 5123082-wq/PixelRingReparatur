@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
+import { spawn, type ChildProcessByStdio } from 'node:child_process';
+import type { Readable } from 'node:stream';
 import { after, before, test } from 'node:test';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -36,7 +37,7 @@ let ownerUserId: string | null = null;
 let ownerEmail: string | null = null;
 const createdArticleIds = new Set<string>();
 const createdMediaIds = new Set<string>();
-let devServer: ChildProcessWithoutNullStreams | null = null;
+let devServer: ChildProcessByStdio<null, Readable, Readable> | null = null;
 let devServerLogTail = '';
 
 function sleep(ms: number): Promise<void> {
@@ -114,7 +115,7 @@ async function readJson(response: Response): Promise<any> {
   return JSON.parse(text);
 }
 
-function startDevServer(): ChildProcessWithoutNullStreams {
+function startDevServer(): ChildProcessByStdio<null, Readable, Readable> {
   const child = spawn('npm', ['run', 'dev', '--', '--port', String(PORT)], {
     cwd: projectRoot,
     env: {

@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { useTranslations } from 'next-intl';
 import { BentoGridCmsContent } from '@/lib/cms/pages';
 
 interface BentoGridSectionProps {
@@ -9,10 +8,6 @@ interface BentoGridSectionProps {
 }
 
 const BentoGridSection = ({ content }: BentoGridSectionProps) => {
-  const t = useTranslations('Bento');
-
-  const DEFAULT_STEP_KEYS = [0, 1, 2, 3, 4] as const;
-
   // Helper: assign span class by position pattern (same visual rhythm as original design)
   const getCardClass = (idx: number, total: number): string => {
     // First card always spans 2 columns

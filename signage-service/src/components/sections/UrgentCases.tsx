@@ -17,12 +17,13 @@ interface UrgentCasesProps {
 
 const UrgentCases = ({ isSidebar = false, content }: UrgentCasesProps) => {
   const t = useTranslations('Support');
+  const supportContactHref = process.env.NEXT_PUBLIC_SUPPORT_PHONE_HREF || 'mailto:support@pixelring.de';
 
   const handlePhoneClick = () => {
     window.location.href =
       content?.primaryHref && content.primaryHref.trim()
         ? content.primaryHref
-        : 'tel:+491234567890';
+        : supportContactHref;
   };
 
   const containerPadding = isSidebar ? 'p-6 md:p-8' : 'p-8 md:p-16';

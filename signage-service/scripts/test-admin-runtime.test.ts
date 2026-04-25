@@ -27,6 +27,12 @@ let ownerSessionToken: string | null = null;
 const createdArticleIds = new Set<string>();
 const createdMediaIds = new Set<string>();
 
+type CmsArticleRevisionRecord = {
+  id: string;
+  sourceAction: 'CREATE' | 'UPDATE' | 'PUBLISH' | 'UNPUBLISH';
+  snapshot: unknown;
+};
+
 function buildArticleSnapshot(article: {
   locale: string;
   type: string;
@@ -294,7 +300,7 @@ test('runtime integration: auth verify, article lifecycle, revisions restore, me
   });
   await createArticleRevision(articleId, 'UNPUBLISH', unpublished, required ?? {});
 
-  const revisions = await prisma.cmsArticleRevision.findMany({
+  const revisions = (await prisma.cmsArticleRevision.findMany({
     where: { articleId },
     orderBy: [{ createdAt: 'desc' }],
     take: 20,
@@ -303,7 +309,7 @@ test('runtime integration: auth verify, article lifecycle, revisions restore, me
       sourceAction: true,
       snapshot: true,
     },
-  });
+  })) as CmsArticleRevisionRecord[];
   assert.ok(revisions.length >= 4, 'Expected CREATE/UPDATE/PUBLISH/UNPUBLISH revisions');
   assert.ok(
     revisions.some((item) => item.sourceAction === 'PUBLISH'),

@@ -10,6 +10,11 @@ import { readLocalAttachment as readSafeLocalAttachment } from '@/lib/attachment
 const UUID_LIKE_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+type PrivateAttachmentHeaderInput = {
+  mimeType: string | null;
+  originalFilename: string | null;
+};
+
 function isUuidLike(value: string): boolean {
   return UUID_LIKE_PATTERN.test(value);
 }
@@ -144,7 +149,7 @@ export async function GET(
           },
         });
 
-        return new NextResponse(stream as any, {
+        return new NextResponse(stream, {
           headers: createPrivateAttachmentHeaders(attachment, attachment.byteSize || Number(blob.size)),
         });
       } catch (error) {
@@ -189,7 +194,7 @@ export async function GET(
 /**
  * Internal helper to create secure headers
  */
-function createPrivateAttachmentHeaders(attachment: any, size: number) {
+function createPrivateAttachmentHeaders(attachment: PrivateAttachmentHeaderInput, size: number) {
   const headers = new Headers();
   headers.set('Content-Type', attachment.mimeType || 'application/octet-stream');
   headers.set('Content-Length', size.toString());

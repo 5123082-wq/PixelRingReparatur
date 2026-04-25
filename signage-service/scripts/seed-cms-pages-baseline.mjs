@@ -119,6 +119,69 @@ function createCanonicalUrl(locale, pageKey) {
   return `/${locale}/${pageKey}`;
 }
 
+const PROBLEME_LOESUNGEN_CONTENT = {
+  de: {
+    title: 'Probleme & Loesungen',
+    seoTitle: 'Probleme mit Werbeanlagen? Typische Schaeden & Loesungen | PixelRing',
+    seoDescription:
+      'Typische Probleme mit Werbeanlagen, LED-Schildern, Leuchtkaesten, Folien und Beschriftungen erkennen und direkt eine PixelRing Anfrage starten.',
+    heroTitle: 'Typische Probleme mit Werbeanlagen erkennen und richtig loesen',
+    heroDescription:
+      'Nicht sicher, ob es Elektrik, LED, Folie, Befestigung oder Witterungsschaden ist? Beschreiben Sie das sichtbare Problem oder senden Sie ein Foto.',
+    heroCta: 'Problem schildern',
+  },
+  en: {
+    title: 'Problems & Solutions',
+    seoTitle: 'Signage Problems? Common Damage & Solutions | PixelRing',
+    seoDescription:
+      'Understand common signage, LED, lightbox, film, lettering and storefront branding problems and start a PixelRing request.',
+    heroTitle: 'Recognize common signage problems and choose the right next step',
+    heroDescription:
+      'Not sure whether it is electrical, LED, film, mounting or weather damage? Describe the visible issue or send a photo.',
+    heroCta: 'Describe the problem',
+  },
+  ru: {
+    title: 'Проблемы и решения',
+    seoTitle: 'Проблемы с вывеской? Типовые повреждения и решения | PixelRing',
+    seoDescription:
+      'Типовые проблемы вывесок, LED, световых коробов, пленок и брендинга: понятная диагностика и заявка в PixelRing.',
+    heroTitle: 'Типовые проблемы с вывесками и правильный следующий шаг',
+    heroDescription:
+      'Не знаете, это электрика, LED, пленка, крепление или повреждение после погоды? Опишите видимую проблему или отправьте фото.',
+    heroCta: 'Описать проблему',
+  },
+  tr: {
+    title: 'Sorunlar ve Cozumler',
+    seoTitle: 'Tabela Sorunlari? Tipik Hasarlar ve Cozumler | PixelRing',
+    seoDescription:
+      'Tabela, LED, isikli kutu, folyo ve vitrin markalama sorunlarini anlayin ve PixelRing talebi baslatin.',
+    heroTitle: 'Tabela sorunlarini tanimlayin ve dogru sonraki adimi secin',
+    heroDescription:
+      'Sorun elektrik, LED, folyo, montaj veya hava kosulu hasari mi emin degil misiniz? Gorunen sorunu anlatin veya fotograf gonderin.',
+    heroCta: 'Sorunu anlat',
+  },
+  pl: {
+    title: 'Problemy i rozwiazania',
+    seoTitle: 'Problemy z reklama? Typowe uszkodzenia i rozwiazania | PixelRing',
+    seoDescription:
+      'Typowe problemy szyldow, LED, kasetonow, folii i brandingu witryn oraz szybka sciezka zgloszenia do PixelRing.',
+    heroTitle: 'Rozpoznaj typowe problemy z reklama i wybierz wlasciwy kolejny krok',
+    heroDescription:
+      'Nie wiesz, czy chodzi o elektryke, LED, folie, mocowanie czy skutki pogody? Opisz widoczny problem albo wyslij zdjecie.',
+    heroCta: 'Opisz problem',
+  },
+  ar: {
+    title: 'المشكلات والحلول',
+    seoTitle: 'مشكلات اللوحات؟ أضرار شائعة وحلول | PixelRing',
+    seoDescription:
+      'تعرف على مشكلات اللوحات المضيئة و LED والفويل والكتابات وابدأ طلبا واضحا مع PixelRing.',
+    heroTitle: 'تعرّف على مشكلات اللوحات الإعلانية واختر الخطوة الصحيحة',
+    heroDescription:
+      'لست متأكدا هل المشكلة كهرباء أو LED أو فويل أو تثبيت أو ضرر بسبب الطقس؟ صف المشكلة الظاهرة أو أرسل صورة.',
+    heroCta: 'وصف المشكلة',
+  },
+};
+
 function statusItemsFromMessages(statusValues) {
   if (!statusValues || typeof statusValues !== 'object' || Array.isArray(statusValues)) {
     return [];
@@ -351,6 +414,29 @@ function buildStatusPageSeed(locale, messages) {
   };
 }
 
+function buildProblemeLoesungenPageSeed(locale) {
+  const content = PROBLEME_LOESUNGEN_CONTENT[locale] ?? PROBLEME_LOESUNGEN_CONTENT.de;
+  const blocks = [
+    createBlock('hero', 'problemeLoesungenHero', 0, {
+      sourceNamespace: 'ProblemsSolutions',
+      title: content.heroTitle,
+      description: content.heroDescription,
+      cta: content.heroCta,
+    }),
+  ];
+
+  return {
+    pageKey: 'probleme-loesungen',
+    locale,
+    status: 'PUBLISHED',
+    title: content.title,
+    blocks,
+    seoTitle: content.seoTitle,
+    seoDescription: content.seoDescription,
+    canonicalUrl: createCanonicalUrl(locale, 'probleme-loesungen'),
+  };
+}
+
 function buildGlobalPageSeed(locale, messages) {
   const footer = messages.Footer ?? {};
   const nav = messages.Nav ?? {};
@@ -368,7 +454,7 @@ function buildGlobalPageSeed(locale, messages) {
       requestHref: null,
       links: [
         { label: nav.services ?? 'Services', href: '/leistungen' },
-        { label: nav.solutions ?? 'Solutions', href: '/support#symptoms' },
+        { label: nav.solutions ?? 'Problems & Solutions', href: '/probleme-loesungen' },
         { label: nav.for_business ?? 'For Business', href: '/business' },
         { label: nav.references ?? 'References', href: '/' },
         { label: nav.about ?? 'About Us', href: '/' },
@@ -439,6 +525,7 @@ function buildPageSeeds(locale) {
     buildGlobalPageSeed(locale, messages),
     buildLegalPageSeed(locale, 'impressum'),
     buildLegalPageSeed(locale, 'privacy'),
+    buildProblemeLoesungenPageSeed(locale),
   ];
 }
 
@@ -697,6 +784,7 @@ async function main() {
     restored: 0,
     skipped: 0,
   };
+  let pagesProcessed = 0;
 
   await client.connect();
 
@@ -708,6 +796,7 @@ async function main() {
 
       for (const page of pages) {
         const result = await upsertBaselinePage(client, page);
+        pagesProcessed += 1;
         counters[result.action] += 1;
         console.log(
           `[cms-pages] ${result.action.toUpperCase()} ${page.pageKey}/${page.locale}`
@@ -721,7 +810,7 @@ async function main() {
       JSON.stringify(
         {
           success: true,
-          pagesProcessed: SUPPORTED_LOCALES.length * 6,
+          pagesProcessed,
           ...counters,
         },
         null,

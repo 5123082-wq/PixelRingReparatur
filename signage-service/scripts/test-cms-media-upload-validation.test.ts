@@ -67,7 +67,11 @@ test('validateCmsMediaUploadFile rejects invalid checksum format', async () => {
 
 test('validateCmsMediaUploadFile rejects extreme image dimensions', async () => {
   const hugePng = createPngWithDimensions(20_000, 20_000);
-  const file = new File([hugePng], 'huge.png', { type: 'image/png' });
+  const hugePngBytes = new Uint8Array(hugePng.byteLength);
+  hugePngBytes.set(hugePng);
+  const file = new File([hugePngBytes.buffer], 'huge.png', {
+    type: 'image/png',
+  });
 
   await assert.rejects(
     validateCmsMediaUploadFile({ file }),

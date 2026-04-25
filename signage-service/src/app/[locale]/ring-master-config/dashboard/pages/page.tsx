@@ -10,7 +10,16 @@ import { adminFetch } from '@/lib/admin-fetch';
 // Types
 // ─────────────────────────────────────────────────────────
 
-type CmsPageKey = 'home' | 'support' | 'status' | 'global' | 'impressum' | 'privacy' | 'leistungen';
+type CmsPageKey =
+  | 'home'
+  | 'support'
+  | 'status'
+  | 'global'
+  | 'impressum'
+  | 'privacy'
+  | 'leistungen'
+  | 'business'
+  | 'probleme-loesungen';
 type CmsPageStatus = 'DRAFT' | 'PUBLISHED';
 type CmsPageBlock = Record<string, unknown> & {
   type?: string;
@@ -83,12 +92,22 @@ type PageGroup = {
 // ─────────────────────────────────────────────────────────
 
 const SUPPORTED_LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'] as const;
-const PAGE_KEYS: CmsPageKey[] = ['home', 'support', 'status', 'global', 'impressum', 'privacy', 'leistungen'];
+const PAGE_KEYS: CmsPageKey[] = [
+  'home',
+  'support',
+  'status',
+  'global',
+  'impressum',
+  'privacy',
+  'leistungen',
+  'business',
+  'probleme-loesungen',
+];
 
 /** Fields that are locale-specific text for each known block type.
  *  These MUST match the field names that getHomePageCmsContent / frontend components actually read. */
 const BLOCK_TEXT_FIELDS: Record<string, string[]> = {
-  hero: ['titlePrefix', 'titleAccent', 'titleSuffix', 'pretitle', 'intro', 'ctaPrimary', 'ctaSecondary', 'trustBadge', 'responseBadge'],
+  hero: ['title', 'description', 'cta', 'titlePrefix', 'titleAccent', 'titleSuffix', 'pretitle', 'intro', 'ctaPrimary', 'ctaSecondary', 'trustBadge', 'responseBadge'],
   faqList: ['title', 'items'],
   textSection: ['title', 'description'],
   reviewList: ['title', 'subtitle', 'items'],

@@ -2,7 +2,17 @@ import 'server-only';
 
 import { prisma } from '@/lib/prisma';
 
-export const CMS_PAGE_KEYS = ['home', 'support', 'status', 'global', 'impressum', 'privacy', 'leistungen', 'business'] as const;
+export const CMS_PAGE_KEYS = [
+  'home',
+  'support',
+  'status',
+  'global',
+  'impressum',
+  'privacy',
+  'leistungen',
+  'business',
+  'probleme-loesungen',
+] as const;
 export const CMS_PAGE_STATUSES = ['DRAFT', 'PUBLISHED'] as const;
 export const SUPPORTED_CMS_LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'] as const;
 export const CMS_PAGE_BLOCK_TYPES = [
@@ -684,6 +694,23 @@ function getLinkItems(block: CmsPageBlock, field: string): CmsLinkItem[] | undef
   return links.length > 0 ? links : undefined;
 }
 
+function normalizeGlobalNavigationLinks(links: CmsLinkItem[] | undefined): CmsLinkItem[] | undefined {
+  if (!links) {
+    return undefined;
+  }
+
+  return links.map((link, index) => {
+    if (index === 1 || link.href === '/support#symptoms') {
+      return {
+        label: link.label,
+        href: '/probleme-loesungen',
+      };
+    }
+
+    return link;
+  });
+}
+
 function getLeistungenHeroSlides(block: CmsPageBlock): LeistungenHeroSlideCmsContent[] | undefined {
   const items = getBlockObjectList(block, 'items');
 
@@ -812,7 +839,7 @@ export async function getGlobalPageCmsContent(
       ? {
           servicePill: getBlockText(navigation, 'servicePill'),
           bookLabel: getBlockText(navigation, 'bookLabel'),
-          links: getLinkItems(navigation, 'links'),
+          links: normalizeGlobalNavigationLinks(getLinkItems(navigation, 'links')),
           accountStatusLabel: getBlockText(navigation, 'accountStatusLabel'),
           accountStatusHref: getBlockText(navigation, 'accountStatusHref'),
           requestLabel: getBlockText(navigation, 'requestLabel'),
@@ -1057,6 +1084,35 @@ export async function getBusinessPageCmsContent(
           title: getBlockText(hero, 'title'),
           description: getBlockText(hero, 'description') ?? getBlockText(hero, 'intro'),
           image: getBlockText(hero, 'image') ?? getBlockText(hero, 'assetUrl'),
+          cta: getBlockText(hero, 'cta') ?? getBlockText(hero, 'ctaPrimary'),
+        }
+      : undefined,
+  };
+
+  return Object.values(content).some(Boolean) ? content : null;
+}
+
+export type ProblemeLoesungenHeroCmsContent = {
+  title?: string;
+  description?: string;
+  cta?: string;
+};
+
+export type ProblemeLoesungenPageCmsContent = {
+  hero?: ProblemeLoesungenHeroCmsContent;
+};
+
+export async function getProblemeLoesungenPageCmsContent(
+  locale: string
+): Promise<ProblemeLoesungenPageCmsContent | null> {
+  const page = await getPublishedCmsPage('probleme-loesungen', locale);
+  const hero = getEnabledBlock(page, 'hero', ['problemeLoesungenHero', 'hero']);
+
+  const content: ProblemeLoesungenPageCmsContent = {
+    hero: hero
+      ? {
+          title: getBlockText(hero, 'title'),
+          description: getBlockText(hero, 'description') ?? getBlockText(hero, 'intro'),
           cta: getBlockText(hero, 'cta') ?? getBlockText(hero, 'ctaPrimary'),
         }
       : undefined,

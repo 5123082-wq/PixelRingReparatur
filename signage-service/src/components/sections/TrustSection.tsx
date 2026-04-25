@@ -15,7 +15,7 @@ const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
   const safeT = (key: string, fallback: string) => {
     try {
       return t(key) || fallback;
-    } catch (e) {
+    } catch {
       console.error(`Translation missing for Trust.${key}`);
       return fallback;
     }
@@ -23,8 +23,8 @@ const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
 
   const rawStats = (() => {
     try {
-      return t.raw('stats') as any[] || [];
-    } catch (e) {
+      return t.raw('stats') as NonNullable<TrustCmsContent['stats']> || [];
+    } catch {
       return [];
     }
   })();
