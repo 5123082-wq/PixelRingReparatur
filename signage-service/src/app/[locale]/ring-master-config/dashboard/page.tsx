@@ -1,11 +1,9 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import { useRouter, useParams } from 'next/navigation';
 import { getLocaleSegment, withLocalePath } from '../../admin-route';
 
 export default function CmsDashboardPage() {
-  const t = useTranslations();
   const router = useRouter();
   const params = useParams();
   const locale = getLocaleSegment(params?.locale);

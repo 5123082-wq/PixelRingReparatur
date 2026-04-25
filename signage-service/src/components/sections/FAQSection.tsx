@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useTranslations } from 'next-intl';
 import { FaqCmsContent } from '@/lib/cms/pages';
 
 interface FAQSectionProps {
@@ -9,10 +8,9 @@ interface FAQSectionProps {
 }
 
 const FAQSection = ({ content }: FAQSectionProps) => {
-  const t = useTranslations('FAQ');
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-  const faqItems = (content?.items || []).map((item, idx) => ({
+  const faqItems = (content?.items || []).map((item) => ({
     q: item.question || '',
     a: item.answer || '',
   }));

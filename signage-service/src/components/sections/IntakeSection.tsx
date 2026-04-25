@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useTranslations } from 'next-intl';
 import ContactModal from '../common/ContactModal';
 import ChatModal from '../common/ChatModal';
 
@@ -20,7 +19,6 @@ type IntakeSectionContent = {
 const METHOD_ORDER: IntakeMethodId[] = ['text', 'photo', 'voice', 'messenger'];
 
 const IntakeSection = ({ content }: { content?: IntakeSectionContent | null }) => {
-  const t = useTranslations('Intake');
   const [modalOpen, setModalOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
 
@@ -28,7 +26,7 @@ const IntakeSection = ({ content }: { content?: IntakeSectionContent | null }) =
     (content?.methods ?? []).map((method) => [method.id, method])
   );
 
-  const methods = METHOD_ORDER.map((id, index) => {
+  const methods = METHOD_ORDER.map((id) => {
     const cmsMethod = cmsMethods.get(id);
 
     return {

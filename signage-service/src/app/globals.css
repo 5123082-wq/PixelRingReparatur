@@ -17,6 +17,26 @@ body {
   font-family: var(--font-inter, 'Inter', sans-serif);
 }
 
+@keyframes metric-fill {
+  from {
+    width: 0;
+  }
+  to {
+    width: var(--metric-target, 75%);
+  }
+}
+
+.metric-fill {
+  width: var(--metric-target, 75%);
+  animation: metric-fill 1.1s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .metric-fill {
+    animation: none;
+  }
+}
+
 /* Hide scrollbar but keep scroll functionality */
 .no-scrollbar::-webkit-scrollbar {
   display: none;

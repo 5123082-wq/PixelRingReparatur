@@ -7,6 +7,7 @@ import {
   buildAiCmsArticleBlock,
   getPublishedCmsArticlesForAi,
 } from '@/lib/cms/articles';
+import { getProblemKnowledgePrompt } from '@/lib/content/problem-knowledge';
 
 export const KNOWLEDGE_BASE_FILES = [
   'service_info.md',
@@ -111,6 +112,7 @@ export async function buildSystemPrompt(
     }))
   );
   const cmsKnowledgeContext = await buildCmsKnowledgeContext(locale);
+  const problemKnowledgeContext = getProblemKnowledgePrompt(locale);
 
   const knowledgeBase = sections
     .map(
@@ -127,6 +129,7 @@ export async function buildSystemPrompt(
     '',
     'Knowledge base:',
     knowledgeBase,
+    problemKnowledgeContext ? `\n${problemKnowledgeContext}` : '',
     cmsKnowledgeContext ? `\n${cmsKnowledgeContext}` : '',
   ].join('\n');
 }

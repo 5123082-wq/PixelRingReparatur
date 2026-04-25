@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { useTranslations } from 'next-intl';
 import { RoadmapCmsContent } from '@/lib/cms/pages';
 
 interface RoadmapSectionProps {
@@ -9,8 +8,6 @@ interface RoadmapSectionProps {
 }
 
 const RoadmapSection = ({ content }: RoadmapSectionProps) => {
-  const t = useTranslations('Roadmap');
-
   const StepIcon = ({ index }: { index: number }) => {
     const iconSize = "w-6 h-6";
     const icons = [
@@ -40,9 +37,7 @@ const RoadmapSection = ({ content }: RoadmapSectionProps) => {
     return icons[index % icons.length];
   };
 
-  const DEFAULT_STEP_KEYS = [0, 1, 2, 3] as const;
-
-  const steps = (content?.steps || []).map((cmsStep, idx) => ({
+  const steps = (content?.steps || []).map((cmsStep) => ({
     title: cmsStep.title || '',
     description: cmsStep.description || '',
   }));

@@ -3,6 +3,10 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+function isRecord(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
 async function checkCms() {
   const page = await prisma.cmsPage.findFirst({
     where: {
@@ -19,17 +23,23 @@ async function checkCms() {
   }
 
   console.log('Page Title:', page.title);
-  console.log('Blocks Count:', page.blocks ? (page.blocks as any[]).length : 0);
+  const blocks = Array.isArray(page.blocks) ? page.blocks : [];
+  console.log('Blocks Count:', blocks.length);
   
-  const blocks = page.blocks as any[];
-  const coverageBlock = blocks.find(b => b.key === 'coverageSection');
+  const coverageBlock = blocks.find((block) => isRecord(block) && block.key === 'coverageSection');
   
   if (coverageBlock) {
     console.log('Coverage Block found:');
     console.log(JSON.stringify(coverageBlock, null, 2));
   } else {
     console.log('Coverage Block NOT FOUND in blocks list.');
-    console.log('Available keys:', blocks.map(b => b.key).join(', '));
+    console.log(
+      'Available keys:',
+      blocks
+        .map((block) => (isRecord(block) && typeof block.key === 'string' ? block.key : null))
+        .filter(Boolean)
+        .join(', ')
+    );
   }
 }
 

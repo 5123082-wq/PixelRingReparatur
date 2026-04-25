@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { useTranslations, useLocale } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { useInView } from 'framer-motion';
 import { ReviewCmsContent } from '@/lib/cms/pages';
 
@@ -64,7 +64,6 @@ const TypewriterQuote = ({ content, shouldAnimate }: { content: string; shouldAn
 };
 
 const ReviewsSection = ({ content }: ReviewsSectionProps) => {
-  const t = useTranslations('Reviews');
   const locale = useLocale();
   const isRTL = locale === 'ar';
   const scrollRef = useRef<HTMLDivElement>(null);

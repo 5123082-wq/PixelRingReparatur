@@ -14,17 +14,17 @@ Implementation status note as of `2026-04-05`:
 
 ---
 
-## 1. Current baseline in this repository
+## 1. Historical baseline in this repository
 
-At the moment the website does **not** have the backend needed for a real `Status` area:
+The list below is historical pre-implementation context, not the current live code state. As of `2026-04-25`, the current implementation status is tracked in [project_state_and_roadmap.md](../00_project_overview/project_state_and_roadmap.md).
 
 - `Header.tsx` links `Status` to `#status`, not to a real page.
 - `ChatModal.tsx` keeps messages only in client state.
 - `ContactForm.tsx` simulates submit success.
-- `api/contact/route.ts` forwards data to Telegram, but does not create a database record, request number, account, or message history.
+- `api/contact/route.ts` was previously Telegram-only; current code calls `createWebsiteRequest`, creates the website request/public request number, stores attachments when present, then sends the Telegram notification.
 - there is no database, no private file storage, no authentication model, no RBAC, and no customer portal.
 
-Because of this, the `Status` button must be treated as a separate product module, not as a small UI patch.
+Because of this historical baseline, the `Status` button was treated as a separate product module, not as a small UI patch.
 
 ---
 

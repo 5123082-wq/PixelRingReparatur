@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, use, useRef } from 'react';
+import { useState, useEffect, use, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -62,7 +62,16 @@ type CaseDetail = {
   }[];
 };
 
-const STATUS_OPTIONS: { value: string; label: string; variant: any }[] = [
+type CaseMessage = CaseDetail['messages'][number];
+type CaseStatusEvent = CaseDetail['statusEvents'][number];
+type TimelineEvent =
+  | { timestamp: number; type: 'message' | 'note'; data: CaseMessage }
+  | { timestamp: number; type: 'status'; data: CaseStatusEvent };
+type StatusOption = { value: string; label: string; variant: string };
+type ActiveTab = 'client' | 'master' | 'history';
+type ReplyMode = 'customer' | 'internal';
+
+const STATUS_OPTIONS: StatusOption[] = [
   { value: 'DRAFT', label: 'Черновик', variant: 'neutral' },
   { value: 'FORMALIZED', label: 'Оформлена', variant: 'neutral' },
   { value: 'NUMBER_ISSUED', label: 'Принято', variant: 'info' },
@@ -80,6 +89,8 @@ const CHANNEL_ICONS: Record<string, string> = {
 };
 
 const ACTOR_ROLE_LABELS: Record<string, string> = { CUSTOMER: 'Клиент', OPERATOR: 'Оператор', SYSTEM: 'Система', AI: 'AI' };
+const ACTIVE_TABS: ActiveTab[] = ['client', 'master', 'history'];
+const REPLY_MODES: ReplyMode[] = ['customer', 'internal'];
 
 function formatStatusLabel(status: string | null | undefined) {
   if (!status) return '—';
@@ -94,7 +105,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
 
-  const [activeTab, setActiveTab] = useState<'client' | 'master' | 'history'>('client');
+  const [activeTab, setActiveTab] = useState<ActiveTab>('client');
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomAnchorRef = useRef<HTMLDivElement>(null);
   const initialScrollCaseIdRef = useRef<string | null>(null);
@@ -105,15 +116,11 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
   const [assignedOperatorDraft, setAssignedOperatorDraft] = useState('');
   const [updatingAssignment, setUpdatingAssignment] = useState(false);
 
-  const [replyMode, setReplyMode] = useState<'customer' | 'internal'>('customer');
+  const [replyMode, setReplyMode] = useState<ReplyMode>('customer');
   const [replyText, setReplyText] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
 
-  useEffect(() => {
-    fetchCase();
-  }, [id, locale]);
-
-  async function fetchCase() {
+  const fetchCase = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch(`/api/admin/cases/${id}`);
@@ -125,12 +132,16 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
       setCaseData(data.case);
       setAssignedOperatorDraft(data.case.assignedOperator || '');
       setNewStatus(data.case.status);
-    } catch (e) {
+    } catch {
       setLoadError('Failed to connect to API');
     } finally {
       setLoading(false);
     }
-  }
+  }, [id]);
+
+  useEffect(() => {
+    fetchCase();
+  }, [fetchCase, locale]);
 
   async function updateStatus() {
     setUpdating(true);
@@ -175,7 +186,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
         body: JSON.stringify({ operatorTakeover: nextValue }),
       });
       await fetchCase();
-    } catch (e) {}
+    } catch {}
   }
 
   const caseId = caseData?.id;
@@ -204,9 +215,17 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
   const operatorTakeover = caseData.sessions.some((session) => session.operatorTakeover);
   const hasCustomerSession = caseData.sessions.length > 0;
 
-  const timelineEvents = [
-    ...caseData.messages.map(m => ({ timestamp: new Date(m.createdAt).getTime(), type: m.isCustomerVisible ? 'message' : 'note', data: m })),
-    ...caseData.statusEvents.map(e => ({ timestamp: new Date(e.createdAt).getTime(), type: 'status', data: e }))
+  const timelineEvents: TimelineEvent[] = [
+    ...caseData.messages.map((message): TimelineEvent => ({
+      timestamp: new Date(message.createdAt).getTime(),
+      type: message.isCustomerVisible ? 'message' : 'note',
+      data: message,
+    })),
+    ...caseData.statusEvents.map((statusEvent): TimelineEvent => ({
+      timestamp: new Date(statusEvent.createdAt).getTime(),
+      type: 'status',
+      data: statusEvent,
+    })),
   ].sort((a, b) => a.timestamp - b.timestamp);
 
   // Extract metadata (Robust regex for Тип/Type and Локация/Location)
@@ -231,7 +250,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
           <h1 className="text-lg sm:text-2xl font-black text-white tracking-tight flex items-center gap-3">
             {caseData.publicRequestNumber || 'CASE #'+caseData.id.slice(0,6)}
             {currentStatusObj && (
-              <Badge variant={currentStatusObj.variant as any} className="text-[9px] uppercase font-black tracking-[0.2em] px-2 py-0.5 rounded-sm border-white/5">
+              <Badge variant={currentStatusObj.variant} className="text-[9px] uppercase font-black tracking-[0.2em] px-2 py-0.5 rounded-sm border-white/5">
                 {currentStatusObj.label}
               </Badge>
             )}
@@ -317,10 +336,11 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                     const url = `/api/admin/attachments/${att.id}`;
                     return (
                       <div key={att.id} className="group overflow-hidden rounded-xl border border-white/[0.05] bg-white/[0.01]">
-                        {isImage ? (
-                          <a href={url} target="_blank" rel="noreferrer" className="block aspect-video bg-black overflow-hidden hover:opacity-90 transition-opacity">
-                            <img src={url} alt="" className="w-full h-full object-cover" />
-                          </a>
+	                        {isImage ? (
+	                          <a href={url} target="_blank" rel="noreferrer" className="block aspect-video bg-black overflow-hidden hover:opacity-90 transition-opacity">
+	                            {/* eslint-disable-next-line @next/next/no-img-element -- Authenticated attachment proxy URLs must render through the browser session. */}
+	                            <img src={url} alt="" className="w-full h-full object-cover" />
+	                          </a>
                         ) : isVideo ? (
                           <video src={url} controls className="w-full max-h-[250px] bg-black" />
                         ) : (
@@ -350,9 +370,9 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
 
         <main className="flex flex-1 min-h-0 flex-col bg-zinc-950 overflow-hidden">
           <nav className="shrink-0 flex items-center h-16 px-8 border-b border-white/[0.03] gap-10">
-             {['client', 'master', 'history'].map((tid) => (
+             {ACTIVE_TABS.map((tid) => (
                <button
-                 key={tid} onClick={() => setActiveTab(tid as any)}
+                 key={tid} onClick={() => setActiveTab(tid)}
                  className={`relative h-full flex items-center text-[10px] font-black uppercase tracking-[0.2em] transition-all ${activeTab === tid ? 'text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
                >
                  {tid === 'client' ? 'Chat with client' : tid === 'master' ? 'Communication Master' : 'Event Timeline'}
@@ -369,16 +389,17 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                       <div className="max-w-3xl mx-auto w-full space-y-10">
                          {timelineEvents.map((event) => {
                             if (event.type === 'status') {
-                               const e = event.data as any;
+                               const e = event.data;
+                               const actorRoleLabel = e.actorRole ? (ACTOR_ROLE_LABELS[e.actorRole] || e.actorRole) : 'SYSTEM';
                                return (
                                  <div key={e.id} className="flex items-center justify-center gap-4 opacity-20">
                                     <div className="h-px w-6 bg-white"></div>
-                                    <span className="text-[8px] font-black uppercase tracking-[0.4em]">{ACTOR_ROLE_LABELS[e.actorRole] || 'SYSTEM'} → {formatStatusLabel(e.toStatus)}</span>
+                                    <span className="text-[8px] font-black uppercase tracking-[0.4em]">{actorRoleLabel} → {formatStatusLabel(e.toStatus)}</span>
                                     <div className="h-px w-6 bg-white"></div>
                                  </div>
                                );
                             }
-                            const m = event.data as any;
+                            const m = event.data;
                             const isNote = event.type === 'note';
                             const isCustomer = m.authorRole === 'CUSTOMER';
                             return (
@@ -402,8 +423,8 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                      <div className="mx-auto w-full max-w-2xl">
                       <div className={`rounded-3xl border ${replyMode === 'internal' ? 'bg-amber-950/30 border-amber-500/20' : 'bg-zinc-900 border-white/5'} backdrop-blur-3xl overflow-hidden shadow-2xl`}>
                          <div className="flex h-10 border-b border-white/5 px-6 items-center gap-6">
-                            {['customer', 'internal'].map(m => (
-                              <button key={m} onClick={() => setReplyMode(m as any)} className={`text-[8px] font-black tracking-widest uppercase ${replyMode === m ? 'text-indigo-500' : 'text-zinc-600'}`}>
+                            {REPLY_MODES.map(m => (
+                              <button key={m} onClick={() => setReplyMode(m)} className={`text-[8px] font-black tracking-widest uppercase ${replyMode === m ? 'text-indigo-500' : 'text-zinc-600'}`}>
                                  {m === 'customer' ? 'Reply to client' : 'Internal Note'}
                               </button>
                             ))}

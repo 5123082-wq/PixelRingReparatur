@@ -9,3 +9,8 @@ script = ""
 name = "Запустить"
 icon = "run"
 command = "cd signage-service && npm install && npm run dev"
+
+[[actions]]
+name = "Stop dev server"
+icon = "tool"
+command = "pids=$(lsof -tiTCP:3000 -tiTCP:3001); if [ -n \"$pids\" ]; then kill $pids; echo \"Stopped: $pids\"; else echo \"No dev servers on 3000/3001\"; fi"
