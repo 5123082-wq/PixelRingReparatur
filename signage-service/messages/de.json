@@ -11,7 +11,13 @@
     "badge_label": "Reaktionszeit für dringende Fälle"
   },
   "Nav": {
-    "services": "Reparatur & Service",
+    "services": "Leistungen",
+    "solutions": "Loesungen",
+    "for_business": "Fuer Unternehmen",
+    "references": "Referenzen",
+    "about": "Ueber uns",
+    "account_status": "Kundenkonto & Status",
+    "submit_request": "Anfrage senden",
     "warranty": "Garantie",
     "status": "Status",
     "support": "Support",

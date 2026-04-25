@@ -8,4 +8,9 @@ Planned base documents:
 - `user_journey_flows.md`
 - `request_intake_ux.md`
 - `multilingual_routes.md`
-
+- `page_brief_services.md`
+- `page_brief_solutions.md`
+- `page_brief_for_business.md`
+- `page_brief_references.md`
+- `page_brief_about.md`
+- `page_plan_leistungen.md`

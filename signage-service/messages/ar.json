@@ -11,12 +11,19 @@
     "badge_label": "وقت الاستجابة للحالات الطارئة"
   },
   "Nav": {
-    "services": "الإصلاح والخدمة",
+    "services": "الخدمات",
+    "solutions": "الحلول",
+    "for_business": "للشركات",
+    "references": "الاعمال المنجزة",
+    "about": "من نحن",
+    "account_status": "الحساب والحالة",
+    "submit_request": "إرسال الطلب",
     "warranty": "الضمان",
     "status": "الحالة",
     "support": "الدعم",
     "book": "احجز إصلاحاً",
-    "service_pill": "خدمة"
+    "service_pill": "خدمة",
+    "hilfe": "مساعدة"
   },
   "Footer": {
     "copyright": "© 2024 PixelRing Technical Atelier. جميع الحقوق محفوظة.",
@@ -30,7 +37,16 @@
     "services": "الخدمات",
     "company": "الشركة",
     "support_title": "المساعدة والدعم",
-    "social": "تابعنا"
+    "social": "تابعنا",
+    "services_sign_repair": "إصلاح اللوحات",
+    "services_installation": "التركيب والفك",
+    "services_lighting": "الإعلانات المضيئة وLED",
+    "services_branding": "الهوية التجارية والتغليف",
+    "services_maintenance": "الصيانة والخدمة",
+    "how_it_works": "كيف يعمل",
+    "status_check": "التحقق من الحالة",
+    "help_center": "مركز المساعدة",
+    "contact": "اتصل بنا"
   },
   "Trust": {
     "titleStart": "وداعاً",

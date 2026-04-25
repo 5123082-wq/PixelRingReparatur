@@ -11,12 +11,19 @@
     "badge_label": "Acil durumlar için tepki süresi"
   },
   "Nav": {
-    "services": "Onarım ve Servis",
+    "services": "Hizmetler",
+    "solutions": "Cozumler",
+    "for_business": "Isletmeler Icin",
+    "references": "Referanslar",
+    "about": "Hakkimizda",
+    "account_status": "Hesap ve Durum",
+    "submit_request": "Talep Gonder",
     "warranty": "Garanti",
     "status": "Durum",
     "support": "Destek",
     "book": "Onarım Rezerve Et",
-    "service_pill": "SERVİS"
+    "service_pill": "SERVİS",
+    "hilfe": "Yardım"
   },
   "Footer": {
     "copyright": "© 2024 PixelRing Technical Atelier. Tüm hakları saklıdır.",
@@ -30,7 +37,16 @@
     "services": "Hizmetler",
     "company": "Şirket",
     "support_title": "Yardım ve Destek",
-    "social": "Bizi Takip Edin"
+    "social": "Bizi Takip Edin",
+    "services_sign_repair": "Tabela Onarımı",
+    "services_installation": "Montaj ve Demontaj",
+    "services_lighting": "Işıklı Reklam ve LED",
+    "services_branding": "Branding ve Kaplama",
+    "services_maintenance": "Bakım ve Servis",
+    "how_it_works": "Nasıl Çalışır",
+    "status_check": "Durum Sorgulama",
+    "help_center": "Yardım Merkezi",
+    "contact": "İletişim"
   },
   "Trust": {
     "titleStart": "Karmaşık portallara",

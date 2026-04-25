@@ -60,6 +60,13 @@ Do not introduce `SiteSettings` in Phase 3 v1.
 
 Use `pageKey: "global"` for shared footer, global CTA, and global contact-adjacent content. This keeps the first migration and API small while preserving a path to split a dedicated `SiteSettings` model later.
 
+Approved header dependency (2026-04-22):
+
+- the public MVP header IA has been narrowed to six primary items plus two utility actions;
+- current header labels/actions are still sourced through `global` CMS content, so the approved navigation change may require a small adaptation of the current page editor/block contract before a dedicated `Menu` / `MenuItem` model exists;
+- the merged customer entry `Account & Status` must be treated as a protected client-access action, not as a plain marketing navigation link;
+- messenger icons are no longer part of the target header contract.
+
 Future trigger for `SiteSettings`:
 
 - settings become non-page-like;
@@ -106,6 +113,11 @@ Example:
 ```
 
 The frontend should validate or normalize block content before rendering. Unknown block types must be ignored, not rendered unsafely.
+
+Current navigation implication:
+
+- `cta` and related `global` navigation/footer blocks remain sufficient for the current narrow MVP update;
+- however, the approved header decision increases pressure to move from ad hoc nav labels toward managed navigation entities in the next CMS scaling step.
 
 ## Fallback Rule
 
@@ -183,6 +195,12 @@ Implemented starter integration:
 - if the CMS row is missing, draft, invalid, empty, or the DB is unavailable in that recoverable helper path, `StatusLookup` uses the existing `StatusPage` translations from `messages/*.json`;
 - no broad home/support/footer render refactor has been done.
 
+Narrow follow-up compatibility:
+
+- `leistungen` is allowed as a `CmsPage` page key and appears in the admin page editor selector so the approved public Leistungen page can become CMS-managed later.
+- The current `/[locale]/leistungen` MVP renders static localized content first; no new page workflow, preview, scheduling, menu model, or generic page-builder behavior was introduced.
+- The Leistungen hero slider has a narrow CMS overlay: a published `leistungen` `CmsPage` may include a `cardList` block with key `leistungenHero` or `heroSlides`; its `items` can override slide `id`, `title`, `description`, `image`, and `cta` while missing fields continue to use the static fallback.
+
 ## Out Of Scope
 
 Do not include in Phase 3 v1:
@@ -240,6 +258,8 @@ Implemented in the Phase 3 starter slice:
 - migration `20260408120000_phase3_cms_pages`;
 - `src/lib/cms/pages.ts` normalization helpers for allowed page keys, locales, status values, links, safe JSON blocks, and public fallback helpers;
 - starter API validation currently allowlists the agreed starter block types and rejects unsafe/unknown block payloads instead of storing arbitrary JSON for public rendering;
+- `leistungen` is included in the page-key allowlist for future public page content management;
+- `leistungen` hero slides can be edited through the existing Pages CMS using the `Leistungen Hero` preset, without introducing a new block type or generic page-builder behavior;
 - OWNER-only `/api/cms/pages` and `/api/cms/pages/[id]` route handlers;
 - CSRF protection on `POST`, `PATCH`, and `DELETE`;
 - generic 404 responses for unauthorized CMS page endpoint access;

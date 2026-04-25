@@ -11,12 +11,19 @@
     "badge_label": "Время реакции по срочным случаям"
   },
   "Nav": {
-    "services": "Ремонт и Сервис",
+    "services": "Услуги",
+    "solutions": "Решения",
+    "for_business": "Для бизнеса",
+    "references": "Примеры работ",
+    "about": "О нас",
+    "account_status": "Кабинет и статус",
+    "submit_request": "Подать заявку",
     "warranty": "Гарантия",
     "status": "Статус",
     "support": "Поддержка",
     "book": "Заказать ремонт",
-    "service_pill": "СЕРВИС"
+    "service_pill": "СЕРВИС",
+    "hilfe": "Помощь"
   },
   "Footer": {
     "copyright": "© 2024 PixelRing Technical Atelier. Все права защищены.",

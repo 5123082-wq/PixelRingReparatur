@@ -33,10 +33,14 @@ Short global status only. Detailed session notes belong to folder-level `Progres
 - [x] CMS Locale-Switch Regression Coverage: complete; admin e2e smoke now verifies locale-switch save uses create path (new locale record created), source-locale record remains unchanged, and direct locale mutation via update path is rejected.
 - [x] CMS Media Upload Validation Runtime Coverage: complete; admin e2e smoke now verifies media upload validation via real `/api/cms/media` runtime path for oversized payload (`413`), unsupported MIME (`415`), and invalid checksum format (`400`), replacing reliance on standalone `node --test` path that fails on `server-only` resolution.
 - [x] Admin Next-Agent Handoff Doc: complete; concise transfer document added at `docs/05_admin_platform/next_agent_handoff.md`.
+- Public Website IA (Header): decision updated/documented; approved multilingual header now uses `Services / Solutions / For Business / References / About Us` with utility actions `Account & Status` and `Submit Request`; CMS/global navigation contract follow-up documented.
+- Public Website Header Implementation: in progress; new top navigation, separate `Account & Status` and `Submit Request` actions, CMS/editor action-field support, and safe interim non-404 route mapping are introduced before dedicated pages are built; stale CMS header labels are now ignored in favor of the approved live fallback until dedicated pages and fresh CMS nav data are ready; desktop header now collapses the secondary navigation row after scroll and exposes it through an expanding notch-style hover/focus menu.
+- Public Website Leistungen Page: MVP implemented; public route `/[locale]/leistungen` renders the approved six-section structure in DE/EN/RU/TR/PL/AR with service-intent CTA attributes, header Services/Leistungen link target, `leistungen` CMS page-key compatibility, organized hero fallback assets under `public/images/leistungen/`, a regenerated natural LED-service hero asset, a generated fourth branding hero slide, and a narrow CMS overlay for editable hero slides via Pages CMS.
 - Agent Rules: root instructions extended with short Karpathy-style execution rules; shared detailed playbook added in root `SKILL.md`
 - Admin Agent Prompt Pack: added a full handoff prompt document for staged admin finalization execution with mandatory DUTY (fact-check implemented vs missing before each run), hotfix-in-stage rule, and sub-agent orchestration guidance.
 
 ## Last Updated
 
-- Date: 2026-04-19
-- Updated by: Codex (admin finalization baseline accepted; track paused and documented)
+- Date: 2026-04-25
+- Updated by: Codex (Leistungen page MVP implemented)
+- Fixed: Leistungen route, header target, CMS page-key compatibility, localized static content, CTA intent attributes, organized hero asset paths, fourth generated branding hero slide, CMS-editable hero slide overlay, and verification notes are now aligned with the approved page plan.
