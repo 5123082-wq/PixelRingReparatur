@@ -369,7 +369,7 @@ function buildGlobalPageSeed(locale, messages) {
       links: [
         { label: nav.services ?? 'Services', href: '/leistungen' },
         { label: nav.solutions ?? 'Solutions', href: '/support#symptoms' },
-        { label: nav.for_business ?? 'For Business', href: '/' },
+        { label: nav.for_business ?? 'For Business', href: '/business' },
         { label: nav.references ?? 'References', href: '/' },
         { label: nav.about ?? 'About Us', href: '/' },
       ],

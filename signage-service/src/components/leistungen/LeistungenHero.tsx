@@ -4,6 +4,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import LeistungenRequestButton from './LeistungenRequestButton';
+import ContactModal from '../common/ContactModal';
+import ChatModal from '../common/ChatModal';
 
 type HeroSlide = {
   id: string;
@@ -18,9 +20,11 @@ type LeistungenHeroProps = {
   locale: string;
 };
 
-export default function LeistungenHero({ slides, locale }: LeistungenHeroProps) {
+export default function LeistungenHero({ slides }: Omit<LeistungenHeroProps, 'locale'>) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [isContactOpen, setIsContactOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const nextSlide = useCallback(() => {
     setDirection(1);
@@ -33,9 +37,12 @@ export default function LeistungenHero({ slides, locale }: LeistungenHeroProps) 
   }, [slides.length]);
 
   useEffect(() => {
+    // Pause autoplay if any modal is open
+    if (isContactOpen || isChatOpen) return;
+
     const timer = setInterval(nextSlide, 8000);
     return () => clearInterval(timer);
-  }, [nextSlide]);
+  }, [nextSlide, isContactOpen, isChatOpen]);
 
   const variants = {
     enter: (direction: number) => ({
@@ -99,6 +106,7 @@ export default function LeistungenHero({ slides, locale }: LeistungenHeroProps) 
                     label={slides[currentIndex].cta}
                     serviceIntent="diagnose"
                     className="!min-h-[56px] !px-8 !text-[16px]"
+                    onClick={() => setIsContactOpen(true)}
                   />
                 </div>
               </motion.div>
@@ -145,6 +153,17 @@ export default function LeistungenHero({ slides, locale }: LeistungenHeroProps) 
           />
         ))}
       </div>
+
+      {/* Modals are rendered here, outside the keyed AnimatePresence, so they persist during slide changes */}
+      <ContactModal
+        isOpen={isContactOpen}
+        onClose={() => setIsContactOpen(false)}
+        onOpenChat={() => setIsChatOpen(true)}
+      />
+      <ChatModal
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+      />
     </section>
   );
 }

@@ -35,7 +35,7 @@ const Header = ({ content }: { content?: HeaderContent | null }) => {
   const fallbackNavLinks = [
     { name: t('services'), href: '/leistungen' },
     { name: t('solutions'), href: '/support#symptoms' },
-    { name: t('for_business'), href: '/' },
+    { name: t('for_business'), href: '/business' },
     { name: t('references'), href: '/' },
     { name: t('about'), href: '/' },
   ];

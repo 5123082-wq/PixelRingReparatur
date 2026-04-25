@@ -10,6 +10,7 @@ type LeistungenRequestButtonProps = {
   serviceIntent: string;
   variant?: 'primary' | 'secondary' | 'ghost';
   className?: string;
+  onClick?: () => void;
 };
 
 export default function LeistungenRequestButton({
@@ -17,6 +18,7 @@ export default function LeistungenRequestButton({
   serviceIntent,
   variant = 'primary',
   className = '',
+  onClick,
 }: LeistungenRequestButtonProps) {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -28,22 +30,34 @@ export default function LeistungenRequestButton({
         ? 'border border-[#B8643E] bg-white text-[#8F4F34] hover:bg-[#FFF4EC]'
         : 'border border-[#D9C7BA] bg-white/70 text-[#4E5A5A] hover:border-[#7BA190] hover:text-[#24594D]';
 
+  const handleButtonClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      setIsContactOpen(true);
+    }
+  };
+
   return (
     <>
       <button
         type="button"
         data-service-intent={serviceIntent}
-        onClick={() => setIsContactOpen(true)}
+        onClick={handleButtonClick}
         className={`inline-flex min-h-12 items-center justify-center rounded-full px-5 py-3 text-[15px] font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8643E] ${variantClass} ${className}`}
       >
         {label}
       </button>
-      <ContactModal
-        isOpen={isContactOpen}
-        onClose={() => setIsContactOpen(false)}
-        onOpenChat={() => setIsChatOpen(true)}
-      />
-      <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+      {!onClick && (
+        <>
+          <ContactModal
+            isOpen={isContactOpen}
+            onClose={() => setIsContactOpen(false)}
+            onOpenChat={() => setIsChatOpen(true)}
+          />
+          <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+        </>
+      )}
     </>
   );
 }

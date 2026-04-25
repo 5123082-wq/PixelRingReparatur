@@ -35,12 +35,17 @@ Short global status only. Detailed session notes belong to folder-level `Progres
 - [x] Admin Next-Agent Handoff Doc: complete; concise transfer document added at `docs/05_admin_platform/next_agent_handoff.md`.
 - Public Website IA (Header): decision updated/documented; approved multilingual header now uses `Services / Solutions / For Business / References / About Us` with utility actions `Account & Status` and `Submit Request`; CMS/global navigation contract follow-up documented.
 - Public Website Header Implementation: complete; new top navigation with separate `Account & Status` and `Submit Request` actions; desktop header now collapses the secondary navigation row after scroll into a notch-style menu; optimized scroll behavior by using `fixed` positioning with a static placeholder to prevent severe reflow jerks on complex pages.
-- Public Website Leistungen Page: MVP implemented; public route `/[locale]/leistungen` renders the approved six-section structure in DE/EN/RU/TR/PL/AR with service-intent CTA attributes, header Services/Leistungen link target, `leistungen` CMS page-key compatibility, organized hero fallback assets under `public/images/leistungen/`, a regenerated natural LED-service hero asset, a generated fourth branding hero slide, and a narrow CMS overlay for editable hero slides via Pages CMS.
+- Public Website Leistungen Page: MVP implemented; public route `/[locale]/leistungen` renders the approved six-section structure in DE/EN/RU/TR/PL/AR.
+- Public Website Business Page: MVP implemented; public route `/[locale]/business` renders B2B focused sections (Target groups, Subscription/Audit, Platform Cabinet, Trust) in DE/EN/RU/TR/PL/AR. Includes a generated hero asset and CMS integration.
+- **Current Stage**: Implemented 'For Business' page structure (`/business`). Unified Header and Footer component implementations to resolve missing CMS data mapping bugs.
+- **Status**: ✅ Completed. B2B value propositions, custom B2B CTA, and global layout mappings are now consistent across all responsive breakpoints.
 - Agent Rules: root instructions extended with short Karpathy-style execution rules; shared detailed playbook added in root `SKILL.md`
-- Admin Agent Prompt Pack: added a full handoff prompt document for staged admin finalization execution with mandatory DUTY (fact-check implemented vs missing before each run), hotfix-in-stage rule, and sub-agent orchestration guidance.
+- Admin Agent Prompt Pack: added a full handoff prompt document for staged admin finalization execution with mandatory DUTY.
 
 ## Last Updated
 
 - Date: 2026-04-25
 - Updated by: Codex
-- Fixed: Header notch animation performance (replaced `sticky` with `fixed` + placeholder to prevent reflow jerks), merged Leistungen page and Header overhaul to main.
+- Fixed: Header notch animation performance (replaced `sticky` with `fixed` + placeholder to prevent reflow jerks), merged Leistungen page and Header overhaul to main. Fixed auto-closing modal bug in LeistungenHero.
+- Added: Business page (`/[locale]/business`) with focus on B2B subscription and audits.
+- Server: Restarted development server on port 3000 as requested.
