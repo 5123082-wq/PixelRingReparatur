@@ -137,6 +137,15 @@ Entries are in **reverse chronological order** — newest entry is always at the
 
 ### Latest Entry
 
+- Date: 2026-04-25
+- Current sprint: Page CMS integration for Leistungen hero assets
+- Current block: Public Website / Page CMS narrow overlay
+- Done: Added a narrow `leistungen` page overlay that reads a published `cardList` block keyed `leistungenHero` / `heroSlides`, merges hero slide fields over static fallback content, and exposes a Pages CMS preset for editing slide IDs, images, titles, descriptions, and CTA labels. Fallback files were moved into `public/images/leistungen/`.
+- In progress: Page CMS supports the Leistungen hero slider only; full structured editing for the remaining Leistungen sections is still deferred. The slider fallback now includes a fourth generated branding/print slide.
+- Next action: Create/publish a `leistungen` `CmsPage` record per locale when owner wants live CMS control, using Media Library URLs for final image replacements.
+- Blockers/risks: no seeding/migration was run in this slice; public output remains fallback-only until published CMS rows exist.
+- Documents updated in this session: `PROGRESS.md`, `docs/02_public_website/page_plan_leistungen.md`, `docs/05_admin_platform/page_content_cms_plan.md`, `docs/05_admin_platform/admin_rollout_execution_plan.md`
+
 - Date: 2026-04-19
 - Current sprint: Owner checkpoint and track pause
 - Current block: Finalization Track (accepted baseline freeze)

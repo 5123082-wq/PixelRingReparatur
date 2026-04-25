@@ -2,7 +2,7 @@ import 'server-only';
 
 import { prisma } from '@/lib/prisma';
 
-export const CMS_PAGE_KEYS = ['home', 'support', 'status', 'global', 'impressum', 'privacy'] as const;
+export const CMS_PAGE_KEYS = ['home', 'support', 'status', 'global', 'impressum', 'privacy', 'leistungen'] as const;
 export const CMS_PAGE_STATUSES = ['DRAFT', 'PUBLISHED'] as const;
 export const SUPPORTED_CMS_LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'] as const;
 export const CMS_PAGE_BLOCK_TYPES = [
@@ -98,6 +98,10 @@ export type GlobalHeaderCmsContent = {
   servicePill?: string;
   bookLabel?: string;
   links?: CmsLinkItem[];
+  accountStatusLabel?: string;
+  accountStatusHref?: string;
+  requestLabel?: string;
+  requestHref?: string;
 };
 
 export type GlobalFooterCmsContent = {
@@ -242,6 +246,18 @@ export type SupportPageCmsContent = {
   urgent?: SupportUrgentCmsContent;
   categories?: ProblemCategoryCmsContent;
   symptoms?: SymptomCmsContent;
+};
+
+export type LeistungenHeroSlideCmsContent = {
+  id?: string;
+  title?: string;
+  description?: string;
+  image?: string;
+  cta?: string;
+};
+
+export type LeistungenPageCmsContent = {
+  heroSlides?: LeistungenHeroSlideCmsContent[];
 };
 
 type CmsPageRecord = {
@@ -668,6 +684,34 @@ function getLinkItems(block: CmsPageBlock, field: string): CmsLinkItem[] | undef
   return links.length > 0 ? links : undefined;
 }
 
+function getLeistungenHeroSlides(block: CmsPageBlock): LeistungenHeroSlideCmsContent[] | undefined {
+  const items = getBlockObjectList(block, 'items');
+
+  if (!items) {
+    return undefined;
+  }
+
+  const slides = items
+    .map<LeistungenHeroSlideCmsContent | null>((item) => {
+      const id = typeof item.id === 'string' && item.id.trim() ? item.id.trim() : undefined;
+      const title = typeof item.title === 'string' && item.title.trim() ? item.title.trim() : undefined;
+      const description =
+        typeof item.description === 'string' && item.description.trim()
+          ? item.description.trim()
+          : undefined;
+      const image = typeof item.image === 'string' && item.image.trim() ? item.image.trim() : undefined;
+      const cta = typeof item.cta === 'string' && item.cta.trim() ? item.cta.trim() : undefined;
+
+      return id || title || description || image || cta
+        ? { id, title, description, image, cta }
+        : null;
+    })
+    .filter((item): item is LeistungenHeroSlideCmsContent => Boolean(item))
+    .slice(0, 6);
+
+  return slides.length > 0 ? slides : undefined;
+}
+
 function isHomeIntakeMethodId(value: unknown): value is HomeIntakeMethodId {
   return (
     typeof value === 'string' &&
@@ -769,6 +813,10 @@ export async function getGlobalPageCmsContent(
           servicePill: getBlockText(navigation, 'servicePill'),
           bookLabel: getBlockText(navigation, 'bookLabel'),
           links: getLinkItems(navigation, 'links'),
+          accountStatusLabel: getBlockText(navigation, 'accountStatusLabel'),
+          accountStatusHref: getBlockText(navigation, 'accountStatusHref'),
+          requestLabel: getBlockText(navigation, 'requestLabel'),
+          requestHref: getBlockText(navigation, 'requestHref'),
         }
       : undefined,
     footer:
@@ -968,6 +1016,19 @@ export async function getSupportPageCmsContent(
           internalLinksTitle: getBlockText(symptoms, 'internalLinksTitle'),
         }
       : undefined,
+  };
+
+  return Object.values(content).some(Boolean) ? content : null;
+}
+
+export async function getLeistungenPageCmsContent(
+  locale: string
+): Promise<LeistungenPageCmsContent | null> {
+  const page = await getPublishedCmsPage('leistungen', locale);
+  const hero = getEnabledBlock(page, 'cardList', ['leistungenHero', 'heroSlides']);
+
+  const content: LeistungenPageCmsContent = {
+    heroSlides: hero ? getLeistungenHeroSlides(hero) : undefined,
   };
 
   return Object.values(content).some(Boolean) ? content : null;

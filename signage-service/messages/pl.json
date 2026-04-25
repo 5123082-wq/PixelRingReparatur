@@ -11,12 +11,19 @@
     "badge_label": "Czas reakcji dla pilnych przypadków"
   },
   "Nav": {
-    "services": "Naprawa i Serwis",
+    "services": "Uslugi",
+    "solutions": "Rozwiazania",
+    "for_business": "Dla Firm",
+    "references": "Realizacje",
+    "about": "O Nas",
+    "account_status": "Konto i Status",
+    "submit_request": "Wyslij Zgloszenie",
     "warranty": "Gwarancja",
     "status": "Status",
     "support": "Pomoc",
     "book": "Zarezerwuj naprawę",
-    "service_pill": "SERWIS"
+    "service_pill": "SERWIS",
+    "hilfe": "Pomoc"
   },
   "Footer": {
     "copyright": "© 2024 PixelRing Technical Atelier. Wszelkie prawa zastrzeżone.",
@@ -30,7 +37,16 @@
     "services": "Usługi",
     "company": "Firma",
     "support_title": "Pomoc i wsparcie",
-    "social": "Obserwuj nas"
+    "social": "Obserwuj nas",
+    "services_sign_repair": "Naprawa szyldów",
+    "services_installation": "Montaż i demontaż",
+    "services_lighting": "Reklama świetlna i LED",
+    "services_branding": "Branding i oklejanie",
+    "services_maintenance": "Konserwacja i serwis",
+    "how_it_works": "Jak to działa",
+    "status_check": "Sprawdź status",
+    "help_center": "Centrum pomocy",
+    "contact": "Kontakt"
   },
   "Trust": {
     "titleStart": "Dość skomplikowanych",

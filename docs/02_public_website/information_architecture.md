@@ -61,14 +61,23 @@
 
 ### 3.1. Верхний уровень
 1. Главная
-2. Как это работает
-3. Услуги
-4. Кейсы / Примеры задач
-5. Для бизнеса / сетевых клиентов
-6. Для мастеров / партнеров
-7. Контакты
-8. Начать заявку / AI intake
-9. Юридические страницы
+2. Услуги
+3. Решения
+4. Для бизнеса / сетевых клиентов
+5. Примеры работ
+6. Как это работает
+7. О нас
+8. Подать заявку / AI intake
+9. Клиентский кабинет и статус заявки
+10. Юридические страницы
+
+Page briefs for the approved header-linked pages:
+
+- `Услуги` -> `docs/02_public_website/page_brief_services.md`
+- `Решения` -> `docs/02_public_website/page_brief_solutions.md`
+- `Для бизнеса` -> `docs/02_public_website/page_brief_for_business.md`
+- `Примеры работ` -> `docs/02_public_website/page_brief_references.md`
+- `О нас` -> `docs/02_public_website/page_brief_about.md`
 
 ### 3.2. Услуги — второй уровень
 1. Ремонт вывесок
@@ -113,42 +122,72 @@
 ## 5. Навигация сайта
 
 ### 5.1. Основное меню (desktop)
-- Главная
-- Как это работает
 - Услуги
-- Кейсы
+- Решения
 - Для бизнеса
-- Контакты
-- Начать заявку
+- Примеры работ
+- Как это работает
+- О нас
 
 ### 5.2. Secondary nav / utility layer
-- WhatsApp
-- Telegram
-- Телефон
 - Переключатель языка
+- Кабинет и статус
+- Подать заявку
 
 ### 5.3. Меню mobile
 Mobile menu должно быть коротким.
 Главный акцент — на CTA, а не на глубоком меню.
 
 Рекомендуемый состав:
-- Главная
 - Услуги
+- Решения
+- Для бизнеса
+- Примеры работ
 - Как это работает
-- Кейсы
-- Контакты
-- Начать заявку
+- О нас
+- Кабинет и статус
+- Подать заявку
 
 Отдельно sticky actions:
-- Написать
-- Отправить фото
-- Позвонить
+- Кабинет и статус
+- Подать заявку
 
 ### 5.4. Навигационный принцип
 Меню должно не “рассказывать всё”, а помогать быстро перейти:
 - к пониманию сервиса;
-- к типу задачи;
+- к типу решения;
 - к действию.
+
+### 5.5. Утвержденное решение по header (2026-04-22)
+Текущее утвержденное направление для MVP:
+
+- верхнее меню не должно выглядеть как каталог услуг, marketplace menu или набор разрозненных ссылок;
+- основная навигация должна объяснять scope сервиса, варианты решения, бизнес-сценарии, proof layer, процесс и саму компанию;
+- иконки мессенджеров убираются из header, чтобы не размывать главный CTA и не перегружать utility-слой;
+- `Статус` как отдельная utility-ссылка заменяется на объединенную защищенную точку входа `Кабинет и статус`;
+- `Заказать ремонт` заменяется на более широкий CTA `Подать заявку`, чтобы navigation не ограничивала продукт только repair-intent сценарием.
+
+Финальная логика header для всех локалей:
+
+- основное меню: `Услуги`, `Решения`, `Для бизнеса`, `Примеры работ`, `Как это работает`, `О нас`;
+- правый блок: переключатель языка, `Кабинет и статус`, `Подать заявку`.
+
+Принцип мультиязычности:
+
+- IA, порядок пунктов и смысловые роли header должны оставаться одинаковыми в `DE`, `EN`, `RU`, `TR`, `PL`, `AR`;
+- меняются только локализованные labels;
+- немецкая версия остается canonical-first для терминологии и дальнейшей CMS-настройки;
+- Arabic version обязана сохранять RTL-aware layout без изменения структуры header.
+
+### 5.6. Временный принцип запуска header до готовности новых страниц
+До появления полноценных отдельных страниц новый header не должен вести на `404`.
+
+Правило запуска:
+
+- сначала обновляется визуальная и структурная модель header;
+- затем новые отдельные страницы запускаются по one-by-one сценарию;
+- до их готовности допускаются только безопасные временные маршруты или временные anchors;
+- `Кабинет и статус` остается защищенной клиентской точкой входа, а не публичной маркетинговой страницей.
 
 ---
 
@@ -184,7 +223,7 @@ Mobile menu должно быть коротким.
 ## 7. CTA-архитектура
 
 ### 7.1. Основной CTA сайта
-**Начать заявку**
+**Подать заявку**
 
 ### 7.2. Вторичные CTA
 - Отправить фото
@@ -218,6 +257,44 @@ Mobile menu должно быть коротким.
 
 ### 8.2. Conversion goal
 Primary: start lead intake
+
+## Progress Log
+
+### 2026-04-23 — Header IA To Delivery Bridge
+
+- Current sprint/block: Public Website navigation update, Step 1
+- Done: approved header structure fixed in IA; separate page briefs prepared for `Услуги`, `Решения`, `Для бизнеса`, `Примеры работ`, `О нас`; temporary non-404 launch principle for the new header documented
+- In progress: code implementation of the new header and safe interim route mapping before standalone pages are built
+- Next action: update the live header component, its CMS/global-navigation contract, and locale fallbacks without touching footer
+- Blockers/risks: dedicated public pages for the new menu items do not exist yet in code; current header is still tied to old CMS/global nav fields and existing seeded data
+- Updated documents: `docs/02_public_website/README.md`, `docs/02_public_website/information_architecture.md`, `docs/02_public_website/page_brief_services.md`, `docs/02_public_website/page_brief_solutions.md`, `docs/02_public_website/page_brief_for_business.md`, `docs/02_public_website/page_brief_references.md`, `docs/02_public_website/page_brief_about.md`
+
+### 2026-04-24 — Header Responsive Layout Fix
+
+- Current sprint/block: Public Website navigation update, responsive header pass
+- Done: live header component changed to a two-row desktop layout: brand and utility actions stay in the first row, text navigation moves to a separate row; long localized labels are kept on one line
+- In progress: visual QA across all MVP locales and narrower tablet/mobile widths
+- Next action: confirm the same header behavior in EN, RU, TR, PL, and AR after locale content stabilizes
+- Blockers/risks: dedicated public pages for the new menu items are still not implemented; interim routes must remain non-404 until page rollout
+- Updated documents: `PROGRESS.md`, `docs/02_public_website/information_architecture.md`
+
+### 2026-04-24 — Header Scroll Collapse Interaction
+
+- Current sprint/block: Public Website navigation update, desktop sticky header interaction
+- Done: desktop secondary navigation now collapses after the page is scrolled; a centered notch-style control expands horizontally and slightly downward to reveal the same links on hover, focus, or click
+- In progress: visual QA for notch expansion across supported desktop locales
+- Next action: verify desktop collapsed-menu behavior together with the dedicated page rollout once final routes replace interim links
+- Blockers/risks: dedicated public pages for the new menu items are still not implemented; interim routes must remain non-404 until page rollout
+- Updated documents: `PROGRESS.md`, `docs/02_public_website/information_architecture.md`, `signage-service/src/components/layout/Header.tsx`
+
+### 2026-04-25 — Leistungen Page Plan Approved
+
+- Current sprint/block: Public Website, first dedicated header-linked page rollout
+- Done: external research output for `Leistungen` reviewed against PixelRing product guardrails and current implementation constraints; owner confirmed service area, partner wording, service contracts, 20% benefit condition, warranty wording, Druckprodukte/Branding scope, replacement/new-construction wording, on-site checks, and electric/LED/neon scope
+- In progress: documentation handoff before implementation
+- Next action: implement `leistungen` CMS/page-key support and public route, then build the visual service landing page from the approved plan
+- Blockers/risks: final German microcopy and visual assets still need implementation-level review; service-intent persistence into CRM is planned but should not block first route launch
+- Updated documents: `docs/02_public_website/page_plan_leistungen.md`, `docs/02_public_website/page_brief_services.md`, `docs/02_public_website/README.md`, `docs/02_public_website/information_architecture.md`, `PROGRESS.md`
 Secondary: go to messaging channel / service page / how it works
 
 ### 8.3. Ключевые сообщения страницы
@@ -772,4 +849,3 @@ SEO-страницы не должны ломать trust-first UX.
 ---
 
 Конец документа 2.
-

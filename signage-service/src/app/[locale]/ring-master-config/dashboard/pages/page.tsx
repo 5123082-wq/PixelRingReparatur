@@ -10,7 +10,7 @@ import { adminFetch } from '@/lib/admin-fetch';
 // Types
 // ─────────────────────────────────────────────────────────
 
-type CmsPageKey = 'home' | 'support' | 'status' | 'global' | 'impressum' | 'privacy';
+type CmsPageKey = 'home' | 'support' | 'status' | 'global' | 'impressum' | 'privacy' | 'leistungen';
 type CmsPageStatus = 'DRAFT' | 'PUBLISHED';
 type CmsPageBlock = Record<string, unknown> & {
   type?: string;
@@ -83,7 +83,7 @@ type PageGroup = {
 // ─────────────────────────────────────────────────────────
 
 const SUPPORTED_LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'] as const;
-const PAGE_KEYS: CmsPageKey[] = ['home', 'support', 'status', 'global', 'impressum', 'privacy'];
+const PAGE_KEYS: CmsPageKey[] = ['home', 'support', 'status', 'global', 'impressum', 'privacy', 'leistungen'];
 
 /** Fields that are locale-specific text for each known block type.
  *  These MUST match the field names that getHomePageCmsContent / frontend components actually read. */
@@ -93,7 +93,7 @@ const BLOCK_TEXT_FIELDS: Record<string, string[]> = {
   textSection: ['title', 'description'],
   reviewList: ['title', 'subtitle', 'items'],
   cardList: ['title', 'titleStart', 'titleAccent', 'titleEnd', 'subtitle', 'description', 'copyright', 'items', 'steps', 'stats', 'features'],
-  cta: ['servicePill', 'bookLabel', 'badge', 'title', 'intro', 'description', 'primaryLabel', 'secondaryLabel', 'links'],
+  cta: ['servicePill', 'bookLabel', 'accountStatusLabel', 'accountStatusHref', 'requestLabel', 'requestHref', 'badge', 'title', 'intro', 'description', 'primaryLabel', 'secondaryLabel', 'links'],
   footerCta: ['title', 'subtitle', 'connectLabel', 'formTitle', 'formSubtitle'],
 };
 
@@ -440,6 +440,14 @@ export default function PagesPage() {
       for (const tf of textFields) {
         lt[tf] = tf === 'items' ? [] : '';
       }
+      if (type === 'cardList' && customKey === 'leistungenHero') {
+        lt.items = [
+          { id: 'repair', title: '', description: '', image: '/images/leistungen/hero-repair.png', cta: '' },
+          { id: 'led', title: '', description: '', image: '/images/leistungen/hero-led-natural.png', cta: '' },
+          { id: 'maintenance', title: '', description: '', image: '/images/leistungen/hero-maintenance.png', cta: '' },
+          { id: 'branding', title: '', description: '', image: '/images/leistungen/hero-branding.png', cta: '' },
+        ];
+      }
       texts[locale] = lt;
     }
 
@@ -536,7 +544,7 @@ export default function PagesPage() {
         const block = { ...next[blockIndex], texts: { ...next[blockIndex].texts } };
 
         // Identify if we are updating a field that should be synchronized across locales
-        const syncedFields = ['href', 'image', 'icon'];
+        const syncedFields = ['id', 'href', 'image', 'icon'];
         const isSyncing = syncedFields.some((f) => f in updates);
 
         if (isSyncing) {
@@ -870,6 +878,7 @@ export default function PagesPage() {
                   <button type="button" onClick={() => addBlock('cardList', 'trustSection')} style={styles.addBlockBtnPreset}>+ Trust</button>
                   <button type="button" onClick={() => addBlock('cardList', 'bentoSection')} style={styles.addBlockBtnPreset}>+ Bento</button>
                   <button type="button" onClick={() => addBlock('cardList', 'excellenceSection')} style={styles.addBlockBtnPreset}>+ Excellence</button>
+                  <button type="button" onClick={() => addBlock('cardList', 'leistungenHero')} style={styles.addBlockBtnPreset}>+ Leistungen Hero</button>
                   <button type="button" onClick={() => addBlock('cardList', 'roadmapSection')} style={styles.addBlockBtnPreset}>+ Roadmap</button>
                   <button type="button" onClick={() => addBlock('faqList', 'faqSection')} style={styles.addBlockBtnPreset}>+ FAQ</button>
                   <button type="button" onClick={() => addBlock('reviewList', 'reviewsSection')} style={styles.addBlockBtnPreset}>+ Reviews</button>
@@ -1142,8 +1151,44 @@ export default function PagesPage() {
                                   />
                                 </EditorField>
 
+                                {/* Leistungen hero slider */}
+                                {block.key === 'leistungenHero' ? (
+                                  <ListEditor
+                                    label="Hero Slides"
+                                    items={Array.isArray(localeTexts.items) ? (localeTexts.items as Record<string, unknown>[]) : []}
+                                    onAdd={() => addListItem(index, 'items', { id: '', title: '', description: '', image: '', cta: '' })}
+                                    onRemove={(fi) => removeListItem(index, 'items', fi)}
+                                    renderItem={(item, fi) => (
+                                      <>
+                                        <div style={styles.formGrid}>
+                                          <EditorField label="Slide ID" hint="Shared stable key, e.g. repair, led, maintenance.">
+                                            <TextInput value={String(item.id || '')} onChange={(v) => updateListItem(index, 'items', fi, { id: v })} />
+                                          </EditorField>
+                                          <EditorField label="Image Path/URL 🔗" hint="Use Media Library URL or /images/leistungen/... fallback asset.">
+                                            <TextInput value={String(item.image || '')} onChange={(v) => updateListItem(index, 'items', fi, { image: v })} />
+                                          </EditorField>
+                                        </div>
+                                        <EditorField label="Title">
+                                          <TextInput value={String(item.title || '')} onChange={(v) => updateListItem(index, 'items', fi, { title: v })} />
+                                        </EditorField>
+                                        <EditorField label="Description">
+                                          <textarea
+                                            value={String(item.description || '')}
+                                            onChange={(e) => updateListItem(index, 'items', fi, { description: e.target.value })}
+                                            rows={3}
+                                            style={styles.textarea}
+                                          />
+                                        </EditorField>
+                                        <EditorField label="CTA Label">
+                                          <TextInput value={String(item.cta || '')} onChange={(v) => updateListItem(index, 'items', fi, { cta: v })} />
+                                        </EditorField>
+                                      </>
+                                    )}
+                                  />
+                                ) : null}
+
                                 {/* Generic items editor (Excellence/Portfolio) */}
-                                {(block.key === 'excellenceSection' || localeTexts.items) && (
+                                {block.key !== 'leistungenHero' && (block.key === 'excellenceSection' || localeTexts.items) && (
                                   <ListEditor
                                     label="Carousel Items"
                                     items={Array.isArray(localeTexts.items) ? (localeTexts.items as Record<string, unknown>[]) : []}
@@ -1272,8 +1317,24 @@ export default function PagesPage() {
                                   <EditorField label="Secondary Button Label" hint="Secondary button label (optional).">
                                     <TextInput value={String(localeTexts.secondaryLabel || '')} onChange={(v) => updateBlockText(index, activeLocale, { secondaryLabel: v })} />
                                   </EditorField>
-                                  <EditorField label="Book Label" hint="Booking label (navigation, optional).">
+                                  <EditorField label="Legacy Book Label" hint="Legacy fallback field for the previous booking button.">
                                     <TextInput value={String(localeTexts.bookLabel || '')} onChange={(v) => updateBlockText(index, activeLocale, { bookLabel: v })} />
+                                  </EditorField>
+                                </div>
+                                <div style={styles.formGrid}>
+                                  <EditorField label="Account & Status Label" hint="Secondary header action label.">
+                                    <TextInput value={String(localeTexts.accountStatusLabel || '')} onChange={(v) => updateBlockText(index, activeLocale, { accountStatusLabel: v })} placeholder="e.g. Kundenkonto & Status" />
+                                  </EditorField>
+                                  <EditorField label="Account & Status URL" hint="Protected status/account route.">
+                                    <TextInput value={String(localeTexts.accountStatusHref || '')} onChange={(v) => updateBlockText(index, activeLocale, { accountStatusHref: v })} placeholder="/status" />
+                                  </EditorField>
+                                </div>
+                                <div style={styles.formGrid}>
+                                  <EditorField label="Request Button Label" hint="Primary header request button label.">
+                                    <TextInput value={String(localeTexts.requestLabel || '')} onChange={(v) => updateBlockText(index, activeLocale, { requestLabel: v })} placeholder="e.g. Anfrage senden" />
+                                  </EditorField>
+                                  <EditorField label="Request Button URL" hint="Optional. Leave empty to keep the current request modal trigger.">
+                                    <TextInput value={String(localeTexts.requestHref || '')} onChange={(v) => updateBlockText(index, activeLocale, { requestHref: v })} placeholder="/contact" />
                                   </EditorField>
                                 </div>
 

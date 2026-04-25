@@ -11,12 +11,19 @@
     "badge_label": "Response time for urgent cases"
   },
   "Nav": {
-    "services": "Repair Services",
+    "services": "Services",
+    "solutions": "Solutions",
+    "for_business": "For Business",
+    "references": "References",
+    "about": "About Us",
+    "account_status": "Account & Status",
+    "submit_request": "Submit Request",
     "warranty": "Warranty",
     "status": "Status",
     "support": "Support",
     "book": "Book Repair",
-    "service_pill": "SERVICE"
+    "service_pill": "SERVICE",
+    "hilfe": "Help"
   },
   "Footer": {
     "copyright": "© 2024 PixelRing Technical Atelier. All rights reserved.",

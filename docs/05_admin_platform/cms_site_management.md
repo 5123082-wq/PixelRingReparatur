@@ -82,7 +82,7 @@ This area manages editable content on fixed website pages.
 
 Required page content model:
 
-- `pageKey`: for example `home`, `support`, `status`, `footer`;
+- `pageKey`: for example `home`, `support`, `status`, `global`;
 - `locale`;
 - `status`;
 - structured `blocks`;
@@ -103,6 +103,13 @@ Block examples:
 - footer CTA;
 - navigation labels;
 - global contact text.
+
+Navigation note (2026-04-22):
+
+- the approved public header IA is now `Services / Solutions / For Business / References / How It Works / About Us` plus utility actions for language switcher, `Account & Status`, and `Submit Request`;
+- this replaces the older lighter nav assumptions around standalone `Status`, messenger-heavy header actions, and simpler request labels;
+- until dedicated managed navigation entities (`Menu` / `MenuItem`) are introduced, these labels and links remain part of the `global` page block contract;
+- any CMS page-editor/UI work touching `global` blocks must account for the merged `Account & Status` entry and the removal of messenger icons from header-level configuration.
 
 Do not store JSX or arbitrary HTML in CMS. Store safe data for existing frontend components.
 
