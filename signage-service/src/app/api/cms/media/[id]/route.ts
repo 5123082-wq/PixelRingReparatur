@@ -23,6 +23,8 @@ const CMS_MEDIA_SELECT = {
   storageProvider: true,
   storageKey: true,
   publicUrl: true,
+  fallbackUrl: true,
+  fallbackStorageKey: true,
   originalFilename: true,
   title: true,
   altText: true,

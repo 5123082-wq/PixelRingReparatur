@@ -1,17 +1,18 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import LeistungenRequestButton from './LeistungenRequestButton';
 import ContactModal from '../common/ContactModal';
 import ChatModal from '../common/ChatModal';
+import CmsImage from '../common/CmsImage';
 
 type HeroSlide = {
   id: string;
   title: string;
   description: string;
   image: string;
+  fallbackSrc?: string;
   cta: string;
 };
 
@@ -78,8 +79,9 @@ export default function LeistungenHero({ slides }: Omit<LeistungenHeroProps, 'lo
           className="absolute inset-0"
         >
           <div className="relative h-full w-full">
-            <Image
+            <CmsImage
               src={slides[currentIndex].image}
+              fallbackSrc={slides[currentIndex].fallbackSrc}
               alt={slides[currentIndex].title}
               fill
               priority

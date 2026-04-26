@@ -5,6 +5,7 @@ import Header from '@/components/layout/Header';
 import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestButton';
 import { getGlobalPageCmsContent, getBusinessPageCmsContent } from '@/lib/cms/pages';
 import Image from 'next/image';
+import CmsImage from '@/components/common/CmsImage';
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
 
@@ -27,6 +28,7 @@ type BusinessContent = {
   heroIntro: string;
   heroCta: string;
   heroImage: string;
+  heroFallbackSrc?: string;
   targetTitle: string;
   targetIntro: string;
   targetGroups: TargetGroup[];
@@ -41,6 +43,12 @@ type BusinessContent = {
   finalHeadline: string;
   finalText: string;
   finalCta: string;
+  heroEnabled?: boolean;
+  targetEnabled?: boolean;
+  auditEnabled?: boolean;
+  platformEnabled?: boolean;
+  trustEnabled?: boolean;
+  finalEnabled?: boolean;
 };
 
 const CONTENT: Record<Locale, BusinessContent> = {
@@ -286,218 +294,270 @@ export default async function BusinessPage({
   const globalCms = await getGlobalPageCmsContent(locale);
   const businessCms = await getBusinessPageCmsContent(locale);
 
-  // Merge CMS hero data if available
-  const heroTitle = businessCms?.hero?.title || tContent.heroTitle;
-  const heroIntro = businessCms?.hero?.description || tContent.heroIntro;
-  const heroCta = businessCms?.hero?.cta || tContent.heroCta;
-  const heroImage = businessCms?.hero?.image || tContent.heroImage;
+  // Merge CMS data if available
+  const content = {
+    ...tContent,
+    heroTitle: businessCms?.hero?.title || tContent.heroTitle,
+    heroIntro: businessCms?.hero?.description || tContent.heroIntro,
+    heroCta: businessCms?.hero?.cta || tContent.heroCta,
+    heroImage: businessCms?.hero?.image || tContent.heroImage,
+    heroFallbackSrc: businessCms?.hero?.fallbackSrc,
+    targetTitle: businessCms?.target?.title || tContent.targetTitle,
+    targetIntro: businessCms?.target?.description || tContent.targetIntro,
+    targetGroups: businessCms?.target?.items?.length
+      ? tContent.targetGroups.map((group, i) => ({
+          ...group,
+          title: businessCms.target?.items?.[i]?.title || group.title,
+          description: businessCms.target?.items?.[i]?.description || group.description,
+        }))
+      : tContent.targetGroups,
+    auditTitle: businessCms?.audit?.title || tContent.auditTitle,
+    auditIntro: businessCms?.audit?.description || tContent.auditIntro,
+    auditBenefits: businessCms?.audit?.items?.length
+      ? tContent.auditBenefits.map((benefit, i) => ({
+          ...benefit,
+          title: businessCms.audit?.items?.[i]?.title || benefit.title,
+          description: businessCms.audit?.items?.[i]?.description || benefit.description,
+        }))
+      : tContent.auditBenefits,
+    platformTitle: businessCms?.platform?.title || tContent.platformTitle,
+    platformIntro: businessCms?.platform?.description || tContent.platformIntro,
+    platformBenefits: businessCms?.platform?.items?.length
+      ? tContent.platformBenefits.map((benefit, i) => ({
+          ...benefit,
+          title: businessCms.platform?.items?.[i]?.title || benefit.title,
+          description: businessCms.platform?.items?.[i]?.description || benefit.description,
+        }))
+      : tContent.platformBenefits,
+    trustTitle: businessCms?.trust?.title || tContent.trustTitle,
+    trustIntro: businessCms?.trust?.description || tContent.trustIntro,
+    finalHeadline: businessCms?.final?.title || tContent.finalHeadline,
+    finalText: businessCms?.final?.description || tContent.finalText,
+    finalCta: businessCms?.final?.primaryLabel || tContent.finalCta,
+    heroEnabled: businessCms?.hero?.enabled,
+    targetEnabled: businessCms?.target?.enabled,
+    auditEnabled: businessCms?.audit?.enabled,
+    platformEnabled: businessCms?.platform?.enabled,
+    trustEnabled: businessCms?.trust?.enabled,
+    finalEnabled: businessCms?.final?.enabled,
+  };
 
   return (
     <div className={`flex min-h-screen flex-col bg-[#F7F1E8] ${isRtl ? 'rtl' : 'ltr'}`} dir={isRtl ? 'rtl' : 'ltr'}>
       <Header content={globalCms?.header} />
 
       <main className="flex-grow">
-        {/* HERO SECTION */}
-        <section className="relative w-full bg-[#0E1A2B] pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden">
-          <div className="absolute inset-0 z-0">
-            <Image
-              src={heroImage}
-              alt={heroTitle}
-              fill
-              className="object-cover opacity-40 mix-blend-overlay"
-              priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0E1A2B] via-[#0E1A2B]/80 to-transparent" />
-          </div>
+        {content.heroEnabled !== false && (
+          <section className="relative w-full bg-[#0E1A2B] pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden">
+            <div className="absolute inset-0 z-0">
+              <CmsImage
+                src={content.heroImage}
+                fallbackSrc={content.heroFallbackSrc}
+                alt={content.heroTitle}
+                fill
+                className="object-cover opacity-40 mix-blend-overlay"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0E1A2B] via-[#0E1A2B]/80 to-transparent" />
+            </div>
 
-          <div className="relative z-10 max-w-7xl mx-auto px-6">
-            <div className="max-w-3xl">
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-1.5 backdrop-blur-md">
-                <div className="h-2 w-2 rounded-full bg-[#B8643E] animate-pulse" />
-                <span className="text-[13px] font-bold uppercase tracking-wider text-white">
-                  B2B Services
-                </span>
-              </div>
-              <h1 className="text-[42px] font-extrabold leading-[1.1] text-white sm:text-[56px] lg:text-[64px] tracking-tight">
-                {heroTitle}
-              </h1>
-              <p className="mt-8 text-[18px] leading-relaxed text-white/80 sm:text-[22px]">
-                {heroIntro}
-              </p>
-              <div className="mt-10 flex gap-4">
-                <LeistungenRequestButton
-                  label={heroCta}
-                  serviceIntent="wartung-servicevertrag"
-                  className="!min-h-[56px] !px-8 !text-[16px]"
-                />
+            <div className="relative z-10 max-w-7xl mx-auto px-6">
+              <div className="max-w-3xl">
+                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-1.5 backdrop-blur-md">
+                  <div className="h-2 w-2 rounded-full bg-[#B8643E] animate-pulse" />
+                  <span className="text-[13px] font-bold uppercase tracking-wider text-white">
+                    B2B Services
+                  </span>
+                </div>
+                <h1 className="text-[42px] font-extrabold leading-[1.1] text-white sm:text-[56px] lg:text-[64px] tracking-tight">
+                  {content.heroTitle}
+                </h1>
+                <p className="mt-8 text-[18px] leading-relaxed text-white/80 sm:text-[22px]">
+                  {content.heroIntro}
+                </p>
+                <div className="mt-10 flex gap-4">
+                  <LeistungenRequestButton
+                    label={content.heroCta}
+                    serviceIntent="wartung-servicevertrag"
+                    className="!min-h-[56px] !px-8 !text-[16px]"
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* TARGET GROUPS */}
-        <section className="py-24 bg-white relative">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="max-w-2xl mb-16">
-              <h2 className="text-[36px] font-extrabold text-[#0D1B2A] leading-tight mb-4">
-                {tContent.targetTitle}
-              </h2>
-              <p className="text-[18px] text-[#4A5568] leading-relaxed">
-                {tContent.targetIntro}
-              </p>
-            </div>
+        {content.targetEnabled !== false && (
+          <section className="py-24 bg-white relative">
+            <div className="max-w-7xl mx-auto px-6">
+              <div className="max-w-2xl mb-16">
+                <h2 className="text-[36px] font-extrabold text-[#0D1B2A] leading-tight mb-4">
+                  {content.targetTitle}
+                </h2>
+                <p className="text-[18px] text-[#4A5568] leading-relaxed">
+                  {content.targetIntro}
+                </p>
+              </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {tContent.targetGroups.map((group) => (
-                <div key={group.id} className="bg-[#F8FAFC] rounded-2xl p-8 border border-[#E2E8F0] hover:shadow-lg hover:border-[#B8643E]/30 transition-all duration-300">
-                  <div className="w-12 h-12 rounded-full bg-[#B8643E]/10 flex items-center justify-center mb-6">
-                    <svg className="w-6 h-6 text-[#B8643E]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {content.targetGroups.map((group) => (
+                  <div key={group.id} className="bg-[#F8FAFC] rounded-2xl p-8 border border-[#E2E8F0] hover:shadow-lg hover:border-[#B8643E]/30 transition-all duration-300">
+                    <div className="w-12 h-12 rounded-full bg-[#B8643E]/10 flex items-center justify-center mb-6">
+                      <svg className="w-6 h-6 text-[#B8643E]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                    </div>
+                    <h3 className="text-[20px] font-bold text-[#0D1B2A] mb-3">{group.title}</h3>
+                    <p className="text-[#4A5568] text-[15px] leading-relaxed">{group.description}</p>
                   </div>
-                  <h3 className="text-[20px] font-bold text-[#0D1B2A] mb-3">{group.title}</h3>
-                  <p className="text-[#4A5568] text-[15px] leading-relaxed">{group.description}</p>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* AUDIT & SUBSCRIPTION */}
-        <section className="py-24 bg-[#EEF3FB] relative border-y border-[#E2E8F0]">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
-              <div>
-                <div className="inline-block px-3 py-1 bg-[#B8643E]/10 text-[#B8643E] rounded-full text-[14px] font-bold mb-6">
-                  Subscription Model
-                </div>
-                <h2 className="text-[36px] font-extrabold text-[#0D1B2A] leading-tight mb-6">
-                  {tContent.auditTitle}
-                </h2>
-                <p className="text-[18px] text-[#4A5568] leading-relaxed mb-10">
-                  {tContent.auditIntro}
-                </p>
+        {content.auditEnabled !== false && (
+          <section className="py-24 bg-[#EEF3FB] relative border-y border-[#E2E8F0]">
+            <div className="max-w-7xl mx-auto px-6">
+              <div className="grid lg:grid-cols-2 gap-16 items-center">
+                <div>
+                  <div className="inline-block px-3 py-1 bg-[#B8643E]/10 text-[#B8643E] rounded-full text-[14px] font-bold mb-6">
+                    Subscription Model
+                  </div>
+                  <h2 className="text-[36px] font-extrabold text-[#0D1B2A] leading-tight mb-6">
+                    {content.auditTitle}
+                  </h2>
+                  <p className="text-[18px] text-[#4A5568] leading-relaxed mb-10">
+                    {content.auditIntro}
+                  </p>
 
-                <div className="space-y-8">
-                  {tContent.auditBenefits.map((benefit, i) => (
-                    <div key={benefit.id} className="flex gap-4">
-                      <div className="shrink-0 w-10 h-10 rounded-full bg-white border border-[#D1D9E6] flex items-center justify-center text-[#B8643E] font-bold shadow-sm">
-                        {i + 1}
+                  <div className="space-y-8">
+                    {content.auditBenefits.map((benefit, i) => (
+                      <div key={benefit.id} className="flex gap-4">
+                        <div className="shrink-0 w-10 h-10 rounded-full bg-white border border-[#D1D9E6] flex items-center justify-center text-[#B8643E] font-bold shadow-sm">
+                          {i + 1}
+                        </div>
+                        <div>
+                          <h4 className="text-[18px] font-bold text-[#0D1B2A] mb-2">{benefit.title}</h4>
+                          <p className="text-[#4A5568] text-[15px] leading-relaxed">{benefit.description}</p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="text-[18px] font-bold text-[#0D1B2A] mb-2">{benefit.title}</h4>
-                        <p className="text-[#4A5568] text-[15px] leading-relaxed">{benefit.description}</p>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-              
-              <div className="relative h-[600px] w-full rounded-3xl overflow-hidden shadow-2xl">
-                {/* Visual representation of an audit/storefront */}
-                <Image
-                  src="/images/leistungen/hero-branding.png"
-                  alt="Audit & Maintenance"
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0E1A2B]/80 to-transparent" />
-                <div className="absolute bottom-10 left-10 right-10">
-                  <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6">
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
-                      <span className="text-white font-bold tracking-wide">Audit Complete</span>
+                
+                <div className="relative h-[600px] w-full rounded-3xl overflow-hidden shadow-2xl">
+                  {/* Visual representation of an audit/storefront */}
+                  <Image
+                    src="/images/leistungen/hero-branding.png"
+                    alt="Audit & Maintenance"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0E1A2B]/80 to-transparent" />
+                  <div className="absolute bottom-10 left-10 right-10">
+                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6">
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
+                        <span className="text-white font-bold tracking-wide">Audit Complete</span>
+                      </div>
+                      <div className="h-2 bg-white/20 rounded-full mb-3 overflow-hidden">
+                        <div className="h-full bg-[#B8643E] w-[100%]" />
+                      </div>
+                      <p className="text-white/80 text-[14px]">All print materials and signage verified</p>
                     </div>
-                    <div className="h-2 bg-white/20 rounded-full mb-3 overflow-hidden">
-                      <div className="h-full bg-[#B8643E] w-[100%]" />
-                    </div>
-                    <p className="text-white/80 text-[14px]">All print materials and signage verified</p>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
-        {/* PLATFORM / CABINET */}
-        <section className="py-24 bg-white relative">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
-              
-              <div className="order-2 lg:order-1 relative h-[600px] w-full rounded-3xl overflow-hidden bg-[#F8FAFC] border border-[#E2E8F0] shadow-inner flex items-center justify-center">
-                 {/* Abstract representation of a dashboard */}
-                 <div className="w-[80%] h-[70%] bg-white rounded-xl shadow-lg border border-[#E2E8F0] p-6 flex flex-col gap-4">
-                    <div className="flex justify-between items-center border-b pb-4">
-                      <div className="w-32 h-6 bg-gray-200 rounded-md" />
-                      <div className="w-10 h-10 bg-[#B8643E]/10 rounded-full" />
-                    </div>
-                    <div className="grid grid-cols-3 gap-4">
-                       <div className="h-24 bg-[#EEF3FB] rounded-lg" />
-                       <div className="h-24 bg-[#EEF3FB] rounded-lg" />
-                       <div className="h-24 bg-[#EEF3FB] rounded-lg" />
-                    </div>
-                    <div className="flex-1 bg-gray-50 rounded-lg border border-gray-100 p-4 mt-4">
-                       <div className="w-1/3 h-4 bg-gray-200 rounded mb-4" />
-                       <div className="space-y-3">
-                         <div className="h-10 bg-white rounded shadow-sm border border-gray-100" />
-                         <div className="h-10 bg-white rounded shadow-sm border border-gray-100" />
-                         <div className="h-10 bg-white rounded shadow-sm border border-gray-100" />
-                       </div>
+        {content.platformEnabled !== false && (
+          <section className="py-24 bg-white relative">
+            <div className="max-w-7xl mx-auto px-6">
+              <div className="grid lg:grid-cols-2 gap-16 items-center">
+                
+                <div className="order-2 lg:order-1 relative h-[600px] w-full rounded-3xl overflow-hidden bg-[#F8FAFC] border border-[#E2E8F0] shadow-inner flex items-center justify-center">
+                   {/* Abstract representation of a dashboard */}
+                   <div className="w-[80%] h-[70%] bg-white rounded-xl shadow-lg border border-[#E2E8F0] p-6 flex flex-col gap-4">
+                      <div className="flex justify-between items-center border-b pb-4">
+                        <div className="w-32 h-6 bg-gray-200 rounded-md" />
+                        <div className="w-10 h-10 bg-[#B8643E]/10 rounded-full" />
+                      </div>
+                      <div className="grid grid-cols-3 gap-4">
+                         <div className="h-24 bg-[#EEF3FB] rounded-lg" />
+                         <div className="h-24 bg-[#EEF3FB] rounded-lg" />
+                         <div className="h-24 bg-[#EEF3FB] rounded-lg" />
+                      </div>
+                      <div className="flex-1 bg-gray-50 rounded-lg border border-gray-100 p-4 mt-4">
+                         <div className="w-1/3 h-4 bg-gray-200 rounded mb-4" />
+                         <div className="space-y-3">
+                           <div className="h-10 bg-white rounded shadow-sm border border-gray-100" />
+                           <div className="h-10 bg-white rounded shadow-sm border border-gray-100" />
+                           <div className="h-10 bg-white rounded shadow-sm border border-gray-100" />
+                         </div>
+                      </div>
+                   </div>
+                </div>
+
+                <div className="order-1 lg:order-2">
+                  <h2 className="text-[36px] font-extrabold text-[#0D1B2A] leading-tight mb-6">
+                    {content.platformTitle}
+                  </h2>
+                  <p className="text-[18px] text-[#4A5568] leading-relaxed mb-10">
+                    {content.platformIntro}
+                  </p>
+
+                  <div className="space-y-8">
+                    {content.platformBenefits.map((benefit) => (
+                      <div key={benefit.id} className="flex gap-4">
+                        <div className="shrink-0 mt-1">
+                          <svg className="w-6 h-6 text-[#B8643E]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h4 className="text-[18px] font-bold text-[#0D1B2A] mb-2">{benefit.title}</h4>
+                          <p className="text-[#4A5568] text-[15px] leading-relaxed">{benefit.description}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+          </section>
+        )}
+
+        {content.trustEnabled !== false && (
+          <section className="relative w-full py-24 sm:py-32 overflow-hidden bg-[#0E1A2B] rounded-t-[40px] sm:rounded-t-[80px] text-center">
+             <div className="max-w-4xl mx-auto px-6">
+               <h2 className="text-[36px] md:text-[48px] font-extrabold text-white leading-tight mb-6">
+                 {content.trustTitle}
+               </h2>
+               <p className="text-[18px] md:text-[22px] text-white/70 leading-relaxed mb-12">
+                 {content.trustIntro}
+               </p>
+               {content.finalEnabled !== false && (
+                 <div className="flex justify-center">
+                    <div className="bg-gradient-to-r from-[#B8643E] to-[#9E5332] p-10 rounded-[32px] max-w-2xl border border-white/10 shadow-2xl">
+                       <h3 className="text-white text-[24px] font-bold mb-4">{content.finalHeadline}</h3>
+                       <p className="text-white/80 mb-8">{content.finalText}</p>
+                       <LeistungenRequestButton
+                          label={content.finalCta}
+                          serviceIntent="wartung-servicevertrag"
+                          className="!bg-white !text-[#0D1B2A] hover:!bg-gray-100 !min-h-[56px] !px-8 !text-[16px] mx-auto"
+                       />
                     </div>
                  </div>
-              </div>
-
-              <div className="order-1 lg:order-2">
-                <h2 className="text-[36px] font-extrabold text-[#0D1B2A] leading-tight mb-6">
-                  {tContent.platformTitle}
-                </h2>
-                <p className="text-[18px] text-[#4A5568] leading-relaxed mb-10">
-                  {tContent.platformIntro}
-                </p>
-
-                <div className="space-y-8">
-                  {tContent.platformBenefits.map((benefit) => (
-                    <div key={benefit.id} className="flex gap-4">
-                      <div className="shrink-0 mt-1">
-                        <svg className="w-6 h-6 text-[#B8643E]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                      <div>
-                        <h4 className="text-[18px] font-bold text-[#0D1B2A] mb-2">{benefit.title}</h4>
-                        <p className="text-[#4A5568] text-[15px] leading-relaxed">{benefit.description}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-            </div>
-          </div>
-        </section>
-
-        {/* TRUST / RESPONSIBILITY */}
-        <section className="relative w-full py-24 sm:py-32 overflow-hidden bg-[#0E1A2B] rounded-t-[40px] sm:rounded-t-[80px] text-center">
-           <div className="max-w-4xl mx-auto px-6">
-             <h2 className="text-[36px] md:text-[48px] font-extrabold text-white leading-tight mb-6">
-               {tContent.trustTitle}
-             </h2>
-             <p className="text-[18px] md:text-[22px] text-white/70 leading-relaxed mb-12">
-               {tContent.trustIntro}
-             </p>
-             <div className="flex justify-center">
-                <div className="bg-gradient-to-r from-[#B8643E] to-[#9E5332] p-10 rounded-[32px] max-w-2xl border border-white/10 shadow-2xl">
-                   <h3 className="text-white text-[24px] font-bold mb-4">{tContent.finalHeadline}</h3>
-                   <p className="text-white/80 mb-8">{tContent.finalText}</p>
-                   <LeistungenRequestButton
-                      label={tContent.finalCta}
-                      serviceIntent="wartung-servicevertrag"
-                      className="!bg-white !text-[#0D1B2A] hover:!bg-gray-100 !min-h-[56px] !px-8 !text-[16px] mx-auto"
-                   />
-                </div>
+               )}
              </div>
-           </div>
-        </section>
+          </section>
+        )}
 
       </main>
 

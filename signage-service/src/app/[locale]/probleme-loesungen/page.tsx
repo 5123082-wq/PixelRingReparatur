@@ -87,6 +87,13 @@ type SolutionsContent = {
   faqs: Faq[];
   finalTitle: string;
   finalText: string;
+  heroEnabled?: boolean;
+  problemEnabled?: boolean;
+  impactEnabled?: boolean;
+  urgentEnabled?: boolean;
+  assessmentEnabled?: boolean;
+  faqEnabled?: boolean;
+  finalEnabled?: boolean;
 };
 
 const CONTENT: Record<Locale, SolutionsContent> = {
@@ -565,11 +572,44 @@ export default async function ProblemeLoesungenPage({
     getProblemeLoesungenPageCmsContent(locale),
     getPublishedSymptomArticles(locale),
   ]);
-  const content = {
+  const content: SolutionsContent = {
     ...baseContent,
     heroTitle: cmsContent?.hero?.title ?? baseContent.heroTitle,
     heroIntro: cmsContent?.hero?.description ?? baseContent.heroIntro,
+    heroTrust: cmsContent?.hero?.trust ?? baseContent.heroTrust,
+    badge: cmsContent?.hero?.badge ?? baseContent.badge,
     primaryCta: cmsContent?.hero?.cta ?? baseContent.primaryCta,
+    secondaryCta: cmsContent?.hero?.secondaryCta ?? baseContent.secondaryCta,
+    
+    problemTitle: cmsContent?.problems?.title ?? baseContent.problemTitle,
+    problemIntro: cmsContent?.problems?.description ?? baseContent.problemIntro,
+    problemCta: cmsContent?.problems?.cta ?? baseContent.problemCta,
+    
+    impactTitle: cmsContent?.impact?.title ?? baseContent.impactTitle,
+    impactIntro: cmsContent?.impact?.description ?? baseContent.impactIntro,
+    
+    urgentTitle: cmsContent?.urgent?.title ?? baseContent.urgentTitle,
+    urgentText: cmsContent?.urgent?.description ?? baseContent.urgentText,
+    urgentPoints: (cmsContent?.urgent?.items as string[]) ?? baseContent.urgentPoints,
+    urgentCta: cmsContent?.urgent?.cta ?? baseContent.urgentCta,
+    
+    faqTitle: cmsContent?.faq?.title ?? baseContent.faqTitle,
+    faqs: cmsContent?.faq?.items?.length
+      ? cmsContent.faq.items.map((item) => ({
+          question: item.question ?? item.title ?? '',
+          answer: item.answer ?? item.description ?? '',
+        }))
+      : baseContent.faqs,
+      
+    finalTitle: cmsContent?.final?.title ?? baseContent.finalTitle,
+    finalText: cmsContent?.final?.description ?? baseContent.finalText,
+    heroEnabled: cmsContent?.hero?.enabled,
+    problemEnabled: cmsContent?.problems?.enabled,
+    impactEnabled: cmsContent?.impact?.enabled,
+    urgentEnabled: cmsContent?.urgent?.enabled,
+    assessmentEnabled: baseContent.assessmentEnabled,
+    faqEnabled: cmsContent?.faq?.enabled,
+    finalEnabled: cmsContent?.final?.enabled,
   };
 
   // Build a Map<cardId, knowledge> from CMS articles.
@@ -626,189 +666,199 @@ export default async function ProblemeLoesungenPage({
       )}
       <Header content={globalCms?.header} />
       <main>
-        <section className="relative overflow-hidden bg-[#0E1A2B] text-white">
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute left-[8%] top-12 h-40 w-40 rounded-full border border-white/20" />
-            <div className="absolute bottom-10 right-[10%] h-64 w-64 rounded-full border border-[#B8643E]/45" />
-          </div>
-          <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[1fr_0.78fr] lg:items-center">
-            <div>
-              <div className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/8 px-4 py-2 text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#F4C7A9]">
-                <span className="h-2 w-2 rounded-full bg-[#B8643E]" />
-                {content.badge}
-              </div>
-              <h1 className="mt-7 max-w-4xl text-4xl font-black leading-[1.05] sm:text-6xl">
-                {content.heroTitle}
-              </h1>
-              <p className="mt-7 max-w-3xl text-lg leading-8 text-white/78 sm:text-xl">
-                {content.heroIntro}
-              </p>
-              <p className="mt-5 max-w-2xl text-[15px] font-bold leading-7 text-[#F4C7A9]">
-                {content.heroTrust}
-              </p>
-              <div className="mt-9 flex flex-wrap gap-3">
-                <ProblemRequestButton label={content.primaryCta} problemIntent="sign-not-lighting" />
-                <ProblemRequestButton
-                  label={content.secondaryCta}
-                  problemIntent="peeling-film"
-                  variant="secondary"
-                />
-              </div>
+        {content.heroEnabled !== false && (
+          <section className="relative overflow-hidden bg-[#0E1A2B] text-white">
+            <div className="absolute inset-0 opacity-20">
+              <div className="absolute left-[8%] top-12 h-40 w-40 rounded-full border border-white/20" />
+              <div className="absolute bottom-10 right-[10%] h-64 w-64 rounded-full border border-[#B8643E]/45" />
             </div>
-            <div className="rounded-[32px] border border-white/12 bg-white/[0.07] p-5 shadow-2xl backdrop-blur">
-              <div className="rounded-[24px] bg-[#F7F1E8] p-5 text-[#0E1A2B]">
-                <div className="flex items-center justify-between gap-4 border-b border-[#D9C7BA] pb-4">
-                  <div>
-                    <p className="text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#B8643E]">
-                      PixelRing Check
-                    </p>
-                    <p className="mt-1 text-lg font-black">{content.impactBefore} / {content.impactAfter}</p>
+            <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[1fr_0.78fr] lg:items-center">
+              <div>
+                <div className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/8 px-4 py-2 text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#F4C7A9]">
+                  <span className="h-2 w-2 rounded-full bg-[#B8643E]" />
+                  {content.badge}
+                </div>
+                <h1 className="mt-7 max-w-4xl text-4xl font-black leading-[1.05] sm:text-6xl">
+                  {content.heroTitle}
+                </h1>
+                <p className="mt-7 max-w-3xl text-lg leading-8 text-white/78 sm:text-xl">
+                  {content.heroIntro}
+                </p>
+                <p className="mt-5 max-w-2xl text-[15px] font-bold leading-7 text-[#F4C7A9]">
+                  {content.heroTrust}
+                </p>
+                <div className="mt-9 flex flex-wrap gap-3">
+                  <ProblemRequestButton label={content.primaryCta} problemIntent="sign-not-lighting" />
+                  <ProblemRequestButton
+                    label={content.secondaryCta}
+                    problemIntent="peeling-film"
+                    variant="secondary"
+                  />
+                </div>
+              </div>
+              <div className="rounded-[32px] border border-white/12 bg-white/[0.07] p-5 shadow-2xl backdrop-blur">
+                <div className="rounded-[24px] bg-[#F7F1E8] p-5 text-[#0E1A2B]">
+                  <div className="flex items-center justify-between gap-4 border-b border-[#D9C7BA] pb-4">
+                    <div>
+                      <p className="text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#B8643E]">
+                        PixelRing Check
+                      </p>
+                      <p className="mt-1 text-lg font-black">{content.impactBefore} / {content.impactAfter}</p>
+                    </div>
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0E1A2B] text-white">
+                      !
+                    </div>
                   </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0E1A2B] text-white">
-                    !
+                  <div className="mt-5 space-y-4">
+                    {content.metrics.slice(0, 3).map((metric) => (
+                      <div key={metric.label}>
+                        <div className="mb-2 flex items-center justify-between text-[13px] font-bold">
+                          <span>{metric.label}</span>
+                          <span className="text-[#24594D]">{metric.after}%</span>
+                        </div>
+                        <div className="h-3 overflow-hidden rounded-full bg-[#E7DDD3]">
+                          <div
+                            className="metric-fill h-full rounded-full bg-[#7BA190]"
+                            style={{ '--metric-target': `${metric.after}%` } as CSSProperties}
+                          />
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-                <div className="mt-5 space-y-4">
-                  {content.metrics.slice(0, 3).map((metric) => (
-                    <div key={metric.label}>
-                      <div className="mb-2 flex items-center justify-between text-[13px] font-bold">
-                        <span>{metric.label}</span>
-                        <span className="text-[#24594D]">{metric.after}%</span>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {content.problemEnabled !== false && (
+          <section id="probleme" className="bg-white py-14 sm:py-20">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6">
+              <div className="max-w-4xl">
+                <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">
+                  {content.problemTitle}
+                </h2>
+                <p className="mt-5 text-lg leading-8 text-[#4A5568]">{content.problemIntro}</p>
+              </div>
+              <ProblemKnowledgeGrid
+                locale={locale}
+                problems={content.problems}
+                knowledgeBySlug={knowledgeBySlug}
+              />
+            </div>
+          </section>
+        )}
+
+        {content.impactEnabled !== false && (
+          <section id="wirkung" className="bg-[#EEF3FB] py-14 sm:py-20">
+            <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+              <div>
+                <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">
+                  {content.impactTitle}
+                </h2>
+                <p className="mt-5 text-lg leading-8 text-[#4A5568]">{content.impactIntro}</p>
+                <p className="mt-5 rounded-[18px] border border-[#D9C7BA] bg-white/70 px-5 py-4 text-[14px] font-bold leading-7 text-[#6B625C]">
+                  {content.impactNote}
+                </p>
+              </div>
+              <div className="rounded-[28px] border border-white bg-white p-6 shadow-xl">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {content.metrics.map((metric) => (
+                    <div key={metric.label} className="rounded-[20px] border border-[#E7DDD3] bg-[#FFFDF9] p-5">
+                      <div className="flex items-center justify-between gap-3">
+                        <h3 className="text-lg font-extrabold text-[#0E1A2B]">{metric.label}</h3>
+                        <span className="text-[12px] font-black text-[#B8643E]">
+                          {content.impactAfter}
+                        </span>
                       </div>
-                      <div className="h-3 overflow-hidden rounded-full bg-[#E7DDD3]">
-                        <div
-                          className="metric-fill h-full rounded-full bg-[#7BA190]"
-                          style={{ '--metric-target': `${metric.after}%` } as CSSProperties}
-                        />
+                      <div className="mt-5 space-y-3">
+                        <div>
+                          <div className="mb-1 flex justify-between text-[12px] font-bold text-[#6B625C]">
+                            <span>{content.impactBefore}</span>
+                            <span>{metric.before}%</span>
+                          </div>
+                          <div className="h-2 rounded-full bg-[#E7DDD3]">
+                            <div className="h-2 rounded-full bg-[#DAB08A]" style={{ width: `${metric.before}%` }} />
+                          </div>
+                        </div>
+                        <div>
+                          <div className="mb-1 flex justify-between text-[12px] font-bold text-[#24594D]">
+                            <span>{content.impactAfter}</span>
+                            <span>{metric.after}%</span>
+                          </div>
+                          <div className="h-3 overflow-hidden rounded-full bg-[#E6F0EC]">
+                            <div
+                              className="metric-fill h-3 rounded-full bg-[#7BA190]"
+                              style={{ '--metric-target': `${metric.after}%` } as CSSProperties}
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
-        <section id="probleme" className="bg-white py-14 sm:py-20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6">
-            <div className="max-w-4xl">
-              <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">
-                {content.problemTitle}
-              </h2>
-              <p className="mt-5 text-lg leading-8 text-[#4A5568]">{content.problemIntro}</p>
-            </div>
-            <ProblemKnowledgeGrid
-              locale={locale}
-              problems={content.problems}
-              knowledgeBySlug={knowledgeBySlug}
-            />
-          </div>
-        </section>
-
-        <section id="wirkung" className="bg-[#EEF3FB] py-14 sm:py-20">
-          <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-            <div>
-              <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">
-                {content.impactTitle}
-              </h2>
-              <p className="mt-5 text-lg leading-8 text-[#4A5568]">{content.impactIntro}</p>
-              <p className="mt-5 rounded-[18px] border border-[#D9C7BA] bg-white/70 px-5 py-4 text-[14px] font-bold leading-7 text-[#6B625C]">
-                {content.impactNote}
-              </p>
-            </div>
-            <div className="rounded-[28px] border border-white bg-white p-6 shadow-xl">
-              <div className="grid gap-4 sm:grid-cols-2">
-                {content.metrics.map((metric) => (
-                  <div key={metric.label} className="rounded-[20px] border border-[#E7DDD3] bg-[#FFFDF9] p-5">
-                    <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-lg font-extrabold text-[#0E1A2B]">{metric.label}</h3>
-                      <span className="text-[12px] font-black text-[#B8643E]">
-                        {content.impactAfter}
+        {content.urgentEnabled !== false && (
+          <section id="dringend" className="bg-[#0E1A2B] py-14 text-white sm:py-20">
+            <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+              <div>
+                <h2 className="text-3xl font-extrabold leading-[1.1] sm:text-5xl">{content.urgentTitle}</h2>
+                <p className="mt-5 text-lg leading-8 text-white/78">{content.urgentText}</p>
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <ProblemRequestButton label={content.urgentCta} problemIntent="urgent-safety-risk" />
+                  <a
+                    href={supportContactHref}
+                    className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/35 bg-white/10 px-5 py-3 text-[15px] font-bold text-white transition-colors hover:bg-white/18"
+                  >
+                    {content.phoneCta}
+                  </a>
+                </div>
+              </div>
+              <div className="rounded-[24px] border border-white/12 bg-white/[0.08] p-6">
+                <ul className="space-y-4">
+                  {content.urgentPoints.map((point) => (
+                    <li key={point} className="flex gap-3 text-[16px] leading-7 text-white/[0.88]">
+                      <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#B8643E] text-sm font-extrabold text-white">
+                        !
                       </span>
-                    </div>
-                    <div className="mt-5 space-y-3">
-                      <div>
-                        <div className="mb-1 flex justify-between text-[12px] font-bold text-[#6B625C]">
-                          <span>{content.impactBefore}</span>
-                          <span>{metric.before}%</span>
-                        </div>
-                        <div className="h-2 rounded-full bg-[#E7DDD3]">
-                          <div className="h-2 rounded-full bg-[#DAB08A]" style={{ width: `${metric.before}%` }} />
-                        </div>
-                      </div>
-                      <div>
-                        <div className="mb-1 flex justify-between text-[12px] font-bold text-[#24594D]">
-                          <span>{content.impactAfter}</span>
-                          <span>{metric.after}%</span>
-                        </div>
-                        <div className="h-3 overflow-hidden rounded-full bg-[#E6F0EC]">
-                          <div
-                            className="metric-fill h-3 rounded-full bg-[#7BA190]"
-                            style={{ '--metric-target': `${metric.after}%` } as CSSProperties}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
-        <section id="dringend" className="bg-[#0E1A2B] py-14 text-white sm:py-20">
-          <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-            <div>
-              <h2 className="text-3xl font-extrabold leading-[1.1] sm:text-5xl">{content.urgentTitle}</h2>
-              <p className="mt-5 text-lg leading-8 text-white/78">{content.urgentText}</p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <ProblemRequestButton label={content.urgentCta} problemIntent="urgent-safety-risk" />
-                <a
-                  href={supportContactHref}
-                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/35 bg-white/10 px-5 py-3 text-[15px] font-bold text-white transition-colors hover:bg-white/18"
-                >
-                  {content.phoneCta}
-                </a>
+        {content.assessmentEnabled !== false && (
+          <section id="einschaetzung" className="bg-white py-14 sm:py-20">
+            <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr]">
+              <div>
+                <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">
+                  {content.assessmentTitle}
+                </h2>
+                <p className="mt-5 text-lg leading-8 text-[#4A5568]">{content.assessmentIntro}</p>
               </div>
-            </div>
-            <div className="rounded-[24px] border border-white/12 bg-white/[0.08] p-6">
-              <ul className="space-y-4">
-                {content.urgentPoints.map((point) => (
-                  <li key={point} className="flex gap-3 text-[16px] leading-7 text-white/[0.88]">
-                    <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#B8643E] text-sm font-extrabold text-white">
-                      !
+              <div className="grid gap-4 sm:grid-cols-2">
+                {content.assessmentPoints.map((point, index) => (
+                  <p
+                    key={point}
+                    className="rounded-[18px] border border-[#E7DDD3] bg-[#FFFDF9] px-5 py-4 text-[16px] font-bold leading-7 text-[#3E4A48]"
+                  >
+                    <span className="mr-3 text-[#B8643E] rtl:ml-3 rtl:mr-0">
+                      {String(index + 1).padStart(2, '0')}
                     </span>
-                    <span>{point}</span>
-                  </li>
+                    {point}
+                  </p>
                 ))}
-              </ul>
+              </div>
             </div>
-          </div>
-        </section>
-
-        <section id="einschaetzung" className="bg-white py-14 sm:py-20">
-          <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr]">
-            <div>
-              <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">
-                {content.assessmentTitle}
-              </h2>
-              <p className="mt-5 text-lg leading-8 text-[#4A5568]">{content.assessmentIntro}</p>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {content.assessmentPoints.map((point, index) => (
-                <p
-                  key={point}
-                  className="rounded-[18px] border border-[#E7DDD3] bg-[#FFFDF9] px-5 py-4 text-[16px] font-bold leading-7 text-[#3E4A48]"
-                >
-                  <span className="mr-3 text-[#B8643E] rtl:ml-3 rtl:mr-0">
-                    {String(index + 1).padStart(2, '0')}
-                  </span>
-                  {point}
-                </p>
-              ))}
-            </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         <section id="seo-geo" className="bg-[#F7F1E8] py-14 sm:py-20">
           <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.78fr_1.22fr]">
@@ -823,42 +873,46 @@ export default async function ProblemeLoesungenPage({
           </div>
         </section>
 
-        <section id="faq" className="bg-white py-14 sm:py-20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6">
-            <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-              <div>
-                <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">
-                  {content.faqTitle}
-                </h2>
-                <p className="mt-5 text-lg leading-8 text-[#4A5568]">{content.supportBridge}</p>
-              </div>
-              <div className="space-y-4">
-                {content.faqs.map((faq) => (
-                  <details key={faq.question} className="group rounded-[20px] border border-[#E7DDD3] bg-[#FFFDF9] p-5">
-                    <summary className="flex cursor-pointer list-none justify-between gap-4 text-lg font-extrabold text-[#0E1A2B] [&::-webkit-details-marker]:hidden">
-                      {faq.question}
-                      <span className="text-[#B8643E] transition-transform group-open:rotate-45">+</span>
-                    </summary>
-                    <p className="mt-4 border-t border-[#E7DDD3] pt-4 text-[15px] leading-7 text-[#4A5568]">
-                      {faq.answer}
-                    </p>
-                  </details>
-                ))}
-                <div className="rounded-[24px] bg-[#24594D] p-6 text-white">
-                  <h2 className="text-2xl font-extrabold leading-[1.1]">{content.finalTitle}</h2>
-                  <p className="mt-3 text-[16px] leading-7 text-white/[0.82]">{content.finalText}</p>
-                  <div className="mt-6">
-                    <ProblemRequestButton
-                      label={content.primaryCta}
-                      problemIntent="sign-not-lighting"
-                      className="min-w-[180px] px-7"
-                    />
-                  </div>
+        {content.faqEnabled !== false && (
+          <section id="faq" className="bg-white py-14 sm:py-20">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6">
+              <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+                <div>
+                  <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">
+                    {content.faqTitle}
+                  </h2>
+                  <p className="mt-5 text-lg leading-8 text-[#4A5568]">{content.supportBridge}</p>
+                </div>
+                <div className="space-y-4">
+                  {content.faqs.map((faq) => (
+                    <details key={faq.question} className="group rounded-[20px] border border-[#E7DDD3] bg-[#FFFDF9] p-5">
+                      <summary className="flex cursor-pointer list-none justify-between gap-4 text-lg font-extrabold text-[#0E1A2B] [&::-webkit-details-marker]:hidden">
+                        {faq.question}
+                        <span className="text-[#B8643E] transition-transform group-open:rotate-45">+</span>
+                      </summary>
+                      <p className="mt-4 border-t border-[#E7DDD3] pt-4 text-[15px] leading-7 text-[#4A5568]">
+                        {faq.answer}
+                      </p>
+                    </details>
+                  ))}
+                  {content.finalEnabled !== false && (
+                    <div className="rounded-[24px] bg-[#24594D] p-6 text-white">
+                      <h2 className="text-2xl font-extrabold leading-[1.1]">{content.finalTitle}</h2>
+                      <p className="mt-3 text-[16px] leading-7 text-white/[0.82]">{content.finalText}</p>
+                      <div className="mt-6">
+                        <ProblemRequestButton
+                          label={content.primaryCta}
+                          problemIntent="sign-not-lighting"
+                          className="min-w-[180px] px-7"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
       <Footer content={globalCms?.footer} />
     </div>

@@ -137,6 +137,60 @@ Entries are in **reverse chronological order** — newest entry is always at the
 
 ### Latest Entry
 
+- Date: 2026-04-26
+- Current sprint: CMS admin palette deploy pass
+- Current block: Final visual readability adjustment before deploy
+- Done: Added a `cms-soft-admin` theme overlay at the CMS dashboard shell level to lift the interface from near-black to a lighter graphite palette. Updated shell-level backgrounds, panels, inputs/selects/textareas, borders, muted text, and shadows through centralized CSS so Page CMS and sibling CMS admin views are more readable without changing layout or data logic. Browser verification confirmed Page CMS editor readability and no new console errors.
+- In progress: This is a deploy-oriented visual pass, not a full design-system token migration.
+- Next action: If more refinement is needed after deploy preview, migrate the repeated CMS admin colors into shared design tokens/components.
+- Blockers/risks: The overlay intentionally uses `!important` to override existing utility classes quickly before deploy; long-term cleanup should replace this with explicit admin UI tokens.
+- Documents updated in this session: `PROGRESS.md`, `docs/05_admin_platform/admin_rollout_execution_plan.md`
+
+- Date: 2026-04-26
+- Current sprint: Page CMS workspace tabs and stable nested item grouping
+- Current block: Editor usability and locale coverage correctness
+- Done: Moved the large nested content list out of the primary editor flow by adding `Editor`, `Recent`, and `Locale gaps` workspace tabs in the Page CMS toolbar. The `Editor` tab now shows the selected block directly without the large recent-changes panel above it. Fixed false AR-only locale gaps for translated list items such as `home / bentoSection / steps` by grouping array items by stable `id/key/slug` when available, otherwise by array index, instead of translated `title/label`. Browser verification confirmed `bentoSection / steps` rows now show `Live: DE, EN, RU, TR, PL, AR` instead of `Live: AR / Missing: DE, EN, RU, TR, PL`.
+- In progress: Stable authored IDs for every nested item are still not enforced at save time.
+- Next action: Add generated stable IDs to list items on creation if exact item identity must survive reordering and translation title edits.
+- Blockers/risks: Index-based grouping is correct for current synchronized list structure, but explicit item IDs are safer if editors later reorder one locale independently.
+- Documents updated in this session: `PROGRESS.md`, `docs/05_admin_platform/admin_rollout_execution_plan.md`
+
+- Date: 2026-04-26
+- Current sprint: Page CMS filtering and nested change visibility
+- Current block: Editorial navigation and item-level observability
+- Done: Added Page CMS filters for page, block, locale, status, and search. Added a visible `Recent page content changes` panel on both the Page CMS start screen and active editor view. Nested page block array items are now surfaced as item-level rows, including `home / excellenceSection / Feed Post #7`, with live/draft/missing locale indicators. Dashboard latest changes now includes nested Page CMS items, while locale-gap calculations count a nested item locale as filled only when it has meaningful non-technical text content.
+- In progress: Item-level rows are still derived from `CmsPage.blocks` JSON and page `updatedAt`; there is no dedicated per-card revision timestamp yet.
+- Next action: Add explicit per-item stable IDs and revision metadata if the owner wants exact item-created/item-edited chronology independent of the parent `CmsPage.updatedAt`.
+- Blockers/risks: Current Page CMS add-item behavior creates structural empty items across all locales, so missing-language reporting intentionally distinguishes structural existence from meaningful localized content.
+- Documents updated in this session: `PROGRESS.md`, `docs/05_admin_platform/admin_rollout_execution_plan.md`
+
+- Date: 2026-04-26
+- Current sprint: CMS dashboard editorial overview
+- Current block: Dashboard visibility for recent changes, in-progress edits, and locale coverage
+- Done: Replaced the static CMS dashboard cards with a live editorial overview powered by existing `/api/cms/articles` and `/api/cms/pages` reads. Added metrics for total CMS records, published records, editing queue, and locale gaps. Added latest changes and in-editing panels for `CmsArticle`/`CmsPage` records. Added published-with-missing-languages detection across DE/EN/RU/TR/PL/AR, including nested `CmsPage.blocks` array items keyed by `id`, `key`, `slug`, `title`, or `label` so homepage card-level German-only publication gaps are visible.
+- In progress: This is a dashboard-only read model; it does not add a dedicated editorial lock/presence table.
+- Next action: If exact "currently being edited by user X" presence is needed later, add explicit editor session tracking instead of inferring from draft/review statuses.
+- Blockers/risks: Existing article list API is locale-scoped, so the dashboard fetches one page of up to 100 articles per MVP locale.
+- Documents updated in this session: `PROGRESS.md`, `docs/05_admin_platform/admin_rollout_execution_plan.md`
+
+- Date: 2026-04-26
+- Current sprint: CMS media storage migration
+- Current block: Blob primary with local fallback for public CMS media
+- Done: Added nullable fallback metadata to `CmsMedia`, applied migration `20260425230336_cms_media_blob_fallback`, updated CMS media upload flow to save local fallback first and use Vercel Blob as primary when `BLOB_READ_WRITE_TOKEN` is configured, added `CmsImage` fallback rendering for CMS-driven public hero assets, expanded Media Library provider/fallback display, and added `scripts/backfill-cms-media-to-blob.mjs` with dry-run/apply and optional page-reference rewrite mode. Dry-run reports 14 candidate public image files.
+- In progress: Historical local assets are not uploaded to Blob yet because the configured Vercel Blob store rejected public uploads.
+- Next action: Point `BLOB_READ_WRITE_TOKEN` to a Blob store that permits `access: 'public'`, then run `node scripts/backfill-cms-media-to-blob.mjs --apply --rewrite-pages` to create Blob records and replace exact local references in published `home`, `leistungen`, and `business` CMS blocks.
+- Blockers/risks: Current Blob store is configured private and returns `Cannot use public access on a private store`; local dev has no existing `public/uploads/cms-media` file to verify a real fallback upload URL over HTTP, so route exclusion was checked with a missing upload path returning normal 404.
+- Documents updated in this session: `PROGRESS.md`, `docs/05_admin_platform/admin_rollout_execution_plan.md`
+
+- Date: 2026-04-25
+- Current sprint: Public page CMS content backfill
+- Current block: Page CMS data population for fixed public pages
+- Done: Synced hardcoded `CONTENT` from `leistungen`, `business`, and `probleme-loesungen` into published `CmsPage` records for all MVP locales (`de`, `en`, `ru`, `tr`, `pl`, `ar`). Verified non-empty DB block trees after sync: `leistungen` has 7 blocks per locale, `business` has 5 blocks per locale, and `probleme-loesungen` has 8 blocks per locale. Removed the temporary sync script after execution.
+- In progress: Full public rendering still only consumes the already-wired CMS overlays (`leistungen` hero slides, `business` hero, `probleme-loesungen` hero); the remaining seeded blocks are available for Page CMS editing but need typed public readers before they can replace fallback route content.
+- Next action: Extend typed public CMS readers section by section when owner wants the full public pages to render from these new blocks.
+- Blockers/risks: Admin UI verification requires an authenticated CMS session; DB verification confirms the page trees are populated.
+- Documents updated in this session: `PROGRESS.md`, `docs/05_admin_platform/admin_rollout_execution_plan.md`
+
 - Date: 2026-04-25
 - Current sprint: Page CMS integration for Leistungen hero assets
 - Current block: Public Website / Page CMS narrow overlay

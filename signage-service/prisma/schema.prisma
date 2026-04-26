@@ -447,6 +447,8 @@ model CmsMedia {
   storageProvider  CmsMediaStorageProvider @default(LOCAL)
   storageKey       String                  @unique
   publicUrl        String                  @unique
+  fallbackUrl       String?
+  fallbackStorageKey String?
   originalFilename String?
   title            String?
   altText          String?

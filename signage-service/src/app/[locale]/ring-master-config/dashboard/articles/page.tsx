@@ -382,158 +382,7 @@ async function readApiError(response: Response): Promise<string> {
   return data?.error || `Request failed (${response.status})`;
 }
 
-function EditorField({
-  label,
-  children,
-  hint,
-  onCopy,
-  onTranslate,
-  isTranslating,
-  hasReference,
-}: {
-  label: string;
-  children: ReactNode;
-  hint?: string;
-  onCopy?: () => void;
-  onTranslate?: () => void;
-  isTranslating?: boolean;
-  hasReference?: boolean;
-}) {
-  return (
-    <div style={styles.field}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
-        <span style={styles.fieldLabel}>{label}</span>
-        {hasReference && (
-          <div style={{ display: 'flex', gap: '4px' }}>
-            <button
-              type="button"
-              onClick={onCopy}
-              title="Copy from Reference"
-              style={styles.fieldActionButton}
-            >
-              Copy
-            </button>
-            <button
-              type="button"
-              onClick={onTranslate}
-              disabled={isTranslating}
-              title="Translate from Reference via AI"
-              style={{
-                ...styles.fieldActionButton,
-                color: isTranslating ? '#666' : '#8b5cf6',
-                borderColor: isTranslating ? '#333' : '#4c1d95',
-              }}
-            >
-              {isTranslating ? '...' : 'AI'}
-            </button>
-          </div>
-        )}
-      </div>
-      {children}
-      {hint ? <span style={styles.fieldHint}>{hint}</span> : null}
-    </div>
-  );
-}
 
-function TextInput({
-  value,
-  onChange,
-  placeholder,
-  type = 'text',
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  type?: 'text' | 'number';
-}) {
-  return (
-    <input
-      type={type}
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      placeholder={placeholder}
-      style={styles.input}
-    />
-  );
-}
-
-function TextArea({
-  value,
-  onChange,
-  placeholder,
-  rows = 4,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  rows?: number;
-}) {
-  return (
-    <textarea
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      placeholder={placeholder}
-      rows={rows}
-      style={styles.textarea}
-    />
-  );
-}
-
-function SelectInput({
-  value,
-  onChange,
-  children,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  children: ReactNode;
-}) {
-  return (
-    <select value={value} onChange={(event) => onChange(event.target.value)} style={styles.input}>
-      {children}
-    </select>
-  );
-}
-
-function chipStyle(kind: 'draft' | 'published' | 'type' | 'locale') {
-  if (kind === 'published') {
-    return { ...styles.chip, background: '#0f241b', color: '#6ee7b7', borderColor: '#1f5c45' };
-  }
-
-  if (kind === 'draft') {
-    return { ...styles.chip, background: '#241b0f', color: '#fbbf24', borderColor: '#6a4a16' };
-  }
-
-  if (kind === 'locale') {
-    return { ...styles.chip, background: '#112033', color: '#93c5fd', borderColor: '#1f3a5b' };
-  }
-
-  return { ...styles.chip, background: '#181818', color: '#d4d4d8', borderColor: '#333' };
-}
-
-function statusChipStyle(status: CmsArticleStatus) {
-  if (status === 'PUBLISHED') {
-    return chipStyle('published');
-  }
-
-  if (status === 'ARCHIVED') {
-    return { ...styles.chip, background: '#25131c', color: '#fda4af', borderColor: '#6b213d' };
-  }
-
-  if (status === 'IN_REVIEW') {
-    return { ...styles.chip, background: '#1a152b', color: '#c4b5fd', borderColor: '#4c1d95' };
-  }
-
-  if (status === 'APPROVED') {
-    return { ...styles.chip, background: '#10251a', color: '#86efac', borderColor: '#166534' };
-  }
-
-  if (status === 'SCHEDULED') {
-    return { ...styles.chip, background: '#1a1f2e', color: '#93c5fd', borderColor: '#1d4ed8' };
-  }
-
-  return chipStyle('draft');
-}
 
 export default function ArticlesPage() {
   const params = useParams();
@@ -560,7 +409,9 @@ export default function ArticlesPage() {
   const [listView, setListView] = useState<ArticleListView>('ALL');
   const [draftSavedNotice, setDraftSavedNotice] = useState('');
 
-  const [editorOpen, setEditorOpen] = useState(false);
+  // ── Editor state ──
+  const [activeArticleId, setActiveArticleId] = useState<string | null>(null);
+  const [activeSectionId, setActiveSectionId] = useState<string>('content');
   const [editingArticle, setEditingArticle] = useState<CmsArticle | null>(null);
   const [form, setForm] = useState<ArticleFormState>(() => createEmptyForm(routeLocale));
   const [formError, setFormError] = useState('');
@@ -666,10 +517,10 @@ export default function ArticlesPage() {
   }, []);
 
   useEffect(() => {
-    if (editorOpen) {
+    if (activeArticleId) {
       void loadMediaItems();
     }
-  }, [editorOpen, loadMediaItems]);
+  }, [activeArticleId, loadMediaItems]);
 
   const loadReferenceArticles = useCallback(async (slug: string) => {
     try {
@@ -701,7 +552,8 @@ export default function ArticlesPage() {
     setRevisionsError('');
     setRestoreReason('');
     setRestoringRevisionId('');
-    setEditorOpen(true);
+    setActiveArticleId('new');
+    setActiveSectionId('content');
   }, [localeFilter, routeLocale]);
 
   const openEdit = useCallback(
@@ -714,7 +566,8 @@ export default function ArticlesPage() {
       setRevisionsError('');
       setRestoreReason('');
       setRestoringRevisionId('');
-      setEditorOpen(true);
+      setActiveArticleId(article.id);
+      setActiveSectionId('content');
       
       // Load DE and EN references for parallel editing
       void loadReferenceArticles(article.slug);
@@ -730,7 +583,7 @@ export default function ArticlesPage() {
   );
 
   const closeEditor = useCallback(() => {
-    setEditorOpen(false);
+    setActiveArticleId(null);
     setEditingArticle(null);
     setFormError('');
     setFormSaving('');
@@ -859,12 +712,12 @@ export default function ArticlesPage() {
   }, []);
 
   useEffect(() => {
-    if (!editorOpen || !editingArticle) {
+    if (!activeArticleId || !editingArticle) {
       return;
     }
 
     void loadArticleRevisions(editingArticle.id);
-  }, [editorOpen, editingArticle, loadArticleRevisions]);
+  }, [activeArticleId, editingArticle, loadArticleRevisions]);
 
   const restoreArticleRevision = useCallback(
     async (revision: CmsArticleRevision) => {
@@ -986,7 +839,7 @@ export default function ArticlesPage() {
           throw new Error(await readApiError(response));
         }
 
-        setEditorOpen(false);
+        setActiveArticleId(null);
         setEditingArticle(null);
         setForm(createEmptyForm(localeFilter || routeLocale));
         if (isTranslationCreate) {
@@ -1056,1534 +909,564 @@ export default function ArticlesPage() {
     }
   }, [closeEditor, deleteArticle, editingArticle]);
 
-  const articleCards = useMemo(
-    () =>
-      visibleArticles.map((article) => {
-        const statusChip = statusChipStyle(article.status);
-        const typeChip = chipStyle('type');
-        const localeChip = chipStyle('locale');
+  const renderArticleEditor = () => {
+    if (!activeArticleId) {
+      return (
+        <div className="h-full flex flex-col items-center justify-center text-center p-8 space-y-4">
+          <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-2xl">
+            📖
+          </div>
+          <div>
+            <h3 className="text-white font-medium text-lg">No Article Selected</h3>
+            <p className="text-zinc-500 text-sm max-w-xs mx-auto">
+              Select an article from the sidebar to edit or create a new one.
+            </p>
+          </div>
+          <button
+            onClick={openCreate}
+            className="px-4 py-2 bg-white text-black text-sm font-bold rounded-lg hover:bg-zinc-200 transition-colors"
+          >
+            Create New Article
+          </button>
+        </div>
+      );
+    }
 
-        return (
-          <article key={article.id} style={styles.articleCard}>
-            <div style={styles.cardHeader}>
-              <div style={styles.cardTitleBlock}>
-                <h3 style={styles.cardTitle}>{article.title}</h3>
-                <div style={styles.cardMetaLine}>
-                  <span style={localeChip}>{article.locale}</span>
-                  <span style={typeChip}>{article.type}</span>
-                  <span style={statusChip}>{article.status}</span>
+    return (
+      <div className="w-full mx-auto space-y-8 pb-24 px-4">
+        {/* Editor Header */}
+        <div className="flex items-center justify-between sticky top-0 z-10 bg-black/80 backdrop-blur-md py-4 border-b border-white/5 -mt-8 mb-8 px-4">
+          <div className="flex items-center gap-4">
+            <h2 className="text-xl font-bold text-white">
+              {activeArticleId === 'new' ? 'New Article' : 'Edit Article'}
+            </h2>
+            {activeArticleId !== 'new' && (
+              <button
+                onClick={() => setIsSplitMode(!isSplitMode)}
+                className={`px-3 py-1 rounded text-[11px] font-bold border transition-colors ${
+                  isSplitMode 
+                    ? 'border-violet-500/50 bg-violet-500/10 text-violet-400' 
+                    : 'border-white/10 bg-white/5 text-zinc-400 hover:text-white'
+                }`}
+              >
+                {isSplitMode ? 'Hide Reference' : 'Parallel View (DE/EN)'}
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+             <button
+              onClick={closeEditor}
+              className="px-4 py-2 bg-white/5 text-zinc-400 text-sm font-bold rounded-lg border border-white/10 hover:text-white transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => void saveArticle('DRAFT')}
+              disabled={Boolean(formSaving)}
+              className="px-4 py-2 bg-zinc-800 text-white text-sm font-bold rounded-lg hover:bg-zinc-700 transition-colors disabled:opacity-50"
+            >
+              {formSaving === 'DRAFT' ? 'Saving...' : 'Save Draft'}
+            </button>
+            <button
+              onClick={() => void saveArticle(form.status)}
+              disabled={Boolean(formSaving)}
+              className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors disabled:opacity-50 ${
+                form.status === 'PUBLISHED' 
+                  ? 'bg-gradient-to-r from-cyan-500 to-violet-600 text-white shadow-lg shadow-violet-500/20' 
+                  : 'bg-white text-black hover:bg-zinc-200'
+              }`}
+            >
+              {formSaving === form.status 
+                ? 'Saving...' 
+                : form.status === 'PUBLISHED' ? 'Publish' : `Save as ${form.status}`}
+            </button>
+          </div>
+        </div>
+
+        {formError && (
+          <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
+            {formError}
+          </div>
+        )}
+
+        <div className={`grid gap-8 ${isSplitMode ? 'grid-cols-2' : 'grid-cols-1'}`}>
+          {/* Main Form Pane */}
+          <div className="space-y-8">
+            {/* Meta Section */}
+            <section className="bg-[#050505] border border-white/5 rounded-2xl p-6 space-y-6">
+              <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-violet-500"></span>
+                Basic Information
+              </h3>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold text-zinc-500 uppercase">Locale</label>
+                  <select
+                    value={form.locale}
+                    onChange={(e) => setForm(f => ({ ...f, locale: e.target.value }))}
+                    className="w-full bg-[#000] border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-violet-500/50"
+                  >
+                    {SUPPORTED_LOCALES.map(loc => <option key={loc} value={loc}>{loc}</option>)}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold text-zinc-500 uppercase">Type</label>
+                  <select
+                    value={form.type}
+                    onChange={(e) => setForm(f => ({ ...f, type: e.target.value as CmsArticleType }))}
+                    className="w-full bg-[#000] border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-violet-500/50"
+                  >
+                    {ARTICLE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
                 </div>
               </div>
 
-              <div style={styles.sortBadge}>#{article.sortOrder}</div>
-            </div>
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-zinc-500 uppercase flex justify-between items-center">
+                  Slug
+                  {isSplitMode && (activeRefLocale === 'de' ? referenceDe : referenceEn) && (
+                    <button onClick={() => handleCopyField('slug')} className="text-violet-400 hover:text-violet-300">Copy Ref</button>
+                  )}
+                </label>
+                <input
+                  value={form.slug}
+                  onChange={(e) => setForm(f => ({ ...f, slug: e.target.value }))}
+                  placeholder="sign-not-lighting"
+                  className="w-full bg-[#000] border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-violet-500/50"
+                />
+              </div>
 
-            <div style={styles.cardBodyGrid}>
-              <div style={styles.cardField}>
-                <span style={styles.cardFieldLabel}>Slug</span>
-                <span style={styles.cardFieldValue}>{article.slug}</span>
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-zinc-500 uppercase flex justify-between items-center">
+                  Title
+                  {isSplitMode && (activeRefLocale === 'de' ? referenceDe : referenceEn) && (
+                    <div className="flex gap-2">
+                      <button onClick={() => handleCopyField('title')} className="text-violet-400 hover:text-violet-300">Copy</button>
+                      <button onClick={() => handleAiTranslateField('title')} className="text-cyan-400 hover:text-cyan-300">AI</button>
+                    </div>
+                  )}
+                </label>
+                <input
+                  value={form.title}
+                  onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))}
+                  placeholder="Article Title"
+                  className="w-full bg-[#000] border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-violet-500/50 font-bold"
+                />
               </div>
-              <div style={styles.cardField}>
-                <span style={styles.cardFieldLabel}>Symptom label</span>
-                <span style={styles.cardFieldValue}>{article.symptomLabel || '—'}</span>
-              </div>
-              <div style={styles.cardField}>
-                <span style={styles.cardFieldLabel}>Updated</span>
-                <span style={styles.cardFieldValue}>{renderDate(article.updatedAt)}</span>
-              </div>
-              <div style={styles.cardField}>
-                <span style={styles.cardFieldLabel}>Published</span>
-                <span style={styles.cardFieldValue}>{renderDate(article.publishedAt)}</span>
-              </div>
-            </div>
 
-            <p style={styles.cardSummary}>{shortText(article.shortAnswer || article.content)}</p>
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-zinc-500 uppercase flex justify-between items-center">
+                  Short Answer
+                  {isSplitMode && (activeRefLocale === 'de' ? referenceDe : referenceEn) && (
+                    <div className="flex gap-2">
+                      <button onClick={() => handleCopyField('shortAnswer')} className="text-violet-400 hover:text-violet-300">Copy</button>
+                      <button onClick={() => handleAiTranslateField('shortAnswer')} className="text-cyan-400 hover:text-cyan-300">AI</button>
+                    </div>
+                  )}
+                </label>
+                <textarea
+                  value={form.shortAnswer}
+                  onChange={(e) => setForm(f => ({ ...f, shortAnswer: e.target.value }))}
+                  rows={3}
+                  placeholder="Concise answer for previews"
+                  className="w-full bg-[#000] border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-violet-500/50 resize-none"
+                />
+              </div>
+            </section>
 
-            <div style={styles.actionRow}>
-              <button type="button" onClick={() => openEdit(article)} style={styles.secondaryButton}>
-                Edit
-              </button>
-              <button
-                type="button"
-                onClick={() => void deleteArticle(article)}
-                disabled={formSaving === 'DELETE'}
-                style={styles.dangerButton}
-              >
-                Delete
-              </button>
-            </div>
-          </article>
-        );
-      }),
-    [deleteArticle, formSaving, openEdit, visibleArticles]
-  );
+            {/* Content Section */}
+            <section className="bg-[#050505] border border-white/5 rounded-2xl p-6 space-y-6">
+              <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
+                Main Content
+              </h3>
+
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-zinc-500 uppercase flex justify-between items-center">
+                  Markdown Body
+                  {isSplitMode && (activeRefLocale === 'de' ? referenceDe : referenceEn) && (
+                    <div className="flex gap-2">
+                      <button onClick={() => handleCopyField('content')} className="text-violet-400 hover:text-violet-300">Copy</button>
+                      <button onClick={() => handleAiTranslateField('content')} className="text-cyan-400 hover:text-cyan-300">AI</button>
+                    </div>
+                  )}
+                </label>
+                <textarea
+                  value={form.content}
+                  onChange={(e) => setForm(f => ({ ...f, content: e.target.value }))}
+                  rows={15}
+                  placeholder="Markdown content..."
+                  className="w-full bg-[#000] border border-white/10 rounded-lg p-3 text-sm text-white outline-none focus:border-violet-500/50 font-mono"
+                />
+              </div>
+
+              {/* Media Picker Mini */}
+              <div className="p-4 bg-black border border-white/5 rounded-xl space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-zinc-400 uppercase">Media Picker</h4>
+                  <button onClick={() => void loadMediaItems()} className="text-[10px] text-violet-400 font-bold uppercase hover:text-violet-300">Refresh</button>
+                </div>
+                <div className="grid grid-cols-4 gap-2 overflow-x-auto pb-2">
+                  {mediaItems.slice(0, 8).map(media => (
+                    <button
+                      key={media.id}
+                      onClick={() => insertMediaReference(media)}
+                      className="aspect-square bg-zinc-900 rounded border border-white/5 overflow-hidden hover:border-violet-500/50 transition-colors group"
+                    >
+                      {media.url ? (
+                        <img src={media.url} alt="" className="w-full h-full object-cover opacity-50 group-hover:opacity-100 transition-opacity" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-[10px] text-zinc-600">No URL</div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* Diagnostics Section */}
+            <section className="bg-[#050505] border border-white/5 rounded-2xl p-6 space-y-6">
+              <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+                Diagnosis & Process
+              </h3>
+              
+              <div className="grid grid-cols-2 gap-6">
+                {[
+                  { label: 'Causes', key: 'causes' as const },
+                  { label: 'Safe Checks', key: 'safeChecks' as const },
+                  { label: 'Urgent Warnings', key: 'urgentWarnings' as const },
+                  { label: 'Service Process', key: 'serviceProcess' as const },
+                  { label: 'Work Scope', key: 'workScopeFactors' as const },
+                  { label: 'Related Slugs', key: 'relatedSlugs' as const }
+                ].map(field => (
+                  <div key={field.key} className="space-y-2">
+                    <label className="text-[11px] font-bold text-zinc-500 uppercase flex justify-between items-center">
+                      {field.label}
+                      {isSplitMode && (activeRefLocale === 'de' ? referenceDe : referenceEn) && (
+                        <div className="flex gap-2">
+                          <button onClick={() => handleCopyField(field.key)} className="text-violet-400 text-[9px]">Copy</button>
+                          <button onClick={() => handleAiTranslateField(field.key)} className="text-cyan-400 text-[9px]">AI</button>
+                        </div>
+                      )}
+                    </label>
+                    <textarea
+                      value={form[field.key]}
+                      onChange={(e) => setForm(f => ({ ...f, [field.key]: e.target.value }))}
+                      rows={4}
+                      placeholder="One item per line"
+                      className="w-full bg-[#000] border border-white/10 rounded-lg p-2 text-xs text-white outline-none focus:border-violet-500/50 resize-none"
+                    />
+                  </div>
+                ))}
+              </div>
+            </section>
+
+             {/* SEO & Status Section */}
+             <section className="bg-[#050505] border border-white/5 rounded-2xl p-6 space-y-6">
+              <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-pink-500"></span>
+                SEO & Status
+              </h3>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold text-zinc-500 uppercase">Status</label>
+                  <select
+                    value={form.status}
+                    onChange={(e) => setForm(f => ({ ...f, status: e.target.value as CmsArticleStatus }))}
+                    className="w-full bg-[#000] border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-violet-500/50"
+                  >
+                    {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold text-zinc-500 uppercase">Sort Order</label>
+                  <input
+                    type="number"
+                    value={form.sortOrder}
+                    onChange={(e) => setForm(f => ({ ...f, sortOrder: e.target.value }))}
+                    className="w-full bg-[#000] border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-violet-500/50"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-zinc-500 uppercase flex justify-between items-center">
+                  SEO Title
+                  {isSplitMode && (activeRefLocale === 'de' ? referenceDe : referenceEn) && (
+                    <button onClick={() => handleAiTranslateField('seoTitle')} className="text-cyan-400 text-[9px]">AI</button>
+                  )}
+                </label>
+                <input
+                  value={form.seoTitle}
+                  onChange={(e) => setForm(f => ({ ...f, seoTitle: e.target.value }))}
+                  placeholder="Browser title"
+                  className="w-full bg-[#000] border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-violet-500/50"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-zinc-500 uppercase flex justify-between items-center">
+                  SEO Description
+                  {isSplitMode && (activeRefLocale === 'de' ? referenceDe : referenceEn) && (
+                    <button onClick={() => handleAiTranslateField('seoDescription')} className="text-cyan-400 text-[9px]">AI</button>
+                  )}
+                </label>
+                <textarea
+                  value={form.seoDescription}
+                  onChange={(e) => setForm(f => ({ ...f, seoDescription: e.target.value }))}
+                  rows={3}
+                  placeholder="Meta description"
+                  className="w-full bg-[#000] border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-violet-500/50 resize-none"
+                />
+              </div>
+            </section>
+
+            {/* Advanced Section */}
+            {activeArticleId !== 'new' && (
+              <section className="bg-[#050505] border border-white/5 rounded-2xl p-6 space-y-6">
+                <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                  Advanced
+                </h3>
+                
+                <div className="p-4 border border-red-500/20 bg-red-500/5 rounded-xl space-y-4">
+                   <p className="text-zinc-500 text-xs italic">
+                    Delete this article permanently. This action cannot be undone.
+                  </p>
+                  <button
+                    onClick={() => void deleteFromEditor()}
+                    disabled={formSaving === 'DELETE'}
+                    className="w-full px-4 py-2 bg-red-500/10 border border-red-500/50 text-red-500 text-xs font-bold rounded-lg hover:bg-red-500/20 transition-colors"
+                  >
+                    {formSaving === 'DELETE' ? 'Deleting...' : 'Delete Permanently'}
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-bold text-zinc-400 uppercase">Revisions</h4>
+                    <button 
+                      onClick={() => void loadArticleRevisions(activeArticleId)} 
+                      className="text-[10px] text-violet-400 font-bold uppercase"
+                      disabled={revisionsLoading}
+                    >
+                      {revisionsLoading ? '...' : 'Refresh'}
+                    </button>
+                  </div>
+                  {revisions.length > 0 ? (
+                    <div className="space-y-2">
+                      {revisions.slice(0, 5).map(rev => (
+                        <div key={rev.id} className="p-3 bg-black border border-white/5 rounded-lg flex items-center justify-between gap-4">
+                          <div className="min-width-0">
+                            <p className="text-[10px] text-zinc-500">{renderDate(rev.createdAt)}</p>
+                            <p className="text-xs text-white truncate">{rev.actorDisplayName || rev.actorEmail}</p>
+                          </div>
+                          <button 
+                            onClick={() => void restoreArticleRevision(rev)}
+                            disabled={!restoreReason.trim() || restoringRevisionId === rev.id}
+                            className="px-2 py-1 bg-white/5 border border-white/10 text-[9px] font-bold text-zinc-400 hover:text-white rounded disabled:opacity-30"
+                          >
+                            Restore
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[11px] text-zinc-600 italic text-center py-4">No revisions found.</p>
+                  )}
+                </div>
+              </section>
+            )}
+          </div>
+
+          {/* Reference Pane (Split Mode) */}
+          {isSplitMode && (
+             <div className="space-y-8">
+               <section className="bg-[#080808] border border-violet-500/20 rounded-2xl p-6 space-y-6 sticky top-[100px]">
+                 <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                   <h3 className="text-xs font-bold text-violet-400 uppercase tracking-widest">
+                     Reference Master
+                   </h3>
+                   <div className="flex bg-black rounded-lg p-1 border border-white/5">
+                     {(['de', 'en'] as const).map(loc => (
+                       <button
+                         key={loc}
+                         onClick={() => setActiveRefLocale(loc)}
+                         className={`px-3 py-1 rounded text-[10px] font-bold uppercase transition-colors ${
+                           activeRefLocale === loc ? 'bg-violet-600 text-white' : 'text-zinc-500 hover:text-zinc-300'
+                         }`}
+                       >
+                         {loc}
+                       </button>
+                     ))}
+                   </div>
+                 </div>
+
+                 <div className="space-y-6 overflow-y-auto max-h-[70vh] pr-2 custom-scrollbar">
+                   {(() => {
+                     const ref = activeRefLocale === 'de' ? referenceDe : referenceEn;
+                     if (!ref) {
+                       return <div className="text-zinc-600 text-xs italic py-12 text-center">No {activeRefLocale.toUpperCase()} reference found.</div>;
+                     }
+
+                     return (
+                       <div className="space-y-6">
+                         {[
+                           { label: 'Title', value: ref.title },
+                           { label: 'Short Answer', value: ref.shortAnswer },
+                           { label: 'Content', value: ref.content, mono: true },
+                           { label: 'SEO Title', value: ref.seoTitle },
+                           { label: 'SEO Description', value: ref.seoDescription }
+                         ].map(item => (
+                           <div key={item.label} className="space-y-2">
+                             <label className="text-[10px] font-bold text-zinc-600 uppercase">{item.label}</label>
+                             <div className={`p-3 bg-black border border-white/5 rounded-lg text-xs text-zinc-300 leading-relaxed ${item.mono ? 'font-mono whitespace-pre-wrap' : ''}`}>
+                               {item.value || '—'}
+                             </div>
+                           </div>
+                         ))}
+                       </div>
+                     );
+                   })()}
+                 </div>
+               </section>
+             </div>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.header}>
-        <div>
-          <h1 style={styles.title}>Content & Wiki</h1>
-          <p style={styles.subtitle}>
-            Manage symptom articles, FAQ pages, and service content for the website and AI prompt.
-          </p>
-        </div>
-
-        <button type="button" onClick={openCreate} style={styles.primaryButton}>
-          + New article
-        </button>
-      </div>
-
-      <div style={styles.statRow}>
-        <div style={styles.statCard}>
-          <span style={styles.statLabel}>Matching</span>
-          <span style={styles.statValue}>{summary.total}</span>
-        </div>
-        <div style={styles.statCard}>
-          <span style={styles.statLabel}>On page published</span>
-          <span style={styles.statValue}>{summary.published}</span>
-        </div>
-        <div style={styles.statCard}>
-          <span style={styles.statLabel}>On page drafts</span>
-          <span style={styles.statValue}>{summary.drafts}</span>
-        </div>
-        <div style={styles.statCard}>
-          <span style={styles.statLabel}>Workflow / archived</span>
-          <span style={styles.statValue}>{summary.inWorkflow}</span>
-        </div>
-      </div>
-
-      <div style={styles.filters}>
-        <label style={styles.filterField}>
-          <span style={styles.filterLabel}>Search</span>
-          <div style={styles.searchGroup}>
+    <div className="flex h-full bg-[#050505] overflow-hidden">
+      {/* 2nd Column: Sidebar List */}
+      <aside className="w-[280px] border-r border-white/5 flex flex-col bg-[#050505] shrink-0">
+        {/* Search & Header */}
+        <div className="p-4 border-b border-white/5 space-y-4 bg-black/20">
+          <div className="flex items-center justify-between">
+            <h2 className="text-white font-bold text-sm tracking-tight flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-violet-500 animate-pulse"></span>
+              Articles & Wiki
+            </h2>
+            <button
+              onClick={openCreate}
+              className="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-white border border-white/10 transition-colors"
+              title="Create New"
+            >
+              <span className="text-lg leading-none">+</span>
+            </button>
+          </div>
+          
+          <div className="relative group">
             <input
               type="text"
               value={searchInput}
-              onChange={(event) => setSearchInput(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') {
-                  event.preventDefault();
-                  applySearch();
-                }
-              }}
-              placeholder="Slug, title, symptom label, short answer"
-              style={styles.searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && applySearch()}
+              placeholder="Search slug, title..."
+              className="w-full bg-[#111] border border-white/5 rounded-xl py-2 pl-3 pr-10 text-xs text-white outline-none focus:border-violet-500/50 transition-colors"
             />
-            <button type="button" onClick={applySearch} style={styles.filterButton}>
-              Apply
+            <button 
+              onClick={applySearch}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 group-hover:text-zinc-300 transition-colors"
+            >
+              ⏎
             </button>
           </div>
-        </label>
 
-        <label style={styles.filterField}>
-          <span style={styles.filterLabel}>Locale</span>
-          <SelectInput
-            value={localeFilter}
-            onChange={(value) => {
-              setLocaleFilter(value);
-              setPage(1);
-            }}
-          >
-            {SUPPORTED_LOCALES.map((locale) => (
-              <option key={locale} value={locale}>
-                {locale}
-              </option>
-            ))}
-          </SelectInput>
-        </label>
-
-        <label style={styles.filterField}>
-          <span style={styles.filterLabel}>Status</span>
-          <SelectInput
-            value={statusFilter}
-            onChange={(value) => {
-              setListView('ALL');
-              setStatusFilter(value);
-              setPage(1);
-            }}
-          >
-            <option value="">All</option>
-            {STATUS_OPTIONS.map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </SelectInput>
-        </label>
-
-        <label style={styles.filterField}>
-          <span style={styles.filterLabel}>Type</span>
-          <SelectInput
-            value={typeFilter}
-            onChange={(value) => {
-              setTypeFilter(value);
-              setPage(1);
-            }}
-          >
-            <option value="">All</option>
-            {ARTICLE_TYPES.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </SelectInput>
-        </label>
-
-        <label style={styles.filterField}>
-          <span style={styles.filterLabel}>Page size</span>
-          <SelectInput
-            value={String(pageSize)}
-            onChange={(value) => {
-              setPageSize(Number(value));
-              setPage(1);
-            }}
-          >
-            {PAGE_SIZE_OPTIONS.map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </SelectInput>
-        </label>
-      </div>
-
-      <div style={styles.viewRow}>
-        <button
-          type="button"
-          onClick={showReviewQueue}
-          style={{
-            ...styles.viewButton,
-            ...(listView === 'REVIEW_QUEUE' ? styles.viewButtonActive : {}),
-          }}
-        >
-          Review queue (IN_REVIEW + APPROVED)
-        </button>
-        <button type="button" onClick={clearListView} style={styles.viewButton}>
-          Reset view
-        </button>
-      </div>
-
-      {draftSavedNotice ? (
-        <div style={styles.infoBanner}>
-          <span>{draftSavedNotice}</span>
-          <button type="button" onClick={showDrafts} style={styles.inlineActionButton}>
-            Show drafts
-          </button>
-        </div>
-      ) : null}
-
-      {error ? <div style={styles.errorBanner}>{error}</div> : null}
-
-      {loading ? (
-        <div style={styles.emptyState}>Loading articles...</div>
-      ) : visibleArticles.length === 0 ? (
-        <div style={styles.emptyState}>
-          {listView === 'REVIEW_QUEUE'
-            ? 'No items in review queue on this page.'
-            : 'No articles found for the current filters.'}
-        </div>
-      ) : (
-        <div style={styles.articleGrid}>{articleCards}</div>
-      )}
-
-      <div style={styles.pagination}>
-        <button
-          type="button"
-          onClick={() => setPage((value) => Math.max(1, value - 1))}
-          disabled={page <= 1}
-          style={styles.paginationButton}
-        >
-          Previous
-        </button>
-        <div style={styles.paginationMeta}>
-          Page {pagination.page} of {pagination.totalPages || 1} · {pagination.total} total
-        </div>
-        <button
-          type="button"
-          onClick={() => setPage((value) => value + 1)}
-          disabled={pagination.totalPages > 0 ? page >= pagination.totalPages : true}
-          style={styles.paginationButton}
-        >
-          Next
-        </button>
-      </div>
-
-      {editorOpen ? (
-        <div style={styles.modalOverlay} onClick={closeEditor}>
-          <div
-            style={{
-              ...styles.modal,
-              width: isSplitMode ? 'min(1440px, 100%)' : 'min(1120px, 100%)',
-            }}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div style={styles.modalHeader}>
-              <div>
-                <h2 style={styles.modalTitle}>
-                  {editingArticle ? 'Edit article' : 'New article'}
-                </h2>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
-                  <p style={{ ...styles.modalSubtitle, margin: 0 }}>
-                    Save a draft, publish it, or keep the content ready for the support flow.
-                  </p>
-                  {editingArticle && (
-                    <button
-                      type="button"
-                      onClick={() => setIsSplitMode(!isSplitMode)}
-                      style={{
-                        ...styles.secondaryButton,
-                        borderColor: isSplitMode ? '#8b5cf6' : '#333',
-                        color: isSplitMode ? '#8b5cf6' : '#fff',
-                        padding: '4px 10px',
-                        fontSize: '11px',
-                      }}
-                    >
-                      {isSplitMode ? 'Hide Parallel View' : 'Show Parallel View'}
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button type="button" onClick={closeEditor} style={styles.closeButton}>
-                  Close
-                </button>
-              </div>
-            </div>
-
-            {formError ? <div style={styles.errorBanner}>{formError}</div> : null}
-
-              <div style={isSplitMode ? styles.splitWorkspace : {}}>
-                {isSplitMode && (
-                  <div style={styles.referencePane}>
-                    <div style={styles.referenceHeader}>
-                      <div style={styles.referenceTabs}>
-                        {(['de', 'en'] as const).map((loc) => (
-                          <button
-                            key={loc}
-                            type="button"
-                            onClick={() => setActiveRefLocale(loc)}
-                            style={{
-                              ...styles.referenceTab,
-                              background: activeRefLocale === loc ? '#8b5cf6' : 'transparent',
-                              color: activeRefLocale === loc ? '#fff' : '#888',
-                            }}
-                          >
-                            {loc.toUpperCase()} {loc === 'de' ? 'MASTER' : 'AI MASTER'}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div style={styles.referenceContent}>
-                      {activeRefLocale === 'de' && !referenceDe && (
-                        <div style={styles.referenceEmpty}>No German version found for this slug.</div>
-                      )}
-                      {activeRefLocale === 'en' && !referenceEn && (
-                        <div style={styles.referenceEmpty}>No English version found for this slug.</div>
-                      )}
-                      
-                      {((activeRefLocale === 'de' && referenceDe) || (activeRefLocale === 'en' && referenceEn)) ? (
-                        (() => {
-                          const ref = activeRefLocale === 'de' ? referenceDe : referenceEn;
-                          if (!ref) return null;
-                          
-                          return (
-                            <>
-                              <div style={styles.cardField}>
-                                <span style={styles.cardFieldLabel}>Title</span>
-                                <div style={styles.cardFieldValue}>{ref.title}</div>
-                              </div>
-                              <div style={styles.cardField}>
-                                <span style={styles.cardFieldLabel}>Short Answer</span>
-                                <div style={styles.cardFieldValue}>{ref.shortAnswer}</div>
-                              </div>
-                              <div style={styles.cardField}>
-                                <span style={styles.cardFieldLabel}>Main Content</span>
-                                <div style={{ ...styles.cardFieldValue, whiteSpace: 'pre-wrap', maxHeight: '300px', overflow: 'auto', background: '#000', padding: '10px', borderRadius: '4px' }}>
-                                  {ref.content}
-                                </div>
-                              </div>
-                              {/* SEO Items */}
-                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                                <div style={styles.cardField}>
-                                  <span style={styles.cardFieldLabel}>SEO Title</span>
-                                  <div style={styles.cardFieldValue}>{ref.seoTitle}</div>
-                                </div>
-                                <div style={styles.cardField}>
-                                  <span style={styles.cardFieldLabel}>CTA Link</span>
-                                  <div style={styles.cardFieldValue}>{ref.ctaHref}</div>
-                                </div>
-                              </div>
-                            </>
-                          );
-                        })()
-                      ) : null}
-                    </div>
-                  </div>
-                )}
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <div style={styles.formSection}>
-
-                <EditorField label="Locale">
-                  <SelectInput
-                    value={form.locale}
-                    onChange={(value) => setForm((current) => ({ ...current, locale: value }))}
-                  >
-                    {SUPPORTED_LOCALES.map((locale) => (
-                      <option key={locale} value={locale}>
-                        {locale}
-                      </option>
-                    ))}
-                  </SelectInput>
-                </EditorField>
-
-                <EditorField label="Type">
-                  <SelectInput
-                    value={form.type}
-                    onChange={(value) =>
-                      setForm((current) => ({ ...current, type: value as CmsArticleType }))
-                    }
-                  >
-                    {ARTICLE_TYPES.map((type) => (
-                      <option key={type} value={type}>
-                        {type}
-                      </option>
-                    ))}
-                  </SelectInput>
-                </EditorField>
-
-                <EditorField label="Status">
-                  <SelectInput
-                    value={form.status}
-                    onChange={(value) =>
-                      setForm((current) => ({
-                        ...current,
-                        status: value as CmsArticleStatus,
-                      }))
-                    }
-                  >
-                    {STATUS_OPTIONS.map((status) => (
-                      <option key={status} value={status}>
-                        {status}
-                      </option>
-                    ))}
-                  </SelectInput>
-                </EditorField>
-
-                <EditorField label="Transition reason" hint="Required for archive and publish rollback transitions.">
-                  <TextArea
-                    value={form.statusReason}
-                    onChange={(value) =>
-                      setForm((current) => ({
-                        ...current,
-                        statusReason: value,
-                      }))
-                    }
-                    placeholder="Why this status change is needed"
-                    rows={3}
-                  />
-                </EditorField>
-
-                <EditorField label="Sort order"
-                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
-                  onCopy={() => handleCopyField('sortOrder')}
-                >
-                  <TextInput
-                    type="number"
-                    value={form.sortOrder}
-                    onChange={(value) => setForm((current) => ({ ...current, sortOrder: value }))}
-                    placeholder="0"
-                  />
-                </EditorField>
-
-                <EditorField label="Slug" hint="Lowercase letters, numbers, hyphens only"
-                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
-                  onCopy={() => handleCopyField('slug')}
-                >
-                  <TextInput
-                    value={form.slug}
-                    onChange={(value) => setForm((current) => ({ ...current, slug: value }))}
-                    placeholder="sign-not-lighting"
-                  />
-                </EditorField>
-
-                <EditorField label="Title"
-                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
-                  onCopy={() => handleCopyField('title')}
-                  onTranslate={() => handleAiTranslateField('title')}
-                  isTranslating={isTranslating === 'title'}
-                >
-                  <TextInput
-                    value={form.title}
-                    onChange={(value) => setForm((current) => ({ ...current, title: value }))}
-                    placeholder="Why the sign does not light up"
-                  />
-                </EditorField>
-
-                <EditorField label="Symptom label"
-                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
-                  onCopy={() => handleCopyField('symptomLabel')}
-                  onTranslate={() => handleAiTranslateField('symptomLabel')}
-                  isTranslating={isTranslating === 'symptomLabel'}
-                >
-                  <TextInput
-                    value={form.symptomLabel}
-                    onChange={(value) => setForm((current) => ({ ...current, symptomLabel: value }))}
-                    placeholder="Optional internal label"
-                  />
-                </EditorField>
-
-                <EditorField label="Short answer"
-                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
-                  onCopy={() => handleCopyField('shortAnswer')}
-                  onTranslate={() => handleAiTranslateField('shortAnswer')}
-                  isTranslating={isTranslating === 'shortAnswer'}
-                >
-                  <TextArea
-                    value={form.shortAnswer}
-                    onChange={(value) => setForm((current) => ({ ...current, shortAnswer: value }))}
-                    placeholder="1-3 sentence answer for list cards and detail intro"
-                    rows={4}
-                  />
-                </EditorField>
-
-                <EditorField label="Canonical URL"
-                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
-                  onCopy={() => handleCopyField('canonicalUrl')}
-                >
-                  <TextInput
-                    value={form.canonicalUrl}
-                    onChange={(value) => setForm((current) => ({ ...current, canonicalUrl: value }))}
-                    placeholder="/de/support/sign-not-lighting"
-                  />
-                </EditorField>
-
-                <EditorField label="SEO title"
-                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
-                  onCopy={() => handleCopyField('seoTitle')}
-                  onTranslate={() => handleAiTranslateField('seoTitle')}
-                  isTranslating={isTranslating === 'seoTitle'}
-                >
-                  <TextInput
-                    value={form.seoTitle}
-                    onChange={(value) => setForm((current) => ({ ...current, seoTitle: value }))}
-                    placeholder="SEO title"
-                  />
-                </EditorField>
-
-                <EditorField label="SEO description"
-                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
-                  onCopy={() => handleCopyField('seoDescription')}
-                  onTranslate={() => handleAiTranslateField('seoDescription')}
-                  isTranslating={isTranslating === 'seoDescription'}
-                >
-                  <TextArea
-                    value={form.seoDescription}
-                    onChange={(value) => setForm((current) => ({ ...current, seoDescription: value }))}
-                    placeholder="Meta description"
-                    rows={4}
-                  />
-                </EditorField>
-
-                <EditorField label="CTA label"
-                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
-                  onCopy={() => handleCopyField('ctaLabel')}
-                  onTranslate={() => handleAiTranslateField('ctaLabel')}
-                  isTranslating={isTranslating === 'ctaLabel'}
-                >
-                  <TextInput
-                    value={form.ctaLabel}
-                    onChange={(value) => setForm((current) => ({ ...current, ctaLabel: value }))}
-                    placeholder="Send photo"
-                  />
-                </EditorField>
-
-                <EditorField label="CTA href"
-                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
-                  onCopy={() => handleCopyField('ctaHref')}
-                >
-                  <TextInput
-                    value={form.ctaHref}
-                    onChange={(value) => setForm((current) => ({ ...current, ctaHref: value }))}
-                    placeholder="/de/contact"
-                  />
-                </EditorField>
-              </div>
-
-              <div style={styles.formSection}>
-                <h3 style={styles.sectionTitle}>Content</h3>
-                <EditorField label="Markdown body" hint="Required"
-                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
-                  onCopy={() => handleCopyField('content')}
-                  onTranslate={() => handleAiTranslateField('content')}
-                  isTranslating={isTranslating === 'content'}
-                >
-                  <TextArea
-                    value={form.content}
-                    onChange={(value) => setForm((current) => ({ ...current, content: value }))}
-                    placeholder="Markdown content"
-                    rows={14}
-                  />
-                </EditorField>
-
-              <div style={styles.mediaPickerPanel}>
-                <div style={styles.mediaPickerHeader}>
-                  <div>
-                    <h4 style={styles.mediaPickerTitle}>Media picker</h4>
-                    <p style={styles.mediaPickerText}>
-                      Inserts a public CMS media Markdown reference into the article body.
-                    </p>
-                  </div>
-                  <button type="button" onClick={() => void loadMediaItems()} style={styles.secondaryButton}>
-                    Refresh media
-                  </button>
-                </div>
-
-                {mediaError ? <div style={styles.errorBanner}>{mediaError}</div> : null}
-                {mediaLoading ? (
-                  <div style={styles.emptyState}>Loading CMS media...</div>
-                ) : mediaItems.length === 0 ? (
-                  <div style={styles.emptyState}>No public CMS media available yet.</div>
-                ) : (
-                  <div style={styles.mediaPickerGrid}>
-                    {mediaItems.map((media) => (
-                      <button
-                        key={media.id}
-                        type="button"
-                        onClick={() => insertMediaReference(media)}
-                        disabled={!media.url}
-                        style={styles.mediaPickerCard}
-                      >
-                        <span style={styles.mediaPickerThumb}>
-                          {media.url ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={media.url}
-                              alt={media.alt || media.title || ''}
-                              style={styles.mediaPickerImage}
-                            />
-                          ) : (
-                            <span style={styles.mediaPickerNoImage}>No URL</span>
-                          )}
-                        </span>
-                        <span style={styles.mediaPickerName}>
-                          {media.title || media.filename || media.id}
-                        </span>
-                        <span style={styles.mediaPickerMeta}>
-                          {media.locale || '-'} · {media.usageType}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div style={styles.formSection}>
-              <h3 style={styles.sectionTitle}>Arrays</h3>
-              <div style={styles.arrayGrid}>
-                <EditorField label="Related slugs" hint="One slug per line"
-                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
-                  onCopy={() => handleCopyField('relatedSlugs')}
-                >
-                  <TextArea
-                    value={form.relatedSlugs}
-                    onChange={(value) =>
-                      setForm((current) => ({ ...current, relatedSlugs: value }))
-                    }
-                    rows={5}
-                  />
-                </EditorField>
-
-                <EditorField label="Causes" hint="One line per item"
-                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
-                  onCopy={() => handleCopyField('causes')}
-                  onTranslate={() => handleAiTranslateField('causes')}
-                  isTranslating={isTranslating === 'causes'}
-                >
-                  <TextArea
-                    value={form.causes}
-                    onChange={(value) => setForm((current) => ({ ...current, causes: value }))}
-                    rows={5}
-                  />
-                </EditorField>
-
-                <EditorField label="Safe checks" hint="One line per item"
-                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
-                  onCopy={() => handleCopyField('safeChecks')}
-                  onTranslate={() => handleAiTranslateField('safeChecks')}
-                  isTranslating={isTranslating === 'safeChecks'}
-                >
-                  <TextArea
-                    value={form.safeChecks}
-                    onChange={(value) => setForm((current) => ({ ...current, safeChecks: value }))}
-                    rows={5}
-                  />
-                </EditorField>
-
-                <EditorField label="Urgent warnings" hint="One line per item"
-                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
-                  onCopy={() => handleCopyField('urgentWarnings')}
-                  onTranslate={() => handleAiTranslateField('urgentWarnings')}
-                  isTranslating={isTranslating === 'urgentWarnings'}
-                >
-                  <TextArea
-                    value={form.urgentWarnings}
-                    onChange={(value) =>
-                      setForm((current) => ({ ...current, urgentWarnings: value }))
-                    }
-                    rows={5}
-                  />
-                </EditorField>
-
-                <EditorField label="Service process" hint="One line per item"
-                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
-                  onCopy={() => handleCopyField('serviceProcess')}
-                  onTranslate={() => handleAiTranslateField('serviceProcess')}
-                  isTranslating={isTranslating === 'serviceProcess'}
-                >
-                  <TextArea
-                    value={form.serviceProcess}
-                    onChange={(value) =>
-                      setForm((current) => ({ ...current, serviceProcess: value }))
-                    }
-                    rows={5}
-                  />
-                </EditorField>
-
-                <EditorField label="Work scope factors" hint="One line per item"
-                  hasReference={isSplitMode && !!(activeRefLocale === 'de' ? referenceDe : referenceEn)}
-                  onCopy={() => handleCopyField('workScopeFactors')}
-                  onTranslate={() => handleAiTranslateField('workScopeFactors')}
-                  isTranslating={isTranslating === 'workScopeFactors'}
-                >
-                  <TextArea
-                    value={form.workScopeFactors}
-                    onChange={(value) =>
-                      setForm((current) => ({ ...current, workScopeFactors: value }))
-                    }
-                    rows={5}
-                  />
-                </EditorField>
-              </div>
-            </div>
-
-            <div style={styles.metadataPanel}>
-              <div style={styles.metadataItem}>
-                <span style={styles.cardFieldLabel}>Created</span>
-                <span style={styles.cardFieldValue}>{editingArticle ? renderDate(editingArticle.createdAt) : '—'}</span>
-              </div>
-              <div style={styles.metadataItem}>
-                <span style={styles.cardFieldLabel}>Updated</span>
-                <span style={styles.cardFieldValue}>{editingArticle ? renderDate(editingArticle.updatedAt) : '—'}</span>
-              </div>
-              <div style={styles.metadataItem}>
-                <span style={styles.cardFieldLabel}>Published</span>
-                <span style={styles.cardFieldValue}>{editingArticle ? renderDate(editingArticle.publishedAt) : '—'}</span>
-              </div>
-              <div style={styles.metadataItem}>
-                <span style={styles.cardFieldLabel}>Reviewed</span>
-                <span style={styles.cardFieldValue}>
-                  {editingArticle ? renderDate(editingArticle.lastReviewedAt) : '—'}
-                </span>
-              </div>
-            </div>
-
-            {editingArticle ? (
-              <div style={styles.revisionsPanel}>
-                <div style={styles.revisionsHeader}>
-                  <div>
-                    <h3 style={styles.sectionTitle}>Revisions</h3>
-                    <p style={styles.revisionsSubtitle}>
-                      History is sorted newest first. Restore keeps the content in draft-safe flow.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => void loadArticleRevisions(editingArticle.id)}
-                    disabled={revisionsLoading}
-                    style={styles.secondaryButton}
-                  >
-                    {revisionsLoading ? 'Loading...' : 'Refresh revisions'}
-                  </button>
-                </div>
-
-                <EditorField
-                  label="Restore reason"
-                  hint="Required before restore. Stored in audit logs."
-                >
-                  <TextInput
-                    value={restoreReason}
-                    onChange={setRestoreReason}
-                    placeholder="Explain why this revision is being restored"
-                  />
-                </EditorField>
-
-                {revisionsError ? <div style={styles.errorBanner}>{revisionsError}</div> : null}
-
-                {revisionsLoading ? (
-                  <div style={styles.emptyState}>Loading revisions...</div>
-                ) : revisions.length === 0 ? (
-                  <div style={styles.emptyState}>No revisions found for this article yet.</div>
-                ) : (
-                  <div style={styles.revisionList}>
-                    {revisions.map((revision) => (
-                      <div key={revision.id} style={styles.revisionItem}>
-                        <div style={styles.revisionMeta}>
-                          <span style={styles.revisionDate}>{renderDate(revision.createdAt)}</span>
-                          <span style={styles.revisionActor}>
-                            {revision.actorDisplayName || revision.actorEmail || 'Unknown actor'}
-                          </span>
-                          {revision.sourceAction ? (
-                            <span style={styles.revisionStatusChip}>{revision.sourceAction}</span>
-                          ) : null}
-                          {revision.sourceStatus ? (
-                            <span style={styles.revisionStatusChip}>{revision.sourceStatus}</span>
-                          ) : null}
-                        </div>
-                        {revision.reason ? (
-                          <div style={styles.revisionReason}>Reason: {revision.reason}</div>
-                        ) : null}
-                        {revision.restoredAt ? (
-                          <div style={styles.revisionRestoreMeta}>
-                            Restored on {renderDate(revision.restoredAt)} by{' '}
-                            {revision.restoredByDisplayName ||
-                              revision.restoredByEmail ||
-                              'unknown user'}
-                          </div>
-                        ) : null}
-                        <div style={styles.revisionActions}>
-                          <button
-                            type="button"
-                            onClick={() => void restoreArticleRevision(revision)}
-                            disabled={!restoreReason.trim() || restoringRevisionId === revision.id}
-                            style={styles.warningButton}
-                          >
-                            {restoringRevisionId === revision.id ? 'Restoring...' : 'Restore revision'}
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : null}
-
-            <div style={styles.modalFooter}>
-              <button type="button" onClick={closeEditor} style={styles.secondaryButton}>
-                Cancel
-              </button>
-              {editingArticle ? (
-                <button
-                  type="button"
-                  onClick={() => void deleteFromEditor()}
-                  disabled={formSaving === 'DELETE'}
-                  style={styles.dangerButton}
-                >
-                  Delete
-                </button>
-              ) : null}
-              <button
-                type="button"
-                onClick={() => void saveArticle('DRAFT')}
-                disabled={Boolean(formSaving)}
-                style={styles.warningButton}
-              >
-                {formSaving === 'DRAFT' ? 'Saving...' : 'Save draft'}
-              </button>
-              <button
-                type="button"
-                onClick={() => void saveArticle(form.status)}
-                disabled={Boolean(formSaving)}
-                style={form.status === 'PUBLISHED' ? styles.successButton : styles.primaryButton}
-              >
-                {formSaving === form.status
-                  ? 'Saving...'
-                  : form.status === 'PUBLISHED'
-                    ? 'Publish'
-                    : `Save as ${form.status}`}
-              </button>
-            </div>
+          <div className="grid grid-cols-2 gap-2">
+            <select
+              value={localeFilter}
+              onChange={(e) => { setLocaleFilter(e.target.value); setPage(1); }}
+              className="bg-zinc-900 border border-white/5 rounded-lg p-1.5 text-[10px] text-zinc-400 outline-none"
+            >
+              {SUPPORTED_LOCALES.map(loc => <option key={loc} value={loc}>{loc.toUpperCase()}</option>)}
+            </select>
+            <select
+              value={statusFilter}
+              onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
+              className="bg-zinc-900 border border-white/5 rounded-lg p-1.5 text-[10px] text-zinc-400 outline-none"
+            >
+              <option value="">Status: All</option>
+              {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
           </div>
         </div>
-      </div>
-    </div>
-    ) : null}
+
+        {/* Article List */}
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1">
+          {loading ? (
+            <div className="p-12 flex items-center justify-center">
+              <div className="w-5 h-5 border-2 border-violet-500/20 border-t-violet-500 rounded-full animate-spin"></div>
+            </div>
+          ) : articles.length === 0 ? (
+            <div className="p-8 text-center text-zinc-600 text-xs italic">
+              No articles found.
+            </div>
+          ) : (
+            articles.map(article => (
+              <button
+                key={article.id}
+                onClick={() => openEdit(article)}
+                className={`w-full text-left p-3 rounded-xl border transition-all group ${
+                  activeArticleId === article.id
+                    ? 'bg-violet-600/10 border-violet-500/30 ring-1 ring-violet-500/30'
+                    : 'bg-transparent border-transparent hover:bg-white/5'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                    article.status === 'PUBLISHED' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-orange-500/10 text-orange-500'
+                  }`}>
+                    {article.status}
+                  </span>
+                  <span className="text-[10px] text-zinc-600 font-mono">#{article.sortOrder}</span>
+                </div>
+                <h3 className={`text-xs font-bold leading-tight mb-1 truncate ${
+                  activeArticleId === article.id ? 'text-white' : 'text-zinc-300 group-hover:text-white'
+                }`}>
+                  {article.title}
+                </h3>
+                <div className="flex items-center gap-2">
+                   <span className="text-[10px] text-zinc-500 bg-black/40 px-1 rounded uppercase">{article.locale}</span>
+                   <p className="text-[10px] text-zinc-500 truncate">{article.slug}</p>
+                </div>
+              </button>
+            ))
+          )}
+        </div>
+
+        {/* Pagination Mini */}
+        <div className="p-3 border-t border-white/5 flex items-center justify-between bg-black/20">
+          <button 
+            disabled={page <= 1}
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            className="p-1 text-zinc-500 hover:text-white disabled:opacity-20"
+          >
+            ←
+          </button>
+          <span className="text-[10px] text-zinc-500 font-medium">
+            {page} / {pagination.totalPages || 1}
+          </span>
+          <button 
+             disabled={page >= pagination.totalPages}
+             onClick={() => setPage(p => p + 1)}
+             className="p-1 text-zinc-500 hover:text-white disabled:opacity-20"
+          >
+            →
+          </button>
+        </div>
+      </aside>
+
+      {/* 3rd Column: Editor Area */}
+      <main className="flex-1 overflow-y-auto bg-black p-8 custom-scrollbar">
+        {renderArticleEditor()}
+      </main>
     </div>
   );
 }
 
-const styles: Record<string, React.CSSProperties> = {
-  page: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px',
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    gap: '16px',
-    flexWrap: 'wrap',
-  },
-  title: {
-    margin: 0,
-    fontSize: '24px',
-    fontWeight: 700,
-    color: '#fff',
-  },
-  subtitle: {
-    margin: '8px 0 0',
-    fontSize: '14px',
-    color: '#8b8b8b',
-    lineHeight: 1.6,
-    maxWidth: '760px',
-  },
-  primaryButton: {
-    padding: '10px 14px',
-    fontSize: '13px',
-    fontWeight: 700,
-    background: '#fff',
-    color: '#111',
-    border: '1px solid #fff',
-    borderRadius: '8px',
-    cursor: 'pointer',
-  },
-  statRow: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-    gap: '12px',
-  },
-  statCard: {
-    border: '1px solid #222',
-    borderRadius: '8px',
-    background: '#111',
-    padding: '14px 16px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-  },
-  statLabel: {
-    color: '#8b8b8b',
-    fontSize: '12px',
-    textTransform: 'uppercase',
-    letterSpacing: '0.04em',
-  },
-  statValue: {
-    color: '#fff',
-    fontSize: '20px',
-    fontWeight: 700,
-  },
-  filters: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-    gap: '12px',
-  },
-  filterField: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-  },
-  filterLabel: {
-    color: '#8b8b8b',
-    fontSize: '12px',
-    textTransform: 'uppercase',
-    letterSpacing: '0.04em',
-  },
-  searchGroup: {
-    display: 'flex',
-    gap: '8px',
-  },
-  searchInput: {
-    flex: 1,
-    minWidth: 0,
-    padding: '10px 12px',
-    borderRadius: '8px',
-    border: '1px solid #333',
-    background: '#0b0b0b',
-    color: '#fff',
-    outline: 'none',
-    fontSize: '13px',
-  },
-  input: {
-    width: '100%',
-    padding: '10px 12px',
-    borderRadius: '8px',
-    border: '1px solid #333',
-    background: '#0b0b0b',
-    color: '#fff',
-    outline: 'none',
-    fontSize: '13px',
-    boxSizing: 'border-box',
-  },
-  filterButton: {
-    padding: '10px 14px',
-    borderRadius: '8px',
-    border: '1px solid #333',
-    background: '#171717',
-    color: '#fff',
-    cursor: 'pointer',
-    fontSize: '13px',
-  },
-  viewRow: {
-    display: 'flex',
-    gap: '8px',
-    flexWrap: 'wrap',
-  },
-  viewButton: {
-    padding: '9px 12px',
-    borderRadius: '8px',
-    border: '1px solid #333',
-    background: '#171717',
-    color: '#d4d4d8',
-    cursor: 'pointer',
-    fontSize: '12px',
-    fontWeight: 700,
-  },
-  viewButtonActive: {
-    border: '1px solid #4c1d95',
-    background: '#1a152b',
-    color: '#c4b5fd',
-  },
-  infoBanner: {
-    padding: '12px 14px',
-    border: '1px solid #1f3a5b',
-    borderRadius: '8px',
-    background: '#112033',
-    color: '#bfdbfe',
-    fontSize: '13px',
-    lineHeight: 1.5,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: '12px',
-    flexWrap: 'wrap',
-  },
-  inlineActionButton: {
-    padding: '7px 10px',
-    borderRadius: '8px',
-    border: '1px solid #1d4ed8',
-    background: '#0f1f33',
-    color: '#93c5fd',
-    cursor: 'pointer',
-    fontSize: '12px',
-    fontWeight: 700,
-  },
-  errorBanner: {
-    padding: '12px 14px',
-    border: '1px solid #5b1f1f',
-    borderRadius: '8px',
-    background: '#2a1111',
-    color: '#fca5a5',
-    fontSize: '13px',
-    lineHeight: 1.5,
-  },
-  emptyState: {
-    padding: '28px 16px',
-    border: '1px dashed #303030',
-    borderRadius: '8px',
-    color: '#8b8b8b',
-    background: '#111',
-    fontSize: '14px',
-  },
-  articleGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-    gap: '12px',
-  },
-  articleCard: {
-    border: '1px solid #222',
-    borderRadius: '8px',
-    background: '#111',
-    padding: '16px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '14px',
-  },
-  cardHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    gap: '12px',
-    alignItems: 'flex-start',
-  },
-  cardTitleBlock: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-    minWidth: 0,
-  },
-  cardTitle: {
-    margin: 0,
-    fontSize: '16px',
-    lineHeight: 1.4,
-    color: '#fff',
-    fontWeight: 700,
-    wordBreak: 'break-word',
-  },
-  cardMetaLine: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '6px',
-  },
-  chip: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '24px',
-    padding: '3px 8px',
-    borderRadius: '999px',
-    border: '1px solid #333',
-    fontSize: '11px',
-    fontWeight: 700,
-    letterSpacing: '0.02em',
-    textTransform: 'uppercase',
-  },
-  sortBadge: {
-    flexShrink: 0,
-    padding: '6px 10px',
-    borderRadius: '8px',
-    border: '1px solid #333',
-    background: '#0b0b0b',
-    color: '#d4d4d8',
-    fontSize: '12px',
-    fontWeight: 700,
-  },
-  cardBodyGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-    gap: '10px',
-  },
-  cardField: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '4px',
-  },
-  cardFieldLabel: {
-    color: '#8b8b8b',
-    fontSize: '11px',
-    textTransform: 'uppercase',
-    letterSpacing: '0.04em',
-  },
-  cardFieldValue: {
-    color: '#fff',
-    fontSize: '13px',
-    lineHeight: 1.5,
-    wordBreak: 'break-word',
-  },
-  cardSummary: {
-    margin: 0,
-    color: '#c7c7c7',
-    fontSize: '13px',
-    lineHeight: 1.6,
-  },
-  actionRow: {
-    display: 'flex',
-    gap: '8px',
-    flexWrap: 'wrap',
-  },
-  secondaryButton: {
-    padding: '9px 12px',
-    borderRadius: '8px',
-    border: '1px solid #333',
-    background: '#171717',
-    color: '#fff',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: 700,
-  },
-  successButton: {
-    padding: '9px 12px',
-    borderRadius: '8px',
-    border: '1px solid #14532d',
-    background: '#0f241b',
-    color: '#86efac',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: 700,
-  },
-  warningButton: {
-    padding: '9px 12px',
-    borderRadius: '8px',
-    border: '1px solid #6a4a16',
-    background: '#241b0f',
-    color: '#fbbf24',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: 700,
-  },
-  dangerButton: {
-    padding: '9px 12px',
-    borderRadius: '8px',
-    border: '1px solid #7f1d1d',
-    background: '#2a1111',
-    color: '#fca5a5',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: 700,
-  },
-  pagination: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: '12px',
-    flexWrap: 'wrap',
-    paddingTop: '4px',
-  },
-  paginationButton: {
-    padding: '9px 12px',
-    borderRadius: '8px',
-    border: '1px solid #333',
-    background: '#171717',
-    color: '#fff',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: 700,
-  },
-  paginationMeta: {
-    color: '#8b8b8b',
-    fontSize: '13px',
-  },
-  modalOverlay: {
-    position: 'fixed',
-    inset: 0,
-    background: 'rgba(0,0,0,0.72)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 100,
-    padding: '16px',
-  },
-  modal: {
-    width: 'min(1120px, 100%)',
-    maxHeight: '92vh',
-    overflow: 'auto',
-    borderRadius: '8px',
-    border: '1px solid #222',
-    background: '#111',
-    padding: '20px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
-    transition: 'width 0.3s ease-in-out',
-  },
-  splitWorkspace: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '24px',
-    alignItems: 'stretch',
-  },
-  referencePane: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
-    background: '#0a0a0a',
-    border: '1px solid #222',
-    borderRadius: '8px',
-    overflow: 'hidden',
-    height: 'fit-content',
-    position: 'sticky' as const,
-    top: 0,
-  },
-  referenceHeader: {
-    padding: '8px 12px',
-    background: '#141414',
-    borderBottom: '1px solid #222',
-  },
-  referenceTabs: {
-    display: 'flex',
-    gap: '2px',
-    padding: '2px',
-    background: '#000',
-    borderRadius: '6px',
-  },
-  referenceTab: {
-    flex: 1,
-    padding: '6px',
-    fontSize: '11px',
-    fontWeight: 700,
-    borderRadius: '4px',
-    border: 'none',
-    cursor: 'pointer',
-    transition: 'all 0.2s',
-  },
-  referenceContent: {
-    padding: '16px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
-    maxHeight: '600px',
-    overflowY: 'auto' as const,
-  },
-  referenceEmpty: {
-    padding: '32px 16px',
-    textAlign: 'center' as const,
-    color: '#666',
-    fontSize: '13px',
-  },
-  modalHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    gap: '12px',
-    alignItems: 'flex-start',
-    flexWrap: 'wrap',
-  },
-  modalTitle: {
-    margin: 0,
-    color: '#fff',
-    fontSize: '20px',
-    fontWeight: 700,
-  },
-  modalSubtitle: {
-    margin: '6px 0 0',
-    color: '#8b8b8b',
-    fontSize: '13px',
-    lineHeight: 1.6,
-    maxWidth: '760px',
-  },
-  closeButton: {
-    padding: '9px 12px',
-    borderRadius: '8px',
-    border: '1px solid #333',
-    background: '#171717',
-    color: '#fff',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: 700,
-  },
-  formGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-    gap: '12px',
-  },
-  field: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-  },
-  fieldLabel: {
-    color: '#d4d4d8',
-    fontSize: '12px',
-    fontWeight: 700,
-    textTransform: 'uppercase',
-    letterSpacing: '0.04em',
-  },
-  fieldHint: {
-    color: '#8b8b8b',
-    fontSize: '12px',
-    lineHeight: 1.5,
-  },
-  textarea: {
-    width: '100%',
-    minHeight: '110px',
-    padding: '10px 12px',
-    borderRadius: '8px',
-    border: '1px solid #333',
-    background: '#0b0b0b',
-    color: '#fff',
-    outline: 'none',
-    fontSize: '13px',
-    lineHeight: 1.6,
-    resize: 'vertical',
-    boxSizing: 'border-box',
-  },
-  formSection: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
-  },
-  sectionTitle: {
-    margin: 0,
-    color: '#fff',
-    fontSize: '14px',
-    fontWeight: 700,
-    textTransform: 'uppercase',
-    letterSpacing: '0.04em',
-  },
-  arrayGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-    gap: '12px',
-  },
-  mediaPickerPanel: {
-    border: '1px solid #222',
-    borderRadius: '8px',
-    background: '#0b0b0b',
-    padding: '12px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
-  },
-  mediaPickerHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    gap: '12px',
-    alignItems: 'flex-start',
-    flexWrap: 'wrap',
-  },
-  mediaPickerTitle: {
-    margin: 0,
-    color: '#fff',
-    fontSize: '13px',
-    fontWeight: 700,
-    textTransform: 'uppercase',
-    letterSpacing: '0.04em',
-  },
-  mediaPickerText: {
-    margin: '4px 0 0',
-    color: '#8b8b8b',
-    fontSize: '12px',
-    lineHeight: 1.5,
-  },
-  mediaPickerGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-    gap: '10px',
-  },
-  mediaPickerCard: {
-    border: '1px solid #252525',
-    borderRadius: '8px',
-    background: '#111',
-    color: '#d4d4d8',
-    cursor: 'pointer',
-    padding: '8px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '7px',
-    textAlign: 'left',
-  },
-  mediaPickerThumb: {
-    height: '86px',
-    borderRadius: '6px',
-    background: '#171717',
-    overflow: 'hidden',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  mediaPickerImage: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    display: 'block',
-  },
-  mediaPickerNoImage: {
-    color: '#8b8b8b',
-    fontSize: '12px',
-  },
-  mediaPickerName: {
-    color: '#fff',
-    fontSize: '12px',
-    fontWeight: 700,
-    lineHeight: 1.4,
-    wordBreak: 'break-word',
-  },
-  mediaPickerMeta: {
-    color: '#8b8b8b',
-    fontSize: '11px',
-    lineHeight: 1.4,
-  },
-  metadataPanel: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-    gap: '12px',
-    padding: '12px',
-    border: '1px solid #222',
-    borderRadius: '8px',
-    background: '#0b0b0b',
-  },
-  metadataItem: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '4px',
-  },
-  revisionsPanel: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
-    padding: '12px',
-    border: '1px solid #222',
-    borderRadius: '8px',
-    background: '#0b0b0b',
-  },
-  revisionsHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    gap: '12px',
-    alignItems: 'flex-start',
-    flexWrap: 'wrap',
-  },
-  revisionsSubtitle: {
-    margin: '4px 0 0',
-    color: '#8b8b8b',
-    fontSize: '12px',
-    lineHeight: 1.5,
-  },
-  revisionList: {
-    display: 'grid',
-    gap: '10px',
-  },
-  revisionItem: {
-    border: '1px solid #252525',
-    borderRadius: '8px',
-    background: '#111',
-    padding: '10px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-  },
-  revisionMeta: {
-    display: 'flex',
-    gap: '8px',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-  },
-  revisionDate: {
-    color: '#fff',
-    fontSize: '12px',
-    fontWeight: 700,
-  },
-  revisionActor: {
-    color: '#8b8b8b',
-    fontSize: '12px',
-    lineHeight: 1.4,
-  },
-  revisionStatusChip: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '22px',
-    padding: '2px 8px',
-    borderRadius: '999px',
-    border: '1px solid #333',
-    background: '#161616',
-    color: '#d4d4d8',
-    fontSize: '11px',
-    fontWeight: 700,
-    letterSpacing: '0.02em',
-    textTransform: 'uppercase',
-  },
-  revisionReason: {
-    color: '#d4d4d8',
-    fontSize: '12px',
-    lineHeight: 1.5,
-  },
-  revisionRestoreMeta: {
-    color: '#8b8b8b',
-    fontSize: '12px',
-    lineHeight: 1.5,
-  },
-  revisionActions: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    gap: '8px',
-    flexWrap: 'wrap',
-  },
-  modalFooter: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    gap: '8px',
-    flexWrap: 'wrap',
-  },
-};
+

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { adminFetch } from '@/lib/admin-fetch';
 
@@ -34,15 +34,20 @@ export default function AiConfigPage() {
   const [runtime, setRuntime] = useState<AiRuntimeStatus | null>(null);
   const [knowledgeDocs, setKnowledgeDocs] = useState<KnowledgeBaseDocument[]>([]);
   const [selectedKnowledgeFilename, setSelectedKnowledgeFilename] = useState<string | null>(null);
+  const [aiError, setAiError] = useState<string | null>(null);
   const [knowledgeError, setKnowledgeError] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
+  const savingRef = useRef(false);
+
   useEffect(() => {
+    const controller = new AbortController();
+
     async function fetchData() {
       try {
         const [res, knowledgeRes] = await Promise.all([
-          fetch('/api/cms/ai'),
-          fetch('/api/cms/knowledge-base'),
+          adminFetch('/api/cms/ai', { signal: controller.signal }),
+          adminFetch('/api/cms/knowledge-base', { signal: controller.signal }),
         ]);
 
         if (res.ok) {
@@ -51,6 +56,11 @@ export default function AiConfigPage() {
           setModel(data.model || 'gpt-4o-mini');
           setTemperature(data.temperature ?? 0.2);
           setRuntime(data.runtime ?? null);
+          setAiError(null);
+        } else {
+          const errorData = await res.json().catch(() => null);
+          console.error('AI config load failed:', errorData);
+          setAiError(errorData?.message || 'Failed to load AI configuration.');
         }
 
         if (knowledgeRes.ok) {
@@ -59,39 +69,62 @@ export default function AiConfigPage() {
             ? data.documents as KnowledgeBaseDocument[]
             : [];
           setKnowledgeDocs(documents);
-          setSelectedKnowledgeFilename(documents[0]?.filename ?? null);
+          setKnowledgeError(null);
+          
+          // Only set default if not already set or if current selection is not in new list
+          setSelectedKnowledgeFilename(prev => {
+            if (prev && documents.some(d => d.filename === prev)) return prev;
+            return documents[0]?.filename ?? null;
+          });
         } else {
-          setKnowledgeError('Knowledge base files could not be loaded.');
+          const errorData = await knowledgeRes.json().catch(() => null);
+          setKnowledgeError(errorData?.message || 'Knowledge base files could not be loaded.');
         }
-      } catch (error) {
-        console.error('Failed to load AI config', error);
-        setKnowledgeError('Knowledge base files could not be loaded.');
+      } catch (error: unknown) {
+        if (error instanceof Error && error.name === 'AbortError') return;
+        console.error('Failed to load AI data', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        setAiError(`Connection error: Failed to sync with AI service (${errorMessage}).`);
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     }
+
     fetchData();
+    return () => controller.abort();
   }, []);
 
   async function handleSave() {
+    if (savingRef.current) return;
+    
+    savingRef.current = true;
     setSaving(true);
     setMessage(null);
+
     try {
       const res = await adminFetch('/api/cms/ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ systemPrompt, model, temperature }),
       });
+
       if (res.ok) {
         setMessage({ type: 'success', text: 'AI Configuration saved successfully!' });
       } else {
-        setMessage({ type: 'error', text: 'Failed to save configuration.' });
+        const errorData = await res.json().catch(() => null);
+        setMessage({ 
+          type: 'error', 
+          text: errorData?.message || 'Failed to save configuration.' 
+        });
       }
     } catch (error) {
       console.error('Failed to save AI config', error);
       setMessage({ type: 'error', text: 'An unexpected error occurred.' });
     } finally {
       setSaving(false);
+      savingRef.current = false;
     }
   }
 
@@ -149,9 +182,10 @@ export default function AiConfigPage() {
           </div>
         </div>
 
-        {runtime?.issues?.length ? (
+        {runtime?.issues?.length || aiError ? (
           <div style={styles.warning}>
-            {runtime.issues.map((issue) => (
+            {aiError ? <div><strong>Configuration Error:</strong> {aiError}</div> : null}
+            {runtime?.issues?.map((issue) => (
               <div key={issue}>{issue}</div>
             ))}
           </div>

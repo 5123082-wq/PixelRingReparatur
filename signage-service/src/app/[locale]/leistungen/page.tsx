@@ -64,6 +64,11 @@ type LeistungenContent = {
   trustPoints: string[];
   finalHeadline: string;
   finalText: string;
+  repairEnabled?: boolean;
+  brandingEnabled?: boolean;
+  maintenanceEnabled?: boolean;
+  processEnabled?: boolean;
+  trustEnabled?: boolean;
 };
 
 type HeroSlide = {
@@ -71,6 +76,7 @@ type HeroSlide = {
   title: string;
   description: string;
   image: string;
+  fallbackSrc?: string;
   cta: string;
 };
 
@@ -650,6 +656,7 @@ function applyCmsHeroSlide(
     title: cmsSlide.title ?? fallback.title,
     description: cmsSlide.description ?? fallback.description,
     image: cmsSlide.image ?? fallback.image,
+    fallbackSrc: cmsSlide.fallbackSrc,
     cta: cmsSlide.cta ?? fallback.cta,
   };
 }
@@ -658,20 +665,77 @@ function mergeCmsContent(
   fallback: LeistungenContent,
   cmsContent: Awaited<ReturnType<typeof getLeistungenPageCmsContent>>
 ): LeistungenContent {
-  if (!cmsContent?.heroSlides?.length) {
+  if (!cmsContent) {
     return fallback;
   }
 
-  const heroSlides = fallback.heroSlides.map((slide, index) => {
-    const matchingSlide = cmsContent.heroSlides?.find((item) => item.id === slide.id);
-    const indexedSlide = cmsContent.heroSlides?.[index];
-    const cmsSlide = matchingSlide ?? (indexedSlide?.id ? undefined : indexedSlide);
-    return applyCmsHeroSlide(slide, cmsSlide);
-  });
+  const heroSlides = cmsContent.heroSlides?.length
+    ? fallback.heroSlides.map((slide, index) => {
+        const matchingSlide = cmsContent.heroSlides?.find((item) => item.id === slide.id);
+        const indexedSlide = cmsContent.heroSlides?.[index];
+        const cmsSlide = matchingSlide ?? (indexedSlide?.id ? undefined : indexedSlide);
+        return applyCmsHeroSlide(slide, cmsSlide);
+      })
+    : fallback.heroSlides;
 
   return {
     ...fallback,
     heroSlides,
+    repairTitle: cmsContent.repair?.title ?? fallback.repairTitle,
+    repairIntro: cmsContent.repair?.description ?? fallback.repairIntro,
+    repairCards: cmsContent.repair?.items?.length
+      ? fallback.repairCards.map((card, index) => {
+          const cmsItem = cmsContent.repair?.items?.[index];
+          if (!cmsItem) return card;
+          return {
+            ...card,
+            title: cmsItem.title ?? card.title,
+            summary: cmsItem.summary ?? card.summary,
+            details: cmsItem.details ?? card.details,
+          };
+        })
+      : fallback.repairCards,
+    repairFocus: cmsContent.repair?.focus ?? fallback.repairFocus,
+    brandingTitle: cmsContent.branding?.title ?? fallback.brandingTitle,
+    brandingIntro: cmsContent.branding?.description ?? fallback.brandingIntro,
+    brandingCards: cmsContent.branding?.items?.length
+      ? fallback.brandingCards.map((card, index) => {
+          const cmsItem = cmsContent.branding?.items?.[index];
+          if (!cmsItem) return card;
+          return {
+            ...card,
+            title: cmsItem.title ?? card.title,
+            text: cmsItem.text ?? card.text,
+          };
+        })
+      : fallback.brandingCards,
+    maintenanceTitle: cmsContent.maintenance?.title ?? fallback.maintenanceTitle,
+    maintenanceSubline: cmsContent.maintenance?.description ?? fallback.maintenanceSubline,
+    maintenanceBenefits: cmsContent.maintenance?.items ?? fallback.maintenanceBenefits,
+    maintenanceDiscount: cmsContent.maintenance?.discount ?? fallback.maintenanceDiscount,
+    serviceContractCta: cmsContent.maintenance?.cta ?? fallback.serviceContractCta,
+    auditCta: cmsContent.maintenance?.auditCta ?? fallback.auditCta,
+    processTitle: cmsContent.process?.title ?? fallback.processTitle,
+    processSteps: cmsContent.process?.items?.length
+      ? fallback.processSteps.map((step, index) => {
+          const cmsItem = cmsContent.process?.items?.[index];
+          if (!cmsItem) return step;
+          return {
+            ...step,
+            title: cmsItem.title ?? step.title,
+            text: cmsItem.text ?? step.text,
+          };
+        })
+      : fallback.processSteps,
+    frameTitle: cmsContent.trust?.title ?? fallback.frameTitle,
+    trustPoints: cmsContent.trust?.items ?? fallback.trustPoints,
+    finalHeadline: cmsContent.trust?.finalHeadline ?? fallback.finalHeadline,
+    finalText: cmsContent.trust?.finalText ?? fallback.finalText,
+    repairEnabled: cmsContent.repair?.enabled,
+    brandingEnabled: cmsContent.branding?.enabled,
+    maintenanceEnabled: cmsContent.maintenance?.enabled,
+    processEnabled: cmsContent.process?.enabled,
+    trustEnabled: cmsContent.trust?.enabled,
   };
 }
 
@@ -709,135 +773,145 @@ export default async function LeistungenPage({
       <main>
         <LeistungenHero slides={content.heroSlides} />
 
-        <section id="reparatur-diagnose-montage" className="bg-white py-14 sm:py-20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6">
-            <div className="max-w-4xl">
-              <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">{content.repairTitle}</h2>
-              <p className="mt-5 text-lg leading-relaxed text-[#4A5568]">{content.repairIntro}</p>
-            </div>
-            <div className="mt-10 grid gap-4 lg:grid-cols-2">
-              {content.repairCards.map((card) => (
-                <details
-                  key={card.id}
-                  className="group rounded-[22px] border border-[#D9C7BA] bg-[#FFFDF9] p-5 shadow-sm open:border-[#7BA190]"
-                >
-                  <summary className="flex cursor-pointer list-none items-start justify-between gap-4 [&::-webkit-details-marker]:hidden">
-                    <div>
-                      <h3 className="text-xl font-extrabold leading-[1.1] text-[#0E1A2B]">{card.title}</h3>
-                      <span className="mt-2 block text-[15px] leading-6 text-[#66706B]">{card.summary}</span>
+        {content.repairEnabled !== false && (
+          <section id="reparatur-diagnose-montage" className="bg-white py-14 sm:py-20">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6">
+              <div className="max-w-4xl">
+                <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">{content.repairTitle}</h2>
+                <p className="mt-5 text-lg leading-relaxed text-[#4A5568]">{content.repairIntro}</p>
+              </div>
+              <div className="mt-10 grid gap-4 lg:grid-cols-2">
+                {content.repairCards.map((card) => (
+                  <details
+                    key={card.id}
+                    className="group rounded-[22px] border border-[#D9C7BA] bg-[#FFFDF9] p-5 shadow-sm open:border-[#7BA190]"
+                  >
+                    <summary className="flex cursor-pointer list-none items-start justify-between gap-4 [&::-webkit-details-marker]:hidden">
+                      <div>
+                        <h3 className="text-xl font-extrabold leading-[1.1] text-[#0E1A2B]">{card.title}</h3>
+                        <span className="mt-2 block text-[15px] leading-6 text-[#66706B]">{card.summary}</span>
+                      </div>
+                      <span className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#E6F0EC] text-xl font-black text-[#24594D] transition-transform group-open:rotate-45">
+                        +
+                      </span>
+                    </summary>
+                    <p className="mt-5 border-t border-[#E7DDD3] pt-5 text-[15px] leading-7 text-[#4E5A5A]">
+                      {card.details}
+                    </p>
+                    <div className="mt-5">
+                      <LeistungenRequestButton
+                        label={requestCtaLabel}
+                        serviceIntent={card.intent}
+                        variant="ghost"
+                        className="min-h-10 px-4 py-2 text-[14px]"
+                      />
                     </div>
-                    <span className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#E6F0EC] text-xl font-black text-[#24594D] transition-transform group-open:rotate-45">
-                      +
-                    </span>
-                  </summary>
-                  <p className="mt-5 border-t border-[#E7DDD3] pt-5 text-[15px] leading-7 text-[#4E5A5A]">
-                    {card.details}
-                  </p>
-                  <div className="mt-5">
-                    <LeistungenRequestButton
-                      label={requestCtaLabel}
-                      serviceIntent={card.intent}
-                      variant="ghost"
-                      className="min-h-10 px-4 py-2 text-[14px]"
-                    />
-                  </div>
-                </details>
-              ))}
-            </div>
-            <p className="mt-8 rounded-[18px] border border-[#7BA190]/45 bg-[#EEF6F2] px-5 py-4 text-[16px] font-bold leading-7 text-[#24594D]">
-              {content.repairFocus}
-            </p>
-          </div>
-        </section>
-
-        <section id="druck-branding" className="bg-[#EEF3FB] py-14 sm:py-20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6">
-            <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
-              <div>
-                <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">{content.brandingTitle}</h2>
-                <p className="mt-5 text-lg leading-8 text-[#5D6662]">{content.brandingIntro}</p>
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {content.brandingCards.map((card) => (
-                  <article key={card.id} className="rounded-[22px] border border-white bg-white p-6 shadow-sm">
-                    <h3 className="text-xl font-extrabold leading-[1.1] text-[#0E1A2B]">{card.title}</h3>
-                    <p className="mt-3 min-h-[96px] text-[15px] leading-7 text-[#5D6662]">{card.text}</p>
-                  </article>
+                  </details>
                 ))}
               </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="wartung-servicevertraege" className="bg-[#0E1A2B] py-14 text-white sm:py-20">
-          <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:items-center">
-            <div>
-              <h2 className="text-3xl font-extrabold leading-[1.1] sm:text-5xl">{content.maintenanceTitle}</h2>
-              <p className="mt-5 text-lg leading-8 text-white/75">{content.maintenanceSubline}</p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <LeistungenRequestButton label={content.serviceContractCta} serviceIntent="wartung-servicevertrag" />
-                <LeistungenRequestButton label={content.auditCta} serviceIntent="wartung-servicevertrag" variant="secondary" />
-              </div>
-            </div>
-            <div className="rounded-[24px] border border-white/[0.12] bg-white/[0.08] p-6">
-              <ul className="space-y-4">
-                {content.maintenanceBenefits.map((benefit) => (
-                  <li key={benefit} className="flex gap-3 text-[16px] leading-7 text-white/[0.88]">
-                    <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#7BA190] text-sm font-extrabold text-[#0E1A2B]">
-                      ✓
-                    </span>
-                    <span>{benefit}</span>
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-6 rounded-[18px] border border-[#DAB08A]/45 bg-[#B8643E]/20 px-4 py-4 text-[15px] font-bold leading-7 text-[#FFE6D6]">
-                {content.maintenanceDiscount}
+              <p className="mt-8 rounded-[18px] border border-[#7BA190]/45 bg-[#EEF6F2] px-5 py-4 text-[16px] font-bold leading-7 text-[#24594D]">
+                {content.repairFocus}
               </p>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
-        <section id="ablauf" className="bg-white py-14 sm:py-20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6">
-            <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">{content.processTitle}</h2>
-            <div className="mt-10 grid gap-4 md:grid-cols-5">
-              {content.processSteps.map((step, index) => (
-                <article key={step.id} className="rounded-[20px] border border-[#E1D3C6] bg-[#FFFDF9] p-5">
-                  <p className="text-sm font-extrabold text-[#B8643E]">{String(index + 1).padStart(2, '0')}</p>
-                  <h3 className="mt-4 text-lg font-extrabold leading-[1.1] text-[#0E1A2B]">{step.title}</h3>
-                  <p className="mt-3 text-[14px] leading-6 text-[#5D6662]">{step.text}</p>
-                </article>
-              ))}
-            </div>
-            <p className="mt-7 text-[15px] font-bold text-[#24594D]">{content.intakeNote}</p>
-          </div>
-        </section>
-
-        <section id="rahmenbedingungen" className="bg-[#F7F1E8] py-14 sm:py-20">
-          <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr]">
-            <div>
-              <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">{content.frameTitle}</h2>
-            </div>
-            <div className="grid gap-4">
-              {content.trustPoints.map((point) => (
-                <p key={point} className="rounded-[18px] border border-[#D9C7BA] bg-white px-5 py-4 text-[16px] font-bold leading-7 text-[#3E4A48]">
-                  {point}
-                </p>
-              ))}
-              <div className="rounded-[24px] bg-[#24594D] p-6 text-white">
-                <h2 className="text-2xl font-extrabold leading-[1.1]">{content.finalHeadline}</h2>
-                <p className="mt-3 text-[16px] leading-7 text-white/[0.82]">{content.finalText}</p>
-                <div className="mt-6">
-                  <LeistungenRequestButton
-                    label={requestCtaLabel}
-                    serviceIntent="diagnose"
-                    className="min-w-[180px] px-7"
-                  />
+        {content.brandingEnabled !== false && (
+          <section id="druck-branding" className="bg-[#EEF3FB] py-14 sm:py-20">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6">
+              <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+                <div>
+                  <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">{content.brandingTitle}</h2>
+                  <p className="mt-5 text-lg leading-8 text-[#5D6662]">{content.brandingIntro}</p>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {content.brandingCards.map((card) => (
+                    <article key={card.id} className="rounded-[22px] border border-white bg-white p-6 shadow-sm">
+                      <h3 className="text-xl font-extrabold leading-[1.1] text-[#0E1A2B]">{card.title}</h3>
+                      <p className="mt-3 min-h-[96px] text-[15px] leading-7 text-[#5D6662]">{card.text}</p>
+                    </article>
+                  ))}
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
+
+        {content.maintenanceEnabled !== false && (
+          <section id="wartung-servicevertraege" className="bg-[#0E1A2B] py-14 text-white sm:py-20">
+            <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:items-center">
+              <div>
+                <h2 className="text-3xl font-extrabold leading-[1.1] sm:text-5xl">{content.maintenanceTitle}</h2>
+                <p className="mt-5 text-lg leading-8 text-white/75">{content.maintenanceSubline}</p>
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <LeistungenRequestButton label={content.serviceContractCta} serviceIntent="wartung-servicevertrag" />
+                  <LeistungenRequestButton label={content.auditCta} serviceIntent="wartung-servicevertrag" variant="secondary" />
+                </div>
+              </div>
+              <div className="rounded-[24px] border border-white/[0.12] bg-white/[0.08] p-6">
+                <ul className="space-y-4">
+                  {content.maintenanceBenefits.map((benefit) => (
+                    <li key={benefit} className="flex gap-3 text-[16px] leading-7 text-white/[0.88]">
+                      <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#7BA190] text-sm font-extrabold text-[#0E1A2B]">
+                        ✓
+                      </span>
+                      <span>{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-6 rounded-[18px] border border-[#DAB08A]/45 bg-[#B8643E]/20 px-4 py-4 text-[15px] font-bold leading-7 text-[#FFE6D6]">
+                  {content.maintenanceDiscount}
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {content.processEnabled !== false && (
+          <section id="ablauf" className="bg-white py-14 sm:py-20">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6">
+              <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">{content.processTitle}</h2>
+              <div className="mt-10 grid gap-4 md:grid-cols-5">
+                {content.processSteps.map((step, index) => (
+                  <article key={step.id} className="rounded-[20px] border border-[#E1D3C6] bg-[#FFFDF9] p-5">
+                    <p className="text-sm font-extrabold text-[#B8643E]">{String(index + 1).padStart(2, '0')}</p>
+                    <h3 className="mt-4 text-lg font-extrabold leading-[1.1] text-[#0E1A2B]">{step.title}</h3>
+                    <p className="mt-3 text-[14px] leading-6 text-[#5D6662]">{step.text}</p>
+                  </article>
+                ))}
+              </div>
+              <p className="mt-7 text-[15px] font-bold text-[#24594D]">{content.intakeNote}</p>
+            </div>
+          </section>
+        )}
+
+        {content.trustEnabled !== false && (
+          <section id="rahmenbedingungen" className="bg-[#F7F1E8] py-14 sm:py-20">
+            <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr]">
+              <div>
+                <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">{content.frameTitle}</h2>
+              </div>
+              <div className="grid gap-4">
+                {content.trustPoints.map((point) => (
+                  <p key={point} className="rounded-[18px] border border-[#D9C7BA] bg-white px-5 py-4 text-[16px] font-bold leading-7 text-[#3E4A48]">
+                    {point}
+                  </p>
+                ))}
+                <div className="rounded-[24px] bg-[#24594D] p-6 text-white">
+                  <h2 className="text-2xl font-extrabold leading-[1.1]">{content.finalHeadline}</h2>
+                  <p className="mt-3 text-[16px] leading-7 text-white/[0.82]">{content.finalText}</p>
+                  <div className="mt-6">
+                    <LeistungenRequestButton
+                      label={requestCtaLabel}
+                      serviceIntent="diagnose"
+                      className="min-w-[180px] px-7"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
       </main>
       <Footer content={globalCms?.footer} />
     </div>

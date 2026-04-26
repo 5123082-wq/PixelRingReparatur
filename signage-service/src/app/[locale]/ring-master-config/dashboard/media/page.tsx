@@ -1,12 +1,19 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useParams } from 'next/navigation';
-import type { ReactNode } from 'react';
 
 import { adminFetch } from '@/lib/admin-fetch';
 
-type CmsMediaUsageType = 'HERO' | 'ARTICLE' | 'SERVICE' | 'CASE' | 'GENERAL';
+type CmsMediaUsageType =
+  | 'GENERAL'
+  | 'HERO'
+  | 'ARTICLE'
+  | 'SERVICE'
+  | 'CASE'
+  | 'PAGE'
+  | 'CARD'
+  | 'SEO'
+  | 'ICON';
 
 type CmsMedia = {
   id: string;
@@ -21,6 +28,10 @@ type CmsMedia = {
   width: number | null;
   height: number | null;
   url: string | null;
+  publicUrl: string | null;
+  fallbackUrl: string | null;
+  storageProvider: string | null;
+  storageKey: string | null;
   meta: unknown;
   createdAt: string | null;
   updatedAt: string | null;
@@ -30,7 +41,6 @@ type CmsMedia = {
 type RawMedia = Record<string, unknown>;
 
 type MediaFormState = {
-  locale: string;
   usageType: CmsMediaUsageType;
   title: string;
   alt: string;
@@ -39,21 +49,39 @@ type MediaFormState = {
   metaJson: string;
 };
 
-type EditFormState = MediaFormState & {
-  readonlyUrl: string;
-};
-
-const SUPPORTED_LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'] as const;
-const USAGE_TYPES: CmsMediaUsageType[] = ['HERO', 'ARTICLE', 'SERVICE', 'CASE', 'GENERAL'];
-const EMPTY_META_JSON = '{}';
-
-function getLocale(value: string | string[] | undefined | null, fallback = 'de'): string {
-  if (Array.isArray(value)) {
-    return value[0] || fallback;
-  }
-
-  return value || fallback;
+function getImageDimensions(file: File): Promise<{ width: number; height: number }> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    
+    img.onload = () => {
+      resolve({ width: img.width, height: img.height });
+      URL.revokeObjectURL(objectUrl);
+    };
+    
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error('Failed to load image'));
+    };
+    
+    img.src = objectUrl;
+  });
 }
+
+type EditFormState = MediaFormState;
+
+const USAGE_TYPES: CmsMediaUsageType[] = [
+  'GENERAL',
+  'HERO',
+  'ARTICLE',
+  'SERVICE',
+  'CASE',
+  'PAGE',
+  'CARD',
+  'SEO',
+  'ICON',
+];
+const EMPTY_META_JSON = '{}';
 
 function asString(value: unknown): string | null {
   return typeof value === 'string' && value.trim() ? value : null;
@@ -86,6 +114,10 @@ function normalizeMediaItem(raw: RawMedia): CmsMedia {
     width: asNumber(raw.width),
     height: asNumber(raw.height),
     url: asString(raw.url) || asString(raw.publicUrl) || asString(raw.storageUrl),
+    publicUrl: asString(raw.publicUrl) || asString(raw.url) || asString(raw.storageUrl),
+    fallbackUrl: asString(raw.fallbackUrl),
+    storageProvider: asString(raw.storageProvider),
+    storageKey: asString(raw.storageKey),
     meta: raw.metadata ?? raw.meta ?? null,
     createdAt: asString(raw.createdAt),
     updatedAt: asString(raw.updatedAt),
@@ -109,9 +141,8 @@ function normalizeMediaResponse(value: unknown): CmsMedia[] {
     .filter((item) => item.id);
 }
 
-function createEmptyForm(locale: string): MediaFormState {
+function createEmptyForm(): MediaFormState {
   return {
-    locale,
     usageType: 'GENERAL',
     title: '',
     alt: '',
@@ -121,9 +152,8 @@ function createEmptyForm(locale: string): MediaFormState {
   };
 }
 
-function mediaToEditForm(media: CmsMedia, fallbackLocale: string): EditFormState {
+function mediaToEditForm(media: CmsMedia): EditFormState {
   return {
-    locale: media.locale || fallbackLocale,
     usageType: USAGE_TYPES.includes(media.usageType as CmsMediaUsageType)
       ? (media.usageType as CmsMediaUsageType)
       : 'GENERAL',
@@ -131,7 +161,6 @@ function mediaToEditForm(media: CmsMedia, fallbackLocale: string): EditFormState
     alt: media.alt || '',
     width: media.width === null ? '' : String(media.width),
     height: media.height === null ? '' : String(media.height),
-    readonlyUrl: media.url || '',
     metaJson: JSON.stringify(media.meta && typeof media.meta === 'object' ? media.meta : {}, null, 2),
   };
 }
@@ -164,10 +193,6 @@ function parseMetaJson(value: string): { ok: true; meta: unknown } | { ok: false
 }
 
 function validateForm(form: MediaFormState, file?: File | null): string | null {
-  if (!SUPPORTED_LOCALES.includes(form.locale as (typeof SUPPORTED_LOCALES)[number])) {
-    return 'Locale is invalid.';
-  }
-
   if (!USAGE_TYPES.includes(form.usageType)) {
     return 'Usage type is invalid.';
   }
@@ -198,11 +223,9 @@ function buildJsonPayload(form: EditFormState): Record<string, unknown> {
   const meta = parseMetaJson(form.metaJson);
 
   return {
-    locale: form.locale,
     usageType: form.usageType,
     title: form.title.trim() || null,
     alt: form.alt.trim() || null,
-    altText: form.alt.trim() || null,
     width: parseOptionalInteger(form.width) ?? null,
     height: parseOptionalInteger(form.height) ?? null,
     metadata: meta.ok ? meta.meta : {},
@@ -214,11 +237,9 @@ function buildUploadPayload(form: MediaFormState, file: File): FormData {
   const payload = new FormData();
 
   payload.set('file', file);
-  payload.set('locale', form.locale);
   payload.set('usageType', form.usageType);
   payload.set('title', form.title.trim());
   payload.set('alt', form.alt.trim());
-  payload.set('altText', form.alt.trim());
   payload.set('width', String(parseOptionalInteger(form.width) ?? ''));
   payload.set('height', String(parseOptionalInteger(form.height) ?? ''));
   payload.set('metadata', JSON.stringify(meta.ok ? meta.meta : {}));
@@ -229,22 +250,6 @@ function buildUploadPayload(form: MediaFormState, file: File): FormData {
 async function readApiError(response: Response): Promise<string> {
   const data = (await response.json().catch(() => null)) as { error?: string; message?: string } | null;
   return data?.error || data?.message || `Request failed (${response.status})`;
-}
-
-function renderDate(value: string | null | undefined): string {
-  if (!value) {
-    return '-';
-  }
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return '-';
-  }
-
-  return new Intl.DateTimeFormat('de-DE', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(date);
 }
 
 function formatBytes(value: number | null): string {
@@ -263,100 +268,52 @@ function formatBytes(value: number | null): string {
   return `${(value / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function shortText(value: string | null | undefined, maxLength = 72): string {
-  const text = (value || '').trim().replace(/\s+/g, ' ');
-  if (!text) {
-    return '-';
+function getStorageBadge(item: CmsMedia): { label: string; className: string } {
+  if (item.storageProvider === 'VERCEL_BLOB') {
+    return {
+      label: item.fallbackUrl ? 'Blob + local fallback' : 'Blob',
+      className: 'border-emerald-500/20 bg-emerald-500/10 text-emerald-300',
+    };
   }
 
-  return text.length > maxLength ? `${text.slice(0, maxLength).trim()}...` : text;
-}
+  if (item.fallbackUrl) {
+    return {
+      label: 'Local fallback',
+      className: 'border-amber-500/20 bg-amber-500/10 text-amber-300',
+    };
+  }
 
-function EditorField({
-  label,
-  children,
-  hint,
-}: {
-  label: string;
-  children: ReactNode;
-  hint?: string;
-}) {
-  return (
-    <label style={styles.field}>
-      <span style={styles.fieldLabel}>{label}</span>
-      {children}
-      {hint ? <span style={styles.fieldHint}>{hint}</span> : null}
-    </label>
-  );
-}
-
-function TextInput({
-  value,
-  onChange,
-  placeholder,
-  type = 'text',
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  type?: 'text' | 'number';
-}) {
-  return (
-    <input
-      type={type}
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      placeholder={placeholder}
-      style={styles.input}
-    />
-  );
-}
-
-function SelectInput({
-  value,
-  onChange,
-  children,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  children: ReactNode;
-}) {
-  return (
-    <select value={value} onChange={(event) => onChange(event.target.value)} style={styles.input}>
-      {children}
-    </select>
-  );
+  return {
+    label: 'Local only',
+    className: 'border-zinc-500/20 bg-zinc-500/10 text-zinc-300',
+  };
 }
 
 export default function MediaLibraryPage() {
-  const params = useParams();
-  const routeLocale = getLocale(params?.locale);
-
   const [media, setMedia] = useState<CmsMedia[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [refreshVersion, setRefreshVersion] = useState(0);
 
-  const [uploadForm, setUploadForm] = useState<MediaFormState>(() => createEmptyForm(routeLocale));
+  const [uploadForm, setUploadForm] = useState<MediaFormState>(() => createEmptyForm());
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadError, setUploadError] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
 
   const [editingMedia, setEditingMedia] = useState<CmsMedia | null>(null);
-  const [editForm, setEditForm] = useState<EditFormState>(() => ({
-    ...createEmptyForm(routeLocale),
-    readonlyUrl: '',
-  }));
+  const [editForm, setEditForm] = useState<EditFormState>(() => createEmptyForm());
   const [editError, setEditError] = useState('');
   const [editSaving, setEditSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const summary = useMemo(() => {
     const images = media.filter((item) => item.mimeType?.startsWith('image/')).length;
-    const localized = media.filter((item) => item.locale).length;
     const totalBytes = media.reduce((sum, item) => sum + (item.byteSize || 0), 0);
+    const usageTypes = new Set(media.map((item) => item.usageType).filter(Boolean)).size;
 
-    return { total: media.length, images, localized, totalBytes };
+    return { total: media.length, images, usageTypes, totalBytes };
   }, [media]);
 
   const loadMedia = useCallback(async () => {
@@ -364,9 +321,8 @@ export default function MediaLibraryPage() {
     setError('');
 
     try {
-      const response = await fetch('/api/cms/media', {
+      const response = await adminFetch('/api/cms/media', {
         method: 'GET',
-        credentials: 'same-origin',
         cache: 'no-store',
       });
       const data = (await response.json().catch(() => null)) as unknown;
@@ -387,6 +343,45 @@ export default function MediaLibraryPage() {
   useEffect(() => {
     void loadMedia();
   }, [loadMedia, refreshVersion]);
+
+  const handleFileChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null;
+    setUploadFile(file);
+    if (file && file.type.startsWith('image/')) {
+      try {
+        const { width, height } = await getImageDimensions(file);
+        setUploadForm((prev) => ({
+          ...prev,
+          width: String(width),
+          height: String(height),
+          title: prev.title || file.name.split('.')[0] || '',
+        }));
+      } catch (err) {
+        console.error('Failed to get dimensions:', err);
+      }
+    }
+  }, []);
+
+  const copyToClipboard = useCallback((text: string) => {
+    if (navigator.clipboard) {
+      void navigator.clipboard.writeText(text);
+      setNotice('URL copied to clipboard!');
+      setTimeout(() => setNotice(''), 3000);
+    } else {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        setNotice('URL copied!');
+      } catch (err) {
+        console.error('Fallback copy failed:', err);
+      }
+      document.body.removeChild(textarea);
+      setTimeout(() => setNotice(''), 3000);
+    }
+  }, []);
 
   const uploadMedia = useCallback(async () => {
     const validationError = validateForm(uploadForm, uploadFile);
@@ -414,22 +409,23 @@ export default function MediaLibraryPage() {
         throw new Error(await readApiError(response));
       }
 
-      setUploadForm(createEmptyForm(routeLocale));
+      setUploadForm(createEmptyForm());
       setUploadFile(null);
-      setNotice('Media uploaded to the public CMS library.');
+      setNotice('Media uploaded to the global CMS library.');
+      setShowUploadModal(false);
       setRefreshVersion((value) => value + 1);
     } catch (error) {
       setUploadError(error instanceof Error ? error.message : 'Failed to upload media.');
     } finally {
       setUploading(false);
     }
-  }, [routeLocale, uploadFile, uploadForm]);
+  }, [uploadFile, uploadForm]);
 
   const openEdit = useCallback((item: CmsMedia) => {
     setEditingMedia(item);
-    setEditForm(mediaToEditForm(item, routeLocale));
+    setEditForm(mediaToEditForm(item));
     setEditError('');
-  }, [routeLocale]);
+  }, []);
 
   const closeEdit = useCallback(() => {
     setEditingMedia(null);
@@ -475,7 +471,9 @@ export default function MediaLibraryPage() {
 
   const deleteMedia = useCallback(async (item: CmsMedia) => {
     const confirmed = window.confirm(
-      `Delete public CMS media "${item.title || item.filename || item.id}"? The API must block this if the item is still used by CMS content.`
+      `⚠️ Delete public CMS media "${item.title || item.filename || item.id}"?\n\n` +
+      `Usage: ${item.usageType}\n` +
+      `This action cannot be undone. The API will block deletion if the asset is still in use.`
     );
 
     if (!confirmed) {
@@ -484,6 +482,7 @@ export default function MediaLibraryPage() {
 
     setError('');
     setNotice('');
+    setDeletingId(item.id);
 
     try {
       const response = await adminFetch(`/api/cms/media/${item.id}`, {
@@ -498,583 +497,379 @@ export default function MediaLibraryPage() {
       setRefreshVersion((value) => value + 1);
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to delete media.');
+    } finally {
+      setDeletingId(null);
     }
   }, []);
 
   return (
-    <div style={styles.page}>
-      <div style={styles.header}>
-        <div>
-          <h1 style={styles.title}>Media Library</h1>
-          <p style={styles.subtitle}>
-            Manage public CMS media for pages and articles. Private customer request attachments stay in the CRM attachment flow.
+    <div className="flex flex-col gap-10 pb-20">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-4xl font-black text-white tracking-tight">Media Library</h1>
+          <p className="text-sm text-zinc-500 font-medium">
+            Shared assets for Page CMS, content, and branding.
           </p>
         </div>
+        <button 
+          onClick={() => setShowUploadModal(true)}
+          className="h-14 px-8 bg-gradient-to-r from-cyan-500 to-violet-600 hover:from-cyan-400 hover:to-violet-500 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl shadow-cyan-500/20 flex items-center gap-3"
+        >
+          <span className="text-xl">+</span>
+          Upload New Asset
+        </button>
       </div>
 
-      <div style={styles.statRow}>
-        <div style={styles.statCard}>
-          <span style={styles.statLabel}>Public media</span>
-          <span style={styles.statValue}>{summary.total}</span>
-        </div>
-        <div style={styles.statCard}>
-          <span style={styles.statLabel}>Images</span>
-          <span style={styles.statValue}>{summary.images}</span>
-        </div>
-        <div style={styles.statCard}>
-          <span style={styles.statLabel}>Localized</span>
-          <span style={styles.statValue}>{summary.localized}</span>
-        </div>
-        <div style={styles.statCard}>
-          <span style={styles.statLabel}>Storage</span>
-          <span style={styles.statValue}>{formatBytes(summary.totalBytes)}</span>
-        </div>
-      </div>
-
-      {notice ? <div style={styles.noticeBanner}>{notice}</div> : null}
-      {error ? <div style={styles.errorBanner}>{error}</div> : null}
-
-      <section style={styles.panel}>
-        <div>
-          <h2 style={styles.sectionTitle}>Upload public media</h2>
-          <p style={styles.sectionText}>
-            The backend validates MIME, size, and checksum. This form only sends CMS media metadata and never touches customer attachments.
-          </p>
-        </div>
-
-        {uploadError ? <div style={styles.errorBanner}>{uploadError}</div> : null}
-
-        <div style={styles.formGrid}>
-          <EditorField label="File" hint="Image file for the public CMS library">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(event) => setUploadFile(event.target.files?.[0] ?? null)}
-              style={styles.input}
-            />
-          </EditorField>
-          <EditorField label="Locale">
-            <SelectInput
-              value={uploadForm.locale}
-              onChange={(value) => setUploadForm((current) => ({ ...current, locale: value }))}
-            >
-              {SUPPORTED_LOCALES.map((locale) => (
-                <option key={locale} value={locale}>{locale}</option>
-              ))}
-            </SelectInput>
-          </EditorField>
-          <EditorField label="Usage type">
-            <SelectInput
-              value={uploadForm.usageType}
-              onChange={(value) => setUploadForm((current) => ({ ...current, usageType: value as CmsMediaUsageType }))}
-            >
-              {USAGE_TYPES.map((usageType) => (
-                <option key={usageType} value={usageType}>{usageType}</option>
-              ))}
-            </SelectInput>
-          </EditorField>
-          <EditorField label="Title">
-            <TextInput
-              value={uploadForm.title}
-              onChange={(value) => setUploadForm((current) => ({ ...current, title: value }))}
-              placeholder="Repair photo card"
-            />
-          </EditorField>
-          <EditorField label="Alt text">
-            <TextInput
-              value={uploadForm.alt}
-              onChange={(value) => setUploadForm((current) => ({ ...current, alt: value }))}
-              placeholder="Technician repairing illuminated signage"
-            />
-          </EditorField>
-          <EditorField label="Width">
-            <TextInput
-              type="number"
-              value={uploadForm.width}
-              onChange={(value) => setUploadForm((current) => ({ ...current, width: value }))}
-              placeholder="1200"
-            />
-          </EditorField>
-          <EditorField label="Height">
-            <TextInput
-              type="number"
-              value={uploadForm.height}
-              onChange={(value) => setUploadForm((current) => ({ ...current, height: value }))}
-              placeholder="800"
-            />
-          </EditorField>
-        </div>
-
-        <EditorField label="Meta JSON">
-          <textarea
-            value={uploadForm.metaJson}
-            onChange={(event) => setUploadForm((current) => ({ ...current, metaJson: event.target.value }))}
-            rows={4}
-            spellCheck={false}
-            style={{ ...styles.textarea, ...styles.codeTextarea }}
-          />
-        </EditorField>
-
-        <div style={styles.actionRow}>
-          <button type="button" onClick={() => void uploadMedia()} disabled={uploading} style={styles.primaryButton}>
-            {uploading ? 'Uploading...' : 'Upload media'}
-          </button>
-        </div>
-      </section>
-
-      <section style={styles.panel}>
-        <div>
-          <h2 style={styles.sectionTitle}>Library</h2>
-          <p style={styles.sectionText}>Use these records from article and page editors via the media picker.</p>
-        </div>
-
-        {loading ? (
-          <div style={styles.emptyState}>Loading media...</div>
-        ) : media.length === 0 ? (
-          <div style={styles.emptyState}>No public CMS media records found.</div>
-        ) : (
-          <div style={styles.mediaGrid}>
-            {media.map((item) => (
-              <article key={item.id} style={styles.mediaCard}>
-                <div style={styles.previewBox}>
-                  {item.url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={item.url} alt={item.alt || item.title || ''} style={styles.previewImage} />
-                  ) : (
-                    <span style={styles.previewFallback}>No URL</span>
-                  )}
-                </div>
-                <div style={styles.mediaBody}>
-                  <div>
-                    <h3 style={styles.mediaTitle}>{item.title || item.filename || 'Untitled media'}</h3>
-                    <p style={styles.mediaMeta}>{shortText(item.alt, 110)}</p>
-                  </div>
-                  <div style={styles.chipRow}>
-                    <span style={styles.chip}>{item.locale || '-'}</span>
-                    <span style={styles.chip}>{item.usageType}</span>
-                    <span style={styles.chip}>{item.mimeType || '-'}</span>
-                  </div>
-                  <div style={styles.detailGrid}>
-                    <span>Size: {formatBytes(item.byteSize)}</span>
-                    <span>Dimensions: {item.width && item.height ? `${item.width}x${item.height}` : '-'}</span>
-                    <span>Updated: {renderDate(item.updatedAt)}</span>
-                    <span>Checksum: {shortText(item.checksumSha256, 18)}</span>
-                  </div>
-                  <div style={styles.actionRow}>
-                    <button type="button" onClick={() => openEdit(item)} style={styles.secondaryButton}>Edit</button>
-                    {item.url ? (
-                      <a href={item.url} target="_blank" rel="noreferrer" style={styles.linkButton}>Open</a>
-                    ) : null}
-                    <button type="button" onClick={() => void deleteMedia(item)} style={styles.dangerButton}>Delete</button>
-                  </div>
-                </div>
-              </article>
-            ))}
+      {/* STATS */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: 'Total Files', value: summary.total },
+          { label: 'Images', value: summary.images },
+          { label: 'Usage Types', value: summary.usageTypes },
+          { label: 'Storage', value: formatBytes(summary.totalBytes) },
+        ].map((s) => (
+          <div key={s.label} className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5 shadow-inner">
+            <span className="block text-[10px] font-black text-zinc-600 uppercase tracking-widest">{s.label}</span>
+            <span className="block text-2xl font-black text-white mt-1">{s.value}</span>
           </div>
-        )}
-      </section>
+        ))}
+      </div>
 
-      {editingMedia ? (
-        <div style={styles.modalOverlay} onClick={closeEdit}>
-          <div style={styles.modal} onClick={(event) => event.stopPropagation()}>
-            <div style={styles.modalHeader}>
+      {notice && (
+        <div className="bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 px-6 py-4 rounded-2xl text-sm font-bold animate-in fade-in slide-in-from-top-2 duration-300">
+          ✨ {notice}
+        </div>
+      )}
+
+      {error && (
+        <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-6 py-4 rounded-2xl text-sm font-bold">
+          🚫 {error}
+        </div>
+      )}
+
+      {/* UPLOAD MODAL */}
+      {showUploadModal && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 backdrop-blur-2xl bg-black/80 animate-in fade-in duration-300">
+          <div className="bg-[#0a0a0c] border border-white/10 rounded-[40px] w-full max-w-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="p-10 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
               <div>
-                <h2 style={styles.modalTitle}>Edit media metadata</h2>
-                <p style={styles.modalSubtitle}>Update public CMS media fields. Delete stays blocked by backend where-used checks.</p>
+                <h2 className="text-2xl font-black text-white">Upload Media</h2>
+                <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest mt-1">Add asset to global CMS pool</p>
               </div>
-              <button type="button" onClick={closeEdit} style={styles.closeButton}>Close</button>
+              <button 
+                onClick={() => setShowUploadModal(false)}
+                className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors text-white"
+              >
+                ✕
+              </button>
             </div>
 
-            {editError ? <div style={styles.errorBanner}>{editError}</div> : null}
+            <div className="p-10 overflow-y-auto space-y-10">
+              {uploadError && (
+                <div className="p-5 bg-red-500/10 border border-red-500/20 rounded-2xl text-xs font-bold text-red-500">
+                  🚫 {uploadError}
+                </div>
+              )}
 
-            <div style={styles.formGrid}>
-              <EditorField label="Locale">
-                <SelectInput value={editForm.locale} onChange={(value) => setEditForm((current) => ({ ...current, locale: value }))}>
-                  {SUPPORTED_LOCALES.map((locale) => (
-                    <option key={locale} value={locale}>{locale}</option>
-                  ))}
-                </SelectInput>
-              </EditorField>
-              <EditorField label="Usage type">
-                <SelectInput value={editForm.usageType} onChange={(value) => setEditForm((current) => ({ ...current, usageType: value as CmsMediaUsageType }))}>
-                  {USAGE_TYPES.map((usageType) => (
-                    <option key={usageType} value={usageType}>{usageType}</option>
-                  ))}
-                </SelectInput>
-              </EditorField>
-              <EditorField label="Title">
-                <TextInput value={editForm.title} onChange={(value) => setEditForm((current) => ({ ...current, title: value }))} />
-              </EditorField>
-              <EditorField label="Alt text">
-                <TextInput value={editForm.alt} onChange={(value) => setEditForm((current) => ({ ...current, alt: value }))} />
-              </EditorField>
-              <EditorField label="Public URL">
-                <input value={editForm.readonlyUrl} readOnly style={styles.inputReadOnly} />
-              </EditorField>
-              <EditorField label="Width">
-                <TextInput type="number" value={editForm.width} onChange={(value) => setEditForm((current) => ({ ...current, width: value }))} />
-              </EditorField>
-              <EditorField label="Height">
-                <TextInput type="number" value={editForm.height} onChange={(value) => setEditForm((current) => ({ ...current, height: value }))} />
-              </EditorField>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-1">Source File</label>
+                  <div className="relative group h-64 rounded-[2.5rem] border-2 border-dashed border-white/10 hover:border-cyan-500/40 hover:bg-cyan-500/[0.02] transition-all flex flex-col items-center justify-center gap-4 overflow-hidden bg-black/40">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                    />
+                    {uploadFile ? (
+                      <div className="text-center p-6">
+                        <div className="text-4xl mb-3">🖼️</div>
+                        <div className="text-xs font-black text-white truncate max-w-[200px]">{uploadFile.name}</div>
+                        <div className="text-[10px] text-zinc-500 mt-2 font-bold uppercase">{(uploadFile.size / 1024).toFixed(0)} KB</div>
+                        <button className="mt-4 text-[9px] font-black text-cyan-400 uppercase tracking-widest hover:text-white underline decoration-cyan-500/30">Change File</button>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="w-16 h-16 rounded-3xl bg-white/5 flex items-center justify-center text-zinc-500 group-hover:text-cyan-400 transition-all group-hover:scale-110">
+                          <span className="text-2xl">＋</span>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-[11px] font-black text-white uppercase tracking-widest">Drop Image Here</div>
+                          <div className="text-[9px] text-zinc-600 mt-1 font-bold uppercase">PNG, JPG, WEBP, SVG</div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-1">Usage Category</label>
+                    <select 
+                      value={uploadForm.usageType}
+                      onChange={(e) => setUploadForm(p => ({ ...p, usageType: e.target.value as CmsMediaUsageType }))}
+                      className="w-full h-14 bg-black border border-white/10 rounded-2xl px-5 text-sm text-zinc-200 focus:border-cyan-500/50 outline-none transition-all appearance-none"
+                    >
+                      {USAGE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-1">SEO Title</label>
+                    <input
+                      placeholder="e.g. Neon Repair Process"
+                      value={uploadForm.title}
+                      onChange={(e) => setUploadForm(p => ({ ...p, title: e.target.value }))}
+                      className="w-full h-14 bg-black border border-white/10 rounded-2xl px-5 text-sm text-zinc-200 focus:border-cyan-500/50 outline-none transition-all"
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-1">Alt Text</label>
+                    <input
+                      placeholder="e.g. Master fixing a neon tube"
+                      value={uploadForm.alt}
+                      onChange={(e) => setUploadForm(p => ({ ...p, alt: e.target.value }))}
+                      className="w-full h-14 bg-black border border-white/10 rounded-2xl px-5 text-sm text-zinc-200 focus:border-cyan-500/50 outline-none transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <EditorField label="Meta JSON">
-              <textarea
-                value={editForm.metaJson}
-                onChange={(event) => setEditForm((current) => ({ ...current, metaJson: event.target.value }))}
-                rows={5}
-                spellCheck={false}
-                style={{ ...styles.textarea, ...styles.codeTextarea }}
-              />
-            </EditorField>
-
-            <div style={styles.modalFooter}>
-              <button type="button" onClick={closeEdit} style={styles.secondaryButton}>Cancel</button>
-              <button type="button" onClick={() => void saveEdit()} disabled={editSaving} style={styles.primaryButton}>
-                {editSaving ? 'Saving...' : 'Save metadata'}
+            <div className="p-10 bg-white/[0.01] border-t border-white/5 flex items-center justify-between">
+              <div className="flex gap-8">
+                <div className="flex flex-col">
+                  <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Resoluton</span>
+                  <span className="text-xs font-bold text-zinc-400 mt-1">{uploadForm.width && uploadForm.height ? `${uploadForm.width} × ${uploadForm.height}` : 'Automatic'}</span>
+                </div>
+              </div>
+              <button 
+                onClick={() => void uploadMedia()} 
+                disabled={uploading || !uploadFile}
+                className="h-14 px-12 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-20 disabled:hover:bg-cyan-500 text-black rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl shadow-cyan-500/20"
+              >
+                {uploading ? 'Processing...' : 'Start Upload'}
               </button>
             </div>
           </div>
         </div>
-      ) : null}
+      )}
+
+      {/* LIBRARY GRID */}
+      <section className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-black text-white">Asset Gallery</h2>
+            <p className="text-xs text-zinc-600 font-bold uppercase tracking-wider mt-1">Available for Page CMS and article content</p>
+          </div>
+          <button 
+            onClick={() => void loadMedia()} 
+            className="w-10 h-10 rounded-xl border border-white/5 bg-white/[0.02] flex items-center justify-center hover:bg-white/5 transition-all"
+          >
+            🔄
+          </button>
+        </div>
+
+        {loading ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            {[1,2,3,4,5,6].map(i => <div key={i} className="aspect-square rounded-3xl bg-white/[0.02] animate-pulse" />)}
+          </div>
+        ) : media.length === 0 ? (
+          <div className="py-20 text-center bg-white/[0.01] border border-dashed border-white/10 rounded-3xl">
+             <div className="text-4xl mb-4 opacity-20">🖼️</div>
+             <p className="text-sm font-bold text-zinc-600 uppercase tracking-widest">Your library is empty</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            {media.map((item) => {
+              const storageBadge = getStorageBadge(item);
+
+              return (
+              <div key={item.id} className="group relative bg-[#08080a] border border-white/[0.06] rounded-3xl overflow-hidden hover:border-white/20 transition-all">
+                <div className="aspect-[4/3] bg-black flex items-center justify-center relative overflow-hidden">
+                  {item.url ? (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img 
+                        src={item.url} 
+                        alt={item.alt || ''} 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                          const parent = (e.target as HTMLImageElement).parentElement;
+                          if (parent) {
+                            const span = document.createElement('span');
+                            span.className = 'flex h-full w-full items-center justify-center px-1 text-[8px] font-black uppercase text-red-500/40 bg-red-500/5';
+                            span.innerText = 'Broken Link';
+                            parent.appendChild(span);
+                          }
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                        <button 
+                          onClick={() => copyToClipboard(item.url || '')}
+                          className="w-10 h-10 rounded-xl bg-white text-black text-sm flex items-center justify-center hover:scale-110 transition-all shadow-xl"
+                          title="Copy Link"
+                        >
+                          🔗
+                        </button>
+                        <a 
+                          href={item.url} 
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md text-white text-sm flex items-center justify-center hover:scale-110 transition-all"
+                          title="View Original"
+                        >
+                          ↗
+                        </a>
+                      </div>
+                    </>
+                  ) : (
+                    <span className="text-[10px] font-black text-zinc-800 uppercase">Invalid URL</span>
+                  )}
+                  {/* Badge */}
+                  <div className="absolute top-3 left-3 px-2 py-1 bg-black/60 backdrop-blur-md rounded-lg border border-white/10">
+                     <span className="text-[8px] font-black text-white uppercase tracking-widest">{item.usageType}</span>
+                  </div>
+                </div>
+                
+                <div className="p-4">
+                  <h3 className="text-[11px] font-black text-white truncate uppercase tracking-wider">{item.title || item.filename}</h3>
+                  <div className={`mt-2 inline-flex rounded-full border px-2 py-1 text-[8px] font-black uppercase tracking-widest ${storageBadge.className}`}>
+                    {storageBadge.label}
+                  </div>
+                  <div className="mt-3 space-y-2">
+                    <div>
+                      <div className="text-[8px] font-black text-zinc-700 uppercase tracking-widest">Primary URL</div>
+                      <div className="mt-1 truncate text-[10px] font-mono text-zinc-500" title={item.publicUrl || item.url || ''}>
+                        {item.publicUrl || item.url || '-'}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-[8px] font-black text-zinc-700 uppercase tracking-widest">Fallback URL</div>
+                      <div className="mt-1 truncate text-[10px] font-mono text-zinc-500" title={item.fallbackUrl || ''}>
+                        {item.fallbackUrl || '-'}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between mt-2 text-[9px] font-bold text-zinc-600 uppercase">
+                    <span>{item.width && item.height ? `${item.width}x${item.height}` : 'Dimensions -'}</span>
+                    <span>{formatBytes(item.byteSize)}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3 mt-3 pt-3 border-t border-white/[0.04]">
+                    <button
+                      onClick={() => openEdit(item)}
+                      className="text-[10px] text-zinc-500 hover:text-cyan-400 transition-colors"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => item.url && copyToClipboard(item.url)}
+                      disabled={!item.url}
+                      className="text-[10px] text-zinc-500 hover:text-white disabled:opacity-30 disabled:hover:text-zinc-500 transition-colors"
+                    >
+                      Copy URL
+                    </button>
+                    {item.fallbackUrl ? (
+                      <button
+                        onClick={() => item.fallbackUrl && copyToClipboard(item.fallbackUrl)}
+                        className="text-[10px] text-zinc-500 hover:text-amber-300 transition-colors"
+                      >
+                        Copy fallback
+                      </button>
+                    ) : null}
+                    <button 
+                      onClick={() => void deleteMedia(item)}
+                      disabled={deletingId === item.id}
+                      className="text-[10px] text-zinc-700 hover:text-red-500 disabled:opacity-30 transition-colors"
+                    >
+                      {deletingId === item.id ? '...' : 'Delete'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* EDIT MODAL - Simplified */}
+      {editingMedia && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 backdrop-blur-2xl bg-black/60 animate-in fade-in duration-300">
+          <div className="bg-[#0a0a0c] border border-white/10 rounded-[32px] w-full max-w-xl shadow-2xl overflow-hidden">
+            <div className="p-8 border-b border-white/5 flex items-center justify-between">
+               <div>
+                 <h2 className="text-xl font-black text-white">Edit Asset Info</h2>
+                 <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest mt-1">ID: {editingMedia.id}</p>
+               </div>
+               <button onClick={closeEdit} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">✕</button>
+            </div>
+
+            <div className="p-8 space-y-6">
+              {editError ? (
+                <div className="p-4 bg-red-500/5 border border-red-500/10 rounded-xl text-xs font-bold text-red-500">
+                  {editError}
+                </div>
+              ) : null}
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest px-1">Usage</label>
+                <select
+                  value={editForm.usageType}
+                  onChange={(e) => setEditForm(p => ({ ...p, usageType: e.target.value as CmsMediaUsageType }))}
+                  className="w-full h-11 bg-black border border-white/10 rounded-xl px-4 text-sm text-zinc-200 focus:border-violet-500/50 outline-none transition-all appearance-none"
+                >
+                  {USAGE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest px-1">Title</label>
+                <input 
+                  value={editForm.title}
+                  onChange={(e) => setEditForm(p => ({ ...p, title: e.target.value }))}
+                  className="w-full h-11 bg-black border border-white/10 rounded-xl px-4 text-sm text-zinc-200 focus:border-violet-500/50 outline-none"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest px-1">Alt Text</label>
+                <input 
+                  value={editForm.alt}
+                  onChange={(e) => setEditForm(p => ({ ...p, alt: e.target.value }))}
+                  className="w-full h-11 bg-black border border-white/10 rounded-xl px-4 text-sm text-zinc-200 focus:border-violet-500/50 outline-none transition-all"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest px-1">Meta JSON</label>
+                <textarea
+                  value={editForm.metaJson}
+                  onChange={(e) => setEditForm(p => ({ ...p, metaJson: e.target.value }))}
+                  rows={4}
+                  className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-sm text-zinc-200 focus:border-violet-500/50 outline-none font-mono transition-all"
+                />
+                {editForm.metaJson !== EMPTY_META_JSON && (
+                  <p className="text-[9px] text-amber-400/60 px-1">⚠️ Custom meta detected — edit with care</p>
+                )}
+              </div>
+            </div>
+
+            <div className="p-8 bg-white/[0.01] border-t border-white/5 flex gap-3">
+               <button onClick={closeEdit} className="h-12 flex-1 border border-white/10 hover:bg-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-zinc-400 transition-all">Cancel</button>
+               <button 
+                 onClick={() => void saveEdit()}
+                 disabled={editSaving}
+                 className="h-12 flex-1 bg-violet-600 hover:bg-violet-500 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white transition-all"
+               >
+                 {editSaving ? 'Saving...' : 'Update Metadata'}
+               </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  page: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px',
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    gap: '16px',
-    flexWrap: 'wrap',
-  },
-  title: {
-    margin: 0,
-    fontSize: '24px',
-    fontWeight: 700,
-    color: '#fff',
-  },
-  subtitle: {
-    margin: '8px 0 0',
-    fontSize: '14px',
-    color: '#8b8b8b',
-    lineHeight: 1.6,
-    maxWidth: '780px',
-  },
-  statRow: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-    gap: '12px',
-  },
-  statCard: {
-    border: '1px solid #222',
-    borderRadius: '8px',
-    background: '#111',
-    padding: '14px 16px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-  },
-  statLabel: {
-    color: '#8b8b8b',
-    fontSize: '12px',
-    textTransform: 'uppercase',
-    letterSpacing: '0.04em',
-  },
-  statValue: {
-    color: '#fff',
-    fontSize: '20px',
-    fontWeight: 700,
-  },
-  panel: {
-    border: '1px solid #222',
-    borderRadius: '12px',
-    background: '#111',
-    padding: '18px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
-  },
-  sectionTitle: {
-    margin: 0,
-    color: '#fff',
-    fontSize: '16px',
-    fontWeight: 700,
-  },
-  sectionText: {
-    margin: '6px 0 0',
-    color: '#8b8b8b',
-    fontSize: '13px',
-    lineHeight: 1.6,
-  },
-  formGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-    gap: '12px',
-  },
-  field: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-  },
-  fieldLabel: {
-    color: '#d4d4d8',
-    fontSize: '12px',
-    fontWeight: 700,
-    textTransform: 'uppercase',
-    letterSpacing: '0.04em',
-  },
-  fieldHint: {
-    color: '#8b8b8b',
-    fontSize: '12px',
-    lineHeight: 1.5,
-  },
-  input: {
-    width: '100%',
-    padding: '10px 12px',
-    borderRadius: '8px',
-    border: '1px solid #333',
-    background: '#0b0b0b',
-    color: '#fff',
-    outline: 'none',
-    fontSize: '13px',
-    boxSizing: 'border-box',
-  },
-  inputReadOnly: {
-    width: '100%',
-    background: '#0c0c0c',
-    border: '1px solid #2b2b2b',
-    color: '#9ca3af',
-    borderRadius: '8px',
-    padding: '10px 12px',
-    fontSize: '13px',
-  },
-  textarea: {
-    width: '100%',
-    minHeight: '100px',
-    padding: '10px 12px',
-    borderRadius: '8px',
-    border: '1px solid #333',
-    background: '#0b0b0b',
-    color: '#fff',
-    outline: 'none',
-    fontSize: '13px',
-    lineHeight: 1.6,
-    resize: 'vertical',
-    boxSizing: 'border-box',
-  },
-  codeTextarea: {
-    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-  },
-  mediaGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-    gap: '12px',
-  },
-  mediaCard: {
-    border: '1px solid #242424',
-    borderRadius: '10px',
-    background: '#0b0b0b',
-    overflow: 'hidden',
-  },
-  previewBox: {
-    height: '180px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: 'linear-gradient(135deg, #111 0%, #1f2937 100%)',
-    borderBottom: '1px solid #222',
-  },
-  previewImage: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    display: 'block',
-  },
-  previewFallback: {
-    color: '#8b8b8b',
-    fontSize: '13px',
-  },
-  mediaBody: {
-    padding: '14px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
-  },
-  mediaTitle: {
-    margin: 0,
-    color: '#fff',
-    fontSize: '15px',
-    fontWeight: 700,
-    lineHeight: 1.4,
-  },
-  mediaMeta: {
-    margin: '4px 0 0',
-    color: '#8b8b8b',
-    fontSize: '13px',
-    lineHeight: 1.5,
-  },
-  chipRow: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '6px',
-  },
-  chip: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    minHeight: '22px',
-    padding: '2px 8px',
-    borderRadius: '999px',
-    border: '1px solid #333',
-    color: '#d4d4d8',
-    background: '#161616',
-    fontSize: '11px',
-    fontWeight: 700,
-    letterSpacing: '0.02em',
-  },
-  detailGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-    gap: '6px 12px',
-    color: '#a3a3a3',
-    fontSize: '12px',
-    lineHeight: 1.5,
-  },
-  actionRow: {
-    display: 'flex',
-    gap: '8px',
-    flexWrap: 'wrap',
-  },
-  primaryButton: {
-    padding: '10px 14px',
-    fontSize: '13px',
-    fontWeight: 700,
-    background: '#fff',
-    color: '#111',
-    border: '1px solid #fff',
-    borderRadius: '8px',
-    cursor: 'pointer',
-  },
-  secondaryButton: {
-    padding: '9px 12px',
-    borderRadius: '8px',
-    border: '1px solid #333',
-    background: '#171717',
-    color: '#fff',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: 700,
-  },
-  linkButton: {
-    padding: '9px 12px',
-    borderRadius: '8px',
-    border: '1px solid #333',
-    background: '#171717',
-    color: '#fff',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: 700,
-    textDecoration: 'none',
-  },
-  dangerButton: {
-    padding: '9px 12px',
-    borderRadius: '8px',
-    border: '1px solid #7f1d1d',
-    background: '#2a1111',
-    color: '#fca5a5',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: 700,
-  },
-  errorBanner: {
-    padding: '12px 14px',
-    border: '1px solid #5b1f1f',
-    borderRadius: '8px',
-    background: '#2a1111',
-    color: '#fca5a5',
-    fontSize: '13px',
-    lineHeight: 1.5,
-  },
-  noticeBanner: {
-    padding: '12px 14px',
-    border: '1px solid #14532d',
-    borderRadius: '8px',
-    background: '#0f241b',
-    color: '#86efac',
-    fontSize: '13px',
-    lineHeight: 1.5,
-  },
-  emptyState: {
-    padding: '28px 16px',
-    border: '1px dashed #303030',
-    borderRadius: '8px',
-    color: '#8b8b8b',
-    background: '#111',
-    fontSize: '14px',
-  },
-  modalOverlay: {
-    position: 'fixed',
-    inset: 0,
-    background: 'rgba(0,0,0,0.72)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 100,
-    padding: '16px',
-  },
-  modal: {
-    width: 'min(920px, 100%)',
-    maxHeight: '92vh',
-    overflow: 'auto',
-    borderRadius: '8px',
-    border: '1px solid #222',
-    background: '#111',
-    padding: '20px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
-  },
-  modalHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    gap: '12px',
-    alignItems: 'flex-start',
-    flexWrap: 'wrap',
-  },
-  modalTitle: {
-    margin: 0,
-    color: '#fff',
-    fontSize: '20px',
-    fontWeight: 700,
-  },
-  modalSubtitle: {
-    margin: '6px 0 0',
-    color: '#8b8b8b',
-    fontSize: '13px',
-    lineHeight: 1.6,
-    maxWidth: '720px',
-  },
-  closeButton: {
-    padding: '9px 12px',
-    borderRadius: '8px',
-    border: '1px solid #333',
-    background: '#171717',
-    color: '#fff',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: 700,
-  },
-  modalFooter: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    gap: '8px',
-    flexWrap: 'wrap',
-  },
-};
