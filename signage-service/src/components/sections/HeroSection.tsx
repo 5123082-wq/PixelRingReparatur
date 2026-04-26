@@ -14,6 +14,7 @@ type HomeHeroContent = {
   trustBadge?: string | null;
   responseBadge?: string | null;
   assetUrl?: string | null;
+  imageAlt?: string | null;
   fallbackSrc?: string | null;
 };
 
@@ -136,7 +137,7 @@ const HeroSection = ({ content }: { content?: HomeHeroContent | null }) => {
                     <CmsImage
                       src={heroImage}
                       fallbackSrc={content?.fallbackSrc}
-                      alt="Neon sign repair — PixelRing"
+                      alt={content?.imageAlt || content?.titleAccent || "Neon sign repair — PixelRing"}
                       fill
                       sizes="100vw"
                       className="object-cover"

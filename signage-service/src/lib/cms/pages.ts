@@ -154,6 +154,7 @@ export type HomeHeroCmsContent = {
   trustBadge?: string;
   responseBadge?: string;
   assetUrl?: string;
+  imageAlt?: string;
   fallbackSrc?: string;
 };
 
@@ -195,7 +196,7 @@ export type CoverageMapCmsContent = {
 export type ExcellenceCmsContent = {
   title?: string;
   subtitle?: string;
-  items?: { title?: string; tag?: string; description?: string; image?: string }[];
+  items?: { title?: string; tag?: string; description?: string; image?: string; imageAlt?: string }[];
 };
 
 export type ReviewCmsContent = {
@@ -233,6 +234,7 @@ export type LeistungenHeroSlideCmsContent = {
   title?: string;
   description?: string;
   image?: string;
+  imageAlt?: string;
   fallbackSrc?: string;
   cta?: string;
 };
@@ -245,6 +247,7 @@ export type CmsListItemContent = {
   details?: string;
   text?: string;
   image?: string;
+  imageAlt?: string;
   cta?: string;
   href?: string;
   icon?: string;
@@ -748,10 +751,11 @@ function getLeistungenHeroSlides(block: CmsPageBlock): LeistungenHeroSlideCmsCon
           ? item.description.trim()
           : undefined;
       const image = typeof item.image === 'string' && item.image.trim() ? item.image.trim() : undefined;
+      const imageAlt = typeof item.imageAlt === 'string' && item.imageAlt.trim() ? item.imageAlt.trim() : undefined;
       const cta = typeof item.cta === 'string' && item.cta.trim() ? item.cta.trim() : undefined;
 
-      return id || title || description || image || cta
-        ? { id, title, description, image, cta }
+      return id || title || description || image || imageAlt || cta
+        ? { id, title, description, image, imageAlt, cta }
         : null;
     })
     .filter((item): item is LeistungenHeroSlideCmsContent => Boolean(item))
@@ -934,6 +938,7 @@ export async function getHomePageCmsContent(
           trustBadge: getBlockText(hero, 'trustBadge'),
           responseBadge: getBlockText(hero, 'responseBadge'),
           assetUrl: getBlockText(hero, 'assetUrl'),
+          imageAlt: getBlockText(hero, 'imageAlt'),
         }
       : undefined,
     intake: intake
@@ -986,6 +991,7 @@ export async function getHomePageCmsContent(
             tag: typeof i.tag === 'string' ? i.tag : undefined,
             description: typeof i.description === 'string' ? i.description : undefined,
             image: typeof i.image === 'string' ? i.image : undefined,
+            imageAlt: typeof i.imageAlt === 'string' ? i.imageAlt : undefined,
           })),
         }
       : undefined,
@@ -1107,6 +1113,7 @@ export type BusinessHeroCmsContent = {
   title?: string;
   description?: string;
   image?: string;
+  imageAlt?: string;
   fallbackSrc?: string;
   cta?: string;
 };
@@ -1139,6 +1146,7 @@ export async function getBusinessPageCmsContent(
       title: getBlockText(hero, 'title'),
       description: getBlockText(hero, 'description') ?? getBlockText(hero, 'intro'),
       image: getBlockText(hero, 'image') ?? getBlockText(hero, 'assetUrl'),
+      imageAlt: getBlockText(hero, 'imageAlt'),
       cta: getBlockText(hero, 'cta') ?? getBlockText(hero, 'ctaPrimary'),
     } : undefined,
     target: target ? {

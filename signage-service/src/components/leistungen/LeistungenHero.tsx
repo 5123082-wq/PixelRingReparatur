@@ -12,6 +12,7 @@ type HeroSlide = {
   title: string;
   description: string;
   image: string;
+  imageAlt?: string;
   fallbackSrc?: string;
   cta: string;
 };
@@ -82,7 +83,7 @@ export default function LeistungenHero({ slides }: Omit<LeistungenHeroProps, 'lo
             <CmsImage
               src={slides[currentIndex].image}
               fallbackSrc={slides[currentIndex].fallbackSrc}
-              alt={slides[currentIndex].title}
+              alt={slides[currentIndex].imageAlt || slides[currentIndex].title}
               fill
               priority
               className="object-cover opacity-60"

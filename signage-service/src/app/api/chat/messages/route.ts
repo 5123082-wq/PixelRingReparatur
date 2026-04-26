@@ -12,9 +12,13 @@ import {
 
 import { generateChatReply } from '@/lib/ai/chat-engine';
 import { resolveChatSession } from '@/lib/ai/chat-session';
+import {
+  AttachmentValidationError,
+  storeAttachment,
+  type StoredAttachmentInput,
+} from '@/lib/attachments';
 
 type ChatMessageResponse = {
-  id: string;
   authorRole: MessageAuthorRole;
   channel: CaseOriginChannel;
   body: string;
@@ -22,11 +26,32 @@ type ChatMessageResponse = {
   sentAt: string | null;
   createdAt: string;
   updatedAt: string;
-  caseId: string | null;
-  sessionId: string | null;
+  attachments?: { id: string; storageKey: string; originalFilename: string | null }[];
 };
 
+type ChatIntakePrefill = {
+  issueType?: string;
+  contact?: string;
+  contactMode?: 'phone' | 'email';
+  summary?: string;
+  hasSessionAttachments?: boolean;
+  needsPhoto?: boolean;
+  hasKnownSessionContact?: boolean;
+};
+
+type ChatIntakeMode = 'full_form' | 'confirm_existing_contact';
+
 const MAX_CHAT_MESSAGE_LENGTH = 4000;
+const EMAIL_IN_TEXT_RE = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i;
+const PHONE_IN_TEXT_RE = /(?:\+?\d[\d\s().-]{6,}\d)/;
+const ISSUE_KEYWORDS: Array<{ issueType: string; patterns: RegExp[] }> = [
+  { issueType: 'Reparatur', patterns: [/repar/i, /ремонт/i, /kaputt/i, /broken/i, /defekt/i, /сломал/i, /сломалась/i, /не\s+работ/i, /почин/i] },
+  { issueType: 'Montage', patterns: [/montage/i, /install/i, /установ/i, /монтаж/i] },
+  { issueType: 'Neue Beschilderung', patterns: [/neue beschilderung/i, /new sign/i, /нов(?:ая|ую|ой|ые|ый)?\s+(?:вывес|таблич|реклам)/i] },
+  { issueType: 'Branding', patterns: [/branding/i, /бренд/i] },
+  { issueType: 'Lichterwerbung', patterns: [/lichterwerbung/i, /light/i, /led/i, /вывес/i, /букв/i, /свет/i, /подсвет/i, /мерца/i, /flicker/i, /flacker/i] },
+  { issueType: 'Wartung', patterns: [/wartung/i, /maintenance/i, /обслуж/i] },
+];
 
 function buildInitialGreeting(locale?: string): string {
   switch (locale) {
@@ -47,7 +72,6 @@ function buildInitialGreeting(locale?: string): string {
 }
 
 function serializeMessage(message: {
-  id: string;
   authorRole: MessageAuthorRole;
   channel: CaseOriginChannel;
   body: string;
@@ -55,11 +79,9 @@ function serializeMessage(message: {
   sentAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
-  caseId: string | null;
-  sessionId: string | null;
+  attachments: { id: string; storageKey: string; originalFilename: string | null }[];
 }): ChatMessageResponse {
   return {
-    id: message.id,
     authorRole: message.authorRole,
     channel: message.channel,
     body: message.body,
@@ -67,9 +89,133 @@ function serializeMessage(message: {
     sentAt: message.sentAt ? message.sentAt.toISOString() : null,
     createdAt: message.createdAt.toISOString(),
     updatedAt: message.updatedAt.toISOString(),
-    caseId: message.caseId,
-    sessionId: message.sessionId,
+    attachments: message.attachments,
   };
+}
+
+function isLikelyContactOnly(value: string): boolean {
+  const trimmed = value.trim();
+  return EMAIL_IN_TEXT_RE.test(trimmed) || PHONE_IN_TEXT_RE.test(trimmed);
+}
+
+function isLowSignalIntakeSummary(value: string): boolean {
+  const trimmed = value.trim().toLowerCase();
+
+  return (
+    trimmed.length < 6 ||
+    isLikelyContactOnly(trimmed) ||
+    /заяв|статус|request|status|anfrag/i.test(trimmed) ||
+    /^(привет|здравств|hello|hi|hey|hallo|guten tag|добрый день)([!,.?\s]|$)/i.test(trimmed) ||
+    ['foto', 'photo', 'bild', 'image', 'фото', 'фотография', 'картинка', 'видео']
+      .some((prefix) => trimmed.startsWith(prefix))
+  );
+}
+
+function inferIssueTypeFromText(value: string): string | undefined {
+  for (const item of ISSUE_KEYWORDS) {
+    if (item.patterns.some((pattern) => pattern.test(value))) {
+      return item.issueType;
+    }
+  }
+
+  return undefined;
+}
+
+function getCurrentIntakeWindow(
+  messages: Awaited<ReturnType<typeof loadSessionMessages>>
+): Awaited<ReturnType<typeof loadSessionMessages>> {
+  const lastRegistrationIndex = messages.findLastIndex(
+    (message) =>
+      message.authorRole === MessageAuthorRole.SYSTEM &&
+      /Anfrage erfolgreich registriert\. Nummer:/i.test(message.body)
+  );
+
+  return lastRegistrationIndex >= 0
+    ? messages.slice(lastRegistrationIndex + 1)
+    : messages;
+}
+
+function isStatusOrAccountQuestion(value: string): boolean {
+  const normalized = value.trim().toLowerCase();
+
+  return [
+    /сколько.*заяв/i,
+    /какие.*заяв/i,
+    /статус/i,
+    /номер.*заяв/i,
+    /мои.*заяв/i,
+    /how many.*requests?/i,
+    /my requests?/i,
+    /request status/i,
+    /status/i,
+    /wie viele.*anfrag/i,
+    /meine.*anfrag/i,
+    /status/i,
+  ].some((pattern) => pattern.test(normalized));
+}
+
+function buildIntakePrefill(
+  messages: Awaited<ReturnType<typeof loadSessionMessages>>,
+  markerPrefill?: ChatIntakePrefill | null,
+  sessionContact?: {
+    contactMethod: string | null;
+    contactValue: string | null;
+  }
+): ChatIntakePrefill {
+  const currentMessages = getCurrentIntakeWindow(messages);
+  const customerMessages = currentMessages.filter(
+    (message) => message.authorRole === MessageAuthorRole.CUSTOMER
+  );
+  const customerText = customerMessages.map((message) => message.body).join('\n');
+  const email = customerText.match(EMAIL_IN_TEXT_RE)?.[0];
+  const phone = customerText.match(PHONE_IN_TEXT_RE)?.[0]?.trim();
+  const sessionContactMode =
+    sessionContact?.contactMethod === 'EMAIL'
+      ? 'email'
+      : sessionContact?.contactMethod === 'PHONE'
+        ? 'phone'
+        : undefined;
+  const hasSessionAttachments = currentMessages.some(
+    (message) => message.attachments.length > 0
+  );
+  const summarySource = [...customerMessages]
+    .reverse()
+    .find((message) => !isLowSignalIntakeSummary(message.body))
+    ?.body
+    .trim();
+
+  return {
+    ...markerPrefill,
+    issueType:
+      markerPrefill?.issueType ||
+      inferIssueTypeFromText(customerText) ||
+      undefined,
+    contact: markerPrefill?.contact || email || phone || sessionContact?.contactValue || undefined,
+    contactMode:
+      markerPrefill?.contactMode ||
+      (email ? 'email' : phone ? 'phone' : sessionContactMode),
+    summary: markerPrefill?.summary || summarySource || undefined,
+    hasSessionAttachments,
+    needsPhoto: !hasSessionAttachments,
+    hasKnownSessionContact: Boolean(sessionContact?.contactValue),
+  };
+}
+
+function shouldSuggestIntake(
+  prefill: ChatIntakePrefill,
+  latestCustomerMessage?: string | null
+): boolean {
+  if (latestCustomerMessage && isStatusOrAccountQuestion(latestCustomerMessage)) {
+    return false;
+  }
+
+  return Boolean(prefill.contact && prefill.summary && prefill.issueType);
+}
+
+function getIntakeMode(prefill: ChatIntakePrefill): ChatIntakeMode {
+  return prefill.hasKnownSessionContact && prefill.summary && prefill.issueType
+    ? 'confirm_existing_contact'
+    : 'full_form';
 }
 
 async function loadSessionMessages(
@@ -77,20 +223,28 @@ async function loadSessionMessages(
   sessionId: string,
   caseId: string | null
 ) {
-  const where = caseId
-    ? {
-        OR: [{ sessionId }, { caseId }],
-      }
-    : {
-        sessionId,
-      };
+  const caseIds = new Set<string>();
+  if (caseId) caseIds.add(caseId);
+
+  const sessionRelatedCases = await db.message.findMany({
+    where: { sessionId, isCustomerVisible: true },
+    select: { caseId: true },
+    distinct: ['caseId'],
+  });
+  sessionRelatedCases.forEach(r => { if (r.caseId) caseIds.add(r.caseId); });
+
+  const where = {
+    isCustomerVisible: true,
+    OR: [
+      { sessionId },
+      { caseId: { in: Array.from(caseIds) } },
+    ],
+  };
 
   return db.message.findMany({
     where,
-    distinct: ['id'],
     orderBy: { createdAt: 'asc' },
     select: {
-      id: true,
       authorRole: true,
       channel: true,
       body: true,
@@ -100,6 +254,13 @@ async function loadSessionMessages(
       updatedAt: true,
       caseId: true,
       sessionId: true,
+      attachments: {
+        select: {
+          id: true,
+          storageKey: true,
+          originalFilename: true,
+        }
+      }
     },
   });
 }
@@ -117,8 +278,6 @@ export async function GET(request: NextRequest) {
     if (!resolved) {
       return NextResponse.json({
         success: true,
-        sessionId: null,
-        caseId: null,
         operatorTakeover: false,
         messages: [],
       });
@@ -143,12 +302,13 @@ export async function GET(request: NextRequest) {
       messages = await loadSessionMessages(prisma, session.id, session.caseId);
     }
 
+    const intakePrefill = buildIntakePrefill(messages, null, session);
     const response = NextResponse.json({
       success: true,
-      sessionId: session.id,
-      caseId: session.caseId,
       operatorTakeover: session.operatorTakeover,
       messages: messages.map(serializeMessage),
+      intakePrefill,
+      intakeMode: getIntakeMode(intakePrefill),
     });
 
     if (resolved.cookieToken) {
@@ -186,15 +346,23 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const body = (await request.json().catch(() => null)) as
-      | {
-          message?: string;
-          locale?: string;
-        }
-      | null;
+    let message = '';
+    let locale = '';
+    let files: File[] = [];
 
-    const message = body?.message?.trim() ?? '';
-    const locale = body?.locale?.trim();
+    const contentType = request.headers.get('content-type') || '';
+    if (contentType.includes('multipart/form-data')) {
+      const formData = await request.formData();
+      message = String(formData.get('message') ?? '').trim();
+      locale = String(formData.get('locale') ?? '').trim();
+      files = formData.getAll('files').filter((entry): entry is File => entry instanceof File && entry.size > 0);
+    } else {
+      const body = (await request.json().catch(() => null)) as
+        | { message?: string; locale?: string; }
+        | null;
+      message = body?.message?.trim() ?? '';
+      locale = body?.locale?.trim() ?? '';
+    }
 
     if (!message) {
       return NextResponse.json(
@@ -225,10 +393,17 @@ export async function POST(request: NextRequest) {
     }
 
     const { session, cookieToken } = resolved;
+    let storedAttachments: StoredAttachmentInput[] = [];
+    if (files.length > 0) {
+      storedAttachments = await Promise.all(
+        files.map((file) => storeAttachment(file))
+      );
+    }
+
     const now = new Date();
 
     await prisma.$transaction(async (tx) => {
-      await tx.message.create({
+      const dbMessage = await tx.message.create({
         data: {
           caseId: session.caseId,
           sessionId: session.id,
@@ -240,6 +415,18 @@ export async function POST(request: NextRequest) {
         },
       });
 
+      if (storedAttachments.length > 0) {
+        await tx.attachment.createMany({
+          data: storedAttachments.map(att => ({
+            ...att,
+            messageId: dbMessage.id,
+            caseId: session.caseId,
+            uploadedBySessionId: session.id,
+            isCustomerVisible: true,
+          })),
+        });
+      }
+
       await tx.session.update({
         where: { id: session.id },
         data: {
@@ -248,6 +435,8 @@ export async function POST(request: NextRequest) {
         },
       });
     });
+
+    let reply: import('@/lib/ai/chat-engine').GenerateChatReplyResult | null = null;
 
     if (!session.operatorTakeover) {
       const messages = await loadSessionMessages(prisma, session.id, session.caseId);
@@ -261,11 +450,26 @@ export async function POST(request: NextRequest) {
           body: entry.body,
         }));
 
-      const reply = await generateChatReply({
+      const aiMessage = files.length > 0
+        ? `${message}\n\n[System-Notiz: Der Benutzer hat ${files.length} Foto(s)/Datei(en) an diese Nachricht angehängt. Bestätige kurz, dass du die Fotos erhalten hast, auch wenn du sie noch nicht sehen kannst.]`
+        : message;
+
+      // Fetch public request number for AI context
+      let publicRequestNumber: string | null = null;
+      if (session.caseId) {
+        const c = await prisma.case.findUnique({
+          where: { id: session.caseId },
+          select: { publicRequestNumber: true }
+        });
+        publicRequestNumber = c?.publicRequestNumber || null;
+      }
+
+      reply = await generateChatReply({
         locale,
-        message,
+        message: aiMessage,
         history,
         operatorTakeover: session.operatorTakeover,
+        publicRequestNumber,
       });
 
       if (reply.text.trim().length > 0) {
@@ -284,13 +488,27 @@ export async function POST(request: NextRequest) {
     }
 
     const persistedMessages = await loadSessionMessages(prisma, session.id, session.caseId);
+    const latestCustomerMessage = [...persistedMessages]
+      .reverse()
+      .find((message) => message.authorRole === MessageAuthorRole.CUSTOMER)
+      ?.body;
+    const intakePrefill = buildIntakePrefill(
+      persistedMessages,
+      reply?.intakePrefill ?? null,
+      session
+    );
 
     const response = NextResponse.json({
       success: true,
-      sessionId: session.id,
-      caseId: session.caseId,
       operatorTakeover: session.operatorTakeover,
       messages: persistedMessages.map(serializeMessage),
+      intakeMode: getIntakeMode(intakePrefill),
+      suggestIntake:
+        !session.operatorTakeover &&
+        !isStatusOrAccountQuestion(latestCustomerMessage ?? '') &&
+        ((reply?.suggestIntake ?? false) ||
+          shouldSuggestIntake(intakePrefill, latestCustomerMessage)),
+      intakePrefill: !session.operatorTakeover ? intakePrefill : null,
     });
 
     if (cookieToken) {
@@ -308,6 +526,13 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (error) {
     console.error('Chat message error:', error);
+
+    if (error instanceof AttachmentValidationError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 400 }
+      );
+    }
 
     return NextResponse.json(
       { success: false, error: 'Failed to save chat message' },

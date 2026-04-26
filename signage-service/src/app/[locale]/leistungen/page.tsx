@@ -76,6 +76,7 @@ type HeroSlide = {
   title: string;
   description: string;
   image: string;
+  imageAlt?: string;
   fallbackSrc?: string;
   cta: string;
 };
@@ -656,6 +657,7 @@ function applyCmsHeroSlide(
     title: cmsSlide.title ?? fallback.title,
     description: cmsSlide.description ?? fallback.description,
     image: cmsSlide.image ?? fallback.image,
+    imageAlt: cmsSlide.imageAlt ?? (cmsSlide.title ?? fallback.title),
     fallbackSrc: cmsSlide.fallbackSrc,
     cta: cmsSlide.cta ?? fallback.cta,
   };

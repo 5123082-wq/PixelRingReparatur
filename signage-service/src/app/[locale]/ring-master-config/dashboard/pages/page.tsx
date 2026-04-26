@@ -127,13 +127,14 @@ const PAGE_KEYS: CmsPageKey[] = [
 /** Fields that are locale-specific text for each known block type.
  *  These MUST match the field names that getHomePageCmsContent / frontend components actually read. */
 const BLOCK_TEXT_FIELDS: Record<string, string[]> = {
-  hero: ['title', 'description', 'cta', 'titlePrefix', 'titleAccent', 'titleSuffix', 'pretitle', 'intro', 'ctaPrimary', 'ctaSecondary', 'trustBadge', 'responseBadge'],
+  hero: ['title', 'description', 'cta', 'titlePrefix', 'titleAccent', 'titleSuffix', 'pretitle', 'intro', 'ctaPrimary', 'ctaSecondary', 'trustBadge', 'responseBadge', 'imageAlt'],
   faqList: ['title', 'items'],
   textSection: ['title', 'description'],
   reviewList: ['title', 'subtitle', 'items'],
   cardList: ['title', 'titleStart', 'titleAccent', 'titleEnd', 'subtitle', 'description', 'copyright', 'items', 'steps', 'stats', 'features'],
   cta: ['servicePill', 'bookLabel', 'accountStatusLabel', 'accountStatusHref', 'requestLabel', 'requestHref', 'badge', 'title', 'intro', 'description', 'primaryLabel', 'secondaryLabel', 'links'],
   footerCta: ['title', 'subtitle', 'connectLabel', 'formTitle', 'formSubtitle'],
+  excellence: ['title', 'subtitle', 'items'],
 };
 
 /** Structural keys never treated as shared or text — they live at the block root. */
@@ -1285,7 +1286,8 @@ export default function PagesPage() {
                             if (k === 'links') defaultItem = { label: '', href: '' };
                             else if (k === 'stats') defaultItem = { value: '', label: '', description: '' };
                             else if (k === 'features') defaultItem = { icon: '', label: '' };
-                            else if (block.key === 'excellenceSection') defaultItem = { title: '', tag: '', description: '', image: '' };
+                            else if (block.key === 'excellenceSection') defaultItem = { title: '', tag: '', description: '', image: '', imageAlt: '' };
+                            else defaultItem = { title: '', description: '', image: '', imageAlt: '', cta: '' };
 
                             addListItem(blockIndex, k, defaultItem);
                           }}
@@ -1297,8 +1299,12 @@ export default function PagesPage() {
                       </div>
                       <div className="grid grid-cols-1 gap-4">
                         {v.map((item, ii) => {
+                          const rawItem = item as Record<string, unknown>;
                           const isExcellence = block.key === 'excellenceSection';
-                          const castItem = item as Record<string, unknown>;
+                          // Normalize: if item has 'image' but no 'imageAlt', inject it for editing
+                          const castItem = (rawItem.image !== undefined && rawItem.imageAlt === undefined)
+                            ? { ...rawItem, imageAlt: '' }
+                            : rawItem;
 
                           return (
                             <div

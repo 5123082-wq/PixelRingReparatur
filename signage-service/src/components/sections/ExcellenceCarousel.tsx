@@ -29,6 +29,7 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
     tag: cmsItem.tag || '',
     description: cmsItem.description || '',
     image: cmsItem.image || DEFAULT_IMAGES[idx % DEFAULT_IMAGES.length],
+    imageAlt: cmsItem.imageAlt || cmsItem.title || '',
   }));
 
   const itemsCount = items.length;
@@ -226,7 +227,7 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
               >
                 <Image
                   src={item.image}
-                  alt={item.title}
+                  alt={item.imageAlt}
                   fill
                   sizes="100vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-700"

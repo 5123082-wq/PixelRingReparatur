@@ -14,12 +14,12 @@ export type SafetyVerdict = {
 };
 
 const REFUSAL_TEXT: Record<SupportedLocale, string> = {
-  de: 'Ich kann nur bei Fragen zum PixelRing-Reparaturservice helfen. Brauchen Sie Hilfe mit einer Reparaturanfrage?',
-  en: 'I can only help with PixelRing repair services. Need help with a repair request?',
-  ru: 'Я могу помочь только с вопросами о ремонте в PixelRing. Помочь с заявкой?',
-  tr: 'Yalnızca PixelRing onarım hizmetleriyle ilgili konularda yardımcı olabilirim. Bir onarım talebiyle ilgili yardıma mı ihtiyacınız var?',
-  pl: 'Mogę pomóc tylko w sprawach związanych z serwisem PixelRing. Potrzebujesz pomocy przy zgłoszeniu naprawy?',
-  ar: 'يمكنني المساعدة فقط في خدمات إصلاح PixelRing. هل تحتاج إلى مساعدة في طلب إصلاح؟',
+  de: 'Dabei kann ich hier nicht helfen. Ich bin fuer PixelRing-Service, Reparaturen, Anfragen und Statusfragen da. Beschreiben Sie bitte kurz das Problem mit der Beschilderung oder Ihrer Anfrage.',
+  en: 'I cannot help with that here. I can help with PixelRing service, repairs, requests, and status questions. Please briefly describe the signage issue or your request.',
+  ru: 'С этим здесь не помогу. Я могу помочь по сервису PixelRing: ремонт, заявки, связь с менеджером и статус обращения. Опишите, пожалуйста, проблему с вывеской или вашу заявку.',
+  tr: 'Bu konuda burada yardimci olamam. PixelRing servis, onarim, talep ve durum sorularinda yardimci olabilirim. Lutfen tabela veya talebinizle ilgili sorunu kisaca aciklayin.',
+  pl: 'W tym tutaj nie pomoge. Pomagam w sprawach serwisu PixelRing: naprawy, zgloszenia, kontakt z menedzerem i status. Opisz krotko problem z oznakowaniem albo zgloszeniem.',
+  ar: 'لا يمكنني المساعدة في ذلك هنا. يمكنني المساعدة في خدمة PixelRing والإصلاحات والطلبات وحالة الطلب. يرجى وصف مشكلة اللافتة أو طلبك بإيجاز.',
 };
 
 const INJECTION_PATTERNS = [
@@ -58,6 +58,15 @@ const OFF_TOPIC_PATTERNS = [
   /\bessay\b/i,
   /\bstory\b/i,
   /\bjoke\b/i,
+  /\bgenerate (an? )?image\b/i,
+  /\bcreate (an? )?image\b/i,
+  /\bmake (an? )?image\b/i,
+  /\bwrite (me )?(a )?(text|post|article|ad|advertisement)\b/i,
+  /сгенерируй/i,
+  /генерац/i,
+  /напиши\s+(?:мне\s+)?(?:текст|статью|пост|код|сценар)/i,
+  /сделай\s+(?:мне\s+)?(?:картинк|изображен|домашн|код)/i,
+  /реши\s+(?:задач|пример)/i,
   /\bgeneral AI\b/i,
 ];
 
@@ -72,14 +81,41 @@ const REQUEST_PATTERNS = [
   /\bdevice\b/i,
   /\blamp\b/i,
   /\bring light\b/i,
+  /\bsign(?:age)?\b/i,
+  /\bled\b/i,
+  /\bflicker/i,
+  /\bbroken\b/i,
+  /\bdefect/i,
+  /\bfallen\b/i,
+  /\bnot lighting\b/i,
+  /\bno photo\b/i,
+  /\bneed help\b/i,
+  /\bcreate (a )?request\b/i,
   /\banfrage\b/i,
   /\breparatur\b/i,
   /\bgerät\b/i,
   /\blampe\b/i,
+  /\bschild\b/i,
+  /\bwerbung\b/i,
+  /\bdefekt\b/i,
+  /\bkaputt\b/i,
+  /\bflacker/i,
+  /\bhilfe\b/i,
   /заявк/i,
   /ремонт/i,
   /устрой/i,
   /ламп/i,
+  /вывес/i,
+  /букв/i,
+  /свет/i,
+  /мерца/i,
+  /сломал/i,
+  /упал/i,
+  /фото\s+нет/i,
+  /нет\s+фото/i,
+  /нужн[ао]?\s+помощ/i,
+  /помоги/i,
+  /оформ/i,
   /телефон/i,
   /почт/i,
   /контакт/i,
@@ -101,12 +137,18 @@ const HUMAN_PATTERNS = [
   /\bagent\b/i,
   /\breal person\b/i,
   /\bcall me\b/i,
+  /\bcall back\b/i,
   /\bmanager\b/i,
   /\bmitarbeiter\b/i,
   /\boperator\b/i,
+  /\bcontact me\b/i,
+  /\bspeak to\b/i,
+  /\brueckruf\b/i,
+  /\bzurueckrufen\b/i,
   /оператор/i,
   /человек/i,
   /менеджер/i,
+  /связаться/i,
   /позвон/i,
 ];
 
@@ -153,7 +195,8 @@ export function getRefusalText(locale?: string): string {
 
 export function guardChatText(
   text: string,
-  locale?: string
+  locale?: string,
+  caseId?: string | null
 ): SafetyVerdict {
   const normalizedText = text.trim();
 
@@ -175,7 +218,7 @@ export function guardChatText(
     };
   }
 
-  if (matchesAny(OFF_TOPIC_PATTERNS, normalizedText)) {
+  if (matchesAny(OFF_TOPIC_PATTERNS, normalizedText) && !caseId) {
     return {
       allowed: false,
       intent: 'refusal',
@@ -193,9 +236,10 @@ export function guardChatText(
 
 export function guardChatReply(
   text: string,
-  locale?: string
+  locale?: string,
+  caseId?: string | null
 ): SafetyVerdict {
-  const verdict = guardChatText(text, locale);
+  const verdict = guardChatText(text, locale, caseId);
 
   if (!verdict.allowed) {
     return verdict;
@@ -222,42 +266,42 @@ export function buildFallbackReply(intent: SafetyIntent, locale?: string): strin
       status: 'Wenn Sie bereits eine PR-Nummer haben, können Sie den Status direkt auf der Status-Seite prüfen. Geben Sie dazu PR-Nummer und die bei der Anfrage verwendete Kontaktmethode ein.',
       human: 'Ein menschlicher Mitarbeiter kann den Vorgang übernehmen. Wenn Sie möchten, kann ich Ihre Anfrage kurz zusammenfassen und an den Operator übergeben.',
       refusal: getRefusalText('de'),
-      general: 'Ich kann nur bei PixelRing-Reparaturen helfen. Bitte senden Sie Gerät, Problem und Kontakt oder fragen Sie nach dem Status einer bestehenden Anfrage.',
+      general: 'Ich bin hier fuer PixelRing-Servicefragen da. Wenn es um eine Beschilderung, Lichtwerbung, Reparatur, Montage oder eine bestehende Anfrage geht, beschreiben Sie kurz, was passiert ist.',
     },
     en: {
       request: 'Please share the device type, the issue, and a contact method. Then I can help prepare the repair request.',
       status: 'If you already have a PR number, you can check the request status on the Status page using the PR number and the contact method used for the request.',
       human: 'A human operator can take over. If you want, I can summarize the request and hand it off to the operator.',
       refusal: getRefusalText('en'),
-      general: 'I can only help with PixelRing repairs. Please share the device, the issue, and a contact method, or ask about an existing request status.',
+      general: 'I am here for PixelRing service questions. If this is about signage, lighting, repair, installation, or an existing request, briefly describe what happened.',
     },
     ru: {
       request: 'Пожалуйста, отправьте тип устройства, описание проблемы и контакт. После этого я помогу подготовить заявку.',
       status: 'Если у вас уже есть PR-номер, проверьте статус на странице Status по PR-номеру и контакту, который использовался при оформлении.',
       human: 'Может подключиться человек-оператор. Если хотите, я кратко подытожу заявку и передам ее оператору.',
       refusal: getRefusalText('ru'),
-      general: 'Я могу помочь только с ремонтом PixelRing. Пожалуйста, отправьте устройство, проблему и контакт или спросите о статусе существующей заявки.',
+      general: 'Я здесь по вопросам сервиса PixelRing. Если речь о вывеске, подсветке, ремонте, монтаже или существующей заявке, коротко опишите, что случилось.',
     },
     tr: {
       request: 'Lütfen cihaz türünü, sorunu ve bir iletişim bilgisini gönderin. Sonra talebi hazırlamaya yardımcı olabilirim.',
       status: 'Eğer zaten bir PR numaranız varsa, Status sayfasında PR numarası ve talepte kullanılan iletişim bilgisi ile durumu kontrol edebilirsiniz.',
       human: 'Bir insan operatör devralabilir. İsterseniz talebi kısaca özetleyip operatöre aktarabilirim.',
       refusal: getRefusalText('tr'),
-      general: 'Yalnızca PixelRing onarımlarıyla ilgili konularda yardımcı olabilirim. Lütfen cihaz, sorun ve iletişim bilgisi paylaşın ya da mevcut bir talebin durumunu sorun.',
+      general: 'PixelRing servis konulari icin buradayim. Konu tabela, aydinlatma, onarim, montaj veya mevcut bir talepse lutfen ne oldugunu kisaca yazin.',
     },
     pl: {
       request: 'Proszę podać typ urządzenia, problem i dane kontaktowe. Wtedy pomogę przygotować zgłoszenie.',
       status: 'Jeśli masz już numer PR, możesz sprawdzić status na stronie Status, podając numer PR i kontakt użyty przy zgłoszeniu.',
       human: 'Może przejąć to człowiek-operator. Jeśli chcesz, mogę krótko podsumować zgłoszenie i przekazać je operatorowi.',
       refusal: getRefusalText('pl'),
-      general: 'Mogę pomóc tylko w sprawach napraw PixelRing. Podaj urządzenie, problem i kontakt albo zapytaj o status istniejącego zgłoszenia.',
+      general: 'Jestem tutaj w sprawach serwisu PixelRing. Jesli chodzi o oznakowanie, reklame swietlna, naprawe, montaz albo istniejace zgloszenie, opisz krotko, co sie stalo.',
     },
     ar: {
       request: 'يرجى إرسال نوع الجهاز والمشكلة ووسيلة تواصل. بعد ذلك يمكنني المساعدة في إعداد الطلب.',
       status: 'إذا كان لديك رقم PR بالفعل، يمكنك التحقق من الحالة في صفحة Status باستخدام رقم PR ووسيلة التواصل المستخدمة في الطلب.',
       human: 'يمكن لمشغل بشري أن يتولى المحادثة. إذا أردت، يمكنني تلخيص الطلب وتسليمه للمشغل.',
       refusal: getRefusalText('ar'),
-      general: 'يمكنني المساعدة فقط في إصلاحات PixelRing. يرجى إرسال الجهاز والمشكلة ووسيلة تواصل أو السؤال عن حالة طلب موجود.',
+      general: 'أنا هنا لمواضيع خدمة PixelRing. إذا كان الأمر يتعلق بلافتة أو إضاءة أو إصلاح أو تركيب أو طلب قائم، صف بإيجاز ما حدث.',
     },
   };
 

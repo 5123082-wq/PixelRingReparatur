@@ -30,6 +30,24 @@ export async function POST(request: NextRequest) {
     const message = String(formData.get('message') ?? '').trim();
     const issueType = String(formData.get('issueType') ?? '').trim();
     const location = String(formData.get('location') ?? '').trim();
+    const isFromChat = formData.get('isFromChat') === 'true';
+
+    let existingSessionId: string | null = null;
+    let existingSessionToken: string | null = null;
+
+    if (isFromChat) {
+      const { resolveChatSession } = await import('@/lib/ai/chat-session');
+      const token = request.cookies.get(CASE_SESSION_COOKIE_NAME)?.value ?? null;
+      const resolved = await resolveChatSession(prisma, token, {
+        createIfMissing: false,
+        userAgent: request.headers.get('user-agent'),
+        ipAddress: getClientIP(request),
+      });
+      if (resolved) {
+        existingSessionId = resolved.session.id;
+        existingSessionToken = resolved.cookieToken || token;
+      }
+    }
 
     if (!contact || !message) {
       return NextResponse.json(
@@ -67,6 +85,9 @@ export async function POST(request: NextRequest) {
       ipAddress:
         request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null,
       attachments: storedAttachments,
+      existingSessionId,
+      existingSessionToken,
+      isFromChat,
     });
 
     const attachmentsText = storedAttachments.length > 0
