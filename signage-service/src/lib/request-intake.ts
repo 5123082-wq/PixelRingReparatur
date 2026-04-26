@@ -30,6 +30,9 @@ export type WebsiteRequestInput = {
   userAgent?: string | null;
   ipAddress?: string | null;
   attachments?: StoredAttachmentInput[];
+  existingSessionId?: string | null;
+  existingSessionToken?: string | null;
+  isFromChat?: boolean;
 };
 
 export type WebsiteRequestResult = {
@@ -140,23 +143,41 @@ export async function createWebsiteRequest(
       select: { id: true },
     });
 
-    const initialMessage = await tx.message.create({
-      data: {
-        caseId: createdCase.id,
-        channel: CaseOriginChannel.WEBSITE_FORM,
-        authorRole: MessageAuthorRole.CUSTOMER,
-        authorName: input.name?.trim() || null,
-        body: input.message.trim(),
-        isCustomerVisible: true,
-        sentAt: now,
-      },
-      select: { id: true },
-    });
-
     const publicRequestNumber = await ensurePublicRequestNumberForCase(
       tx,
       createdCase.id
     );
+
+    let initialMessageId = null;
+    if (!input.isFromChat) {
+      const initialMessage = await tx.message.create({
+        data: {
+          caseId: createdCase.id,
+          channel: CaseOriginChannel.WEBSITE_FORM,
+          authorRole: MessageAuthorRole.CUSTOMER,
+          authorName: input.name?.trim() || null,
+          body: input.message.trim(),
+          isCustomerVisible: true,
+          sentAt: now,
+        },
+        select: { id: true },
+      });
+      initialMessageId = initialMessage.id;
+    } else {
+      const sysMsg = await tx.message.create({
+        data: {
+          caseId: createdCase.id,
+          sessionId: input.existingSessionId || undefined,
+          channel: CaseOriginChannel.WEBSITE_CHAT,
+          authorRole: MessageAuthorRole.SYSTEM,
+          body: `Anfrage erfolgreich registriert. Nummer: ${publicRequestNumber}`,
+          isCustomerVisible: true,
+          sentAt: now,
+        },
+        select: { id: true },
+      });
+      initialMessageId = sysMsg.id;
+    }
 
     await tx.case.update({
       where: { id: createdCase.id },
@@ -167,27 +188,78 @@ export async function createWebsiteRequest(
       },
     });
 
-    const session = await tx.session.create({
-      data: {
-        tokenHash: sessionTokenHash,
-        scope: SessionScope.CASE_ACCESS,
-        caseId: createdCase.id,
-        contactMethod: parsedContact.method,
-        contactValue: parsedContact.value,
-        userAgent: input.userAgent ?? null,
-        ipAddress: input.ipAddress ?? null,
-        lastSeenAt: now,
-        expiresAt: getCaseSessionExpiryDate(now),
-      },
-      select: { id: true },
-    });
+    let session;
+    let finalSessionToken = sessionToken;
+    let linkedSessionAttachmentCount = 0;
+    if (input.existingSessionId && input.existingSessionToken) {
+      const lastRegistrationMessage = await tx.message.findFirst({
+        where: {
+          sessionId: input.existingSessionId,
+          authorRole: MessageAuthorRole.SYSTEM,
+          body: { startsWith: 'Anfrage erfolgreich registriert. Nummer:' },
+        },
+        orderBy: { createdAt: 'desc' },
+        select: { createdAt: true },
+      });
+
+      session = await tx.session.update({
+        where: { id: input.existingSessionId },
+        data: {
+          scope: SessionScope.CASE_ACCESS,
+          caseId: createdCase.id,
+          contactMethod: parsedContact.method,
+          contactValue: parsedContact.value,
+          lastSeenAt: now,
+          expiresAt: getCaseSessionExpiryDate(now),
+        },
+        select: { id: true },
+      });
+      finalSessionToken = input.existingSessionToken;
+
+      await tx.message.updateMany({
+        where: {
+          sessionId: input.existingSessionId,
+          ...(lastRegistrationMessage
+            ? { createdAt: { gt: lastRegistrationMessage.createdAt } }
+            : {}),
+        },
+        data: { caseId: createdCase.id },
+      });
+
+      const linkedSessionAttachments = await tx.attachment.updateMany({
+        where: {
+          uploadedBySessionId: input.existingSessionId,
+          isCustomerVisible: true,
+          ...(lastRegistrationMessage
+            ? { createdAt: { gt: lastRegistrationMessage.createdAt } }
+            : {}),
+        },
+        data: { caseId: createdCase.id },
+      });
+      linkedSessionAttachmentCount = linkedSessionAttachments.count;
+    } else {
+      session = await tx.session.create({
+        data: {
+          tokenHash: sessionTokenHash,
+          scope: SessionScope.CASE_ACCESS,
+          caseId: createdCase.id,
+          contactMethod: parsedContact.method,
+          contactValue: parsedContact.value,
+          userAgent: input.userAgent ?? null,
+          ipAddress: input.ipAddress ?? null,
+          lastSeenAt: now,
+          expiresAt: getCaseSessionExpiryDate(now),
+        },
+        select: { id: true },
+      });
+    }
 
     if (attachments.length > 0) {
       await tx.attachment.createMany({
         data: attachments.map((attachment) => ({
           ...attachment,
           caseId: createdCase.id,
-          messageId: initialMessage.id,
+          messageId: initialMessageId,
           uploadedBySessionId: session.id,
           isCustomerVisible: true,
         })),
@@ -197,8 +269,8 @@ export async function createWebsiteRequest(
     return {
       caseId: createdCase.id,
       publicRequestNumber,
-      sessionToken,
-      photoReceived: attachments.length > 0,
+      sessionToken: finalSessionToken,
+      photoReceived: attachments.length + linkedSessionAttachmentCount > 0,
     };
   });
 }

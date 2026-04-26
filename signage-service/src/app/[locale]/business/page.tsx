@@ -28,6 +28,7 @@ type BusinessContent = {
   heroIntro: string;
   heroCta: string;
   heroImage: string;
+  heroImageAlt?: string;
   heroFallbackSrc?: string;
   targetTitle: string;
   targetIntro: string;
@@ -301,6 +302,7 @@ export default async function BusinessPage({
     heroIntro: businessCms?.hero?.description || tContent.heroIntro,
     heroCta: businessCms?.hero?.cta || tContent.heroCta,
     heroImage: businessCms?.hero?.image || tContent.heroImage,
+    heroImageAlt: businessCms?.hero?.imageAlt || businessCms?.hero?.title || tContent.heroTitle,
     heroFallbackSrc: businessCms?.hero?.fallbackSrc,
     targetTitle: businessCms?.target?.title || tContent.targetTitle,
     targetIntro: businessCms?.target?.description || tContent.targetIntro,
@@ -353,7 +355,7 @@ export default async function BusinessPage({
               <CmsImage
                 src={content.heroImage}
                 fallbackSrc={content.heroFallbackSrc}
-                alt={content.heroTitle}
+                alt={content.heroImageAlt || content.heroTitle}
                 fill
                 className="object-cover opacity-40 mix-blend-overlay"
                 priority

@@ -22,6 +22,17 @@ export type GenerateChatReplyInput = {
   message: string;
   history: ChatHistoryItem[];
   operatorTakeover?: boolean;
+  publicRequestNumber?: string | null;
+};
+
+export type IntakePrefill = {
+  issueType?: string;
+  contact?: string;
+  contactMode?: 'phone' | 'email';
+  summary?: string;
+  hasSessionAttachments?: boolean;
+  needsPhoto?: boolean;
+  hasKnownSessionContact?: boolean;
 };
 
 export type GenerateChatReplyResult = {
@@ -30,7 +41,32 @@ export type GenerateChatReplyResult = {
   provider: 'openai' | 'fallback';
   model?: string;
   refused?: boolean;
+  suggestIntake?: boolean;
+  intakePrefill?: IntakePrefill;
 };
+
+const INTAKE_MARKER_RE = /\n?<<SHOW_INTAKE:(\{[^>]*\})>>/;
+
+function parseIntakeMarker(text: string): {
+  cleanText: string;
+  suggestIntake: boolean;
+  intakePrefill?: IntakePrefill;
+} {
+  const match = INTAKE_MARKER_RE.exec(text);
+
+  if (!match) {
+    return { cleanText: text, suggestIntake: false };
+  }
+
+  const cleanText = text.replace(INTAKE_MARKER_RE, '').trim();
+
+  try {
+    const prefill = JSON.parse(match[1]) as IntakePrefill;
+    return { cleanText, suggestIntake: true, intakePrefill: prefill };
+  } catch {
+    return { cleanText, suggestIntake: true };
+  }
+}
 
 const DEFAULT_MODEL = 'gpt-4o-mini';
 
@@ -111,14 +147,11 @@ async function callOpenAI(
 export async function generateChatReply(
   input: GenerateChatReplyInput
 ): Promise<GenerateChatReplyResult> {
-  const config = await getAiRuntimeConfig();
-  const history = normalizeHistory(input.history, config.maxContextMessages);
-  const systemPrompt = await buildSystemPrompt({
-    locale: input.locale,
-    operatorTakeover: input.operatorTakeover,
-    extraSystemPrompt: config.cmsSystemPrompt,
-  });
-  const incomingVerdict = guardChatText(input.message, input.locale);
+  const incomingVerdict = guardChatText(
+    input.message,
+    input.locale,
+    input.publicRequestNumber
+  );
 
   if (!incomingVerdict.allowed) {
     return {
@@ -139,22 +172,37 @@ export async function generateChatReply(
   }
 
   try {
+    const config = await getAiRuntimeConfig();
+    const history = normalizeHistory(input.history, config.maxContextMessages);
+    const systemPrompt = await buildSystemPrompt({
+      locale: input.locale,
+      operatorTakeover: input.operatorTakeover,
+      extraSystemPrompt: config.cmsSystemPrompt,
+      publicRequestNumber: input.publicRequestNumber,
+    });
     const aiText = await callOpenAI(config, systemPrompt, input.message, history);
 
     if (aiText) {
-      const outputVerdict = guardChatReply(aiText, input.locale);
+      const outputVerdict = guardChatReply(
+        aiText,
+        input.locale,
+        input.publicRequestNumber
+      );
 
       if (outputVerdict.allowed) {
+        const { cleanText, suggestIntake, intakePrefill } = parseIntakeMarker(aiText);
         return {
-          text: aiText,
+          text: cleanText,
           intent: incomingVerdict.intent,
           provider: 'openai',
           model: config.model || DEFAULT_MODEL,
+          suggestIntake,
+          intakePrefill,
         };
       }
     }
   } catch (error) {
-    console.error('OpenAI chat generation failed:', error);
+    console.error('AI chat generation failed:', error);
   }
 
   return {
