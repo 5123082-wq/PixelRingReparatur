@@ -79,11 +79,23 @@ export default async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
+    // Standard internationalized routes
     '/',
     '/(de|en|ru|tr|pl|ar)/:path*',
+    
+    // Admin & Dashboard routes
     '/admin/:path*',
     '/ring-master-admin/:path*',
     '/ring-manager-crm/:path*',
     '/ring-master-config/:path*',
+
+    // Match all request paths except for the ones starting with:
+    // - api (API routes)
+    // - _next/static (static files)
+    // - _next/image (image optimization files)
+    // - images/uploads (public media files)
+    // - favicon.ico, sitemap.xml, robots.txt (static files)
+    // - any direct file request with an extension
+    '/((?!api|_next/static|_next/image|images|uploads|favicon.ico|icon.png|sitemap.xml|robots.txt|.*\\..*).*)',
   ],
 };

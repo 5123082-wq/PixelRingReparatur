@@ -1,5 +1,6 @@
 import { CMS_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
 import { createAdminAuditLog, requireAdminPermissionActor, type AdminRequestActor } from '@/lib/admin-audit';
+import type { CmsMediaStorageProvider } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { validateAdminCsrf } from '@/lib/admin-csrf';
@@ -12,7 +13,7 @@ import {
   normalizeCmsMediaSearch,
   normalizeCmsMediaTitle,
   normalizeCmsMediaUsageType,
-  saveCmsMediaToPublicStorage,
+  saveCmsMediaWithFallback,
   serializeCmsMedia,
   validateCmsMediaUploadFile,
 } from '@/lib/cms/media';
@@ -25,6 +26,8 @@ const CMS_MEDIA_SELECT = {
   storageProvider: true,
   storageKey: true,
   publicUrl: true,
+  fallbackUrl: true,
+  fallbackStorageKey: true,
   originalFilename: true,
   title: true,
   altText: true,
@@ -112,6 +115,8 @@ function buildWhere(searchParams: URLSearchParams) {
       { originalFilename: { contains: search, mode: 'insensitive' } },
       { storageKey: { contains: search, mode: 'insensitive' } },
       { publicUrl: { contains: search, mode: 'insensitive' } },
+      { fallbackUrl: { contains: search, mode: 'insensitive' } },
+      { fallbackStorageKey: { contains: search, mode: 'insensitive' } },
     ];
   }
 
@@ -153,7 +158,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
-  let storedMedia: { storageKey: string; publicUrl: string } | null = null;
+  let storedMedia: {
+    storageProvider: CmsMediaStorageProvider;
+    storageKey: string;
+    publicUrl: string;
+    fallbackStorageKey: string | null;
+    fallbackUrl: string | null;
+  } | null = null;
 
   try {
     const formData = await request.formData();
@@ -186,10 +197,11 @@ export async function POST(request: NextRequest) {
       checksumSha256,
     });
 
-    storedMedia = await saveCmsMediaToPublicStorage({
+    storedMedia = await saveCmsMediaWithFallback({
       buffer: validated.buffer,
       filename: validated.originalFilename,
       extension: validated.extension,
+      mimeType: validated.mimeType,
     });
     const persistedMedia = storedMedia;
 
@@ -198,9 +210,11 @@ export async function POST(request: NextRequest) {
         data: {
           locale,
           usageType,
-          storageProvider: 'LOCAL',
+          storageProvider: persistedMedia.storageProvider,
           storageKey: persistedMedia.storageKey,
           publicUrl: persistedMedia.publicUrl,
+          fallbackUrl: persistedMedia.fallbackUrl,
+          fallbackStorageKey: persistedMedia.fallbackStorageKey,
           originalFilename: validated.originalFilename,
           title,
           altText,
@@ -242,7 +256,9 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (isPrismaUniqueError(error)) {
       if (storedMedia) {
-        await cleanupLocalCmsMediaUpload(storedMedia.storageKey).catch((cleanupError) => {
+        await cleanupLocalCmsMediaUpload(
+          storedMedia.fallbackStorageKey ?? storedMedia.storageKey
+        ).catch((cleanupError) => {
           console.error('Failed to clean up duplicate CMS media upload:', cleanupError);
         });
       }
@@ -276,7 +292,9 @@ export async function POST(request: NextRequest) {
     }
 
     if (storedMedia) {
-      await cleanupLocalCmsMediaUpload(storedMedia.storageKey).catch((cleanupError) => {
+      await cleanupLocalCmsMediaUpload(
+        storedMedia.fallbackStorageKey ?? storedMedia.storageKey
+      ).catch((cleanupError) => {
         console.error('Failed to clean up orphaned CMS media upload:', cleanupError);
       });
     }

@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import Image from 'next/image';
 import ContactModal from '../common/ContactModal';
 import ChatModal from '../common/ChatModal';
+import CmsImage from '../common/CmsImage';
 
 type HomeHeroContent = {
   titlePrefix?: string | null;
@@ -14,6 +14,7 @@ type HomeHeroContent = {
   trustBadge?: string | null;
   responseBadge?: string | null;
   assetUrl?: string | null;
+  fallbackSrc?: string | null;
 };
 
 const HeroSection = ({ content }: { content?: HomeHeroContent | null }) => {
@@ -132,8 +133,9 @@ const HeroSection = ({ content }: { content?: HomeHeroContent | null }) => {
                   style={{ transform: 'rotate(3deg)' }}
                 >
                   <div className="relative aspect-[4/3.2]">
-                    <Image
+                    <CmsImage
                       src={heroImage}
+                      fallbackSrc={content?.fallbackSrc}
                       alt="Neon sign repair — PixelRing"
                       fill
                       sizes="100vw"

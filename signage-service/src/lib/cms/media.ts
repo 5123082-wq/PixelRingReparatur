@@ -3,6 +3,7 @@ import 'server-only';
 import crypto from 'node:crypto';
 import { mkdir, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { put } from '@vercel/blob';
 import type {
   CmsMediaStorageProvider,
   CmsMediaUsageType,
@@ -67,6 +68,10 @@ const FILE_EXTENSION_BY_MIME: Record<string, string> = {
   'image/gif': 'gif',
 };
 
+function getCmsBlobReadWriteToken(): string | undefined {
+  return process.env.CMS_BLOB_READ_WRITE_TOKEN ?? process.env.BLOB_READ_WRITE_TOKEN;
+}
+
 type DbClient = PrismaClient | Prisma.TransactionClient;
 
 type CmsMediaRecord = {
@@ -76,6 +81,8 @@ type CmsMediaRecord = {
   storageProvider: CmsMediaStorageProvider;
   storageKey: string;
   publicUrl: string;
+  fallbackUrl: string | null;
+  fallbackStorageKey: string | null;
   originalFilename: string | null;
   title: string | null;
   altText: string | null;
@@ -111,10 +118,15 @@ export type CmsMediaResponse = {
   storageProvider: CmsMediaStorageProvider;
   storageKey: string;
   publicUrl: string;
+  url: string;
+  fallbackUrl: string | null;
+  fallbackStorageKey: string | null;
   originalFilename: string | null;
   title: string | null;
+  alt: string | null;
   altText: string | null;
   mimeType: string;
+  size: number;
   byteSize: number;
   checksumSha256: string;
   width: number | null;
@@ -647,6 +659,68 @@ export async function saveCmsMediaToPublicStorage(input: {
   throw new CmsMediaValidationError('Failed to persist media file');
 }
 
+export async function saveCmsMediaWithFallback(input: {
+  buffer: Buffer;
+  filename: string;
+  extension: string;
+  mimeType: string;
+}): Promise<{
+  storageProvider: CmsMediaStorageProvider;
+  storageKey: string;
+  publicUrl: string;
+  fallbackStorageKey: string | null;
+  fallbackUrl: string | null;
+}> {
+  const local = await saveCmsMediaToPublicStorage({
+    buffer: input.buffer,
+    filename: input.filename,
+    extension: input.extension,
+  });
+
+  const token = getCmsBlobReadWriteToken();
+
+  if (!token) {
+    return {
+      storageProvider: 'LOCAL',
+      storageKey: local.storageKey,
+      publicUrl: local.publicUrl,
+      fallbackStorageKey: null,
+      fallbackUrl: null,
+    };
+  }
+
+  const blobKey = `cms-media/${local.storageKey}`;
+
+  try {
+    const blob = await put(blobKey, input.buffer, {
+      access: 'public',
+      contentType: input.mimeType,
+      token,
+    });
+
+    return {
+      storageProvider: 'VERCEL_BLOB',
+      storageKey: blob.pathname || blobKey,
+      publicUrl: blob.url,
+      fallbackStorageKey: local.storageKey,
+      fallbackUrl: local.publicUrl,
+    };
+  } catch (error) {
+    console.warn(
+      'CMS media Blob upload failed; using local-only storage:',
+      error instanceof Error ? error.message : 'Unknown Blob upload error'
+    );
+
+    return {
+      storageProvider: 'LOCAL',
+      storageKey: local.storageKey,
+      publicUrl: local.publicUrl,
+      fallbackStorageKey: null,
+      fallbackUrl: null,
+    };
+  }
+}
+
 export async function storeLocalCmsMediaUpload(
   file: File,
   options: { checksumSha256?: string | null } = {}
@@ -704,10 +778,15 @@ export function serializeCmsMedia(record: CmsMediaRecord): CmsMediaResponse {
     storageProvider: record.storageProvider,
     storageKey: record.storageKey,
     publicUrl: record.publicUrl,
+    url: record.publicUrl,
+    fallbackUrl: record.fallbackUrl,
+    fallbackStorageKey: record.fallbackStorageKey,
     originalFilename: record.originalFilename,
     title: record.title,
+    alt: record.altText,
     altText: record.altText,
     mimeType: record.mimeType,
+    size: record.byteSize,
     byteSize: record.byteSize,
     checksumSha256: record.checksumSha256,
     width: record.width,
