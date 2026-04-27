@@ -632,31 +632,20 @@ function baseNameWithoutExtension(filename: string): string {
 
 export async function saveCmsMediaToPublicStorage(input: {
   buffer: Buffer;
-  filename: string;
-  extension: string;
+  storageKey: string;
 }): Promise<{ storageKey: string; publicUrl: string }> {
   await ensureCmsMediaDirectory();
+  const filePath = path.join(CMS_MEDIA_PUBLIC_DIRECTORY, input.storageKey);
 
-  const baseName = baseNameWithoutExtension(input.filename);
-
-  for (let attempt = 0; attempt < 4; attempt += 1) {
-    const suffix = crypto.randomBytes(6).toString('hex');
-    const storageKey = `${Date.now()}-${suffix}-${baseName}.${input.extension}`;
-    const filePath = path.join(CMS_MEDIA_PUBLIC_DIRECTORY, storageKey);
-
-    try {
-      await writeFile(filePath, input.buffer, { flag: 'wx' });
-
-      return {
-        storageKey,
-        publicUrl: `${CMS_MEDIA_PUBLIC_URL_PREFIX}/${storageKey}`,
-      };
-    } catch {
-      // retry with a new random suffix
-    }
+  try {
+    await writeFile(filePath, input.buffer, { flag: 'wx' });
+    return {
+      storageKey: input.storageKey,
+      publicUrl: `${CMS_MEDIA_PUBLIC_URL_PREFIX}/${input.storageKey}`,
+    };
+  } catch (error) {
+    throw new CmsMediaValidationError(`Failed to persist media file locally: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
-
-  throw new CmsMediaValidationError('Failed to persist media file');
 }
 
 export async function saveCmsMediaWithFallback(input: {
@@ -671,54 +660,62 @@ export async function saveCmsMediaWithFallback(input: {
   fallbackStorageKey: string | null;
   fallbackUrl: string | null;
 }> {
-  const local = await saveCmsMediaToPublicStorage({
-    buffer: input.buffer,
-    filename: input.filename,
-    extension: input.extension,
-  });
-
+  const baseName = baseNameWithoutExtension(input.filename);
+  const suffix = crypto.randomBytes(6).toString('hex');
+  const storageKey = `${Date.now()}-${suffix}-${baseName}.${input.extension}`;
+  
   const token = getCmsBlobReadWriteToken();
 
-  if (!token) {
-    return {
-      storageProvider: 'LOCAL',
-      storageKey: local.storageKey,
-      publicUrl: local.publicUrl,
-      fallbackStorageKey: null,
-      fallbackUrl: null,
-    };
+  // 1. Try Vercel Blob if token is available
+  if (token) {
+    const blobKey = `cms-media/${storageKey}`;
+    try {
+      const blob = await put(blobKey, input.buffer, {
+        access: 'public',
+        contentType: input.mimeType,
+        token,
+      });
+
+      // Try local as a best-effort fallback (likely to fail on Vercel production)
+      let local: { storageKey: string; publicUrl: string } | null = null;
+      try {
+        local = await saveCmsMediaToPublicStorage({
+          buffer: input.buffer,
+          storageKey,
+        });
+      } catch (e) {
+        console.warn('CMS media: Local fallback storage failed (likely read-only FS):', e instanceof Error ? e.message : e);
+      }
+
+      return {
+        storageProvider: 'VERCEL_BLOB',
+        storageKey: blob.pathname || blobKey,
+        publicUrl: blob.url,
+        fallbackStorageKey: local?.storageKey || null,
+        fallbackUrl: local?.publicUrl || null,
+      };
+    } catch (error) {
+      console.warn(
+        'CMS media: Blob upload failed, trying local storage as fallback:',
+        error instanceof Error ? error.message : 'Unknown Blob upload error'
+      );
+      // Fall through to mandatory local storage
+    }
   }
 
-  const blobKey = `cms-media/${local.storageKey}`;
+  // 2. Mandatory Local storage (if no blob or blob failed)
+  const local = await saveCmsMediaToPublicStorage({
+    buffer: input.buffer,
+    storageKey,
+  });
 
-  try {
-    const blob = await put(blobKey, input.buffer, {
-      access: 'public',
-      contentType: input.mimeType,
-      token,
-    });
-
-    return {
-      storageProvider: 'VERCEL_BLOB',
-      storageKey: blob.pathname || blobKey,
-      publicUrl: blob.url,
-      fallbackStorageKey: local.storageKey,
-      fallbackUrl: local.publicUrl,
-    };
-  } catch (error) {
-    console.warn(
-      'CMS media Blob upload failed; using local-only storage:',
-      error instanceof Error ? error.message : 'Unknown Blob upload error'
-    );
-
-    return {
-      storageProvider: 'LOCAL',
-      storageKey: local.storageKey,
-      publicUrl: local.publicUrl,
-      fallbackStorageKey: null,
-      fallbackUrl: null,
-    };
-  }
+  return {
+    storageProvider: 'LOCAL',
+    storageKey: local.storageKey,
+    publicUrl: local.publicUrl,
+    fallbackStorageKey: null,
+    fallbackUrl: null,
+  };
 }
 
 export async function storeLocalCmsMediaUpload(
@@ -739,10 +736,13 @@ export async function storeLocalCmsMediaUpload(
     file,
     checksumSha256: options.checksumSha256,
   });
+  const baseName = baseNameWithoutExtension(validated.originalFilename);
+  const suffix = crypto.randomBytes(6).toString('hex');
+  const storageKey = `${Date.now()}-${suffix}-${baseName}.${validated.extension}`;
+
   const stored = await saveCmsMediaToPublicStorage({
     buffer: validated.buffer,
-    filename: validated.originalFilename,
-    extension: validated.extension,
+    storageKey,
   });
 
   return {

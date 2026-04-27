@@ -323,7 +323,9 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    console.error('API Error /api/cms/media (POST):', error);
-    return NextResponse.json({ error: 'Failed to upload media' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to upload media',
+      debugId: errorId
+    }, { status: 500 });
   }
 }

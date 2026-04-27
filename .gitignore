@@ -37,3 +37,6 @@ DesignPrototip/
 # Local info and Project docs
 docs/.DS_Store
 docs/04_client_portal/prototype/index.html
+
+# Local Uploads
+signage-service/public/uploads/
