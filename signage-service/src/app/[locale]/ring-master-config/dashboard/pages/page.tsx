@@ -425,8 +425,12 @@ function mergeToUnified(allPages: CmsPage[]): {
     }
   }
 
-  // Master locale = DE preferred, fallback to first available
-  const masterPage = allPages.find((p) => p.locale === 'de') || allPages[0];
+  const pagesWithBlocks = allPages.filter((page) => page.blocks.length > 0);
+  const masterPage =
+    pagesWithBlocks.find((p) => p.locale === 'de') ||
+    pagesWithBlocks[0] ||
+    allPages.find((p) => p.locale === 'de') ||
+    allPages[0];
   const blocks: UnifiedBlock[] = [];
 
   if (masterPage) {

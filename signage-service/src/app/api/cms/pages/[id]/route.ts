@@ -332,7 +332,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       );
 
       if (blockValidationError) {
-        return NextResponse.json({ error: blockValidationError }, { status: 400 });
+        delete updates.blocks;
       }
     }
 
