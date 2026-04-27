@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { hashAdminToken } from '../src/lib/admin-auth.ts';
 import { prisma } from '../src/lib/prisma.ts';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -20,10 +21,12 @@ async function testUpload() {
   }
   
   const token = randomUUID();
+  const tokenHash = hashAdminToken(token);
   const session = await prisma.adminSession.create({
     data: {
       adminUserId: owner.id,
-      token,
+      tokenHash,
+      role: owner.role,
       expiresAt: new Date(Date.now() + 3600000),
       label: 'Test Session',
     }
