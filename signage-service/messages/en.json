@@ -436,6 +436,14 @@
     "fileSize": "File Size",
     "usageType": "Usage Type",
     "createdAt": "Created At",
-    "deleteConfirm": "Are you sure you want to delete this media?"
+    "deleteConfirm": "Are you sure you want to delete this media?",
+    "dropImageHere": "Drop Image Here",
+    "processing": "Processing...",
+    "startUpload": "Start Upload",
+    "assetGallery": "Asset Gallery",
+    "libraryEmpty": "Your library is empty",
+    "seoTitle": "SEO Title",
+    "altText": "Alt Text",
+    "sourceFile": "Source File"
   }
 }

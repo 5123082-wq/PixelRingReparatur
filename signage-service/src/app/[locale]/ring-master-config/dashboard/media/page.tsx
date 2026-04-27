@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 import { adminFetch } from '@/lib/admin-fetch';
 
@@ -290,6 +291,7 @@ function getStorageBadge(item: CmsMedia): { label: string; className: string } {
 }
 
 export default function MediaLibraryPage() {
+  const t = useTranslations('CmsMedia');
   const [media, setMedia] = useState<CmsMedia[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -510,7 +512,7 @@ export default function MediaLibraryPage() {
     <div className="flex flex-col gap-10 pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex flex-col gap-1">
-          <h1 className="text-4xl font-black text-white tracking-tight">Media Library</h1>
+          <h1 className="text-4xl font-black text-white tracking-tight">{t('title')}</h1>
           <p className="text-sm text-zinc-500 font-medium">
             Shared assets for Page CMS, content, and branding.
           </p>
@@ -557,7 +559,7 @@ export default function MediaLibraryPage() {
           <div className="bg-[#0a0a0c] border border-white/10 rounded-[40px] w-full max-w-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
             <div className="p-10 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
               <div>
-                <h2 className="text-2xl font-black text-white">Upload Media</h2>
+                <h2 className="text-2xl font-black text-white">{t('uploadMedia')}</h2>
                 <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest mt-1">Add asset to global CMS pool</p>
               </div>
               <button 
@@ -577,7 +579,7 @@ export default function MediaLibraryPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <div className="space-y-4">
-                  <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-1">Source File</label>
+                  <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-1">{t('sourceFile') || 'Source File'}</label>
                   <div className="relative group h-64 rounded-[2.5rem] border-2 border-dashed border-white/10 hover:border-cyan-500/40 hover:bg-cyan-500/[0.02] transition-all flex flex-col items-center justify-center gap-4 overflow-hidden bg-black/40">
                     <input
                       type="file"
@@ -598,7 +600,7 @@ export default function MediaLibraryPage() {
                           <span className="text-2xl">＋</span>
                         </div>
                         <div className="text-center">
-                          <div className="text-[11px] font-black text-white uppercase tracking-widest">Drop Image Here</div>
+                          <div className="text-[11px] font-black text-white uppercase tracking-widest">{t('dropImageHere') || 'Drop Image Here'}</div>
                           <div className="text-[9px] text-zinc-600 mt-1 font-bold uppercase">PNG, JPG, WEBP, SVG</div>
                         </div>
                       </>
@@ -608,7 +610,7 @@ export default function MediaLibraryPage() {
 
                 <div className="space-y-6">
                   <div className="space-y-3">
-                    <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-1">Usage Category</label>
+                    <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-1">{t('usageType') || 'Usage Category'}</label>
                     <select 
                       value={uploadForm.usageType}
                       onChange={(e) => setUploadForm(p => ({ ...p, usageType: e.target.value as CmsMediaUsageType }))}
@@ -619,7 +621,7 @@ export default function MediaLibraryPage() {
                   </div>
 
                   <div className="space-y-3">
-                    <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-1">SEO Title</label>
+                    <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-1">{t('seoTitle') || 'SEO Title'}</label>
                     <input
                       placeholder="e.g. Neon Repair Process"
                       value={uploadForm.title}
@@ -629,7 +631,7 @@ export default function MediaLibraryPage() {
                   </div>
 
                   <div className="space-y-3">
-                    <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-1">Alt Text</label>
+                    <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-1">{t('altText') || 'Alt Text'}</label>
                     <input
                       placeholder="e.g. Master fixing a neon tube"
                       value={uploadForm.alt}
@@ -644,7 +646,7 @@ export default function MediaLibraryPage() {
             <div className="p-10 bg-white/[0.01] border-t border-white/5 flex items-center justify-between">
               <div className="flex gap-8">
                 <div className="flex flex-col">
-                  <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Resolution</span>
+                  <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">{t('resolution') || 'Resolution'}</span>
                   <span className="text-xs font-bold text-zinc-400 mt-1">{uploadForm.width && uploadForm.height ? `${uploadForm.width} × ${uploadForm.height}` : 'Automatic'}</span>
                 </div>
               </div>
@@ -653,7 +655,7 @@ export default function MediaLibraryPage() {
                 disabled={uploading || !uploadFile}
                 className="h-14 px-12 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-20 disabled:hover:bg-cyan-500 text-black rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all active:scale-95 shadow-xl shadow-cyan-500/20"
               >
-                {uploading ? 'Processing...' : 'Start Upload'}
+                {uploading ? t('processing') || 'Processing...' : t('startUpload') || 'Start Upload'}
               </button>
             </div>
           </div>
@@ -664,7 +666,7 @@ export default function MediaLibraryPage() {
       <section className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-black text-white">Asset Gallery</h2>
+            <h2 className="text-xl font-black text-white">{t('assetGallery') || 'Asset Gallery'}</h2>
             <p className="text-xs text-zinc-600 font-bold uppercase tracking-wider mt-1">Available for Page CMS and article content</p>
           </div>
           <button 
@@ -682,7 +684,7 @@ export default function MediaLibraryPage() {
         ) : media.length === 0 ? (
           <div className="py-20 text-center bg-white/[0.01] border border-dashed border-white/10 rounded-3xl">
              <div className="text-4xl mb-4 opacity-20">🖼️</div>
-             <p className="text-sm font-bold text-zinc-600 uppercase tracking-widest">Your library is empty</p>
+             <p className="text-sm font-bold text-zinc-600 uppercase tracking-widest">{t('libraryEmpty') || 'Your library is empty'}</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">

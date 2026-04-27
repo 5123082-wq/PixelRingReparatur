@@ -436,6 +436,14 @@
     "fileSize": "Dateigröße",
     "usageType": "Verwendung",
     "createdAt": "Erstellt am",
-    "deleteConfirm": "Möchten Sie dieses Medium wirklich löschen?"
+    "deleteConfirm": "Möchten Sie dieses Medium wirklich löschen?",
+    "dropImageHere": "Bild hierher ziehen",
+    "processing": "Verarbeitung...",
+    "startUpload": "Upload starten",
+    "assetGallery": "Asset-Galerie",
+    "libraryEmpty": "Ihre Bibliothek ist leer",
+    "seoTitle": "SEO-Titel",
+    "altText": "Alt-Text",
+    "sourceFile": "Quelldatei"
   }
 }
