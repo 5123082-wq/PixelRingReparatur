@@ -434,9 +434,14 @@ export function normalizeCmsPageBlocks(value: unknown): CmsPageBlock[] | null {
 
 export function validateCmsPageBlocksForPage(
   pageKey: CmsPageKey,
+  locale: string,
   blocks: CmsPageBlock[]
 ): string | null {
   if (pageKey !== 'impressum' && pageKey !== 'privacy') {
+    return null;
+  }
+
+  if (locale !== DEFAULT_LOCALE) {
     return null;
   }
 

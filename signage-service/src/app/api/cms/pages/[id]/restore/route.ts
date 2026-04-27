@@ -116,6 +116,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       if (Array.isArray(restoreData.blocks)) {
         const blockValidationError = validateCmsPageBlocksForPage(
           current.pageKey as CmsPageKey,
+          current.locale,
           restoreData.blocks
         );
 

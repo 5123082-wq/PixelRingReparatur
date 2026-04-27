@@ -154,8 +154,20 @@ function toNullable(value: string): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
-function validateBlocksForSave(pageKey: CmsPageKey, blocks: CmsPageBlock[]): string | null {
+function isLegalPageKey(pageKey: CmsPageKey): boolean {
+  return pageKey === 'impressum' || pageKey === 'privacy';
+}
+
+function validateBlocksForSave(
+  pageKey: CmsPageKey,
+  locale: string,
+  blocks: CmsPageBlock[]
+): string | null {
   if (pageKey !== 'impressum' && pageKey !== 'privacy') {
+    return null;
+  }
+
+  if (locale !== 'de') {
     return null;
   }
 
@@ -659,13 +671,16 @@ export default function PagesPage() {
   );
 
   const saveableLocales = useMemo(() => {
-    return SUPPORTED_LOCALES.filter((locale) => {
+    const localesToSave = isLegalPageKey(form.pageKey) ? ['de'] : SUPPORTED_LOCALES;
+
+    return localesToSave.filter((locale) => {
       const meta = form.localeMeta[locale];
       return meta && (meta.id !== null || meta.title.trim() !== '');
     });
-  }, [form.localeMeta]);
+  }, [form.localeMeta, form.pageKey]);
 
   const activeMeta = form.localeMeta[activeLocale] || form.localeMeta.de;
+  const isEditingLegalPage = isLegalPageKey(form.pageKey);
 
   // ── Data loading ──
   const loadPages = useCallback(async () => {
@@ -726,7 +741,7 @@ export default function PagesPage() {
       setForm({ pageKey, blocks, localeMeta });
       setActivePageKey(pageKey);
       setActiveSectionId('meta');
-      setActiveLocale(routeLocale);
+      setActiveLocale(isLegalPageKey(pageKey) ? 'de' : routeLocale);
       setFormError('');
       setFormSaving(false);
     },
@@ -737,7 +752,11 @@ export default function PagesPage() {
     (row: PageContentRow) => {
       selectPage(row.pageKey);
       setActiveSectionId(row.blockKey);
-      setActiveLocale((row.presentLocales[0] || row.draftLocales[0] || routeLocale) as string);
+      setActiveLocale(
+        isLegalPageKey(row.pageKey)
+          ? 'de'
+          : ((row.presentLocales[0] || row.draftLocales[0] || routeLocale) as string)
+      );
       setWorkspaceTab('EDITOR');
     },
     [routeLocale, selectPage]
@@ -929,7 +948,7 @@ export default function PagesPage() {
       saveableLocales.map(async (locale) => {
         const meta = form.localeMeta[locale];
         const blocks = splitToLocaleBlocks(form.blocks, locale);
-        const blockValidationError = validateBlocksForSave(form.pageKey, blocks);
+        const blockValidationError = validateBlocksForSave(form.pageKey, locale, blocks);
 
         if (blockValidationError) {
           results.push({ locale, success: false, error: blockValidationError });
@@ -1680,21 +1699,32 @@ export default function PagesPage() {
                 </div>
 
                 {/* Locale Switcher */}
-                <div className="h-10 p-1 bg-black border border-white/5 rounded-xl flex gap-1 shadow-inner">
-                  {SUPPORTED_LOCALES.map((loc) => (
-                    <button
-                      key={loc}
-                      onClick={() => setActiveLocale(loc)}
-                      className={`px-4 h-full rounded-lg text-[10px] font-black transition-all ${
-                        activeLocale === loc
-                          ? 'bg-gradient-to-br from-white to-zinc-300 text-black shadow-lg'
-                          : 'text-zinc-600 hover:text-zinc-400 hover:bg-white/5'
-                      }`}
-                    >
-                      {loc.toUpperCase()}
-                    </button>
-                  ))}
-                </div>
+                {isEditingLegalPage ? (
+                  <div className="h-10 px-4 rounded-xl border border-amber-400/20 bg-amber-400/10 flex items-center gap-3 shadow-inner">
+                    <span className="rounded-lg bg-white px-3 py-1 text-[10px] font-black text-black">
+                      DE
+                    </span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-amber-200">
+                      German legal document
+                    </span>
+                  </div>
+                ) : (
+                  <div className="h-10 p-1 bg-black border border-white/5 rounded-xl flex gap-1 shadow-inner">
+                    {SUPPORTED_LOCALES.map((loc) => (
+                      <button
+                        key={loc}
+                        onClick={() => setActiveLocale(loc)}
+                        className={`px-4 h-full rounded-lg text-[10px] font-black transition-all ${
+                          activeLocale === loc
+                            ? 'bg-gradient-to-br from-white to-zinc-300 text-black shadow-lg'
+                            : 'text-zinc-600 hover:text-zinc-400 hover:bg-white/5'
+                        }`}
+                      >
+                        {loc.toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
+                )}
 
                 <div className="h-10 p-1 bg-black border border-white/5 rounded-xl flex gap-1 shadow-inner">
                   {[
@@ -1732,7 +1762,11 @@ export default function PagesPage() {
                     disabled={formSaving}
                     className="h-11 px-8 bg-gradient-to-br from-cyan-400 via-violet-500 to-pink-500 text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-[0_8px_24px_rgba(124,58,237,0.3)] hover:shadow-[0_12px_32px_rgba(124,58,237,0.4)] hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:scale-100"
                    >
-                     {formSaving ? 'Syncing...' : 'Save All Locales'}
+                     {formSaving
+                       ? 'Saving...'
+                       : isEditingLegalPage
+                         ? 'Save German Legal Page'
+                         : 'Save All Locales'}
                    </button>
                  </div>
               </div>
