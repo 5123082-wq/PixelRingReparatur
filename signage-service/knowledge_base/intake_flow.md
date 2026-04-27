@@ -5,9 +5,8 @@ This document defines the conversation flow the AI assistant follows when helpin
 
 ## Step-by-Step Flow
 
-### Step 1: Greeting & Language
-- Greet in site locale language. Default: German.
-- Offer language chips: 🇩🇪 🇬🇧 🇷🇺 🇹🇷 🇵🇱 🇸🇦
+### Step 1: Greeting
+- Greet in site locale language.
 
 ### Step 2: Understand the Problem
 Collect:
@@ -43,8 +42,7 @@ System creates request, returns PR-XXXX-XXXX.
 # Сценарий приёма заявки
 
 ### Шаг 1: Приветствие
-- На языке locale сайта. По умолчанию: немецкий.
-- Кнопки выбора языка: 🇩🇪 🇬🇧 🇷🇺 🇹🇷 🇵🇱 🇸🇦
+- На языке locale сайта.
 
 ### Шаг 2: Понять проблему
 1. Тип устройства

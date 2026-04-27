@@ -109,7 +109,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-[20px] border border-[#B8643E]/20 bg-[#FDF7F0] p-4 shadow-sm space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-400"
+      className="rounded-[20px] border border-[#B8643E]/20 bg-[#FDF7F0] p-3.5 shadow-sm space-y-2.5 animate-in fade-in slide-in-from-bottom-2 duration-400"
     >
       {/* Header */}
       <div className="flex items-center gap-2">

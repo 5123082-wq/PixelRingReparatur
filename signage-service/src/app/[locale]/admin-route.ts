@@ -34,9 +34,14 @@ export function withLocalePath(locale: string, path: string): string {
 export function isLocalizedRouteActive(
   pathname: string,
   locale: string,
-  route: string
+  route: string,
+  exact: boolean = false
 ): boolean {
   const localizedRoute = withLocalePath(locale, route);
+
+  if (exact) {
+    return pathname === localizedRoute;
+  }
 
   return pathname === localizedRoute || pathname.startsWith(`${localizedRoute}/`);
 }

@@ -290,6 +290,152 @@ function getStorageBadge(item: CmsMedia): { label: string; className: string } {
   };
 }
 
+function MediaCard({ 
+  item, 
+  onEdit, 
+  onDelete, 
+  onCopy, 
+  isDeleting,
+  isConfirming,
+  onConfirmRequest
+}: { 
+  item: CmsMedia; 
+  onEdit: (item: CmsMedia) => void;
+  onDelete: (item: CmsMedia) => void;
+  onCopy: (text: string) => void;
+  isDeleting: boolean;
+  isConfirming: boolean;
+  onConfirmRequest: (id: string | null) => void;
+}) {
+  const [imageError, setImageError] = useState(false);
+  const storageBadge = getStorageBadge(item);
+
+  return (
+    <div className="group relative bg-[#08080a] border border-white/[0.06] rounded-[2rem] overflow-hidden hover:border-white/20 transition-all flex flex-col h-full shadow-2xl">
+      <div className="aspect-[4/3] bg-black flex items-center justify-center relative overflow-hidden shrink-0">
+        {item.url && !imageError ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img 
+              src={item.url} 
+              alt={item.alt || ''} 
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+              onError={() => setImageError(true)}
+            />
+            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+              <button 
+                onClick={() => onCopy(item.url || '')}
+                className="w-10 h-10 rounded-xl bg-white text-black text-sm flex items-center justify-center hover:scale-110 transition-all shadow-xl"
+                title="Copy Link"
+              >
+                🔗
+              </button>
+              <a 
+                href={item.url} 
+                target="_blank" 
+                rel="noreferrer"
+                className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md text-white text-sm flex items-center justify-center hover:scale-110 transition-all"
+                title="View Original"
+              >
+                ↗
+              </a>
+            </div>
+          </>
+        ) : (
+          <div className="flex h-full w-full flex-col items-center justify-center px-4 text-center bg-red-500/5">
+             <span className="text-[10px] font-black text-red-500/40 uppercase tracking-widest leading-relaxed">
+               {imageError ? 'Broken Link' : 'No URL'}
+             </span>
+             {imageError && (
+               <span className="text-[8px] text-zinc-700 mt-2 font-mono truncate max-w-full opacity-40">
+                 {item.url}
+               </span>
+             )}
+          </div>
+        )}
+        
+        {/* Type Badge */}
+        <div className="absolute top-3 left-3 px-2 py-1 bg-black/60 backdrop-blur-md rounded-lg border border-white/10">
+           <span className="text-[8px] font-black text-white uppercase tracking-widest">{item.usageType}</span>
+        </div>
+      </div>
+      
+      <div className="p-5 flex flex-col flex-1">
+        <h3 className="text-xs font-black text-white truncate uppercase tracking-wider">{item.title || item.filename}</h3>
+        
+        <div className="mt-2 flex flex-wrap gap-2">
+          <div className={`inline-flex rounded-full border px-2 py-0.5 text-[8px] font-black uppercase tracking-widest ${storageBadge.className}`}>
+            {storageBadge.label}
+          </div>
+        </div>
+
+        <div className="mt-5 space-y-4 flex-1">
+          <div className="group/url">
+            <div className="flex items-center justify-between">
+              <span className="text-[8px] font-black text-zinc-700 uppercase tracking-widest">Primary URL</span>
+              <span className="text-[7px] text-zinc-800 font-bold uppercase opacity-0 group-hover/url:opacity-100 transition-opacity">Click to copy</span>
+            </div>
+            <div 
+              className="mt-1.5 truncate text-[10px] font-mono text-zinc-500 hover:text-cyan-400 transition-colors cursor-pointer bg-white/[0.02] px-2 py-1.5 rounded-lg border border-white/[0.02]" 
+              title={item.publicUrl || item.url || ''}
+              onClick={() => onCopy(item.publicUrl || item.url || '')}
+            >
+              {item.publicUrl || item.url || '-'}
+            </div>
+          </div>
+
+          {item.fallbackUrl && (
+            <div className="group/fallback">
+              <div className="flex items-center justify-between">
+                <span className="text-[8px] font-black text-zinc-700 uppercase tracking-widest">Fallback URL</span>
+                <span className="text-[7px] text-zinc-800 font-bold uppercase opacity-0 group-hover/fallback:opacity-100 transition-opacity">Click to copy</span>
+              </div>
+              <div 
+                className="mt-1.5 truncate text-[10px] font-mono text-zinc-500 hover:text-amber-400 transition-colors cursor-pointer bg-white/[0.02] px-2 py-1.5 rounded-lg border border-white/[0.02]" 
+                title={item.fallbackUrl}
+                onClick={() => onCopy(item.fallbackUrl || '')}
+              >
+                {item.fallbackUrl}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center justify-between mt-5 text-[9px] font-bold text-zinc-600 uppercase tracking-tight">
+          <span className="opacity-50">{item.width && item.height ? `${item.width} × ${item.height}` : 'No Dimensions'}</span>
+          <span className="px-2 py-0.5 bg-white/[0.03] rounded-md">{formatBytes(item.byteSize)}</span>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 mt-5 pt-5 border-t border-white/[0.04] relative z-20">
+          <button
+            onClick={() => onEdit(item)}
+            className="text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-cyan-400 transition-all active:scale-95 py-2"
+          >
+            Edit
+          </button>
+          
+          <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (isConfirming) {
+                  onDelete(item);
+                } else {
+                  onConfirmRequest(item.id);
+                }
+              }}
+            disabled={isDeleting}
+            className={`text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 py-2 px-4 rounded-lg ${
+              isConfirming ? 'text-white bg-red-600 animate-pulse' : 'text-zinc-500 hover:text-red-500 hover:bg-red-500/10'
+            } disabled:opacity-30 relative z-30`}
+          >
+            {isDeleting ? '...' : isConfirming ? 'Confirm?' : 'Delete'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function MediaLibraryPage() {
   const t = useTranslations('CmsMedia');
   const [media, setMedia] = useState<CmsMedia[]>([]);
@@ -309,6 +455,7 @@ export default function MediaLibraryPage() {
   const [editError, setEditError] = useState('');
   const [editSaving, setEditSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const summary = useMemo(() => {
     const images = media.filter((item) => item.mimeType?.startsWith('image/')).length;
@@ -476,16 +623,7 @@ export default function MediaLibraryPage() {
   }, [closeEdit, editForm, editingMedia]);
 
   const deleteMedia = useCallback(async (item: CmsMedia) => {
-    const confirmed = window.confirm(
-      `⚠️ Delete public CMS media "${item.title || item.filename || item.id}"?\n\n` +
-      `Usage: ${item.usageType}\n` +
-      `This action cannot be undone. The API will block deletion if the asset is still in use.`
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
+    setConfirmDeleteId(null);
     setError('');
     setNotice('');
     setDeletingId(item.id);
@@ -509,7 +647,7 @@ export default function MediaLibraryPage() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-10 pb-20">
+    <div className="flex-1 h-full overflow-y-auto p-10 flex flex-col gap-10 custom-scrollbar">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex flex-col gap-1">
           <h1 className="text-4xl font-black text-white tracking-tight">{t('title')}</h1>
@@ -688,115 +826,18 @@ export default function MediaLibraryPage() {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-            {media.map((item) => {
-              const storageBadge = getStorageBadge(item);
-
-              return (
-              <div key={item.id} className="group relative bg-[#08080a] border border-white/[0.06] rounded-3xl overflow-hidden hover:border-white/20 transition-all">
-                <div className="aspect-[4/3] bg-black flex items-center justify-center relative overflow-hidden">
-                  {item.url ? (
-                    <>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img 
-                        src={item.url} 
-                        alt={item.alt || ''} 
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).style.display = 'none';
-                          const parent = (e.target as HTMLImageElement).parentElement;
-                          if (parent) {
-                            const span = document.createElement('span');
-                            span.className = 'flex h-full w-full items-center justify-center px-1 text-[8px] font-black uppercase text-red-500/40 bg-red-500/5';
-                            span.innerText = 'Broken Link';
-                            parent.appendChild(span);
-                          }
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                        <button 
-                          onClick={() => copyToClipboard(item.url || '')}
-                          className="w-10 h-10 rounded-xl bg-white text-black text-sm flex items-center justify-center hover:scale-110 transition-all shadow-xl"
-                          title="Copy Link"
-                        >
-                          🔗
-                        </button>
-                        <a 
-                          href={item.url} 
-                          target="_blank" 
-                          rel="noreferrer"
-                          className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md text-white text-sm flex items-center justify-center hover:scale-110 transition-all"
-                          title="View Original"
-                        >
-                          ↗
-                        </a>
-                      </div>
-                    </>
-                  ) : (
-                    <span className="text-[10px] font-black text-zinc-800 uppercase">Invalid URL</span>
-                  )}
-                  {/* Badge */}
-                  <div className="absolute top-3 left-3 px-2 py-1 bg-black/60 backdrop-blur-md rounded-lg border border-white/10">
-                     <span className="text-[8px] font-black text-white uppercase tracking-widest">{item.usageType}</span>
-                  </div>
-                </div>
-                
-                <div className="p-4">
-                  <h3 className="text-[11px] font-black text-white truncate uppercase tracking-wider">{item.title || item.filename}</h3>
-                  <div className={`mt-2 inline-flex rounded-full border px-2 py-1 text-[8px] font-black uppercase tracking-widest ${storageBadge.className}`}>
-                    {storageBadge.label}
-                  </div>
-                  <div className="mt-3 space-y-2">
-                    <div>
-                      <div className="text-[8px] font-black text-zinc-700 uppercase tracking-widest">Primary URL</div>
-                      <div className="mt-1 truncate text-[10px] font-mono text-zinc-500" title={item.publicUrl || item.url || ''}>
-                        {item.publicUrl || item.url || '-'}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-[8px] font-black text-zinc-700 uppercase tracking-widest">Fallback URL</div>
-                      <div className="mt-1 truncate text-[10px] font-mono text-zinc-500" title={item.fallbackUrl || ''}>
-                        {item.fallbackUrl || '-'}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between mt-2 text-[9px] font-bold text-zinc-600 uppercase">
-                    <span>{item.width && item.height ? `${item.width}x${item.height}` : 'Dimensions -'}</span>
-                    <span>{formatBytes(item.byteSize)}</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-3 mt-3 pt-3 border-t border-white/[0.04]">
-                    <button
-                      onClick={() => openEdit(item)}
-                      className="text-[10px] text-zinc-500 hover:text-cyan-400 transition-colors"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => item.url && copyToClipboard(item.url)}
-                      disabled={!item.url}
-                      className="text-[10px] text-zinc-500 hover:text-white disabled:opacity-30 disabled:hover:text-zinc-500 transition-colors"
-                    >
-                      Copy URL
-                    </button>
-                    {item.fallbackUrl ? (
-                      <button
-                        onClick={() => item.fallbackUrl && copyToClipboard(item.fallbackUrl)}
-                        className="text-[10px] text-zinc-500 hover:text-amber-300 transition-colors"
-                      >
-                        Copy fallback
-                      </button>
-                    ) : null}
-                    <button 
-                      onClick={() => void deleteMedia(item)}
-                      disabled={deletingId === item.id}
-                      className="text-[10px] text-zinc-700 hover:text-red-500 disabled:opacity-30 transition-colors"
-                    >
-                      {deletingId === item.id ? '...' : 'Delete'}
-                    </button>
-                  </div>
-                </div>
-              </div>
-              );
-            })}
+            {media.map((item) => (
+              <MediaCard 
+                key={item.id} 
+                item={item} 
+                onEdit={openEdit}
+                onDelete={deleteMedia}
+                isConfirming={confirmDeleteId === item.id}
+                onConfirmRequest={setConfirmDeleteId}
+                onCopy={copyToClipboard}
+                isDeleting={deletingId === item.id}
+              />
+            ))}
           </div>
         )}
       </section>
