@@ -14,6 +14,7 @@ import {
   normalizeCmsPageStatus,
   normalizeCmsPageTitle,
   serializeCmsPage,
+  validateCmsPageBlocksForPage,
 } from '@/lib/cms/pages';
 import { createPageRevisionSnapshot } from '@/lib/cms/revisions';
 import { prisma } from '@/lib/prisma';
@@ -220,6 +221,12 @@ export async function POST(request: NextRequest) {
       !canonicalUrl.ok
     ) {
       return NextResponse.json({ error: 'Invalid page payload' }, { status: 400 });
+    }
+
+    const blockValidationError = validateCmsPageBlocksForPage(pageKey, blocks);
+
+    if (blockValidationError) {
+      return NextResponse.json({ error: blockValidationError }, { status: 400 });
     }
 
     const now = new Date();

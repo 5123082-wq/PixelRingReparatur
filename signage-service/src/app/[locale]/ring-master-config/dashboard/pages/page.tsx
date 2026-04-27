@@ -154,7 +154,32 @@ function toNullable(value: string): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
+function validateBlocksForSave(pageKey: CmsPageKey, blocks: CmsPageBlock[]): string | null {
+  if (pageKey !== 'impressum' && pageKey !== 'privacy') {
+    return null;
+  }
 
+  const mainContent = blocks.find(
+    (block) => block.type === 'textSection' && block.key === 'mainContent'
+  );
+
+  if (!mainContent) {
+    return 'Legal pages require the mainContent section. Reopen the page before saving.';
+  }
+
+  if (mainContent.enabled === false) {
+    return 'Legal pages require the mainContent section to stay live.';
+  }
+
+  const description =
+    typeof mainContent.description === 'string' ? mainContent.description.trim() : '';
+
+  if (!description) {
+    return 'Legal pages require description text in the mainContent section.';
+  }
+
+  return null;
+}
 
 function getTextFieldNames(blockType: string): string[] {
   return BLOCK_TEXT_FIELDS[blockType] || [];
@@ -904,6 +929,13 @@ export default function PagesPage() {
       saveableLocales.map(async (locale) => {
         const meta = form.localeMeta[locale];
         const blocks = splitToLocaleBlocks(form.blocks, locale);
+        const blockValidationError = validateBlocksForSave(form.pageKey, blocks);
+
+        if (blockValidationError) {
+          results.push({ locale, success: false, error: blockValidationError });
+          return;
+        }
+
         const payload = {
           pageKey: form.pageKey,
           locale,

@@ -15,6 +15,8 @@ import {
   normalizeCmsPageStatus,
   normalizeCmsPageTitle,
   serializeCmsPage,
+  validateCmsPageBlocksForPage,
+  type CmsPageKey,
   type CmsPageStatus,
 } from '@/lib/cms/pages';
 import { createPageRevisionSnapshot } from '@/lib/cms/revisions';
@@ -316,10 +318,22 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'No valid page fields provided' }, { status: 400 });
     }
 
-    const nextPageKey =
-      typeof updates.pageKey === 'string' ? updates.pageKey : current.pageKey;
+    const nextPageKey = (
+      typeof updates.pageKey === 'string' ? updates.pageKey : current.pageKey
+    ) as CmsPageKey;
     const nextLocale =
       typeof updates.locale === 'string' ? updates.locale : current.locale;
+
+    if (Array.isArray(updates.blocks)) {
+      const blockValidationError = validateCmsPageBlocksForPage(
+        nextPageKey,
+        updates.blocks
+      );
+
+      if (blockValidationError) {
+        return NextResponse.json({ error: blockValidationError }, { status: 400 });
+      }
+    }
 
     if (updates.pageKey !== undefined || updates.locale !== undefined) {
       const conflict = await prisma.cmsPage.findFirst({

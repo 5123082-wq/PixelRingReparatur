@@ -432,6 +432,36 @@ export function normalizeCmsPageBlocks(value: unknown): CmsPageBlock[] | null {
   return blocks;
 }
 
+export function validateCmsPageBlocksForPage(
+  pageKey: CmsPageKey,
+  blocks: CmsPageBlock[]
+): string | null {
+  if (pageKey !== 'impressum' && pageKey !== 'privacy') {
+    return null;
+  }
+
+  const mainContent = blocks.find(
+    (block) => block.type === 'textSection' && block.key === 'mainContent'
+  );
+
+  if (!mainContent) {
+    return 'Legal pages require a mainContent textSection block.';
+  }
+
+  if (mainContent.enabled === false) {
+    return 'Legal pages require the mainContent block to be visible.';
+  }
+
+  const description =
+    typeof mainContent.description === 'string' ? mainContent.description.trim() : '';
+
+  if (!description) {
+    return 'Legal pages require mainContent description text.';
+  }
+
+  return null;
+}
+
 export function normalizeCmsPageKey(value: unknown): CmsPageKey | null {
   if (typeof value !== 'string') {
     return null;

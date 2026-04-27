@@ -4,7 +4,11 @@ import type { Prisma } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { validateAdminCsrf } from '@/lib/admin-csrf';
-import { serializeCmsPage } from '@/lib/cms/pages';
+import {
+  serializeCmsPage,
+  validateCmsPageBlocksForPage,
+  type CmsPageKey,
+} from '@/lib/cms/pages';
 import {
   buildPageRestoreDataFromSnapshot,
   createPageRevisionSnapshot,
@@ -109,6 +113,17 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         throw new Error('INVALID_PAGE_REVISION_SNAPSHOT');
       }
 
+      if (Array.isArray(restoreData.blocks)) {
+        const blockValidationError = validateCmsPageBlocksForPage(
+          current.pageKey as CmsPageKey,
+          restoreData.blocks
+        );
+
+        if (blockValidationError) {
+          throw new Error('INVALID_LEGAL_PAGE_BLOCKS');
+        }
+      }
+
       await createPageRevisionSnapshot(tx, current, {
         sourceAction: 'RESTORE',
         reason,
@@ -160,6 +175,16 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       error.message === 'INVALID_PAGE_REVISION_SNAPSHOT'
     ) {
       return NextResponse.json({ error: 'Revision snapshot is invalid' }, { status: 400 });
+    }
+
+    if (
+      error instanceof Error &&
+      error.message === 'INVALID_LEGAL_PAGE_BLOCKS'
+    ) {
+      return NextResponse.json(
+        { error: 'Legal pages cannot be restored without mainContent text.' },
+        { status: 400 }
+      );
     }
 
     console.error('API Error /api/cms/pages/[id]/restore (POST):', error);
