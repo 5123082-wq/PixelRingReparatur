@@ -49,8 +49,9 @@ Short global status only. Detailed session notes belong to folder-level `Progres
 
 ## Last Updated
 
-- Date: 2026-04-27
-- Updated by: Codex
+- Date: 2026-04-27 (Latest: 22:42)
+- Updated by: Antigravity
+- Optimized: Chat Modal dimensions and mobile responsiveness. Increased desktop size to `750px / 5xl` and implemented full-screen behavior on mobile to handle soft keyboards on iOS/Android. Compacted `ChatIntakeCard` form layout.
 - Fixed: Legal Page CMS empty-block regression; restored production `privacy/de` content from the last valid revision, added server-side validation for Page CMS create/update/restore, and added Page CMS client validation before `SAVE ALL LOCALES`. Verified production `/de/privacy` no longer falls back to `Inhalt wird im CMS gepflegt`.
 - **Cleanup audit (safe dead-code + repo trash pass)**: Removed empty `src/app/api/cms/debug-seed/` directory (no route.ts, confirmed dead). Removed 5 `.DS_Store` macOS artifacts (already in `.gitignore`). Removed 5 boilerplate Next.js SVG stubs from `public/` (`file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg`) — confirmed zero imports across the codebase. All 5 mandatory checks passed: `npm run lint` ✓, `npx tsc --noEmit` ✓, `npm run build` ✓, `npm run test:admin-security` (21 routes) ✓, `npm run test:admin-auth` (7 tests) ✓. Left intentionally: `HelpCTA`, `HelpHero`, `SupportCTA` (reserved for future `/hilfe` page — Hilfe namespace exists in messages), `MessengerButtons` (planned WhatsApp/Telegram integration). `admin/ui/` components confirmed live (used in CRM/CMS routes). `lib/cms/revisions.ts` confirmed live (used by revisions/restore API routes).
 - Fixed: Header notch animation performance (replaced `sticky` with `fixed` + placeholder to prevent reflow jerks), merged Leistungen page and Header overhaul to main. Fixed auto-closing modal bug in LeistungenHero. Migrated Next.js request interception convention from `src/middleware.ts` to `src/proxy.ts`. Removed per-card request buttons from `/probleme-loesungen` problem cards.
@@ -92,3 +93,16 @@ Short global status only. Detailed session notes belong to folder-level `Progres
 - **AI Chat Assistant Boundary**: complete; refusal behavior softened so normal customer conversation, "no photo", unknown brand/model, manager callback, and incomplete service descriptions stay in the service flow, while explicit misuse such as prompt injection, image/code/text generation, homework, and unrelated regulated advice is redirected back to PixelRing service scope.
 - **Build & CI Hardening**: complete; resolved TypeScript error in `prepare-upload-test.ts` where `AdminSession` creation used the wrong field name (`token` instead of `tokenHash`); updated `tsconfig.json` to exclude the `scripts/` directory from the production build check to prevent non-runtime utility scripts from blocking deployments. Verified `npm run build` locally.
 - **Status**: ✅ Fixed. Vercel build recovered.
+- Fixed: Media Library layout and scrolling issues. Resolved a clipping bug where only the first row of assets was visible due to `overflow-hidden` on parent containers; added `overflow-y-auto` and fixed height to the media page content area.
+- Fixed: Sidebar navigation highlighting issue. Resolved a bug where "Dashboard" was highlighted for all sub-routes by implementing exact-matching support for the root dashboard route.
+- Redesign: AI Brain Configuration (`/ring-master-config/dashboard/ai`) completely rewritten with Tailwind CSS and Framer Motion. Improved layout, status visibility, and knowledge base preview experience with a premium dark-mode aesthetic.
+- **AI Chat Modal UX Optimization**: complete; increased desktop dimensions to `h-[750px]` and `max-w-5xl; implemented full-screen mode on mobile devices to prevent layout clipping. Optimized internal paddings and made the `ChatIntakeCard` form more compact.
+- **AI Chat Intake Hardening**: complete; deterministic triggers, session-scoped intake windows, and repeat-contact confirmation flow implemented.
+- **BentoGridSection Performance**: complete; fixed layout constraints and resolved TypeScript/Lint regressions.
+- **Status**: ✅ All changes validated. Prepared for Pull Request.
+
+## Last Updated
+
+- Date: 2026-04-27 (Final: 23:12)
+- Updated by: Antigravity
+- Finalized: Chat Modal UX, Intake logic, and repository cleanup for PR.

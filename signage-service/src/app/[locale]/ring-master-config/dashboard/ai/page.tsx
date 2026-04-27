@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-
+import { motion, AnimatePresence } from 'framer-motion';
 import { adminFetch } from '@/lib/admin-fetch';
 
 type AiRuntimeStatus = {
@@ -71,7 +71,6 @@ export default function AiConfigPage() {
           setKnowledgeDocs(documents);
           setKnowledgeError(null);
           
-          // Only set default if not already set or if current selection is not in new list
           setSelectedKnowledgeFilename(prev => {
             if (prev && documents.some(d => d.filename === prev)) return prev;
             return documents[0]?.filename ?? null;
@@ -112,6 +111,8 @@ export default function AiConfigPage() {
 
       if (res.ok) {
         setMessage({ type: 'success', text: 'AI Configuration saved successfully!' });
+        // Auto-clear success message
+        setTimeout(() => setMessage(null), 5000);
       } else {
         const errorData = await res.json().catch(() => null);
         setMessage({ 
@@ -134,390 +135,283 @@ export default function AiConfigPage() {
     null;
 
   if (loading) {
-    return <div style={{ color: '#888' }}>Loading AI Intelligence context...</div>;
+    return (
+      <div className="flex items-center justify-center h-full w-full">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-violet-500/30 border-t-violet-500 rounded-full animate-spin"></div>
+          <p className="text-zinc-500 font-medium animate-pulse">Synchronizing AI Intelligence...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>AI Brain Configuration</h1>
-        <p style={styles.subtitle}>Fine-tune the assistant behavior and verify the server-side API connection.</p>
-      </div>
+    <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
+      <div className="max-w-5xl mx-auto space-y-6 pb-12">
+        {/* Header */}
+        <div>
+          <h1 className="text-2xl font-bold text-white tracking-tight">AI Brain Configuration</h1>
+          <p className="text-zinc-500 mt-1.5 text-[13px]">
+            Fine-tune the assistant behavior and verify the server-side API connection.
+          </p>
+        </div>
 
-      <div style={styles.form}>
-        <div style={styles.statusGrid}>
-          <div style={styles.statusCard}>
-            <span style={styles.statusLabel}>API key</span>
-            <strong style={{
-              ...styles.statusValue,
-              color: runtime?.apiKeyConfigured ? '#6ee7b7' : '#fca5a5',
-            }}>
-              {runtime?.apiKeyConfigured ? 'Configured' : 'Missing'}
-            </strong>
-            <span style={styles.statusHint}>
-              {runtime?.apiKeyConfigured
-                ? `Loaded from ${runtime.apiKeySource}`
-                : 'Set OPENAI_API_KEY in server env'}
+        {/* Status Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.08] flex flex-col gap-1.5"
+          >
+            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">API Key Status</span>
+            <div className="flex items-center gap-2">
+              <div className={`w-2 h-2 rounded-full ${runtime?.apiKeyConfigured ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]'}`} />
+              <span className={`text-base font-bold ${runtime?.apiKeyConfigured ? 'text-emerald-400' : 'text-rose-400'}`}>
+                {runtime?.apiKeyConfigured ? 'Active & Valid' : 'Missing Configuration'}
+              </span>
+            </div>
+            <span className="text-[10px] text-zinc-600 font-medium italic">
+              {runtime?.apiKeyConfigured ? `Source: ${runtime.apiKeySource}` : 'Set OPENAI_API_KEY in environment'}
             </span>
-          </div>
+          </motion.div>
 
-          <div style={styles.statusCard}>
-            <span style={styles.statusLabel}>Provider</span>
-            <strong style={styles.statusValue}>
-              {runtime?.rawProvider || 'openai'}
-            </strong>
-            <span style={styles.statusHint}>
-              {runtime?.supportedProvider ? 'Ready' : 'Unsupported provider'}
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.08] flex flex-col gap-1.5"
+          >
+            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Inference Provider</span>
+            <span className="text-base font-bold text-zinc-200 capitalize">
+              {runtime?.rawProvider || 'OpenAI API'}
             </span>
-          </div>
+            <span className="text-[10px] text-zinc-600 font-medium">
+              {runtime?.supportedProvider ? 'System Ready' : 'Protocol Mismatch'}
+            </span>
+          </motion.div>
 
-          <div style={styles.statusCard}>
-            <span style={styles.statusLabel}>Runtime limits</span>
-            <strong style={styles.statusValue}>
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.08] flex flex-col gap-1.5"
+          >
+            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Runtime Constraints</span>
+            <span className="text-base font-bold text-zinc-200">
               {runtime?.maxOutputTokens ?? 600} tokens
-            </strong>
-            <span style={styles.statusHint}>
-              timeout {runtime?.timeoutMs ?? 20000}ms, context {runtime?.maxContextMessages ?? 20}
             </span>
-          </div>
+            <span className="text-[10px] text-zinc-600 font-medium">
+              {runtime?.timeoutMs ?? 20000}ms timeout • {runtime?.maxContextMessages ?? 20} msgs
+            </span>
+          </motion.div>
         </div>
 
-        {runtime?.issues?.length || aiError ? (
-          <div style={styles.warning}>
-            {aiError ? <div><strong>Configuration Error:</strong> {aiError}</div> : null}
-            {runtime?.issues?.map((issue) => (
-              <div key={issue}>{issue}</div>
-            ))}
-          </div>
-        ) : null}
-
-        <div style={styles.section}>
-          <label style={styles.label}>Server Knowledge Base</label>
-          <p style={styles.hint}>
-            Read-only markdown files currently injected into the assistant system prompt.
-          </p>
-
-          {knowledgeError ? (
-            <div style={styles.warning}>{knowledgeError}</div>
-          ) : null}
-
-          <div style={styles.knowledgeGrid}>
-            <div style={styles.knowledgeList}>
-              {knowledgeDocs.map((doc) => {
-                const active = selectedKnowledgeDoc?.filename === doc.filename;
-
-                return (
-                  <button
-                    key={doc.filename}
-                    type="button"
-                    onClick={() => setSelectedKnowledgeFilename(doc.filename)}
-                    style={{
-                      ...styles.knowledgeButton,
-                      ...(active ? styles.knowledgeButtonActive : {}),
-                    }}
-                  >
-                    <span style={styles.knowledgeButtonTitle}>{doc.title}</span>
-                    <span style={styles.knowledgeButtonMeta}>
-                      {doc.filename} · {doc.characterCount.toLocaleString()} chars
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            <div style={styles.knowledgeViewer}>
-              {selectedKnowledgeDoc ? (
-                <>
-                  <div style={styles.knowledgeViewerHeader}>
-                    <strong>{selectedKnowledgeDoc.filename}</strong>
-                    <span>{selectedKnowledgeDoc.characterCount.toLocaleString()} chars</span>
-                  </div>
-                  <pre style={styles.knowledgeContent}>{selectedKnowledgeDoc.content}</pre>
-                </>
-              ) : (
-                <div style={styles.emptyState}>No knowledge base files found.</div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div style={styles.section}>
-          <label style={styles.label}>System Prompt</label>
-          <p style={styles.hint}>
-            Additional CMS instructions. The assistant still receives the server-side markdown knowledge base and safety boundaries.
-          </p>
-          <textarea
-            style={styles.textarea}
-            value={systemPrompt}
-            onChange={(e) => setSystemPrompt(e.target.value)}
-            placeholder="You are a helpful assistant for PixelRing Reparatur..."
-            rows={12}
-          />
-        </div>
-
-        <div style={styles.row}>
-          <div style={styles.section}>
-            <label style={styles.label}>Model Selection</label>
-            <select 
-              style={styles.select}
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
+        {/* Error/Warning Banner */}
+        <AnimatePresence>
+          {(runtime?.issues?.length || aiError) && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm overflow-hidden"
             >
-              <option value="gpt-4o-mini">GPT-4o mini (Recommended, Fast)</option>
-              <option value="gpt-4o">GPT-4o (Reasoning, Complex)</option>
-              <option value="o1-mini">o1-mini (Preview, Fast Reasoning)</option>
-            </select>
-          </div>
+              {aiError && <div className="font-bold mb-1">Configuration Error: {aiError}</div>}
+              {runtime?.issues?.map((issue, idx) => (
+                <div key={idx} className="flex items-start gap-2">
+                  <span className="mt-1">⚠️</span>
+                  <span>{issue}</span>
+                </div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-          <div style={styles.section}>
-            <label style={styles.label}>Temperature ({temperature})</label>
-            <input
-              type="range"
-              min="0"
-              max="2"
-              step="0.1"
-              style={styles.range}
-              value={temperature}
-              onChange={(e) => setTemperature(parseFloat(e.target.value))}
-            />
+        {/* Main Config Form Area */}
+        <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-6 space-y-8">
+          
+          {/* Section: Knowledge Base */}
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-bold text-white tracking-tight uppercase text-[13px] opacity-80">Server Knowledge Base</h3>
+                <p className="text-xs text-zinc-500 mt-1">Read-only markdown files injected into the assistant system prompt.</p>
+              </div>
+            </div>
+
+            {knowledgeError && (
+              <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs">
+                {knowledgeError}
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
+              <div className="flex flex-col gap-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                {knowledgeDocs.map((doc) => {
+                  const active = selectedKnowledgeDoc?.filename === doc.filename;
+                  return (
+                    <button
+                      key={doc.filename}
+                      onClick={() => setSelectedKnowledgeFilename(doc.filename)}
+                      className={`group p-3 rounded-xl border text-left transition-all duration-200 ${
+                        active 
+                          ? 'bg-violet-600/10 border-violet-500/50 shadow-lg shadow-violet-500/10' 
+                          : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.12]'
+                      }`}
+                    >
+                      <span className={`block text-[13px] font-bold transition-colors ${active ? 'text-violet-400' : 'text-zinc-300 group-hover:text-white'}`}>
+                        {doc.title}
+                      </span>
+                      <span className="block text-[10px] text-zinc-500 mt-0.5 font-mono opacity-80">
+                        {doc.filename}
+                      </span>
+                      <div className="mt-1.5 flex items-center justify-between">
+                        <span className="text-[9px] uppercase tracking-wider text-zinc-600 font-bold">
+                          {doc.characterCount.toLocaleString()} chars
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="bg-black/40 border border-white/[0.06] rounded-2xl flex flex-col overflow-hidden min-h-[400px]">
+                {selectedKnowledgeDoc ? (
+                  <>
+                    <div className="flex items-center justify-between px-5 py-3 border-b border-white/[0.06] bg-white/[0.02]">
+                      <span className="text-xs font-mono text-violet-400 font-bold">{selectedKnowledgeDoc.filename}</span>
+                      <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Preview Mode</span>
+                    </div>
+                    <div className="p-6 flex-1 max-h-[440px] overflow-y-auto custom-scrollbar">
+                      <pre className="text-sm text-zinc-300 font-mono leading-relaxed whitespace-pre-wrap break-words">
+                        {selectedKnowledgeDoc.content}
+                      </pre>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex-1 flex items-center justify-center text-zinc-600 text-sm italic">
+                    Select a knowledge document to preview content
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+
+          {/* Section: System Prompt */}
+          <section className="space-y-4 pt-4 border-t border-white/[0.06]">
+            <div>
+              <h3 className="text-lg font-bold text-white tracking-tight uppercase text-[13px] opacity-80">Dynamic System Instructions</h3>
+              <p className="text-xs text-zinc-500 mt-1">Additional CMS logic. The base knowledge and safety boundaries are appended automatically.</p>
+            </div>
+            
+            <div className="relative group">
+              <textarea
+                value={systemPrompt}
+                onChange={(e) => setSystemPrompt(e.target.value)}
+                placeholder="Describe your assistant's personality and specific CMS tasks..."
+                className="w-full min-h-[300px] p-6 bg-black/30 border border-white/[0.08] rounded-2xl text-zinc-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-500/50 transition-all placeholder:text-zinc-700 resize-none custom-scrollbar"
+              />
+              <div className="absolute top-4 right-4 text-[10px] font-bold text-zinc-700 uppercase tracking-widest group-focus-within:text-violet-500/50 pointer-events-none">
+                Live Editor
+              </div>
+            </div>
+          </section>
+
+          {/* Section: Model & Params */}
+          <section className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold text-white tracking-tight uppercase text-[13px] opacity-80">Model Engine</h3>
+              <select 
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+                className="w-full px-4 h-12 bg-black/30 border border-white/[0.08] rounded-xl text-zinc-200 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/40 transition-all appearance-none cursor-pointer"
+              >
+                <option value="gpt-4o-mini">GPT-4o mini (Balanced)</option>
+                <option value="gpt-4o">GPT-4o (Vision & Reasoning)</option>
+                <option value="o1-mini">o1-mini (Complex Logic)</option>
+              </select>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold text-white tracking-tight uppercase text-[13px] opacity-80">Temperature</h3>
+                <span className="text-xs font-bold text-violet-400 font-mono bg-violet-400/10 px-2 py-0.5 rounded-md">{temperature}</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="2"
+                step="0.1"
+                value={temperature}
+                onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                className="w-full accent-violet-500 h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer"
+              />
+              <div className="flex justify-between text-[10px] text-zinc-600 font-bold uppercase tracking-wider">
+                <span>Precise</span>
+                <span>Creative</span>
+              </div>
+            </div>
+          </section>
+
+          {/* Actions & Alerts */}
+          <div className="pt-8 border-t border-white/[0.06] flex flex-col gap-4">
+            <AnimatePresence>
+              {message && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className={`p-4 rounded-xl text-sm font-bold flex items-center gap-3 ${
+                    message.type === 'success' 
+                      ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' 
+                      : 'bg-rose-500/10 border border-rose-500/20 text-rose-400'
+                  }`}
+                >
+                  <span className="text-lg">{message.type === 'success' ? '✅' : '❌'}</span>
+                  {message.text}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <button
+              disabled={saving}
+              onClick={handleSave}
+              className={`w-full h-11 rounded-xl font-bold text-white transition-all duration-300 relative overflow-hidden group shadow-xl ${
+                saving 
+                  ? 'bg-zinc-800 cursor-not-allowed' 
+                  : 'bg-gradient-to-r from-violet-600 via-violet-500 to-indigo-600 hover:shadow-violet-500/20 active:scale-[0.98]'
+              }`}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+              <span className="relative flex items-center justify-center gap-2 text-sm">
+                {saving ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Updating Production Brain...
+                  </>
+                ) : (
+                  'Deploy Brain Configuration'
+                )}
+              </span>
+            </button>
           </div>
         </div>
-
-        {message && (
-          <div style={{
-            ...styles.alert,
-            background: message.type === 'success' ? '#064e3b' : '#7f1d1d',
-            color: message.type === 'success' ? '#6ee7b7' : '#fca5a5',
-          }}>
-            {message.text}
-          </div>
-        )}
-
-        <button
-          style={{
-            ...styles.saveBtn,
-            opacity: saving ? 0.7 : 1,
-            cursor: saving ? 'not-allowed' : 'pointer'
-          }}
-          disabled={saving}
-          onClick={handleSave}
-        >
-          {saving ? 'Saving...' : 'Update Production Brain'}
-        </button>
       </div>
+
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.1);
+        }
+      `}</style>
     </div>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    maxWidth: '900px',
-  },
-  header: {
-    marginBottom: '32px',
-  },
-  title: {
-    margin: 0,
-    fontSize: '28px',
-    fontWeight: 700,
-    color: '#fff',
-  },
-  subtitle: {
-    margin: '8px 0 0',
-    fontSize: '14px',
-    color: '#888',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '24px',
-    backgroundColor: '#141414',
-    borderWidth: '1px',
-    borderStyle: 'solid',
-    borderColor: '#222',
-    borderRadius: '16px',
-    padding: '32px',
-  },
-  section: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-    flex: 1,
-  },
-  row: {
-    display: 'flex',
-    gap: '24px',
-    width: '100%',
-  },
-  knowledgeGrid: {
-    display: 'grid',
-    gridTemplateColumns: '260px minmax(0, 1fr)',
-    gap: '16px',
-  },
-  knowledgeList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-  },
-  knowledgeButton: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '6px',
-    padding: '12px',
-    backgroundColor: '#0a0a0a',
-    borderWidth: '1px',
-    borderStyle: 'solid',
-    borderColor: '#222',
-    borderRadius: '8px',
-    color: '#aaa',
-    cursor: 'pointer',
-    textAlign: 'left' as const,
-  },
-  knowledgeButtonActive: {
-    borderColor: '#8b5cf6',
-    backgroundColor: '#151022',
-    color: '#fff',
-  },
-  knowledgeButtonTitle: {
-    fontSize: '13px',
-    fontWeight: 600,
-  },
-  knowledgeButtonMeta: {
-    fontSize: '11px',
-    color: '#777',
-    lineHeight: 1.4,
-  },
-  knowledgeViewer: {
-    minHeight: '360px',
-    backgroundColor: '#0a0a0a',
-    borderWidth: '1px',
-    borderStyle: 'solid',
-    borderColor: '#222',
-    borderRadius: '8px',
-    overflow: 'hidden',
-  },
-  knowledgeViewerHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    gap: '16px',
-    padding: '12px 14px',
-    borderBottomWidth: '1px',
-    borderBottomStyle: 'solid',
-    borderBottomColor: '#222',
-    color: '#ddd',
-    fontSize: '12px',
-  },
-  knowledgeContent: {
-    margin: 0,
-    maxHeight: '420px',
-    overflow: 'auto',
-    padding: '16px',
-    color: '#ddd',
-    fontSize: '13px',
-    lineHeight: 1.6,
-    whiteSpace: 'pre-wrap' as const,
-    wordBreak: 'break-word' as const,
-    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-  },
-  emptyState: {
-    padding: '16px',
-    color: '#777',
-    fontSize: '13px',
-  },
-  statusGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-    gap: '12px',
-  },
-  statusCard: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '6px',
-    padding: '14px',
-    backgroundColor: '#0a0a0a',
-    borderWidth: '1px',
-    borderStyle: 'solid',
-    borderColor: '#222',
-    borderRadius: '10px',
-  },
-  statusLabel: {
-    fontSize: '11px',
-    color: '#666',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.05em',
-  },
-  statusValue: {
-    fontSize: '15px',
-    color: '#fff',
-  },
-  statusHint: {
-    fontSize: '12px',
-    color: '#777',
-  },
-  warning: {
-    padding: '12px 16px',
-    borderRadius: '8px',
-    backgroundColor: '#451a03',
-    color: '#fdba74',
-    fontSize: '13px',
-    lineHeight: 1.5,
-  },
-  label: {
-    fontSize: '13px',
-    fontWeight: 600,
-    color: '#ddd',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.05em',
-  },
-  hint: {
-    margin: 0,
-    fontSize: '12px',
-    color: '#666',
-  },
-  textarea: {
-    width: '100%',
-    padding: '16px',
-    backgroundColor: '#0a0a0a',
-    borderWidth: '1px',
-    borderStyle: 'solid',
-    borderColor: '#333',
-    borderRadius: '10px',
-    color: '#fff',
-    fontSize: '14px',
-    fontFamily: 'inherit',
-    resize: 'vertical' as const,
-    outline: 'none',
-  },
-  select: {
-    padding: '12px',
-    backgroundColor: '#0a0a0a',
-    borderWidth: '1px',
-    borderStyle: 'solid',
-    borderColor: '#333',
-    borderRadius: '10px',
-    color: '#fff',
-    fontSize: '14px',
-    outline: 'none',
-  },
-  range: {
-    accentColor: '#8b5cf6',
-  },
-  saveBtn: {
-    marginTop: '12px',
-    padding: '14px 24px',
-    backgroundColor: '#8b5cf6',
-    color: '#fff',
-    borderWidth: 0,
-    borderStyle: 'none',
-    borderRadius: '10px',
-    fontSize: '14px',
-    fontWeight: 600,
-    transition: 'all 0.2s',
-  },
-  alert: {
-    padding: '12px 16px',
-    borderRadius: '8px',
-    fontSize: '13px',
-    fontWeight: 500,
-  }
-};

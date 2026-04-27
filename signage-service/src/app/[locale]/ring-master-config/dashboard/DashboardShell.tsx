@@ -131,7 +131,8 @@ export default function CmsDashboardShell({
 
         <nav className="flex flex-col gap-1 px-3 flex-1">
           {navItems.map((item) => {
-            const isActive = isLocalizedRouteActive(pathname, locale, item.path);
+            const isDashboardRoot = item.path === '/ring-master-config/dashboard';
+            const isActive = isLocalizedRouteActive(pathname, locale, item.path, isDashboardRoot);
             return (
               <button
                 key={item.path}

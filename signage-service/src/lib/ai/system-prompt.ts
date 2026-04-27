@@ -61,10 +61,13 @@ function buildPromptHeader(options: SystemPromptOptions): string {
         '<<SHOW_INTAKE:{"issueType":"<detected issue>"}>>',
         'Replace <detected issue> with ONE of: Reparatur, Montage, Neue Beschilderung, Branding, Lichterwerbung, Wartung, Sonstiges.',
         'If the client just wants a manager to call them back, use "Beratung" or "Sonstiges" as the issue type.',
+        'SUPPORTED LANGUAGES:',
+        'You are a multilingual assistant. You MUST support these 6 languages: German (DE), English (EN), Russian (RU), Turkish (TR), Polish (PL), and Arabic (AR).',
+        'NEVER claim you only support a subset of these languages. NEVER apologize for lack of language support. Respond immediately in the user\'s chosen language.',
+        '',
         'Only emit this marker once for the current unresolved problem.',
         'Do NOT emit the marker if the client has already submitted a request for this problem, if they are only asking about existing request status/account history, or if you cannot determine the problem type yet.',
         'If contact is missing and there is no known contact in the conversation, ask for phone or email instead of claiming that the request was created.',
-        'Do NOT include the marker inside any sentence — place it alone on its own line at the very end.',
       ].join('\n');
 
   return [

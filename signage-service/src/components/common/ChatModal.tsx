@@ -5,6 +5,7 @@ import { useLocale } from 'next-intl';
 import Logo from '../common/Logo';
 import ChatIntakeCard, { type IntakePrefill } from './ChatIntakeCard';
 import ChatRequestConfirmCard from './ChatRequestConfirmCard';
+import ChatLanguageSelector from './ChatLanguageSelector';
 
 type ChatAuthorRole = 'CUSTOMER' | 'SYSTEM' | 'OPERATOR';
 
@@ -68,9 +69,9 @@ function formatTimestamp(value: string): string {
 }
 
 function getRoleLabel(role: ChatAuthorRole): string {
-  if (role === 'CUSTOMER') return 'Sie';
-  if (role === 'OPERATOR') return 'Mitarbeiter';
-  return 'AI';
+  if (role === 'CUSTOMER') return 'User';
+  if (role === 'OPERATOR') return 'Agent';
+  return 'Assistant';
 }
 
 function getRolePalette(role: ChatAuthorRole) {
@@ -106,6 +107,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
   const [intakeMode, setIntakeMode] = useState<'full_form' | 'confirm_existing_contact'>('full_form');
   const [intakePrefill, setIntakePrefill] = useState<IntakePrefill | undefined>();
   const [intakeDone, setIntakeDone] = useState(false);
+  const [hasChosenLanguage, setHasChosenLanguage] = useState(false);
   const [pendingFiles, setPendingFiles] = useState<AttachmentPreview[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const hasLoadedRef = useRef(false);
@@ -118,7 +120,9 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
       const res = await fetch(`/api/chat/messages?locale=${encodeURIComponent(locale)}`, { method: 'GET', cache: 'no-store' });
       if (!res.ok) throw new Error(DEFAULT_CHAT_ERROR);
       const data = (await res.json().catch(() => null)) as ChatApiResponse | null;
-      setMessages(Array.isArray(data?.messages) ? data.messages.map(normalizeMessage) : []);
+      const rawMessages = Array.isArray(data?.messages) ? data.messages.map(normalizeMessage) : [];
+      
+      setMessages(rawMessages);
       setOperatorTakeover(Boolean(data?.operatorTakeover));
       setIntakePrefill(data?.intakePrefill ?? undefined);
       setIntakeMode(data?.intakeMode ?? 'full_form');
@@ -162,12 +166,12 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
     });
   };
 
-  const handleSend = useCallback(async () => {
-    const trimmed = inputText.trim();
-    if ((!trimmed && pendingFiles.length === 0) || isLoadingHistory || isSending) return;
+  const handleSend = useCallback(async (overrideMessage?: string, silent?: boolean) => {
+    const messageToSubmit = (overrideMessage || inputText).trim();
+    if ((!messageToSubmit && pendingFiles.length === 0) || isLoadingHistory || isSending) return;
 
     const currentFiles = [...pendingFiles];
-    const messageText = trimmed || 'Foto';
+    const messageText = messageToSubmit || 'Foto';
 
     const optimistic: ChatMessage = {
       id: `temp-${Date.now()}`,
@@ -181,17 +185,21 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
       }))
     };
 
-    setInputText('');
+    if (!silent) {
+      setInputText('');
+      setMessages(c => [...c, optimistic]);
+    }
+
     setErrorMessage('');
     setPendingFiles([]);
     setIsSending(true);
     setIntakeDone(false);
-    setMessages(c => [...c, optimistic]);
 
     try {
       const fd = new FormData();
       fd.append('message', messageText);
       fd.append('locale', locale);
+      if (silent) fd.append('silent', 'true');
       currentFiles.forEach(f => fd.append('files', f.file));
 
       const res = await fetch('/api/chat/messages', {
@@ -201,6 +209,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
       if (!res.ok) throw new Error(DEFAULT_CHAT_ERROR);
 
       const data = (await res.json().catch(() => null)) as ChatApiResponse | null;
+      
       const next = Array.isArray(data?.messages) ? data.messages.map(normalizeMessage) : [];
       if (next.length > 0) setMessages(next);
       if (typeof data?.operatorTakeover === 'boolean') setOperatorTakeover(data.operatorTakeover);
@@ -214,25 +223,31 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
       hasLoadedRef.current = true;
     } catch {
       setMessages(c => c.filter(m => m.id !== optimistic.id));
-      setInputText(trimmed);
+      setInputText(messageToSubmit);
       setErrorMessage(DEFAULT_CHAT_ERROR);
     } finally {
       setIsSending(false);
     }
   }, [inputText, pendingFiles, isLoadingHistory, isSending, locale, showIntakeCard]);
 
+  const handleLanguageSelect = (languageName: string) => {
+    setHasChosenLanguage(true);
+    const silentInstruction = `Please communicate with me in ${languageName} from now on. Start by repeating your initial greeting in this language.`;
+    void handleSend(silentInstruction, true);
+  };
+
   if (!isOpen) return null;
 
   const showInitialLoading = isLoadingHistory && messages.length === 0;
 
   return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6 transition-all duration-500">
+    <div className="fixed inset-0 z-[110] flex items-center justify-center sm:p-6 transition-all duration-500">
       <div className="absolute inset-0 bg-[#0E1A2B]/40 backdrop-blur-md" onClick={onClose} />
 
-      <div className="relative flex h-[600px] w-full max-w-4xl flex-col overflow-hidden rounded-[32px] border border-white/20 bg-[#F7F1E8]/95 shadow-2xl backdrop-blur-3xl">
+      <div className="relative flex h-full sm:h-[750px] w-full sm:max-w-5xl flex-col overflow-hidden sm:rounded-[32px] border-none sm:border border-white/20 bg-[#F7F1E8]/95 shadow-2xl backdrop-blur-3xl">
 
         {/* Header */}
-        <div className="flex items-center justify-between gap-2 border-b border-black/5 bg-white/80 p-5">
+        <div className="flex items-center justify-between gap-2 border-b border-black/5 bg-white/80 p-4 sm:p-5">
           <div className="flex min-w-0 flex-1 items-center gap-4">
             <Logo className="origin-left scale-75 shrink-0" />
             <div className="hidden h-6 w-px shrink-0 bg-black/10 sm:block" />
@@ -252,7 +267,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
         </div>
 
         {/* Messages */}
-        <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto p-5 scroll-smooth">
+        <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto p-4 sm:p-5 scroll-smooth">
           {operatorTakeover && (
             <div className="rounded-[20px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-[13px] text-emerald-900">
               Ein Mitarbeiter hat das Gespräch übernommen.
@@ -270,37 +285,53 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
               Beschreiben Sie Ihr Anliegen oder senden Sie ein Foto.
             </div>
           )}
-
-          {messages.map(message => {
-            const p = getRolePalette(message.authorRole);
-            return (
-              <div key={message.id} className={`flex flex-col ${p.container} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
-                <span className={`mb-1 text-[10px] font-bold uppercase tracking-[0.18em] ${p.label}`}>
-                  {getRoleLabel(message.authorRole)}
-                </span>
-                <div className={`max-w-[80%] rounded-[24px] px-5 py-3 text-[14px] shadow-sm whitespace-pre-wrap ${p.bubble}`}>
-                  {message.body}
-                  {message.attachments && message.attachments.length > 0 && (
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {message.attachments.map(att => (
-                        <div key={att.id} className="relative rounded-xl overflow-hidden bg-white/10 flex-shrink-0" style={{ width: '80px', height: '80px' }}>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={att.storageKey}
-                            alt={att.originalFilename || 'Attachment'}
-                            className="w-full h-full object-cover"
-                          />
+          
+          {(() => {
+            const userHasSpoken = messages.some(m => m.authorRole === 'CUSTOMER');
+            return messages.map((message, idx) => {
+              if (message.body.startsWith('[SILENT]')) return null;
+              const p = getRolePalette(message.authorRole);
+              return (
+                <div key={message.id}>
+                  <div className={`flex flex-col ${p.container} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
+                    <span className={`mb-1 text-[10px] font-bold uppercase tracking-[0.18em] ${p.label}`}>
+                      {idx === 1 ? 'System' : getRoleLabel(message.authorRole)}
+                    </span>
+                    <div className={`max-w-[80%] rounded-[24px] px-5 py-3 text-[14px] shadow-sm whitespace-pre-wrap ${p.bubble}`}>
+                      {message.body}
+                      
+                      {/* Integrated language selector */}
+                      {idx === 1 && !userHasSpoken && (
+                        <div className="mt-4 animate-in fade-in slide-in-from-bottom-1 duration-400">
+                          <ChatLanguageSelector onSelect={handleLanguageSelect} />
                         </div>
-                      ))}
+                      )}
+
+                      {message.attachments && message.attachments.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {message.attachments.map(att => (
+                            <div key={att.id} className="relative rounded-xl overflow-hidden bg-white/10 flex-shrink-0" style={{ width: '80px', height: '80px' }}>
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={att.storageKey}
+                                alt={att.originalFilename || 'Attachment'}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  )}
+                    <span className={`mx-2 mt-1.5 text-[9px] font-bold uppercase tracking-widest ${p.meta}`}>
+                      {formatTimestamp(message.createdAt)}
+                    </span>
+                  </div>
+
                 </div>
-                <span className={`mx-2 mt-1.5 text-[9px] font-bold uppercase tracking-widest ${p.meta}`}>
-                  {formatTimestamp(message.createdAt)}
-                </span>
-              </div>
-            );
-          })}
+              );
+            });
+          })()}
+
 
           {/* Inline intake card */}
           {showIntakeCard && !intakeDone && (
@@ -349,7 +380,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
         </div>
 
         {/* Input area */}
-        <div className="mt-auto border-t border-black/5 bg-white/80 p-4">
+        <div className="mt-auto border-t border-black/5 bg-white/80 p-3 sm:p-4">
           {errorMessage && (
             <p className="mb-3 rounded-[20px] border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700">
               {errorMessage}

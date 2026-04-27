@@ -287,6 +287,8 @@ export async function GET(request: NextRequest) {
     let messages = await loadSessionMessages(prisma, session.id, session.caseId);
 
     if (messages.length === 0) {
+      const now = new Date();
+      // First message: Locale greeting
       await prisma.message.create({
         data: {
           caseId: session.caseId,
@@ -295,7 +297,20 @@ export async function GET(request: NextRequest) {
           authorRole: MessageAuthorRole.SYSTEM,
           body: buildInitialGreeting(locale),
           isCustomerVisible: true,
-          sentAt: new Date(),
+          sentAt: now,
+        },
+      });
+
+      // Second message: Language selection
+      await prisma.message.create({
+        data: {
+          caseId: session.caseId,
+          sessionId: session.id,
+          channel: CaseOriginChannel.WEBSITE_CHAT,
+          authorRole: MessageAuthorRole.SYSTEM,
+          body: 'Please choose your preferred language:',
+          isCustomerVisible: true,
+          sentAt: new Date(now.getTime() + 1000),
         },
       });
 
@@ -348,6 +363,7 @@ export async function POST(request: NextRequest) {
   try {
     let message = '';
     let locale = '';
+    let silent = false;
     let files: File[] = [];
 
     const contentType = request.headers.get('content-type') || '';
@@ -355,13 +371,15 @@ export async function POST(request: NextRequest) {
       const formData = await request.formData();
       message = String(formData.get('message') ?? '').trim();
       locale = String(formData.get('locale') ?? '').trim();
+      silent = formData.get('silent') === 'true';
       files = formData.getAll('files').filter((entry): entry is File => entry instanceof File && entry.size > 0);
     } else {
       const body = (await request.json().catch(() => null)) as
-        | { message?: string; locale?: string; }
+        | { message?: string; locale?: string; silent?: boolean; }
         | null;
       message = body?.message?.trim() ?? '';
       locale = body?.locale?.trim() ?? '';
+      silent = !!body?.silent;
     }
 
     if (!message) {
@@ -409,7 +427,7 @@ export async function POST(request: NextRequest) {
           sessionId: session.id,
           channel: CaseOriginChannel.WEBSITE_CHAT,
           authorRole: MessageAuthorRole.CUSTOMER,
-          body: message,
+          body: silent ? `[SILENT] ${message}` : message,
           isCustomerVisible: true,
           sentAt: now,
         },
@@ -445,9 +463,9 @@ export async function POST(request: NextRequest) {
         .map((entry) => ({
           role:
             entry.authorRole === MessageAuthorRole.CUSTOMER
-              ? ('user' as const)
-              : ('assistant' as const),
-          body: entry.body,
+               ? ('user' as const)
+               : ('assistant' as const),
+          body: entry.body.replace(/<<SHOW_LANGUAGE_SELECTOR>>/g, '').trim(),
         }));
 
       const aiMessage = files.length > 0
@@ -464,26 +482,31 @@ export async function POST(request: NextRequest) {
         publicRequestNumber = c?.publicRequestNumber || null;
       }
 
-      reply = await generateChatReply({
-        locale,
-        message: aiMessage,
-        history,
-        operatorTakeover: session.operatorTakeover,
-        publicRequestNumber,
-      });
-
-      if (reply.text.trim().length > 0) {
-        await prisma.message.create({
-          data: {
-            caseId: session.caseId,
-            sessionId: session.id,
-            channel: CaseOriginChannel.WEBSITE_CHAT,
-            authorRole: MessageAuthorRole.SYSTEM,
-            body: reply.text,
-            isCustomerVisible: true,
-            sentAt: new Date(),
-          },
+      // ONLY generate AI reply if the last message was from the customer.
+      // This prevents the AI from responding to initial system greetings.
+      const lastMsg = messages[messages.length - 1];
+      if (lastMsg?.authorRole === MessageAuthorRole.CUSTOMER) {
+        reply = await generateChatReply({
+          locale,
+          message: aiMessage,
+          history,
+          operatorTakeover: session.operatorTakeover,
+          publicRequestNumber,
         });
+
+        if (reply.text.trim().length > 0) {
+          await prisma.message.create({
+            data: {
+              caseId: session.caseId,
+              sessionId: session.id,
+              channel: CaseOriginChannel.WEBSITE_CHAT,
+              authorRole: MessageAuthorRole.SYSTEM,
+              body: reply.text,
+              isCustomerVisible: true,
+              sentAt: new Date(),
+            },
+          });
+        }
       }
     }
 
