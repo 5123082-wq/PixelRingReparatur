@@ -406,16 +406,20 @@ export default function MediaLibraryPage() {
       });
 
       if (!response.ok) {
-        throw new Error(await readApiError(response));
+        const data = await response.json();
+        const debugId = data.debugId ? ` (ID: ${data.debugId})` : '';
+        setUploadError(data.error || t('failedToUploadMedia') + debugId);
+        console.error('Upload error:', data);
+      } else {
+        setUploadForm(createEmptyForm());
+        setUploadFile(null);
+        setNotice('Media uploaded to the global CMS library.');
+        setShowUploadModal(false);
+        setRefreshVersion((value) => value + 1);
       }
-
-      setUploadForm(createEmptyForm());
-      setUploadFile(null);
-      setNotice('Media uploaded to the global CMS library.');
-      setShowUploadModal(false);
-      setRefreshVersion((value) => value + 1);
-    } catch (error) {
-      setUploadError(error instanceof Error ? error.message : 'Failed to upload media.');
+    } catch (err) {
+      setUploadError(t('failedToUploadMedia'));
+      console.error('Upload request failed:', err);
     } finally {
       setUploading(false);
     }
@@ -640,7 +644,7 @@ export default function MediaLibraryPage() {
             <div className="p-10 bg-white/[0.01] border-t border-white/5 flex items-center justify-between">
               <div className="flex gap-8">
                 <div className="flex flex-col">
-                  <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Resoluton</span>
+                  <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Resolution</span>
                   <span className="text-xs font-bold text-zinc-400 mt-1">{uploadForm.width && uploadForm.height ? `${uploadForm.width} × ${uploadForm.height}` : 'Automatic'}</span>
                 </div>
               </div>

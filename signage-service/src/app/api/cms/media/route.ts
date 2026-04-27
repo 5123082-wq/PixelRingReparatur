@@ -221,29 +221,26 @@ export async function POST(request: NextRequest) {
           mimeType: validated.mimeType,
           byteSize: validated.byteSize,
           checksumSha256: validated.checksumSha256,
-          width: dimensions.width ?? validated.width,
-          height: dimensions.height ?? validated.height,
+          width: dimensions?.width ?? validated.width,
+          height: dimensions?.height ?? validated.height,
           meta: meta ?? undefined,
           deletedAt: null,
         },
-        select: CMS_MEDIA_SELECT,
       });
 
       await createAdminAuditLog(tx, {
         actorSessionId: actor.sessionId,
         actorAdminUserId: actor.adminUserId,
         actorRole: actor.role,
-        action: 'CMS_MEDIA_UPLOADED',
+        action: 'CMS_MEDIA_UPLOAD',
         resourceType: 'CMS_MEDIA',
         resourceId: mediaRecord.id,
+        outcome: 'SUCCESS',
         details: {
-          usageType: mediaRecord.usageType,
-          locale: mediaRecord.locale,
-          mimeType: mediaRecord.mimeType,
-          byteSize: mediaRecord.byteSize,
-          checksumSha256: mediaRecord.checksumSha256,
-          width: mediaRecord.width,
-          height: mediaRecord.height,
+          filename: validated.originalFilename,
+          mimeType: validated.mimeType,
+          byteSize: validated.byteSize,
+          storageProvider: persistedMedia.storageProvider,
         },
         ipAddress: actor.ipAddress,
         userAgent: actor.userAgent,
@@ -252,8 +249,35 @@ export async function POST(request: NextRequest) {
       return mediaRecord;
     });
 
-    return NextResponse.json({ success: true, media: serializeCmsMedia(created) }, { status: 201 });
+    return NextResponse.json({
+      message: 'Media uploaded successfully',
+      media: serializeCmsMedia(created),
+    }, { status: 201 });
+
   } catch (error) {
+    const errorId = crypto.randomUUID();
+    console.error(`[${errorId}] API Error /api/cms/media (POST):`, error);
+
+    // Try to log failure to audit log (outside of main transaction if that failed)
+    if (actor) {
+      try {
+        await createAdminAuditLog(prisma, {
+          actorSessionId: actor.sessionId,
+          actorAdminUserId: actor.adminUserId,
+          actorRole: actor.role,
+          action: 'CMS_MEDIA_UPLOAD',
+          resourceType: 'CMS_MEDIA',
+          outcome: 'FAILURE',
+          reason: error instanceof Error ? error.message : 'Unknown error',
+          details: { errorId },
+          ipAddress: actor.ipAddress,
+          userAgent: actor.userAgent,
+        });
+      } catch (auditError) {
+        console.error(`[${errorId}] Failed to log audit failure:`, auditError);
+      }
+    }
+
     if (isPrismaUniqueError(error)) {
       if (storedMedia) {
         await cleanupLocalCmsMediaUpload(

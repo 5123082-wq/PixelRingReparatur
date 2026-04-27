@@ -426,5 +426,16 @@
     "cta_primary": "Diagnose starten",
     "cta_secondary": "Foto hochladen",
     "internal_links_title": "Beliebte Themen & Lösungen"
+  },
+  "CmsMedia": {
+    "title": "Medienbibliothek",
+    "uploadMedia": "Medien hochladen",
+    "failedToUploadMedia": "Medien konnten nicht hochgeladen werden",
+    "searchPlaceholder": "Suchen...",
+    "resolution": "Auflösung",
+    "fileSize": "Dateigröße",
+    "usageType": "Verwendung",
+    "createdAt": "Erstellt am",
+    "deleteConfirm": "Möchten Sie dieses Medium wirklich löschen?"
   }
 }

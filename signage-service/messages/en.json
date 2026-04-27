@@ -426,5 +426,16 @@
       "guaranteed": "Service Guarantee",
       "experts": "Certified Experts"
     }
+  },
+  "CmsMedia": {
+    "title": "Media Library",
+    "uploadMedia": "Upload Media",
+    "failedToUploadMedia": "Failed to upload media",
+    "searchPlaceholder": "Search...",
+    "resolution": "Resolution",
+    "fileSize": "File Size",
+    "usageType": "Usage Type",
+    "createdAt": "Created At",
+    "deleteConfirm": "Are you sure you want to delete this media?"
   }
 }
