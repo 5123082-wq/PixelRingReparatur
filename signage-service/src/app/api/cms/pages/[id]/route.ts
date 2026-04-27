@@ -327,6 +327,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     if (Array.isArray(updates.blocks)) {
       const blockValidationError = validateCmsPageBlocksForPage(
         nextPageKey,
+        nextLocale,
         updates.blocks
       );
 
