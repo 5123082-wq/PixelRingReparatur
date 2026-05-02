@@ -766,6 +766,13 @@ function normalizeGlobalNavigationLinks(links: CmsLinkItem[] | undefined): CmsLi
       };
     }
 
+    if (index === 3) {
+      return {
+        label: link.label,
+        href: '/referenzen',
+      };
+    }
+
     return link;
   });
 }

@@ -85,17 +85,6 @@ const BentoCard = ({ step, isAccent }: { step: Step; isAccent: boolean }) => {
       </motion.div>
 
       <div className="flex flex-col gap-4 relative z-20">
-        <div className="flex items-center gap-2">
-          <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded border ${
-            isAccent ? 'border-white/30 text-white/70' : 'border-[#B8643E]/30 text-[#B8643E]'
-          }`}>
-            [{String(step.id).padStart(2, '0')}]
-          </span>
-          <div className={`h-[1px] flex-grow transition-all duration-700 origin-left group-hover:scale-x-105 ${
-            isAccent ? 'bg-white/10' : 'bg-[#B8643E]/10'
-          }`} />
-        </div>
-        
         <h3 className="text-[24px] md:text-[28px] font-bold leading-tight tracking-tight">
           {step.title}
         </h3>

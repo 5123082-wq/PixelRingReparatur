@@ -319,6 +319,34 @@
         "label": "مغلق",
         "description": "لم يعد الطلب نشطاً."
       }
+    },
+    "cabinet_title": "بوابة العميل",
+    "cabinet_description": "إدارة الطلبات والمستندات وتقارير الصور وسجل الخدمة في مكان واحد",
+    "cabinet_link": "الانتقال إلى البوابة",
+    "cabinet_items": {
+      "documents": "المستندات وتقارير الصور",
+      "photo_reports": "تقارير الصور",
+      "payment": "دفع سريع",
+      "history": "السجل والضمان",
+      "chat": "دردشة مباشرة مع الفني"
+    },
+    "chat_header": "مراسلات الطلب",
+    "chat_online": "متصل",
+    "chat_manager": "المدير",
+    "chat_you": "أنت",
+    "chat_open_button": "فتح الدردشة",
+    "chat_placeholder": "اكتب رسالتك هنا...",
+    "chat_auth_hint": "سجّل الدخول لبدء المراسلة",
+    "progress_steps": {
+      "accepted": "تم القبول",
+      "diagnostics": "التشخيص",
+      "repairing": "الإصلاح",
+      "delivery": "جاهز للتسليم"
+    },
+    "chat_messages": {
+      "welcome": "مرحباً! لقد استلمنا جهازك للتشخيص.",
+      "question": "شكراً! متى ستكون نتيجة التشخيص جاهزة؟",
+      "answer": "عادةً يستغرق ذلك من يوم إلى يومي عمل. سنخبرك هنا!"
     }
   },
   "FooterCTA": {
@@ -426,5 +454,83 @@
     "cta_primary": "Start Diagnosis",
     "cta_secondary": "Upload Photo",
     "internal_links_title": "Popular Topics & Solutions"
+  },
+  "Portal": {
+    "accountLabel": "حساب العميل",
+    "planLabel": "خطة تجريبية {plan}",
+    "demoBadge": "وضع تجريبي",
+    "title": "بوابة العميل",
+    "subtitle": "المواقع والطلبات وأصول الإعلانات والمستندات في مساحة عمل مختصرة.",
+    "logout": "تسجيل الخروج",
+    "logoutLoading": "جار تسجيل الخروج...",
+    "safeBoundary": "تعرض هذه المرحلة بيانات تجريبية مترابطة فقط. لا توجد بيانات CRM داخلية أو مسارات مستندات خاصة أو بيانات عملاء حقيقية.",
+    "nav": { "overview": "نظرة عامة", "requests": "الطلبات", "objects": "المواقع", "assets": "الأصول", "documents": "المستندات" },
+    "gate": {
+      "badge": "Portal Stage 1",
+      "title": "تحقق من الوصول التجريبي إلى بوابة العميل",
+      "description": "يعرض أول هيكل للبوابة رؤية آمنة ومترابطة للعميل التجاري قبل تفعيل الهوية الحقيقية والمؤسسات واعتمادات المستندات.",
+      "safeData": "رقم PR وحده لا يفتح البيانات الخاصة.",
+      "demoNotice": "البيانات التجريبية تخص سيناريو اختبار Pixel Ring GmbH المعتمد.",
+      "formEyebrow": "البريد الإلكتروني أولا",
+      "formTitle": "فتح الوصول",
+      "formHint": "لهذه المرحلة استخدم عنوان demo: {email}",
+      "disabled": "الوصول التجريبي معطل. اضبط PORTAL_DEMO_ENABLED=true للاختبار محليا.",
+      "emailLabel": "البريد الإلكتروني",
+      "submit": "فتح البوابة",
+      "loading": "جار التحقق...",
+      "error": "تعذر التحقق من الوصول."
+    },
+    "metrics": { "objects": "المواقع", "activeRequests": "طلبات نشطة", "assetsWatch": "أصول للمراقبة", "documents": "مستندات" },
+    "requests": { "title": "الطلبات", "activeTitle": "عمل نشط", "nextStep": "الخطوة التالية" },
+    "objects": { "title": "المواقع", "assets": "أصول", "access": "الوصول", "contacts": "المسؤولون", "requests": "الطلبات" },
+    "assets": { "title": "أصول الإعلانات", "lastService": "آخر خدمة" },
+    "documents": { "title": "التقارير والضمانات والمستندات" },
+    "detail": {
+      "backToPortal": "العودة إلى البوابة",
+      "customerStatus": "حالة العميل",
+      "requestSummary": "ملخص الطلب",
+      "objectLocation": "الموقع والعنوان",
+      "openedAt": "تاريخ الفتح",
+      "updatedAt": "آخر تحديث",
+      "relatedAssets": "الأصول المرتبطة",
+      "issueSummary": "ملخص المشكلة",
+      "nextStep": "الخطوة التالية",
+      "requiresActionEyebrow": "يتطلب إجراء",
+      "requiresAction": "يتطلب إجراء",
+      "actionPlaceholder": "Stage 2 demo: هذا الإجراء لا يحفظ أي شيء بعد.",
+      "noActions": "لا يوجد إجراء مطلوب من العميل لهذا الطلب الآن.",
+      "correspondence": "مراسلات الطلب",
+      "noMessages": "لا توجد مراسلات آمنة للعميل في هذا الطلب التجريبي.",
+      "timeline": "الخط الزمني للحالة",
+      "noTimeline": "لا يوجد خط زمني آمن للعميل.",
+      "customerAttachments": "مرفقات العميل",
+      "noAttachments": "لا توجد مرفقات عميل لهذا الطلب التجريبي.",
+      "pixelringFiles": "معاينات PixelRing",
+      "previewOnly": "معاينة فقط",
+      "unavailable": "غير متاح",
+      "noFiles": "لا توجد معاينات PixelRing معتمدة لهذا الطلب.",
+      "unknownTitle": "الطلب غير متاح",
+      "unknownDescription": "هذا الطلب غير ظاهر في جلسة demo الحالية.",
+      "unknownSafeCopy": "تعرض صفحة التفاصيل فقط الطلبات المرتبطة بحساب Pixel Ring GmbH التجريبي. قيمة PR غير المعروفة لا تكشف بيانات خاصة.",
+      "returnToPortal": "فتح نظرة عامة على البوابة"
+    },
+    "actionType": {
+      "approveEstimate": "الموافقة على التقدير",
+      "confirmVisitWindow": "تأكيد موعد زيارة الفني",
+      "uploadMissingPhoto": "رفع الصورة الناقصة"
+    },
+    "actionCta": {
+      "approveEstimate": "تسجيل الموافقة",
+      "confirmVisitWindow": "تأكيد الموعد",
+      "uploadMissingPhoto": "تحضير الرفع"
+    },
+    "messageAuthor": { "customer": "Customer", "ai": "PixelRing AI", "manager": "PixelRing Manager" },
+    "attachmentStatus": { "received": "تم الاستلام", "reviewed": "تمت المراجعة", "needs_more_context": "يحتاج إلى استكمال" },
+    "messages": { "title": "آخر المراسلات" },
+    "comingSoon": { "eyebrow": "محجوز", "title": "الموافقات والفريق والفواتير لاحقا", "description": "تبقى هذه المناطق كمعاينة آمنة حتى تصبح المصادقة والأدوار والوصول إلى المستندات جاهزة للإنتاج." },
+    "requestStatus": { "UNDER_REVIEW": "قيد المراجعة", "IN_PROGRESS": "قيد التنفيذ", "WAITING_FOR_CUSTOMER": "بانتظار العميل", "COMPLETED": "مكتمل", "PLANNED": "مخطط" },
+    "assetStatus": { "OK": "OK", "WATCH": "مراقبة", "SERVICE_NEEDED": "تحتاج خدمة", "WARRANTY": "ضمان" },
+    "documentType": { "REPORT": "تقرير صور", "WARRANTY": "ضمان", "DOCUMENT": "مستند", "OFFER": "موافقة", "INVOICE": "فاتورة" },
+    "documentStatus": { "available": "معاينة", "planned": "قيد التحضير", "locked": "مغلق" }
   }
 }

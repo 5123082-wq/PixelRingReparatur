@@ -319,6 +319,34 @@
         "label": "Закрыто",
         "description": "Заявка больше не активна."
       }
+    },
+    "cabinet_title": "Личный кабинет",
+    "cabinet_description": "Управляйте заказами, документами, фотоотчетами и историей сервиса в одном месте",
+    "cabinet_link": "Перейти в кабинет",
+    "cabinet_items": {
+      "documents": "Документы и фотоотчеты",
+      "photo_reports": "Фотоотчеты",
+      "payment": "Быстрая оплата",
+      "history": "История и гарантия",
+      "chat": "Прямой чат с мастером"
+    },
+    "chat_header": "Переписка по заказу",
+    "chat_online": "Онлайн",
+    "chat_manager": "Менеджер",
+    "chat_you": "Вы",
+    "chat_open_button": "Открыть чат",
+    "chat_placeholder": "Напишите ваше сообщение здесь...",
+    "chat_auth_hint": "Авторизуйтесь, чтобы начать переписку",
+    "progress_steps": {
+      "accepted": "Принято",
+      "diagnostics": "Диагностика",
+      "repairing": "Ремонт",
+      "delivery": "К выдаче"
+    },
+    "chat_messages": {
+      "welcome": "Добрый день! Мы получили ваше устройство на диагностику.",
+      "question": "Спасибо! Подскажите, когда будет готов результат диагностики?",
+      "answer": "Обычно это занимает 1-2 рабочих дня. Мы сообщим вам здесь!"
     }
   },
   "FooterCTA": {
@@ -426,5 +454,87 @@
     "cta_primary": "Начать диагностику",
     "cta_secondary": "Загрузить фото",
     "internal_links_title": "Популярные темы и решения"
+  },
+  "Portal": {
+    "accountLabel": "Клиентский аккаунт",
+    "planLabel": "Демо-план {plan}",
+    "demoBadge": "Демо-режим",
+    "title": "Личный кабинет клиента",
+    "subtitle": "Объекты, заявки, рекламные активы и документы в компактной рабочей панели.",
+    "logout": "Выйти",
+    "logoutLoading": "Выходим...",
+    "safeBoundary": "Эта стадия показывает только связанные demo fixture данные. Без CRM-внутренностей, приватных путей документов и реальных клиентских данных.",
+    "nav": { "overview": "Обзор", "requests": "Заявки", "objects": "Объекты", "assets": "Активы", "documents": "Документы" },
+    "gate": {
+      "badge": "Portal Stage 1",
+      "title": "Подтвердите demo-доступ в клиентский кабинет",
+      "description": "Первый shell кабинета показывает безопасную связанную B2B-картину до включения настоящей идентификации, организаций и доступа к документам.",
+      "safeData": "Один PR-номер не открывает приватные данные.",
+      "demoNotice": "Demo-данные относятся к утвержденному сценарию Pixel Ring GmbH.",
+      "formEyebrow": "Сначала email",
+      "formTitle": "Открыть доступ",
+      "formHint": "Для этой стадии используйте demo-адрес: {email}",
+      "disabled": "Demo-доступ отключен. Установите PORTAL_DEMO_ENABLED=true, чтобы проверить stage локально.",
+      "emailLabel": "Email",
+      "submit": "Открыть кабинет",
+      "loading": "Проверяем...",
+      "error": "Не удалось подтвердить доступ."
+    },
+    "metrics": { "objects": "Объекты", "activeRequests": "Активные заявки", "assetsWatch": "Активы под контролем", "documents": "Документы" },
+    "requests": { "title": "Заявки", "activeTitle": "Активная работа", "nextStep": "Следующий шаг" },
+    "objects": { "title": "Объекты", "assets": "активов", "access": "Доступ", "contacts": "Ответственные", "requests": "Заявки" },
+    "assets": { "title": "Рекламные конструкции и активы", "lastService": "Последний сервис" },
+    "documents": { "title": "Фотоотчеты, гарантии и документы" },
+    "detail": {
+      "backToPortal": "Назад в кабинет",
+      "customerStatus": "Клиентский статус",
+      "requestSummary": "Сводка по заявке",
+      "objectLocation": "Объект и локация",
+      "openedAt": "Открыта",
+      "updatedAt": "Обновлена",
+      "relatedAssets": "Связанные активы",
+      "issueSummary": "Описание проблемы",
+      "nextStep": "Следующий шаг",
+      "requiresActionEyebrow": "Requires action",
+      "requiresAction": "Требует действия",
+      "actionPlaceholder": "Stage 2 demo: действие пока ничего не сохраняет.",
+      "noActions": "По этой заявке сейчас не требуется действие клиента.",
+      "correspondence": "Переписка по заявке",
+      "noMessages": "В этой demo-заявке нет клиентской переписки.",
+      "timeline": "Статусная timeline",
+      "noTimeline": "Клиентская timeline недоступна.",
+      "customerAttachments": "Файлы клиента",
+      "noAttachments": "У этой demo-заявки нет клиентских файлов.",
+      "pixelringFiles": "PixelRing previews",
+      "previewOnly": "Только preview",
+      "unavailable": "Недоступно",
+      "noFiles": "Для этой заявки нет разрешенных PixelRing previews.",
+      "unknownTitle": "Заявка недоступна",
+      "unknownDescription": "Эта заявка не видна в текущей demo-сессии.",
+      "unknownSafeCopy": "Detail page показывает только заявки, связанные с demo-аккаунтом Pixel Ring GmbH. Неизвестный PR-номер не раскрывает приватные данные.",
+      "returnToPortal": "Открыть обзор кабинета"
+    },
+    "actionType": {
+      "approveEstimate": "Согласовать смету",
+      "confirmVisitWindow": "Подтвердить окно визита",
+      "uploadMissingPhoto": "Загрузить недостающее фото"
+    },
+    "actionCta": {
+      "approveEstimate": "Отметить согласование",
+      "confirmVisitWindow": "Подтвердить окно",
+      "uploadMissingPhoto": "Подготовить upload"
+    },
+    "messageAuthor": { "customer": "Customer", "ai": "PixelRing AI", "manager": "PixelRing Manager" },
+    "attachmentStatus": { "received": "Получено", "reviewed": "Проверено", "needs_more_context": "Нужно дополнить" },
+    "messages": { "title": "Последняя переписка" },
+    "comingSoon": {
+      "eyebrow": "Зарезервировано",
+      "title": "Согласования, команда и счета позже",
+      "description": "Эти разделы остаются безопасной preview-зоной, пока авторизация, роли и доступ к документам не будут готовы для production."
+    },
+    "requestStatus": { "UNDER_REVIEW": "На проверке", "IN_PROGRESS": "В работе", "WAITING_FOR_CUSTOMER": "Ждет клиента", "COMPLETED": "Завершено", "PLANNED": "Запланировано" },
+    "assetStatus": { "OK": "OK", "WATCH": "Наблюдать", "SERVICE_NEEDED": "Нужен сервис", "WARRANTY": "Гарантия" },
+    "documentType": { "REPORT": "Фотоотчет", "WARRANTY": "Гарантия", "DOCUMENT": "Документ", "OFFER": "Согласование", "INVOICE": "Счет" },
+    "documentStatus": { "available": "Preview", "planned": "Готовится", "locked": "Закрыто" }
   }
 }

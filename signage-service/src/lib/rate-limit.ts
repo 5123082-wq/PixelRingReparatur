@@ -126,3 +126,10 @@ export const CHAT_MESSAGE_LIMIT: RateLimitConfig = {
   windowMs: 60 * 1000,
   prefix: 'chat-message',
 };
+
+/** Portal demo auth: 5 attempts per 5 minutes per IP */
+export const PORTAL_DEMO_AUTH_LIMIT: RateLimitConfig = {
+  maxRequests: 5,
+  windowMs: 5 * 60 * 1000,
+  prefix: 'portal-demo-auth',
+};
