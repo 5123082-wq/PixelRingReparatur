@@ -12,6 +12,7 @@ Planned base documents:
 - `page_brief_solutions.md`
 - `page_brief_for_business.md`
 - `page_brief_references.md`
+- `page_plan_references.md`
 - `page_brief_about.md`
 - `page_plan_leistungen.md`
 - `page_plan_solutions.md`

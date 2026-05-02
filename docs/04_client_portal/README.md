@@ -5,6 +5,9 @@ Purpose: future customer account area for requests, employees, photo reports, wa
 Current migrated documents:
 - `request_tracking_and_customer_portal_architecture.md`
 - `full_customer_portal_plan.md`
+- `client_portal_implementation_plan.md`
+- `client_portal_prototype_functional_map.md`
+- `Маркетинговая стратегия и план развития платформы контроля объектов и рекламных активов.md`
 
 Planned base documents:
 - `client_portal_blueprint.md`

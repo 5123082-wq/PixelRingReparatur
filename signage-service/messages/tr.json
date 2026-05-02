@@ -319,6 +319,34 @@
         "label": "Kapalı",
         "description": "Talep artık aktif değil."
       }
+    },
+    "cabinet_title": "Müşteri Portalı",
+    "cabinet_description": "Talepleri, belgeleri, fotoğraf raporlarını ve servis geçmişini tek yerde yönetin",
+    "cabinet_link": "Portala Git",
+    "cabinet_items": {
+      "documents": "Belgeler ve fotoğraf raporları",
+      "photo_reports": "Fotoğraf raporları",
+      "payment": "Hızlı ödeme",
+      "history": "Geçmiş ve garanti",
+      "chat": "Teknisyenle direkt sohbet"
+    },
+    "chat_header": "Sipariş yazışması",
+    "chat_online": "Çevrimiçi",
+    "chat_manager": "Yönetici",
+    "chat_you": "Siz",
+    "chat_open_button": "Sohbeti aç",
+    "chat_placeholder": "Mesajınızı buraya yazın...",
+    "chat_auth_hint": "Yazışmayı başlatmak için giriş yapın",
+    "progress_steps": {
+      "accepted": "Kabul edildi",
+      "diagnostics": "Teşhis",
+      "repairing": "Onarım",
+      "delivery": "Teslime hazır"
+    },
+    "chat_messages": {
+      "welcome": "Merhaba! Cihazınızı teşhis için teslim aldık.",
+      "question": "Teşekkürler! Teşhis sonucu ne zaman hazır olur?",
+      "answer": "Genellikle 1-2 iş günü sürer. Sizi buradan bilgilendireceğiz!"
     }
   },
   "FooterCTA": {
@@ -426,5 +454,83 @@
     "cta_primary": "Start Diagnosis",
     "cta_secondary": "Upload Photo",
     "internal_links_title": "Popular Topics & Solutions"
+  },
+  "Portal": {
+    "accountLabel": "Müşteri hesabı",
+    "planLabel": "{plan} demo planı",
+    "demoBadge": "Demo modu",
+    "title": "Müşteri portalı",
+    "subtitle": "Objeler, talepler, reklam varlıkları ve belgeler tek kompakt çalışma alanında.",
+    "logout": "Çıkış yap",
+    "logoutLoading": "Çıkış yapılıyor...",
+    "safeBoundary": "Bu aşama yalnızca bağlı demo fixture verilerini gösterir. CRM iç bilgileri, özel belge yolları veya gerçek müşteri verileri yoktur.",
+    "nav": { "overview": "Genel bakış", "requests": "Talepler", "objects": "Objeler", "assets": "Varlıklar", "documents": "Belgeler" },
+    "gate": {
+      "badge": "Portal Stage 1",
+      "title": "Müşteri portalı demo erişimini doğrulayın",
+      "description": "İlk portal kabuğu, gerçek kimlik, organizasyonlar ve belge onayları açılmadan önce güvenli bağlı bir işletme müşteri görünümü gösterir.",
+      "safeData": "PR numarası tek başına özel verileri açmaz.",
+      "demoNotice": "Demo verileri onaylı Pixel Ring GmbH test senaryosuna aittir.",
+      "formEyebrow": "Önce e-posta",
+      "formTitle": "Erişimi aç",
+      "formHint": "Bu aşama için demo adresini kullanın: {email}",
+      "disabled": "Demo erişimi kapalı. Yerel test için PORTAL_DEMO_ENABLED=true ayarlayın.",
+      "emailLabel": "E-posta",
+      "submit": "Portalı aç",
+      "loading": "Kontrol ediliyor...",
+      "error": "Erişim doğrulanamadı."
+    },
+    "metrics": { "objects": "Objeler", "activeRequests": "Aktif talepler", "assetsWatch": "İzlenen varlıklar", "documents": "Belgeler" },
+    "requests": { "title": "Talepler", "activeTitle": "Aktif iş", "nextStep": "Sonraki adım" },
+    "objects": { "title": "Objeler", "assets": "varlık", "access": "Erişim", "contacts": "Sorumlu", "requests": "Talepler" },
+    "assets": { "title": "Reklam varlıkları", "lastService": "Son servis" },
+    "documents": { "title": "Raporlar, garantiler ve belgeler" },
+    "detail": {
+      "backToPortal": "Portala dön",
+      "customerStatus": "Müşteri durumu",
+      "requestSummary": "Talep özeti",
+      "objectLocation": "Obje ve lokasyon",
+      "openedAt": "Açıldı",
+      "updatedAt": "Güncellendi",
+      "relatedAssets": "Bağlı varlıklar",
+      "issueSummary": "Sorun özeti",
+      "nextStep": "Sonraki adım",
+      "requiresActionEyebrow": "İşlem gerekli",
+      "requiresAction": "İşlem gerekli",
+      "actionPlaceholder": "Stage 2 demo: bu işlem henüz kayıt yapmaz.",
+      "noActions": "Bu talep için şu anda müşteri işlemi gerekmiyor.",
+      "correspondence": "Talep yazışmaları",
+      "noMessages": "Bu demo talebinde müşteriye gösterilebilir yazışma yok.",
+      "timeline": "Durum zaman çizelgesi",
+      "noTimeline": "Müşteriye gösterilebilir zaman çizelgesi yok.",
+      "customerAttachments": "Müşteri ekleri",
+      "noAttachments": "Bu demo talebi için müşteri eki yok.",
+      "pixelringFiles": "PixelRing önizlemeleri",
+      "previewOnly": "Sadece önizleme",
+      "unavailable": "Kullanılamaz",
+      "noFiles": "Bu talep için onaylı PixelRing önizlemesi yok.",
+      "unknownTitle": "Talep kullanılamıyor",
+      "unknownDescription": "Bu talep mevcut demo oturumunda görünmüyor.",
+      "unknownSafeCopy": "Detay sayfası yalnızca Pixel Ring GmbH demo hesabına bağlı talepleri gösterir. Bilinmeyen PR değeri özel veri göstermez.",
+      "returnToPortal": "Portal özetini aç"
+    },
+    "actionType": {
+      "approveEstimate": "Teklifi onayla",
+      "confirmVisitWindow": "Teknisyen ziyaret saatini onayla",
+      "uploadMissingPhoto": "Eksik fotoğrafı yükle"
+    },
+    "actionCta": {
+      "approveEstimate": "Onayı işaretle",
+      "confirmVisitWindow": "Saat aralığını onayla",
+      "uploadMissingPhoto": "Yüklemeyi hazırla"
+    },
+    "messageAuthor": { "customer": "Customer", "ai": "PixelRing AI", "manager": "PixelRing Manager" },
+    "attachmentStatus": { "received": "Alındı", "reviewed": "Kontrol edildi", "needs_more_context": "Ek bilgi gerekli" },
+    "messages": { "title": "Son yazışmalar" },
+    "comingSoon": { "eyebrow": "Ayrıldı", "title": "Onaylar, ekip ve faturalar sonra gelir", "description": "Bu alanlar kimlik doğrulama, roller ve belge erişimi üretime hazır olana kadar güvenli önizleme olarak kalır." },
+    "requestStatus": { "UNDER_REVIEW": "İncelemede", "IN_PROGRESS": "Devam ediyor", "WAITING_FOR_CUSTOMER": "Müşteri bekleniyor", "COMPLETED": "Tamamlandı", "PLANNED": "Planlandı" },
+    "assetStatus": { "OK": "OK", "WATCH": "İzle", "SERVICE_NEEDED": "Servis gerekli", "WARRANTY": "Garanti" },
+    "documentType": { "REPORT": "Foto raporu", "WARRANTY": "Garanti", "DOCUMENT": "Belge", "OFFER": "Onay", "INVOICE": "Fatura" },
+    "documentStatus": { "available": "Önizleme", "planned": "Hazırlanıyor", "locked": "Kilitli" }
   }
 }

@@ -371,6 +371,34 @@
         "label": "Closed",
         "description": "The request is no longer active."
       }
+    },
+    "cabinet_title": "Personal Cabinet",
+    "cabinet_description": "Manage orders, documents, photo reports, and service history in one place",
+    "cabinet_link": "Enter Cabinet",
+    "cabinet_items": {
+      "documents": "Documents & Photo Reports",
+      "photo_reports": "Photo Reports",
+      "payment": "Quick Payment",
+      "history": "History & Warranty",
+      "chat": "Direct Chat with Master"
+    },
+    "chat_header": "Order Correspondence",
+    "chat_online": "Online",
+    "chat_manager": "Manager",
+    "chat_you": "You",
+    "chat_open_button": "Open Chat",
+    "chat_placeholder": "Write your message here...",
+    "chat_auth_hint": "Log in to start correspondence",
+    "progress_steps": {
+      "accepted": "Accepted",
+      "diagnostics": "Diagnostics",
+      "repairing": "Repairing",
+      "delivery": "Ready"
+    },
+    "chat_messages": {
+      "welcome": "Hello! We have received your device for diagnostics.",
+      "question": "Thanks! When will the diagnostic result be ready?",
+      "answer": "It usually takes 1-2 business days. We will notify you here!"
     }
   },
   "FooterCTA": {
@@ -426,6 +454,88 @@
       "guaranteed": "Service Guarantee",
       "experts": "Certified Experts"
     }
+  },
+  "Portal": {
+    "accountLabel": "Customer account",
+    "planLabel": "{plan} demo plan",
+    "demoBadge": "Demo mode",
+    "title": "Customer portal",
+    "subtitle": "Objects, requests, advertising assets, and documents in one compact work surface.",
+    "logout": "Log out",
+    "logoutLoading": "Logging out...",
+    "safeBoundary": "This stage shows only connected demo fixture data. No CRM internals, private document paths, or real customer data.",
+    "nav": { "overview": "Overview", "requests": "Requests", "objects": "Objects", "assets": "Assets", "documents": "Documents" },
+    "gate": {
+      "badge": "Portal Stage 1",
+      "title": "Verify demo access to the customer portal",
+      "description": "The first portal shell shows a safe connected business-customer view before real identity, organizations, and document approvals are enabled.",
+      "safeData": "PR numbers alone never open private data.",
+      "demoNotice": "Demo data belongs to the approved Pixel Ring GmbH test scenario.",
+      "formEyebrow": "Email first",
+      "formTitle": "Open access",
+      "formHint": "For this stage use the demo address: {email}",
+      "disabled": "Demo access is disabled. Set PORTAL_DEMO_ENABLED=true to test this stage locally.",
+      "emailLabel": "Email",
+      "submit": "Open portal",
+      "loading": "Checking...",
+      "error": "Access could not be verified."
+    },
+    "metrics": { "objects": "Objects", "activeRequests": "Active requests", "assetsWatch": "Assets to watch", "documents": "Documents" },
+    "requests": { "title": "Requests", "activeTitle": "Active work", "nextStep": "Next step" },
+    "objects": { "title": "Objects", "assets": "assets", "access": "Access", "contacts": "Responsible", "requests": "Requests" },
+    "assets": { "title": "Advertising assets", "lastService": "Last service" },
+    "documents": { "title": "Reports, warranties, and documents" },
+    "detail": {
+      "backToPortal": "Back to portal",
+      "customerStatus": "Customer status",
+      "requestSummary": "Request summary",
+      "objectLocation": "Object and location",
+      "openedAt": "Opened",
+      "updatedAt": "Updated",
+      "relatedAssets": "Related assets",
+      "issueSummary": "Issue summary",
+      "nextStep": "Next step",
+      "requiresActionEyebrow": "Requires action",
+      "requiresAction": "Requires action",
+      "actionPlaceholder": "Stage 2 demo: this action does not save anything yet.",
+      "noActions": "No customer action is required for this request right now.",
+      "correspondence": "Request correspondence",
+      "noMessages": "No customer-safe correspondence for this demo request.",
+      "timeline": "Status timeline",
+      "noTimeline": "No customer-safe timeline is available.",
+      "customerAttachments": "Customer attachments",
+      "noAttachments": "No customer attachments for this demo request.",
+      "pixelringFiles": "PixelRing previews",
+      "previewOnly": "Preview only",
+      "unavailable": "Unavailable",
+      "noFiles": "No approved PixelRing previews for this request.",
+      "unknownTitle": "Request unavailable",
+      "unknownDescription": "This request is not visible in the current demo session.",
+      "unknownSafeCopy": "The detail page only shows requests linked to the Pixel Ring GmbH demo account. An unknown PR value does not reveal private data.",
+      "returnToPortal": "Open portal overview"
+    },
+    "actionType": {
+      "approveEstimate": "Approve estimate",
+      "confirmVisitWindow": "Confirm technician visit window",
+      "uploadMissingPhoto": "Upload missing photo"
+    },
+    "actionCta": {
+      "approveEstimate": "Mark approval",
+      "confirmVisitWindow": "Confirm window",
+      "uploadMissingPhoto": "Prepare upload"
+    },
+    "messageAuthor": { "customer": "Customer", "ai": "PixelRing AI", "manager": "PixelRing Manager" },
+    "attachmentStatus": { "received": "Received", "reviewed": "Reviewed", "needs_more_context": "Needs more context" },
+    "messages": { "title": "Latest correspondence" },
+    "comingSoon": {
+      "eyebrow": "Reserved",
+      "title": "Approvals, team, and invoices come later",
+      "description": "These areas stay as a safe preview until authentication, roles, and document access are production-ready."
+    },
+    "requestStatus": { "UNDER_REVIEW": "Under review", "IN_PROGRESS": "In progress", "WAITING_FOR_CUSTOMER": "Waiting for customer", "COMPLETED": "Completed", "PLANNED": "Planned" },
+    "assetStatus": { "OK": "OK", "WATCH": "Watch", "SERVICE_NEEDED": "Service needed", "WARRANTY": "Warranty" },
+    "documentType": { "REPORT": "Photo report", "WARRANTY": "Warranty", "DOCUMENT": "Document", "OFFER": "Approval", "INVOICE": "Invoice" },
+    "documentStatus": { "available": "Preview", "planned": "In preparation", "locked": "Locked" }
   },
   "CmsMedia": {
     "title": "Media Library",

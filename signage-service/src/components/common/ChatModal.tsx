@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocale } from 'next-intl';
+import { Link } from '@/i18n/routing';
 import Logo from '../common/Logo';
 import ChatIntakeCard, { type IntakePrefill } from './ChatIntakeCard';
 import ChatRequestConfirmCard from './ChatRequestConfirmCard';
@@ -112,6 +113,32 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const hasLoadedRef = useRef(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const renderMessageBody = (text: string) => {
+    // Regex for PR-XXXX-XXXX format
+    const prRegex = /([A-Z]{2,8}-[A-Z0-9]{4}-[A-Z0-9]{4})/g;
+    const parts = text.split(prRegex);
+    
+    return parts.map((part, i) => {
+      if (i % 2 === 1) {
+        return (
+          <Link
+            key={i}
+            href={{
+              pathname: '/status',
+              query: { request: part }
+            }}
+            className="underline font-black decoration-current hover:opacity-60 transition-all"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {part}
+          </Link>
+        );
+      }
+      return part;
+    });
+  };
 
   const loadChatHistory = useCallback(async () => {
     setIsLoadingHistory(true);
@@ -298,7 +325,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
                       {idx === 1 ? 'System' : getRoleLabel(message.authorRole)}
                     </span>
                     <div className={`max-w-[80%] rounded-[24px] px-5 py-3 text-[14px] shadow-sm whitespace-pre-wrap ${p.bubble}`}>
-                      {message.body}
+                      {renderMessageBody(message.body)}
                       
                       {/* Integrated language selector */}
                       {idx === 1 && !userHasSpoken && (

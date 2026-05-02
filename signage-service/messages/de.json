@@ -319,6 +319,34 @@
         "label": "Geschlossen",
         "description": "Die Anfrage ist nicht mehr aktiv."
       }
+    },
+    "cabinet_title": "Kundenportal",
+    "cabinet_description": "Verwalten Sie Aufträge, Dokumente, Foto-Reports und Serviceverlauf an einem Ort",
+    "cabinet_link": "Zum Portal",
+    "cabinet_items": {
+      "documents": "Dokumente & Foto-Reports",
+      "photo_reports": "Foto-Reports",
+      "payment": "Direktzahlung",
+      "history": "Verlauf & Garantie",
+      "chat": "Direkt-Chat mit Techniker"
+    },
+    "chat_header": "Auftragskorrespondenz",
+    "chat_online": "Online",
+    "chat_manager": "Manager",
+    "chat_you": "Sie",
+    "chat_open_button": "Chat öffnen",
+    "chat_placeholder": "Ihre Nachricht...",
+    "chat_auth_hint": "Melden Sie sich an, um den Chat zu starten",
+    "progress_steps": {
+      "accepted": "Angenommen",
+      "diagnostics": "Diagnose",
+      "repairing": "Reparatur",
+      "delivery": "Abholbereit"
+    },
+    "chat_messages": {
+      "welcome": "Guten Tag! Wir haben Ihr Gerät zur Diagnose erhalten.",
+      "question": "Danke! Wann wird das Diagnoseergebnis fertig sein?",
+      "answer": "Normalerweise dauert das 1-2 Werktage. Wir werden Sie hier benachrichtigen!"
     }
   },
   "FooterCTA": {
@@ -426,6 +454,88 @@
     "cta_primary": "Diagnose starten",
     "cta_secondary": "Foto hochladen",
     "internal_links_title": "Beliebte Themen & Lösungen"
+  },
+  "Portal": {
+    "accountLabel": "Kundenkonto",
+    "planLabel": "{plan} Demo-Plan",
+    "demoBadge": "Demo-Modus",
+    "title": "Kundenportal",
+    "subtitle": "Objekte, Anfragen, Werbeanlagen und Dokumente in einer kompakten Arbeitsansicht.",
+    "logout": "Abmelden",
+    "logoutLoading": "Wird abgemeldet...",
+    "safeBoundary": "Diese Stage zeigt nur verbundene Demo-Fixture-Daten. Keine CRM-Interna, privaten Dokumentpfade oder echten Kundendaten.",
+    "nav": { "overview": "Übersicht", "requests": "Anfragen", "objects": "Objekte", "assets": "Assets", "documents": "Dokumente" },
+    "gate": {
+      "badge": "Portal Stage 1",
+      "title": "Verifizieren Sie den Demo-Zugang zum Kundenportal",
+      "description": "Der erste Portal-Shell zeigt eine sichere, zusammenhängende Business-Kundenansicht, bevor echte Identität, Organisationen und Dokumentfreigaben aktiviert werden.",
+      "safeData": "PR-Nummern allein öffnen keine privaten Daten.",
+      "demoNotice": "Demo-Daten gehören zur freigegebenen Pixel Ring GmbH Testszene.",
+      "formEyebrow": "E-Mail zuerst",
+      "formTitle": "Zugang öffnen",
+      "formHint": "Für diese Stage verwenden Sie die Demo-Adresse: {email}",
+      "disabled": "Der Demo-Zugang ist deaktiviert. Setzen Sie PORTAL_DEMO_ENABLED=true, um diese Stage lokal zu prüfen.",
+      "emailLabel": "E-Mail",
+      "submit": "Portal öffnen",
+      "loading": "Prüfung läuft...",
+      "error": "Der Zugang konnte nicht verifiziert werden."
+    },
+    "metrics": { "objects": "Objekte", "activeRequests": "Aktive Anfragen", "assetsWatch": "Assets im Blick", "documents": "Dokumente" },
+    "requests": { "title": "Anfragen", "activeTitle": "Aktive Arbeit", "nextStep": "Nächster Schritt" },
+    "objects": { "title": "Objekte", "assets": "Assets", "access": "Zugang", "contacts": "Verantwortlich", "requests": "Anfragen" },
+    "assets": { "title": "Werbeanlagen und Assets", "lastService": "Letzter Service" },
+    "documents": { "title": "Reports, Garantien und Dokumente" },
+    "detail": {
+      "backToPortal": "Zurück zum Portal",
+      "customerStatus": "Kundenstatus",
+      "requestSummary": "Anfrageüberblick",
+      "objectLocation": "Objekt und Standort",
+      "openedAt": "Eröffnet",
+      "updatedAt": "Aktualisiert",
+      "relatedAssets": "Verknüpfte Assets",
+      "issueSummary": "Problemzusammenfassung",
+      "nextStep": "Nächster Schritt",
+      "requiresActionEyebrow": "Kundenaktion",
+      "requiresAction": "Erfordert Aktion",
+      "actionPlaceholder": "Stage 2 Demo: diese Aktion speichert noch nichts.",
+      "noActions": "Für diese Anfrage ist aktuell keine Kundenaktion erforderlich.",
+      "correspondence": "Korrespondenz zur Anfrage",
+      "noMessages": "Keine kundenfähige Korrespondenz in dieser Demo-Anfrage.",
+      "timeline": "Status-Timeline",
+      "noTimeline": "Keine kundenfähige Timeline verfügbar.",
+      "customerAttachments": "Kundenanhänge",
+      "noAttachments": "Keine Kundenanhänge für diese Demo-Anfrage.",
+      "pixelringFiles": "PixelRing Vorschauen",
+      "previewOnly": "Nur Vorschau",
+      "unavailable": "Nicht verfügbar",
+      "noFiles": "Keine freigegebenen PixelRing Vorschauen für diese Anfrage.",
+      "unknownTitle": "Anfrage nicht verfügbar",
+      "unknownDescription": "Diese Anfrage ist in der aktuellen Demo-Sitzung nicht sichtbar.",
+      "unknownSafeCopy": "Die Detailansicht zeigt nur Anfragen, die zum verbundenen Pixel Ring GmbH Demo-Konto gehören. Ein unbekannter PR-Wert gibt keine privaten Daten preis.",
+      "returnToPortal": "Portalübersicht öffnen"
+    },
+    "actionType": {
+      "approveEstimate": "Kostenschätzung freigeben",
+      "confirmVisitWindow": "Technikerfenster bestätigen",
+      "uploadMissingPhoto": "Fehlendes Foto hochladen"
+    },
+    "actionCta": {
+      "approveEstimate": "Freigabe vormerken",
+      "confirmVisitWindow": "Fenster bestätigen",
+      "uploadMissingPhoto": "Upload vorbereiten"
+    },
+    "messageAuthor": { "customer": "Customer", "ai": "PixelRing AI", "manager": "PixelRing Manager" },
+    "attachmentStatus": { "received": "Empfangen", "reviewed": "Geprüft", "needs_more_context": "Ergänzung nötig" },
+    "messages": { "title": "Letzte Korrespondenz" },
+    "comingSoon": {
+      "eyebrow": "Reserviert",
+      "title": "Freigaben, Team und Rechnungen folgen später",
+      "description": "Diese Bereiche bleiben bewusst als sichere Vorschau, bis Authentifizierung, Rollen und Dokumentzugriff produktionsreif sind."
+    },
+    "requestStatus": { "UNDER_REVIEW": "In Prüfung", "IN_PROGRESS": "In Bearbeitung", "WAITING_FOR_CUSTOMER": "Wartet auf Kunde", "COMPLETED": "Abgeschlossen", "PLANNED": "Geplant" },
+    "assetStatus": { "OK": "OK", "WATCH": "Beobachten", "SERVICE_NEEDED": "Service nötig", "WARRANTY": "Garantie" },
+    "documentType": { "REPORT": "Foto-Report", "WARRANTY": "Garantie", "DOCUMENT": "Dokument", "OFFER": "Freigabe", "INVOICE": "Rechnung" },
+    "documentStatus": { "available": "Vorschau", "planned": "In Vorbereitung", "locked": "Gesperrt" }
   },
   "CmsMedia": {
     "title": "Medienbibliothek",

@@ -456,7 +456,7 @@ function buildGlobalPageSeed(locale, messages) {
         { label: nav.services ?? 'Services', href: '/leistungen' },
         { label: nav.solutions ?? 'Problems & Solutions', href: '/probleme-loesungen' },
         { label: nav.for_business ?? 'For Business', href: '/business' },
-        { label: nav.references ?? 'References', href: '/' },
+        { label: nav.references ?? 'References', href: '/referenzen' },
         { label: nav.about ?? 'About Us', href: '/' },
       ],
     }),

@@ -1,0 +1,532 @@
+import type { Metadata } from 'next';
+
+import Footer from '@/components/layout/Footer';
+import Header from '@/components/layout/Header';
+import ReferencesExperience, {
+  type ReferencesContent,
+  type ReferenceCase,
+} from '@/components/references/ReferencesExperience';
+import { getGlobalPageCmsContent } from '@/lib/cms/pages';
+
+type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
+
+type LocalizedPageContent = Omit<ReferencesContent, 'locale' | 'cases' | 'galleryItems' | 'productCategories'> & {
+  metaTitle: string;
+  metaDescription: string;
+};
+
+const IMAGE_SET = {
+  lightbox: '/images/ex-lightbox.png',
+  led: '/images/leistungen/hero-led.png',
+  ledNatural: '/images/leistungen/hero-led-natural.png',
+  neon: '/images/hero-neon.jpg',
+  film: '/images/leistungen/hero-branding.png',
+  maintenance: '/images/leistungen/hero-maintenance.png',
+  mounting: '/images/ex-mounting.png',
+  repair: '/images/leistungen/hero-repair.png',
+  beforeGeneral: '/images/hero.jpg',
+  process: '/images/ex-repair.png',
+  dismantling: '/images/ex-dismantling.png',
+  business: '/images/business/hero.png',
+  design: '/images/ex-design.png',
+  generatedLedDetail: '/images/references/led-detail.webp',
+  generatedLightboxLift: '/images/references/lightbox-lift.webp',
+  generatedNeonBench: '/images/references/neon-bench.webp',
+  generatedWindowFilm: '/images/references/window-film-install.webp',
+  generatedFacadeLine: '/images/references/facade-light-line.webp',
+  generatedBranchEvening: '/images/references/branch-evening.webp',
+  generatedStorefrontRow: '/images/references/storefront-row.webp',
+  generatedCircuitRepair: '/images/references/circuit-repair.webp',
+};
+
+const BASE_CASES: Array<Pick<ReferenceCase, 'id' | 'beforeImage' | 'afterImage' | 'gallery'>> = [
+  {
+    id: 'lightbox-facade',
+    beforeImage: IMAGE_SET.beforeGeneral,
+    afterImage: IMAGE_SET.lightbox,
+    gallery: [IMAGE_SET.beforeGeneral, IMAGE_SET.lightbox, IMAGE_SET.repair],
+  },
+  {
+    id: 'led-letters',
+    beforeImage: IMAGE_SET.dismantling,
+    afterImage: IMAGE_SET.led,
+    gallery: [IMAGE_SET.dismantling, IMAGE_SET.led, IMAGE_SET.ledNatural],
+  },
+  {
+    id: 'neon-contour',
+    beforeImage: IMAGE_SET.process,
+    afterImage: IMAGE_SET.neon,
+    gallery: [IMAGE_SET.process, IMAGE_SET.neon, IMAGE_SET.maintenance],
+  },
+  {
+    id: 'window-film',
+    beforeImage: IMAGE_SET.design,
+    afterImage: IMAGE_SET.film,
+    gallery: [IMAGE_SET.design, IMAGE_SET.film, IMAGE_SET.mounting],
+  },
+  {
+    id: 'branch-service',
+    beforeImage: IMAGE_SET.maintenance,
+    afterImage: IMAGE_SET.business,
+    gallery: [IMAGE_SET.maintenance, IMAGE_SET.business, IMAGE_SET.repair],
+  },
+  {
+    id: 'mounting-review',
+    beforeImage: IMAGE_SET.maintenance,
+    afterImage: IMAGE_SET.mounting,
+    gallery: [IMAGE_SET.maintenance, IMAGE_SET.mounting, IMAGE_SET.ledNatural],
+  },
+];
+
+const CONTENT: Record<Locale, LocalizedPageContent> = {
+  de: {
+    metaTitle: 'Referenzen fuer Schilder-Reparatur & Werbetechnik | PixelRing',
+    metaDescription:
+      'Ausgewaehlte Referenzen von PixelRing: Leuchtkaesten, LED-Buchstaben, Neon, Folien, Fassadenmontage und Filialservice ohne private Kundendaten.',
+    badge: 'Referenzen',
+    heroTitle: 'Sichtbare Ergebnisse nach Reparatur und Service',
+    heroIntro:
+      'Diese Beispiele zeigen, was defekt war, was PixelRing geprueft und umgesetzt hat und wie die Werbeanlage danach wieder wirkt. Ohne Kundennamen, genaue Adressen oder interne CRM-Daten.',
+    heroPrimaryCta: 'Arbeiten ansehen',
+    heroSecondaryCta: 'Aehnliche Anfrage starten',
+    heroTags: ['LED-Service', 'Leuchtkaesten', 'Neon', 'Folien', 'Fassaden', 'Filialservice'],
+    heroNoteTitle: 'Proof statt Galerie',
+    heroNoteText:
+      'Jede Referenz ist als kurzer Reparaturbericht gedacht: Ausgangszustand, Arbeitsschritt, Ergebnis. Der Fokus bleibt auf Ausfuehrung und Vertrauen.',
+    recentEyebrow: 'Ausgewaehlte Arbeiten',
+    recentTitle: 'Vorher sichtbar. Danach wieder betriebsbereit.',
+    recentIntro:
+      'Die Karten bewegen sich horizontal. Im Fokus oder Hover sehen Sie den problemorientierten Vorher-Zustand; ein Klick oeffnet den kompakten Reparaturbericht.',
+    reportTitle: 'Kurze Reparaturberichte statt dekorativer Bildwand',
+    reportIntro:
+      'Referenzen sollen erklaeren, warum eine Reparatur vertrauenswuerdig ist. Deshalb bleibt jedes Beispiel knapp, technisch und disclosure-safe.',
+    reports: [
+      { id: 'r1', type: 'LED-Buchstaben', issue: 'Einzelne Elemente waren dunkel, die Wortmarke wirkte unvollstaendig.', outcome: 'Module ersetzt, Helligkeit angeglichen, Lesbarkeit wiederhergestellt.' },
+      { id: 'r2', type: 'Leuchtkasten', issue: 'Unregelmaessige Ausleuchtung und verschmutzte Innenflaechen.', outcome: 'Innen gereinigt, LED-Strecke geprueft, Lichtfeld stabilisiert.' },
+      { id: 'r3', type: 'Folierung', issue: 'Kanten loesten sich, Farben wirkten nicht mehr markengerecht.', outcome: 'Untergrund vorbereitet und Sichtflaeche neu foliert.' },
+      { id: 'r4', type: 'Filialservice', issue: 'Mehrere kleine Maengel lagen verteilt ueber Standorte vor.', outcome: 'Ein Servicebericht mit priorisierten naechsten Schritten erstellt.' },
+    ],
+    galleryEyebrow: 'Gesamte Bildauswahl',
+    galleryTitle: 'Ein kompakter Viewer fuer Details',
+    galleryIntro:
+      'Die Galerie ist bewusst kleiner als der Hauptcarousel. Ein Klick oeffnet alle Fotos in einem Viewer mit Kategorien und Thumbnails.',
+    galleryPromoEyebrow: 'Video / Seite',
+    galleryPromoTitle: 'Reparaturprozess ansehen',
+    galleryPromoText:
+      'Dieser Bereich kann zu einem Video, einer Detailseite oder einem erklaerenden Servicebereich fuehren.',
+    galleryPromoCta: 'Oeffnen',
+    galleryPromoHref: '/leistungen',
+    categoriesTitle: 'Produktbereiche, in denen Referenzen entstehen',
+    categoriesIntro:
+      'PixelRing bleibt ein verantwortlicher Servicepartner: Reparatur, Montage, Branding und Standortservice laufen ueber einen Einstiegspunkt.',
+    typeBandLines: ['Repair evidence', 'LED · Neon · Folie · Montage', 'Ein Partner. Ein Auftrag. Ein Ergebnis.'],
+    finalTitle: 'Zeigen Sie uns Ihr Schild, Ihre Fassade oder Ihr Werbeelement.',
+    finalText:
+      'Ein Foto reicht oft fuer die erste Einschaetzung. PixelRing prueft den sichtbaren Zustand und klaert den naechsten sinnvollen Schritt.',
+    finalCta: 'Foto senden',
+    modalProblemLabel: 'Ausgangslage',
+    modalWorkLabel: 'Umsetzung',
+    modalResultLabel: 'Ergebnis',
+    modalBeforeLabel: 'Vorher ansehen',
+    modalCta: 'Aehnliche Anfrage',
+    viewerAllLabel: 'Alle',
+    viewerCloseLabel: 'Schliessen',
+  },
+  en: {
+    metaTitle: 'References for Sign Repair & Visual Service | PixelRing',
+    metaDescription:
+      'Selected PixelRing references: lightboxes, LED letters, neon, window film, facade mounting, and branch service without private customer data.',
+    badge: 'References',
+    heroTitle: 'Visible results after repair and service',
+    heroIntro:
+      'These examples show what was wrong, what PixelRing checked and repaired, and how the advertising element looked after service. No customer names, exact addresses, or internal CRM data.',
+    heroPrimaryCta: 'View work',
+    heroSecondaryCta: 'Start a similar request',
+    heroTags: ['LED service', 'Lightboxes', 'Neon', 'Films', 'Facades', 'Branch service'],
+    heroNoteTitle: 'Proof, not a vanity gallery',
+    heroNoteText:
+      'Every reference is shaped like a short repair report: initial state, work performed, outcome. The focus stays on execution and trust.',
+    recentEyebrow: 'Selected work',
+    recentTitle: 'Before it was visible. After it was operational again.',
+    recentIntro:
+      'The cards move horizontally. Hover or focus shows the problem-oriented before state; click opens a compact repair report.',
+    reportTitle: 'Short repair reports instead of a decorative wall',
+    reportIntro:
+      'References should explain why a repair is trustworthy, so every example stays concise, technical, and safe to disclose.',
+    reports: [
+      { id: 'r1', type: 'LED letters', issue: 'Several elements were dark and the wordmark looked incomplete.', outcome: 'Modules replaced, brightness matched, readability restored.' },
+      { id: 'r2', type: 'Lightbox', issue: 'Uneven lighting and dirty internal surfaces.', outcome: 'Interior cleaned, LED path checked, light field stabilized.' },
+      { id: 'r3', type: 'Window film', issue: 'Edges lifted and colors no longer matched the brand.', outcome: 'Surface prepared and the visible area wrapped again.' },
+      { id: 'r4', type: 'Branch service', issue: 'Several small defects were spread across locations.', outcome: 'One service report created with prioritized next steps.' },
+    ],
+    galleryEyebrow: 'Full image set',
+    galleryTitle: 'A compact viewer for details',
+    galleryIntro:
+      'The gallery is intentionally smaller than the main carousel. Click opens all photos in one viewer with categories and thumbnails.',
+    galleryPromoEyebrow: 'Video / page',
+    galleryPromoTitle: 'Watch the repair process',
+    galleryPromoText:
+      'This area can link to a video, a detail page, or a service explanation elsewhere on the site.',
+    galleryPromoCta: 'Open',
+    galleryPromoHref: '/leistungen',
+    categoriesTitle: 'Product areas where references are created',
+    categoriesIntro:
+      'PixelRing stays one accountable service partner: repair, mounting, branding, and location service run through one entry point.',
+    typeBandLines: ['Repair evidence', 'LED · Neon · Film · Mounting', 'One partner. One request. One result.'],
+    finalTitle: 'Show us your sign, facade, or advertising element.',
+    finalText:
+      'A photo is often enough for the first assessment. PixelRing checks the visible condition and clarifies the next useful step.',
+    finalCta: 'Send photo',
+    modalProblemLabel: 'Initial state',
+    modalWorkLabel: 'Work done',
+    modalResultLabel: 'Outcome',
+    modalBeforeLabel: 'View before',
+    modalCta: 'Similar request',
+    viewerAllLabel: 'All',
+    viewerCloseLabel: 'Close',
+  },
+  ru: {
+    metaTitle: 'Примеры работ по ремонту вывесок | PixelRing',
+    metaDescription:
+      'Выбранные примеры PixelRing: световые короба, LED-буквы, неон, пленка, фасадный монтаж и сервис филиалов без раскрытия частных данных клиентов.',
+    badge: 'Примеры работ',
+    heroTitle: 'Видимый результат после ремонта и сервиса',
+    heroIntro:
+      'На этой странице показано, что было неисправно, что PixelRing проверил и восстановил, и как рекламный элемент стал выглядеть после работы. Без имен клиентов, точных адресов и CRM-данных.',
+    heroPrimaryCta: 'Смотреть работы',
+    heroSecondaryCta: 'Оставить похожую заявку',
+    heroTags: ['LED-сервис', 'Световые короба', 'Неон', 'Пленки', 'Фасады', 'Сервис сетей'],
+    heroNoteTitle: 'Доказательство, а не витрина',
+    heroNoteText:
+      'Каждый пример оформлен как короткий ремонтный отчет: исходное состояние, выполненная работа, результат. Фокус на исполнении и доверии.',
+    recentEyebrow: 'Выбранные работы',
+    recentTitle: 'До было заметно. После снова работает.',
+    recentIntro:
+      'Карточки двигаются горизонтально. При наведении показывается исходное состояние, по клику открывается краткий ремонтный отчет.',
+    reportTitle: 'Короткие отчеты вместо декоративной галереи',
+    reportIntro:
+      'Примеры должны объяснять, почему ремонту можно доверять. Поэтому каждый кейс остается коротким, техническим и безопасным по раскрытию данных.',
+    reports: [
+      { id: 'r1', type: 'LED-буквы', issue: 'Отдельные элементы не горели, название выглядело неполным.', outcome: 'Модули заменены, яркость выровнена, читаемость восстановлена.' },
+      { id: 'r2', type: 'Световой короб', issue: 'Подсветка была неравномерной, внутри заметны загрязнения.', outcome: 'Внутренняя часть очищена, LED-линия проверена, свет стабилизирован.' },
+      { id: 'r3', type: 'Витринная пленка', issue: 'Края отходили, цвет больше не соответствовал бренду.', outcome: 'Поверхность подготовлена и видимая зона оклеена заново.' },
+      { id: 'r4', type: 'Сервис филиалов', issue: 'Мелкие дефекты копились на нескольких объектах.', outcome: 'Собран единый отчет с приоритетом следующих работ.' },
+    ],
+    galleryEyebrow: 'Общая подборка',
+    galleryTitle: 'Компактный просмотр деталей',
+    galleryIntro:
+      'Галерея отделена от выбранных работ. По клику открывается общий просмотр со всеми фотографиями, категориями и миниатюрами.',
+    galleryPromoEyebrow: 'Видео / страница',
+    galleryPromoTitle: 'Посмотреть процесс ремонта',
+    galleryPromoText:
+      'Этот широкий блок может вести на видео, отдельную страницу кейса или сервисный раздел сайта.',
+    galleryPromoCta: 'Открыть',
+    galleryPromoHref: '/leistungen',
+    categoriesTitle: 'Направления, где появляются такие работы',
+    categoriesIntro:
+      'PixelRing остается одним ответственным сервисом: ремонт, монтаж, брендинг и обслуживание объектов идут через одну точку входа.',
+    typeBandLines: ['Repair evidence', 'LED · Neon · Folie · Montage', 'Один партнер. Одна заявка. Один результат.'],
+    finalTitle: 'Покажите нам вывеску, фасад или рекламный элемент.',
+    finalText:
+      'Для первичной оценки часто достаточно фотографии. PixelRing проверит видимое состояние и предложит следующий разумный шаг.',
+    finalCta: 'Отправить фото',
+    modalProblemLabel: 'Исходное состояние',
+    modalWorkLabel: 'Что сделано',
+    modalResultLabel: 'Результат',
+    modalBeforeLabel: 'Показать before',
+    modalCta: 'Похожая заявка',
+    viewerAllLabel: 'Все',
+    viewerCloseLabel: 'Закрыть',
+  },
+  tr: {
+    metaTitle: 'Tabela Onarımı Referansları | PixelRing',
+    metaDescription:
+      'PixelRing seçili referansları: ışıklı kutular, LED harfler, neon, vitrin filmi, cephe montajı ve şube servisi. Özel müşteri verisi paylaşılmaz.',
+    badge: 'Referanslar',
+    heroTitle: 'Onarım ve servisten sonra görünen sonuçlar',
+    heroIntro:
+      'Bu örnekler neyin bozuk olduğunu, PixelRing’in neyi kontrol edip onardığını ve reklam unsurunun servis sonrası nasıl göründüğünü gösterir. Müşteri adı, tam adres veya CRM verisi yoktur.',
+    heroPrimaryCta: 'İşleri görüntüle',
+    heroSecondaryCta: 'Benzer talep başlat',
+    heroTags: ['LED servis', 'Işıklı kutular', 'Neon', 'Filmler', 'Cepheler', 'Şube servisi'],
+    heroNoteTitle: 'Galeri değil, kanıt',
+    heroNoteText:
+      'Her referans kısa bir onarım raporu gibi kurulur: başlangıç durumu, yapılan iş, sonuç. Odak uygulama ve güven üzerindedir.',
+    recentEyebrow: 'Seçili işler',
+    recentTitle: 'Önce sorun görünüyordu. Sonra tekrar çalışır hale geldi.',
+    recentIntro:
+      'Kartlar yatay hareket eder. Hover veya focus problem odaklı önceki durumu gösterir; tıklama kısa raporu açar.',
+    reportTitle: 'Dekoratif galeri yerine kısa onarım raporları',
+    reportIntro:
+      'Referanslar onarıma neden güvenileceğini anlatmalıdır. Bu yüzden her örnek kısa, teknik ve paylaşımı güvenlidir.',
+    reports: [
+      { id: 'r1', type: 'LED harfler', issue: 'Bazı elemanlar karanlıktı ve marka yazısı eksik görünüyordu.', outcome: 'Modüller değiştirildi, parlaklık eşitlendi, okunabilirlik geri geldi.' },
+      { id: 'r2', type: 'Işıklı kutu', issue: 'Işık dağılımı düzensizdi ve iç yüzey kirliydi.', outcome: 'İç bölüm temizlendi, LED hattı kontrol edildi, ışık alanı stabilize edildi.' },
+      { id: 'r3', type: 'Vitrin filmi', issue: 'Kenarlar kalkmıştı ve renkler markaya uygun değildi.', outcome: 'Yüzey hazırlandı ve görünür alan yeniden kaplandı.' },
+      { id: 'r4', type: 'Şube servisi', issue: 'Küçük arızalar farklı lokasyonlara dağılmıştı.', outcome: 'Öncelikli adımları olan tek servis raporu oluşturuldu.' },
+    ],
+    galleryEyebrow: 'Tüm görsel seçki',
+    galleryTitle: 'Detaylar için kompakt görüntüleyici',
+    galleryIntro:
+      'Galeri ana carousel’den daha küçüktür. Tıklama tüm fotoğrafları kategori ve küçük resimlerle tek viewer içinde açar.',
+    galleryPromoEyebrow: 'Video / sayfa',
+    galleryPromoTitle: 'Onarım sürecini izle',
+    galleryPromoText:
+      'Bu geniş alan bir videoya, detay sayfasına veya sitedeki servis açıklamasına bağlanabilir.',
+    galleryPromoCta: 'Aç',
+    galleryPromoHref: '/leistungen',
+    categoriesTitle: 'Referansların oluştuğu ürün alanları',
+    categoriesIntro:
+      'PixelRing tek sorumlu servis ortağı olarak kalır: onarım, montaj, branding ve lokasyon servisi tek giriş noktasından yürür.',
+    typeBandLines: ['Repair evidence', 'LED · Neon · Film · Montaj', 'Tek ortak. Tek talep. Tek sonuç.'],
+    finalTitle: 'Tabelanızı, cephenizi veya reklam unsurunuzu gösterin.',
+    finalText:
+      'İlk değerlendirme için çoğu zaman bir fotoğraf yeterlidir. PixelRing görünen durumu kontrol eder ve sonraki mantıklı adımı netleştirir.',
+    finalCta: 'Fotoğraf gönder',
+    modalProblemLabel: 'Başlangıç durumu',
+    modalWorkLabel: 'Yapılan iş',
+    modalResultLabel: 'Sonuç',
+    modalBeforeLabel: 'Öncesini gör',
+    modalCta: 'Benzer talep',
+    viewerAllLabel: 'Tümü',
+    viewerCloseLabel: 'Kapat',
+  },
+  pl: {
+    metaTitle: 'Realizacje napraw szyldów i reklam | PixelRing',
+    metaDescription:
+      'Wybrane realizacje PixelRing: kasetony, litery LED, neon, folie, montaż elewacyjny i obsługa sieci bez ujawniania prywatnych danych klientów.',
+    badge: 'Realizacje',
+    heroTitle: 'Widoczne efekty po naprawie i serwisie',
+    heroIntro:
+      'Te przykłady pokazują, co było uszkodzone, co PixelRing sprawdził i naprawił oraz jak element reklamowy wyglądał po usłudze. Bez nazw klientów, dokładnych adresów i danych CRM.',
+    heroPrimaryCta: 'Zobacz prace',
+    heroSecondaryCta: 'Zgłoś podobny problem',
+    heroTags: ['Serwis LED', 'Kasetony', 'Neon', 'Folie', 'Elewacje', 'Serwis sieci'],
+    heroNoteTitle: 'Dowód, nie galeria',
+    heroNoteText:
+      'Każda realizacja ma formę krótkiego raportu: stan wyjściowy, wykonana praca, efekt. Liczy się wykonanie i zaufanie.',
+    recentEyebrow: 'Wybrane prace',
+    recentTitle: 'Przedtem problem był widoczny. Potem obiekt znów działał.',
+    recentIntro:
+      'Karty przesuwają się poziomo. Hover lub focus pokazuje stan przed naprawą; kliknięcie otwiera krótki raport.',
+    reportTitle: 'Krótkie raporty zamiast dekoracyjnej ściany zdjęć',
+    reportIntro:
+      'Realizacje powinny wyjaśniać, dlaczego naprawie można zaufać, dlatego przykłady są krótkie, techniczne i bezpieczne.',
+    reports: [
+      { id: 'r1', type: 'Litery LED', issue: 'Część elementów była ciemna, a znak wyglądał na niepełny.', outcome: 'Wymieniono moduły, wyrównano jasność, przywrócono czytelność.' },
+      { id: 'r2', type: 'Kaseton', issue: 'Nierówne światło i zabrudzone powierzchnie wewnętrzne.', outcome: 'Wnętrze oczyszczono, tor LED sprawdzono, pole świetlne ustabilizowano.' },
+      { id: 'r3', type: 'Folia witrynowa', issue: 'Krawędzie odchodziły, kolory nie pasowały już do marki.', outcome: 'Przygotowano podłoże i ponownie oklejono widoczną powierzchnię.' },
+      { id: 'r4', type: 'Serwis sieci', issue: 'Kilka małych usterek było rozproszonych po lokalizacjach.', outcome: 'Utworzono jeden raport z priorytetami kolejnych działań.' },
+    ],
+    galleryEyebrow: 'Pełny zestaw zdjęć',
+    galleryTitle: 'Kompaktowy viewer do szczegółów',
+    galleryIntro:
+      'Galeria jest celowo mniejsza niż główny carousel. Kliknięcie otwiera wszystkie zdjęcia z kategoriami i miniaturami.',
+    galleryPromoEyebrow: 'Wideo / strona',
+    galleryPromoTitle: 'Zobacz proces naprawy',
+    galleryPromoText:
+      'Ten szeroki blok może prowadzić do wideo, strony szczegółowej albo opisu usługi w serwisie.',
+    galleryPromoCta: 'Otwórz',
+    galleryPromoHref: '/leistungen',
+    categoriesTitle: 'Obszary produktowe, z których powstają realizacje',
+    categoriesIntro:
+      'PixelRing pozostaje jednym odpowiedzialnym partnerem: naprawa, montaż, branding i serwis lokalizacji mają jeden punkt wejścia.',
+    typeBandLines: ['Repair evidence', 'LED · Neon · Folia · Montaż', 'Jeden partner. Jedno zgłoszenie. Jeden wynik.'],
+    finalTitle: 'Pokaż nam swój szyld, fasadę lub element reklamowy.',
+    finalText:
+      'Do pierwszej oceny często wystarczy zdjęcie. PixelRing sprawdzi widoczny stan i ustali kolejny rozsądny krok.',
+    finalCta: 'Wyślij zdjęcie',
+    modalProblemLabel: 'Stan wyjściowy',
+    modalWorkLabel: 'Wykonano',
+    modalResultLabel: 'Efekt',
+    modalBeforeLabel: 'Zobacz przed',
+    modalCta: 'Podobne zgłoszenie',
+    viewerAllLabel: 'Wszystkie',
+    viewerCloseLabel: 'Zamknij',
+  },
+  ar: {
+    metaTitle: 'مراجع إصلاح اللوحات والإعلانات | PixelRing',
+    metaDescription:
+      'نماذج مختارة من أعمال PixelRing: صناديق مضيئة، حروف LED، نيون، أفلام واجهات، تثبيت واجهات وخدمة فروع بدون كشف بيانات العملاء الخاصة.',
+    badge: 'الأعمال المنجزة',
+    heroTitle: 'نتائج واضحة بعد الإصلاح والخدمة',
+    heroIntro:
+      'تعرض هذه الأمثلة ما كان معطلاً، وما فحصته PixelRing ونفذته، وكيف أصبح العنصر الإعلاني بعد الخدمة. لا أسماء عملاء، لا عناوين دقيقة، ولا بيانات CRM داخلية.',
+    heroPrimaryCta: 'عرض الأعمال',
+    heroSecondaryCta: 'ابدأ طلباً مشابهاً',
+    heroTags: ['خدمة LED', 'صناديق مضيئة', 'نيون', 'أفلام', 'واجهات', 'خدمة الفروع'],
+    heroNoteTitle: 'إثبات عمل لا معرض فقط',
+    heroNoteText:
+      'كل مرجع مكتوب كتقرير إصلاح قصير: الحالة الأولية، العمل المنفذ، والنتيجة. التركيز على التنفيذ والثقة.',
+    recentEyebrow: 'أعمال مختارة',
+    recentTitle: 'كان الخلل واضحاً. ثم عاد العنصر للعمل.',
+    recentIntro:
+      'تتحرك البطاقات أفقياً. عند التركيز أو التحويم تظهر حالة ما قبل الإصلاح؛ النقر يفتح تقريراً مختصراً.',
+    reportTitle: 'تقارير إصلاح قصيرة بدلاً من معرض زخرفي',
+    reportIntro:
+      'يجب أن تشرح المراجع سبب الثقة بالإصلاح، لذلك تبقى الأمثلة مختصرة وتقنية وآمنة من ناحية الخصوصية.',
+    reports: [
+      { id: 'r1', type: 'حروف LED', issue: 'بعض العناصر كانت مطفأة وكان اسم العلامة غير مكتمل.', outcome: 'تم تبديل الوحدات، توحيد السطوع، واستعادة الوضوح.' },
+      { id: 'r2', type: 'صندوق مضيء', issue: 'إضاءة غير متساوية وأسطح داخلية متسخة.', outcome: 'تم تنظيف الداخل، فحص مسار LED، وتثبيت مجال الإضاءة.' },
+      { id: 'r3', type: 'فيلم واجهة', issue: 'الحواف بدأت تنفصل والألوان لم تعد مناسبة للعلامة.', outcome: 'تم تحضير السطح وتغليف المنطقة المرئية من جديد.' },
+      { id: 'r4', type: 'خدمة فروع', issue: 'عدة أعطال صغيرة موزعة على مواقع مختلفة.', outcome: 'تم إعداد تقرير خدمة واحد مع خطوات ذات أولوية.' },
+    ],
+    galleryEyebrow: 'مجموعة الصور',
+    galleryTitle: 'عارض مدمج للتفاصيل',
+    galleryIntro:
+      'المعرض أصغر عمداً من carousel الرئيسي. النقر يفتح كل الصور في عارض واحد مع الفئات والصور المصغرة.',
+    galleryPromoEyebrow: 'فيديو / صفحة',
+    galleryPromoTitle: 'شاهد مسار الإصلاح',
+    galleryPromoText:
+      'يمكن لهذا الشريط أن يفتح فيديو أو صفحة تفاصيل أو شرح خدمة داخل الموقع.',
+    galleryPromoCta: 'فتح',
+    galleryPromoHref: '/leistungen',
+    categoriesTitle: 'مجالات المنتج التي تظهر فيها المراجع',
+    categoriesIntro:
+      'تبقى PixelRing شريك خدمة واحداً مسؤولاً: الإصلاح، التثبيت، الهوية البصرية وخدمة المواقع عبر نقطة دخول واحدة.',
+    typeBandLines: ['Repair evidence', 'LED · Neon · Film · Mounting', 'شريك واحد. طلب واحد. نتيجة واحدة.'],
+    finalTitle: 'أرنا لوحتك أو واجهتك أو العنصر الإعلاني لديك.',
+    finalText:
+      'غالباً تكفي صورة واحدة للتقييم الأولي. تفحص PixelRing الحالة الظاهرة وتوضح الخطوة العملية التالية.',
+    finalCta: 'إرسال صورة',
+    modalProblemLabel: 'الحالة الأولية',
+    modalWorkLabel: 'العمل المنفذ',
+    modalResultLabel: 'النتيجة',
+    modalBeforeLabel: 'عرض قبل الإصلاح',
+    modalCta: 'طلب مشابه',
+    viewerAllLabel: 'الكل',
+    viewerCloseLabel: 'إغلاق',
+  },
+};
+
+const CASE_COPY: Record<Locale, Array<Omit<ReferenceCase, 'beforeImage' | 'afterImage' | 'gallery'>>> = {
+  de: [
+    { id: 'lightbox-facade', title: 'LED-Lightbox an der Fassade', category: 'Leuchtkasten', problem: 'Ein Teil des Lichtfelds blieb dunkel, der Eingang wirkte abends vernachlaessigt.', work: 'Stromversorgung geprueft, beschaedigte LED-Elemente ersetzt, Innenflaeche gereinigt und Helligkeit angeglichen.', result: 'Die Fassade wirkt abends wieder aktiv und gut sichtbar.', defaultText: 'Gleichmaessige Ausleuchtung fuer bessere Abendwirkung.', beforeText: 'BEFORE: dunkle Bereiche und ein sichtbar gealterter Kasten.' },
+    { id: 'led-letters', title: 'LED-Buchstaben eines Shops', category: 'LED-Buchstaben', problem: 'Mehrere Buchstaben waren ausgefallen, die Beschriftung wurde falsch gelesen.', work: 'Verbindungen geprueft, defekte Module ersetzt und die Helligkeit mit den Nachbarelementen abgestimmt.', result: 'Der Name ist wieder vollstaendig lesbar.', defaultText: 'Buchstaben lesen sich wieder als saubere Wortmarke.', beforeText: 'BEFORE: einzelne Buchstaben fehlten im Lichtbild.' },
+    { id: 'neon-contour', title: 'Neon-Konturlicht', category: 'Neon', problem: 'Teile der Kontur flackerten oder schalteten nach dem Aufwaermen ab.', work: 'Instabilen Abschnitt eingegrenzt, Kontakt wiederhergestellt und Abendbetrieb geprueft.', result: 'Der warme Konturverlauf ist wieder ohne sichtbare Aussetzer.', defaultText: 'Warmer Konturverlauf ohne sichtbare Aussetzer.', beforeText: 'BEFORE: Flackern und unterbrochene Lichtlinie.' },
+    { id: 'window-film', title: 'Schaufenster-Folierung', category: 'Folien', problem: 'Die Folie war ausgeblichen und loeste sich an den Kanten.', work: 'Alte Schicht entfernt, Untergrund vorbereitet und neue Markenflaeche aufgebracht.', result: 'Die Flaeche wirkt wieder wie ein gepflegter Teil des Standorts.', defaultText: 'Aktualisierte Sichtflaeche statt provisorischer Wirkung.', beforeText: 'BEFORE: geloeste Kanten und verblasste Markenfarbe.' },
+    { id: 'branch-service', title: 'Service fuer mehrere Standorte', category: 'Filialservice', problem: 'Maengel lagen verteilt vor und wurden nicht gemeinsam priorisiert.', work: 'Zustand zusammengefuehrt, akute und planbare Arbeiten getrennt und als Servicebericht strukturiert.', result: 'Das Team erhielt eine klare Reihenfolge fuer die naechsten Schritte.', defaultText: 'Mehrere Standorte in einem verstaendlichen Servicebild.', beforeText: 'BEFORE: Einzelfaelle ohne Gesamtueberblick.' },
+    { id: 'mounting-review', title: 'Montage- und Sicherheitscheck', category: 'Fassade', problem: 'Befestigung und Servicezugang mussten vor dem Wiederbetrieb geprueft werden.', work: 'Sichtbare Befestigungspunkte, Zugang und Schaeden geprueft und Massnahmen vorbereitet.', result: 'Der Objektzustand war fuer die weitere Planung klar.', defaultText: 'Klarer Zustand fuer Reparatur, Montage und Wartung.', beforeText: 'BEFORE: Unsicherheit bei Befestigung und Zugang.' },
+  ],
+  en: [
+    { id: 'lightbox-facade', title: 'Facade LED lightbox', category: 'Lightbox', problem: 'Part of the light field stayed dark and the entrance looked neglected at night.', work: 'Power supply checked, damaged LED elements replaced, interior cleaned, brightness balanced.', result: 'The facade looks active and visible again after dark.', defaultText: 'Even lighting restored for stronger evening visibility.', beforeText: 'BEFORE: dark areas and a visibly tired lightbox.' },
+    { id: 'led-letters', title: 'Shop LED letters', category: 'LED letters', problem: 'Several letters failed, so the sign was read incorrectly from the street.', work: 'Connections checked, failed modules replaced, brightness matched with adjacent letters.', result: 'The name is readable as a complete wordmark again.', defaultText: 'Letters read as one clean wordmark again.', beforeText: 'BEFORE: individual letters were missing from the light image.' },
+    { id: 'neon-contour', title: 'Neon contour light', category: 'Neon', problem: 'Sections flickered or switched off after warming up.', work: 'Unstable section isolated, contact restored, evening operation checked.', result: 'The warm contour line runs without visible gaps.', defaultText: 'Warm contour light without visible dropouts.', beforeText: 'BEFORE: flicker and interrupted light line.' },
+    { id: 'window-film', title: 'Storefront film', category: 'Films', problem: 'The film had faded and started lifting at the edges.', work: 'Old layer removed, substrate prepared, new branded surface applied.', result: 'The surface looks like a maintained part of the location again.', defaultText: 'Updated visible surface instead of a temporary look.', beforeText: 'BEFORE: lifted edges and faded brand color.' },
+    { id: 'branch-service', title: 'Multi-location service', category: 'Branch service', problem: 'Defects were spread across locations and not prioritized together.', work: 'Condition consolidated, urgent and planned work separated, report structured.', result: 'The team received a clear order for next steps.', defaultText: 'Several locations combined into one clear service view.', beforeText: 'BEFORE: isolated issues without a shared overview.' },
+    { id: 'mounting-review', title: 'Mounting and safety check', category: 'Facade', problem: 'Mounting and service access had to be checked before restarting the system.', work: 'Visible fixing points, access, and damage checked; measures prepared.', result: 'The object condition was clear for further planning.', defaultText: 'Clear condition for repair, mounting, and maintenance.', beforeText: 'BEFORE: uncertainty around fixing points and access.' },
+  ],
+  ru: [
+    { id: 'lightbox-facade', title: 'LED-lightbox фасада', category: 'Световой короб', problem: 'Часть светового поля не горела, вход вечером выглядел заброшенным.', work: 'Проверили питание, заменили поврежденные LED-элементы, очистили внутреннюю поверхность и выровняли яркость.', result: 'Фасад снова выглядит активным и заметным вечером.', defaultText: 'Равномерная подсветка восстановлена для вечерней видимости.', beforeText: 'ДО: темные зоны и визуально уставший короб.' },
+    { id: 'led-letters', title: 'LED-буквы магазина', category: 'LED-буквы', problem: 'Несколько букв погасли, название стало читаться неправильно с улицы.', work: 'Проверили соединения, заменили отказавшие модули и согласовали яркость с соседними буквами.', result: 'Название снова читается целиком.', defaultText: 'Буквы снова читаются как цельный знак.', beforeText: 'ДО: отдельные буквы пропали из световой картины.' },
+    { id: 'neon-contour', title: 'Неоновый контур', category: 'Неон', problem: 'Секции мерцали или отключались после прогрева.', work: 'Нашли нестабильный участок, восстановили контакт и проверили работу вечером.', result: 'Теплый контур снова работает без заметных провалов.', defaultText: 'Теплый контур без заметных разрывов.', beforeText: 'ДО: мерцание и разорванная линия света.' },
+    { id: 'window-film', title: 'Витринная пленка', category: 'Пленки', problem: 'Пленка выгорела и начала отходить по краям.', work: 'Сняли старый слой, подготовили основание и нанесли новую брендированную поверхность.', result: 'Витрина снова выглядит как ухоженная часть действующей точки.', defaultText: 'Обновленная поверхность без ощущения временного ремонта.', beforeText: 'ДО: отходящие края и выцветший цвет бренда.' },
+    { id: 'branch-service', title: 'Сервис нескольких точек', category: 'Сервис филиалов', problem: 'Дефекты были разбросаны по объектам и не имели общего приоритета.', work: 'Собрали состояние в один отчет, разделили срочные и плановые работы.', result: 'Команда получила понятный порядок следующих действий.', defaultText: 'Несколько объектов сведены в один понятный обзор.', beforeText: 'ДО: отдельные проблемы без общей картины.' },
+    { id: 'mounting-review', title: 'Проверка монтажа и безопасности', category: 'Фасад', problem: 'Крепления и доступ к сервису нужно было проверить перед повторным запуском.', work: 'Проверили видимые точки крепления, доступ и повреждения, подготовили меры.', result: 'Состояние объекта стало понятным для дальнейшего планирования.', defaultText: 'Понятное состояние для ремонта, монтажа и сервиса.', beforeText: 'ДО: неопределенность по креплениям и доступу.' },
+  ],
+  tr: [
+    { id: 'lightbox-facade', title: 'Cephe LED ışıklı kutu', category: 'Işıklı kutu', problem: 'Işık alanının bir bölümü karanlıktı ve giriş akşamları bakımsız görünüyordu.', work: 'Güç kaynağı kontrol edildi, hasarlı LED elemanları değiştirildi, iç yüzey temizlendi ve parlaklık dengelendi.', result: 'Cephe akşamları tekrar aktif ve görünür hale geldi.', defaultText: 'Akşam görünürlüğü için eşit aydınlatma geri geldi.', beforeText: 'BEFORE: karanlık bölgeler ve yıpranmış görünen kutu.' },
+    { id: 'led-letters', title: 'Mağaza LED harfleri', category: 'LED harfler', problem: 'Birkaç harf sönmüştü, yazı sokaktan yanlış okunuyordu.', work: 'Bağlantılar kontrol edildi, arızalı modüller değiştirildi ve parlaklık komşu harflerle eşitlendi.', result: 'İsim tekrar tam bir marka yazısı olarak okunuyor.', defaultText: 'Harfler yeniden temiz bir marka yazısı gibi okunuyor.', beforeText: 'BEFORE: bazı harfler ışık görüntüsünden eksikti.' },
+    { id: 'neon-contour', title: 'Neon kontur ışığı', category: 'Neon', problem: 'Bazı bölümler titriyor veya ısındıktan sonra kapanıyordu.', work: 'Dengesiz bölüm bulundu, kontak onarıldı ve akşam çalışma modu kontrol edildi.', result: 'Sıcak kontur çizgisi görünür kesinti olmadan çalışıyor.', defaultText: 'Sıcak kontur ışığı görünür kesinti olmadan çalışıyor.', beforeText: 'BEFORE: titreme ve kesintili ışık çizgisi.' },
+    { id: 'window-film', title: 'Vitrin filmi', category: 'Filmler', problem: 'Film solmuştu ve kenarlardan kalkmaya başlamıştı.', work: 'Eski katman söküldü, zemin hazırlandı ve yeni markalı yüzey uygulandı.', result: 'Yüzey tekrar bakımlı bir lokasyon parçası gibi görünüyor.', defaultText: 'Geçici görünüm yerine yenilenmiş vitrin yüzeyi.', beforeText: 'BEFORE: kalkmış kenarlar ve solmuş marka rengi.' },
+    { id: 'branch-service', title: 'Çok lokasyonlu servis', category: 'Şube servisi', problem: 'Kusurlar lokasyonlara dağılmıştı ve birlikte önceliklendirilmiyordu.', work: 'Durum tek raporda toplandı, acil ve planlı işler ayrıldı.', result: 'Ekip sonraki adımlar için net bir sıra aldı.', defaultText: 'Birden fazla lokasyon tek servis görünümünde toplandı.', beforeText: 'BEFORE: ortak görünümü olmayan ayrı sorunlar.' },
+    { id: 'mounting-review', title: 'Montaj ve güvenlik kontrolü', category: 'Cephe', problem: 'Sistemi yeniden başlatmadan önce montaj ve servis erişimi kontrol edilmeliydi.', work: 'Görünen bağlantı noktaları, erişim ve hasarlar kontrol edilip önlemler hazırlandı.', result: 'Nesnenin durumu sonraki planlama için netleşti.', defaultText: 'Onarım, montaj ve bakım için net durum.', beforeText: 'BEFORE: bağlantı noktaları ve erişim konusunda belirsizlik.' },
+  ],
+  pl: [
+    { id: 'lightbox-facade', title: 'Kaseton LED na fasadzie', category: 'Kaseton', problem: 'Część pola świetlnego była ciemna, a wejście wieczorem wyglądało na zaniedbane.', work: 'Sprawdzono zasilanie, wymieniono uszkodzone elementy LED, oczyszczono wnętrze i wyrównano jasność.', result: 'Fasada znów wygląda aktywnie i jest dobrze widoczna po zmroku.', defaultText: 'Równe światło przywrócone dla lepszej widoczności wieczorem.', beforeText: 'BEFORE: ciemne obszary i wyraźnie zużyty kaseton.' },
+    { id: 'led-letters', title: 'Litery LED sklepu', category: 'Litery LED', problem: 'Kilka liter nie świeciło, przez co napis był błędnie odczytywany z ulicy.', work: 'Sprawdzono połączenia, wymieniono uszkodzone moduły i dopasowano jasność do sąsiednich liter.', result: 'Nazwa znów jest czytelna jako pełny znak.', defaultText: 'Litery znów tworzą czysty, czytelny znak.', beforeText: 'BEFORE: pojedyncze litery znikały z obrazu świetlnego.' },
+    { id: 'neon-contour', title: 'Kontur neonowy', category: 'Neon', problem: 'Części konturu migały lub wyłączały się po nagrzaniu.', work: 'Zlokalizowano niestabilny odcinek, przywrócono kontakt i sprawdzono pracę wieczorem.', result: 'Ciepła linia konturu działa bez widocznych przerw.', defaultText: 'Ciepła linia neonowa bez widocznych przerw.', beforeText: 'BEFORE: migotanie i przerwana linia światła.' },
+    { id: 'window-film', title: 'Folia witrynowa', category: 'Folie', problem: 'Folia wyblakła i zaczęła odchodzić na krawędziach.', work: 'Usunięto starą warstwę, przygotowano podłoże i nałożono nową powierzchnię brandową.', result: 'Witryna znów wygląda jak zadbana część działającego punktu.', defaultText: 'Odnowiona powierzchnia zamiast tymczasowego wyglądu.', beforeText: 'BEFORE: odchodzące krawędzie i wyblakły kolor marki.' },
+    { id: 'branch-service', title: 'Serwis wielu lokalizacji', category: 'Serwis sieci', problem: 'Usterki były rozproszone i nie miały wspólnego priorytetu.', work: 'Zebrano stan w jednym raporcie, oddzielono prace pilne od planowych.', result: 'Zespół otrzymał jasną kolejność następnych działań.', defaultText: 'Kilka lokalizacji połączonych w jeden obraz serwisowy.', beforeText: 'BEFORE: osobne problemy bez wspólnego przeglądu.' },
+    { id: 'mounting-review', title: 'Kontrola montażu i bezpieczeństwa', category: 'Fasada', problem: 'Mocowanie i dostęp serwisowy wymagały kontroli przed ponownym uruchomieniem.', work: 'Sprawdzono widoczne punkty mocowania, dostęp i uszkodzenia oraz przygotowano działania.', result: 'Stan obiektu był jasny dla dalszego planowania.', defaultText: 'Jasny stan dla naprawy, montażu i serwisu.', beforeText: 'BEFORE: niepewność wokół mocowań i dostępu.' },
+  ],
+  ar: [
+    { id: 'lightbox-facade', title: 'صندوق LED مضيء على الواجهة', category: 'صندوق مضيء', problem: 'بقي جزء من مساحة الإضاءة مطفأً وكان المدخل يبدو مهملاً في المساء.', work: 'تم فحص التغذية، تبديل عناصر LED المتضررة، تنظيف الداخل، وتوحيد السطوع.', result: 'أصبحت الواجهة نشطة وواضحة مرة أخرى في المساء.', defaultText: 'إضاءة متساوية عادت لتحسين الرؤية المسائية.', beforeText: 'BEFORE: مناطق مظلمة وصندوق يبدو قديماً.' },
+    { id: 'led-letters', title: 'حروف LED لمتجر', category: 'حروف LED', problem: 'تعطلت عدة حروف، فأصبح الاسم يقرأ بشكل غير صحيح من الشارع.', work: 'تم فحص التوصيلات، تبديل الوحدات المعطلة، ومطابقة السطوع مع الحروف المجاورة.', result: 'عاد الاسم مقروءاً كعلامة كاملة.', defaultText: 'الحروف تقرأ من جديد كعلامة نظيفة.', beforeText: 'BEFORE: حروف منفردة غابت عن الصورة الضوئية.' },
+    { id: 'neon-contour', title: 'إضاءة نيون محيطية', category: 'نيون', problem: 'كانت بعض المقاطع تومض أو تنطفئ بعد التسخين.', work: 'تم تحديد المقطع غير المستقر، إصلاح التلامس، وفحص التشغيل المسائي.', result: 'عاد خط النيون الدافئ دون انقطاعات ظاهرة.', defaultText: 'خط ضوء دافئ دون انقطاعات واضحة.', beforeText: 'BEFORE: وميض وخط ضوئي متقطع.' },
+    { id: 'window-film', title: 'فيلم واجهة متجر', category: 'أفلام', problem: 'بهت الفيلم وبدأ ينفصل عند الحواف.', work: 'أزيلت الطبقة القديمة، تم تحضير السطح، وتطبيق سطح جديد مطابق للهوية.', result: 'عادت الواجهة لتبدو كجزء مصان من الموقع.', defaultText: 'سطح مرئي محدث بدلاً من مظهر مؤقت.', beforeText: 'BEFORE: حواف منفصلة ولون علامة باهت.' },
+    { id: 'branch-service', title: 'خدمة عدة مواقع', category: 'خدمة الفروع', problem: 'كانت العيوب موزعة على المواقع ولم يتم ترتيبها ضمن أولوية واحدة.', work: 'تم جمع الحالة في تقرير واحد وفصل الأعمال العاجلة عن المخططة.', result: 'حصل الفريق على ترتيب واضح للخطوات التالية.', defaultText: 'عدة مواقع ضمن صورة خدمة واحدة واضحة.', beforeText: 'BEFORE: مشاكل منفصلة بلا نظرة عامة مشتركة.' },
+    { id: 'mounting-review', title: 'فحص التثبيت والسلامة', category: 'واجهة', problem: 'كان يجب فحص التثبيت والوصول للصيانة قبل إعادة التشغيل.', work: 'تم فحص نقاط التثبيت الظاهرة والوصول والأضرار وتحضير الإجراءات.', result: 'أصبحت حالة العنصر واضحة للتخطيط اللاحق.', defaultText: 'حالة واضحة للإصلاح والتثبيت والصيانة.', beforeText: 'BEFORE: عدم وضوح حول نقاط التثبيت والوصول.' },
+  ],
+};
+
+function getContent(locale: string): ReferencesContent & { metaTitle: string; metaDescription: string } {
+  const safeLocale = (locale in CONTENT ? locale : 'de') as Locale;
+  const text = CONTENT[safeLocale];
+  const caseCopy = CASE_COPY[safeLocale];
+  const cases = BASE_CASES.map((base) => ({
+    ...base,
+    ...caseCopy.find((item) => item.id === base.id)!,
+  }));
+
+  const galleryItems = [
+    { id: 'g-lightbox', title: cases[0].title, category: cases[0].category, image: IMAGE_SET.lightbox, description: cases[0].result },
+    { id: 'g-led', title: cases[1].title, category: cases[1].category, image: IMAGE_SET.led, description: cases[1].result },
+    { id: 'g-neon', title: cases[2].title, category: cases[2].category, image: IMAGE_SET.neon, description: cases[2].result },
+    { id: 'g-film', title: cases[3].title, category: cases[3].category, image: IMAGE_SET.film, description: cases[3].result },
+    { id: 'g-branches', title: cases[4].title, category: cases[4].category, image: IMAGE_SET.business, description: cases[4].result },
+    { id: 'g-mounting', title: cases[5].title, category: cases[5].category, image: IMAGE_SET.mounting, description: cases[5].result },
+    { id: 'g-before', title: text.modalBeforeLabel, category: 'Before', image: IMAGE_SET.beforeGeneral, description: cases[0].problem },
+    { id: 'g-process', title: text.modalWorkLabel, category: 'Service', image: IMAGE_SET.process, description: cases[2].work },
+    { id: 'g-led-detail', title: cases[1].title, category: cases[1].category, image: IMAGE_SET.generatedLedDetail, description: cases[1].work },
+    { id: 'g-lightbox-lift', title: cases[0].title, category: cases[0].category, image: IMAGE_SET.generatedLightboxLift, description: cases[0].work },
+    { id: 'g-neon-bench', title: cases[2].title, category: cases[2].category, image: IMAGE_SET.generatedNeonBench, description: cases[2].work },
+    { id: 'g-window-film-install', title: cases[3].title, category: cases[3].category, image: IMAGE_SET.generatedWindowFilm, description: cases[3].work },
+    { id: 'g-facade-light-line', title: cases[5].title, category: cases[5].category, image: IMAGE_SET.generatedFacadeLine, description: cases[5].work },
+    { id: 'g-branch-evening', title: cases[4].title, category: cases[4].category, image: IMAGE_SET.generatedBranchEvening, description: cases[4].result },
+    { id: 'g-storefront-row', title: cases[4].title, category: cases[4].category, image: IMAGE_SET.generatedStorefrontRow, description: cases[4].result },
+    { id: 'g-circuit-repair', title: text.modalWorkLabel, category: 'Service', image: IMAGE_SET.generatedCircuitRepair, description: cases[0].work },
+  ];
+
+  const productCategories = [
+    { id: 'led', title: text.heroTags[0], text: cases[1].defaultText, image: IMAGE_SET.ledNatural, filter: cases[1].category },
+    { id: 'lightbox', title: text.heroTags[1], text: cases[0].defaultText, image: IMAGE_SET.lightbox, filter: cases[0].category },
+    { id: 'neon', title: text.heroTags[2], text: cases[2].defaultText, image: IMAGE_SET.neon, filter: cases[2].category },
+    { id: 'films', title: text.heroTags[3], text: cases[3].defaultText, image: IMAGE_SET.film, filter: cases[3].category },
+    { id: 'facade', title: text.heroTags[4], text: cases[5].defaultText, image: IMAGE_SET.mounting, filter: cases[5].category },
+    { id: 'service', title: text.heroTags[5], text: cases[4].defaultText, image: IMAGE_SET.business, filter: cases[4].category },
+  ];
+
+  return {
+    locale: safeLocale,
+    ...text,
+    cases,
+    galleryItems,
+    productCategories,
+  };
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const content = getContent(locale);
+
+  return {
+    title: content.metaTitle,
+    description: content.metaDescription,
+    alternates: {
+      canonical: `/${locale}/referenzen`,
+    },
+  };
+}
+
+export default async function ReferenzenPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const content = getContent(locale);
+  const globalCms = await getGlobalPageCmsContent(locale);
+
+  return (
+    <div className={`min-h-screen bg-white ${content.locale === 'ar' ? 'rtl' : 'ltr'}`} dir={content.locale === 'ar' ? 'rtl' : 'ltr'}>
+      <Header content={globalCms?.header} />
+      <ReferencesExperience content={content} />
+      <Footer content={globalCms?.footer} />
+    </div>
+  );
+}
