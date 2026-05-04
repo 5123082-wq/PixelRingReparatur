@@ -72,11 +72,7 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
   const reviewsCount = content?.items?.length || 3;
   const originalIndices = Array.from({ length: reviewsCount }, (_, i) => i);
   
-  // Triple the indices to create infinite buffers: [0,1,2, 0,1,2, 0,1,2]
-  const tripledIndices = [...originalIndices, ...originalIndices, ...originalIndices];
-  
-  // Track the current virtual index (0 to 8)
-  const [virtualIndex, setVirtualIndex] = useState(reviewsCount); // Start at the middle set
+  const [virtualIndex, setVirtualIndex] = useState(0);
   const [isReady, setIsReady] = useState(false);
 
   // Initialize scroll position to the middle set
@@ -84,15 +80,11 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
     const el = scrollRef.current;
     if (!el) return;
 
-    // Use a more precise multiplier that matches our CSS (w-[92%] -> 0.92)
-    const cardWidth = el.offsetWidth * 0.92;
-    const startPos = reviewsCount * cardWidth;
-    
-    el.scrollLeft = isRTL ? -startPos : startPos;
+    el.scrollLeft = 0;
     const readyFrame = window.requestAnimationFrame(() => setIsReady(true));
 
     return () => window.cancelAnimationFrame(readyFrame);
-  }, [isRTL, reviewsCount]);
+  }, [isRTL]);
 
   const handleInfiniteScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -100,23 +92,7 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
 
     const scrollLeft = Math.abs(el.scrollLeft);
     const cardWidth = el.offsetWidth * 0.92; // Matches w-[92%]
-    
-    const totalSetWidth = reviewsCount * cardWidth;
-    
-    if (scrollLeft < cardWidth * 0.5) {
-      el.scrollTo({
-        left: isRTL ? -(totalSetWidth + scrollLeft) : (totalSetWidth + scrollLeft),
-        behavior: 'instant'
-      });
-    } 
-    else if (scrollLeft > totalSetWidth * 2 - cardWidth * 0.5) {
-      el.scrollTo({
-        left: isRTL ? -(scrollLeft - totalSetWidth) : (scrollLeft - totalSetWidth),
-        behavior: 'instant'
-      });
-    }
-
-    const currentVirtual = Math.round(scrollLeft / cardWidth);
+    const currentVirtual = Math.min(reviewsCount - 1, Math.max(0, Math.round(scrollLeft / cardWidth)));
     setVirtualIndex(currentVirtual);
   }, [isRTL, reviewsCount, isReady]);
 
@@ -145,7 +121,7 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
     scrollToVirtualIndex(virtualIndex - 1);
   };
 
-  const activeReviewIndex = virtualIndex % reviewsCount;
+  const activeReviewIndex = reviewsCount > 0 ? virtualIndex % reviewsCount : 0;
 
   return (
     <section className="w-full bg-[#F7F1E8] py-24 overflow-hidden relative" dir={isRTL ? 'rtl' : 'ltr'}>
@@ -215,7 +191,7 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
           className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar px-[4%]"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {tripledIndices.map((idx, i) => (
+          {originalIndices.map((idx, i) => (
             <div 
               key={`${idx}-${i}`} 
               className="flex-shrink-0 w-[92%] snap-center px-3 flex"

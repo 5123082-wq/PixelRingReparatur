@@ -20,7 +20,7 @@ const FooterCTA = ({ content }: { content?: FooterCtaContent | null }) => {
   const telegramUrl = SITE_CONFIG.messengers.telegram;
 
   return (
-    <section className="w-full bg-[#0D1B2A] py-24 px-6 relative overflow-hidden">
+    <section id="kontakt" className="w-full bg-[#0D1B2A] py-24 px-6 relative overflow-hidden scroll-mt-24">
       {/* Technical Grid Pattern */}
       <div 
         className="absolute inset-0 opacity-[0.03] pointer-events-none" 

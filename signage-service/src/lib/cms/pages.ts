@@ -669,7 +669,97 @@ export async function getPublishedCmsPage(
 function getBlockText(block: CmsPageBlock, field: string): string | undefined {
   const value = block[field];
 
-  return typeof value === 'string' && value.trim() ? value.trim() : undefined;
+  if (typeof value !== 'string' || !value.trim()) {
+    return undefined;
+  }
+
+  if (/href|url|asset/i.test(field) || /^image$/i.test(field)) {
+    return value.trim();
+  }
+
+  return sanitizePublicText(value.trim());
+}
+
+function sanitizePublicText(value: string): string {
+  let text = value
+    .replace(/Describe your task, and we'll get back to you within 15 minutes\./g, 'Beschreiben Sie Ihre Aufgabe. Wir melden uns in der Regel innerhalb von 15 Minuten.')
+    .replace(/\bTest Alt Text Hero\b/g, 'PixelRing Schilder-Reparatur und Service')
+    .replace(/Beschreiben Sie die Aufgabe и загрузите фото\./g, 'Beschreiben Sie die Aufgabe und laden Sie bei Bedarf ein Foto hoch.')
+    .replace(/Reparatur, Wartung, Ersatz или Neubau\./g, 'Reparatur, Wartung, Ersatz oder Neubau.')
+    .replace(/\bHalterungen, Rahmen, Unterkonstruktionen and Befestigungspunkte\b/g, 'Halterungen, Rahmen, Unterkonstruktionen und Befestigungspunkte')
+    .replace(/\bAudit Complete\b/g, 'Audit abgeschlossen')
+    .replace(/\bAll print materials and signage verified\b/g, 'Alle Printmaterialien und Werbeanlagen geprüft')
+    .replace(/\bBEFORE:/g, 'Vorher:')
+    .replace(/([a-zäöüß])\.([A-ZÄÖÜ])/g, '$1. $2');
+
+  const replacements: Array<[RegExp, string]> = [
+    [/\bfuer\b/g, 'für'],
+    [/\bFuer\b/g, 'Für'],
+    [/\bLoesungen\b/g, 'Lösungen'],
+    [/\bloesen\b/g, 'lösen'],
+    [/\bloest\b/g, 'löst'],
+    [/\bgeloest\b/g, 'gelöst'],
+    [/\bPruefung\b/g, 'Prüfung'],
+    [/\bpruefen\b/g, 'prüfen'],
+    [/\bprueft\b/g, 'prüft'],
+    [/\bgeprueft\b/g, 'geprüft'],
+    [/\bSichtpruefung\b/g, 'Sichtprüfung'],
+    [/\bGeschaeftsstandort\b/g, 'Geschäftsstandort'],
+    [/\bGeschaeftsstandorte\b/g, 'Geschäftsstandorte'],
+    [/\bGeschaeftskunden\b/g, 'Geschäftskunden'],
+    [/\bGeschaeftskunden-Anfrage\b/g, 'Geschäftskunden-Anfrage'],
+    [/\bGeschaeft\b/g, 'Geschäft'],
+    [/\bSchaeden\b/g, 'Schäden'],
+    [/\bbeschaedigte\b/g, 'beschädigte'],
+    [/\bbeschaedigt\b/g, 'beschädigt'],
+    [/\bbeschaeftigt\b/g, 'beschäftigt'],
+    [/\bFlaechen\b/g, 'Flächen'],
+    [/\bFlaeche\b/g, 'Fläche'],
+    [/\bregelmaessige\b/g, 'regelmäßige'],
+    [/\bRegelmaessige\b/g, 'Regelmäßige'],
+    [/\bgleichmaessig\b/g, 'gleichmäßig'],
+    [/\bUngleichmaessiges\b/g, 'Ungleichmäßiges'],
+    [/\bungleichmaessig\b/g, 'ungleichmäßig'],
+    [/\bunzuverlaessig\b/g, 'unzuverlässig'],
+    [/\bverstaendlich\b/g, 'verständlich'],
+    [/\bverstaendlichen\b/g, 'verständlichen'],
+    [/\bvollstaendig\b/g, 'vollständig'],
+    [/\bnaechsten\b/g, 'nächsten'],
+    [/\bnaechste\b/g, 'nächste'],
+    [/\bnaechster\b/g, 'nächster'],
+    [/\bEinschaetzung\b/g, 'Einschätzung'],
+    [/\bEinschaetzungen\b/g, 'Einschätzungen'],
+    [/\bFerneinschaetzung\b/g, 'Ferneinschätzung'],
+    [/\bRueckfragen\b/g, 'Rückfragen'],
+    [/\bRueckbau\b/g, 'Rückbau'],
+    [/\bLeuchtkaesten\b/g, 'Leuchtkästen'],
+    [/\bGelaende\b/g, 'Gelände'],
+    [/\bAutohaeuser\b/g, 'Autohäuser'],
+    [/\bLuecken\b/g, 'Lücken'],
+    [/\bgroessen\b/g, 'größen'],
+    [/\bgroesste\b/g, 'größte'],
+    [/\bgrossen\b/g, 'großen'],
+    [/\bHaende\b/g, 'Hände'],
+    [/\bUeberblick\b/g, 'Überblick'],
+    [/\bunterstuetzt\b/g, 'unterstützt'],
+    [/\bServicevertraege\b/g, 'Serviceverträge'],
+    [/\bTagesgeschaeft\b/g, 'Tagesgeschäft'],
+    [/\blauft\b/g, 'läuft'],
+    [/\blaeuft\b/g, 'läuft'],
+    [/\bAufwaermen\b/g, 'Aufwärmen'],
+    [/\bNeonroehren\b/g, 'Neonröhren'],
+  ];
+
+  for (const [pattern, replacement] of replacements) {
+    text = text.replace(pattern, replacement);
+  }
+
+  const midpoint = Math.floor(text.length / 2);
+  if (text.length > 40 && text.length % 2 === 0 && text.slice(0, midpoint) === text.slice(midpoint)) {
+    text = text.slice(0, midpoint);
+  }
+
+  return text.replace(/\s+/g, ' ').trim();
 }
 
 function getBlockTextList(block: CmsPageBlock, field: string): string[] | undefined {
@@ -680,7 +770,7 @@ function getBlockTextList(block: CmsPageBlock, field: string): string[] | undefi
   }
 
   const items = value
-    .map((item) => (typeof item === 'string' ? item.trim() : ''))
+    .map((item) => (typeof item === 'string' ? sanitizePublicText(item.trim()) : ''))
     .filter(Boolean)
     .slice(0, 6);
 
@@ -699,12 +789,24 @@ function getBlockObjectList(
 
   const items = value.reduce<Record<string, unknown>[]>((acc, item) => {
     if (isPlainObject(item)) {
-      acc.push(item);
+      acc.push(sanitizePublicObject(item));
     }
 
     return acc;
   }, []);
   return items.length > 0 ? items : undefined;
+}
+
+function sanitizePublicObject(item: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(item).map(([key, value]) => {
+      if (typeof value === 'string' && !/href|url|image|asset/i.test(key)) {
+        return [key, sanitizePublicText(value)];
+      }
+
+      return [key, value];
+    })
+  );
 }
 
 async function getCmsMediaFallbacks(urls: Array<string | undefined | null>): Promise<Map<string, string>> {

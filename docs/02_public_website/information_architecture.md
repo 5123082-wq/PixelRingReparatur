@@ -866,4 +866,17 @@ SEO-страницы не должны ломать trust-first UX.
 
 ---
 
+## Progress Log
+
+### 2026-05-04 — DE Production QA Cleanup
+
+- Current sprint/block: external DE audit follow-up for broken links, demo exposure, mixed-language copy, duplicate public content, and crawler-visible defects.
+- Done: added legacy redirects for `/[locale]/services/[slug]` to `/[locale]/leistungen` and `/[locale]/contact` to `/#kontakt`; blocked portal demo in `NODE_ENV=production`; cleaned DE fallback/CMS seed copy for mixed RU/DE and EN strings; normalized CMS text output for common DE transliteration, missing spaces after periods, test alt text, and known dirty production snippets; removed tripled DOM rendering from homepage excellence/reviews carousels; localized hardcoded DE business audit labels; added code-owned legal fallback so stale published CMS rows with `TMG/NVKV` no longer render on Impressum/Datenschutzerklärung.
+- In progress: ready for deploy and external production re-audit.
+- Next action: deploy the application, run the same QA links against `https://www.pixel-ring.com/de`, and clean any remaining DB-only CMS rows if the production database still contains old published content.
+- Blockers/risks: runtime sanitizer protects current dirty CMS output, but production CMS rows should still be reviewed manually in `/ring-master-config` after deploy.
+- Updated documents: `PROGRESS.md`, `docs/02_public_website/information_architecture.md`.
+
+---
+
 Конец документа 2.

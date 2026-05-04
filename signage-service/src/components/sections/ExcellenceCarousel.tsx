@@ -33,9 +33,9 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
   }));
 
   const itemsCount = items.length;
-  const tripledItems = [...items, ...items, ...items];
+  const carouselItems = items;
   
-  const [virtualIndex, setVirtualIndex] = useState(itemsCount);
+  const [virtualIndex, setVirtualIndex] = useState(0);
   const [isReady, setIsReady] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -54,15 +54,11 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
     const el = scrollRef.current;
     if (!el) return;
 
-    // Use actual card width for start position
-    const cardWidth = getCardWidth(el);
-    const startPos = itemsCount * cardWidth;
-    
-    el.scrollLeft = isRTL ? -startPos : startPos;
+    el.scrollLeft = 0;
     const readyFrame = window.requestAnimationFrame(() => setIsReady(true));
 
     return () => window.cancelAnimationFrame(readyFrame);
-  }, [isRTL, itemsCount]);
+  }, [isRTL]);
 
   const handleInfiniteScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -70,23 +66,7 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
 
     const scrollPos = Math.abs(el.scrollLeft);
     const cardWidth = getCardWidth(el);
-    const totalSetWidth = itemsCount * cardWidth;
-    
-    // Boundary Jump Logic
-    if (scrollPos < cardWidth * 0.5) {
-      el.scrollTo({
-        left: isRTL ? -(totalSetWidth + scrollPos) : (totalSetWidth + scrollPos),
-        behavior: 'instant'
-      });
-    } 
-    else if (scrollPos > totalSetWidth * 2 - cardWidth * 0.5) {
-      el.scrollTo({
-        left: isRTL ? -(scrollPos - totalSetWidth) : (scrollPos - totalSetWidth),
-        behavior: 'instant'
-      });
-    }
-
-    const currentVirtual = Math.round(scrollPos / cardWidth);
+    const currentVirtual = Math.min(itemsCount - 1, Math.max(0, Math.round(scrollPos / cardWidth)));
     setVirtualIndex(currentVirtual);
   }, [isRTL, itemsCount, isReady]);
 
@@ -114,7 +94,7 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
   const next = () => scrollToVirtualIndex(virtualIndex + 1);
   const prev = () => scrollToVirtualIndex(virtualIndex - 1);
 
-  const activeItemIndex = virtualIndex % itemsCount;
+  const activeItemIndex = itemsCount > 0 ? virtualIndex % itemsCount : 0;
 
   // Drag to scroll handlers
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -216,7 +196,7 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
           `}
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {tripledItems.map((item, index) => (
+          {carouselItems.map((item, index) => (
             <div
               key={`${index}-${item.title}`}
               data-card

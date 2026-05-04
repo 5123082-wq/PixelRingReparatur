@@ -12,8 +12,8 @@
   },
   "Nav": {
     "services": "Leistungen",
-    "solutions": "Probleme & Loesungen",
-    "for_business": "Fuer Unternehmen",
+    "solutions": "Probleme & Lösungen",
+    "for_business": "Für Unternehmen",
     "references": "Referenzen",
     "about": "Über uns",
     "account_status": "Kundenkonto & Status",
@@ -355,7 +355,7 @@
     "connect_label": "SCHNELLER KONTAKT ÜBER MESSENGER",
     "write_us": "Schreiben Sie uns",
     "form_title": "Anfrage senden",
-    "form_subtitle": "Describe your task, and we'll get back to you within 15 minutes."
+    "form_subtitle": "Beschreiben Sie Ihre Aufgabe. Wir melden uns in der Regel innerhalb von 15 Minuten."
   },
   "Reviews": {
     "title": "Kundenerfahrungen",

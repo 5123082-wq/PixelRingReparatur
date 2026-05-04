@@ -2,16 +2,12 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import TextSection from '@/components/sections/TextSection';
 import { getGlobalPageCmsContent, getPublishedCmsPage } from '@/lib/cms/pages';
+import {
+  CODE_OWNED_LEGAL_CONTENT,
+  LEGAL_NOTICE_BY_LOCALE,
+  containsStaleLegalContent,
+} from '@/lib/legal-content';
 import { getTranslations } from 'next-intl/server';
-
-const LEGAL_NOTICE_BY_LOCALE: Record<string, string> = {
-  de: 'Dieses Dokument ist rechtlich bindend in seiner deutschen Fassung.',
-  en: 'This document is legally binding in its German version. The original German text is shown below.',
-  ru: 'Этот документ имеет юридическую силу только в немецкой версии. Ниже показан оригинальный немецкий текст.',
-  tr: 'Bu belge yalnizca Almanca surumunde hukuken baglayicidir. Asagida orijinal Almanca metin gosterilmektedir.',
-  pl: 'Ten dokument jest prawnie wiazacy wylacznie w wersji niemieckiej. Ponizej pokazano oryginalny tekst niemiecki.',
-  ar: 'هذا المستند ملزم قانونيا فقط بنسخته الالمانية. يعرض ادناه النص الالماني الاصلي.',
-};
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -27,7 +23,6 @@ export default async function ImpressumPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'Footer' });
   const legalNotice = LEGAL_NOTICE_BY_LOCALE[locale] ?? LEGAL_NOTICE_BY_LOCALE.en;
   
   const [globalCms, legalCms] = await Promise.all([
@@ -35,6 +30,12 @@ export default async function ImpressumPage({
     // Fetch only German content for legal documents
     getPublishedCmsPage('impressum', 'de'),
   ]);
+  const cmsText = legalCms?.blocks
+    ?.map((block) => `${String(block.title ?? '')}\n${String(block.description ?? '')}`)
+    .join('\n') ?? '';
+  const legalBlocks = legalCms?.blocks ?? [];
+  const useCmsLegalContent = legalBlocks.length > 0 && !containsStaleLegalContent(cmsText);
+  const fallbackContent = CODE_OWNED_LEGAL_CONTENT.impressum;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F7F1E8]">
@@ -46,8 +47,8 @@ export default async function ImpressumPage({
            </div>
         </div>
         
-        {legalCms?.blocks && legalCms.blocks.length > 0 ? (
-          legalCms.blocks.map((block) => {
+        {useCmsLegalContent ? (
+          legalBlocks.map((block) => {
             if (block.type === 'textSection') {
               return <TextSection key={block.key} content={{ 
                 title: block.title as string, 
@@ -57,12 +58,7 @@ export default async function ImpressumPage({
             return null;
           })
         ) : (
-          <section className="py-24 px-6 sm:px-10 bg-white">
-            <div className="max-w-4xl mx-auto text-center">
-              <h1 className="text-4xl font-bold mb-4">{t('impressum')}</h1>
-              <p className="text-gray-500">Inhalt wird im CMS gepflegt.</p>
-            </div>
-          </section>
+          <TextSection content={fallbackContent} />
         )}
       </main>
       <Footer content={globalCms?.footer} />

@@ -98,14 +98,14 @@ type SolutionsContent = {
 
 const CONTENT: Record<Locale, SolutionsContent> = {
   de: {
-    metaTitle: 'Probleme mit Werbeanlagen? Typische Schaeden & Loesungen | PixelRing',
+    metaTitle: 'Probleme mit Werbeanlagen? Typische Schäden & Lösungen | PixelRing',
     metaDescription:
-      'Typische Probleme mit Werbeanlagen, LED-Schildern, Leuchtkaesten, Folien und Beschriftungen erkennen und direkt eine PixelRing Anfrage starten.',
-    badge: 'Probleme & Loesungen',
-    heroTitle: 'Typische Probleme mit Werbeanlagen erkennen und richtig loesen',
+      'Typische Probleme mit Werbeanlagen, LED-Schildern, Leuchtkästen, Folien und Beschriftungen erkennen und direkt eine PixelRing Anfrage starten.',
+    badge: 'Probleme & Lösungen',
+    heroTitle: 'Typische Probleme mit Werbeanlagen erkennen und richtig lösen',
     heroIntro:
-      'Nicht sicher, ob es Elektrik, LED, Folie, Befestigung oder Witterungsschaden ist? Beschreiben Sie das sichtbare Problem oder senden Sie ein Foto. PixelRing prueft den naechsten sinnvollen Schritt.',
-    heroTrust: 'Eine Anfrage. Klare Einschaetzung. Fachliche Umsetzung durch Spezialisten.',
+      'Nicht sicher, ob es Elektrik, LED, Folie, Befestigung oder Witterungsschaden ist? Beschreiben Sie das sichtbare Problem oder senden Sie ein Foto. PixelRing prüft den nächsten sinnvollen Schritt.',
+    heroTrust: 'Eine Anfrage. Klare Einschätzung. Fachliche Umsetzung durch Spezialisten.',
     primaryCta: 'Problem schildern',
     secondaryCta: 'Foto senden',
     problemTitle: 'Welche Situation passt zu Ihrem Problem?',
@@ -117,8 +117,8 @@ const CONTENT: Record<Locale, SolutionsContent> = {
         id: 'no-light',
         intent: 'sign-not-lighting',
         title: 'Werbeanlage leuchtet nicht',
-        symptom: 'Die Anlage bleibt dunkel oder startet nur unzuverlaessig.',
-        solution: 'PixelRing prueft typische Ursachen wie Stromversorgung, Netzteil, Anschluss, Feuchtigkeit und Steuerung.',
+        symptom: 'Die Anlage bleibt dunkel oder startet nur unzuverlässig.',
+        solution: 'PixelRing prüft typische Ursachen wie Stromversorgung, Netzteil, Anschluss, Feuchtigkeit und Steuerung.',
       },
       {
         id: 'flicker',
@@ -130,9 +130,9 @@ const CONTENT: Record<Locale, SolutionsContent> = {
       {
         id: 'uneven-led',
         intent: 'uneven-led-light',
-        title: 'Ungleichmaessiges Leuchten der LEDs',
+        title: 'Ungleichmäßiges Leuchten der LEDs',
         symptom: 'Einzelne Bereiche sind dunkler, fleckig oder deutlich anders hell.',
-        solution: 'Die Anlage wird auf Module, Zuleitung, Alterung und passende Reparatur- oder Austauschschritte geprueft.',
+        solution: 'Die Anlage wird auf Module, Zuleitung, Alterung und passende Reparatur- oder Austauschschritte geprüft.',
       },
       {
         id: 'letter-out',
@@ -151,15 +151,15 @@ const CONTENT: Record<Locale, SolutionsContent> = {
       {
         id: 'peeling-film',
         intent: 'peeling-film',
-        title: 'Folie an der Schaufensterflaeche hat sich geloest',
-        symptom: 'Beschriftung oder Folie loest sich, wirft Kanten oder haftet nicht mehr sauber.',
-        solution: 'PixelRing prueft Untergrund, Alterung, Haftung und ob Reinigung, Teilersatz oder Neufolierung sinnvoll ist.',
+        title: 'Folie an der Schaufensterflaeche hat sich gelöst',
+        symptom: 'Beschriftung oder Folie löst sich, wirft Kanten oder haftet nicht mehr sauber.',
+        solution: 'PixelRing prüft Untergrund, Alterung, Haftung und ob Reinigung, Teilersatz oder Neufolierung sinnvoll ist.',
       },
       {
         id: 'faded-film',
         intent: 'faded-film',
         title: 'Folie ist ausgeblichen',
-        symptom: 'Farben wirken blass, ungleichmaessig oder nicht mehr markengerecht.',
+        symptom: 'Farben wirken blass, ungleichmäßig oder nicht mehr markengerecht.',
         solution: 'Wir klaeren, ob Auffrischung, Austausch oder ein neuer Branding-Stand sinnvoller ist.',
       },
       {
@@ -167,13 +167,13 @@ const CONTENT: Record<Locale, SolutionsContent> = {
         intent: 'loose-sign',
         title: 'Werbeanlage wackelt',
         symptom: 'Schild, Kasten oder Elemente wirken locker, schief oder unsicher.',
-        solution: 'Das ist ein Sicherheitszeichen. PixelRing klaert Befestigung, Unterkonstruktion und naechste Schritte.',
+        solution: 'Das ist ein Sicherheitszeichen. PixelRing klaert Befestigung, Unterkonstruktion und nächste Schritte.',
       },
       {
         id: 'urgent',
         intent: 'urgent-safety-risk',
         title: 'Dringende Reparatur erforderlich',
-        symptom: 'Brandgeruch, Funken, lose Bauteile, offene Kabel oder Gefahr fuer Passanten.',
+        symptom: 'Brandgeruch, Funken, lose Bauteile, offene Kabel oder Gefahr für Passanten.',
         solution: 'Wenn gefahrlos moeglich, Anlage ausschalten und direkt Kontakt aufnehmen. Keine Selbstreparatur versuchen.',
       },
     ],
@@ -186,20 +186,20 @@ const CONTENT: Record<Locale, SolutionsContent> = {
     metrics: [
       { label: 'Sichtbarkeit', before: 38, after: 86 },
       { label: 'Standortwirkung', before: 44, after: 82 },
-      { label: 'Orientierung fuer Kunden', before: 51, after: 79 },
+      { label: 'Orientierung für Kunden', before: 51, after: 79 },
       { label: 'Ausfallrisiko reduziert', before: 32, after: 74 },
     ],
     urgentTitle: 'Wann ist eine dringende Reparatur noetig?',
     urgentText:
-      'Bei Brandgeruch, Funkenbildung, losen Teilen, offenliegenden Leitungen, Sturmschaeden oder Gefahr fuer Passanten sollte der Fall direkt gemeldet werden.',
+      'Bei Brandgeruch, Funkenbildung, losen Teilen, offenliegenden Leitungen, Sturmschaeden oder Gefahr für Passanten sollte der Fall direkt gemeldet werden.',
     urgentPoints: [
       'Anlage nur ausschalten, wenn das gefahrlos moeglich ist.',
-      'Keine elektrischen Teile oeffnen oder Befestigungen selbst loesen.',
+      'Keine elektrischen Teile oeffnen oder Befestigungen selbst lösen.',
       'Fotos helfen, aber Sicherheit geht vor Dokumentation.',
     ],
     urgentCta: 'Dringenden Fall melden',
     phoneCta: 'Techniker anrufen',
-    assessmentTitle: 'Welche Angaben helfen bei der Einschaetzung?',
+    assessmentTitle: 'Welche Angaben helfen bei der Einschätzung?',
     assessmentIntro:
       'Wenn Sie den Fachbegriff nicht kennen, reicht ein Foto und eine kurze Beschreibung. Diese Angaben helfen besonders:',
     assessmentPoints: [
@@ -207,34 +207,34 @@ const CONTENT: Record<Locale, SolutionsContent> = {
       'kurz, was sich veraendert hat',
       'Adresse, Stadt oder Region',
       'ob die Situation dringend wirkt',
-      'Kontaktweg fuer Rueckfragen',
+      'Kontaktweg für Rückfragen',
     ],
-    seoTitle: 'Typische Schaeden an Werbeanlagen richtig einordnen',
+    seoTitle: 'Typische Schäden an Werbeanlagen richtig einordnen',
     seoParagraphs: [
-      'Werbeanlagen, LED-Schilder und Leuchtkaesten koennen aus sehr unterschiedlichen Gruenden ausfallen. Haeufig geht es um Stromversorgung, Netzteile, Controller, LED-Module, Transformatoren, Feuchtigkeit, Korrosion oder gealterte Anschluesse.',
-      'Auch sichtbare Branding-Probleme wie geloeste Folien, ausgeblichene Beschriftungen, beschaedigte Buchstaben oder lockere Konstruktionsteile wirken sich direkt auf den Standortauftritt aus. Eine erste Fotoeinschaetzung kann helfen, den Umfang einzugrenzen.',
-      'PixelRing ist fuer Berlin und Brandenburg als Kerngebiet ausgerichtet. Weitere Regionen in Deutschland koennen je nach Aufgabe angefragt werden.',
+      'Werbeanlagen, LED-Schilder und Leuchtkästen koennen aus sehr unterschiedlichen Gruenden ausfallen. Haeufig geht es um Stromversorgung, Netzteile, Controller, LED-Module, Transformatoren, Feuchtigkeit, Korrosion oder gealterte Anschluesse.',
+      'Auch sichtbare Branding-Probleme wie geloeste Folien, ausgeblichene Beschriftungen, beschädigte Buchstaben oder lockere Konstruktionsteile wirken sich direkt auf den Standortauftritt aus. Eine erste Fotoeinschaetzung kann helfen, den Umfang einzugrenzen.',
+      'PixelRing ist für Berlin und Brandenburg als Kerngebiet ausgerichtet. Weitere Regionen in Deutschland koennen je nach Aufgabe angefragt werden.',
     ],
-    faqTitle: 'Haeufige Fragen zu Schaeden und Reparatur',
+    faqTitle: 'Haeufige Fragen zu Schäden und Reparatur',
     supportBridge:
       'Weitere Details bleiben im Support Center. Wenn Sie nicht sicher sind, starten Sie direkt mit Foto oder kurzer Beschreibung.',
     faqs: [
       {
         question: 'Muss ich wissen, welche Technik verbaut ist?',
-        answer: 'Nein. Ein sichtbares Problem, Fotos und der Standort reichen fuer die erste Einordnung oft aus.',
+        answer: 'Nein. Ein sichtbares Problem, Fotos und der Standort reichen für die erste Einordnung oft aus.',
       },
       {
         question: 'Kann PixelRing sofort sagen, ob repariert oder ersetzt wird?',
-        answer: 'Eine Empfehlung erfolgt nach Pruefung. Der erste Fokus liegt auf sinnvoller Reparatur und Instandsetzung.',
+        answer: 'Eine Empfehlung erfolgt nach Prüfung. Der erste Fokus liegt auf sinnvoller Reparatur und Instandsetzung.',
       },
       {
-        question: 'Soll ich bei elektrischen Problemen selbst pruefen?',
+        question: 'Soll ich bei elektrischen Problemen selbst prüfen?',
         answer: 'Nein. Schalten Sie nur ab, wenn es gefahrlos moeglich ist, und melden Sie den Fall direkt.',
       },
     ],
     finalTitle: 'Nicht sicher, welches Problem vorliegt?',
     finalText:
-      'Senden Sie uns ein Foto oder beschreiben Sie kurz, was sichtbar ist. PixelRing prueft den Fall und klaert die naechsten sinnvollen Schritte.',
+      'Senden Sie uns ein Foto oder beschreiben Sie kurz, was sichtbar ist. PixelRing prüft den Fall und klaert die nächsten sinnvollen Schritte.',
   },
   en: {
     metaTitle: 'Signage Problems? Common Damage & Solutions | PixelRing',

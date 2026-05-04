@@ -26,44 +26,44 @@ const now = new Date();
 
 const LEISTUNGEN_CONTENT = {
   de: {
-    metaTitle: 'Leistungen fuer Reparatur, Wartung & Werbetechnik | PixelRing',
-    metaDescription: 'PixelRing unterstuetzt Unternehmen bei Reparatur, Diagnose, Montage, Wartung, Lichtwerbung, Branding, Druckprodukten und Servicevertraegen fuer Werbeanlagen.',
+    metaTitle: 'Leistungen für Reparatur, Wartung & Werbetechnik | PixelRing',
+    metaDescription: 'PixelRing unterstützt Unternehmen bei Reparatur, Diagnose, Montage, Wartung, Lichtwerbung, Branding, Druckprodukten und Servicevertraegen für Werbeanlagen.',
     heroSlides: [
-      { id: 'repair', title: 'Reparatur & Diagnose vom Profi', description: 'Ihr Partner fuer Werbeanlagen in Berlin & Brandenburg. Fachliche Pruefung und Umsetzung durch Spezialisten.', image: '/images/leistungen/hero-repair.png', cta: 'Anfrage starten' },
-      { id: 'led', title: 'Moderne Lichtwerbung & LED-Service', description: 'Lichtwerbung, die auffaellt. Wir reparieren LED-Module, Netzteile und Neonroehren fachgerecht.', image: '/images/leistungen/hero-led-natural.png', cta: 'Anfrage starten' },
-      { id: 'maintenance', title: 'Wartung & Sorgenfreier Betrieb', description: 'Servicevertraege fuer Unternehmen mit einem oder mehreren Standorten. Geplante Wartung statt Notfall.', image: '/images/leistungen/hero-maintenance.png', cta: 'Servicevertrag anfragen' },
-      { id: 'branding', title: 'Druck, Folierung & Standort-Branding', description: 'Von Schaufensterbeschriftung bis Werbematerial: klare Markenwirkung fuer Ihren Geschaeftsstandort.', image: '/images/leistungen/hero-branding.png', cta: 'Branding anfragen' }
+      { id: 'repair', title: 'Reparatur & Diagnose vom Profi', description: 'Ihr Partner für Werbeanlagen in Berlin & Brandenburg. Fachliche Prüfung und Umsetzung durch Spezialisten.', image: '/images/leistungen/hero-repair.png', cta: 'Anfrage starten' },
+      { id: 'led', title: 'Moderne Lichtwerbung & LED-Service', description: 'Lichtwerbung, die auffaellt. Wir reparieren LED-Module, Netzteile und Neonröhren fachgerecht.', image: '/images/leistungen/hero-led-natural.png', cta: 'Anfrage starten' },
+      { id: 'maintenance', title: 'Wartung & Sorgenfreier Betrieb', description: 'Serviceverträge für Unternehmen mit einem oder mehreren Standorten. Geplante Wartung statt Notfall.', image: '/images/leistungen/hero-maintenance.png', cta: 'Servicevertrag anfragen' },
+      { id: 'branding', title: 'Druck, Folierung & Standort-Branding', description: 'Von Schaufensterbeschriftung bis Werbematerial: klare Markenwirkung für Ihren Geschäftsstandort.', image: '/images/leistungen/hero-branding.png', cta: 'Branding anfragen' }
     ],
     repairTitle: 'Reparatur, Diagnose und Montage von Werbeanlagen',
-    repairIntro: 'Von der ersten Sichtpruefung bis zur Reparatur, Demontage oder Neuinstallation: PixelRing prueft den Zustand Ihrer Werbeanlage und koordiniert die passenden naechsten Schritte.',
+    repairIntro: 'Von der ersten Sichtprüfung bis zur Reparatur, Demontage oder Neuinstallation: PixelRing prüft den Zustand Ihrer Werbeanlage und koordiniert die passenden nächsten Schritte.',
     repairCards: [
-      { id: 'diagnose', title: 'Diagnose & Vor-Ort-Pruefung', summary: 'Zustand, Ursache und Umfang werden strukturiert aufgenommen.', details: 'Wir pruefen sichtbare Schaeden, Montagepunkte, elektrische Hinweise und Standortbedingungen.' },
-      { id: 'lichtwerbung-led', title: 'Elektrik, Lichtwerbung & LED-Service', summary: 'Service fuer Lichtwerbung, LED-Module, Netzteile, Controller und Neonroehren.', details: 'Bei Leuchtschildern und Lichtanlagen pruefen wir typische Ursachen wie Verkabelung, Stromversorgung, Controller, Transformatoren.' },
-      { id: 'konstruktion-befestigung', title: 'Reparatur von Konstruktion & Befestigung', summary: 'Halterungen, Rahmen, Unterkonstruktionen and Befestigungspunkte im Blick.', details: 'Lose, beschaedigte oder gealterte Konstruktionsteile werden bewertet.' },
+      { id: 'diagnose', title: 'Diagnose & Vor-Ort-Prüfung', summary: 'Zustand, Ursache und Umfang werden strukturiert aufgenommen.', details: 'Wir prüfen sichtbare Schäden, Montagepunkte, elektrische Hinweise und Standortbedingungen.' },
+      { id: 'lichtwerbung-led', title: 'Elektrik, Lichtwerbung & LED-Service', summary: 'Service für Lichtwerbung, LED-Module, Netzteile, Controller und Neonröhren.', details: 'Bei Leuchtschildern und Lichtanlagen prüfen wir typische Ursachen wie Verkabelung, Stromversorgung, Controller, Transformatoren.' },
+      { id: 'konstruktion-befestigung', title: 'Reparatur von Konstruktion & Befestigung', summary: 'Halterungen, Rahmen, Unterkonstruktionen und Befestigungspunkte im Blick.', details: 'Lose, beschädigte oder gealterte Konstruktionsteile werden bewertet.' },
       { id: 'reinigung-pflege', title: 'Reinigung, Pflege & optische Instandsetzung', summary: 'Sichtbarkeit und Erscheinungsbild bestehender Anlagen verbessern.', details: 'Wir klaeren, welche Reinigung, Pflege oder optische Instandsetzung passend ist.' },
-      { id: 'montage-demontage', title: 'Montage, Demontage & Versetzung', summary: 'Koordinierte Umsetzung fuer neue, bestehende oder zu versetzende Anlagen.', details: 'PixelRing koordiniert Montage, Demontage oder Standortwechsel von Werbeanlagen.' },
-      { id: 'ersatzloesung', title: 'Reparatur pruefen - Ersatzloesung nur wenn sinnvoll', summary: 'Ersatz oder Neubau wird erst empfohlen, wenn Reparatur nicht sinnvoll ist.', details: 'Unser erster Fokus liegt auf der Reparatur und sinnvollen Instandsetzung bestehender Werbeanlagen.' }
+      { id: 'montage-demontage', title: 'Montage, Demontage & Versetzung', summary: 'Koordinierte Umsetzung für neue, bestehende oder zu versetzende Anlagen.', details: 'PixelRing koordiniert Montage, Demontage oder Standortwechsel von Werbeanlagen.' },
+      { id: 'ersatzloesung', title: 'Reparatur prüfen - Ersatzloesung nur wenn sinnvoll', summary: 'Ersatz oder Neubau wird erst empfohlen, wenn Reparatur nicht sinnvoll ist.', details: 'Unser erster Fokus liegt auf der Reparatur und sinnvollen Instandsetzung bestehender Werbeanlagen.' }
     ],
     repairFocus: 'Unser erster Fokus liegt auf der Reparatur und sinnvollen Instandsetzung bestehender Werbeanlagen.',
-    brandingTitle: 'Druckprodukte, Branding und Werbematerialien fuer Geschaeftsstandorte',
-    brandingIntro: 'PixelRing unterstuetzt Unternehmen auch bei der laufenden Versorgung mit Werbematerialien - von Druckdaten und Gestaltung bis zu Folien, Bannern, Postern und Standort-Branding.',
+    brandingTitle: 'Druckprodukte, Branding und Werbematerialien für Geschäftsstandorte',
+    brandingIntro: 'PixelRing unterstützt Unternehmen auch bei der laufenden Versorgung mit Werbematerialien - von Druckdaten und Gestaltung bis zu Folien, Bannern, Postern und Standort-Branding.',
     brandingCards: [
-      { id: 'design', title: 'Design & Druckdaten', text: 'Aufbereitung, Anpassung und Abstimmung von Druckdaten fuer Standort- und Werbematerialien.' },
-      { id: 'druckprodukte', title: 'Druckprodukte & Werbemittel', text: 'Poster, Banner, Aufkleber, Hinweisschilder und weitere Materialien fuer den laufenden Bedarf.' },
-      { id: 'folierung', title: 'Folierung & Beschriftung', text: 'Beschriftungen, Folien und sichtbare Markenelemente fuer Flaechen, Fenster und Standorte.' },
-      { id: 'filialen', title: 'Versorgung von Filialen & Standorten', text: 'Koordinierte Materialversorgung fuer Unternehmen mit einem oder mehreren Standorten.' }
+      { id: 'design', title: 'Design & Druckdaten', text: 'Aufbereitung, Anpassung und Abstimmung von Druckdaten für Standort- und Werbematerialien.' },
+      { id: 'druckprodukte', title: 'Druckprodukte & Werbemittel', text: 'Poster, Banner, Aufkleber, Hinweisschilder und weitere Materialien für den laufenden Bedarf.' },
+      { id: 'folierung', title: 'Folierung & Beschriftung', text: 'Beschriftungen, Folien und sichtbare Markenelemente für Flächen, Fenster und Standorte.' },
+      { id: 'filialen', title: 'Versorgung von Filialen & Standorten', text: 'Koordinierte Materialversorgung für Unternehmen mit einem oder mehreren Standorten.' }
     ],
-    maintenanceTitle: 'Wartung & Servicevertraege',
-    maintenanceSubline: 'Mit einem Servicevertrag uebernimmt PixelRing die regelmaessige Pruefung, Wartung und Betreuung Ihrer Werbeanlagen.',
-    maintenanceBenefits: ['Weniger Aufwand im Tagesgeschaeft', 'Geplante Wartung statt Notfall', 'Geeignet fuer Filialen', 'Zentrale Koordination'],
+    maintenanceTitle: 'Wartung & Serviceverträge',
+    maintenanceSubline: 'Mit einem Servicevertrag uebernimmt PixelRing die regelmäßige Prüfung, Wartung und Betreuung Ihrer Werbeanlagen.',
+    maintenanceBenefits: ['Weniger Aufwand im Tagesgeschäft', 'Geplante Wartung statt Notfall', 'Geeignet für Filialen', 'Zentrale Koordination'],
     maintenanceDiscount: 'Bis zu 20% Vorteil auf Werbematerialien bei Servicevertrag.',
     serviceContractCta: 'Servicevertrag anfragen',
     auditCta: 'Audit anfragen',
-    processTitle: 'So laeuft Ihre Anfrage ab',
+    processTitle: 'So läuft Ihre Anfrage ab',
     processSteps: [
-      { id: 'send', title: 'Anfrage senden', text: 'Beschreiben Sie die Aufgabe и загрузите фото.' },
-      { id: 'scope', title: 'Pruefung des Umfangs', text: 'PixelRing prueft, ob Ferneinschaetzung reicht.' },
-      { id: 'recommendation', title: 'Empfehlung erhalten', text: 'Reparatur, Wartung, Ersatz или Neubau.' },
+      { id: 'send', title: 'Anfrage senden', text: 'Beschreiben Sie die Aufgabe und laden Sie bei Bedarf ein Foto hoch.' },
+      { id: 'scope', title: 'Prüfung des Umfangs', text: 'PixelRing prüft, ob Ferneinschätzung reicht.' },
+      { id: 'recommendation', title: 'Empfehlung erhalten', text: 'Reparatur, Wartung, Ersatz oder Neubau.' },
       { id: 'offer', title: 'Angebot & Freigabe', text: 'Bedingungen werden vor Beauftragung abgestimmt.' },
       { id: 'execution', title: 'Koordination & Umsetzung', text: 'Umsetzung durch Fachteam und Partner.' }
     ],
@@ -75,7 +75,7 @@ const LEISTUNGEN_CONTENT = {
       'Zentrale Koordination'
     ],
     finalHeadline: 'Nicht sicher?',
-    finalText: 'Senden Sie uns eine Beschreibung. Wir pruefen den Umfang.'
+    finalText: 'Senden Sie uns eine Beschreibung. Wir prüfen den Umfang.'
   },
   en: {
     metaTitle: 'Services for Repair, Maintenance & Signage | PixelRing',
@@ -185,38 +185,38 @@ const LEISTUNGEN_CONTENT = {
 
 const BUSINESS_CONTENT = {
   de: {
-    metaTitle: 'B2B Service & Wartung fuer Werbeanlagen | PixelRing',
-    metaDescription: 'Komplexer Service und Wartung fuer Geschaeftskunden. Restaurants, Retail und Netzwerke. Alles aus einer Hand mit eigenem Kundenportal.',
-    heroTitle: 'Komplexer Service fuer Ihre Standorte',
-    heroIntro: 'Professionelle Betreuung Ihrer Werbeanlagen, Leuchtreklamen und Printmedien. Wir loesen die Probleme an Ihren Verkaufsstellen, bevor sie Ihren Kunden auffallen.',
-    heroCta: 'Geschaeftskunden-Anfrage',
+    metaTitle: 'B2B Service & Wartung für Werbeanlagen | PixelRing',
+    metaDescription: 'Komplexer Service und Wartung für Geschäftskunden. Restaurants, Retail und Netzwerke. Alles aus einer Hand mit eigenem Kundenportal.',
+    heroTitle: 'Komplexer Service für Ihre Standorte',
+    heroIntro: 'Professionelle Betreuung Ihrer Werbeanlagen, Leuchtreklamen und Printmedien. Wir lösen die Probleme an Ihren Verkaufsstellen, bevor sie Ihren Kunden auffallen.',
+    heroCta: 'Geschäftskunden-Anfrage',
     heroImage: '/images/business/hero.png',
-    targetTitle: 'Fuer jede Unternehmensgroesse',
-    targetIntro: 'Egal ob einzelner Standort oder Filialnetzwerk: Wir schliessen Ihre Luecken im Rahmen eines umfassenden Servicevertrags.',
+    targetTitle: 'Für jede Unternehmensgroesse',
+    targetIntro: 'Egal ob einzelner Standort oder Filialnetzwerk: Wir schliessen Ihre Lücken im Rahmen eines umfassenden Servicevertrags.',
     targetGroups: [
-      { id: 'restaurants', title: 'Gastronomie & Restaurants', description: 'Reparatur von Neon, Leuchtkaesten, Austausch von zerrissenen oder schmutzigen Speisekarten und Postern.' },
+      { id: 'restaurants', title: 'Gastronomie & Restaurants', description: 'Reparatur von Neon, Leuchtkästen, Austausch von zerrissenen oder schmutzigen Speisekarten und Postern.' },
       { id: 'salons', title: 'Beauty & Salons', description: 'Pflege und Wartung von Schaufensterbeschriftungen und eleganten Leuchtschildern.' },
-      { id: 'dealers', title: 'Autohaeuser', description: 'Wartung von grossen Pylonen, Fassadenschildern und Signaletik auf dem Gelaende.' },
-      { id: 'retail', title: 'Filialisten & Retail', description: 'Standardisierte Prozesse und SLAs fuer ein konsistentes Markenbild an allen Standorten.' }
+      { id: 'dealers', title: 'Autohäuser', description: 'Wartung von großen Pylonen, Fassadenschildern und Signaletik auf dem Gelände.' },
+      { id: 'retail', title: 'Filialisten & Retail', description: 'Standardisierte Prozesse und SLAs für ein konsistentes Markenbild an allen Standorten.' }
     ],
     auditTitle: 'Servicevertrag & Regelmaessiges Audit',
-    auditIntro: 'Volle Betreuung und Erhalt der Funktionsfaehigkeit aller Werbeanlagen.',
+    auditIntro: 'Volle Betreuung und Erhalt der Funktionsfähigkeit aller Werbeanlagen.',
     auditBenefits: [
-      { id: 'a1', title: 'Regelmaessige Inspektion', description: 'Wir pruefen proaktiv den Zustand der Lichtwerbung und Printmaterialien vor Ort.' },
+      { id: 'a1', title: 'Regelmäßige Inspektion', description: 'Wir prüfen proaktiv den Zustand der Lichtwerbung und Printmaterialien vor Ort.' },
       { id: 'a2', title: 'Markenkonsistenz', description: 'Zerrissene Poster, veraltete Speisekarten oder schmutzige Aufkleber werden erkannt und erneuert.' },
       { id: 'a3', title: 'Planbare Kosten', description: 'Feste Service-Raten (Abo-Modell) statt unberechenbarer Einzelreparaturen.' }
     ],
     platformTitle: 'Volle Kontrolle in Ihrem Kundenportal',
-    platformIntro: 'Wir bieten nicht nur Ausfuehrung, sondern auch Transparenz. Mit einem Klick haben Sie den kompletten Ueberblick.',
+    platformIntro: 'Wir bieten nicht nur Ausfuehrung, sondern auch Transparenz. Mit einem Klick haben Sie den kompletten Überblick.',
     platformBenefits: [
       { id: 'p1', title: 'Echtzeit-Tracking', description: 'Verfolgen Sie jeden Auftrag von der Meldung bis zur Fertigstellung.' },
       { id: 'p2', title: 'Umfassender Audit-Report', description: 'Detaillierte Berichte ueber den Zustand jedes Standortes.' },
       { id: 'p3', title: 'Ein zentraler Ansprechpartner', description: 'Koordination aus einer Quelle.' }
     ],
     trustTitle: 'Verantwortung & Koordination',
-    trustIntro: 'Geben Sie die Verantwortung fuer Ihre sichtbare Marke in die Haende von Spezialisten.',
-    finalHeadline: 'Bereit fuer einen reibungslosen Betriebsablauf?',
-    finalText: 'Kontaktieren Sie uns fuer ein individuelles Service-Audit Ihrer Standorte.',
+    trustIntro: 'Geben Sie die Verantwortung für Ihre sichtbare Marke in die Hände von Spezialisten.',
+    finalHeadline: 'Bereit für einen reibungslosen Betriebsablauf?',
+    finalText: 'Kontaktieren Sie uns für ein individuelles Service-Audit Ihrer Standorte.',
     finalCta: 'Service-Paket anfragen'
   },
   en: {
@@ -293,49 +293,49 @@ const BUSINESS_CONTENT = {
 
 const PROBLEME_CONTENT = {
   de: {
-    metaTitle: 'Probleme mit Werbeanlagen? Typische Schaeden & Loesungen | PixelRing',
-    metaDescription: 'Typische Probleme mit Werbeanlagen, LED-Schildern, Leuchtkaesten, Folien und Beschriftungen erkennen и direkt eine PixelRing Anfrage starten.',
-    badge: 'Probleme & Loesungen',
-    heroTitle: 'Typische Probleme mit Werbeanlagen erkennen und richtig loesen',
-    heroIntro: 'Nicht sicher, ob es Elektrik, LED, Folie, Befestigung oder Witterungsschaden ist? Beschreiben Sie das sichtbare Problem или senden Sie ein Foto. PixelRing prueft den naechsten sinnvollen Schritt.',
-    heroTrust: 'Eine Anfrage. Klare Einschaetzung. Fachliche Umsetzung durch Spezialisten.',
+    metaTitle: 'Probleme mit Werbeanlagen? Typische Schäden & Lösungen | PixelRing',
+    metaDescription: 'Typische Probleme mit Werbeanlagen, LED-Schildern, Leuchtkästen, Folien und Beschriftungen erkennen и direkt eine PixelRing Anfrage starten.',
+    badge: 'Probleme & Lösungen',
+    heroTitle: 'Typische Probleme mit Werbeanlagen erkennen und richtig lösen',
+    heroIntro: 'Nicht sicher, ob es Elektrik, LED, Folie, Befestigung oder Witterungsschaden ist? Beschreiben Sie das sichtbare Problem или senden Sie ein Foto. PixelRing prüft den nächsten sinnvollen Schritt.',
+    heroTrust: 'Eine Anfrage. Klare Einschätzung. Fachliche Umsetzung durch Spezialisten.',
     primaryCta: 'Problem schildern',
     secondaryCta: 'Foto senden',
     problemTitle: 'Welche Situation passt zu Ihrem Problem?',
     problemIntro: 'Waehlen Sie den sichtbaren Zustand. Die erste Einordnung hilft, die Anfrage schneller und genauer anzugehen.',
     problemCta: 'Dazu Anfrage senden',
     problems: [
-      { id: 'no-light', intent: 'sign-not-lighting', title: 'Werbeanlage leuchtet nicht', symptom: 'Die Anlage bleibt dunkel oder startet nur unzuverlaessig.', solution: 'PixelRing prueft typische Ursachen wie Stromversorgung, Netzteil, Anschluss, Feuchtigkeit und Steuerung.' },
+      { id: 'no-light', intent: 'sign-not-lighting', title: 'Werbeanlage leuchtet nicht', symptom: 'Die Anlage bleibt dunkel oder startet nur unzuverlässig.', solution: 'PixelRing prüft typische Ursachen wie Stromversorgung, Netzteil, Anschluss, Feuchtigkeit und Steuerung.' },
       { id: 'flicker', intent: 'flickering-light', title: 'Werbeanlage flackert', symptom: 'Das Licht wirkt instabil, flackert oder faellt kurzzeitig aus.', solution: 'Wir klaeren, ob LED-Module, Netzteile, Controller, Kontakte oder Feuchtigkeit eine Rolle spielen.' },
-      { id: 'uneven-led', intent: 'uneven-led-light', title: 'Ungleichmaessiges Leuchten der LEDs', symptom: 'Einzelne Bereiche sind dunkler, fleckig oder deutlich anders hell.', solution: 'Die Anlage wird auf Module, Zuleitung, Alterung und passende Reparatur- oder Austauschschritte geprueft.' },
+      { id: 'uneven-led', intent: 'uneven-led-light', title: 'Ungleichmäßiges Leuchten der LEDs', symptom: 'Einzelne Bereiche sind dunkler, fleckig oder deutlich anders hell.', solution: 'Die Anlage wird auf Module, Zuleitung, Alterung und passende Reparatur- oder Austauschschritte geprüft.' },
       { id: 'letter-out', intent: 'letter-not-lighting', title: 'Ein einzelner Buchstabe leuchtet nicht', symptom: 'Nur ein Teil der Beschriftung oder ein Buchstabe ist ausgefallen.', solution: 'PixelRing grenzt lokale Ursachen ein: Modul, Anschluss, Verdrahtung oder Elementzustand.' },
       { id: 'rain-fail', intent: 'rain-failure', title: 'Werbeanlage schaltet nach Regen ab', symptom: 'Nach Regen oder Feuchtigkeit kommt es zu Ausfall, Flackern oder Abschaltung.', solution: 'Wir behandeln das als Hinweis auf Feuchtigkeit, Abdichtung, Korrosion oder elektrische Schutzabschaltung.' },
-      { id: 'peeling-film', intent: 'peeling-film', title: 'Folie an der Schaufensterflaeche hat sich geloest', symptom: 'Beschriftung oder Folie loest sich, wirft Kanten oder haftet nicht mehr sauber.', solution: 'PixelRing prueft Untergrund, Alterung, Haftung und ob Reinigung, Teilersatz oder Neufolierung sinnvoll ist.' }
+      { id: 'peeling-film', intent: 'peeling-film', title: 'Folie an der Schaufensterflaeche hat sich gelöst', symptom: 'Beschriftung oder Folie löst sich, wirft Kanten oder haftet nicht mehr sauber.', solution: 'PixelRing prüft Untergrund, Alterung, Haftung und ob Reinigung, Teilersatz oder Neufolierung sinnvoll ist.' }
     ],
     impactTitle: 'Was sich nach der Behebung verbessern kann',
     impactIntro: 'Die Werte sind keine Garantie, sondern zeigen typische Effekte, wenn sichtbare Defekte fachlich eingegrenzt und behoben werden.',
     metrics: [
       { label: 'Sichtbarkeit', before: 38, after: 86 },
       { label: 'Standortwirkung', before: 44, after: 82 },
-      { label: 'Orientierung fuer Kunden', before: 51, after: 79 },
+      { label: 'Orientierung für Kunden', before: 51, after: 79 },
       { label: 'Ausfallrisiko reduziert', before: 32, after: 74 }
     ],
     urgentTitle: 'Wann ist eine dringende Reparatur noetig?',
-    urgentText: 'Bei Brandgeruch, Funkenbildung, losen Teilen, offenliegenden Leitungen, Sturmschaeden oder Gefahr fuer Passanten sollte der Fall direkt gemeldet werden.',
+    urgentText: 'Bei Brandgeruch, Funkenbildung, losen Teilen, offenliegenden Leitungen, Sturmschaeden oder Gefahr für Passanten sollte der Fall direkt gemeldet werden.',
     urgentPoints: [
       'Anlage nur ausschalten, wenn das gefahrlos moeglich ist.',
-      'Keine elektrischen Teile oeffnen oder Befestigungen selbst loesen.',
+      'Keine elektrischen Teile oeffnen oder Befestigungen selbst lösen.',
       'Fotos helfen, aber Sicherheit geht vor Dokumentation.'
     ],
     urgentCta: 'Dringenden Fall melden',
-    faqTitle: 'Haeufige Fragen zu Schaeden und Reparatur',
+    faqTitle: 'Haeufige Fragen zu Schäden und Reparatur',
     faqs: [
-      { question: 'Muss ich wissen, welche Technik verbaut ist?', answer: 'Nein. Ein sichtbares Problem, Fotos und der Standort reichen fuer die erste Einordnung oft aus.' },
-      { question: 'Kann PixelRing sofort sagen, ob repariert oder ersetzt wird?', answer: 'Eine Empfehlung erfolgt nach Pruefung. Der erste Fokus liegt auf sinnvoller Reparatur und Instandsetzung.' },
-      { question: 'Soll ich bei elektrischen Problemen selbst pruefen?', answer: 'Nein. Schalten Sie nur ab, wenn es gefahrlos moeglich ist, und melden Sie den Fall direkt.' }
+      { question: 'Muss ich wissen, welche Technik verbaut ist?', answer: 'Nein. Ein sichtbares Problem, Fotos und der Standort reichen für die erste Einordnung oft aus.' },
+      { question: 'Kann PixelRing sofort sagen, ob repariert oder ersetzt wird?', answer: 'Eine Empfehlung erfolgt nach Prüfung. Der erste Fokus liegt auf sinnvoller Reparatur und Instandsetzung.' },
+      { question: 'Soll ich bei elektrischen Problemen selbst prüfen?', answer: 'Nein. Schalten Sie nur ab, wenn es gefahrlos moeglich ist, und melden Sie den Fall direkt.' }
     ],
     finalTitle: 'Nicht sicher, welches Problem vorliegt?',
-    finalText: 'Senden Sie uns ein Foto oder beschreiben Sie kurz, was sichtbar ist. PixelRing prueft den Fall und klaert die naechsten sinnvollen Schritte.'
+    finalText: 'Senden Sie uns ein Foto oder beschreiben Sie kurz, was sichtbar ist. PixelRing prüft den Fall und klaert die nächsten sinnvollen Schritte.'
   },
   en: {
     metaTitle: 'Signage Problems? Common Damage & Solutions | PixelRing',
@@ -497,7 +497,7 @@ async function main() {
         { type: 'faqList', key: 'faq', enabled: true, sortOrder: 5, title: p.faqTitle, items: p.faqs },
         { type: 'cta', key: 'final', enabled: true, sortOrder: 6, title: p.finalTitle, description: p.finalText, primaryLabel: p.primaryCta }
       ]);
-      await client.query(upsertSql, [crypto.randomUUID(), 'probleme-loesungen', locale, 'PUBLISHED', 'Probleme & Loesungen', pBlocks, p.metaTitle, p.metaDescription, now, now]);
+      await client.query(upsertSql, [crypto.randomUUID(), 'probleme-loesungen', locale, 'PUBLISHED', 'Probleme & Lösungen', pBlocks, p.metaTitle, p.metaDescription, now, now]);
 
       console.log(`✅ ${locale.toUpperCase()} synced.`);
     }

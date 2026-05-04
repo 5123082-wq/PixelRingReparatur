@@ -463,12 +463,12 @@ export default async function BusinessPage({
                     <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6">
                       <div className="flex items-center gap-4 mb-4">
                         <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
-                        <span className="text-white font-bold tracking-wide">Audit Complete</span>
+                        <span className="text-white font-bold tracking-wide">Audit abgeschlossen</span>
                       </div>
                       <div className="h-2 bg-white/20 rounded-full mb-3 overflow-hidden">
                         <div className="h-full bg-[#B8643E] w-[100%]" />
                       </div>
-                      <p className="text-white/80 text-[14px]">All print materials and signage verified</p>
+                      <p className="text-white/80 text-[14px]">Alle Printmaterialien und Werbeanlagen geprüft</p>
                     </div>
                   </div>
                 </div>

@@ -517,7 +517,7 @@ export function getPortalDemoEmail(): string {
 }
 
 export function isPortalDemoEnabled(): boolean {
-  return process.env.PORTAL_DEMO_ENABLED === 'true';
+  return process.env.NODE_ENV !== 'production' && process.env.PORTAL_DEMO_ENABLED === 'true';
 }
 
 export function getPortalDemoRequestDetail(publicRequestNumber: string) {
