@@ -322,47 +322,47 @@ Recommended near-term priorities:
 
 1. Documentation re-baseline and status sync to current code (admin/security/workflow reality).
 2. Security P0 completion:
-   - route-level object authorization checks;
-   - CSRF coverage review for all admin mutation routes;
-   - attachment access hardening;
-   - session timeout policy review.
+    - route-level object authorization checks;
+    - CSRF coverage review for all admin mutation routes;
+    - attachment access hardening;
+    - session timeout policy review.
 3. Test contour upgrade:
-   - runtime integration tests for high-risk admin routes;
-   - minimum browser E2E smoke for login/publish/unpublish/restore.
-   - keep current static check baseline green (`npm run test:admin-security` and `npm run test:admin-auth`; restored to passing in Stage 1 hotfix run on 2026-04-18).
+    - runtime integration tests for high-risk admin routes;
+    - minimum browser E2E smoke for login/publish/unpublish/restore.
+    - keep current static check baseline green (`npm run test:admin-security` and `npm run test:admin-auth`; restored to passing in Stage 1 hotfix run on 2026-04-18).
 4. Phase 7 workflow expansion:
-   - workflow status model beyond `DRAFT`/`PUBLISHED`;
-   - server-side transition rules and audit reasons.
+    - workflow status model beyond `DRAFT`/`PUBLISHED`;
+    - server-side transition rules and audit reasons.
 5. Editorial flow simplification (owner decision, 2026-04-19):
-   - no signed preview path in the current track;
-   - no scheduled publish/unpublish execution in the current track;
-   - use simple lifecycle: draft -> internal review in admin -> publish (or unpublish).
+    - no signed preview path in the current track;
+    - no scheduled publish/unpublish execution in the current track;
+    - use simple lifecycle: draft -> internal review in admin -> publish (or unpublish).
 6. Assets + Forms hardening:
-   - media governance metadata and usage reporting;
-   - image derivative/optimization pipeline;
-   - scanning/quarantine for upload safety;
-   - configurable request/contact form schemas with server-side validation.
+    - media governance metadata and usage reporting;
+    - image derivative/optimization pipeline;
+    - scanning/quarantine for upload safety;
+    - configurable request/contact form schemas with server-side validation.
 7. Delivery + Integrations hardening:
-   - outbox/event dispatch baseline for publish and operations triggers;
-   - deterministic cache revalidation policy;
-   - adapter boundary for channel/external connectors;
-   - retry/idempotency and failure visibility controls.
+    - outbox/event dispatch baseline for publish and operations triggers;
+    - deterministic cache revalidation policy;
+    - adapter boundary for channel/external connectors;
+    - retry/idempotency and failure visibility controls.
 8. Define customer portal identity before implementation:
-   - individual vs organization accounts;
-   - employees/member roles;
-   - recovery model;
-   - visible request data rules.
+    - individual vs organization accounts;
+    - employees/member roles;
+    - recovery model;
+    - visible request data rules.
 9. Define security baseline before production:
-   - admin identity model;
-   - RBAC;
-   - MFA;
-   - retention/export/deletion;
-   - distributed rate limiting.
+    - admin identity model;
+    - RBAC;
+    - MFA;
+    - retention/export/deletion;
+    - distributed rate limiting.
 10. Enforce hardening + release readiness:
-   - backup/PITR restore drills;
-   - monitoring/alert ownership;
-   - incident response runbooks;
-   - staging/UAT/rollback release gates.
+    - backup/PITR restore drills;
+    - monitoring/alert ownership;
+    - incident response runbooks;
+    - staging/UAT/rollback release gates.
 11. Implement Marketing & Analytics Readiness:
     - Deploy Consent Management Platform (CMP) for GDPR/TTDSG compliance.
     - Integrate Google Analytics 4 and Facebook Pixel with proper consent gating.

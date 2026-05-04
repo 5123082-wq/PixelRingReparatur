@@ -1,14 +1,15 @@
 'use client';
 
 import React from 'react';
+import { SITE_CONFIG } from '@/lib/site-config';
 
 interface MessengerButtonsProps {
   compact?: boolean;
 }
 
 const MessengerButtons = ({ compact = false }: MessengerButtonsProps) => {
-  const whatsappUrl = process.env.NEXT_PUBLIC_WHATSAPP_URL || 'https://wa.me/message/27UOBFWB7UYCN1';
-  const telegramUrl = process.env.NEXT_PUBLIC_TELEGRAM_URL || 'https://t.me/PixelRing_bot';
+  const whatsappUrl = SITE_CONFIG.messengers.whatsapp;
+  const telegramUrl = SITE_CONFIG.messengers.telegram;
 
   if (compact) {
     // Header-style compact icons

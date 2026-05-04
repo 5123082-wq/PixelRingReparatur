@@ -28,6 +28,8 @@ Primary code references for homepage and global UI:
   - Layout, spacing, containers, CTA placement, section order rules.
 - `component_guidelines.md`
   - Component inventory, status, and usage constraints.
+- `premium_elements.md`
+  - Base implementation guidelines for custom high-end visual components (like the Embossed Watermark Stamp).
 - `responsive_accessibility.md`
   - Responsive, localization, RTL, and accessibility verification rules.
 - `change_log.md`

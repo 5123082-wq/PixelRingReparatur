@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import ContactModal from '../common/ContactModal';
 import ChatModal from '../common/ChatModal';
 import CmsImage from '../common/CmsImage';
+import { SITE_CONFIG } from '@/lib/site-config';
 
 type HomeHeroContent = {
   titlePrefix?: string | null;
@@ -22,8 +23,8 @@ const HeroSection = ({ content }: { content?: HomeHeroContent | null }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
 
-  const whatsappUrl = process.env.NEXT_PUBLIC_WHATSAPP_URL || 'https://wa.me/message/27UOBFWB7UYCN1';
-  const telegramUrl = process.env.NEXT_PUBLIC_TELEGRAM_URL || 'https://t.me/PixelRing_bot';
+  const whatsappUrl = SITE_CONFIG.messengers.whatsapp;
+  const telegramUrl = SITE_CONFIG.messengers.telegram;
   const titlePrefix = content?.titlePrefix || '';
   const titleAccent = content?.titleAccent || '';
   const titleSuffix = content?.titleSuffix || '';

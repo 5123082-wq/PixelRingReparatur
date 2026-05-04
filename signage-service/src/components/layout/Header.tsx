@@ -37,7 +37,7 @@ const Header = ({ content }: { content?: HeaderContent | null }) => {
     { name: t('solutions'), href: '/probleme-loesungen' },
     { name: t('for_business'), href: '/business' },
     { name: t('references'), href: '/referenzen' },
-    { name: t('about'), href: '/' },
+    { name: t('about'), href: '/ueber-uns' },
   ];
   const cmsNavLinks = (content?.links || []).map((link) => ({
     name: link.label,
@@ -64,6 +64,10 @@ const Header = ({ content }: { content?: HeaderContent | null }) => {
 
     if (index === 3) {
       return { ...link, name: t('references'), href: '/referenzen' };
+    }
+
+    if (index === 4) {
+      return { ...link, name: t('about'), href: '/ueber-uns' };
     }
 
     return link;

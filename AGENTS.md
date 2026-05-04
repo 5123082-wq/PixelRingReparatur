@@ -134,7 +134,8 @@ If a useful rule should become active, propose extracting it into `docs/12_agent
 - Keep a root-level `PROGRESS.md` as the global short development journal.
 - Agent must read `PROGRESS.md` before starting work.
 - Agent must update `PROGRESS.md` after changes.
-- `PROGRESS.md` should stay short: module + current stage/status only.
+- `PROGRESS.md` should stay short: module + current stage/status only. It is strictly for tracking important high-level changes to understand where the project stands.
+- Do NOT log minor bug fixes, minor refactoring, or routine git commits in `PROGRESS.md`.
 - Detailed notes must go into the domain-specific `Progress Log` section inside the corresponding documentation folder.
 - For every new development track, add or update a `Progress Log` section in the main domain execution document (for example, rollout/plan doc in the touched folder).
 - The `Progress Log` must include at least: date, current sprint/block, done, in progress, next action, blockers/risks, and updated documents.
