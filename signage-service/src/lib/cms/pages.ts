@@ -11,6 +11,7 @@ export const CMS_PAGE_KEYS = [
   'leistungen',
   'business',
   'probleme-loesungen',
+  'about',
 ] as const;
 export const CMS_PAGE_STATUSES = ['DRAFT', 'PUBLISHED'] as const;
 export const SUPPORTED_CMS_LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'] as const;
@@ -930,7 +931,7 @@ export async function getGlobalPageCmsContent(
             companyTitle: footerCompany ? getBlockText(footerCompany, 'title') : undefined,
             copyright: footerLegal ? getBlockText(footerLegal, 'copyright') : undefined,
             serviceLinks: footerServices ? getLinkItems(footerServices, 'items') : undefined,
-            supportLinks: footerSupport ? getLinkItems(footerSupport, 'items') : undefined,
+            supportLinks: footerSupport ? getLinkItems(footerSupport, 'items')?.map(l => l.href === '/support' || l.href === '/support#symptoms' ? { ...l, href: '/probleme-loesungen' } : l) : undefined,
             socialLinks: footerSocial ? getLinkItems(footerSocial, 'items') : undefined,
             legalLinks: footerLegal ? getLinkItems(footerLegal, 'items') : undefined,
             companyLines: footerCompany ? getBlockTextList(footerCompany, 'lines') : undefined,
@@ -1150,7 +1151,6 @@ export async function getLeistungenPageCmsContent(
 
   return content;
 }
-
 export type BusinessHeroCmsContent = {
   title?: string;
   description?: string;
@@ -1301,6 +1301,108 @@ export async function getProblemeLoesungenPageCmsContent(
       primaryLabel: getBlockText(final, 'primaryLabel') ?? getBlockText(final, 'primaryCta'),
     } : undefined,
   };
+
+  return content;
+}
+
+export type AboutPageCmsContent = {
+  hero?: {
+    enabled?: boolean;
+    title?: string;
+    intro?: string;
+    cta?: string;
+    image?: string;
+    imageAlt?: string;
+    fallbackSrc?: string;
+  };
+  mission?: {
+    enabled?: boolean;
+    title?: string;
+    description?: string;
+    items?: CmsListItemContent[];
+  };
+  story?: {
+    enabled?: boolean;
+    title?: string;
+    description?: string;
+    image?: string;
+    imageAlt?: string;
+  };
+  quality?: {
+    enabled?: boolean;
+    title?: string;
+    description?: string;
+    features?: CmsListItemContent[];
+  };
+  stats?: {
+    enabled?: boolean;
+    items?: CmsListItemContent[];
+  };
+  final?: {
+    enabled?: boolean;
+    title?: string;
+    description?: string;
+    button?: string;
+  };
+};
+
+export async function getAboutPageCmsContent(
+  locale: string
+): Promise<AboutPageCmsContent | null> {
+  const page = await getPublishedCmsPage('about', locale);
+  if (!page) return null;
+
+  const hero = getBlock(page, 'hero', ['hero']);
+  const mission = getBlock(page, 'cardList', ['mission']);
+  const story = getBlock(page, 'textSection', ['story']);
+  const quality = getBlock(page, 'cardList', ['quality']);
+  const stats = getBlock(page, 'cardList', ['stats']);
+  const final = getBlock(page, 'cta', ['final']);
+
+  const content: AboutPageCmsContent = {
+    hero: hero ? {
+      enabled: hero.enabled !== false,
+      title: getBlockText(hero, 'title'),
+      intro: getBlockText(hero, 'intro') ?? getBlockText(hero, 'description'),
+      cta: getBlockText(hero, 'cta'),
+      image: getBlockText(hero, 'image') ?? getBlockText(hero, 'assetUrl'),
+      imageAlt: getBlockText(hero, 'imageAlt'),
+    } : undefined,
+    mission: mission ? {
+      enabled: mission.enabled !== false,
+      title: getBlockText(mission, 'title'),
+      description: getBlockText(mission, 'description'),
+      items: getBlockObjectList(mission, 'items'),
+    } : undefined,
+    story: story ? {
+      enabled: story.enabled !== false,
+      title: getBlockText(story, 'title'),
+      description: getBlockText(story, 'description'),
+      image: getBlockText(story, 'image'),
+      imageAlt: getBlockText(story, 'imageAlt'),
+    } : undefined,
+    quality: quality ? {
+      enabled: quality.enabled !== false,
+      title: getBlockText(quality, 'title'),
+      description: getBlockText(quality, 'description'),
+      features: getBlockObjectList(quality, 'features') ?? getBlockObjectList(quality, 'items'),
+    } : undefined,
+    stats: stats ? {
+      enabled: stats.enabled !== false,
+      items: getBlockObjectList(stats, 'items'),
+    } : undefined,
+    final: final ? {
+      enabled: final.enabled !== false,
+      title: getBlockText(final, 'title'),
+      description: getBlockText(final, 'description'),
+      button: getBlockText(final, 'button') ?? getBlockText(final, 'primaryLabel'),
+    } : undefined,
+  };
+
+  if (content.hero?.image) {
+    const fallbacks = await getCmsMediaFallbacks([content.hero.image]);
+    content.hero.fallbackSrc = fallbacks.get(content.hero.image);
+  }
 
   return content;
 }

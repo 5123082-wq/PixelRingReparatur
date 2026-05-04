@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import ContactForm from './ContactForm';
 import Logo from '../common/Logo';
+import { SITE_CONFIG } from '@/lib/site-config';
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -40,8 +41,8 @@ const ContactModal = ({ isOpen, onClose, onOpenChat }: ContactModalProps) => {
 
   if (!isRendered && !isOpen) return null;
 
-  const whatsappUrl = process.env.NEXT_PUBLIC_WHATSAPP_URL || 'https://wa.me/message/27UOBFWB7UYCN1';
-  const telegramUrl = process.env.NEXT_PUBLIC_TELEGRAM_URL || 'https://t.me/PixelRing_bot';
+  const whatsappUrl = SITE_CONFIG.messengers.whatsapp;
+  const telegramUrl = SITE_CONFIG.messengers.telegram;
 
   return (
     <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
@@ -128,7 +129,7 @@ const ContactModal = ({ isOpen, onClose, onOpenChat }: ContactModalProps) => {
 
               {/* Email */}
               <a
-                href="mailto:support@pixelring.de"
+                href={`mailto:${SITE_CONFIG.company.email}`}
                 className="flex-1 sm:w-full h-12 sm:h-auto px-2 sm:px-5 py-3 bg-white/40 hover:bg-white/60 text-[#0E1A2B] border border-black/5 rounded-2xl font-bold flex items-center justify-center sm:justify-start gap-3 transition-all active:scale-[0.98]"
               >
                 <div className="w-6 h-6 flex items-center justify-center bg-black/5 text-[#72665D] rounded-lg">

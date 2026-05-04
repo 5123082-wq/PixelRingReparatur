@@ -3,6 +3,7 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import ContactForm from '../common/ContactForm';
+import { SITE_CONFIG } from '@/lib/site-config';
 
 type FooterCtaContent = {
   title?: string | null;
@@ -15,8 +16,8 @@ type FooterCtaContent = {
 const FooterCTA = ({ content }: { content?: FooterCtaContent | null }) => {
   const t = useTranslations('FooterCTA');
 
-  const whatsappUrl = process.env.NEXT_PUBLIC_WHATSAPP_URL || 'https://wa.me/message/27UOBFWB7UYCN1';
-  const telegramUrl = process.env.NEXT_PUBLIC_TELEGRAM_URL || 'https://t.me/PixelRing_bot';
+  const whatsappUrl = SITE_CONFIG.messengers.whatsapp;
+  const telegramUrl = SITE_CONFIG.messengers.telegram;
 
   return (
     <section className="w-full bg-[#0D1B2A] py-24 px-6 relative overflow-hidden">
