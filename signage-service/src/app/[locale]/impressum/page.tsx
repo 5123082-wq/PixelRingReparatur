@@ -34,7 +34,7 @@ export default async function ImpressumPage({
     ?.map((block) => `${String(block.title ?? '')}\n${String(block.description ?? '')}`)
     .join('\n') ?? '';
   const legalBlocks = legalCms?.blocks ?? [];
-  const useCmsLegalContent = legalBlocks.length > 0 && !containsStaleLegalContent(cmsText);
+  const useCmsLegalContent = legalBlocks.length > 0 && !containsStaleLegalContent('impressum', cmsText);
   const fallbackContent = CODE_OWNED_LEGAL_CONTENT.impressum;
 
   return (

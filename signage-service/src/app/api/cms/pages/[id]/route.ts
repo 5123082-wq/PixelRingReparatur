@@ -324,11 +324,28 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     const nextLocale =
       typeof updates.locale === 'string' ? updates.locale : current.locale;
 
-    if (Array.isArray(updates.blocks)) {
+    const blocksForValidation = Array.isArray(updates.blocks)
+      ? updates.blocks
+      : Array.isArray(current.blocks)
+        ? current.blocks
+        : null;
+
+    if (blocksForValidation) {
       const blockValidationError = validateCmsPageBlocksForPage(
         nextPageKey,
         nextLocale,
-        updates.blocks
+        blocksForValidation,
+        [
+          typeof updates.seoTitle === 'string' || updates.seoTitle === null
+            ? updates.seoTitle as string | null
+            : current.seoTitle,
+          typeof updates.seoDescription === 'string' || updates.seoDescription === null
+            ? updates.seoDescription as string | null
+            : current.seoDescription,
+          typeof updates.canonicalUrl === 'string' || updates.canonicalUrl === null
+            ? updates.canonicalUrl as string | null
+            : current.canonicalUrl,
+        ]
       );
 
       if (blockValidationError) {

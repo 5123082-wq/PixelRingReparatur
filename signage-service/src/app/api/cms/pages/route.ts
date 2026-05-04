@@ -223,7 +223,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid page payload' }, { status: 400 });
     }
 
-    const blockValidationError = validateCmsPageBlocksForPage(pageKey, locale, blocks);
+    const blockValidationError = validateCmsPageBlocksForPage(pageKey, locale, blocks, [
+      seoTitle.value,
+      seoDescription.value,
+      canonicalUrl.value,
+    ]);
 
     if (blockValidationError) {
       return NextResponse.json({ error: blockValidationError }, { status: 400 });

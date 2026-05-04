@@ -92,6 +92,10 @@ Wir behalten uns vor, diese Datenschutzerklärung zu aktualisieren, wenn technis
   },
 };
 
-export function containsStaleLegalContent(value: string): boolean {
-  return /\bTMG\b|NVKV|Ivan Novikov|Dannenwalder Weg 110 13439 Berlin|info@nvkv\.de|DE367887602/i.test(value);
+export function containsStaleLegalContent(pageKey: LegalPageKey, value: string): boolean {
+  if (pageKey === 'privacy') {
+    return /\bTMG\b/i.test(value);
+  }
+
+  return /\bTMG\b|§\s*5\s*TMG|§§\s*8\s*bis\s*10\s*TMG|§\s*7\s*Abs\.?\s*1\s*TMG/i.test(value);
 }

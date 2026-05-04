@@ -117,7 +117,18 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         const blockValidationError = validateCmsPageBlocksForPage(
           current.pageKey as CmsPageKey,
           current.locale,
-          restoreData.blocks
+          restoreData.blocks,
+          [
+            typeof restoreData.seoTitle === 'string' || restoreData.seoTitle === null
+              ? restoreData.seoTitle
+              : current.seoTitle,
+            typeof restoreData.seoDescription === 'string' || restoreData.seoDescription === null
+              ? restoreData.seoDescription
+              : current.seoDescription,
+            typeof restoreData.canonicalUrl === 'string' || restoreData.canonicalUrl === null
+              ? restoreData.canonicalUrl
+              : current.canonicalUrl,
+          ]
         );
 
         if (blockValidationError) {

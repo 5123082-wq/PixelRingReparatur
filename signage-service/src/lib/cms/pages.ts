@@ -1,5 +1,6 @@
 import 'server-only';
 
+import { containsStaleLegalContent } from '@/lib/legal-content';
 import { prisma } from '@/lib/prisma';
 
 export const CMS_PAGE_KEYS = [
@@ -436,7 +437,8 @@ export function normalizeCmsPageBlocks(value: unknown): CmsPageBlock[] | null {
 export function validateCmsPageBlocksForPage(
   pageKey: CmsPageKey,
   locale: string,
-  blocks: CmsPageBlock[]
+  blocks: CmsPageBlock[],
+  metadataText: Array<string | null | undefined> = []
 ): string | null {
   if (pageKey !== 'impressum' && pageKey !== 'privacy') {
     return null;
@@ -463,6 +465,20 @@ export function validateCmsPageBlocksForPage(
 
   if (!description) {
     return 'Legal pages require mainContent description text.';
+  }
+
+  const legalText = [
+    ...metadataText,
+    ...blocks.map((block) =>
+      [
+        typeof block.title === 'string' ? block.title : '',
+        typeof block.description === 'string' ? block.description : '',
+      ].join('\n')
+    ),
+  ].join('\n');
+
+  if (containsStaleLegalContent(pageKey, legalText)) {
+    return 'Legal page contains stale legal content.';
   }
 
   return null;
