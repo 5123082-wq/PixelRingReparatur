@@ -31,10 +31,10 @@ export type ProblemKnowledgeLabels = {
 
 const LABELS: Record<ProblemKnowledgeLocale, ProblemKnowledgeLabels> = {
   de: {
-    answer: 'Kurzantwort fuer den Assistenten',
-    causes: 'Moegliche Ursachen',
-    questions: 'Sichere Rueckfragen',
-    checks: 'Was PixelRing prueft',
+    answer: 'Kurzantwort für den Assistenten',
+    causes: 'Mögliche Ursachen',
+    questions: 'Sichere Rückfragen',
+    checks: 'Was PixelRing prüft',
     warnings: 'Wann es dringend ist',
   },
   en: {

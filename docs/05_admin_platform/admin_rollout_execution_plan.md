@@ -137,6 +137,15 @@ Entries are in **reverse chronological order** — newest entry is always at the
 
 ### Latest Entry
 
+- Date: 2026-05-05
+- Current sprint: References CMS image replacement
+- Current block: Public Website / Page CMS media data repair
+- Done: Generated a new role-based image set for `referenzen` with main-agent and delegated image generation passes covering repaired lightboxes, LED letters, neon contour, storefront film, facade mounting, branch service, and technical repair details. Added project-local generated sources under `signage-service/public/generated/referenzen/`, created new `CmsMedia` records in Blob storage with local fallback files, and rewrote published `CmsPage.blocks` image references for `referenzen` across `de`, `en`, `ru`, `tr`, `pl`, and `ar`. Verified the page now uses 16 unique Blob image URLs, with no remaining Unsplash references and all image URLs returning `200 image/png`.
+- In progress: CMS editor hardening remains separate; `referenzen` still stores media as URL strings in `CmsPage.blocks`, not as strict relations to `CmsMedia`.
+- Next action: When the CMS hardening track reopens, add server/client validation for gallery image fields and fallback-aware rendering for `referenzen` images.
+- Blockers/risks: Direct data repair does not solve the underlying editor weakness: invalid image URLs can still be saved/published unless validation is added.
+- Documents updated in this session: `PROGRESS.md`, `docs/05_admin_platform/admin_rollout_execution_plan.md`
+
 - Date: 2026-04-26
 - Current sprint: CMS admin palette deploy pass
 - Current block: Final visual readability adjustment before deploy

@@ -358,26 +358,23 @@
     "form_subtitle": "Opisz swoje zadanie, a mianowicie skontaktujemy się z Tobą w ciągu 15 minut."
   },
   "Reviews": {
-    "title": "Historie klientów",
-    "subtitle": "Co nasi klienci mówią o doświadczeniu z PixelRing.",
+    "title": "Typowe sprawy serwisowe",
+    "subtitle": "Anonimowe przykłady problemów z reklamą, które PixelRing przyjmuje, sprawdza i koordynuje ze specjalistami.",
     "items": [
       {
-        "name": "Sarah Jenkins",
-        "role": "Kierownik sklepu",
-        "content": "PixelRing uratował naszą witrynę! Szyld LED migotał od tygodni, ale naprawili go w mniej niż 24 godziny. Prawdziwy profesjonalizm.",
-        "rating": 5
+        "name": "Migający szyld LED",
+        "role": "Handel detaliczny i witryny",
+        "content": "Szyld LED wyraźnie miga i pogarsza wygląd witryny. PixelRing zbiera zdjęcia, dane lokalizacji i opis usterki, sprawdza rozsądny kolejny krok oraz koordynuje diagnostykę lub naprawę."
       },
       {
-        "name": "Marcus Thorne",
-        "role": "Architekt",
-        "content": "Dbałość o szczegóły techniczne jest tym, co ich wyróżnia. Naprawa w standardzie cleanroom dla luksusowych szyldów. Gorąco polecam.",
-        "rating": 5
+        "name": "Uszkodzone oznakowanie zewnętrzne",
+        "role": "Gabinety, biura i lokale komercyjne",
+        "content": "Litery, folie lub kasetony świetlne są uszkodzone przez pogodę, remont albo zużycie. PixelRing dokumentuje stan, wyjaśnia materiał i sposób montażu oraz przygotowuje właściwą ścieżkę realizacji."
       },
       {
-        "name": "Elena Kovacs",
-        "role": "Koordynator wydarzeń",
-        "content": "Szybko, przejrzyście i wysoka jakość. 24-miesięczna gwarancja daje nam prawdziwy spokój o nasze instalacje neonowe.",
-        "rating": 5
+        "name": "Montaż po remoncie",
+        "role": "Gastronomia, oddziały i relokacje",
+        "content": "Po remoncie lub przeprowadzce istniejącą reklamę trzeba dostosować, przenieść albo zamontować ponownie. PixelRing łączy zgłoszenie, wymiary i zdjęcia oraz planuje prace z odpowiednimi specjalistami."
       }
     ]
   },

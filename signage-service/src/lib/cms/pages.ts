@@ -13,6 +13,7 @@ export const CMS_PAGE_KEYS = [
   'business',
   'probleme-loesungen',
   'about',
+  'referenzen',
 ] as const;
 export const CMS_PAGE_STATUSES = ['DRAFT', 'PUBLISHED'] as const;
 export const SUPPORTED_CMS_LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'] as const;
@@ -26,6 +27,7 @@ export const CMS_PAGE_BLOCK_TYPES = [
   'footerCta',
   'trustSection',
   'excellence',
+  'labels',
 ] as const;
 
 const DEFAULT_LOCALE = 'de';
@@ -682,7 +684,7 @@ export async function getPublishedCmsPage(
   }
 }
 
-function getBlockText(block: CmsPageBlock, field: string): string | undefined {
+export function getBlockText(block: CmsPageBlock, field: string): string | undefined {
   const value = block[field];
 
   if (typeof value !== 'string' || !value.trim()) {
@@ -778,7 +780,7 @@ function sanitizePublicText(value: string): string {
   return text.replace(/\s+/g, ' ').trim();
 }
 
-function getBlockTextList(block: CmsPageBlock, field: string): string[] | undefined {
+export function getBlockTextList(block: CmsPageBlock, field: string): string[] | undefined {
   const value = block[field];
 
   if (!Array.isArray(value)) {
@@ -793,7 +795,7 @@ function getBlockTextList(block: CmsPageBlock, field: string): string[] | undefi
   return items.length > 0 ? items : undefined;
 }
 
-function getBlockObjectList(
+export function getBlockObjectList(
   block: CmsPageBlock,
   field: string
 ): Record<string, unknown>[] | undefined {
@@ -963,7 +965,7 @@ function getHomeIntakeMethods(
   return methods.length > 0 ? methods : undefined;
 }
 
-function getBlock(
+export function getBlock(
   page: CmsPagePublicContent | null,
   type: CmsPageBlockType,
   keys: string[]

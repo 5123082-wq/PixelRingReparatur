@@ -94,7 +94,7 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
     const cardWidth = el.offsetWidth * 0.92; // Matches w-[92%]
     const currentVirtual = Math.min(reviewsCount - 1, Math.max(0, Math.round(scrollLeft / cardWidth)));
     setVirtualIndex(currentVirtual);
-  }, [isRTL, reviewsCount, isReady]);
+  }, [reviewsCount, isReady]);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -130,22 +130,6 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div className="flex flex-col gap-6">
-            {/* Rating Badge */}
-            <div className="flex items-center gap-3 px-5 py-2.5 bg-white rounded-full w-fit border border-[#E7DDD3] shadow-sm">
-              <div className="flex gap-1 text-[#B8643E]">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[15px] font-bold text-[#0E1A2B]">4.9 / 5.0</span>
-                <span className="w-px h-4 bg-[#E7DDD3]" />
-                <span className="text-[12px] font-bold text-[#B8643E] uppercase tracking-[0.1em]">Google Reviews</span>
-              </div>
-            </div>
-
             <div className="flex flex-col gap-4">
               <h2 className="text-[42px] md:text-[60px] font-bold text-[#0E1A2B] leading-[1.05] tracking-tight">
                 {content?.title || ''}
@@ -161,7 +145,7 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
             <button
               onClick={prev}
               className="w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 border border-[#B8643E] text-[#B8643E] hover:bg-[#B8643E] hover:text-white group"
-              aria-label="Previous review"
+              aria-label="Previous service case"
             >
               <svg className={`w-6 h-6 transition-transform group-active:-translate-x-1 ${isRTL ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
@@ -170,7 +154,7 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
             <button
               onClick={next}
               className="w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 border border-[#B8643E] text-[#B8643E] hover:bg-[#B8643E] hover:text-white group"
-              aria-label="Next review"
+              aria-label="Next service case"
             >
               <svg className={`w-6 h-6 transition-transform group-active:translate-x-1 ${isRTL ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 
 import { adminFetch } from '@/lib/admin-fetch';
@@ -17,7 +17,8 @@ type CmsPageKey =
   | 'privacy'
   | 'leistungen'
   | 'business'
-  | 'probleme-loesungen';
+  | 'probleme-loesungen'
+  | 'referenzen';
 type CmsPageStatus = 'DRAFT' | 'PUBLISHED';
 type CmsPageBlock = Record<string, unknown> & {
   type?: string;
@@ -122,19 +123,21 @@ const PAGE_KEYS: CmsPageKey[] = [
   'leistungen',
   'business',
   'probleme-loesungen',
+  'referenzen',
 ];
 
 /** Fields that are locale-specific text for each known block type.
  *  These MUST match the field names that getHomePageCmsContent / frontend components actually read. */
 const BLOCK_TEXT_FIELDS: Record<string, string[]> = {
-  hero: ['title', 'description', 'cta', 'titlePrefix', 'titleAccent', 'titleSuffix', 'pretitle', 'intro', 'ctaPrimary', 'ctaSecondary', 'trustBadge', 'responseBadge', 'imageAlt'],
+  hero: ['title', 'description', 'cta', 'titlePrefix', 'titleAccent', 'titleSuffix', 'pretitle', 'intro', 'ctaPrimary', 'ctaSecondary', 'trustBadge', 'responseBadge', 'imageAlt', 'badge', 'tags', 'subtitle', 'heroImage1', 'heroImage2', 'heroImage3', 'heroImage4', 'heroImage5'],
   faqList: ['title', 'items'],
-  textSection: ['title', 'description'],
+  textSection: ['title', 'description', 'pretitle'],
   reviewList: ['title', 'subtitle', 'items'],
   cardList: ['title', 'titleStart', 'titleAccent', 'titleEnd', 'subtitle', 'description', 'copyright', 'items', 'steps', 'stats', 'features'],
   cta: ['servicePill', 'bookLabel', 'accountStatusLabel', 'accountStatusHref', 'requestLabel', 'requestHref', 'badge', 'title', 'intro', 'description', 'primaryLabel', 'secondaryLabel', 'links'],
   footerCta: ['title', 'subtitle', 'connectLabel', 'formTitle', 'formSubtitle'],
   excellence: ['title', 'subtitle', 'items'],
+  labels: ['modalProblemLabel', 'modalWorkLabel', 'modalResultLabel', 'modalBeforeLabel', 'modalCta', 'viewerAllLabel', 'viewerCloseLabel'],
 };
 
 /** Structural keys never treated as shared or text — they live at the block root. */
@@ -156,6 +159,25 @@ function toNullable(value: string): string | null {
 
 function isLegalPageKey(pageKey: CmsPageKey): boolean {
   return pageKey === 'impressum' || pageKey === 'privacy';
+}
+
+/** Returns the gallery card variant info for a given item index inside galleryItemsBlock. */
+function getGalleryVariantForIndex(index: number): { variant: string; label: string; emoji: string; size: string; color: string } {
+  if (index < 4) {
+    // Intro pack: items[0]=vertical, items[1..3]=small
+    if (index === 0) return { variant: 'vertical', label: 'Vertical', emoji: '📱', size: '236×440', color: 'text-blue-400 bg-blue-500/10 border-blue-500/20' };
+    return { variant: 'small', label: 'Small', emoji: '⬜', size: '212×212', color: 'text-zinc-400 bg-zinc-500/10 border-zinc-500/20' };
+  }
+  const pos = (index - 4) % 6;
+  switch (pos) {
+    case 0: return { variant: 'large', label: 'Large', emoji: '🟫', size: '440×440', color: 'text-amber-400 bg-amber-500/10 border-amber-500/20' };
+    case 1: return { variant: 'vertical', label: 'Vertical', emoji: '📱', size: '236×440', color: 'text-blue-400 bg-blue-500/10 border-blue-500/20' };
+    case 2:
+    case 3: return { variant: 'small', label: 'Small', emoji: '⬜', size: '212×212', color: 'text-zinc-400 bg-zinc-500/10 border-zinc-500/20' };
+    case 4: return { variant: 'wide', label: 'Wide', emoji: '⬛', size: '692×212', color: 'text-violet-400 bg-violet-500/10 border-violet-500/20' };
+    case 5: return { variant: 'small', label: 'Small', emoji: '⬜', size: '212×212', color: 'text-zinc-400 bg-zinc-500/10 border-zinc-500/20' };
+    default: return { variant: 'small', label: 'Small', emoji: '⬜', size: '212×212', color: 'text-zinc-400 bg-zinc-500/10 border-zinc-500/20' };
+  }
 }
 
 function validateBlocksForSave(
@@ -233,7 +255,7 @@ function normalizeMediaResponse(value: unknown): CmsMedia[] {
 }
 
 function isMediaField(field: string): boolean {
-  return field === 'assetUrl' || field === 'image';
+  return field === 'assetUrl' || field === 'image' || field === 'beforeImage' || field === 'afterImage' || field === 'galleryImage1' || field === 'galleryImage2' || field === 'galleryImage3' || field.startsWith('heroImage');
 }
 
 const NON_CONTENT_ITEM_FIELDS = new Set([
@@ -838,7 +860,11 @@ export default function PagesPage() {
       const block = { ...next[index], texts: { ...next[index].texts } };
 
       // Identify if we are updating a field that should be synchronized across locales
-      const syncedFields = ['primaryHref', 'href', 'url', 'image', 'icon'];
+      const syncedFields = [
+        'primaryHref', 'href', 'url', 'image', 'icon',
+        'beforeImage', 'afterImage', 'galleryImage1', 'galleryImage2', 'galleryImage3',
+        'heroImage1', 'heroImage2', 'heroImage3', 'heroImage4', 'heroImage5'
+      ];
       const isSyncing = syncedFields.some((f) => f in updates);
 
       if (isSyncing) {
@@ -897,7 +923,11 @@ export default function PagesPage() {
         const block = { ...next[blockIndex], texts: { ...next[blockIndex].texts } };
 
         // Identify if we are updating a field that should be synchronized across locales
-        const syncedFields = ['id', 'href', 'image', 'icon'];
+        const syncedFields = [
+          'id', 'href', 'image', 'icon',
+          'beforeImage', 'afterImage', 'galleryImage1', 'galleryImage2', 'galleryImage3',
+          'heroImage1', 'heroImage2', 'heroImage3', 'heroImage4', 'heroImage5'
+        ];
         const isSyncing = syncedFields.some((f) => f in updates);
 
         if (isSyncing) {
@@ -1055,6 +1085,46 @@ export default function PagesPage() {
 
   const MediaFieldEditor = ({ value, onSelect }: { value: string; onSelect: (url: string) => void }) => {
     const [pickerOpen, setPickerOpen] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      setIsUploading(true);
+      try {
+        const formData = new FormData();
+        formData.set('file', file);
+        formData.set('usageType', 'GENERAL');
+        formData.set('title', file.name.split('.')[0] || 'Direct Upload');
+        formData.set('alt', '');
+
+        const response = await adminFetch('/api/cms/media', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}));
+          throw new Error(data.error || 'Upload failed');
+        }
+
+        const data = await response.json();
+        if (data.media?.url) {
+          onSelect(data.media.url);
+          setPickerOpen(false);
+        }
+      } catch (err) {
+        console.error('Direct upload failed:', err);
+        alert(err instanceof Error ? err.message : 'Upload failed');
+      } finally {
+        setIsUploading(false);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      }
+    };
 
     return (
       <div className="space-y-3">
@@ -1069,18 +1139,36 @@ export default function PagesPage() {
                 {value || 'No image selected'}
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => {
-                setPickerOpen((open) => !open);
-                if (mediaItems.length === 0 && !mediaLoading) {
-                  void loadMediaItems();
-                }
-              }}
-              className="h-9 w-full shrink-0 rounded-lg border border-violet-500/20 bg-violet-500/10 px-3 text-[9px] font-black uppercase tracking-widest text-violet-300 hover:bg-violet-500/20 transition-colors xl:w-auto"
-            >
-              {pickerOpen ? 'Close' : value ? 'Change image' : 'Choose image'}
-            </button>
+            <div className="flex gap-2 shrink-0">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                ref={fileInputRef}
+                onChange={handleUpload}
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="h-9 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 text-[9px] font-black uppercase tracking-widest text-cyan-300 hover:bg-cyan-500/20 transition-colors disabled:opacity-50"
+              >
+                {isUploading ? 'Uploading...' : 'Direct Upload'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPickerOpen((open) => !open);
+                  if (mediaItems.length === 0 && !mediaLoading) {
+                    void loadMediaItems();
+                  }
+                }}
+                disabled={isUploading}
+                className="h-9 rounded-lg border border-violet-500/20 bg-violet-500/10 px-3 text-[9px] font-black uppercase tracking-widest text-violet-300 hover:bg-violet-500/20 transition-colors disabled:opacity-50 xl:w-auto w-full"
+              >
+                {pickerOpen ? 'Close Library' : value ? 'Change' : 'Library'}
+              </button>
+            </div>
           </div>
           {pickerOpen ? (
             <div className="mt-3 border-t border-white/[0.04] pt-3">
@@ -1135,8 +1223,8 @@ export default function PagesPage() {
           {mediaLoading ? 'Loading media...' : 'Load media library'}
         </button>
       ) : (
-        <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-          {mediaItems.slice(0, 12).map((media) => (
+        <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 h-64 overflow-y-auto custom-scrollbar pr-2">
+          {mediaItems.slice(0, 48).map((media) => (
             <button
               key={media.id}
               type="button"
@@ -1352,6 +1440,58 @@ export default function PagesPage() {
                           {block.key === 'excellenceSection' ? 'ADD NEW POST' : 'ADD NEW ITEM'}
                         </button>
                       </div>
+
+                      {/* Gallery Layout Preview for galleryItemsBlock */}
+                      {block.key === 'galleryItemsBlock' && v.length > 0 && (
+                        <div className="mb-6 p-5 bg-black/30 border border-white/[0.06] rounded-2xl">
+                          <div className="flex items-center gap-2 mb-4">
+                            <span className="text-[9px] font-black text-amber-400 uppercase tracking-[0.2em]">Gallery Layout Preview</span>
+                            <span className="text-[9px] text-zinc-600">— item shape depends on its position</span>
+                          </div>
+                          {/* Intro pack (items 0-3) */}
+                          <div className="flex items-start gap-1.5 mb-2">
+                            <div className="flex items-center justify-center rounded bg-cyan-500/10 border border-cyan-500/20 text-[8px] font-black text-cyan-400 w-[52px] h-[52px] shrink-0">INTRO</div>
+                            <div className={`flex items-center justify-center rounded border text-[8px] font-black shrink-0 ${v.length > 0 ? 'bg-blue-500/15 border-blue-500/30 text-blue-300' : 'bg-zinc-800/50 border-zinc-700/30 text-zinc-600'}`} style={{width: 28, height: 52}}>①</div>
+                            <div className="flex flex-col gap-1.5 shrink-0">
+                              <div className={`flex items-center justify-center rounded border text-[8px] font-black ${v.length > 1 ? 'bg-zinc-500/15 border-zinc-500/30 text-zinc-300' : 'bg-zinc-800/50 border-zinc-700/30 text-zinc-600'}`} style={{width: 24, height: 24}}>②</div>
+                              <div className={`flex items-center justify-center rounded border text-[8px] font-black ${v.length > 2 ? 'bg-zinc-500/15 border-zinc-500/30 text-zinc-300' : 'bg-zinc-800/50 border-zinc-700/30 text-zinc-600'}`} style={{width: 24, height: 24}}>③</div>
+                            </div>
+                          </div>
+                          <div className="flex items-start gap-1.5 mb-3">
+                            <div className="flex items-center justify-center rounded bg-emerald-500/10 border border-emerald-500/20 text-[8px] font-black text-emerald-400 shrink-0" style={{width: 68, height: 24}}>PROMO</div>
+                            <div className={`flex items-center justify-center rounded border text-[8px] font-black ${v.length > 3 ? 'bg-zinc-500/15 border-zinc-500/30 text-zinc-300' : 'bg-zinc-800/50 border-zinc-700/30 text-zinc-600'}`} style={{width: 24, height: 24}}>④</div>
+                          </div>
+                          {/* Repeating packs (6 items each) */}
+                          {Array.from({ length: Math.ceil(Math.max(0, v.length - 4) / 6) }).map((_, pi) => {
+                            const base = 4 + pi * 6;
+                            return (
+                              <div key={pi} className="mb-3">
+                                <div className="text-[8px] text-zinc-600 font-bold mb-1">Pack {pi + 1}</div>
+                                <div className="flex items-start gap-1.5 mb-1.5">
+                                  <div className={`flex items-center justify-center rounded border text-[8px] font-black shrink-0 ${v.length > base ? 'bg-amber-500/15 border-amber-500/30 text-amber-300' : 'bg-zinc-800/50 border-zinc-700/30 text-zinc-600'}`} style={{width: 52, height: 52}}>⑤</div>
+                                  <div className={`flex items-center justify-center rounded border text-[8px] font-black shrink-0 ${v.length > base + 1 ? 'bg-blue-500/15 border-blue-500/30 text-blue-300' : 'bg-zinc-800/50 border-zinc-700/30 text-zinc-600'}`} style={{width: 28, height: 52}}>⑥</div>
+                                  <div className="flex flex-col gap-1.5 shrink-0">
+                                    <div className={`flex items-center justify-center rounded border text-[8px] font-black ${v.length > base + 2 ? 'bg-zinc-500/15 border-zinc-500/30 text-zinc-300' : 'bg-zinc-800/50 border-zinc-700/30 text-zinc-600'}`} style={{width: 24, height: 24}}>⑦</div>
+                                    <div className={`flex items-center justify-center rounded border text-[8px] font-black ${v.length > base + 3 ? 'bg-zinc-500/15 border-zinc-500/30 text-zinc-300' : 'bg-zinc-800/50 border-zinc-700/30 text-zinc-600'}`} style={{width: 24, height: 24}}>⑧</div>
+                                  </div>
+                                </div>
+                                <div className="flex items-start gap-1.5">
+                                  <div className={`flex items-center justify-center rounded border text-[8px] font-black shrink-0 ${v.length > base + 4 ? 'bg-violet-500/15 border-violet-500/30 text-violet-300' : 'bg-zinc-800/50 border-zinc-700/30 text-zinc-600'}`} style={{width: 68, height: 24}}>⑨</div>
+                                  <div className={`flex items-center justify-center rounded border text-[8px] font-black ${v.length > base + 5 ? 'bg-zinc-500/15 border-zinc-500/30 text-zinc-300' : 'bg-zinc-800/50 border-zinc-700/30 text-zinc-600'}`} style={{width: 24, height: 24}}>⑩</div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                          {/* Legend */}
+                          <div className="mt-3 pt-3 border-t border-white/[0.04] flex flex-wrap gap-3 text-[8px] font-bold">
+                            <span className="text-amber-400">🟫 Large 440×440</span>
+                            <span className="text-blue-400">📱 Vertical 236×440</span>
+                            <span className="text-zinc-400">⬜ Small 212×212</span>
+                            <span className="text-violet-400">⬛ Wide 692×212</span>
+                          </div>
+                        </div>
+                      )}
+
                       <div className="grid grid-cols-1 gap-4">
                         {v.map((item, ii) => {
                           const rawItem = item as Record<string, unknown>;
@@ -1360,6 +1500,8 @@ export default function PagesPage() {
                           const castItem = (rawItem.image !== undefined && rawItem.imageAlt === undefined)
                             ? { ...rawItem, imageAlt: '' }
                             : rawItem;
+
+                          const galleryVariant = block.key === 'galleryItemsBlock' ? getGalleryVariantForIndex(ii) : null;
 
                           return (
                             <div
@@ -1372,6 +1514,16 @@ export default function PagesPage() {
                                 }
                               `}
                             >
+                              {/* Gallery shape badge */}
+                              {galleryVariant && (
+                                <div className="flex items-center gap-2 mb-4">
+                                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[9px] font-black uppercase tracking-widest ${galleryVariant.color}`}>
+                                    {galleryVariant.emoji} {galleryVariant.label}
+                                  </span>
+                                  <span className="text-[9px] font-mono text-zinc-600">{galleryVariant.size}px</span>
+                                  <span className="text-[9px] text-zinc-700">— Item #{ii + 1}{ii >= 4 ? ` (Pack ${Math.floor((ii - 4) / 6) + 1}, pos ${(ii - 4) % 6 + 1})` : ` (Intro, pos ${ii + 1})`}</span>
+                                </div>
+                              )}
                               <button
                                 onClick={() => removeListItem(blockIndex, k, ii)}
                                 className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-red-500/10 text-red-500 rounded-xl opacity-0 group-hover/item:opacity-100 transition-all hover:bg-red-500 hover:text-white z-10"
