@@ -11,6 +11,30 @@ import { findAvailablePublicRequestNumber } from '@/lib/request-number';
 const VALID_STATUSES = Object.values(CaseStatus);
 const VALID_CHANNELS = Object.values(CaseOriginChannel);
 const DEFAULT_PAGE_SIZE = 25;
+const MAX_CASE_CREATE_ATTEMPTS = 25;
+
+function isPublicRequestNumberUniqueConflict(error: unknown): boolean {
+  if (
+    typeof error !== 'object' ||
+    error === null ||
+    !('code' in error) ||
+    (error as { code?: string }).code !== 'P2002'
+  ) {
+    return false;
+  }
+
+  const target = (error as { meta?: { target?: unknown } }).meta?.target;
+
+  if (Array.isArray(target)) {
+    return target.some(
+      (item) =>
+        typeof item === 'string' &&
+        item.toLowerCase().includes('publicrequestnumber')
+    );
+  }
+
+  return typeof target === 'string' && target.toLowerCase().includes('publicrequestnumber');
+}
 
 async function requireCaseReadActor(request: NextRequest) {
   return requireAdminPermissionActor(
@@ -161,79 +185,106 @@ export async function POST(request: NextRequest) {
 
     const now = new Date();
 
-    const publicRequestNumber = await findAvailablePublicRequestNumber(prisma);
+    let createdCase: {
+      id: string;
+      publicRequestNumber: string | null;
+      status: CaseStatus;
+      originChannel: CaseOriginChannel;
+      customerName: string | null;
+      createdAt: Date;
+    } | null = null;
 
-    const createdCase = await prisma.$transaction(async (tx) => {
-      const caseRecord = await tx.case.create({
-        data: {
-          status: CaseStatus.NUMBER_ISSUED,
-          originChannel,
-          customerName: body.customerName?.trim() || null,
-          customerEmail,
-          customerPhone,
-          assignedOperator: body.assignedOperator?.trim() || null,
-          primaryContactMethod,
-          primaryContactValue,
-          summary: body.summary?.trim() || null,
-          description: body.description?.trim() || null,
-          publicRequestNumber,
-          numberIssuedAt: now,
-          formalizedAt: now,
-          statusUpdatedAt: now,
-        },
-        select: {
-          id: true,
-          publicRequestNumber: true,
-          status: true,
-          originChannel: true,
-          customerName: true,
-          createdAt: true,
-        },
-      });
+    for (let attempt = 0; attempt < MAX_CASE_CREATE_ATTEMPTS; attempt += 1) {
+      const publicRequestNumber = await findAvailablePublicRequestNumber(prisma);
 
-      await tx.caseStatusEvent.create({
-        data: {
-          caseId: caseRecord.id,
-          actorSessionId: actor.sessionId,
-          actorRole: actor.role,
-          fromStatus: null,
-          toStatus: CaseStatus.NUMBER_ISSUED,
-          reason: 'Manual CRM case creation',
-          metadata: {
-            originChannel,
-          },
-        },
-      });
+      try {
+        createdCase = await prisma.$transaction(async (tx) => {
+          const caseRecord = await tx.case.create({
+            data: {
+              status: CaseStatus.NUMBER_ISSUED,
+              originChannel,
+              customerName: body.customerName?.trim() || null,
+              customerEmail,
+              customerPhone,
+              assignedOperator: body.assignedOperator?.trim() || null,
+              primaryContactMethod,
+              primaryContactValue,
+              summary: body.summary?.trim() || null,
+              description: body.description?.trim() || null,
+              publicRequestNumber,
+              numberIssuedAt: now,
+              formalizedAt: now,
+              statusUpdatedAt: now,
+            },
+            select: {
+              id: true,
+              publicRequestNumber: true,
+              status: true,
+              originChannel: true,
+              customerName: true,
+              createdAt: true,
+            },
+          });
 
-      const customerProfileId = await syncCaseCustomerProfile(tx, {
-        caseId: caseRecord.id,
-        customerName: body.customerName?.trim() || null,
-        customerEmail,
-        customerPhone,
-        preferredLanguage: null,
-        preferredContactMethod: primaryContactMethod,
-      });
+          await tx.caseStatusEvent.create({
+            data: {
+              caseId: caseRecord.id,
+              actorSessionId: actor.sessionId,
+              actorRole: actor.role,
+              fromStatus: null,
+              toStatus: CaseStatus.NUMBER_ISSUED,
+              reason: 'Manual CRM case creation',
+              metadata: {
+                originChannel,
+              },
+            },
+          });
 
-      await createAdminAuditLog(tx, {
-        actorSessionId: actor.sessionId,
-        actorAdminUserId: actor.adminUserId,
-        actorRole: actor.role,
-        action: 'CASE_CREATED',
-        resourceType: 'CASE',
-        resourceId: caseRecord.id,
-        caseId: caseRecord.id,
-        reason: null,
-        details: {
-          status: CaseStatus.NUMBER_ISSUED,
-          originChannel,
-          customerProfileId,
-        },
-        ipAddress: actor.ipAddress,
-        userAgent: actor.userAgent,
-      });
+          const customerProfileId = await syncCaseCustomerProfile(tx, {
+            caseId: caseRecord.id,
+            customerName: body.customerName?.trim() || null,
+            customerEmail,
+            customerPhone,
+            preferredLanguage: null,
+            preferredContactMethod: primaryContactMethod,
+          });
 
-      return caseRecord;
-    });
+          await createAdminAuditLog(tx, {
+            actorSessionId: actor.sessionId,
+            actorAdminUserId: actor.adminUserId,
+            actorRole: actor.role,
+            action: 'CASE_CREATED',
+            resourceType: 'CASE',
+            resourceId: caseRecord.id,
+            caseId: caseRecord.id,
+            reason: null,
+            details: {
+              status: CaseStatus.NUMBER_ISSUED,
+              originChannel,
+              customerProfileId,
+            },
+            ipAddress: actor.ipAddress,
+            userAgent: actor.userAgent,
+          });
+
+          return caseRecord;
+        });
+
+        break;
+      } catch (error) {
+        if (isPublicRequestNumberUniqueConflict(error)) {
+          continue;
+        }
+
+        throw error;
+      }
+    }
+
+    if (!createdCase) {
+      throw new Error(
+        `Unable to create case with a unique public request number after ${MAX_CASE_CREATE_ATTEMPTS} attempts.`
+      );
+    }
 
     return NextResponse.json({ success: true, case: createdCase }, { status: 201 });
   } catch (error) {

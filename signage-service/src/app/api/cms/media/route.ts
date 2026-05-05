@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { validateAdminCsrf } from '@/lib/admin-csrf';
 import {
-  cleanupLocalCmsMediaUpload,
+  cleanupCmsMediaUpload,
   normalizeCmsMediaAltText,
   normalizeCmsMediaDimensions,
   normalizeCmsMediaLocale,
@@ -280,9 +280,7 @@ export async function POST(request: NextRequest) {
 
     if (isPrismaUniqueError(error)) {
       if (storedMedia) {
-        await cleanupLocalCmsMediaUpload(
-          storedMedia.fallbackStorageKey ?? storedMedia.storageKey
-        ).catch((cleanupError) => {
+        await cleanupCmsMediaUpload(storedMedia).catch((cleanupError) => {
           console.error('Failed to clean up duplicate CMS media upload:', cleanupError);
         });
       }
@@ -316,9 +314,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (storedMedia) {
-      await cleanupLocalCmsMediaUpload(
-        storedMedia.fallbackStorageKey ?? storedMedia.storageKey
-      ).catch((cleanupError) => {
+      await cleanupCmsMediaUpload(storedMedia).catch((cleanupError) => {
         console.error('Failed to clean up orphaned CMS media upload:', cleanupError);
       });
     }

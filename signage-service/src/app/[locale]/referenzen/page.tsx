@@ -3,10 +3,20 @@ import type { Metadata } from 'next';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
 import ReferencesExperience, {
+  type CategoryItem,
+  type GalleryItem,
   type ReferencesContent,
   type ReferenceCase,
+  type ReportRow,
 } from '@/components/references/ReferencesExperience';
-import { getGlobalPageCmsContent } from '@/lib/cms/pages';
+import {
+  type CmsPageBlock,
+  getGlobalPageCmsContent,
+  getPublishedCmsPage,
+  getBlock,
+  getBlockText,
+  getBlockObjectList,
+} from '@/lib/cms/pages';
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
 
@@ -15,7 +25,7 @@ type LocalizedPageContent = Omit<ReferencesContent, 'locale' | 'cases' | 'galler
   metaDescription: string;
 };
 
-const IMAGE_SET = {
+export const IMAGE_SET = {
   lightbox: '/images/ex-lightbox.png',
   led: '/images/leistungen/hero-led.png',
   ledNatural: '/images/leistungen/hero-led-natural.png',
@@ -39,7 +49,7 @@ const IMAGE_SET = {
   generatedCircuitRepair: '/images/references/circuit-repair.webp',
 };
 
-const BASE_CASES: Array<Pick<ReferenceCase, 'id' | 'beforeImage' | 'afterImage' | 'gallery'>> = [
+export const BASE_CASES: Array<Pick<ReferenceCase, 'id' | 'beforeImage' | 'afterImage' | 'gallery'>> = [
   {
     id: 'lightbox-facade',
     beforeImage: IMAGE_SET.beforeGeneral,
@@ -399,7 +409,7 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
   },
 };
 
-const CASE_COPY: Record<Locale, Array<Omit<ReferenceCase, 'beforeImage' | 'afterImage' | 'gallery'>>> = {
+export const CASE_COPY: Record<Locale, Array<Omit<ReferenceCase, 'beforeImage' | 'afterImage' | 'gallery'>>> = {
   de: [
     { id: 'lightbox-facade', title: 'LED-Lightbox an der Fassade', category: 'Leuchtkasten', problem: 'Ein Teil des Lichtfelds blieb dunkel, der Eingang wirkte abends vernachlässigt.', work: 'Stromversorgung geprüft, beschädigte LED-Elemente ersetzt, Innenfläche gereinigt und Helligkeit angeglichen.', result: 'Die Fassade wirkt abends wieder aktiv und gut sichtbar.', defaultText: 'Gleichmäßige Ausleuchtung für bessere Abendwirkung.', beforeText: 'Vorher: dunkle Bereiche und ein sichtbar gealterter Kasten.' },
     { id: 'led-letters', title: 'LED-Buchstaben eines Shops', category: 'LED-Buchstaben', problem: 'Mehrere Buchstaben waren ausgefallen, die Beschriftung wurde falsch gelesen.', work: 'Verbindungen geprüft, defekte Module ersetzt und die Helligkeit mit den Nachbarelementen abgestimmt.', result: 'Der Name ist wieder vollständig lesbar.', defaultText: 'Buchstaben lesen sich wieder als saubere Wortmarke.', beforeText: 'Vorher: einzelne Buchstaben fehlten im Lichtbild.' },
@@ -496,17 +506,18 @@ function getContent(locale: string): ReferencesContent & { metaTitle: string; me
   };
 }
 
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const content = getContent(locale);
+  const page = await getPublishedCmsPage('referenzen', locale);
 
   return {
-    title: content.metaTitle,
-    description: content.metaDescription,
+    title: page?.seoTitle || 'Referenzen | PixelRing',
+    description: page?.seoDescription || '',
     alternates: {
       canonical: `/${locale}/referenzen`,
     },
@@ -519,8 +530,100 @@ export default async function ReferenzenPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const content = getContent(locale);
   const globalCms = await getGlobalPageCmsContent(locale);
+  const page = await getPublishedCmsPage('referenzen', locale);
+
+  // Fallback to static content if CMS page is not found
+  const staticContent = getContent(locale);
+
+  let content = staticContent;
+
+  if (page) {
+    const heroBlock = getBlock(page, 'hero', ['heroBlock', 'hero']);
+    const recentIntroBlock = getBlock(page, 'textSection', ['recentIntroBlock']);
+    const casesBlock = getBlock(page, 'cardList', ['casesBlock', 'cases']);
+    const reportIntroBlock = getBlock(page, 'textSection', ['reportIntroBlock']);
+    const reportsBlock = getBlock(page, 'cardList', ['reportsBlock']);
+    const galleryIntroBlock = getBlock(page, 'textSection', ['galleryIntroBlock']);
+    const galleryItemsBlock = getBlock(page, 'cardList', ['galleryItemsBlock']);
+    const promoBlock = getBlock(page, 'cta', ['promoBlock']);
+    const categoriesIntroBlock = getBlock(page, 'textSection', ['categoriesIntroBlock']);
+    const productCategoriesBlock = getBlock(page, 'cardList', ['productCategoriesBlock']);
+    const typeBandLinesBlock = getBlock(page, 'cardList', ['typeBandLinesBlock']);
+    const finalCtaBlock = getBlock(page, 'cta', ['finalCtaBlock']);
+    const labelsBlock = getBlock(page, 'labels', ['labelsBlock']);
+
+    const safeText = (block: CmsPageBlock | null, field: string) => block ? getBlockText(block, field) : undefined;
+    const safeList = (block: CmsPageBlock | null, field: string) => block ? getBlockObjectList(block, field) : undefined;
+
+    content = {
+      ...staticContent,
+      metaTitle: page.seoTitle || staticContent.metaTitle,
+      metaDescription: page.seoDescription || staticContent.metaDescription,
+
+      badge: safeText(heroBlock, 'badge') || staticContent.badge,
+      heroTitle: safeText(heroBlock, 'title') || staticContent.heroTitle,
+      heroIntro: safeText(heroBlock, 'intro') || staticContent.heroIntro,
+      heroPrimaryCta: safeText(heroBlock, 'ctaPrimary') || staticContent.heroPrimaryCta,
+      heroSecondaryCta: safeText(heroBlock, 'ctaSecondary') || staticContent.heroSecondaryCta,
+      heroTags: safeText(heroBlock, 'tags')?.split('|||') || staticContent.heroTags,
+      heroNoteTitle: safeText(heroBlock, 'subtitle') || staticContent.heroNoteTitle,
+      heroNoteText: safeText(heroBlock, 'description') || staticContent.heroNoteText,
+
+      recentEyebrow: safeText(recentIntroBlock, 'pretitle') || staticContent.recentEyebrow,
+      recentTitle: safeText(recentIntroBlock, 'title') || staticContent.recentTitle,
+      recentIntro: safeText(recentIntroBlock, 'description') || staticContent.recentIntro,
+
+      reportTitle: safeText(reportIntroBlock, 'title') || staticContent.reportTitle,
+      reportIntro: safeText(reportIntroBlock, 'description') || staticContent.reportIntro,
+      reports: (safeList(reportsBlock, 'items')?.map((item, i) => ({ id: item.id || `report-${i}`, ...item })) as ReportRow[] | undefined) || staticContent.reports,
+
+      galleryEyebrow: safeText(galleryIntroBlock, 'pretitle') || staticContent.galleryEyebrow,
+      galleryTitle: safeText(galleryIntroBlock, 'title') || staticContent.galleryTitle,
+      galleryIntro: safeText(galleryIntroBlock, 'description') || staticContent.galleryIntro,
+      galleryItems: (safeList(galleryItemsBlock, 'items')?.map((item, i) => ({ id: item.id || `gallery-${i}`, ...item })) as GalleryItem[] | undefined) || staticContent.galleryItems,
+
+      galleryPromoEyebrow: safeText(promoBlock, 'badge') || staticContent.galleryPromoEyebrow,
+      galleryPromoTitle: safeText(promoBlock, 'title') || staticContent.galleryPromoTitle,
+      galleryPromoText: safeText(promoBlock, 'description') || staticContent.galleryPromoText,
+      galleryPromoCta: safeText(promoBlock, 'primaryLabel') || staticContent.galleryPromoCta,
+      galleryPromoHref: safeText(promoBlock, 'requestHref') || staticContent.galleryPromoHref,
+
+      categoriesTitle: safeText(categoriesIntroBlock, 'title') || staticContent.categoriesTitle,
+      categoriesIntro: safeText(categoriesIntroBlock, 'description') || staticContent.categoriesIntro,
+      productCategories: (safeList(productCategoriesBlock, 'items')?.map((item, i) => ({ id: item.id || `category-${i}`, ...item })) as CategoryItem[] | undefined) || staticContent.productCategories,
+
+      typeBandLines: safeList(typeBandLinesBlock, 'items')?.map(i => i.text as string) || staticContent.typeBandLines,
+
+      finalTitle: safeText(finalCtaBlock, 'title') || staticContent.finalTitle,
+      finalText: safeText(finalCtaBlock, 'description') || staticContent.finalText,
+      finalCta: safeText(finalCtaBlock, 'primaryLabel') || staticContent.finalCta,
+
+      modalProblemLabel: safeText(labelsBlock, 'modalProblemLabel') || staticContent.modalProblemLabel,
+      modalWorkLabel: safeText(labelsBlock, 'modalWorkLabel') || staticContent.modalWorkLabel,
+      modalResultLabel: safeText(labelsBlock, 'modalResultLabel') || staticContent.modalResultLabel,
+      modalBeforeLabel: safeText(labelsBlock, 'modalBeforeLabel') || staticContent.modalBeforeLabel,
+      modalCta: safeText(labelsBlock, 'modalCta') || staticContent.modalCta,
+      viewerAllLabel: safeText(labelsBlock, 'viewerAllLabel') || staticContent.viewerAllLabel,
+      viewerCloseLabel: safeText(labelsBlock, 'viewerCloseLabel') || staticContent.viewerCloseLabel,
+
+      heroSlides: [
+        safeText(heroBlock, 'heroImage1'),
+        safeText(heroBlock, 'heroImage2'),
+        safeText(heroBlock, 'heroImage3'),
+        safeText(heroBlock, 'heroImage4'),
+        safeText(heroBlock, 'heroImage5'),
+      ].filter(Boolean) as string[],
+    };
+
+    const cmsCases = safeList(casesBlock, 'items');
+    if (cmsCases) {
+      content.cases = cmsCases.map((item) => ({
+        ...item,
+        gallery: [item.galleryImage1, item.galleryImage2, item.galleryImage3].filter(Boolean)
+      })) as ReferenceCase[];
+    }
+  }
 
   return (
     <div className={`min-h-screen bg-white ${content.locale === 'ar' ? 'rtl' : 'ltr'}`} dir={content.locale === 'ar' ? 'rtl' : 'ltr'}>

@@ -14,6 +14,7 @@ import { generateChatReply } from '@/lib/ai/chat-engine';
 import { resolveChatSession } from '@/lib/ai/chat-session';
 import {
   AttachmentValidationError,
+  deleteAttachment,
   storeAttachment,
   type StoredAttachmentInput,
 } from '@/lib/attachments';
@@ -352,6 +353,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const ip = getClientIP(request);
   const limit = checkRateLimit(ip, CHAT_MESSAGE_LIMIT);
+  let storedAttachments: StoredAttachmentInput[] = [];
 
   if (!limit.allowed) {
     return NextResponse.json(
@@ -411,7 +413,6 @@ export async function POST(request: NextRequest) {
     }
 
     const { session, cookieToken } = resolved;
-    let storedAttachments: StoredAttachmentInput[] = [];
     if (files.length > 0) {
       storedAttachments = await Promise.all(
         files.map((file) => storeAttachment(file))
@@ -548,6 +549,12 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error) {
+    await Promise.allSettled(
+      storedAttachments.map((attachment) =>
+        deleteAttachment(attachment)
+      )
+    );
+
     console.error('Chat message error:', error);
 
     if (error instanceof AttachmentValidationError) {

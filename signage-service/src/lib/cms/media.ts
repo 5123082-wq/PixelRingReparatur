@@ -3,7 +3,7 @@ import 'server-only';
 import crypto from 'node:crypto';
 import { mkdir, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { put } from '@vercel/blob';
+import { del, put } from '@vercel/blob';
 import type {
   CmsMediaStorageProvider,
   CmsMediaUsageType,
@@ -767,6 +767,43 @@ export async function cleanupLocalCmsMediaUpload(storageKey: string): Promise<vo
     }
 
     throw error;
+  }
+}
+
+export async function cleanupCmsMediaUpload(input: {
+  storageProvider: CmsMediaStorageProvider;
+  storageKey: string;
+  fallbackStorageKey: string | null;
+}): Promise<void> {
+  const errors: unknown[] = [];
+
+  if (input.storageProvider === 'VERCEL_BLOB') {
+    const token = getCmsBlobReadWriteToken();
+
+    if (token) {
+      try {
+        await del(input.storageKey, { token });
+      } catch (error) {
+        errors.push(error);
+      }
+    } else {
+      errors.push(new Error('Missing Vercel Blob read/write token for CMS media cleanup'));
+    }
+  }
+
+  const localStorageKey =
+    input.storageProvider === 'LOCAL' ? input.storageKey : input.fallbackStorageKey;
+
+  if (localStorageKey) {
+    try {
+      await cleanupLocalCmsMediaUpload(localStorageKey);
+    } catch (error) {
+      errors.push(error);
+    }
+  }
+
+  if (errors.length > 0) {
+    throw errors[0];
   }
 }
 

@@ -115,7 +115,6 @@ const Footer = ({ content }: { content?: FooterContent | null }) => {
   // Column 2 — Service & Hilfe (Overriding CMS to match agreed structure)
   const col2Title = tFooter('support_title') || 'Service & Hilfe';
   const col2Links = [
-    { name: tNav('submit_request'), href: '/#how-it-works' },
     { name: tFooter('status_check') || 'Status prüfen', href: '/status' },
     { name: tNav('solutions'), href: '/probleme-loesungen' },
     { name: 'Kundenportal', href: '/portal' },

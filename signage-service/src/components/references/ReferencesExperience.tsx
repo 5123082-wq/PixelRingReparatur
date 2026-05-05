@@ -84,6 +84,7 @@ export type ReferencesContent = {
   cases: ReferenceCase[];
   galleryItems: GalleryItem[];
   productCategories: CategoryItem[];
+  heroSlides?: string[];
 };
 
 type ReferencesExperienceProps = {
@@ -165,11 +166,13 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
 
   const heroSlides = useMemo(
     () =>
-      content.cases
-        .slice(0, 5)
-        .map((item) => item.afterImage)
-        .filter(Boolean),
-    [content.cases]
+      content.heroSlides?.length
+        ? content.heroSlides
+        : content.cases
+            .slice(0, 5)
+            .map((item) => item.afterImage)
+            .filter(Boolean),
+    [content.heroSlides, content.cases]
   );
 
   const activeCase = useMemo(
@@ -178,7 +181,19 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
   );
 
   const photoCategories = useMemo(
-    () => [content.viewerAllLabel, ...Array.from(new Set(content.galleryItems.map((item) => item.category)))],
+    () => [
+      content.viewerAllLabel,
+      ...Array.from(
+        new Set(
+          content.galleryItems
+            .map((item) => item.category?.trim())
+            .filter(
+              (category): category is string =>
+                Boolean(category && category !== content.viewerAllLabel)
+            )
+        )
+      ),
+    ],
     [content.galleryItems, content.viewerAllLabel]
   );
 

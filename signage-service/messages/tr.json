@@ -358,26 +358,23 @@
     "form_subtitle": "Görevinizi açıklayın, 15 dakika içinde size geri döneceğiz."
   },
   "Reviews": {
-    "title": "Müşteri Hikayeleri",
-    "subtitle": "Müşterilerimizin PixelRing deneyimi hakkında söyledikleri.",
+    "title": "Tipik Servis Vakaları",
+    "subtitle": "PixelRing'in kayda aldığı, kontrol ettiği ve uzmanlarla koordine ettiği tabela sorunlarına ait anonimleştirilmiş örnekler.",
     "items": [
       {
-        "name": "Sarah Jenkins",
-        "role": "Perakende Müdürü",
-        "content": "PixelRing vitrinimizi kurtardı! LED tabela haftalardır titriyordu ama 24 saatten kısa sürede düzelttiler. Gerçekten profesyonelce.",
-        "rating": 5
+        "name": "Titreyen LED Tabela",
+        "role": "Perakende ve vitrin markalaması",
+        "content": "Bir LED tabela görünür şekilde titriyor ve vitrinin görünümünü etkiliyor. PixelRing fotoğrafları, konum bilgilerini ve arıza açıklamasını toplar, mantıklı sonraki adımı kontrol eder ve teşhis ya da onarımı koordine eder."
       },
       {
-        "name": "Marcus Thorne",
-        "role": "Mimar",
-        "content": "Teknik detaylara verilen önem onları farklı kılan şeydir. Üst düzey tabelalar için temiz oda standartlarında onarım. Şiddetle tavsiye edilir.",
-        "rating": 5
+        "name": "Hasarlı Dış Mekan Yazısı",
+        "role": "Klinikler, ofisler ve ticari alanlar",
+        "content": "Harfler, folyolar veya ışıklı kutular hava koşulları, tadilat ya da aşınma nedeniyle hasar görmüş olabilir. PixelRing durumu belgeler, malzemeyi ve montaj yolunu netleştirir ve uygun uygulama sürecini hazırlar."
       },
       {
-        "name": "Elena Kovacs",
-        "role": "Etkinlik Koordinatörü",
-        "content": "Hızlı, şeffaf ve yüksek kaliteli. 24 aylık garanti, neon kurulumlarımız için bize gerçek bir huzur veriyor.",
-        "rating": 5
+        "name": "Tadilat Sonrası Montaj",
+        "role": "Gastronomi, şubeler ve taşınmalar",
+        "content": "Tadilat veya taşınma sonrasında mevcut reklamın uyarlanması, yerinin değiştirilmesi ya da yeniden monte edilmesi gerekebilir. PixelRing talebi, ölçüleri ve fotoğrafları bir araya getirir ve işi ilgili uzmanlarla planlar."
       }
     ]
   },

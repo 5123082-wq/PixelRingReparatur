@@ -46,6 +46,33 @@ export type PublicSymptomArticle = {
   sortOrder: number;
 };
 
+export type PublicProblemArticle = PublicSymptomArticle & {
+  publicSlug: string;
+};
+
+export const PROBLEM_ARTICLE_SLUG_BY_CMS_SLUG: Record<string, string> = {
+  'no-light': 'werbeanlage-leuchtet-nicht',
+  'flicking': 'werbeanlage-flackert',
+  'uneven-light': 'led-leuchtet-ungleichmaessig',
+  'letter-out': 'buchstabe-leuchtet-nicht',
+  'rain-fail': 'werbeanlage-schaltet-nach-regen-ab',
+  'peeling-film': 'folie-loest-sich',
+  'faded-film': 'folie-ist-ausgeblichen',
+  'shaky-sign': 'werbeanlage-wackelt',
+  'urgent-repair': 'dringende-reparatur-werbeanlage',
+};
+
+const CMS_SLUG_BY_PROBLEM_ARTICLE_SLUG = Object.fromEntries(
+  Object.entries(PROBLEM_ARTICLE_SLUG_BY_CMS_SLUG).map(([cmsSlug, publicSlug]) => [
+    publicSlug,
+    cmsSlug,
+  ])
+) as Record<string, string>;
+
+export function getProblemArticlePublicSlug(cmsSlug: string): string | null {
+  return PROBLEM_ARTICLE_SLUG_BY_CMS_SLUG[cmsSlug] ?? null;
+}
+
 const AI_CONTEXT_TYPES: CmsArticleType[] = [
   CmsArticleType.SYMPTOM,
   CmsArticleType.FAQ,
@@ -134,4 +161,50 @@ export async function getPublishedSymptomArticles(
   });
 
   return rows;
+}
+
+export async function getPublishedSymptomArticleByPublicSlug(
+  locale: string,
+  publicSlug: string
+): Promise<PublicProblemArticle | null> {
+  const cmsSlug = CMS_SLUG_BY_PROBLEM_ARTICLE_SLUG[publicSlug];
+
+  if (!cmsSlug) {
+    return null;
+  }
+
+  const article = await prisma.cmsArticle.findFirst({
+    where: {
+      locale,
+      type: CmsArticleType.SYMPTOM,
+      status: 'PUBLISHED',
+      deletedAt: null,
+      slug: cmsSlug,
+    },
+    select: {
+      slug: true,
+      title: true,
+      symptomLabel: true,
+      shortAnswer: true,
+      content: true,
+      causes: true,
+      safeChecks: true,
+      urgentWarnings: true,
+      serviceProcess: true,
+      workScopeFactors: true,
+      seoTitle: true,
+      seoDescription: true,
+      canonicalUrl: true,
+      sortOrder: true,
+    },
+  });
+
+  if (!article) {
+    return null;
+  }
+
+  return {
+    ...article,
+    publicSlug,
+  };
 }

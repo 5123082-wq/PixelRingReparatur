@@ -110,6 +110,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
   const [intakeDone, setIntakeDone] = useState(false);
   const [hasChosenLanguage, setHasChosenLanguage] = useState(false);
   const [pendingFiles, setPendingFiles] = useState<AttachmentPreview[]>([]);
+  const [viewportFrame, setViewportFrame] = useState({ height: '100dvh', offsetTop: '0px' });
   const scrollRef = useRef<HTMLDivElement>(null);
   const hasLoadedRef = useRef(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -167,11 +168,81 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
     void loadChatHistory();
   }, [isOpen, isLoadingHistory, loadChatHistory]);
 
+  const scrollToBottom = useCallback(() => {
+    const scrollContainer = scrollRef.current;
+    if (!scrollContainer) return;
+    scrollContainer.scrollTop = scrollContainer.scrollHeight;
+  }, []);
+
+  const scheduleScrollToBottom = useCallback(() => {
+    const frame = window.requestAnimationFrame(scrollToBottom);
+    const delayed = window.setTimeout(scrollToBottom, 250);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(delayed);
+    };
+  }, [scrollToBottom]);
+
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages, isLoadingHistory, isSending, showIntakeCard]);
+    if (!isOpen) return;
+
+    const scrollY = window.scrollY;
+    const { body, documentElement } = document;
+    const previousBodyOverflow = body.style.overflow;
+    const previousBodyPosition = body.style.position;
+    const previousBodyTop = body.style.top;
+    const previousBodyWidth = body.style.width;
+    const previousBodyOverscrollBehavior = body.style.overscrollBehavior;
+    const previousRootOverscrollBehavior = documentElement.style.overscrollBehavior;
+
+    body.style.overflow = 'hidden';
+    body.style.position = 'fixed';
+    body.style.top = `-${scrollY}px`;
+    body.style.width = '100%';
+    body.style.overscrollBehavior = 'none';
+    documentElement.style.overscrollBehavior = 'none';
+
+    return () => {
+      body.style.overflow = previousBodyOverflow;
+      body.style.position = previousBodyPosition;
+      body.style.top = previousBodyTop;
+      body.style.width = previousBodyWidth;
+      body.style.overscrollBehavior = previousBodyOverscrollBehavior;
+      documentElement.style.overscrollBehavior = previousRootOverscrollBehavior;
+      window.scrollTo(0, scrollY);
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const updateViewportFrame = () => {
+      const viewport = window.visualViewport;
+      setViewportFrame({
+        height: `${Math.round(viewport?.height ?? window.innerHeight)}px`,
+        offsetTop: `${Math.round(viewport?.offsetTop ?? 0)}px`,
+      });
+      scrollToBottom();
+    };
+
+    updateViewportFrame();
+    window.visualViewport?.addEventListener('resize', updateViewportFrame);
+    window.visualViewport?.addEventListener('scroll', updateViewportFrame);
+    window.addEventListener('resize', updateViewportFrame);
+
+    return () => {
+      window.visualViewport?.removeEventListener('resize', updateViewportFrame);
+      window.visualViewport?.removeEventListener('scroll', updateViewportFrame);
+      window.removeEventListener('resize', updateViewportFrame);
+      setViewportFrame({ height: '100dvh', offsetTop: '0px' });
+    };
+  }, [isOpen, scrollToBottom]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    return scheduleScrollToBottom();
+  }, [isOpen, messages, isLoadingHistory, isSending, showIntakeCard, viewportFrame.height, scheduleScrollToBottom]);
 
   const handleFiles = (fileList: FileList | null) => {
     if (!fileList) return;
@@ -268,7 +339,10 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
   const showInitialLoading = isLoadingHistory && messages.length === 0;
 
   return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center sm:p-6 transition-all duration-500">
+    <div
+      className="fixed inset-x-0 z-[110] flex items-center justify-center overscroll-none sm:inset-0 sm:p-6 transition-all duration-500"
+      style={{ top: viewportFrame.offsetTop, height: viewportFrame.height }}
+    >
       <div className="absolute inset-0 bg-[#0E1A2B]/40 backdrop-blur-md" onClick={onClose} />
 
       <div className="relative flex h-full sm:h-[750px] w-full sm:max-w-5xl flex-col overflow-hidden sm:rounded-[32px] border-none sm:border border-white/20 bg-[#F7F1E8]/95 shadow-2xl backdrop-blur-3xl">
@@ -294,7 +368,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
         </div>
 
         {/* Messages */}
-        <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto p-4 sm:p-5 scroll-smooth">
+        <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto overscroll-contain p-4 sm:p-5">
           {operatorTakeover && (
             <div className="rounded-[20px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-[13px] text-emerald-900">
               Ein Mitarbeiter hat das Gespräch übernommen.
@@ -407,7 +481,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
         </div>
 
         {/* Input area */}
-        <div className="mt-auto border-t border-black/5 bg-white/80 p-3 sm:p-4">
+        <div className="mt-auto border-t border-black/5 bg-white/80 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:p-4">
           {errorMessage && (
             <p className="mb-3 rounded-[20px] border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700">
               {errorMessage}
@@ -474,6 +548,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
               rows={1}
               value={inputText}
               onChange={e => setInputText(e.target.value)}
+              onFocus={scheduleScrollToBottom}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void handleSend(); } }}
               placeholder="Ihre Nachricht …"
               className="max-h-24 flex-1 resize-none border-none bg-transparent py-2 text-[14px] text-[#0E1A2B] placeholder-[#72665D]/40 focus:ring-0"
