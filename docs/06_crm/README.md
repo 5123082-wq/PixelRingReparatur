@@ -14,6 +14,21 @@ Planned base documents:
 ## Progress Log
 
 ### 2026-05-06
+**CRM Realtime Messaging**
+- **Status**: In progress (Ably live update baseline)
+- **Done**:
+  - Selected Ably Pub/Sub as the managed realtime layer for CRM case updates.
+  - Added a protected CRM token endpoint design so browser clients can subscribe only to authorized case channels.
+  - Added backend realtime event publication points for Telegram intake and CRM case mutations.
+- **In Progress**:
+  - Browser subscription validation on production after deploy.
+- **Next Action**:
+  - Deploy Ably integration and test Telegram inbound messages appearing in open CRM case views without manual refresh.
+- **Blockers/Risks**:
+  - Ably events are notification signals only; the database remains the source of truth and CRM refreshes case data after events.
+- **Updated Documents**: `docs/06_crm/README.md`, `PROGRESS.md`
+
+### 2026-05-06
 **Telegram CRM MVP**
 - **Status**: In progress (implementation baseline added)
 - **Done**:

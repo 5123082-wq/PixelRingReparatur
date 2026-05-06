@@ -1,5 +1,7 @@
 'use client';
 
+import * as Ably from 'ably';
+import type { RealtimeChannel, TokenParams, TokenRequest } from 'ably';
 import { useState, useEffect, use, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -101,10 +103,15 @@ const CHANNEL_ICONS: Record<string, string> = {
 const ACTOR_ROLE_LABELS: Record<string, string> = { CUSTOMER: 'Клиент', OPERATOR: 'Оператор', SYSTEM: 'Система', AI: 'AI' };
 const ACTIVE_TABS: ActiveTab[] = ['client', 'master', 'history'];
 const REPLY_MODES: ReplyMode[] = ['customer', 'internal'];
+const REALTIME_EVENT_NAME = 'case.updated';
 
 function formatStatusLabel(status: string | null | undefined) {
   if (!status) return '—';
   return STATUS_OPTIONS.find((option) => option.value === status)?.label || status;
+}
+
+function getCaseRealtimeChannelName(caseId: string): string {
+  return `private:case:${caseId}`;
 }
 
 export default function CaseDetailPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
@@ -119,6 +126,8 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomAnchorRef = useRef<HTMLDivElement>(null);
   const initialScrollCaseIdRef = useRef<string | null>(null);
+  const realtimeRefreshInFlightRef = useRef(false);
+  const realtimeRefreshQueuedRef = useRef(false);
 
   const [updating, setUpdating] = useState(false);
   const [newStatus, setNewStatus] = useState('');
@@ -132,8 +141,25 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
   const [replyFeedback, setReplyFeedback] = useState('');
   const [issuingPr, setIssuingPr] = useState(false);
 
-  const fetchCase = useCallback(async () => {
-    setLoading(true);
+  const isScrolledNearBottom = useCallback(() => {
+    const el = scrollRef.current;
+
+    if (!el) return true;
+
+    return el.scrollHeight - el.scrollTop - el.clientHeight < 140;
+  }, []);
+
+  const scrollChatToBottom = useCallback(() => {
+    requestAnimationFrame(() => {
+      bottomAnchorRef.current?.scrollIntoView({ block: 'end' });
+    });
+  }, []);
+
+  const fetchCase = useCallback(async (options: { silent?: boolean } = {}) => {
+    if (!options.silent) {
+      setLoading(true);
+    }
+
     try {
       const res = await fetch(`/api/admin/cases/${id}`);
       if (!res.ok) {
@@ -142,18 +168,95 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
       }
       const data = await res.json();
       setCaseData(data.case);
-      setAssignedOperatorDraft(data.case.assignedOperator || '');
-      setNewStatus(data.case.status);
+      if (!options.silent) {
+        setAssignedOperatorDraft(data.case.assignedOperator || '');
+        setNewStatus(data.case.status);
+      }
     } catch {
-      setLoadError('Failed to connect to API');
+      if (!options.silent) {
+        setLoadError('Failed to connect to API');
+      }
     } finally {
-      setLoading(false);
+      if (!options.silent) {
+        setLoading(false);
+      }
     }
   }, [id]);
 
   useEffect(() => {
     fetchCase();
   }, [fetchCase, locale]);
+
+  const refreshCaseFromRealtime = useCallback(async () => {
+    if (realtimeRefreshInFlightRef.current) {
+      realtimeRefreshQueuedRef.current = true;
+      return;
+    }
+
+    realtimeRefreshInFlightRef.current = true;
+    const shouldScrollToBottom = activeTab === 'client' && isScrolledNearBottom();
+
+    try {
+      await fetchCase({ silent: true });
+
+      if (shouldScrollToBottom) {
+        scrollChatToBottom();
+      }
+    } finally {
+      realtimeRefreshInFlightRef.current = false;
+
+      if (realtimeRefreshQueuedRef.current) {
+        realtimeRefreshQueuedRef.current = false;
+        void refreshCaseFromRealtime();
+      }
+    }
+  }, [activeTab, fetchCase, isScrolledNearBottom, scrollChatToBottom]);
+
+  useEffect(() => {
+    let realtime: Ably.Realtime | null = null;
+    let channel: RealtimeChannel | null = null;
+    let isDisposed = false;
+
+    async function connectRealtime() {
+      const nextRealtime = new Ably.Realtime({
+        authCallback: async (_tokenParams: TokenParams, callback) => {
+          try {
+            const res = await adminFetch('/api/admin/realtime/ably-token', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ caseId: id }),
+            });
+
+            if (!res.ok) {
+              throw new Error(`Realtime token request failed (${res.status})`);
+            }
+
+            callback(null, (await res.json()) as TokenRequest);
+          } catch (error) {
+            callback(error instanceof Error ? error.message : 'Realtime auth failed', null);
+          }
+        },
+      });
+
+      realtime = nextRealtime;
+      channel = nextRealtime.channels.get(getCaseRealtimeChannelName(id));
+      await channel.subscribe(REALTIME_EVENT_NAME, () => {
+        if (!isDisposed) {
+          void refreshCaseFromRealtime();
+        }
+      });
+    }
+
+    void connectRealtime().catch((error) => {
+      console.error('CRM realtime connection failed:', error);
+    });
+
+    return () => {
+      isDisposed = true;
+      void channel?.unsubscribe(REALTIME_EVENT_NAME);
+      realtime?.close();
+    };
+  }, [id, refreshCaseFromRealtime]);
 
   async function updateStatus() {
     setUpdating(true);

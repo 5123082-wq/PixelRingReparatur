@@ -12,6 +12,10 @@ import {
   requiresTransitionReason,
 } from '@/lib/case-status-machine';
 import { syncCaseCustomerProfile } from '@/lib/customer-profiles';
+import {
+  publishCaseRealtimeEvent,
+  type CaseRealtimeReason,
+} from '@/lib/realtime';
 import { ensurePublicRequestNumberForCase } from '@/lib/request-number';
 import { sendTelegramMessage } from '@/lib/telegram';
 
@@ -398,6 +402,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     let telegramReplyChatId: string | null = null;
     let telegramPrChatId: string | null = null;
     let issuedPublicRequestNumber: string | null = null;
+    const realtimeReasons = new Set<CaseRealtimeReason>();
 
     await prisma.$transaction(async (tx) => {
       if (hasMessage) {
@@ -430,6 +435,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
         telegramReplyChatId =
           caseRecord.externalConversations[0]?.externalChatId ?? null;
+        realtimeReasons.add('message.created');
       }
 
       if (hasInternalNote) {
@@ -459,6 +465,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           ipAddress: actor.ipAddress,
           userAgent: actor.userAgent,
         });
+        realtimeReasons.add('internal_note.created');
       }
 
       if (takeoverChanged) {
@@ -493,6 +500,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           ipAddress: actor.ipAddress,
           userAgent: actor.userAgent,
         });
+        realtimeReasons.add('takeover.changed');
       }
 
       if (hasPublicRequestNumberIssue) {
@@ -557,6 +565,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
         telegramPrChatId =
           caseRecord.externalConversations[0]?.externalChatId ?? null;
+        realtimeReasons.add('public_request_number.issued');
       }
     });
 
@@ -587,6 +596,14 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         console.error('CRM Telegram PR delivery failed:', error);
       }
     }
+
+    await Promise.all(
+      Array.from(realtimeReasons).map((reason) =>
+        publishCaseRealtimeEvent({ caseId: id, reason }).catch((error) => {
+          console.error('CRM realtime publish failed:', error);
+        })
+      )
+    );
 
     return NextResponse.json({
       success: true,
@@ -868,6 +885,17 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       });
 
       return caseRecord;
+    });
+
+    await publishCaseRealtimeEvent({
+      caseId: id,
+      reason: statusChanged
+        ? 'status.changed'
+        : body.assignedOperator !== undefined
+          ? 'assignment.changed'
+          : 'case.updated',
+    }).catch((error) => {
+      console.error('CRM realtime patch publish failed:', error);
     });
 
     return NextResponse.json({ success: true, case: updated });

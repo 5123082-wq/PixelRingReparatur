@@ -2,6 +2,7 @@ import { CaseOriginChannel, CaseStatus, MessageAuthorRole } from '@prisma/client
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
+import { publishCaseRealtimeEvent } from '@/lib/realtime';
 import {
   extractTelegramMessageBody,
   getTelegramDisplayName,
@@ -196,6 +197,13 @@ export async function POST(request: NextRequest) {
         console.error('Telegram welcome reply failed:', error);
       });
     }
+
+    await publishCaseRealtimeEvent({
+      caseId: result.caseId,
+      reason: 'message.created',
+    }).catch((error) => {
+      console.error('Telegram realtime publish failed:', error);
+    });
 
     return NextResponse.json({ ok: true, caseId: result.caseId });
   } catch (error) {
