@@ -453,7 +453,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const takeoverChanged =
       activeSessionCount > 0 && currentOperatorTakeover !== nextOperatorTakeover;
     const nextCaseAiEnabled =
-      hasMessage || hasPublicRequestNumberIssue
+      hasMessage
         ? false
         : hasAiEnabledUpdate
           ? body?.aiEnabled ?? caseRecord.aiEnabled
@@ -569,9 +569,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           ? null
           : hasMessage
             ? 'operator_message'
-            : hasPublicRequestNumberIssue
-              ? 'public_request_number_issued'
-              : 'manual_toggle';
+            : 'manual_toggle';
 
         await tx.case.update({
           where: { id },
@@ -592,9 +590,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           caseId: id,
           reason: hasMessage
             ? 'Operator message sent'
-            : hasPublicRequestNumberIssue
-              ? 'Public request number issued'
-              : 'Manual AI toggle',
+            : 'Manual AI toggle',
           details: {
             from: caseRecord.aiEnabled,
             to: nextCaseAiEnabled,

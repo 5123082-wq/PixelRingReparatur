@@ -16,6 +16,11 @@ Short global status only. Detailed session notes belong to folder-level `Progres
 
 - Date: 2026-05-06
 - Updated by: Codex
+- **Current Stage**: Telegram AI pause policy adjusted — Issue PR no longer disables AI; customer-visible manager replies pause AI for two hours, with manual re-enable still available.
+- **Next Action**: Deploy and test post-PR Telegram questions plus manager-reply pause/resume behavior.
+
+- Date: 2026-05-06
+- Updated by: Codex
 - **Current Stage**: Telegram PR status link added — manual Issue PR now sends a clickable status-tracking link backed by a case-access session token.
 - **Next Action**: Deploy and validate that tapping the Telegram PR number opens `/status` with safe public status, then continues via HTTP-only case session.
 

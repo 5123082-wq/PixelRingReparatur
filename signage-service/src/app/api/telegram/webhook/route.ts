@@ -15,6 +15,7 @@ import {
 
 const TELEGRAM_SECRET_HEADER = 'x-telegram-bot-api-secret-token';
 const MAX_TELEGRAM_MESSAGE_LENGTH = 4000;
+const OPERATOR_MESSAGE_AI_PAUSE_MS = 2 * 60 * 60 * 1000;
 const SUPPORTED_LOCALES = new Set(['de', 'en', 'ru', 'tr', 'pl', 'ar']);
 
 function buildCaseSummary(body: string): string {
@@ -44,6 +45,25 @@ function normalizeBody(body: string): string {
 
 function hasTextContent(message: TelegramMessage): boolean {
   return Boolean(message.text?.trim() || message.caption?.trim());
+}
+
+function isAutoResumableAiPause(input: {
+  aiEnabled: boolean;
+  aiPausedAt: Date | null;
+  aiPausedReason: string | null;
+  now: Date;
+}): boolean {
+  return (
+    !input.aiEnabled &&
+    (
+      input.aiPausedReason === 'public_request_number_issued' ||
+      (
+        input.aiPausedReason === 'operator_message' &&
+        input.aiPausedAt !== null &&
+        input.now.getTime() - input.aiPausedAt.getTime() >= OPERATOR_MESSAGE_AI_PAUSE_MS
+      )
+    )
+  );
 }
 
 function buildWelcomeText(): string {
@@ -203,6 +223,8 @@ export async function POST(request: NextRequest) {
         select: {
           id: true,
           aiEnabled: true,
+          aiPausedAt: true,
+          aiPausedReason: true,
           locale: true,
           publicRequestNumber: true,
         },
@@ -211,6 +233,8 @@ export async function POST(request: NextRequest) {
       return {
         caseId: caseRecord.id,
         aiEnabled: caseRecord.aiEnabled,
+        aiPausedAt: caseRecord.aiPausedAt,
+        aiPausedReason: caseRecord.aiPausedReason,
         locale: caseRecord.locale,
         publicRequestNumber: caseRecord.publicRequestNumber,
         customerMessageId: customerMessage.id,
@@ -219,8 +243,28 @@ export async function POST(request: NextRequest) {
     });
 
     let assistantReplyText: string | null = null;
+    const aiPauseExpired = isAutoResumableAiPause({
+      aiEnabled: result.aiEnabled,
+      aiPausedAt: result.aiPausedAt,
+      aiPausedReason: result.aiPausedReason,
+      now,
+    });
+    const canAnswerWithAssistant = result.aiEnabled || aiPauseExpired;
 
-    if (canRunAssistant && result.aiEnabled && !result.publicRequestNumber) {
+    if (aiPauseExpired) {
+      await prisma.case.update({
+        where: { id: result.caseId },
+        data: {
+          aiEnabled: true,
+          aiPausedAt: null,
+          aiPausedReason: null,
+        },
+      }).catch((error) => {
+        console.error('Telegram AI auto-resume failed:', error);
+      });
+    }
+
+    if (canRunAssistant && canAnswerWithAssistant) {
       const assistantReply = await runAssistantTurn(prisma, {
         caseId: result.caseId,
         channel: CaseOriginChannel.TELEGRAM,

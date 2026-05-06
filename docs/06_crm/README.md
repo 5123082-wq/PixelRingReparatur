@@ -14,6 +14,22 @@ Planned base documents:
 ## Progress Log
 
 ### 2026-05-06
+**Telegram AI Pause Policy**
+- **Status**: In progress (behavior adjustment implemented)
+- **Done**:
+  - Changed manual Issue PR so it no longer disables case AI.
+  - Kept customer-visible manager replies as the AI pause trigger.
+  - Added automatic AI resume after a two-hour operator-message pause when the next Telegram text arrives.
+  - Kept manual CRM AI toggle for immediate re-enable or disable.
+- **In Progress**:
+  - Production validation of post-PR assistant answers and manager handoff pause behavior.
+- **Next Action**:
+  - Deploy and test a post-PR customer question, then send a manager reply and confirm AI pauses until manual re-enable or timeout.
+- **Blockers/Risks**:
+  - Auto-resume is evaluated on the next Telegram text message, not by a background scheduler.
+- **Updated Documents**: `docs/06_crm/README.md`, `PROGRESS.md`
+
+### 2026-05-06
 **Telegram PR Status Link**
 - **Status**: In progress (implementation baseline added)
 - **Done**:
