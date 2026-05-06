@@ -133,6 +133,9 @@ model Case {
   summary               String?                @db.Text
   description           String?                @db.Text
   locale                String?
+  aiEnabled             Boolean                @default(true)
+  aiPausedAt            DateTime?
+  aiPausedReason        String?
   crmLeadId             String?
   crmCaseId             String?
   numberIssuedAt        DateTime?

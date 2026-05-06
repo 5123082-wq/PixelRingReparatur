@@ -1,6 +1,7 @@
 import { CaseOriginChannel, CaseStatus, MessageAuthorRole } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
+import { runAssistantTurn } from '@/lib/ai/assistant-orchestrator';
 import { prisma } from '@/lib/prisma';
 import { publishCaseRealtimeEvent } from '@/lib/realtime';
 import {
@@ -14,6 +15,7 @@ import {
 
 const TELEGRAM_SECRET_HEADER = 'x-telegram-bot-api-secret-token';
 const MAX_TELEGRAM_MESSAGE_LENGTH = 4000;
+const SUPPORTED_LOCALES = new Set(['de', 'en', 'ru', 'tr', 'pl', 'ar']);
 
 function buildCaseSummary(body: string): string {
   const clean = body.trim().replace(/\s+/g, ' ');
@@ -40,12 +42,22 @@ function normalizeBody(body: string): string {
   return `${normalized.slice(0, MAX_TELEGRAM_MESSAGE_LENGTH - 80)}\n\n[Message truncated by CRM length limit.]`;
 }
 
+function hasTextContent(message: TelegramMessage): boolean {
+  return Boolean(message.text?.trim() || message.caption?.trim());
+}
+
 function buildWelcomeText(): string {
   return [
     'Danke, Ihre Nachricht ist bei PixelRing angekommen.',
     'Ein Manager antwortet hier im Telegram-Chat.',
     'Nach der Klärung der Details erhalten Sie eine PR-Nummer für die weitere Verfolgung.',
   ].join('\n');
+}
+
+function normalizeTelegramLocale(languageCode?: string | null): string {
+  const normalized = languageCode?.trim().toLowerCase().split(/[-_]/)[0] ?? '';
+
+  return SUPPORTED_LOCALES.has(normalized) ? normalized : 'de';
 }
 
 function buildMessageMetadata(message: TelegramMessage) {
@@ -62,6 +74,7 @@ function buildMessageMetadata(message: TelegramMessage) {
     lastName,
     username,
     displayName: getTelegramDisplayName({ firstName, lastName, username }),
+    locale: normalizeTelegramLocale(user?.language_code),
   };
 }
 
@@ -82,6 +95,7 @@ export async function POST(request: NextRequest) {
   const meta = buildMessageMetadata(telegramMessage);
   const externalMessageId = String(telegramMessage.message_id);
   const body = normalizeBody(extractTelegramMessageBody(telegramMessage));
+  const canRunAssistant = hasTextContent(telegramMessage);
   const sentAt = new Date(telegramMessage.date * 1000);
   const now = new Date();
 
@@ -125,6 +139,7 @@ export async function POST(request: NextRequest) {
             primaryContactValue: meta.chatId,
             summary: buildCaseSummary(body),
             description: body,
+            locale: meta.locale,
             statusUpdatedAt: now,
           },
           select: { id: true },
@@ -161,7 +176,7 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      await tx.message.create({
+      const customerMessage = await tx.message.create({
         data: {
           caseId: conversation.caseId,
           channel: CaseOriginChannel.TELEGRAM,
@@ -173,23 +188,65 @@ export async function POST(request: NextRequest) {
           isCustomerVisible: true,
           sentAt,
         },
+        select: {
+          id: true,
+        },
       });
 
-      await tx.case.update({
+      const caseRecord = await tx.case.update({
         where: { id: conversation.caseId },
         data: {
           updatedAt: now,
           summary: buildCaseSummary(body),
+          locale: meta.locale,
+        },
+        select: {
+          id: true,
+          aiEnabled: true,
+          locale: true,
+          publicRequestNumber: true,
         },
       });
 
       return {
-        caseId: conversation.caseId,
+        caseId: caseRecord.id,
+        aiEnabled: caseRecord.aiEnabled,
+        locale: caseRecord.locale,
+        publicRequestNumber: caseRecord.publicRequestNumber,
+        customerMessageId: customerMessage.id,
         createdNewConversation,
       };
     });
 
-    if (result.createdNewConversation) {
+    let assistantReplyText: string | null = null;
+
+    if (canRunAssistant && result.aiEnabled && !result.publicRequestNumber) {
+      const assistantReply = await runAssistantTurn(prisma, {
+        caseId: result.caseId,
+        channel: CaseOriginChannel.TELEGRAM,
+        locale: result.locale,
+        latestMessageId: result.customerMessageId,
+        latestCustomerMessage: body,
+        publicRequestNumber: result.publicRequestNumber,
+        capabilities: [],
+      }).catch((error) => {
+        console.error('Telegram AI assistant turn failed:', error);
+        return null;
+      });
+
+      if (assistantReply?.text) {
+        assistantReplyText = assistantReply.text;
+
+        await sendTelegramMessage({
+          chatId: meta.chatId,
+          text: assistantReply.text,
+        }).catch((error) => {
+          console.error('Telegram AI reply delivery failed:', error);
+        });
+      }
+    }
+
+    if (result.createdNewConversation && !assistantReplyText) {
       await sendTelegramMessage({
         chatId: meta.chatId,
         text: buildWelcomeText(),

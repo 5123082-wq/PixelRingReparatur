@@ -14,6 +14,23 @@ Planned base documents:
 ## Progress Log
 
 ### 2026-05-06
+**Telegram CRM Shared AI Assistant**
+- **Status**: In progress (implementation baseline added)
+- **Done**:
+  - Added case-level AI control fields for external-channel CRM cases.
+  - Connected Telegram webhook intake to the shared AI assistant engine instead of a Telegram-specific assistant.
+  - Persisted AI replies into the same CRM case timeline as customer/operator messages.
+  - Updated CRM case detail AI toggle so Telegram cases use case-level AI control.
+  - Automatically pauses case AI when a manager sends a customer-visible reply or manually issues a PR number.
+- **In Progress**:
+  - Production validation with a real Telegram conversation and manager handoff.
+- **Next Action**:
+  - Deploy migration and validate AI ON, operator reply pause, manual re-enable, and manual PR issue behavior.
+- **Blockers/Risks**:
+  - Telegram file download/storage is still deferred; photo messages remain timeline placeholders.
+- **Updated Documents**: `docs/06_crm/README.md`, `docs/08_ai_assistant/README.md`, `PROGRESS.md`
+
+### 2026-05-06
 **CRM Live Inbox**
 - **Status**: In progress (live inbox baseline)
 - **Done**:

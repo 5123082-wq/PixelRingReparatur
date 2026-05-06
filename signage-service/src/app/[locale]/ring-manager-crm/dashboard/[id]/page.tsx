@@ -22,6 +22,9 @@ type CaseDetail = {
   customerEmail: string | null;
   customerPhone: string | null;
   assignedOperator: string | null;
+  aiEnabled: boolean;
+  aiPausedAt: string | null;
+  aiPausedReason: string | null;
   summary: string | null;
   description: string | null;
   createdAt: string;
@@ -100,7 +103,7 @@ const CHANNEL_ICONS: Record<string, string> = {
   WEBSITE_CHAT: '💬', WEBSITE_FORM: '📝', TELEGRAM: '✈️', WHATSAPP: '📱', PHONE: '📞', EMAIL: '📧', CRM: '🏢', MANUAL: '✋'
 };
 
-const ACTOR_ROLE_LABELS: Record<string, string> = { CUSTOMER: 'Клиент', OPERATOR: 'Оператор', SYSTEM: 'Система', AI: 'AI' };
+const ACTOR_ROLE_LABELS: Record<string, string> = { CUSTOMER: 'Клиент', OPERATOR: 'Оператор', SYSTEM: 'Система' };
 const ACTIVE_TABS: ActiveTab[] = ['client', 'master', 'history'];
 const REPLY_MODES: ReplyMode[] = ['customer', 'internal'];
 const REALTIME_EVENT_NAME = 'case.updated';
@@ -351,11 +354,15 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
     } finally { setUpdatingAssignment(false); }
   }
 
-  async function updateTakeover(nextValue: boolean) {
+  async function updateAiControl(nextEnabled: boolean) {
     try {
+      const payload = caseData?.externalConversations.some((conversation) => conversation.channel === 'TELEGRAM')
+        ? { aiEnabled: nextEnabled }
+        : { operatorTakeover: !nextEnabled };
+
       await adminFetch(`/api/admin/cases/${id}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ operatorTakeover: nextValue }),
+        body: JSON.stringify(payload),
       });
       await fetchCase();
     } catch {}
@@ -387,6 +394,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
   const operatorTakeover = caseData.sessions.some((session) => session.operatorTakeover);
   const hasCustomerSession = caseData.sessions.length > 0;
   const telegramConversation = caseData.externalConversations.find((conversation) => conversation.channel === 'TELEGRAM');
+  const aiAutomationEnabled = telegramConversation ? caseData.aiEnabled : !operatorTakeover;
   const telegramHandle = telegramConversation?.username
     ? `@${telegramConversation.username}`
     : telegramConversation
@@ -586,11 +594,12 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                             const m = event.data;
                             const isNote = event.type === 'note';
                             const isCustomer = m.authorRole === 'CUSTOMER';
+                            const isAiAssistant = m.authorRole === 'SYSTEM' && m.authorName === 'AI Assistant';
                             return (
                               <div key={m.id} className={`flex flex-col ${isCustomer ? 'items-start' : 'items-end'}`}>
                                  <div className={`mb-1 px-1 flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest ${isNote ? 'text-amber-500' : isCustomer ? 'text-zinc-600' : 'text-indigo-400 opacity-80'}`}>
-                                    <span className={`w-1 h-1 rounded-full ${m.authorRole === 'AI' ? 'bg-indigo-400 animate-pulse' : isNote ? 'bg-amber-500' : isCustomer ? 'bg-zinc-700' : 'bg-indigo-500'}`} />
-                                    {isNote ? 'INTERNAL NOTE' : m.authorRole === 'AI' ? 'AI ASSISTANT' : (m.authorName || (isCustomer ? 'CLIENT' : 'OPERATOR'))}
+                                    <span className={`w-1 h-1 rounded-full ${isAiAssistant ? 'bg-indigo-400 animate-pulse' : isNote ? 'bg-amber-500' : isCustomer ? 'bg-zinc-700' : 'bg-indigo-500'}`} />
+                                    {isNote ? 'INTERNAL NOTE' : isAiAssistant ? 'AI ASSISTANT' : (m.authorName || (isCustomer ? 'CLIENT' : 'OPERATOR'))}
                                  </div>
                                  <div className={`max-w-[80%] px-5 py-3.5 rounded-2xl text-[14px] leading-relaxed ${isNote ? 'bg-amber-500/10 border border-amber-500/20 text-amber-200' : isCustomer ? 'bg-zinc-900 text-zinc-300 border border-white/5' : 'bg-indigo-600 text-white shadow-xl shadow-indigo-950/20'}`}>
                                     {m.body}
@@ -612,8 +621,8 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                                  {m === 'customer' ? (telegramConversation ? 'Reply via Telegram' : 'Reply to client') : 'Internal Note'}
                               </button>
                             ))}
-                            <button onClick={() => updateTakeover(!operatorTakeover)} className={`ml-auto text-[8px] font-black px-2 py-0.5 rounded border ${operatorTakeover ? 'border-red-500/30 text-red-500' : 'border-emerald-500/30 text-emerald-500'} uppercase`}>
-                               AI: {operatorTakeover ? 'OFF' : 'ON'}
+                            <button onClick={() => updateAiControl(!aiAutomationEnabled)} className={`ml-auto text-[8px] font-black px-2 py-0.5 rounded border ${aiAutomationEnabled ? 'border-emerald-500/30 text-emerald-500' : 'border-red-500/30 text-red-500'} uppercase`}>
+                               AI: {aiAutomationEnabled ? 'ON' : 'OFF'}
                             </button>
                          </div>
                          <div className="flex items-end p-2 gap-2">

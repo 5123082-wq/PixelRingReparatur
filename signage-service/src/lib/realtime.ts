@@ -10,6 +10,7 @@ export type CaseRealtimeReason =
   | 'internal_note.created'
   | 'status.changed'
   | 'takeover.changed'
+  | 'ai_control.changed'
   | 'public_request_number.issued'
   | 'assignment.changed'
   | 'case.updated';

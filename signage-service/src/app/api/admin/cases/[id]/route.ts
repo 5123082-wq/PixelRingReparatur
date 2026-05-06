@@ -111,6 +111,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         customerEmail: true,
         customerPhone: true,
         assignedOperator: true,
+        aiEnabled: true,
+        aiPausedAt: true,
+        aiPausedReason: true,
         customerProfile: {
           select: {
             id: true,
@@ -206,6 +209,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
                 'CASE_STATUS_CHANGED',
                 'CASE_OPERATOR_MESSAGE_SENT',
                 'CASE_OPERATOR_TAKEOVER_CHANGED',
+                'CASE_AI_CONTROL_CHANGED',
                 'CASE_INTERNAL_NOTE_CREATED',
                 'CASE_ASSIGNMENT_CHANGED',
                 'CASE_CUSTOMER_PROFILE_SYNCED',
@@ -286,6 +290,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           message?: string;
           internalNote?: string;
           operatorTakeover?: boolean;
+          aiEnabled?: boolean;
           issuePublicRequestNumber?: boolean;
         }
       | null;
@@ -294,11 +299,12 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const hasMessage = message.length > 0;
     const hasInternalNote = internalNote.length > 0;
     const hasTakeoverUpdate = typeof body?.operatorTakeover === 'boolean';
+    const hasAiEnabledUpdate = typeof body?.aiEnabled === 'boolean';
     const hasPublicRequestNumberIssue = body?.issuePublicRequestNumber === true;
 
-    if (!hasMessage && !hasInternalNote && !hasTakeoverUpdate && !hasPublicRequestNumberIssue) {
+    if (!hasMessage && !hasInternalNote && !hasTakeoverUpdate && !hasAiEnabledUpdate && !hasPublicRequestNumberIssue) {
       return NextResponse.json(
-        { error: 'Message, internalNote, operatorTakeover, or issuePublicRequestNumber is required' },
+        { error: 'Message, internalNote, operatorTakeover, aiEnabled, or issuePublicRequestNumber is required' },
         { status: 400 }
       );
     }
@@ -309,7 +315,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       requiredPermissions.push('CRM_CASE_MESSAGE_WRITE');
     }
 
-    if (hasTakeoverUpdate && !hasMessage) {
+    if ((hasTakeoverUpdate || hasAiEnabledUpdate) && !hasMessage) {
       requiredPermissions.push('CRM_CASE_TAKEOVER_WRITE');
     }
 
@@ -345,6 +351,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           assignedOperator: true,
           publicRequestNumber: true,
           status: true,
+          aiEnabled: true,
           externalConversations: {
             where: { channel: CaseOriginChannel.TELEGRAM },
             select: {
@@ -399,6 +406,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         : currentOperatorTakeover;
     const takeoverChanged =
       activeSessionCount > 0 && currentOperatorTakeover !== nextOperatorTakeover;
+    const nextCaseAiEnabled =
+      hasMessage || hasPublicRequestNumberIssue
+        ? false
+        : hasAiEnabledUpdate
+          ? body?.aiEnabled ?? caseRecord.aiEnabled
+          : caseRecord.aiEnabled;
+    const caseAiChanged = caseRecord.aiEnabled !== nextCaseAiEnabled;
     let telegramReplyChatId: string | null = null;
     let telegramPrChatId: string | null = null;
     let issuedPublicRequestNumber: string | null = null;
@@ -501,6 +515,48 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           userAgent: actor.userAgent,
         });
         realtimeReasons.add('takeover.changed');
+      }
+
+      if (caseAiChanged) {
+        const aiPausedReason = nextCaseAiEnabled
+          ? null
+          : hasMessage
+            ? 'operator_message'
+            : hasPublicRequestNumberIssue
+              ? 'public_request_number_issued'
+              : 'manual_toggle';
+
+        await tx.case.update({
+          where: { id },
+          data: {
+            aiEnabled: nextCaseAiEnabled,
+            aiPausedAt: nextCaseAiEnabled ? null : now,
+            aiPausedReason,
+          },
+        });
+
+        await createAdminAuditLog(tx, {
+          actorSessionId: actor.sessionId,
+          actorAdminUserId: actor.adminUserId,
+          actorRole: actor.role,
+          action: 'CASE_AI_CONTROL_CHANGED',
+          resourceType: 'CASE',
+          resourceId: id,
+          caseId: id,
+          reason: hasMessage
+            ? 'Operator message sent'
+            : hasPublicRequestNumberIssue
+              ? 'Public request number issued'
+              : 'Manual AI toggle',
+          details: {
+            from: caseRecord.aiEnabled,
+            to: nextCaseAiEnabled,
+            pausedReason: aiPausedReason,
+          },
+          ipAddress: actor.ipAddress,
+          userAgent: actor.userAgent,
+        });
+        realtimeReasons.add('ai_control.changed');
       }
 
       if (hasPublicRequestNumberIssue) {
@@ -608,6 +664,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({
       success: true,
       operatorTakeover: nextOperatorTakeover,
+      aiEnabled: nextCaseAiEnabled,
       publicRequestNumber: issuedPublicRequestNumber,
       telegramDeliveryError,
     });

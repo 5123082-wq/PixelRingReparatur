@@ -1,0 +1,137 @@
+import 'server-only';
+
+import { CaseOriginChannel, MessageAuthorRole, type PrismaClient } from '@prisma/client';
+
+import {
+  generateChatReply,
+  type ChatHistoryItem,
+  type IntakePrefill,
+} from './chat-engine';
+
+export type AssistantChannelCapability =
+  | 'rich_intake_card'
+  | 'language_selector'
+  | 'attachments'
+  | 'inline_buttons';
+
+export type AssistantAction =
+  | { type: 'show_intake'; prefill?: IntakePrefill }
+  | { type: 'handoff_requested' }
+  | { type: 'language_selector' };
+
+export type RunAssistantTurnInput = {
+  caseId: string;
+  channel: CaseOriginChannel;
+  locale?: string | null;
+  latestMessageId?: string | null;
+  latestCustomerMessage: string;
+  publicRequestNumber?: string | null;
+  capabilities?: AssistantChannelCapability[];
+};
+
+export type RunAssistantTurnResult = {
+  text: string;
+  actions: AssistantAction[];
+  provider: 'openai' | 'fallback';
+  model?: string;
+  messageId: string | null;
+};
+
+function mapHistoryRole(authorRole: MessageAuthorRole): ChatHistoryItem['role'] {
+  return authorRole === MessageAuthorRole.CUSTOMER ? 'user' : 'assistant';
+}
+
+function sanitizeHistoryBody(value: string): string {
+  return value.replace(/<<SHOW_LANGUAGE_SELECTOR>>/g, '').trim();
+}
+
+function buildActions(input: {
+  suggestIntake?: boolean;
+  intakePrefill?: IntakePrefill;
+  intent: string;
+  capabilities: AssistantChannelCapability[];
+}): AssistantAction[] {
+  const actions: AssistantAction[] = [];
+
+  if (input.suggestIntake) {
+    actions.push({
+      type: 'show_intake',
+      prefill: input.intakePrefill,
+    });
+  }
+
+  if (input.intent === 'human') {
+    actions.push({ type: 'handoff_requested' });
+  }
+
+  if (input.capabilities.includes('language_selector')) {
+    actions.push({ type: 'language_selector' });
+  }
+
+  return actions;
+}
+
+export async function runAssistantTurn(
+  db: PrismaClient,
+  input: RunAssistantTurnInput
+): Promise<RunAssistantTurnResult | null> {
+  const messages = await db.message.findMany({
+    where: {
+      caseId: input.caseId,
+      isCustomerVisible: true,
+    },
+    orderBy: { createdAt: 'asc' },
+    select: {
+      id: true,
+      authorRole: true,
+      body: true,
+    },
+  });
+  const history = messages
+    .filter((message) => message.id !== input.latestMessageId)
+    .map((message): ChatHistoryItem => ({
+      role: mapHistoryRole(message.authorRole),
+      body: sanitizeHistoryBody(message.body),
+    }))
+    .filter((message) => message.body.length > 0);
+
+  const reply = await generateChatReply({
+    locale: input.locale ?? undefined,
+    message: input.latestCustomerMessage,
+    history,
+    publicRequestNumber: input.publicRequestNumber ?? null,
+  });
+  const text = reply.text.trim();
+
+  if (!text) {
+    return null;
+  }
+
+  const assistantMessage = await db.message.create({
+    data: {
+      caseId: input.caseId,
+      channel: input.channel,
+      authorRole: MessageAuthorRole.SYSTEM,
+      authorName: 'AI Assistant',
+      body: text,
+      isCustomerVisible: true,
+      sentAt: new Date(),
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  return {
+    text,
+    actions: buildActions({
+      suggestIntake: reply.suggestIntake,
+      intakePrefill: reply.intakePrefill,
+      intent: reply.intent,
+      capabilities: input.capabilities ?? [],
+    }),
+    provider: reply.provider,
+    model: reply.model,
+    messageId: assistantMessage.id,
+  };
+}
