@@ -26,11 +26,21 @@ type CaseDetail = {
   updatedAt: string;
   messages: {
     id: string;
+    channel: string;
     authorRole: string;
     authorName: string | null;
     body: string;
     isCustomerVisible: boolean;
     createdAt: string;
+  }[];
+  externalConversations: {
+    id: string;
+    channel: string;
+    externalChatId: string;
+    username: string | null;
+    firstName: string | null;
+    lastName: string | null;
+    lastMessageAt: string | null;
   }[];
   attachments: {
     id: string;
@@ -119,6 +129,8 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
   const [replyMode, setReplyMode] = useState<ReplyMode>('customer');
   const [replyText, setReplyText] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
+  const [replyFeedback, setReplyFeedback] = useState('');
+  const [issuingPr, setIssuingPr] = useState(false);
 
   const fetchCase = useCallback(async () => {
     setLoading(true);
@@ -164,8 +176,36 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      if (res.ok) { setReplyText(''); await fetchCase(); }
+      const data = await res.json().catch(() => null) as { telegramDeliveryError?: string } | null;
+      if (res.ok) {
+        setReplyText('');
+        setReplyFeedback(data?.telegramDeliveryError ? `Telegram delivery warning: ${data.telegramDeliveryError}` : '');
+        await fetchCase();
+      } else {
+        setReplyFeedback('Message could not be sent.');
+      }
     } finally { setSendingReply(false); }
+  }
+
+  async function issuePublicRequestNumber() {
+    if (issuingPr) return;
+    setIssuingPr(true);
+    setReplyFeedback('');
+    try {
+      const res = await adminFetch(`/api/admin/cases/${id}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ issuePublicRequestNumber: true }),
+      });
+      const data = await res.json().catch(() => null) as { telegramDeliveryError?: string } | null;
+      if (res.ok) {
+        setReplyFeedback(data?.telegramDeliveryError ? `PR issued, Telegram delivery warning: ${data.telegramDeliveryError}` : '');
+        await fetchCase();
+      } else {
+        setReplyFeedback('PR could not be issued.');
+      }
+    } finally {
+      setIssuingPr(false);
+    }
   }
 
   async function updateAssignment() {
@@ -214,6 +254,12 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
   const currentStatusObj = STATUS_OPTIONS.find((s) => s.value === caseData.status);
   const operatorTakeover = caseData.sessions.some((session) => session.operatorTakeover);
   const hasCustomerSession = caseData.sessions.length > 0;
+  const telegramConversation = caseData.externalConversations.find((conversation) => conversation.channel === 'TELEGRAM');
+  const telegramHandle = telegramConversation?.username
+    ? `@${telegramConversation.username}`
+    : telegramConversation
+      ? 'Telegram client'
+      : null;
 
   const timelineEvents: TimelineEvent[] = [
     ...caseData.messages.map((message): TimelineEvent => ({
@@ -307,6 +353,11 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                   <Input value={assignedOperatorDraft} onChange={(e) => setAssignedOperatorDraft(e.target.value)} placeholder="Assign operator..." className="bg-transparent border-white/[0.05] h-8 text-[11px] pr-12" />
                   <button onClick={updateAssignment} disabled={updatingAssignment} className="absolute right-2 top-1.5 text-[10px] font-black text-indigo-500 uppercase">Save</button>
                 </div>
+                {!caseData.publicRequestNumber && telegramConversation && (
+                  <Button onClick={issuePublicRequestNumber} disabled={issuingPr} variant="primary" size="sm" className="w-full font-black text-[10px] h-8 uppercase">
+                    {issuingPr ? 'Issuing...' : 'Issue PR'}
+                  </Button>
+                )}
              </div>
           </section>
 
@@ -316,7 +367,8 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                {[
                  { label: 'Name', value: caseData.customerName || 'None' },
                  { label: 'Contact', value: caseData.customerEmail || caseData.customerPhone || '—', mono: true },
-                 { label: 'Source', value: `${CHANNEL_ICONS[caseData.originChannel] || '??'} ${caseData.originChannel}` }
+                 { label: 'Source', value: `${CHANNEL_ICONS[caseData.originChannel] || '??'} ${caseData.originChannel}` },
+                 ...(telegramHandle ? [{ label: 'Telegram', value: telegramHandle, mono: true }] : [])
                ].map((item, idx) => (
                  <div key={idx} className="flex justify-between items-baseline border-b border-white/[0.02] pb-2">
                     <span className="text-[10px] font-bold text-zinc-500 uppercase">{item.label}</span>
@@ -425,7 +477,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                          <div className="flex h-10 border-b border-white/5 px-6 items-center gap-6">
                             {REPLY_MODES.map(m => (
                               <button key={m} onClick={() => setReplyMode(m)} className={`text-[8px] font-black tracking-widest uppercase ${replyMode === m ? 'text-indigo-500' : 'text-zinc-600'}`}>
-                                 {m === 'customer' ? 'Reply to client' : 'Internal Note'}
+                                 {m === 'customer' ? (telegramConversation ? 'Reply via Telegram' : 'Reply to client') : 'Internal Note'}
                               </button>
                             ))}
                             <button onClick={() => updateTakeover(!operatorTakeover)} className={`ml-auto text-[8px] font-black px-2 py-0.5 rounded border ${operatorTakeover ? 'border-red-500/30 text-red-500' : 'border-emerald-500/30 text-emerald-500'} uppercase`}>
@@ -445,6 +497,11 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                                {sendingReply ? <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <span className="text-white text-lg">↑</span>}
                             </button>
                          </div>
+                         {replyFeedback && (
+                           <div className="border-t border-white/5 px-6 py-2 text-[10px] font-semibold text-amber-300">
+                             {replyFeedback}
+                           </div>
+                         )}
                       </div>
                      </div>
                    </div>

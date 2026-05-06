@@ -13,6 +13,23 @@ Planned base documents:
 
 ## Progress Log
 
+### 2026-05-06
+**Telegram CRM MVP**
+- **Status**: In progress (implementation baseline added)
+- **Done**:
+  - Added Telegram external conversation mapping for CRM cases.
+  - Added Telegram webhook intake path for customer messages into the CRM case timeline.
+  - Added CRM-to-Telegram reply delivery from the case detail composer.
+  - Added manual PR issue action for Telegram draft cases.
+- **In Progress**:
+  - Validation and deployment setup for Telegram webhook secrets.
+- **Next Action**:
+  - Rotate the exposed Telegram bot token, set server env vars, deploy, and register the Telegram webhook.
+- **Blockers/Risks**:
+  - Telegram file download/storage is intentionally deferred; non-text Telegram messages are logged as placeholder timeline messages.
+  - The bot token pasted into chat must be revoked before production use.
+- **Updated Documents**: `docs/06_crm/README.md`, `PROGRESS.md`
+
 ### 2026-04-16
 **Sprint 1B: CRM Modernization**
 - **Status**: Complete (chat usability hotfix)

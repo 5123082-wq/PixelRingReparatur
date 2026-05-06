@@ -12,10 +12,21 @@ import {
   requiresTransitionReason,
 } from '@/lib/case-status-machine';
 import { syncCaseCustomerProfile } from '@/lib/customer-profiles';
+import { ensurePublicRequestNumberForCase } from '@/lib/request-number';
+import { sendTelegramMessage } from '@/lib/telegram';
 
 const VALID_STATUSES = Object.values(CaseStatus);
 const MAX_OPERATOR_MESSAGE_LENGTH = 4000;
 const MAX_INTERNAL_NOTE_LENGTH = 2000;
+
+function buildPrIssuedTelegramMessage(publicRequestNumber: string): string {
+  return [
+    'Ihre Anfrage wurde registriert.',
+    `Nummer: ${publicRequestNumber}`,
+    '',
+    'Bitte bewahren Sie diese Nummer auf. Sie hilft uns, die Anfrage eindeutig zuzuordnen.',
+  ].join('\n');
+}
 
 function isUuidLike(value: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
@@ -129,6 +140,18 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
             isCustomerVisible: true,
             sentAt: true,
             createdAt: true,
+          },
+        },
+        externalConversations: {
+          orderBy: { updatedAt: 'desc' },
+          select: {
+            id: true,
+            channel: true,
+            externalChatId: true,
+            username: true,
+            firstName: true,
+            lastName: true,
+            lastMessageAt: true,
           },
         },
         attachments: {
@@ -259,6 +282,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           message?: string;
           internalNote?: string;
           operatorTakeover?: boolean;
+          issuePublicRequestNumber?: boolean;
         }
       | null;
     const message = body?.message?.trim() ?? '';
@@ -266,10 +290,11 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const hasMessage = message.length > 0;
     const hasInternalNote = internalNote.length > 0;
     const hasTakeoverUpdate = typeof body?.operatorTakeover === 'boolean';
+    const hasPublicRequestNumberIssue = body?.issuePublicRequestNumber === true;
 
-    if (!hasMessage && !hasInternalNote && !hasTakeoverUpdate) {
+    if (!hasMessage && !hasInternalNote && !hasTakeoverUpdate && !hasPublicRequestNumberIssue) {
       return NextResponse.json(
-        { error: 'Message, internalNote, or operatorTakeover is required' },
+        { error: 'Message, internalNote, operatorTakeover, or issuePublicRequestNumber is required' },
         { status: 400 }
       );
     }
@@ -282,6 +307,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     if (hasTakeoverUpdate && !hasMessage) {
       requiredPermissions.push('CRM_CASE_TAKEOVER_WRITE');
+    }
+
+    if (hasPublicRequestNumberIssue) {
+      requiredPermissions.push('CRM_CASE_UPDATE');
     }
 
     const actor = await requireCaseConversationActor(request, requiredPermissions);
@@ -307,7 +336,19 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const [caseRecord, activeSessionCount, takeoverEnabledCount] = await Promise.all([
       prisma.case.findUnique({
         where: { id },
-        select: { id: true, assignedOperator: true },
+        select: {
+          id: true,
+          assignedOperator: true,
+          publicRequestNumber: true,
+          status: true,
+          externalConversations: {
+            where: { channel: CaseOriginChannel.TELEGRAM },
+            select: {
+              externalChatId: true,
+            },
+            take: 1,
+          },
+        },
       }),
       prisma.session.count({
         where: {
@@ -326,6 +367,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     if (!caseRecord) {
       return notFoundResponse();
+    }
+
+    if (hasPublicRequestNumberIssue && caseRecord.publicRequestNumber) {
+      return NextResponse.json(
+        { error: 'Public request number already exists for this case' },
+        { status: 400 }
+      );
     }
 
     if (
@@ -347,6 +395,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         : currentOperatorTakeover;
     const takeoverChanged =
       activeSessionCount > 0 && currentOperatorTakeover !== nextOperatorTakeover;
+    let telegramReplyChatId: string | null = null;
+    let telegramPrChatId: string | null = null;
+    let issuedPublicRequestNumber: string | null = null;
 
     await prisma.$transaction(async (tx) => {
       if (hasMessage) {
@@ -376,6 +427,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           ipAddress: actor.ipAddress,
           userAgent: actor.userAgent,
         });
+
+        telegramReplyChatId =
+          caseRecord.externalConversations[0]?.externalChatId ?? null;
       }
 
       if (hasInternalNote) {
@@ -440,11 +494,105 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           userAgent: actor.userAgent,
         });
       }
+
+      if (hasPublicRequestNumberIssue) {
+        const publicRequestNumber = await ensurePublicRequestNumberForCase(tx, id);
+        issuedPublicRequestNumber = publicRequestNumber;
+
+        const shouldUpdateStatus = caseRecord.status !== CaseStatus.NUMBER_ISSUED;
+
+        if (shouldUpdateStatus) {
+          await tx.case.update({
+            where: { id },
+            data: {
+              status: CaseStatus.NUMBER_ISSUED,
+              numberIssuedAt: now,
+              statusUpdatedAt: now,
+            },
+          });
+
+          await tx.caseStatusEvent.create({
+            data: {
+              caseId: id,
+              actorSessionId: actor.sessionId,
+              actorRole: actor.role,
+              fromStatus: caseRecord.status,
+              toStatus: CaseStatus.NUMBER_ISSUED,
+              reason: 'Manual PR issue from CRM',
+              metadata: {
+                publicRequestNumber,
+                channel: CaseOriginChannel.TELEGRAM,
+              },
+            },
+          });
+        }
+
+        await tx.message.create({
+          data: {
+            caseId: id,
+            channel: CaseOriginChannel.CRM,
+            authorRole: MessageAuthorRole.SYSTEM,
+            authorName: 'CRM System',
+            body: buildPrIssuedTelegramMessage(publicRequestNumber),
+            isCustomerVisible: true,
+            sentAt: now,
+          },
+        });
+
+        await createAdminAuditLog(tx, {
+          actorSessionId: actor.sessionId,
+          actorAdminUserId: actor.adminUserId,
+          actorRole: actor.role,
+          action: 'CASE_PUBLIC_REQUEST_NUMBER_ISSUED',
+          resourceType: 'CASE',
+          resourceId: id,
+          caseId: id,
+          details: {
+            publicRequestNumber,
+            statusChanged: shouldUpdateStatus,
+          },
+          ipAddress: actor.ipAddress,
+          userAgent: actor.userAgent,
+        });
+
+        telegramPrChatId =
+          caseRecord.externalConversations[0]?.externalChatId ?? null;
+      }
     });
+
+    let telegramDeliveryError: string | null = null;
+
+    if (hasMessage && telegramReplyChatId) {
+      try {
+        await sendTelegramMessage({
+          chatId: telegramReplyChatId,
+          text: message,
+        });
+      } catch (error) {
+        telegramDeliveryError =
+          error instanceof Error ? error.message : 'Telegram delivery failed';
+        console.error('CRM Telegram reply delivery failed:', error);
+      }
+    }
+
+    if (issuedPublicRequestNumber && telegramPrChatId) {
+      try {
+        await sendTelegramMessage({
+          chatId: telegramPrChatId,
+          text: buildPrIssuedTelegramMessage(issuedPublicRequestNumber),
+        });
+      } catch (error) {
+        telegramDeliveryError =
+          error instanceof Error ? error.message : 'Telegram PR delivery failed';
+        console.error('CRM Telegram PR delivery failed:', error);
+      }
+    }
 
     return NextResponse.json({
       success: true,
       operatorTakeover: nextOperatorTakeover,
+      publicRequestNumber: issuedPublicRequestNumber,
+      telegramDeliveryError,
     });
   } catch (error) {
     console.error('Admin case message error:', error);

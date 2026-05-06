@@ -119,33 +119,34 @@ enum SessionScope {
 }
 
 model Case {
-  id                   String                @id @default(uuid()) @db.Uuid
-  publicRequestNumber  String?               @unique
-  status               CaseStatus            @default(DRAFT)
-  originChannel        CaseOriginChannel
-  customerName         String?
-  customerEmail        String?
-  customerPhone        String?
-  assignedOperator     String?
-  customerProfileId    String?               @db.Uuid
-  primaryContactMethod PrimaryContactMethod?
-  primaryContactValue  String?
-  summary              String?               @db.Text
-  description          String?               @db.Text
-  locale               String?
-  crmLeadId            String?
-  crmCaseId            String?
-  numberIssuedAt       DateTime?
-  formalizedAt         DateTime?
-  statusUpdatedAt      DateTime?
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
-  messages             Message[]
-  attachments          Attachment[]
-  sessions             Session[]
-  customerProfile      CustomerProfile?      @relation(fields: [customerProfileId], references: [id], onDelete: SetNull)
-  statusEvents         CaseStatusEvent[]
-  auditLogs            AdminAuditLog[]
+  id                    String                 @id @default(uuid()) @db.Uuid
+  publicRequestNumber   String?                @unique
+  status                CaseStatus             @default(DRAFT)
+  originChannel         CaseOriginChannel
+  customerName          String?
+  customerEmail         String?
+  customerPhone         String?
+  assignedOperator      String?
+  customerProfileId     String?                @db.Uuid
+  primaryContactMethod  PrimaryContactMethod?
+  primaryContactValue   String?
+  summary               String?                @db.Text
+  description           String?                @db.Text
+  locale                String?
+  crmLeadId             String?
+  crmCaseId             String?
+  numberIssuedAt        DateTime?
+  formalizedAt          DateTime?
+  statusUpdatedAt       DateTime?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  messages              Message[]
+  attachments           Attachment[]
+  sessions              Session[]
+  externalConversations ExternalConversation[]
+  customerProfile       CustomerProfile?       @relation(fields: [customerProfileId], references: [id], onDelete: SetNull)
+  statusEvents          CaseStatusEvent[]
+  auditLogs             AdminAuditLog[]
 
   @@index([status, updatedAt])
   @@index([originChannel, createdAt])
@@ -186,6 +187,8 @@ model Message {
   authorRole        MessageAuthorRole
   authorName        String?
   body              String            @db.Text
+  externalChatId    String?
+  externalMessageId String?
   isCustomerVisible Boolean           @default(true)
   sentAt            DateTime?
   createdAt         DateTime          @default(now())
@@ -194,10 +197,32 @@ model Message {
   session           Session?          @relation(fields: [sessionId], references: [id], onDelete: SetNull)
   attachments       Attachment[]
 
+  @@unique([channel, externalChatId, externalMessageId])
   @@index([caseId, createdAt])
   @@index([sessionId, createdAt])
   @@index([authorRole, createdAt])
+  @@index([channel, externalChatId])
   @@map("messages")
+}
+
+model ExternalConversation {
+  id             String            @id @default(uuid()) @db.Uuid
+  caseId         String            @db.Uuid
+  channel        CaseOriginChannel
+  externalChatId String
+  externalUserId String?
+  username       String?
+  firstName      String?
+  lastName       String?
+  lastMessageAt  DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  case           Case              @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@unique([channel, externalChatId])
+  @@index([caseId])
+  @@index([channel, lastMessageAt])
+  @@map("external_conversations")
 }
 
 model Attachment {
@@ -255,17 +280,17 @@ model Session {
 }
 
 model AdminUser {
-  id           String            @id @default(uuid()) @db.Uuid
-  email        String            @unique
+  id           String          @id @default(uuid()) @db.Uuid
+  email        String          @unique
   displayName  String?
   passwordHash String
-  role         AdminRole         @default(MANAGER)
-  status       AdminUserStatus   @default(ACTIVE)
+  role         AdminRole       @default(MANAGER)
+  status       AdminUserStatus @default(ACTIVE)
   lastLoginAt  DateTime?
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
   sessions     AdminSession[]
-  auditLogs    AdminAuditLog[]   @relation("AdminAuditLogActorUser")
+  auditLogs    AdminAuditLog[] @relation("AdminAuditLogActorUser")
 
   @@index([role, status])
   @@index([status, updatedAt])
@@ -343,32 +368,32 @@ model AdminAuditLog {
 }
 
 model CmsArticle {
-  id               String           @id @default(uuid()) @db.Uuid
-  locale           String           @default("de")
-  type             CmsArticleType   @default(SYMPTOM)
-  status           CmsArticleStatus @default(DRAFT)
+  id               String               @id @default(uuid()) @db.Uuid
+  locale           String               @default("de")
+  type             CmsArticleType       @default(SYMPTOM)
+  status           CmsArticleStatus     @default(DRAFT)
   slug             String
   title            String
   symptomLabel     String?
-  shortAnswer      String?          @db.Text
-  content          String           @db.Text
+  shortAnswer      String?              @db.Text
+  content          String               @db.Text
   seoTitle         String?
-  seoDescription   String?          @db.Text
+  seoDescription   String?              @db.Text
   canonicalUrl     String?
-  relatedSlugs     String[]         @default([])
-  causes           String[]         @default([])
-  safeChecks       String[]         @default([])
-  urgentWarnings   String[]         @default([])
-  serviceProcess   String[]         @default([])
-  workScopeFactors String[]         @default([])
+  relatedSlugs     String[]             @default([])
+  causes           String[]             @default([])
+  safeChecks       String[]             @default([])
+  urgentWarnings   String[]             @default([])
+  serviceProcess   String[]             @default([])
+  workScopeFactors String[]             @default([])
   ctaLabel         String?
   ctaHref          String?
-  sortOrder        Int              @default(0)
+  sortOrder        Int                  @default(0)
   publishedAt      DateTime?
   lastReviewedAt   DateTime?
   deletedAt        DateTime?
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
   revisions        CmsArticleRevision[]
 
   @@unique([locale, slug])
@@ -380,20 +405,20 @@ model CmsArticle {
 }
 
 model CmsPage {
-  id             String           @id @default(uuid()) @db.Uuid
+  id             String            @id @default(uuid()) @db.Uuid
   pageKey        String
-  locale         String           @default("de")
-  status         CmsArticleStatus @default(DRAFT)
+  locale         String            @default("de")
+  status         CmsArticleStatus  @default(DRAFT)
   title          String
   blocks         Json
   seoTitle       String?
-  seoDescription String?          @db.Text
+  seoDescription String?           @db.Text
   canonicalUrl   String?
   publishedAt    DateTime?
   lastReviewedAt DateTime?
   deletedAt      DateTime?
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
   revisions      CmsPageRevision[]
 
   @@unique([pageKey, locale])
@@ -441,26 +466,26 @@ model CmsPageRevision {
 }
 
 model CmsMedia {
-  id               String                  @id @default(uuid()) @db.Uuid
-  locale           String                  @default("de")
-  usageType        CmsMediaUsageType       @default(GENERAL)
-  storageProvider  CmsMediaStorageProvider @default(LOCAL)
-  storageKey       String                  @unique
-  publicUrl        String                  @unique
-  fallbackUrl       String?
+  id                 String                  @id @default(uuid()) @db.Uuid
+  locale             String                  @default("de")
+  usageType          CmsMediaUsageType       @default(GENERAL)
+  storageProvider    CmsMediaStorageProvider @default(LOCAL)
+  storageKey         String                  @unique
+  publicUrl          String                  @unique
+  fallbackUrl        String?
   fallbackStorageKey String?
-  originalFilename String?
-  title            String?
-  altText          String?
-  mimeType         String
-  byteSize         Int
-  checksumSha256   String
-  width            Int?
-  height           Int?
-  meta             Json?
-  deletedAt        DateTime?
-  createdAt        DateTime                @default(now())
-  updatedAt        DateTime                @updatedAt
+  originalFilename   String?
+  title              String?
+  altText            String?
+  mimeType           String
+  byteSize           Int
+  checksumSha256     String
+  width              Int?
+  height             Int?
+  meta               Json?
+  deletedAt          DateTime?
+  createdAt          DateTime                @default(now())
+  updatedAt          DateTime                @updatedAt
 
   @@index([locale, usageType, updatedAt])
   @@index([mimeType, updatedAt])
