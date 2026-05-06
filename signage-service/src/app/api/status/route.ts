@@ -18,15 +18,17 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = (await request.json().catch(() => null)) as
-      | {
-          requestNumber?: string;
-          contact?: string;
-        }
-      | null;
+        | {
+            requestNumber?: string;
+            contact?: string;
+            access?: string;
+          }
+        | null;
 
     const result = await lookupPublicCaseStatus(prisma, {
       publicRequestNumber: body?.requestNumber,
       contact: body?.contact,
+      accessToken: body?.access,
       sessionToken: request.cookies.get(CASE_SESSION_COOKIE_NAME)?.value ?? null,
       userAgent: request.headers.get('user-agent'),
       ipAddress:

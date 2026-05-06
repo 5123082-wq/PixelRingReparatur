@@ -14,6 +14,21 @@ Planned base documents:
 ## Progress Log
 
 ### 2026-05-06
+**Telegram PR Status Link**
+- **Status**: In progress (implementation baseline added)
+- **Done**:
+  - Added a case-access status link to manual Telegram PR issue messages.
+  - Made the Telegram PR number clickable through Telegram HTML formatting.
+  - Extended public status lookup to exchange a one-time URL access token into the existing HTTP-only case session flow.
+- **In Progress**:
+  - Production validation of tapping the Telegram PR number and seeing safe public status.
+- **Next Action**:
+  - Deploy and test a newly issued Telegram PR link on mobile Telegram.
+- **Blockers/Risks**:
+  - The status page still exposes only safe public status; portal registration remains the path for future customer actions.
+- **Updated Documents**: `docs/06_crm/README.md`, `PROGRESS.md`
+
+### 2026-05-06
 **Telegram CRM Shared AI Assistant**
 - **Status**: In progress (implementation baseline added)
 - **Done**:

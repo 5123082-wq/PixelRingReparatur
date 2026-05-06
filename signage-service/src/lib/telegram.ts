@@ -80,6 +80,7 @@ function getTelegramApiUrl(method: string): string {
 export async function sendTelegramMessage(input: {
   chatId: string;
   text: string;
+  parseMode?: 'HTML';
 }): Promise<TelegramSendMessageResult> {
   const response = await fetch(getTelegramApiUrl('sendMessage'), {
     method: 'POST',
@@ -87,6 +88,7 @@ export async function sendTelegramMessage(input: {
     body: JSON.stringify({
       chat_id: input.chatId,
       text: input.text,
+      parse_mode: input.parseMode,
       disable_web_page_preview: true,
     }),
   });

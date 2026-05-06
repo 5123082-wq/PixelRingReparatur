@@ -22,6 +22,7 @@ type PublicCaseStatus = {
 export type StatusLookupRequest = {
   publicRequestNumber?: string;
   contact?: string;
+  accessToken?: string | null;
   sessionToken?: string | null;
   userAgent?: string | null;
   ipAddress?: string | null;
@@ -183,6 +184,54 @@ function isSessionTokenPresent(token: string | null | undefined): token is strin
   return typeof token === 'string' && token.trim().length > 0;
 }
 
+async function lookupBySessionToken(
+  prisma: PrismaClient,
+  input: {
+    token: string;
+    publicRequestNumber?: string;
+    now: Date;
+  }
+): Promise<StatusLookupSuccess | null> {
+  const requestNumber = input.publicRequestNumber?.trim().toUpperCase() ?? '';
+  const hasRequestNumber = requestNumber.length > 0;
+  const session = await prisma.session.findUnique({
+    where: { tokenHash: hashCaseSessionToken(input.token) },
+    include: {
+      case: {
+        select: {
+          publicRequestNumber: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+    },
+  });
+
+  const isValidSession = isActiveSession(session);
+  const sessionCase = session?.case ?? null;
+  const sessionMatchesRequest =
+    !hasRequestNumber ||
+    (sessionCase !== null &&
+      sessionCase.publicRequestNumber !== null &&
+      sessionCase.publicRequestNumber === requestNumber);
+
+  if (session !== null && isValidSession && sessionCase && sessionMatchesRequest) {
+    await prisma.session.update({
+      where: { id: session.id },
+      data: { lastSeenAt: input.now },
+    });
+
+    return {
+      verified: true,
+      cookieToken: input.token,
+      case: buildPublicCaseStatus(sessionCase, 'session'),
+    };
+  }
+
+  return null;
+}
+
 export async function lookupPublicCaseStatus(
   prisma: PrismaClient,
   input: StatusLookupRequest
@@ -193,40 +242,27 @@ export async function lookupPublicCaseStatus(
   const hasRequestNumber = requestNumber.length > 0;
   const hasContact = contact.trim().length > 0;
 
-  if (isSessionTokenPresent(input.sessionToken)) {
-    const session = await prisma.session.findUnique({
-      where: { tokenHash: hashCaseSessionToken(input.sessionToken) },
-      include: {
-        case: {
-          select: {
-            publicRequestNumber: true,
-            status: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-      },
+  if (isSessionTokenPresent(input.accessToken)) {
+    const accessResult = await lookupBySessionToken(prisma, {
+      token: input.accessToken,
+      publicRequestNumber: requestNumber,
+      now,
     });
 
-    const isValidSession = isActiveSession(session);
-    const sessionCase = session?.case ?? null;
-    const sessionMatchesRequest =
-      !hasRequestNumber ||
-      (sessionCase !== null &&
-        sessionCase.publicRequestNumber !== null &&
-        sessionCase.publicRequestNumber === requestNumber);
+    if (accessResult) {
+      return accessResult;
+    }
+  }
 
-    if (session !== null && isValidSession && sessionCase && sessionMatchesRequest) {
-      await prisma.session.update({
-        where: { id: session.id },
-        data: { lastSeenAt: now },
-      });
+  if (isSessionTokenPresent(input.sessionToken)) {
+    const sessionResult = await lookupBySessionToken(prisma, {
+      token: input.sessionToken,
+      publicRequestNumber: requestNumber,
+      now,
+    });
 
-      return {
-        verified: true,
-        cookieToken: input.sessionToken ?? undefined,
-        case: buildPublicCaseStatus(sessionCase, 'session'),
-      };
+    if (sessionResult) {
+      return sessionResult;
     }
   }
 

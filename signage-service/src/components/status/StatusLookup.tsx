@@ -36,9 +36,11 @@ type StatusCmsContent = {
 
 export default function StatusLookup({
   initialRequestNumber = '',
+  initialAccessToken = '',
   cmsContent,
 }: {
   initialRequestNumber?: string;
+  initialAccessToken?: string;
   cmsContent?: StatusCmsContent | null;
 }) {
   const t = useTranslations('StatusPage');
@@ -58,6 +60,7 @@ export default function StatusLookup({
   async function lookupStatus(payload?: {
     requestNumber?: string;
     contact?: string;
+    access?: string;
   }, options?: { silent?: boolean }) {
     setIsSubmitting(true);
     setErrorMessage('');
@@ -72,6 +75,7 @@ export default function StatusLookup({
         body: JSON.stringify({
           requestNumber: payload?.requestNumber ?? requestNumber,
           contact: payload?.contact ?? contact,
+          access: payload?.access ?? '',
         }),
       });
 
@@ -108,9 +112,10 @@ export default function StatusLookup({
     void lookupStatus({
       requestNumber: initialRequestNumber,
       contact: '',
+      access: initialAccessToken,
     }, { silent: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialRequestNumber]);
+  }, [initialRequestNumber, initialAccessToken]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

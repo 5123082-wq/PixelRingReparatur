@@ -17,7 +17,7 @@ export default async function StatusPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams?: { request?: string } | Promise<{ request?: string }>;
+  searchParams?: { request?: string; access?: string } | Promise<{ request?: string; access?: string }>;
 }) {
   const { locale } = await params;
   const query = await Promise.resolve(searchParams ?? {});
@@ -30,7 +30,11 @@ export default async function StatusPage({
     <div className="min-h-screen flex flex-col bg-[#F7F1E8]">
       <Header content={globalCms?.header} />
       <main className="flex-1">
-        <StatusLookup initialRequestNumber={query?.request ?? ''} cmsContent={cmsContent} />
+        <StatusLookup
+          initialRequestNumber={query?.request ?? ''}
+          initialAccessToken={query?.access ?? ''}
+          cmsContent={cmsContent}
+        />
       </main>
       <Footer content={globalCms?.footer} />
     </div>
