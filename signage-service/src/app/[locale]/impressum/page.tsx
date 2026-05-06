@@ -14,6 +14,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const t = await getTranslations({ locale, namespace: 'Footer' });
   return {
     title: `${t('impressum')} | PixelRing`,
+    alternates: {
+      canonical: `/${locale}/impressum`,
+    },
   };
 }
 

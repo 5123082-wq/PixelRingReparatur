@@ -390,6 +390,25 @@ Hub усиливает:
 
 ## 13. Progress Log
 
+### 2026-05-06 | Google Indexing Readiness
+**Done:**
+- Selected `https://www.pixel-ring.com` as the canonical public search domain for generated metadata, robots, and sitemap URLs.
+- Added a Next.js metadata-file baseline for `robots.txt` and `sitemap.xml`.
+- Scoped the sitemap to public localized marketing/content pages and kept CRM, CMS, status lookup, and portal surfaces out of the index path.
+
+**In Progress:**
+- Live deployment and Google Search Console submission are still pending.
+
+**Next Action:**
+- Deploy the app, verify `/robots.txt` and `/sitemap.xml` return `200`, submit the sitemap in Search Console, and request indexing for the German canonical pages first.
+
+**Blockers/Risks:**
+- Published CMS symptom article URLs are included only when the production CMS database is reachable during sitemap generation.
+
+**Updated Documents:**
+- `PROGRESS.md`
+- `docs/07_content_ai_seo/geo_optimization_strategy.md`
+
 ### 2026-04-16 | CMS Localization Workspace (Stage 3)
 **Done:**
 - Refactored CMS Article Editor into a **Dual-Canonical Workspace**.

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/sections/HeroSection";
@@ -11,6 +12,56 @@ import RoadmapSection from "@/components/sections/RoadmapSection";
 import FAQSection from "@/components/sections/FAQSection";
 import FooterCTA from "@/components/sections/FooterCTA";
 import { getHomePageCmsContent, getGlobalPageCmsContent } from "@/lib/cms/pages";
+
+const HOME_METADATA: Record<string, { title: string; description: string }> = {
+  de: {
+    title: 'PixelRing Reparatur | Schilder, Lichtwerbung und Branding-Service',
+    description:
+      'PixelRing koordiniert Reparatur, Montage und Service fuer Schilder, Lichtwerbung, Folien und Branding-Anlagen in Deutschland.',
+  },
+  en: {
+    title: 'PixelRing Repair | Signage, Light Advertising and Branding Service',
+    description:
+      'PixelRing coordinates sign repair, installation and service for signage, light advertising, films and branding assets in Germany.',
+  },
+  ru: {
+    title: 'PixelRing Reparatur | Ремонт вывесок и световой рекламы',
+    description:
+      'PixelRing принимает заявки на ремонт, монтаж и обслуживание вывесок, световой рекламы, пленок и брендированных объектов в Германии.',
+  },
+  tr: {
+    title: 'PixelRing Reparatur | Tabela, Isikli Reklam ve Marka Servisi',
+    description:
+      'PixelRing Almanya genelinde tabela, isikli reklam, folyo ve marka uygulamalari icin onarim, montaj ve servis taleplerini koordine eder.',
+  },
+  pl: {
+    title: 'PixelRing Reparatur | Serwis szyldow, reklam swietlnych i brandingu',
+    description:
+      'PixelRing koordynuje naprawy, montaz i serwis szyldow, reklam swietlnych, folii oraz elementow brandingu w Niemczech.',
+  },
+  ar: {
+    title: 'PixelRing Reparatur | خدمة اللوحات والاعلانات المضيئة',
+    description:
+      'تنسق PixelRing طلبات اصلاح وتركيب وخدمة اللوحات والاعلانات المضيئة والفويل وعناصر العلامة التجارية في المانيا.',
+  },
+};
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const metadata = HOME_METADATA[locale] ?? HOME_METADATA.de;
+
+  return {
+    title: metadata.title,
+    description: metadata.description,
+    alternates: {
+      canonical: `/${locale}`,
+    },
+  };
+}
 
 export default async function HomePage({
   params,

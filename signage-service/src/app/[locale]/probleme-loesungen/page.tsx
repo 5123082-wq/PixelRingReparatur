@@ -568,7 +568,6 @@ export default async function ProblemeLoesungenPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const supportContactHref = process.env.NEXT_PUBLIC_SUPPORT_PHONE_HREF || 'mailto:support@pixelring.de';
   const baseContent = getContent(locale);
   const [globalCms, cmsContent, symptomArticles] = await Promise.all([
     getGlobalPageCmsContent(locale),
@@ -815,12 +814,6 @@ export default async function ProblemeLoesungenPage({
                 <p className="mt-5 text-lg leading-8 text-white/78">{content.urgentText}</p>
                 <div className="mt-8 flex flex-wrap gap-3">
                   <ProblemRequestButton label={content.urgentCta} problemIntent="urgent-safety-risk" />
-                  <a
-                    href={supportContactHref}
-                    className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/35 bg-white/10 px-5 py-3 text-[15px] font-bold text-white transition-colors hover:bg-white/18"
-                  >
-                    {content.phoneCta}
-                  </a>
                 </div>
               </div>
               <div className="rounded-[24px] border border-white/12 bg-white/[0.08] p-6">

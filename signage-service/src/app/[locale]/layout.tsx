@@ -6,6 +6,7 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { Analytics } from '@vercel/analytics/react';
+import { SITE_BASE_URL } from '@/lib/seo';
 
 type Locale = (typeof routing.locales)[number];
 
@@ -27,8 +28,17 @@ const outfit = Outfit({
 
 
 export const metadata: Metadata = {
-  title: "PixelRing",
-  description: "AI-first, multilingual sign repair service",
+  metadataBase: new URL(SITE_BASE_URL),
+  title: {
+    default: 'PixelRing Reparatur',
+    template: '%s',
+  },
+  description: 'Schilder-Reparatur, Lichtwerbung-Service, Montage und Branding-Anfragen mit einem verantwortlichen Servicepartner.',
+  applicationName: 'PixelRing Reparatur',
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default async function RootLayout({

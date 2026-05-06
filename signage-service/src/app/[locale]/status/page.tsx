@@ -1,7 +1,16 @@
+import type { Metadata } from 'next';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import StatusLookup from '@/components/status/StatusLookup';
 import { getGlobalPageCmsContent, getStatusPageCmsContent } from '@/lib/cms/pages';
+
+export const metadata: Metadata = {
+  title: 'Status | PixelRing',
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function StatusPage({
   params,

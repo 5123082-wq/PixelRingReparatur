@@ -279,6 +279,9 @@ export async function generateMetadata({
   return {
     title: cms?.hero?.title || tContent.metaTitle,
     description: cms?.hero?.description || tContent.metaDescription,
+    alternates: {
+      canonical: `/${locale}/business`,
+    },
   };
 }
 

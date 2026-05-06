@@ -600,6 +600,9 @@ export async function generateMetadata({
   return {
     title: tContent.metaTitle,
     description: tContent.metaDescription,
+    alternates: {
+      canonical: `/${locale}/ueber-uns`,
+    },
   };
 }
 
@@ -716,12 +719,6 @@ export default async function AboutPage({
                       label={tContent.hero.ctaPrimary} 
                       serviceIntent="about-page"
                       className="bg-[#B8643E] hover:bg-[#A65835] text-white px-7 py-4 text-[16px] font-semibold rounded-full shadow-lg shadow-[#B8643E]/30 transition-all duration-200 active:scale-95" 
-                    />
-                    <LeistungenRequestButton
-                      label={tContent.hero.ctaSecondary}
-                      serviceIntent="callback"
-                      variant="ghost"
-                      className="border-2 border-[#0E1A2B]/10 px-7 py-4 text-[16px] font-semibold text-[#0E1A2B] hover:bg-[#0E1A2B]/5 hover:text-[#0E1A2B] transition-all hover:scale-105 active:scale-95"
                     />
                   </div>
                 </div>

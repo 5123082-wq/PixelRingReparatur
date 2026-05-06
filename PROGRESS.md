@@ -14,6 +14,11 @@ Short global status only. Detailed session notes belong to folder-level `Progres
 
 ## Last Updated
 
+- Date: 2026-05-06
+- Updated by: Codex
+- **Current Stage**: Google indexing readiness in progress — canonical domain selected as `https://www.pixel-ring.com`; Next.js robots/sitemap/metadata baseline added for public localized pages while excluding CRM/CMS/status/portal surfaces.
+- **Next Action**: Deploy and submit `https://www.pixel-ring.com/sitemap.xml` in Google Search Console, then request indexing for `/de` and priority German content pages.
+
 - Date: 2026-05-05
 - Updated by: Codex
 - **Current Stage**: References CMS image replacement completed — generated a new role-based image set, created new `CmsMedia` Blob records with local fallbacks, and rewrote published `referenzen` page image refs across DE/EN/RU/TR/PL/AR so the page no longer depends on Unsplash.
