@@ -24,6 +24,10 @@ export function getCaseRealtimeChannelName(caseId: string): string {
   return `private:case:${caseId}`;
 }
 
+export function getCrmCasesRealtimeChannelName(): string {
+  return 'private:crm:cases';
+}
+
 function getAblyApiKey(): string | null {
   return process.env.ABLY_API_KEY?.trim() || null;
 }
@@ -63,6 +67,24 @@ export async function createCaseRealtimeTokenRequest(input: {
   });
 }
 
+export async function createCrmCasesRealtimeTokenRequest(input: {
+  clientId: string;
+}): Promise<TokenRequest> {
+  const client = getAblyRestClient();
+
+  if (!client) {
+    throw new Error('Missing ABLY_API_KEY.');
+  }
+
+  return client.auth.createTokenRequest({
+    clientId: input.clientId,
+    capability: {
+      [getCrmCasesRealtimeChannelName()]: ['subscribe'],
+    },
+    ttl: DEFAULT_ABLY_TOKEN_TTL_MS,
+  });
+}
+
 export async function publishCaseRealtimeEvent(input: {
   caseId: string;
   reason: CaseRealtimeReason;
@@ -81,5 +103,9 @@ export async function publishCaseRealtimeEvent(input: {
 
   await client.channels
     .get(getCaseRealtimeChannelName(input.caseId))
+    .publish('case.updated', event);
+
+  await client.channels
+    .get(getCrmCasesRealtimeChannelName())
     .publish('case.updated', event);
 }

@@ -14,6 +14,23 @@ Planned base documents:
 ## Progress Log
 
 ### 2026-05-06
+**CRM Live Inbox**
+- **Status**: In progress (live inbox baseline)
+- **Done**:
+  - Added per-manager case read state for unread customer-message tracking.
+  - Added last-message metadata and unread counts to the CRM case list API.
+  - Added a protected mark-as-read endpoint for case detail views.
+  - Extended Ably publication to a shared CRM inbox channel.
+  - Updated the CRM dashboard to live-refresh and highlight rows with unread customer messages.
+- **In Progress**:
+  - Production validation of unread badge clearing and live list ordering after deployment.
+- **Next Action**:
+  - Test from Telegram while the CRM dashboard is open, then open the case and confirm the unread badge clears.
+- **Blockers/Risks**:
+  - This tracks read state per admin user, not per team/role queue; team-level inbox rules can be added later.
+- **Updated Documents**: `docs/06_crm/README.md`, `PROGRESS.md`
+
+### 2026-05-06
 **CRM Realtime Messaging**
 - **Status**: In progress (Ably live update baseline)
 - **Done**:

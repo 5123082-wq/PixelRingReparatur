@@ -16,6 +16,11 @@ Short global status only. Detailed session notes belong to folder-level `Progres
 
 - Date: 2026-05-06
 - Updated by: Codex
+- **Current Stage**: CRM live inbox baseline added — per-manager read state, unread customer-message counts, last-message previews, and Ably live refresh are wired into the CRM dashboard.
+- **Next Action**: Deploy and test Telegram inbound messages on the open CRM dashboard, then open the case and confirm unread indicators clear.
+
+- Date: 2026-05-06
+- Updated by: Codex
 - **Current Stage**: CRM realtime messaging in progress — Ably Pub/Sub selected and implementation started so open CRM case conversations can refresh live after Telegram or CRM message events.
 - **Next Action**: Deploy Ably realtime integration and validate inbound Telegram messages appearing in open CRM case views without manual browser refresh.
 

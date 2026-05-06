@@ -187,6 +187,14 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
     fetchCase();
   }, [fetchCase, locale]);
 
+  useEffect(() => {
+    void adminFetch(`/api/admin/cases/${id}/read`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+    }).catch(() => {});
+  }, [id, caseData?.messages.length]);
+
   const refreshCaseFromRealtime = useCallback(async () => {
     if (realtimeRefreshInFlightRef.current) {
       realtimeRefreshQueuedRef.current = true;

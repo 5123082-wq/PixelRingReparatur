@@ -1,7 +1,7 @@
 import { CRM_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
 import { createAdminAuditLog, requireAdminPermissionActor } from '@/lib/admin-audit';
 import { NextRequest, NextResponse } from 'next/server';
-import { CaseOriginChannel, CaseStatus } from '@prisma/client';
+import { CaseOriginChannel, CaseStatus, MessageAuthorRole } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
@@ -12,6 +12,7 @@ const VALID_STATUSES = Object.values(CaseStatus);
 const VALID_CHANNELS = Object.values(CaseOriginChannel);
 const DEFAULT_PAGE_SIZE = 25;
 const MAX_CASE_CREATE_ATTEMPTS = 25;
+const LAST_MESSAGE_PREVIEW_LENGTH = 140;
 
 function isPublicRequestNumberUniqueConflict(error: unknown): boolean {
   if (
@@ -52,6 +53,14 @@ async function requireCaseCreateActor(request: NextRequest) {
     CRM_SESSION_COOKIE_NAME,
     ['CRM_CASE_CREATE']
   );
+}
+
+function buildLastMessagePreview(value: string): string {
+  const clean = value.trim().replace(/\s+/g, ' ');
+
+  return clean.length <= LAST_MESSAGE_PREVIEW_LENGTH
+    ? clean
+    : `${clean.slice(0, LAST_MESSAGE_PREVIEW_LENGTH - 3)}...`;
 }
 
 export async function GET(request: NextRequest) {
@@ -120,6 +129,25 @@ export async function GET(request: NextRequest) {
           createdAt: true,
           updatedAt: true,
           statusUpdatedAt: true,
+          messages: {
+            orderBy: { createdAt: 'desc' },
+            select: {
+              id: true,
+              authorRole: true,
+              authorName: true,
+              body: true,
+              channel: true,
+              createdAt: true,
+            },
+            take: 1,
+          },
+          readStates: {
+            where: { adminUserId: actor.adminUserId },
+            select: {
+              lastReadAt: true,
+            },
+            take: 1,
+          },
           _count: {
             select: {
               messages: true,
@@ -134,8 +162,47 @@ export async function GET(request: NextRequest) {
       prisma.case.count({ where }),
     ]);
 
+    const unreadCounts = await Promise.all(
+      cases.map(async (caseRecord) => {
+        const lastReadAt = caseRecord.readStates[0]?.lastReadAt ?? new Date(0);
+        const count = await prisma.message.count({
+          where: {
+            caseId: caseRecord.id,
+            authorRole: MessageAuthorRole.CUSTOMER,
+            isCustomerVisible: true,
+            createdAt: { gt: lastReadAt },
+          },
+        });
+
+        return [caseRecord.id, count] as const;
+      })
+    );
+    const unreadCountByCaseId = new Map(unreadCounts);
+
+    const serializedCases = cases.map((caseRecord) => {
+      const lastMessage = caseRecord.messages[0] ?? null;
+
+      return {
+        ...caseRecord,
+        messages: undefined,
+        readStates: undefined,
+        unreadCustomerMessages: unreadCountByCaseId.get(caseRecord.id) ?? 0,
+        lastMessage: lastMessage
+          ? {
+              id: lastMessage.id,
+              authorRole: lastMessage.authorRole,
+              authorName: lastMessage.authorName,
+              channel: lastMessage.channel,
+              preview: buildLastMessagePreview(lastMessage.body),
+              createdAt: lastMessage.createdAt,
+            }
+          : null,
+        lastActivityAt: lastMessage?.createdAt ?? caseRecord.updatedAt,
+      };
+    });
+
     return NextResponse.json({
-      cases,
+      cases: serializedCases,
       pagination: {
         page,
         pageSize,

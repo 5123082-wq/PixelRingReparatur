@@ -2,10 +2,6 @@ import { CRM_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
 import { requireAdminPermissionActor } from '@/lib/admin-audit';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
 import { prisma } from '@/lib/prisma';
-import {
-  createCaseRealtimeTokenRequest,
-  createCrmCasesRealtimeTokenRequest,
-} from '@/lib/realtime';
 import { NextRequest, NextResponse } from 'next/server';
 
 function isUuidLike(value: string): boolean {
@@ -14,7 +10,11 @@ function isUuidLike(value: string): boolean {
   );
 }
 
-export async function POST(request: NextRequest) {
+type RouteParams = {
+  params: Promise<{ id: string }>;
+};
+
+export async function POST(request: NextRequest, { params }: RouteParams) {
   const csrfError = validateAdminCsrf(request);
   if (csrfError) return csrfError;
 
@@ -29,36 +29,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
-  const body = (await request.json().catch(() => null)) as
-    | { caseId?: string; scope?: string }
-    | null;
-  const scope = body?.scope?.trim() ?? 'case';
+  const { id } = await params;
 
-  if (scope === 'crm-cases') {
-    try {
-      const tokenRequest = await createCrmCasesRealtimeTokenRequest({
-        clientId: `crm:${actor.adminUserId}`,
-      });
-
-      return NextResponse.json(tokenRequest);
-    } catch (error) {
-      console.error('Ably CRM list token error:', error);
-
-      return NextResponse.json(
-        { error: 'Realtime is not configured' },
-        { status: 503 }
-      );
-    }
-  }
-
-  const caseId = body?.caseId?.trim() ?? '';
-
-  if (!isUuidLike(caseId)) {
+  if (!isUuidLike(id)) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
   const caseRecord = await prisma.case.findUnique({
-    where: { id: caseId },
+    where: { id },
     select: {
       id: true,
       assignedOperator: true,
@@ -79,19 +57,24 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
-  try {
-    const tokenRequest = await createCaseRealtimeTokenRequest({
-      caseId,
-      clientId: `crm:${actor.adminUserId}`,
-    });
+  const now = new Date();
 
-    return NextResponse.json(tokenRequest);
-  } catch (error) {
-    console.error('Ably CRM token error:', error);
+  await prisma.caseReadState.upsert({
+    where: {
+      caseId_adminUserId: {
+        caseId: id,
+        adminUserId: actor.adminUserId,
+      },
+    },
+    create: {
+      caseId: id,
+      adminUserId: actor.adminUserId,
+      lastReadAt: now,
+    },
+    update: {
+      lastReadAt: now,
+    },
+  });
 
-    return NextResponse.json(
-      { error: 'Realtime is not configured' },
-      { status: 503 }
-    );
-  }
+  return NextResponse.json({ success: true, lastReadAt: now.toISOString() });
 }

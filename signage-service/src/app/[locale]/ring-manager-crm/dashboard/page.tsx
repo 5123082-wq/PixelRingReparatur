@@ -1,5 +1,7 @@
 'use client';
 
+import * as Ably from 'ably';
+import type { RealtimeChannel, TokenParams, TokenRequest } from 'ably';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 
@@ -21,7 +23,18 @@ type CaseItem = {
   assignedOperator: string | null;
   summary: string | null;
   createdAt: string;
+  updatedAt: string;
   statusUpdatedAt: string | null;
+  unreadCustomerMessages: number;
+  lastActivityAt: string;
+  lastMessage: {
+    id: string;
+    authorRole: string;
+    authorName: string | null;
+    channel: string;
+    preview: string;
+    createdAt: string;
+  } | null;
   _count: { messages: number; attachments: number };
 };
 
@@ -55,6 +68,18 @@ const CHANNEL_LABELS: Record<string, string> = {
   CRM: '🏢 CRM',
   MANUAL: '✋ Вручную',
 };
+const CRM_CASES_REALTIME_CHANNEL = 'private:crm:cases';
+const REALTIME_EVENT_NAME = 'case.updated';
+
+function formatActivityTime(value: string) {
+  return new Date(value).toLocaleDateString('de-DE', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -67,9 +92,12 @@ export default function AdminDashboardPage() {
   const [channelFilter, setChannelFilter] = useState('');
   const [search, setSearch] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [lastLiveUpdateAt, setLastLiveUpdateAt] = useState<string | null>(null);
 
-  const fetchCases = useCallback(async (page = 1) => {
-    setLoading(true);
+  const fetchCases = useCallback(async (page = 1, options: { silent?: boolean } = {}) => {
+    if (!options.silent) {
+      setLoading(true);
+    }
     const params = new URLSearchParams();
 
     params.set('page', String(page));
@@ -95,12 +123,61 @@ export default function AdminDashboardPage() {
     } catch {
       console.error('Failed to fetch cases');
     } finally {
-      setLoading(false);
+      if (!options.silent) {
+        setLoading(false);
+      }
     }
   }, [statusFilter, channelFilter, search, router, locale]);
 
   useEffect(() => {
     fetchCases();
+  }, [fetchCases]);
+
+  useEffect(() => {
+    let realtime: Ably.Realtime | null = null;
+    let channel: RealtimeChannel | null = null;
+    let isDisposed = false;
+
+    async function connectRealtime() {
+      const nextRealtime = new Ably.Realtime({
+        authCallback: async (_tokenParams: TokenParams, callback) => {
+          try {
+            const res = await adminFetch('/api/admin/realtime/ably-token', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ scope: 'crm-cases' }),
+            });
+
+            if (!res.ok) {
+              throw new Error(`Realtime token request failed (${res.status})`);
+            }
+
+            callback(null, (await res.json()) as TokenRequest);
+          } catch (error) {
+            callback(error instanceof Error ? error.message : 'Realtime auth failed', null);
+          }
+        },
+      });
+
+      realtime = nextRealtime;
+      channel = nextRealtime.channels.get(CRM_CASES_REALTIME_CHANNEL);
+      await channel.subscribe(REALTIME_EVENT_NAME, () => {
+        if (!isDisposed) {
+          setLastLiveUpdateAt(new Date().toISOString());
+          void fetchCases(1, { silent: true });
+        }
+      });
+    }
+
+    void connectRealtime().catch((error) => {
+      console.error('CRM list realtime connection failed:', error);
+    });
+
+    return () => {
+      isDisposed = true;
+      void channel?.unsubscribe(REALTIME_EVENT_NAME);
+      realtime?.close();
+    };
   }, [fetchCases]);
 
   return (
@@ -109,7 +186,14 @@ export default function AdminDashboardPage() {
       <div className="flex justify-between items-center bg-zinc-900 border border-zinc-800 p-6 rounded-xl shadow-sm">
         <div>
           <h1 className="text-2xl font-bold text-white tracking-tight">Заявки</h1>
-          <p className="text-sm text-zinc-400 mt-1">Управление заявками и коммуникация CRM</p>
+          <p className="text-sm text-zinc-400 mt-1">
+            Управление заявками и коммуникация CRM
+            {lastLiveUpdateAt && (
+              <span className="ml-3 text-[11px] font-semibold uppercase tracking-wider text-emerald-400">
+                Live updated {new Date(lastLiveUpdateAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            )}
+          </p>
         </div>
         <Button onClick={() => setShowCreateForm(true)}>
           + Новая заявка
@@ -197,13 +281,20 @@ export default function AdminDashboardPage() {
                   <tr
                     key={c.id}
                     onClick={() => router.push(withLocalePath(locale, `/ring-manager-crm/dashboard/${c.id}`))}
-                    className="hover:bg-zinc-800/50 cursor-pointer transition-colors"
+                    className={`hover:bg-zinc-800/50 cursor-pointer transition-colors ${c.unreadCustomerMessages > 0 ? 'bg-blue-500/[0.08]' : ''}`}
                   >
                     <td className="px-6 py-4">
-                      <span className="font-mono text-blue-400 font-semibold">{c.publicRequestNumber || '—'}</span>
+                      <div className="flex items-center gap-3">
+                        <span className={`font-mono font-semibold ${c.unreadCustomerMessages > 0 ? 'text-blue-300' : 'text-blue-400'}`}>{c.publicRequestNumber || '—'}</span>
+                        {c.unreadCustomerMessages > 0 && (
+                          <span className="rounded-full bg-blue-500 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white shadow-[0_0_15px_-5px_#3b82f6]">
+                            {c.unreadCustomerMessages} new
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="font-medium text-zinc-100">{c.customerName || 'Без имени'}</div>
+                      <div className={`font-medium ${c.unreadCustomerMessages > 0 ? 'text-white' : 'text-zinc-100'}`}>{c.customerName || 'Без имени'}</div>
                       <div className="text-xs text-zinc-500 mt-0.5">
                         {c.customerEmail || c.customerPhone || '—'}
                       </div>
@@ -217,14 +308,18 @@ export default function AdminDashboardPage() {
                       {CHANNEL_LABELS[c.originChannel] || c.originChannel}
                     </td>
                     <td className="px-6 py-4 max-w-[200px] truncate text-xs text-zinc-400">
-                      {c.summary || '—'}
+                      <div className={`${c.unreadCustomerMessages > 0 ? 'font-semibold text-zinc-200' : 'text-zinc-400'} truncate`}>
+                        {c.lastMessage?.preview || c.summary || '—'}
+                      </div>
+                      {c.lastMessage && (
+                        <div className="mt-1 text-[10px] font-bold uppercase tracking-wider text-zinc-600">
+                          {c.lastMessage.authorRole === 'CUSTOMER' ? 'Client' : c.lastMessage.authorRole === 'OPERATOR' ? 'Operator' : 'System'}
+                        </div>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-xs font-medium text-zinc-300">{c.assignedOperator || '—'}</td>
                     <td className="px-6 py-4 text-xs text-zinc-500">
-                      {new Date(c.createdAt).toLocaleDateString('de-DE', {
-                        day: '2-digit', month: '2-digit', year: '2-digit',
-                        hour: '2-digit', minute: '2-digit',
-                      })}
+                      {formatActivityTime(c.lastActivityAt)}
                     </td>
                   </tr>
                 ))}
