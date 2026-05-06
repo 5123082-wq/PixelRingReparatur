@@ -511,7 +511,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
             </div>
           )}
 
-          <div className="flex items-end gap-2 rounded-[24px] border border-black/5 bg-[#F7F1E8]/50 p-1.5">
+          <div className="flex w-full min-w-0 items-end gap-2 rounded-[24px] border border-black/5 bg-[#F7F1E8]/50 p-1.5">
             {/* Attachment button */}
             <button
               type="button"
@@ -536,7 +536,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
             <button
               type="button"
               title="Sprachnachricht (demnächst)"
-              className="shrink-0 w-9 h-9 flex items-center justify-center rounded-[16px] text-[#72665D]/40 cursor-not-allowed"
+              className="hidden shrink-0 w-9 h-9 items-center justify-center rounded-[16px] text-[#72665D]/40 cursor-not-allowed sm:flex"
               disabled
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -551,7 +551,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
               onFocus={scheduleScrollToBottom}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void handleSend(); } }}
               placeholder="Ihre Nachricht …"
-              className="max-h-24 flex-1 resize-none border-none bg-transparent py-2 text-[14px] text-[#0E1A2B] placeholder-[#72665D]/40 focus:ring-0"
+              className="min-w-0 max-h-24 flex-1 resize-none border-none bg-transparent py-2 text-[16px] text-[#0E1A2B] placeholder-[#72665D]/40 focus:ring-0"
             />
 
             <button
