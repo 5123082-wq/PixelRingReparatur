@@ -134,7 +134,7 @@ const Footer = ({ content }: { content?: FooterContent | null }) => {
           SITE_CONFIG.company.address.country,
         ];
   const hours = content?.hours || SITE_CONFIG.company.hours;
-  const email = content?.email || SITE_CONFIG.company.email;
+  const email = SITE_CONFIG.company.email;
 
   // Bottom bar
   const copyright = content?.copyright || FALLBACK_NAV.copyright;

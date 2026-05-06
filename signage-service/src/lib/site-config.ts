@@ -12,7 +12,7 @@ export const SITE_CONFIG = {
   company: {
     name: 'PixelRing Technical Atelier',
     legalName: 'PixelRing Technical Atelier',
-    email: 'info@pixel-ring.de',
+    email: 'info@pixel-ring.com',
     hours: 'Mo–Fr 09:00–18:00',
     address: {
       street: 'Dannenwalder Weg 110',
