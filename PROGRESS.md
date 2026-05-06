@@ -16,6 +16,11 @@ Short global status only. Detailed session notes belong to folder-level `Progres
 
 - Date: 2026-05-06
 - Updated by: Codex
+- **Current Stage**: Telegram status links changed to URL buttons — PR issue and post-PR AI replies now attach Telegram inline keyboard status buttons.
+- **Next Action**: Deploy and verify Telegram shows the status button under both PR issue and AI status replies.
+
+- Date: 2026-05-06
+- Updated by: Codex
 - **Current Stage**: Telegram AI pause policy adjusted — Issue PR no longer disables AI; customer-visible manager replies pause AI for two hours, with manual re-enable still available.
 - **Next Action**: Deploy and test post-PR Telegram questions plus manager-reply pause/resume behavior.
 

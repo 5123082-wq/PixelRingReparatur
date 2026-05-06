@@ -1,7 +1,7 @@
 import { CRM_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
 import { createAdminAuditLog, requireAdminPermissionActor } from '@/lib/admin-audit';
 import { NextRequest, NextResponse } from 'next/server';
-import { CaseOriginChannel, CaseStatus, MessageAuthorRole, SessionScope } from '@prisma/client';
+import { CaseOriginChannel, CaseStatus, MessageAuthorRole } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
@@ -16,13 +16,8 @@ import {
   publishCaseRealtimeEvent,
   type CaseRealtimeReason,
 } from '@/lib/realtime';
-import {
-  createCaseSessionToken,
-  getCaseSessionExpiryDate,
-  hashCaseSessionToken,
-} from '@/lib/case-session';
 import { ensurePublicRequestNumberForCase } from '@/lib/request-number';
-import { buildLocaleUrl } from '@/lib/seo';
+import { createCaseStatusAccessLink } from '@/lib/status-access-link';
 import { sendTelegramMessage } from '@/lib/telegram';
 
 const VALID_STATUSES = Object.values(CaseStatus);
@@ -35,20 +30,6 @@ function escapeTelegramHtml(value: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
-}
-
-function buildStatusTrackingUrl(input: {
-  locale?: string | null;
-  publicRequestNumber: string;
-  accessToken: string;
-}): string {
-  const locale = input.locale?.trim() || 'de';
-  const params = new URLSearchParams({
-    request: input.publicRequestNumber,
-    access: input.accessToken,
-  });
-
-  return buildLocaleUrl(locale, `/status?${params.toString()}`);
 }
 
 function buildPrIssuedTelegramMessage(publicRequestNumber: string, statusUrl?: string | null): string {
@@ -604,25 +585,14 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
       if (hasPublicRequestNumberIssue) {
         const publicRequestNumber = await ensurePublicRequestNumberForCase(tx, id);
-        const accessToken = createCaseSessionToken();
-        const statusUrl = buildStatusTrackingUrl({
+        const statusUrl = await createCaseStatusAccessLink(tx, {
+          caseId: id,
           locale: caseRecord.locale,
           publicRequestNumber,
-          accessToken,
+          now,
         });
         issuedPublicRequestNumber = publicRequestNumber;
         issuedPublicRequestStatusUrl = statusUrl;
-
-        await tx.session.create({
-          data: {
-            tokenHash: hashCaseSessionToken(accessToken),
-            scope: SessionScope.CASE_ACCESS,
-            caseId: id,
-            verifiedAt: now,
-            lastSeenAt: now,
-            expiresAt: getCaseSessionExpiryDate(now),
-          },
-        });
 
         const shouldUpdateStatus = caseRecord.status !== CaseStatus.NUMBER_ISSUED;
 
@@ -704,17 +674,27 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     if (issuedPublicRequestNumber && telegramPrChatId) {
       try {
-        const statusUrl =
-          issuedPublicRequestStatusUrl ??
-          buildLocaleUrl('de', `/status?request=${encodeURIComponent(issuedPublicRequestNumber)}`);
+        const statusUrl = issuedPublicRequestStatusUrl;
 
         await sendTelegramMessage({
           chatId: telegramPrChatId,
-          text: buildPrIssuedTelegramHtmlMessage({
-            publicRequestNumber: issuedPublicRequestNumber,
-            statusUrl,
-          }),
-          parseMode: 'HTML',
+          text: statusUrl
+            ? buildPrIssuedTelegramHtmlMessage({
+                publicRequestNumber: issuedPublicRequestNumber,
+                statusUrl,
+              })
+            : buildPrIssuedTelegramMessage(issuedPublicRequestNumber),
+          parseMode: statusUrl ? 'HTML' : undefined,
+          replyMarkup: statusUrl
+            ? {
+                inline_keyboard: [[
+                  {
+                    text: 'Status öffnen',
+                    url: statusUrl,
+                  },
+                ]],
+              }
+            : undefined,
         });
       } catch (error) {
         telegramDeliveryError =

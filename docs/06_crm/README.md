@@ -14,6 +14,21 @@ Planned base documents:
 ## Progress Log
 
 ### 2026-05-06
+**Telegram Status URL Buttons**
+- **Status**: In progress (implementation baseline added)
+- **Done**:
+  - Added Telegram inline keyboard URL buttons to manual PR issue messages.
+  - Added Telegram inline keyboard URL buttons to post-PR AI replies when a public request number exists.
+  - Reused the existing case-access status-link session flow for each button URL.
+- **In Progress**:
+  - Production validation on Telegram mobile clients.
+- **Next Action**:
+  - Deploy and confirm the status button appears below PR issue and AI status replies.
+- **Blockers/Risks**:
+  - Telegram inline text links can be client-dependent visually; URL buttons are the primary UX.
+- **Updated Documents**: `docs/06_crm/README.md`, `PROGRESS.md`
+
+### 2026-05-06
 **Telegram AI Pause Policy**
 - **Status**: In progress (behavior adjustment implemented)
 - **Done**:

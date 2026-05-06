@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { runAssistantTurn } from '@/lib/ai/assistant-orchestrator';
 import { prisma } from '@/lib/prisma';
 import { publishCaseRealtimeEvent } from '@/lib/realtime';
+import { createCaseStatusAccessLink } from '@/lib/status-access-link';
 import {
   extractTelegramMessageBody,
   getTelegramDisplayName,
@@ -72,6 +73,24 @@ function buildWelcomeText(): string {
     'Ein Manager antwortet hier im Telegram-Chat.',
     'Nach der Klärung der Details erhalten Sie eine PR-Nummer für die weitere Verfolgung.',
   ].join('\n');
+}
+
+function getStatusButtonLabel(locale?: string | null): string {
+  switch (locale) {
+    case 'ru':
+      return 'Открыть статус';
+    case 'en':
+      return 'Open status';
+    case 'tr':
+      return 'Durumu aç';
+    case 'pl':
+      return 'Otwórz status';
+    case 'ar':
+      return 'فتح الحالة';
+    case 'de':
+    default:
+      return 'Status öffnen';
+  }
 }
 
 function normalizeTelegramLocale(languageCode?: string | null): string {
@@ -280,10 +299,31 @@ export async function POST(request: NextRequest) {
 
       if (assistantReply?.text) {
         assistantReplyText = assistantReply.text;
+        const statusUrl = result.publicRequestNumber
+          ? await createCaseStatusAccessLink(prisma, {
+              caseId: result.caseId,
+              publicRequestNumber: result.publicRequestNumber,
+              locale: result.locale,
+              now,
+            }).catch((error) => {
+              console.error('Telegram status link creation failed:', error);
+              return null;
+            })
+          : null;
 
         await sendTelegramMessage({
           chatId: meta.chatId,
           text: assistantReply.text,
+          replyMarkup: statusUrl
+            ? {
+                inline_keyboard: [[
+                  {
+                    text: getStatusButtonLabel(result.locale),
+                    url: statusUrl,
+                  },
+                ]],
+              }
+            : undefined,
         }).catch((error) => {
           console.error('Telegram AI reply delivery failed:', error);
         });

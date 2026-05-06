@@ -45,6 +45,13 @@ export type TelegramSendMessageResult = {
   message_id: number;
 };
 
+export type TelegramInlineKeyboardMarkup = {
+  inline_keyboard: Array<Array<{
+    text: string;
+    url: string;
+  }>>;
+};
+
 export function getTelegramBotToken(): string | null {
   return process.env.TELEGRAM_BOT_TOKEN?.trim() || null;
 }
@@ -81,6 +88,7 @@ export async function sendTelegramMessage(input: {
   chatId: string;
   text: string;
   parseMode?: 'HTML';
+  replyMarkup?: TelegramInlineKeyboardMarkup;
 }): Promise<TelegramSendMessageResult> {
   const response = await fetch(getTelegramApiUrl('sendMessage'), {
     method: 'POST',
@@ -89,6 +97,7 @@ export async function sendTelegramMessage(input: {
       chat_id: input.chatId,
       text: input.text,
       parse_mode: input.parseMode,
+      reply_markup: input.replyMarkup,
       disable_web_page_preview: true,
     }),
   });
