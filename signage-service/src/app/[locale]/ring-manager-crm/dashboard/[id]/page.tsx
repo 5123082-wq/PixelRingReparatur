@@ -128,6 +128,8 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
   const initialScrollCaseIdRef = useRef<string | null>(null);
   const realtimeRefreshInFlightRef = useRef(false);
   const realtimeRefreshQueuedRef = useRef(false);
+  const previousMessageCountRef = useRef(0);
+  const shouldStickToBottomRef = useRef(false);
 
   const [updating, setUpdating] = useState(false);
   const [newStatus, setNewStatus] = useState('');
@@ -151,7 +153,9 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
 
   const scrollChatToBottom = useCallback(() => {
     requestAnimationFrame(() => {
-      bottomAnchorRef.current?.scrollIntoView({ block: 'end' });
+      requestAnimationFrame(() => {
+        bottomAnchorRef.current?.scrollIntoView({ block: 'end' });
+      });
     });
   }, []);
 
@@ -188,6 +192,22 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
   }, [fetchCase, locale]);
 
   useEffect(() => {
+    const nextMessageCount = caseData?.messages.length ?? 0;
+    const messageCountIncreased = nextMessageCount > previousMessageCountRef.current;
+
+    previousMessageCountRef.current = nextMessageCount;
+
+    if (
+      activeTab === 'client' &&
+      messageCountIncreased &&
+      shouldStickToBottomRef.current
+    ) {
+      shouldStickToBottomRef.current = false;
+      scrollChatToBottom();
+    }
+  }, [activeTab, caseData?.messages.length, scrollChatToBottom]);
+
+  useEffect(() => {
     void adminFetch(`/api/admin/cases/${id}/read`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -205,6 +225,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
     const shouldScrollToBottom = activeTab === 'client' && isScrolledNearBottom();
 
     try {
+      shouldStickToBottomRef.current = shouldScrollToBottom;
       await fetchCase({ silent: true });
 
       if (shouldScrollToBottom) {
