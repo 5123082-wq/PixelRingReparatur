@@ -74,13 +74,20 @@ export async function GET(request: NextRequest) {
   const page = Math.max(1, Number(searchParams.get('page')) || 1);
   const pageSize = Math.min(100, Math.max(1, Number(searchParams.get('pageSize')) || DEFAULT_PAGE_SIZE));
   const statusFilter = searchParams.get('status');
+  const statusFilters = searchParams
+    .get('statuses')
+    ?.split(',')
+    .map((value) => value.trim())
+    .filter((value): value is CaseStatus => VALID_STATUSES.includes(value as CaseStatus));
   const channelFilter = searchParams.get('channel');
   const search = searchParams.get('search')?.trim().toUpperCase();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {};
 
-  if (statusFilter && VALID_STATUSES.includes(statusFilter as CaseStatus)) {
+  if (statusFilters) {
+    where.status = { in: statusFilters };
+  } else if (statusFilter && VALID_STATUSES.includes(statusFilter as CaseStatus)) {
     where.status = statusFilter;
   }
 

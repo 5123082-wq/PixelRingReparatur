@@ -58,6 +58,9 @@ const STATUS_LABELS: Record<string, { label: string; variant: string }> = {
   CANCELLED: { label: 'Отказ', variant: 'error' },
 };
 
+const STATUS_KEYS = Object.keys(STATUS_LABELS);
+const DEFAULT_VISIBLE_STATUS_KEYS = STATUS_KEYS.filter((key) => key !== 'CANCELLED');
+
 const CHANNEL_LABELS: Record<string, string> = {
   WEBSITE_CHAT: '💬 Чат',
   WEBSITE_FORM: '📝 Форма',
@@ -88,7 +91,7 @@ export default function AdminDashboardPage() {
   const [cases, setCases] = useState<CaseItem[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState('');
+  const [statusFilters, setStatusFilters] = useState<string[]>(DEFAULT_VISIBLE_STATUS_KEYS);
   const [channelFilter, setChannelFilter] = useState('');
   const [search, setSearch] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -102,7 +105,7 @@ export default function AdminDashboardPage() {
 
     params.set('page', String(page));
 
-    if (statusFilter) params.set('status', statusFilter);
+    params.set('statuses', statusFilters.join(','));
     if (channelFilter) params.set('channel', channelFilter);
     if (search.trim()) params.set('search', search.trim());
 
@@ -127,7 +130,7 @@ export default function AdminDashboardPage() {
         setLoading(false);
       }
     }
-  }, [statusFilter, channelFilter, search, router, locale]);
+  }, [statusFilters, channelFilter, search, router, locale]);
 
   useEffect(() => {
     fetchCases();
@@ -211,16 +214,11 @@ export default function AdminDashboardPage() {
           />
         </div>
 
-        <div className="w-48">
-          <Select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option value="">Все статусы</option>
-            {Object.entries(STATUS_LABELS).map(([key, { label }]) => (
-              <option key={key} value={key}>{label}</option>
-            ))}
-          </Select>
+        <div className="w-64">
+          <StatusChecklistFilter
+            selectedStatuses={statusFilters}
+            onChange={setStatusFilters}
+          />
         </div>
 
         <div className="w-48">
@@ -354,6 +352,72 @@ export default function AdminDashboardPage() {
         </div>
       )}
     </div>
+  );
+}
+
+function StatusChecklistFilter({
+  selectedStatuses,
+  onChange,
+}: {
+  selectedStatuses: string[];
+  onChange: (statuses: string[]) => void;
+}) {
+  const selectedSet = new Set(selectedStatuses);
+  const allSelected = selectedStatuses.length === STATUS_KEYS.length;
+  const activeLabel =
+    allSelected
+      ? 'Все статусы'
+      : selectedStatuses.length === 0
+        ? 'Нет статусов'
+        : `${selectedStatuses.length} статусов`;
+
+  function toggleStatus(status: string) {
+    onChange(
+      selectedSet.has(status)
+        ? selectedStatuses.filter((item) => item !== status)
+        : [...selectedStatuses, status]
+    );
+  }
+
+  function toggleAll() {
+    onChange(allSelected ? [] : STATUS_KEYS);
+  }
+
+  return (
+    <details className="group relative">
+      <summary className="flex h-10 cursor-pointer list-none items-center justify-between rounded-lg border border-zinc-700 bg-zinc-950 px-4 text-sm font-medium text-zinc-200 outline-none transition-colors hover:border-zinc-600">
+        <span>{activeLabel}</span>
+        <span className="text-xs text-zinc-500 transition-transform group-open:rotate-180">▾</span>
+      </summary>
+
+      <div className="absolute left-0 top-12 z-50 w-full overflow-hidden rounded-xl border border-zinc-700 bg-zinc-950 shadow-2xl">
+        <label className="flex cursor-pointer items-center gap-3 border-b border-zinc-800 px-4 py-3 text-sm font-semibold text-zinc-100 hover:bg-zinc-900">
+          <input
+            type="checkbox"
+            checked={allSelected}
+            onChange={toggleAll}
+            className="h-4 w-4 accent-blue-500"
+          />
+          Все статусы
+        </label>
+        <div className="max-h-80 overflow-y-auto py-1">
+          {STATUS_KEYS.map((key) => (
+            <label
+              key={key}
+              className="flex cursor-pointer items-center gap-3 px-4 py-2.5 text-sm text-zinc-300 hover:bg-zinc-900"
+            >
+              <input
+                type="checkbox"
+                checked={selectedSet.has(key)}
+                onChange={() => toggleStatus(key)}
+                className="h-4 w-4 accent-blue-500"
+              />
+              <span>{STATUS_LABELS[key].label}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+    </details>
   );
 }
 
