@@ -315,7 +315,9 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
       if (res.ok) {
         setReplyText('');
         setReplyFeedback(data?.telegramDeliveryError ? `Telegram delivery warning: ${data.telegramDeliveryError}` : '');
-        await fetchCase();
+        shouldStickToBottomRef.current = true;
+        await fetchCase({ silent: true });
+        scrollChatToBottom();
       } else {
         setReplyFeedback('Message could not be sent.');
       }
