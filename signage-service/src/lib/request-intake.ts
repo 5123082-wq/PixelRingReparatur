@@ -148,6 +148,19 @@ export async function createWebsiteRequest(
       createdCase.id
     );
 
+    const previousRegistrationMessage =
+      input.existingSessionId && input.existingSessionToken
+        ? await tx.message.findFirst({
+            where: {
+              sessionId: input.existingSessionId,
+              authorRole: MessageAuthorRole.SYSTEM,
+              body: { startsWith: 'Anfrage erfolgreich registriert. Nummer:' },
+            },
+            orderBy: { createdAt: 'desc' },
+            select: { createdAt: true },
+          })
+        : null;
+
     let initialMessageId = null;
     if (!input.isFromChat) {
       const initialMessage = await tx.message.create({
@@ -192,16 +205,6 @@ export async function createWebsiteRequest(
     let finalSessionToken = sessionToken;
     let linkedSessionAttachmentCount = 0;
     if (input.existingSessionId && input.existingSessionToken) {
-      const lastRegistrationMessage = await tx.message.findFirst({
-        where: {
-          sessionId: input.existingSessionId,
-          authorRole: MessageAuthorRole.SYSTEM,
-          body: { startsWith: 'Anfrage erfolgreich registriert. Nummer:' },
-        },
-        orderBy: { createdAt: 'desc' },
-        select: { createdAt: true },
-      });
-
       session = await tx.session.update({
         where: { id: input.existingSessionId },
         data: {
@@ -219,8 +222,8 @@ export async function createWebsiteRequest(
       await tx.message.updateMany({
         where: {
           sessionId: input.existingSessionId,
-          ...(lastRegistrationMessage
-            ? { createdAt: { gt: lastRegistrationMessage.createdAt } }
+          ...(previousRegistrationMessage
+            ? { createdAt: { gt: previousRegistrationMessage.createdAt } }
             : {}),
         },
         data: { caseId: createdCase.id },
@@ -230,8 +233,8 @@ export async function createWebsiteRequest(
         where: {
           uploadedBySessionId: input.existingSessionId,
           isCustomerVisible: true,
-          ...(lastRegistrationMessage
-            ? { createdAt: { gt: lastRegistrationMessage.createdAt } }
+          ...(previousRegistrationMessage
+            ? { createdAt: { gt: previousRegistrationMessage.createdAt } }
             : {}),
         },
         data: { caseId: createdCase.id },
