@@ -14,6 +14,21 @@ Planned base documents:
 ## Progress Log
 
 ### 2026-05-07
+**Telegram Status Button Noise Reduction**
+- **Status**: In progress (implementation baseline added)
+- **Done**:
+  - Changed Telegram AI replies so the status button is attached only for status/request-number tracking questions.
+  - Changed AI prompt context so existing PR numbers are exposed to the assistant only for status-oriented turns.
+  - Added explicit prompt guidance to collect new problem details instead of redirecting new problems to an existing request number.
+- **In Progress**:
+  - Production validation with a Telegram customer asking about a new problem after an existing PR number was issued.
+- **Next Action**:
+  - Deploy and verify that "new problem" messages do not receive the old status button, while "what is my request number/status" still does.
+- **Blockers/Risks**:
+  - Intent detection is keyword-based for this MVP; edge-case phrasing may still need tuning.
+- **Updated Documents**: `docs/06_crm/README.md`
+
+### 2026-05-07
 **Telegram Admin Alerts MVP**
 - **Status**: In progress (implementation baseline added)
 - **Done**:
@@ -30,6 +45,11 @@ Planned base documents:
 - **Blockers/Risks**:
   - Alerts include customer contact/message previews, so the Telegram group must stay private and manager-only.
 - **Updated Documents**: `docs/06_crm/README.md`, `PROGRESS.md`, `signage-service/.env.example`
+- **Later Improvements**:
+  - Reduce noise by avoiding Telegram admin alerts for every message when a manager is already actively viewing the CRM case.
+  - Make the alert type more visually explicit: new request vs. new customer message.
+  - Keep the current `Open in CRM` action as the only button until a real manager workflow justifies actions such as `Later` or `In progress`.
+  - Add a delayed alert for cases or customer messages that remain unanswered after a configured time window.
 
 ### 2026-05-06
 **Telegram Status URL Buttons**

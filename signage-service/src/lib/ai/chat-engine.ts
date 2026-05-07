@@ -2,6 +2,7 @@ import 'server-only';
 
 import {
   buildFallbackReply,
+  detectSafetyIntent,
   guardChatReply,
   guardChatText,
   type SafetyIntent,
@@ -174,11 +175,15 @@ export async function generateChatReply(
   try {
     const config = await getAiRuntimeConfig();
     const history = normalizeHistory(input.history, config.maxContextMessages);
+    const shouldExposeRequestNumber =
+      input.publicRequestNumber && incomingVerdict.intent === 'status';
     const systemPrompt = await buildSystemPrompt({
       locale: input.locale,
       operatorTakeover: input.operatorTakeover,
       extraSystemPrompt: config.cmsSystemPrompt,
-      publicRequestNumber: input.publicRequestNumber,
+      publicRequestNumber: shouldExposeRequestNumber
+        ? input.publicRequestNumber
+        : null,
     });
     const aiText = await callOpenAI(config, systemPrompt, input.message, history);
 
@@ -211,4 +216,8 @@ export async function generateChatReply(
     provider: 'fallback',
     refused: incomingVerdict.intent === 'refusal',
   };
+}
+
+export function shouldAttachStatusAction(message: string): boolean {
+  return detectSafetyIntent(message) === 'status';
 }

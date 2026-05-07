@@ -2,6 +2,7 @@ import { CaseOriginChannel, CaseStatus, MessageAuthorRole } from '@prisma/client
 import { NextRequest, NextResponse } from 'next/server';
 
 import { runAssistantTurn } from '@/lib/ai/assistant-orchestrator';
+import { shouldAttachStatusAction } from '@/lib/ai/chat-engine';
 import { sendAdminTelegramNotification } from '@/lib/admin-telegram-notifications';
 import { prisma } from '@/lib/prisma';
 import { publishCaseRealtimeEvent } from '@/lib/realtime';
@@ -324,10 +325,12 @@ export async function POST(request: NextRequest) {
 
       if (assistantReply?.text) {
         assistantReplyText = assistantReply.text;
-        const statusUrl = result.publicRequestNumber
+        const shouldShowStatusButton =
+          Boolean(result.publicRequestNumber) && shouldAttachStatusAction(body);
+        const statusUrl = shouldShowStatusButton
           ? await createCaseStatusAccessLink(prisma, {
               caseId: result.caseId,
-              publicRequestNumber: result.publicRequestNumber,
+              publicRequestNumber: result.publicRequestNumber!,
               locale: result.locale,
               now,
             }).catch((error) => {
