@@ -16,6 +16,11 @@ Short global status only. Detailed session notes belong to folder-level `Progres
 
 - Date: 2026-05-07
 - Updated by: Codex
+- **Current Stage**: Telegram photo attachments MVP added — inbound Telegram photo messages now download through Bot API `getFile`, store as CRM attachments, and should render in the existing CRM Media block.
+- **Next Action**: Deploy and validate a real Telegram photo on an existing case, confirming both timeline placeholder and CRM Media preview/download.
+
+- Date: 2026-05-07
+- Updated by: Codex
 - **Current Stage**: Telegram admin alerts MVP added — website requests and inbound Telegram customer messages now send manager notifications to `TELEGRAM_ADMIN_CHAT_ID` through a shared helper; group intake is ignored and `/chatid` returns the setup id.
 - **Next Action**: Deploy, create the closed manager Telegram group, add the bot, run `/chatid`, set `TELEGRAM_ADMIN_CHAT_ID`, and verify one website request plus one Telegram inbound message.
 

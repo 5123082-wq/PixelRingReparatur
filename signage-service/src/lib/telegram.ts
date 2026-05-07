@@ -16,6 +16,14 @@ export type TelegramChat = {
   title?: string;
 };
 
+export type TelegramPhotoSize = {
+  file_id: string;
+  file_unique_id?: string;
+  width: number;
+  height: number;
+  file_size?: number;
+};
+
 export type TelegramMessage = {
   message_id: number;
   from?: TelegramUser;
@@ -23,7 +31,7 @@ export type TelegramMessage = {
   date: number;
   text?: string;
   caption?: string;
-  photo?: unknown[];
+  photo?: TelegramPhotoSize[];
   document?: unknown;
   video?: unknown;
   voice?: unknown;
@@ -41,8 +49,22 @@ type TelegramApiResponse<T> = {
   description?: string;
 };
 
+type TelegramFileResult = {
+  file_id: string;
+  file_unique_id?: string;
+  file_size?: number;
+  file_path?: string;
+};
+
 export type TelegramSendMessageResult = {
   message_id: number;
+};
+
+export type TelegramDownloadedFile = {
+  buffer: Buffer;
+  mimeType: string;
+  originalFilename: string;
+  fileSize?: number;
 };
 
 export type TelegramInlineKeyboardMarkup = {
@@ -84,6 +106,44 @@ function getTelegramApiUrl(method: string): string {
   return `https://api.telegram.org/bot${token}/${method}`;
 }
 
+function getTelegramFileUrl(filePath: string): string {
+  const token = getTelegramBotToken();
+
+  if (!token) {
+    throw new Error('Missing TELEGRAM_BOT_TOKEN.');
+  }
+
+  return `https://api.telegram.org/file/bot${token}/${filePath}`;
+}
+
+function getFilenameFromTelegramPath(filePath: string): string {
+  const filename = filePath.split('/').pop()?.trim();
+
+  return filename || 'telegram-file';
+}
+
+function getMimeTypeFromResponse(response: Response): string {
+  return response.headers.get('content-type')?.split(';')[0]?.trim() || 'application/octet-stream';
+}
+
+function getMimeTypeFromTelegramPath(filePath: string): string {
+  const extension = filePath.split('.').pop()?.toLowerCase();
+
+  switch (extension) {
+    case 'jpg':
+    case 'jpeg':
+      return 'image/jpeg';
+    case 'png':
+      return 'image/png';
+    case 'webp':
+      return 'image/webp';
+    case 'gif':
+      return 'image/gif';
+    default:
+      return 'application/octet-stream';
+  }
+}
+
 export async function sendTelegramMessage(input: {
   chatId: string;
   text: string;
@@ -111,6 +171,67 @@ export async function sendTelegramMessage(input: {
   }
 
   return data.result;
+}
+
+export function getLargestTelegramPhoto(message: TelegramMessage): TelegramPhotoSize | null {
+  const photos = message.photo ?? [];
+
+  if (photos.length === 0) {
+    return null;
+  }
+
+  return photos.reduce((largest, photo) => {
+    const largestScore = largest.width * largest.height;
+    const photoScore = photo.width * photo.height;
+
+    return photoScore > largestScore ? photo : largest;
+  }, photos[0]);
+}
+
+export async function getTelegramFile(fileId: string): Promise<TelegramFileResult> {
+  const response = await fetch(getTelegramApiUrl('getFile'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ file_id: fileId }),
+  });
+
+  const data = (await response.json().catch(() => null)) as
+    | TelegramApiResponse<TelegramFileResult>
+    | null;
+
+  if (!response.ok || !data?.ok || !data.result) {
+    throw new Error(data?.description || `Telegram getFile failed (${response.status}).`);
+  }
+
+  if (!data.result.file_path) {
+    throw new Error('Telegram getFile response did not include file_path.');
+  }
+
+  return data.result;
+}
+
+export async function downloadTelegramFile(fileId: string): Promise<TelegramDownloadedFile> {
+  const telegramFile = await getTelegramFile(fileId);
+  const filePath = telegramFile.file_path;
+
+  if (!filePath) {
+    throw new Error('Telegram file_path is missing.');
+  }
+
+  const response = await fetch(getTelegramFileUrl(filePath));
+
+  if (!response.ok) {
+    throw new Error(`Telegram file download failed (${response.status}).`);
+  }
+
+  return {
+    buffer: Buffer.from(await response.arrayBuffer()),
+    mimeType: getMimeTypeFromResponse(response) === 'application/octet-stream'
+      ? getMimeTypeFromTelegramPath(filePath)
+      : getMimeTypeFromResponse(response),
+    originalFilename: getFilenameFromTelegramPath(filePath),
+    fileSize: telegramFile.file_size,
+  };
 }
 
 export function getTelegramDisplayName(input: {

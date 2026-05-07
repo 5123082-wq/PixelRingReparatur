@@ -18,6 +18,13 @@ export type StoredAttachmentInput = {
   checksumSha256: string;
 };
 
+export type StoreAttachmentBufferInput = {
+  buffer: Buffer;
+  mimeType: string;
+  originalFilename?: string | null;
+  source?: string;
+};
+
 export class AttachmentValidationError extends Error {
   constructor(message: string) {
     super(message);
@@ -101,6 +108,72 @@ export function getLocalAttachmentPath(storageKey: string): string {
   return absolutePath;
 }
 
+export async function storeAttachmentBuffer(
+  input: StoreAttachmentBufferInput
+): Promise<StoredAttachmentInput> {
+  if (input.buffer.byteLength <= 0) {
+    throw new AttachmentValidationError('Attachment file is empty.');
+  }
+
+  const maxUploadBytes = getMaxUploadBytes();
+
+  if (input.buffer.byteLength > maxUploadBytes) {
+    throw new AttachmentValidationError(
+      `Attachment is too large. Maximum size is ${Math.floor(maxUploadBytes / 1024 / 1024)} MB.`
+    );
+  }
+
+  const mimeType = input.mimeType || 'application/octet-stream';
+
+  if (!ALLOWED_TYPES.has(mimeType)) {
+    throw new AttachmentValidationError('Please upload an image or video file.');
+  }
+
+  const checksumSha256 = crypto.createHash('sha256').update(input.buffer).digest('hex');
+  const originalFilename = input.originalFilename
+    ? sanitizeFilename(input.originalFilename)
+    : null;
+  const source = sanitizeFilename(input.source || 'upload');
+  const storageKey = path.posix.join(
+    'attachments',
+    source,
+    new Date().toISOString().slice(0, 10),
+    `${crypto.randomUUID()}-${originalFilename ?? 'upload'}`
+  );
+  const absolutePath = getLocalAttachmentPath(storageKey);
+  const kind = getAttachmentKind(mimeType);
+
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    const { url } = await put(storageKey, input.buffer, {
+      access: 'private',
+      contentType: mimeType,
+    });
+
+    return {
+      kind,
+      storageProvider: AttachmentStorageProvider.VERCEL_BLOB,
+      storageKey: url,
+      originalFilename,
+      mimeType,
+      byteSize: input.buffer.byteLength,
+      checksumSha256,
+    };
+  }
+
+  await fs.mkdir(path.dirname(absolutePath), { recursive: true });
+  await fs.writeFile(absolutePath, input.buffer, { flag: 'wx' });
+
+  return {
+    kind,
+    storageProvider: AttachmentStorageProvider.LOCAL,
+    storageKey,
+    originalFilename,
+    mimeType,
+    byteSize: input.buffer.byteLength,
+    checksumSha256,
+  };
+}
+
 export async function storeAttachment(file: File): Promise<StoredAttachmentInput> {
   if (file.size <= 0) {
     throw new AttachmentValidationError('Attachment file is empty.');
@@ -120,48 +193,12 @@ export async function storeAttachment(file: File): Promise<StoredAttachmentInput
     throw new AttachmentValidationError('Please upload an image or video file.');
   }
 
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const checksumSha256 = crypto.createHash('sha256').update(buffer).digest('hex');
-  const originalFilename = file.name ? sanitizeFilename(file.name) : null;
-  const storageKey = path.posix.join(
-    'attachments',
-    'website-form',
-    new Date().toISOString().slice(0, 10),
-    `${crypto.randomUUID()}-${originalFilename ?? 'upload'}`
-  );
-  const absolutePath = getLocalAttachmentPath(storageKey);
-  const kind = getAttachmentKind(mimeType);
-
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
-    const { url } = await put(storageKey, buffer, {
-      access: 'private',
-      contentType: mimeType,
-    });
-    
-    return {
-      kind,
-      storageProvider: AttachmentStorageProvider.VERCEL_BLOB,
-      storageKey: url, // Store the public URL directly
-      originalFilename,
-      mimeType,
-      byteSize: buffer.byteLength,
-      checksumSha256,
-    };
-  }
-
-  // Fallback to local storage
-  await fs.mkdir(path.dirname(absolutePath), { recursive: true });
-  await fs.writeFile(absolutePath, buffer, { flag: 'wx' });
-
-  return {
-    kind,
-    storageProvider: AttachmentStorageProvider.LOCAL,
-    storageKey,
-    originalFilename,
+  return storeAttachmentBuffer({
+    buffer: Buffer.from(await file.arrayBuffer()),
     mimeType,
-    byteSize: buffer.byteLength,
-    checksumSha256,
-  };
+    originalFilename: file.name || null,
+    source: 'website-form',
+  });
 }
 
 export async function readLocalAttachment(storageKey: string): Promise<Buffer> {

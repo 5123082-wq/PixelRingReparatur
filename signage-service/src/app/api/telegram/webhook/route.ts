@@ -4,12 +4,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { runAssistantTurn } from '@/lib/ai/assistant-orchestrator';
 import { shouldAttachStatusAction } from '@/lib/ai/chat-engine';
 import { sendAdminTelegramNotification } from '@/lib/admin-telegram-notifications';
+import { storeAttachmentBuffer } from '@/lib/attachments';
 import { prisma } from '@/lib/prisma';
 import { publishCaseRealtimeEvent } from '@/lib/realtime';
 import { createCaseStatusAccessLink } from '@/lib/status-access-link';
 import {
+  downloadTelegramFile,
   extractTelegramMessageBody,
   getTelegramDisplayName,
+  getLargestTelegramPhoto,
   isTelegramWebhookSecretValid,
   sendTelegramMessage,
   type TelegramMessage,
@@ -161,6 +164,7 @@ export async function POST(request: NextRequest) {
   const externalMessageId = String(telegramMessage.message_id);
   const body = normalizeBody(extractTelegramMessageBody(telegramMessage));
   const canRunAssistant = hasTextContent(telegramMessage);
+  const telegramPhoto = getLargestTelegramPhoto(telegramMessage);
   const sentAt = new Date(telegramMessage.date * 1000);
   const now = new Date();
 
@@ -286,6 +290,31 @@ export async function POST(request: NextRequest) {
         createdNewConversation,
       };
     });
+
+    if (telegramPhoto) {
+      try {
+        const downloadedFile = await downloadTelegramFile(telegramPhoto.file_id);
+        const storedAttachment = await storeAttachmentBuffer({
+          buffer: downloadedFile.buffer,
+          mimeType: downloadedFile.mimeType,
+          originalFilename: downloadedFile.originalFilename,
+          source: 'telegram',
+        });
+
+        await prisma.attachment.create({
+          data: {
+            caseId: result.caseId,
+            messageId: result.customerMessageId,
+            ...storedAttachment,
+            width: telegramPhoto.width,
+            height: telegramPhoto.height,
+            isCustomerVisible: true,
+          },
+        });
+      } catch (error) {
+        console.error('Telegram photo attachment storage failed:', error);
+      }
+    }
 
     let assistantReplyText: string | null = null;
     const aiPauseExpired = isAutoResumableAiPause({

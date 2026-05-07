@@ -14,6 +14,23 @@ Planned base documents:
 ## Progress Log
 
 ### 2026-05-07
+**Telegram Photo Attachments MVP**
+- **Status**: In progress (implementation baseline added)
+- **Done**:
+  - Added Telegram photo file metadata typing and a Bot API `getFile` download path.
+  - Added buffer-based attachment storage so server-side Telegram downloads can reuse the existing private attachment storage model.
+  - Connected inbound Telegram photo messages to CRM `Attachment` records linked to the customer message and case.
+  - Reused the existing CRM case media block and protected admin attachment proxy for display/download.
+- **In Progress**:
+  - Production validation with a real Telegram photo sent by a customer.
+- **Next Action**:
+  - Deploy and send one Telegram photo to an existing case; verify the timeline message appears and the image renders in the CRM `Media` block.
+- **Blockers/Risks**:
+  - This first pass supports Telegram `photo` messages only; documents, videos, audio, and voice messages remain placeholders.
+  - Telegram files are stored as sensitive CRM attachments and must stay behind admin access controls.
+- **Updated Documents**: `docs/06_crm/README.md`, `PROGRESS.md`
+
+### 2026-05-07
 **Telegram Status Button Noise Reduction**
 - **Status**: In progress (implementation baseline added)
 - **Done**:
