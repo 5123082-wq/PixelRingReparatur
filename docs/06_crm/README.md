@@ -13,6 +13,24 @@ Planned base documents:
 
 ## Progress Log
 
+### 2026-05-07
+**Telegram Admin Alerts MVP**
+- **Status**: In progress (implementation baseline added)
+- **Done**:
+  - Added a shared server-side admin Telegram notification helper.
+  - Replaced the website contact route's inline Telegram send path with the shared helper.
+  - Added manager-chat alerts for new website requests and inbound Telegram customer messages.
+  - Guarded Telegram customer intake so non-private chats, including the manager group, do not create CRM cases.
+  - Added a `/chatid` group command so the owner can retrieve the manager group id without disabling the webhook.
+  - Added `TELEGRAM_ADMIN_CHAT_ID` to the environment contract, with legacy `TELEGRAM_CHAT_ID` fallback.
+- **In Progress**:
+  - Owner creates the closed Telegram manager group and provides the group chat id.
+- **Next Action**:
+  - Deploy, add the bot to the closed manager group, run `/chatid`, configure `TELEGRAM_ADMIN_CHAT_ID`, redeploy if required by the host, and submit one website request plus one Telegram message to verify alerts.
+- **Blockers/Risks**:
+  - Alerts include customer contact/message previews, so the Telegram group must stay private and manager-only.
+- **Updated Documents**: `docs/06_crm/README.md`, `PROGRESS.md`, `signage-service/.env.example`
+
 ### 2026-05-06
 **Telegram Status URL Buttons**
 - **Status**: In progress (implementation baseline added)

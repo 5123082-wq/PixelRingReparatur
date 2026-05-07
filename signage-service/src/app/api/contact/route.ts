@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, CONTACT_LIMIT } from '@/lib/rate-limit';
 import { createWebsiteRequest } from '@/lib/request-intake';
 import { CASE_SESSION_COOKIE_NAME } from '@/lib/case-session';
+import { sendAdminTelegramNotification } from '@/lib/admin-telegram-notifications';
 import {
   AttachmentValidationError,
   deleteAttachment,
@@ -90,57 +91,18 @@ export async function POST(request: NextRequest) {
       isFromChat,
     });
 
-    const attachmentsText = storedAttachments.length > 0
-      ? `\n📎 *Вложения:*\n${storedAttachments.map((a, i) => 
-          a.storageProvider === 'VERCEL_BLOB' 
-            ? `[Файл ${i + 1}](${a.storageKey})` 
-            : `Файл ${i + 1} (локальный)`
-        ).join('\n')}`
-      : '';
-
-    const text = [
-      `🔧 *New PixelRing request*`,
-      ``,
-      `👤 *Имя:* ${name || '—'}`,
-      `📞 *Контакт:* ${contact}`,
-      `🆔 *PR:* ${result.publicRequestNumber}`,
-      ...(issueType ? [`📋 *Тип:* ${issueType}`] : []),
-      ...(location ? [`🗺 *Локация:* ${location}`] : []),
-      attachmentsText,
-      ``,
-      `📝 *Сообщение:*`,
-      message,
-      ``,
-      `🏢 [View in CRM](https://pixelring.reparatur/de/ring-manager-crm/dashboard/${result.caseId})`,
-    ].join('\n');
-
-    const botToken = process.env.TELEGRAM_BOT_TOKEN;
-    const chatId = process.env.TELEGRAM_CHAT_ID;
-
-    if (botToken && chatId && chatId !== 'PLACEHOLDER_CHAT_ID') {
-      try {
-        await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: chatId,
-            text,
-            parse_mode: 'Markdown',
-          }),
-        });
-      } catch (telegramError) {
-        console.error('Telegram notification failed:', telegramError);
-      }
-    } else {
-      console.log('New contact form submission');
-      console.log({
-        name,
-        contact,
-        message,
-        publicRequestNumber: result.publicRequestNumber,
-        hasPhoto: result.photoReceived,
-      });
-    }
+    await sendAdminTelegramNotification({
+      kind: 'website_request_created',
+      caseId: result.caseId,
+      publicRequestNumber: result.publicRequestNumber,
+      customerName: name || null,
+      contactLabel: contact,
+      originLabel: isFromChat ? 'Website chat' : 'Website form',
+      messagePreview: finalMessage,
+      isNewCase: true,
+    }).catch((telegramError) => {
+      console.error('Admin Telegram request notification failed:', telegramError);
+    });
 
     const response = NextResponse.json({
       success: true,

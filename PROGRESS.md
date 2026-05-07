@@ -14,6 +14,11 @@ Short global status only. Detailed session notes belong to folder-level `Progres
 
 ## Last Updated
 
+- Date: 2026-05-07
+- Updated by: Codex
+- **Current Stage**: Telegram admin alerts MVP added — website requests and inbound Telegram customer messages now send manager notifications to `TELEGRAM_ADMIN_CHAT_ID` through a shared helper; group intake is ignored and `/chatid` returns the setup id.
+- **Next Action**: Deploy, create the closed manager Telegram group, add the bot, run `/chatid`, set `TELEGRAM_ADMIN_CHAT_ID`, and verify one website request plus one Telegram inbound message.
+
 - Date: 2026-05-06
 - Updated by: Codex
 - **Current Stage**: Telegram status links changed to URL buttons — PR issue and post-PR AI replies now attach Telegram inline keyboard status buttons.

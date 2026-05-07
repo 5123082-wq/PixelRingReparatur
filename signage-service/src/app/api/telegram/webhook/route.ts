@@ -2,6 +2,7 @@ import { CaseOriginChannel, CaseStatus, MessageAuthorRole } from '@prisma/client
 import { NextRequest, NextResponse } from 'next/server';
 
 import { runAssistantTurn } from '@/lib/ai/assistant-orchestrator';
+import { sendAdminTelegramNotification } from '@/lib/admin-telegram-notifications';
 import { prisma } from '@/lib/prisma';
 import { publishCaseRealtimeEvent } from '@/lib/realtime';
 import { createCaseStatusAccessLink } from '@/lib/status-access-link';
@@ -99,6 +100,12 @@ function normalizeTelegramLocale(languageCode?: string | null): string {
   return SUPPORTED_LOCALES.has(normalized) ? normalized : 'de';
 }
 
+function isChatIdCommand(message: TelegramMessage): boolean {
+  const text = message.text?.trim().toLowerCase() ?? '';
+
+  return text === '/chatid' || text.startsWith('/chatid@');
+}
+
 function buildMessageMetadata(message: TelegramMessage) {
   const chatId = String(message.chat.id);
   const user = message.from;
@@ -129,6 +136,24 @@ export async function POST(request: NextRequest) {
 
   if (!telegramMessage) {
     return NextResponse.json({ ok: true });
+  }
+
+  if (telegramMessage.chat.type !== 'private') {
+    if (isChatIdCommand(telegramMessage)) {
+      await sendTelegramMessage({
+        chatId: String(telegramMessage.chat.id),
+        text: [
+          'Telegram chat ID:',
+          String(telegramMessage.chat.id),
+          '',
+          'Use this value as TELEGRAM_ADMIN_CHAT_ID.',
+        ].join('\n'),
+      }).catch((error) => {
+        console.error('Telegram chat id command failed:', error);
+      });
+    }
+
+    return NextResponse.json({ ok: true, ignored: 'non-private-chat' });
   }
 
   const meta = buildMessageMetadata(telegramMessage);
@@ -344,6 +369,19 @@ export async function POST(request: NextRequest) {
       reason: 'message.created',
     }).catch((error) => {
       console.error('Telegram realtime publish failed:', error);
+    });
+
+    await sendAdminTelegramNotification({
+      kind: 'telegram_customer_message_created',
+      caseId: result.caseId,
+      publicRequestNumber: result.publicRequestNumber,
+      customerName: meta.displayName,
+      contactLabel: meta.username ? `@${meta.username}` : `Telegram chat ${meta.chatId}`,
+      originLabel: 'Telegram',
+      messagePreview: body,
+      isNewCase: result.createdNewConversation,
+    }).catch((error) => {
+      console.error('Admin Telegram customer-message notification failed:', error);
     });
 
     return NextResponse.json({ ok: true, caseId: result.caseId });
