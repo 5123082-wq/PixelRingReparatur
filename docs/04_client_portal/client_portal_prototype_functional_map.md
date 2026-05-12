@@ -47,6 +47,8 @@ Primary interaction primitives:
 
 - Objects: `objects`
 - Equipment and advertising assets: `equipment`
+- Suppliers: `suppliers`
+- Location intelligence: `location-intelligence`
 - Maintenance plan: `maintenance`
 - Photo reports: `reports`
 - Warranties: `warranties`
@@ -203,7 +205,95 @@ Implementation status proposal:
 
 - MVP now: object cards from connected fixture data and object detail modal/route.
 - Demo-only now: add object and filtering behavior.
-- Future: organization-scoped object CRUD, permissions, cost tracking.
+- Future: organization-scoped object CRUD, permissions, cost tracking, and a map layer that overlays objects with customer-managed suppliers.
+
+### Suppliers
+
+Role: customer-owned supplier file and logistics map for businesses with multiple locations.
+
+Core surfaces:
+
+- interactive map with customer objects and supplier pins;
+- supplier list/search panel;
+- supplier card file with category, contact data, service area, delivery logic, commercial notes, and status;
+- object/supplier links showing which suppliers serve which locations;
+- reserved suppliers marked as backup or candidate options.
+
+Supplier statuses:
+
+- primary;
+- backup;
+- candidate;
+- inactive.
+
+Interactions:
+
+- add supplier manually;
+- search for potential suppliers by geography, category, delivery capability, coverage, and commercial conditions;
+- show searched suppliers on the map relative to business objects;
+- save a searched supplier into the customer's supplier file;
+- mark a supplier as primary or backup for selected objects.
+
+Implementation status proposal:
+
+- MVP now: not implemented; keep out of the first read-only portal pass unless explicitly approved.
+- Demo-only later: preview map with fixture objects and customer-owned supplier records.
+- Future: organization-scoped supplier file, logistics scoring, supplier discovery workflow, supplier/object linking, and audit-safe changes.
+
+Product guardrail:
+
+- this is a private customer logistics tool, not a public marketplace, contractor directory, or "find a master" surface.
+- PixelRing internal partner operations must stay separate from customer-managed supplier records.
+
+### Location Intelligence
+
+Role: new-object search and competitor-aware location planning for businesses expanding their physical network.
+
+Core surfaces:
+
+- interactive map mode for candidate locations;
+- competitor layer around a selected address, area, or map pin;
+- delivery coverage layer for radius, drive-time, or service-area assumptions;
+- supplier/logistics overlay showing whether current or backup suppliers can support the candidate location;
+- candidate-location list with favorites, notes, source, and decision status;
+- comparison panel for multiple candidate locations.
+
+Candidate location statuses:
+
+- idea;
+- favorite;
+- under review;
+- rental lead;
+- rejected;
+- selected.
+
+Interactions:
+
+- search or enter a new location manually;
+- drop a candidate pin on the map;
+- inspect nearby competitor locations and density;
+- save rental listing links or source notes against the candidate location;
+- compare multiple candidate locations by competitor pressure, delivery coverage, supplier fit, and internal notes;
+- promote a selected candidate into a future object setup flow after separate approval.
+
+Future integrations:
+
+- commercial rental listing APIs;
+- approved real-estate data feeds;
+- approved competitor/location datasets;
+- routing or drive-time coverage APIs.
+
+Implementation status proposal:
+
+- MVP now: not implemented; keep out of the current read-only portal pass.
+- Demo-only later: preview map mode with fixture candidate locations and simulated competitor points.
+- Future: organization-scoped candidate-location file, competitor dataset integration, rental-listing references, coverage scenarios, and candidate-to-object conversion.
+
+Product guardrail:
+
+- this is a private decision-support tool for the customer's expansion planning, not a public real-estate marketplace.
+- competitor and rental data must come from public, licensed, customer-provided, or otherwise approved external sources.
+- the feature should support better location decisions, but must not promise guaranteed revenue, footfall, or market success.
 
 ### Equipment And Advertising Assets
 
@@ -527,7 +617,12 @@ Core entities:
 - organization/account;
 - portal user/contact;
 - object/location;
+- candidate location;
+- competitor location;
+- delivery coverage scenario;
 - asset;
+- supplier;
+- object/supplier link;
 - request;
 - request status/timeline;
 - message/notification;
@@ -542,7 +637,12 @@ Required relationships:
 
 - every request belongs to one organization and one object;
 - every object belongs to one organization;
+- every candidate location belongs to one organization;
+- every competitor layer/source is approved before production use;
+- every delivery coverage scenario belongs to one organization and optionally one candidate location;
 - every asset belongs to one object;
+- every supplier belongs to one organization unless explicitly modeled as a future shared/curated reference;
+- every object/supplier link is scoped to one organization;
 - every message belongs to a request or object context;
 - every offer belongs to a request;
 - every document belongs to a request, object, asset, warranty, invoice, or organization;
@@ -561,6 +661,8 @@ Required relationships:
 | New request | Implement UI and draft behavior | Production portal request creation |
 | Objects | Implement cards and detail | Object CRUD |
 | Assets | Implement read-only inventory | Asset CRUD/reorder |
+| Suppliers | Preview only after separate approval | Supplier CRUD, supplier discovery, logistics scoring |
+| Location intelligence | Preview only after separate approval | Competitor datasets, rental-listing APIs, candidate-to-object conversion |
 | Maintenance | Implement read-only cards | Scheduling |
 | Reports | Implement previews | Authorized downloads |
 | Warranties | Implement read-only list | Claims/document downloads |
@@ -579,9 +681,27 @@ Required relationships:
 - Production code may adapt tokens and components, but must preserve the dense cabinet structure.
 - Any deviation from the prototype must be named before implementation.
 - No private data should be exposed from PR number alone.
-- No billing, team access, or privacy workflow should become real without separate approval.
+- No billing, team access, supplier discovery, location intelligence, or privacy workflow should become real without separate approval.
 
 ## Progress Log
+
+### 2026-05-11
+
+- Current sprint/block: Client Portal location-intelligence concept extension.
+- Done: added future Location intelligence navigation, candidate-location map module, competitor layer, delivery coverage layer, rental-listing/API integration concept, candidate statuses, data relationships, approval matrix guardrails, and source-rights notes.
+- In progress: location intelligence is not part of the current read-only demo implementation.
+- Next action: if approved for design exploration, define one combined map workspace with modes for objects, suppliers, and candidate locations.
+- Blockers/risks: competitor and rental listing data require approved source rights; the feature must not imply guaranteed commercial success or expose customer planning data across organizations.
+- Updated documents: `docs/04_client_portal/client_portal_prototype_functional_map.md`.
+
+### 2026-05-11
+
+- Current sprint/block: Client Portal supplier/logistics concept extension.
+- Done: added future Suppliers navigation, supplier map module description, supplier statuses, object/supplier relationships, approval matrix guardrails, and privacy/marketplace boundary notes.
+- In progress: supplier module is not part of the current read-only demo implementation.
+- Next action: if approved for design exploration, create a supplier-map prototype pass that overlays objects, current suppliers, backup suppliers, and candidate suppliers.
+- Blockers/risks: supplier discovery must remain a private customer logistics tool and must not expose CRM internals or PixelRing internal partner data.
+- Updated documents: `docs/04_client_portal/client_portal_prototype_functional_map.md`.
 
 ### 2026-04-30
 

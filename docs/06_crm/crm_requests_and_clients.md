@@ -35,6 +35,7 @@ Known gaps:
 - no client merge/deduplication;
 - assignment is a free-form operator field, not a full owner/team model;
 - no SLA/priority model;
+- no internal operational map of repaired, diagnosed, or serviced customer objects;
 - no external CRM sync yet;
 - no attachment scanning/quarantine workflow;
 - no granular RBAC beyond `MANAGER` and `OWNER`.
@@ -74,6 +75,7 @@ Future list capabilities:
 - priority;
 - SLA breach flag;
 - unread customer message flag;
+- map/list toggle for cases with known service object coordinates;
 - export with permission gate.
 
 ### Request Detail
@@ -121,6 +123,77 @@ Required behavior:
 - avoid duplicate customers where possible;
 - link requests by verified contact data;
 - keep customer deletion/anonymization policy separate from case history.
+
+### Operational Object Map
+
+The CRM should include a future internal interactive map for managers and administrators.
+
+Purpose:
+
+- show every customer object/location where PixelRing did operational work;
+- distinguish repaired objects, diagnosed-only objects, installation/service objects, and recurring customer locations;
+- help managers understand geographic concentration, customer networks, route density, repeated issues, and service history;
+- provide a staff-only operational view that is richer than the customer-facing portal map.
+
+Map entities:
+
+- service object/location;
+- customer profile or organization;
+- linked cases/requests;
+- work category;
+- visit or diagnostic record;
+- service outcome;
+- object status from the CRM perspective.
+
+Core map layers:
+
+- repaired objects;
+- diagnosed-only objects;
+- completed installations or service visits;
+- active/open requests;
+- recurring or permanent customers;
+- customer trading-point networks;
+- priority/risk markers for repeated issues or follow-up needs.
+
+Required filters:
+
+- customer or organization;
+- trading point/object;
+- case status;
+- work type;
+- repaired vs diagnosed-only;
+- date range;
+- city/region;
+- assigned operator or team;
+- source channel;
+- recurring/permanent customer flag.
+
+Interactions:
+
+- click a map pin to open a CRM-safe object summary;
+- show linked public request numbers and internal case references to authorized managers only;
+- jump from object summary to filtered case list or case detail;
+- filter one customer's full trading-point network on the map;
+- show cluster view for dense city areas;
+- export only after explicit permission gate and privacy review.
+
+Guardrails:
+
+- this is an internal CRM operations tool, not a public customer portal feature;
+- CRM map pins may include sensitive operational history and must require manager/admin authorization;
+- no raw CRM internals should leak into customer-facing maps or status pages;
+- object coordinates and customer location history must be treated as sensitive business data;
+- request number alone must never authorize access to map data.
+
+Target concepts:
+
+- `CrmServiceObject`
+- `CrmServiceObjectVisit`
+- `CrmObjectWorkSummary`
+- `CrmObjectMapLayer`
+- `CrmCustomerNetwork`
+
+These names are planning names, not required final Prisma model names.
 
 ### Communication
 
@@ -200,6 +273,18 @@ The next CRM milestone should continue operational reliability hardening:
 - stricter attachment access review;
 - attachment scanning/quarantine workflow;
 - customer merge/deduplication;
+- internal operational object map for repaired, diagnosed, and recurring customer locations;
 - SLA and priority model;
 - full owner/team assignment model;
 - object-level authorization tests for case, message, attachment, and customer profile access.
+
+## Progress Log
+
+### 2026-05-11
+
+- Current sprint/block: CRM operational object map concept.
+- Done: added a future internal CRM map concept for repaired, diagnosed-only, installed/serviced, active, and recurring customer objects; documented map layers, filters, interactions, data concepts, and privacy guardrails.
+- In progress: documentation-only; no CRM map UI, geocoding, object model, or migrations exist yet.
+- Next action: decide whether CRM object mapping should start from known case service-location data or wait for a dedicated service-object model.
+- Blockers/risks: customer locations, trading-point networks, and operational history are sensitive business data; map access needs CRM authorization and must stay separate from customer-facing portal maps.
+- Updated documents: `docs/06_crm/crm_requests_and_clients.md`, `docs/06_crm/README.md`, `PROGRESS.md`.

@@ -6,13 +6,78 @@ Short global status only. Detailed session notes belong to folder-level `Progres
 
 - **Public Website**: Implemented (Homepage, Support, Problems & Solutions, B2B, References, About, Legal). CMS integration partial. About RU language pass complete. DE QA cleanup completed; legal pages now preserve CMS as source of truth with page-specific stale validation.
 - **Request & Status Flow**: Implemented (Intake, session tracking, customer status lookup, PR-numbers). Reimagined Tracking Page MVP designed.
-- **Manager CRM**: CRM starter implemented (Case detail, assignment, internal notes, operator takeover). Object-level auth hardened.
+- **Manager CRM**: CRM starter implemented (Case detail, assignment, internal notes, operator takeover). Object-level auth hardened. Future internal operational object map concept documented.
 - **Website CMS & Admin Platform**: CMS starter implemented (Pages, Articles, Media Library, SEO, AI config). 3-column MODX-style redesign implemented.
 - **AI Assistant**: Intake MVP implemented (session-scoped, deterministic triggers, repeat-contact confirmation flow).
 - **Security & Audit**: Admin login, HTTP-only cookies, role splitting, CSRF/Rate-limit starter implemented.
-- **Client Portal**: Prototype approved. Stage 2.5 read-only demo implementation merged (dashboard, requests, objects).
+- **Client Portal**: Prototype approved. Stage 2.5 read-only demo implementation merged (dashboard, requests, objects). Future supplier/logistics map and location-intelligence concepts documented.
 
 ## Last Updated
+
+- Date: 2026-05-12
+- Updated by: Codex
+- **Current Stage**: Homepage `Wie es funktioniert` block rewritten and restyled; layout now uses 40/30/30 top-row proportions and 30/70 bottom-row proportions, with the fifth card as the wide accent result card containing a result photo and original PixelRing service stamp anchored to the photo corner. Block 9 CTA guidance changed from `Anfrage starten` to `Anfrage stellen`.
+- **Next Action**: Owner reviews the updated process block visually on the local site, then approves comments or moves to the next homepage block.
+
+- Date: 2026-05-12
+- Updated by: Codex
+- **Current Stage**: Homepage hero layout compacted after visual review; desktop spacing, column balance, image sizing, and mobile stack were adjusted and QA-checked locally.
+- **Next Action**: Owner reviews the updated first screen on `/de`, then decides whether to continue with the next homepage block.
+
+- Date: 2026-05-12
+- Updated by: Codex
+- **Current Stage**: Homepage page-by-page content review started; hero copy updated across DE/EN/RU/TR/PL/AR in fallback messages and published CMS home blocks with the approved SEO+B2B formula, preserving the existing `24h` badge text.
+- **Next Action**: Owner reviews the updated hero visually on the local site, then approves comments or moves to the next homepage block.
+
+- Date: 2026-05-12
+- Updated by: Codex
+- **Current Stage**: Strategy handoff updated; `docs/01_strategy/new/pixelring_master_brief_context_prompt.md` now points agents to Block 1-9 as current source of truth, marks old `master_brief.md` as legacy summary, and defines the next page-by-page content review workflow.
+- **Next Action**: Use the new context prompt to begin website copy rewrite planning or start a page-by-page review with a selected public page.
+
+- Date: 2026-05-12
+- Updated by: Codex
+- **Current Stage**: Strategy Block 9 created as a strategic messaging and conversion block covering core messaging, hierarchy, hero logic, CTA strategy, trust messaging, small/large business messaging, German copywriting direction, and page-level messaging roles.
+- **Next Action**: Owner review of Block 9, then decide whether master brief needs Block 10 or whether to create a separate website copy rewrite execution plan.
+
+- Date: 2026-05-11
+- Updated by: Codex
+- **Current Stage**: Strategy Block 8 created and expanded; legal/German compliance guardrails now include Datenschutzerklärung coverage, cookies/storage/analytics/third-party tools, forms/uploads/messenger handoff, B2B/B2C quote boundary, accessibility, dispute-resolution, and template-risk checks with Russian explanations.
+- **Next Action**: Review Block 8 with the owner, then continue to Block 9 — Messaging & Conversion once legal/compliance guardrails are accepted.
+
+- Date: 2026-05-11
+- Updated by: Codex
+- **Current Stage**: CRM future operational object map documented as an internal admin/manager concept for repaired, diagnosed-only, serviced, active, and recurring customer locations with filters and privacy guardrails.
+- **Next Action**: Decide whether first CRM map planning should derive locations from existing case service-location data or wait for a dedicated service-object model.
+
+- Date: 2026-05-11
+- Updated by: Codex
+- **Current Stage**: Client Portal future location-intelligence module documented as a planned business-portal concept: candidate locations, competitor map layer, delivery coverage, and rental-listing/API integration guardrails.
+- **Next Action**: Decide whether a future portal design pass should combine objects, suppliers, and candidate locations into one map workspace or keep them as separate map modes.
+
+- Date: 2026-05-11
+- Updated by: Codex
+- **Current Stage**: Client Portal future supplier/logistics module documented as a planned business-portal concept: interactive object/supplier map, supplier file, backup/candidate suppliers, and supplier search guardrails.
+- **Next Action**: Decide whether to prototype the supplier map UI next or keep focus on existing portal object/request implementation.
+
+- Date: 2026-05-11
+- Updated by: Codex
+- **Current Stage**: Strategy Block 7 in progress; SEO/GEO architecture documented around five page roles, Berlin/Brandenburg geo hub direction, current page reviews, Business value model, internal linking model, and editorial prerequisite before link implementation.
+- **Next Action**: Continue Block 7 by deciding the next SEO/GEO strategy item after internal linking, likely intake/conversion routing or content rewrite workflow.
+
+- Date: 2026-05-09
+- Updated by: Codex
+- **Current Stage**: Strategy Block 6 completed; product and operating model documented with customer layer, operational CRM layer, content/growth layer, expansion layer, portal/CRM separation, privacy rules, and subscription kept as internal direction until offer is defined.
+- **Next Action**: Continue strategy writing with Block 7 — SEO / GEO Strategy.
+
+- Date: 2026-05-08
+- Updated by: Antigravity
+- **Current Stage**: Strategy documentation maintenance; converted core company blocks to Markdown to ensure consistency with the master brief.
+- **Next Action**: Continue aligning public website copy and SEO content with the finalized strategy documentation.
+
+- Date: 2026-05-07
+- Updated by: Codex
+- **Current Stage**: Status page gateway refined - public status lookup moved into the right-side status/chat area, while the left side now focuses on customer portal entry; chat preview opens a portal-registration CTA across supported locales.
+- **Next Action**: Owner visual review of `/ru/status` and other localized `/status` pages, then decide whether real portal registration/auth copy should replace the current demo-gate positioning.
 
 - Date: 2026-05-07
 - Updated by: Codex

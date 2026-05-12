@@ -4,6 +4,7 @@ import Header from '@/components/layout/Header';
 import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestButton';
 import { getGlobalPageCmsContent } from '@/lib/cms/pages';
 import CmsImage from '@/components/common/CmsImage';
+import ServiceStamp from '@/components/common/ServiceStamp';
 import React from 'react';
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
@@ -651,27 +652,10 @@ export default async function AboutPage({
                 </div>
 
                 {/* Authentic Embossed Watermark Stamp */}
-                <div className="absolute -bottom-6 -right-6 md:-bottom-10 md:-right-10 z-10 w-32 h-32 md:w-40 md:h-40 pointer-events-none opacity-95">
-                   <svg viewBox="0 0 100 100" className="w-full h-full" style={{ filter: 'drop-shadow(1px 1px 0px rgba(255,255,255,1)) drop-shadow(-1px -1px 0px rgba(0,0,0,0.45))' }}>
-                      {/* Outer Ring */}
-                      <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(14,26,43,0.25)" strokeWidth="1.2" />
-                      <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(14,26,43,0.25)" strokeWidth="0.8" />
-                      
-                      {/* Inner Ring */}
-                      <circle cx="50" cy="50" r="28" fill="none" stroke="rgba(14,26,43,0.25)" strokeWidth="1.2" />
-
-                      {/* Text */}
-                      <path id="embossedTextPath" d="M 50, 50 m -34, 0 a 34,34 0 1,1 68,0 a 34,34 0 1,1 -68,0" fill="none" />
-                      <text className="text-[8.5px] font-black uppercase" fill="rgba(14,26,43,0.35)">
-                        <textPath xlinkHref="#embossedTextPath" startOffset="0%" textLength="210" lengthAdjust="spacing">• PRÜFUNG • REPARATUR • SERVICE </textPath>
-                      </text>
-
-                      {/* Center Icon */}
-                      <g transform="translate(36, 36) scale(1.15)">
-                         <path stroke="rgba(14,26,43,0.35)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                      </g>
-                   </svg>
-                </div>
+                <ServiceStamp
+                  idPrefix="about-hero-stamp"
+                  className="absolute -bottom-6 -right-6 md:-bottom-10 md:-right-10 z-10 w-32 h-32 md:w-40 md:h-40 pointer-events-none opacity-95"
+                />
               </div>
 
               {/* Right: Content Stack (Spanning Image Height) */}
@@ -686,7 +670,7 @@ export default async function AboutPage({
                     </span>
                   ))}
                 </div>
-                
+
                 <div className="space-y-8">
                   {/* Avatar Stack */}
                   <div className="flex items-center gap-4">
@@ -715,10 +699,10 @@ export default async function AboutPage({
 
                   {/* Buttons */}
                   <div className="flex flex-wrap gap-4">
-                    <LeistungenRequestButton 
-                      label={tContent.hero.ctaPrimary} 
+                    <LeistungenRequestButton
+                      label={tContent.hero.ctaPrimary}
                       serviceIntent="about-page"
-                      className="bg-[#B8643E] hover:bg-[#A65835] text-white px-7 py-4 text-[16px] font-semibold rounded-full shadow-lg shadow-[#B8643E]/30 transition-all duration-200 active:scale-95" 
+                      className="bg-[#B8643E] hover:bg-[#A65835] text-white px-7 py-4 text-[16px] font-semibold rounded-full shadow-lg shadow-[#B8643E]/30 transition-all duration-200 active:scale-95"
                     />
                   </div>
                 </div>
@@ -779,13 +763,13 @@ export default async function AboutPage({
                        <CmsImage src="/images/about/about_collage_2.png" alt="Collage 2" fill sizes="300px" className="object-cover" />
                     </div>
                  </div>
-                 
+
                  {/* Text Content */}
                  <div>
                     <div className="mb-12">
                        <h2 className="text-[42px] font-black text-[#0E1A2B]">{tContent.about.title}</h2>
                     </div>
-                    
+
                     <div className="space-y-2">
                        {tContent.about.accordions.map((item, i) => (
                          <div key={i} className="border-b border-[#0E1A2B]/10 py-6">
@@ -856,7 +840,7 @@ export default async function AboutPage({
                        </div>
                     </div>
                  </div>
-                 
+
                  <div>
                     <h2 className="text-[42px] font-black text-[#0E1A2B] leading-tight mb-8">
                        {tContent.quality.title}
@@ -905,7 +889,7 @@ export default async function AboutPage({
                          <div className="lg:w-1/2">
                             <h3 className="text-[32px] font-black text-[#0E1A2B] mb-4">{item.title}</h3>
                             <p className="text-[16px] text-[#4A5568] leading-relaxed mb-10">{item.description}</p>
-                            
+
                             <div className="space-y-4 mb-10">
                                {item.specs.map((spec, j) => (
                                  <div key={j} className="flex border-b border-gray-100 pb-3 last:border-0">
@@ -914,7 +898,7 @@ export default async function AboutPage({
                                  </div>
                                ))}
                             </div>
-                            
+
                             <a href={`${localePath}/leistungen`} className="inline-flex rounded-full bg-[#48BB78] px-8 py-3 text-white font-bold text-[14px] hover:bg-[#38A169] transition-colors">
                                {item.cta}
                             </a>
@@ -976,7 +960,7 @@ export default async function AboutPage({
                  {/* Decorative elements */}
                  <div className="absolute top-0 right-0 h-64 w-64 bg-[#B8643E]/10 blur-[100px]" />
                  <div className="absolute bottom-0 left-0 h-64 w-64 bg-blue-500/10 blur-[100px]" />
-                 
+
                  <div className="relative z-10 max-w-2xl mx-auto">
                     <h2 className="text-[42px] md:text-[56px] font-black text-white leading-[1.1] mb-8">
                        {tContent.final.title}
@@ -984,7 +968,7 @@ export default async function AboutPage({
                     <p className="text-[18px] md:text-[20px] text-white/70 leading-relaxed mb-12">
                        {tContent.final.description}
                     </p>
-                    
+
                     <div className="flex justify-center">
                        <LeistungenRequestButton
                          label={tContent.final.button}

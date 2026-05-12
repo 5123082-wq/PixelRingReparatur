@@ -2,12 +2,12 @@
   "HomePage": {
     "title": "PixelRing Reparatur",
     "hero_title_prefix": "PixelRing:",
-    "hero_title_accent": "Schilder-Reparatur",
-    "hero_title_suffix": "und Service, professionell, schnell.",
-    "description": "Starten Sie Ihre Reparaturanfrage in unter einer Minute. Foto hochladen oder Nachricht schreiben. Wir bringen Ihre Werbeanlagen wieder zum Strahlen – effizient und unkompliziert.",
-    "cta_primary": "Anwendung starten",
+    "hero_title_accent": "Reparatur und Service",
+    "hero_title_suffix": "für Werbeanlagen und Lichtwerbung.",
+    "description": "PixelRing unterstützt Unternehmen bei defekten Werbeanlagen, LED-Elementen und visueller Infrastruktur an Geschäftsstandorten. Starten Sie die Anfrage mit Foto oder kurzer Beschreibung — wir prüfen die Angaben und koordinieren den nächsten Schritt.",
+    "cta_primary": "Anfrage starten",
     "cta_secondary": "Foto senden",
-    "trust_badge": "Echte Service-Firma, keine Vermittlungsplattform",
+    "trust_badge": "Ein Ansprechpartner. Ein strukturierter Serviceprozess. Klare Koordination.",
     "badge_label": "Reaktionszeit für dringende Fälle"
   },
   "Nav": {
@@ -119,24 +119,29 @@
     "title": "Wie es funktioniert",
     "steps": [
       {
-        "title": "Anfrage absenden",
-        "description": "Unsere KI erfasst Ihre Nachricht, Fotos oder Sprache sofort."
+        "title": "Anfrage stellen",
+        "description": "Beschreiben Sie kurz das Problem oder senden Sie ein Foto. Der KI-Assistent hilft, die Situation einzuordnen und eine erste Vorprüfung zu erstellen.",
+        "highlight": "Sie müssen sich nicht mit technischen Details auskennen."
       },
       {
-        "title": "Details klären",
-        "description": "Ein erfahrener Projektleiter prüft die Anfrage und präzisiert den Umfang."
+        "title": "Prüfung durch Spezialisten",
+        "description": "Nach der ersten Einschätzung analysiert ein Spezialist die Angaben, stellt bei Bedarf Rückfragen und bestimmt den passenden nächsten Schritt.",
+        "highlight": "Sie verstehen schnell, was als Nächstes sinnvoll ist."
       },
       {
-        "title": "Experten-Match",
-        "description": "Wir wählen den passenden Spezialisten aus unserem geprüften Netzwerk."
+        "title": "Lösung abstimmen",
+        "description": "Umfang, Zeitrahmen, Zugang zum Objekt und Ausführungsart werden geklärt. Sie wissen, was gemacht wird und zu welchen Bedingungen.",
+        "highlight": "Ohne Überraschungen und ohne unnötige Koordination."
       },
       {
-        "title": "Ausführung",
-        "description": "Die Arbeiten werden termingerecht und in höchster Qualität durchgeführt."
+        "title": "Arbeiten ausführen",
+        "description": "Nach der Abstimmung werden die Arbeiten koordiniert und von Spezialisten umgesetzt. PixelRing bleibt der zentrale Kontaktpunkt für Ihre Anfrage.",
+        "highlight": "Ein Prozess. Eine verantwortliche Stelle."
       },
       {
-        "title": "Garantie",
-        "description": "Sie erhalten eine umfassende Gewährleistung auf alle erbrachten Leistungen."
+        "title": "Garantie und Service",
+        "description": "Die ausgeführten Arbeiten werden mit klaren Garantiebedingungen begleitet, und Anfrage sowie Objekt bleiben in der Servicehistorie von PixelRing nachvollziehbar.",
+        "highlight": "PixelRing bleibt die zentrale Servicestelle für Ihr Unternehmen."
       }
     ]
   },
@@ -337,6 +342,10 @@
     "chat_open_button": "Chat öffnen",
     "chat_placeholder": "Ihre Nachricht...",
     "chat_auth_hint": "Melden Sie sich an, um den Chat zu starten",
+    "chat_gate_title": "Chat im Kundenportal öffnen",
+    "chat_gate_body": "Damit Korrespondenz, Dokumente und nächste Schritte sicher sichtbar werden, müssen Sie sich registrieren und den Zugriff verifizieren. Danach bleiben Chat und Serviceverlauf an einem Ort.",
+    "chat_gate_primary": "Zum Portal",
+    "chat_gate_secondary": "Später",
     "progress_steps": {
       "accepted": "Angenommen",
       "diagnostics": "Diagnose",

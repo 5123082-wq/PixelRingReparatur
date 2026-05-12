@@ -129,6 +129,7 @@ If a useful rule should become active, propose extracting it into `docs/12_agent
 - Keep current-state docs separate from future plans.
 - Mark planned or deferred modules explicitly.
 - Do not use phase numbers without context; existing docs contain conflicting phase numbering.
+- When writing Russian-facing strategy, planning, audit, or website-copy documents, any important German or English term, label, website phrase, legal term, CTA, section name, or proposed public wording must include a Russian translation or explanation immediately in parentheses. Do this every time, not only on first mention. Examples: `Impressum` (обязательные сведения о компании), `Anfrage starten` (начать заявку), `claim safety` (безопасность публичных обещаний).
 - When moving or splitting docs, update links and the migration matrix.
 - After documentation changes, check markdown links.
 - Keep a root-level `PROGRESS.md` as the global short development journal.

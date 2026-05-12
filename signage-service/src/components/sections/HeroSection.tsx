@@ -41,25 +41,25 @@ const HeroSection = ({ content }: { content?: HomeHeroContent | null }) => {
 
   return (
     <>
-      <section className="relative w-full bg-[#EEF3FB] py-24 overflow-hidden">
+      <section className="relative w-full bg-[#EEF3FB] py-12 sm:py-14 lg:pt-10 lg:pb-14 xl:pt-12 xl:pb-16 overflow-hidden">
         {/* Subtle top-right glow */}
         <div className="absolute top-0 right-0 w-[700px] h-[500px] bg-white/60 rounded-full blur-[120px] -translate-y-1/3 translate-x-1/4 pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-10 items-center min-h-[540px]">
+          <div className="grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:gap-10 items-center lg:min-h-[460px] xl:min-h-[480px]">
 
             {/* ── LEFT COLUMN ─────────────────────────── */}
-            <div className="flex flex-col gap-7">
+            <div className="flex flex-col gap-5 lg:gap-6">
 
               {/* Headline */}
-              <h1 className="text-[40px] md:text-[48px] xl:text-[56px] leading-[1.1] font-extrabold text-[#0D1B2A] tracking-tight">
+              <h1 className="text-[36px] sm:text-[40px] md:text-[44px] lg:text-[50px] xl:text-[54px] leading-[1.06] font-extrabold text-[#0D1B2A] tracking-[0]">
                 {titlePrefix}{' '}
                 <span className="text-[#B8643E]">{titleAccent}</span>
                 {' '}{titleSuffix}
               </h1>
 
               {/* Description */}
-              <p className="text-[17px] md:text-[18px] leading-[1.65] text-[#4A5568] max-w-[480px]">
+              <p className="text-[16px] md:text-[17px] leading-[1.55] text-[#4A5568] max-w-[520px]">
                 {intro}
               </p>
 
@@ -112,10 +112,10 @@ const HeroSection = ({ content }: { content?: HomeHeroContent | null }) => {
             </div>
 
             {/* ── RIGHT COLUMN — tilted image card ──────── */}
-            <div className="relative flex justify-center md:justify-end items-center py-8">
+            <div className="relative flex justify-center lg:justify-end items-center py-4 lg:py-2">
 
               {/* Outer wrapper for the tilt + badge positioning */}
-              <div className="relative w-full max-w-[500px]">
+              <div className="relative w-full max-w-[460px] xl:max-w-[500px]">
 
                 {/* Tilted image card */}
                 <div
@@ -128,7 +128,7 @@ const HeroSection = ({ content }: { content?: HomeHeroContent | null }) => {
                       fallbackSrc={content?.fallbackSrc}
                       alt={content?.imageAlt || content?.titleAccent || "Neon sign repair — PixelRing"}
                       fill
-                      sizes="100vw"
+                      sizes="(min-width: 1280px) 500px, (min-width: 1024px) 46vw, 100vw"
                       className="object-cover"
                       priority
                     />

@@ -178,7 +178,7 @@ export type HomeIntakeCmsContent = {
 
 export type BentoGridCmsContent = {
   title?: string;
-  steps?: { title?: string; description?: string }[];
+  steps?: { title?: string; description?: string; highlight?: string }[];
 };
 
 export type TrustCmsContent = {
@@ -1117,6 +1117,7 @@ export async function getHomePageCmsContent(
           steps: getBlockObjectList(bento, 'steps')?.map(s => ({
             title: typeof s.title === 'string' ? s.title : undefined,
             description: typeof s.description === 'string' ? s.description : undefined,
+            highlight: typeof s.highlight === 'string' ? s.highlight : undefined,
           })),
         }
       : undefined,

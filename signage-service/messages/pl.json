@@ -2,12 +2,12 @@
   "HomePage": {
     "title": "Naprawa PixelRing",
     "hero_title_prefix": "PixelRing:",
-    "hero_title_accent": "Naprawa szyldów",
-    "hero_title_suffix": "i serwis, profesjonalnie, szybko.",
-    "description": "Rozpocznij zgłoszenie naprawy w mniej niż minutę. Wyślij zdjęcie lub wiadomość. Przywracamy blask Twoich reklam — sprawnie i bez zbędnych formalności.",
+    "hero_title_accent": "Naprawa i serwis",
+    "hero_title_suffix": "reklam oraz reklamy świetlnej.",
+    "description": "PixelRing wspiera firmy przy uszkodzonych nośnikach reklamowych, elementach LED i infrastrukturze wizualnej w lokalizacjach komercyjnych. Rozpocznij zgłoszenie od zdjęcia albo krótkiego opisu — sprawdzimy informacje i skoordynujemy kolejny krok.",
     "cta_primary": "Rozpocznij zgłoszenie",
     "cta_secondary": "Wyślij zdjęcie",
-    "trust_badge": "Prawdziwa firma serwisowa, a nie platforma pośrednicząca",
+    "trust_badge": "Jeden kontakt. Uporządkowany proces serwisowy. Jasna koordynacja.",
     "badge_label": "Czas reakcji dla pilnych przypadków"
   },
   "Nav": {
@@ -119,24 +119,29 @@
     "title": "Jak to działa",
     "steps": [
       {
-        "title": "Wyślij zapytanie",
-        "description": "Nasze AI natychmiast rejestruje Twoją wiadomość, zdjęcie lub głos."
+        "title": "Złóż zgłoszenie",
+        "description": "Krótko opisz problem albo wyślij zdjęcie. Asystent AI pomaga rozpoznać sytuację i przygotować wstępną ocenę.",
+        "highlight": "Nie musisz znać szczegółów technicznych."
       },
       {
-        "title": "Uściślij szczegóły",
-        "description": "Doświadczony kierownik projektu sprawdza zapytanie i uściśla zakres prac."
+        "title": "Weryfikacja przez specjalistę",
+        "description": "Po wstępnej ocenie specjalista analizuje informacje, w razie potrzeby zadaje pytania i określa najlepszy kolejny krok.",
+        "highlight": "Szybko wiesz, co należy zrobić dalej."
       },
       {
-        "title": "Dopasowanie eksperta",
-        "description": "Dopasowujemy Twoje zadanie do najlepszego eksperta z naszej sieci."
+        "title": "Uzgodnienie rozwiązania",
+        "description": "Ustalany jest zakres prac, terminy, dostęp do obiektu i sposób wykonania. Wiesz, co zostanie zrobione i na jakich warunkach.",
+        "highlight": "Bez niespodzianek i zbędnej koordynacji."
       },
       {
-        "title": "Wykonanie",
-        "description": "Prace są realizowane terminowo i zgodnie z najwyższymi standardami."
+        "title": "Wykonanie prac",
+        "description": "Po uzgodnieniu prace są koordynowane i realizowane przez specjalistów. PixelRing pozostaje centralnym punktem kontaktu dla zgłoszenia.",
+        "highlight": "Jeden proces. Jeden punkt odpowiedzialności."
       },
       {
-        "title": "Gwarancja",
-        "description": "Otrzymujesz pełną gwarancję techniczną na wszystkie wykonane usługi."
+        "title": "Gwarancja i serwis",
+        "description": "Wykonane prace są objęte jasnymi warunkami gwarancyjnymi, a zgłoszenie i obiekt pozostają widoczne w historii serwisowej PixelRing.",
+        "highlight": "PixelRing pozostaje centralnym punktem wsparcia dla Twojej firmy."
       }
     ]
   },
@@ -337,6 +342,10 @@
     "chat_open_button": "Otwórz chat",
     "chat_placeholder": "Napisz wiadomość tutaj...",
     "chat_auth_hint": "Zaloguj się, aby rozpocząć korespondencję",
+    "chat_gate_title": "Otwórz chat w panelu klienta",
+    "chat_gate_body": "Aby bezpiecznie pokazać wiadomości, dokumenty i kolejne kroki zgłoszenia, musisz się zarejestrować i potwierdzić dostęp. Po zalogowaniu chat i historia serwisu będą w jednym miejscu.",
+    "chat_gate_primary": "Przejdź do panelu",
+    "chat_gate_secondary": "Później",
     "progress_steps": {
       "accepted": "Przyjęte",
       "diagnostics": "Diagnostyka",

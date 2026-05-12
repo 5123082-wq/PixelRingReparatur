@@ -2,12 +2,12 @@
   "HomePage": {
     "title": "PixelRing Reparatur",
     "hero_title_prefix": "PixelRing:",
-    "hero_title_accent": "Sign Repair",
-    "hero_title_suffix": "and Service, professional, fast.",
-    "description": "Start your repair request in under a minute. Upload a photo or send a message. We bring your signage back to life — efficiently and without hassle.",
-    "cta_primary": "Start Request",
+    "hero_title_accent": "Repair and service",
+    "hero_title_suffix": "for signage and illuminated advertising.",
+    "description": "PixelRing supports businesses with defective signage, LED elements and visual infrastructure at commercial locations. Start the request with a photo or short description — we review the details and coordinate the next step.",
+    "cta_primary": "Start request",
     "cta_secondary": "Send Photo",
-    "trust_badge": "Real service company, not a contractor marketplace",
+    "trust_badge": "One contact. One structured service process. Clear coordination.",
     "badge_label": "Response time for urgent cases"
   },
   "Nav": {
@@ -119,24 +119,29 @@
     "title": "How it works",
     "steps": [
       {
-        "title": "Submit Request",
-        "description": "Our AI captures your text, photos, or voice message instantly."
+        "title": "Submit a request",
+        "description": "Briefly describe the issue or send a photo. The AI assistant helps assess the situation and prepare an initial review.",
+        "highlight": "You do not need to understand the technical details."
       },
       {
-        "title": "Clarify Details",
-        "description": "A dedicated project manager reviews and refines the scope of work."
+        "title": "Specialist review",
+        "description": "After the initial assessment, a specialist reviews the information, asks follow-up questions if needed, and defines the right next step.",
+        "highlight": "You quickly understand what should happen next."
       },
       {
-        "title": "Expert Assignment",
-        "description": "We match your task with the best qualified expert from our network."
+        "title": "Agree on the solution",
+        "description": "Scope, timing, access to the site, and the execution format are clarified. You know what will be done and under which conditions.",
+        "highlight": "No surprises and no unnecessary coordination."
       },
       {
-        "title": "Execution",
-        "description": "The work is performed on schedule at the highest technical standards."
+        "title": "Work execution",
+        "description": "After agreement, the work is coordinated and carried out by specialists. PixelRing remains the central contact point for your request.",
+        "highlight": "One process. One point of responsibility."
       },
       {
-        "title": "Warranty",
-        "description": "You receive a full technical guarantee on all services rendered."
+        "title": "Warranty and service",
+        "description": "Completed work is covered by clear warranty conditions, and the request and site remain traceable in PixelRing's service history.",
+        "highlight": "PixelRing remains the central service point for your business."
       }
     ]
   },
@@ -389,6 +394,10 @@
     "chat_open_button": "Open Chat",
     "chat_placeholder": "Write your message here...",
     "chat_auth_hint": "Log in to start correspondence",
+    "chat_gate_title": "Open chat in your portal",
+    "chat_gate_body": "To show messages, documents, and next steps safely, you need to register and verify access. After login, the chat and service history stay in one place.",
+    "chat_gate_primary": "Go to portal",
+    "chat_gate_secondary": "Later",
     "progress_steps": {
       "accepted": "Accepted",
       "diagnostics": "Diagnostics",

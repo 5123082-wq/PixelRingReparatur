@@ -868,6 +868,24 @@ SEO-страницы не должны ломать trust-first UX.
 
 ## Progress Log
 
+### 2026-05-12 — Homepage Process Block Content Updated
+
+- Current sprint/block: Public Website, homepage page-by-page content review, `Wie es funktioniert` block
+- Done: owner approved the human-readable process direction; updated fallback message files and published CMS `home/bentoSection` blocks across DE, EN, RU, TR, PL, and AR; separated the final line of each step into a highlighted `highlight` field; changed the layout to 40/30/30 for the first row and 30/70 for the second row; changed the wide accent card from step 4 to step 5; added a result photo and reused PixelRing service stamp on the fifth card; removed marketplace-style expert matching and absolute guarantee wording from this block; updated Block 9 CTA guidance from `Anfrage starten` to `Anfrage stellen`
+- In progress: owner visual/content review of the updated process block before moving to the next homepage section
+- Next action: collect owner comments on `Wie es funktioniert`, then continue with the next visible homepage block after approval
+- Blockers/risks: remaining homepage sections still contain older claims around speed, guarantee, network, and geography and must be reviewed block by block
+- Updated documents: `PROGRESS.md`, `docs/02_public_website/information_architecture.md`, `docs/01_strategy/new/Block 9 — Messaging & Conversion.md`
+
+### 2026-05-12 — Homepage Hero Content Review Started
+
+- Current sprint/block: Public Website, homepage page-by-page content review, hero block
+- Done: approved new SEO+B2B hero wording for DE, EN, RU, TR, PL, and AR; updated fallback message files and published CMS `home` hero blocks; preserved the existing `24h / Reaktionszeit für dringende Fälle` badge
+- In progress: owner visual/content review of the updated hero before moving to the next homepage block
+- Next action: collect owner comments on the hero, then continue with the next homepage section only after approval
+- Blockers/risks: remaining homepage sections still contain older claims around speed, guarantee, network, and geography and must be reviewed block by block
+- Updated documents: `PROGRESS.md`, `docs/02_public_website/information_architecture.md`
+
 ### 2026-05-04 — DE Production QA Cleanup
 
 - Current sprint/block: external DE audit follow-up for broken links, demo exposure, mixed-language copy, duplicate public content, and crawler-visible defects.

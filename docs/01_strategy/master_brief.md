@@ -363,6 +363,60 @@ AI не должен:
 
 ## Progress Log
 
+### 2026-05-12
+
+- Current sprint/block: Strategy handoff and source-of-truth cleanup.
+- Done: Rewrote `docs/01_strategy/new/pixelring_master_brief_context_prompt.md` as the active handoff prompt for future content editing work; marked `docs/01_strategy/master_brief.md` as a legacy summary with lower priority than Block 1-9 in `docs/01_strategy/new/`; documented the required reading order, block map, page review workflow, terminology rule, and next phase for page-by-page content review with SEO/GEO optimization.
+- In progress: Ready to start website copy rewrite planning or a selected page review.
+- Next action: Decide whether to create a separate website copy rewrite execution plan or start reviewing a specific public page.
+- Blockers/risks: Future agents must not treat this legacy `master_brief.md` as the active strategic source over the new Block 1-9 files.
+- Updated documents: `docs/01_strategy/new/pixelring_master_brief_context_prompt.md`, `PROGRESS.md`, `docs/01_strategy/master_brief.md`.
+
+### 2026-05-12
+
+- Current sprint/block: Strategy Block 9 — Messaging & Conversion.
+- Done: Created `Block 9 — Messaging & Conversion.md` as a strategic block; documented the core messaging principle, messaging hierarchy, hero logic, CTA strategy, trust messaging, small-business messaging, large-business messaging, German copywriting direction, page-level messaging roles, and strategic summary. German and English terms/phrases include Russian explanations inline.
+- In progress: Block 9 awaits owner review.
+- Next action: Decide whether the master brief needs an additional strategic block or whether the next step is a separate website copy rewrite execution plan.
+- Blockers/risks: Block 9 is strategic direction only; it does not replace future page-by-page copy review, claim cleanup, legal/privacy review, or implementation planning.
+- Updated documents: `docs/01_strategy/new/Block 9 — Messaging & Conversion.md`, `PROGRESS.md`, `docs/01_strategy/master_brief.md`.
+
+### 2026-05-11
+
+- Current sprint/block: Strategy Block 8 — Legal & German Compliance Guardrails.
+- Done: Created `Block 8 — Legal & German Compliance Guardrails.md`; documented the central rule that PixelRing should sound strong but verifiable, plus guardrails for claim safety, geography/availability, speed/emergency/SLA, warranty/results, pricing/discounts/subscription, portal/CRM/status/report claims, AI intake/diagnosis, Impressum/Datenschutz, red-flag phrases, and safe wording patterns; refined the block so German and English terms/phrases include Russian explanations inline; added the Datenschutzerklärung coverage check and additional guardrails for cookies/storage/analytics/third-party tools, forms/uploads/messenger handoff, B2B/B2C quote boundary, accessibility, dispute resolution, and template risks.
+- In progress: Block 8 awaits owner review and refinement before Block 9.
+- Next action: Confirm whether Block 8 guardrails are accepted, then continue with Block 9 — Messaging & Conversion.
+- Blockers/risks: This block is strategic guidance, not legal advice; legal pages and binding commercial terms still require owner-approved source text and/or legal review before publication.
+- Updated documents: `docs/01_strategy/new/Block 8 — Legal & German Compliance Guardrails.md`, `PROGRESS.md`, `docs/01_strategy/master_brief.md`.
+
+### 2026-05-11
+
+- Current sprint/block: Strategy Block 7 — SEO & GEO Strategy.
+- Done: Created the initial `Block 7 — SEO & GEO Strategy.md`; documented the five-role SEO architecture, intent map, Berlin/Brandenburg geo hub direction, current problem-article implementation review, article layout enhancement recommendations, current Leistungen page review, Leistungen enhancement backlog, current Referenzen page review, Referenzen enhancement backlog, current Business page review, Business page value model/restructure direction, current internal linking review, and intent-based internal linking model.
+- In progress: Block 7 continues after internal linking; next SEO/GEO strategy item still needs selection.
+- Next action: Decide whether to continue with intake/conversion routing, content rewrite workflow, or Berlin/Brandenburg geo hub planning.
+- Blockers/risks: Berlin/Brandenburg geo hub needs a separate page plan / IA document before implementation; mass city pages remain blocked until there is evidence and operational reason; internal links should not be added mechanically before page copy is corrected and aligned to the master brief.
+- Updated documents: `docs/01_strategy/new/Block 7 — SEO & GEO Strategy.md`, `PROGRESS.md`, `docs/01_strategy/master_brief.md`.
+
+### 2026-05-09
+
+- Current sprint/block: Strategy Block 6 — Product & Operating Model.
+- Done: Created `Block 6 — Product & Operating Model.md`; documented PixelRing as a service company with a digital product layer, defined the four product layers, separated portal and CRM roles, captured the dual service workflow, added product/privacy rules, and kept subscription as an internal product direction until a concrete customer offer is defined.
+- In progress: Strategy block sequence continues in `docs/01_strategy/new/`.
+- Next action: Draft Block 7 — SEO / GEO Strategy.
+- Blockers/risks: Subscription/package details are intentionally unresolved and must not be used as public claims until the owner defines the customer offer.
+- Updated documents: `docs/01_strategy/new/Block 6 — Product & Operating Model.md`, `PROGRESS.md`, `docs/01_strategy/master_brief.md`.
+
+### 2026-05-08
+
+- Current sprint/block: Strategy documentation maintenance.
+- Done: Converted `Block 1 — Company Core` from RTF to MD format to ensure accessibility and alignment with the master brief; verified positioning claims (B2B service operator, AI-assisted intake, human execution) against the source-of-truth document.
+- In progress: Reviewing remaining RTF/Docx strategy files for conversion.
+- Next action: Continue aligning public website copy with the finalized strategy blocks.
+- Blockers/risks: None.
+- Updated documents: `docs/01_strategy/new/Block 1 — Company Core.md`, `docs/01_strategy/master_brief.md`.
+
 ### 2026-05-04
 
 - Current sprint/block: Strategy source-of-truth re-baseline for PixelRing company positioning.

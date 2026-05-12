@@ -101,6 +101,8 @@ Recommended initial route structure:
 - `/[locale]/portal/objects`
 - `/[locale]/portal/objects/[objectId]`
 - `/[locale]/portal/assets`
+- `/[locale]/portal/suppliers`
+- `/[locale]/portal/location-intelligence`
 - `/[locale]/portal/messages`
 - `/[locale]/portal/reports`
 - `/[locale]/portal/warranties`
@@ -122,6 +124,8 @@ The left navigation from the prototype should be preserved conceptually:
 - Chat and notifications
 - Objects
 - Equipment and advertising assets
+- Suppliers
+- Location intelligence
 - Maintenance plan
 - Photo reports
 - Warranties
@@ -168,9 +172,10 @@ Preserve from the prototype:
 - active work/action cards;
 - request detail as a customer-safe work surface;
 - object detail as a business center with responsible people, access, assets, service, costs, and risks;
+- supplier map as a future business tool for logistics planning across customer locations;
 - asset catalog with object/category/type/status filters;
 - expandable asset categories;
-- clear links between dashboard, requests, objects, assets, documents, reports, and warranties.
+- clear links between dashboard, requests, objects, assets, suppliers, documents, reports, and warranties.
 
 Translate into production code:
 
@@ -883,6 +888,85 @@ Target concepts:
 
 These names are planning names, not required final Prisma model names.
 
+### Location Intelligence And New Object Search
+
+Location intelligence is a future business-portal module for customers that want to open new locations.
+
+The goal is to help a verified business account compare candidate locations before committing to rent, buildout, or launch.
+
+Planned location tools:
+
+- interactive map mode for evaluating new object candidates;
+- manual candidate location entry by address, coordinates, or area;
+- saved favorite/candidate locations with notes, status, source, and decision stage;
+- competitor layer showing nearby competitor locations, density, and distance/radius around the candidate point;
+- optional delivery coverage layer for planned delivery radius, drive time, or service area assumptions;
+- supplier/logistics overlay showing how well the candidate location fits current and backup suppliers;
+- comparison view for multiple candidate locations.
+
+Potential rental listing inputs:
+
+- manual links and notes from commercial rental listings;
+- future API integrations with real-estate or commercial-rent listing providers, if legally and technically approved;
+- imported candidate objects from approved external datasets.
+
+Guardrail:
+
+- competitor and rental data must come from public, licensed, customer-provided, or approved external sources;
+- this module must not scrape or store third-party listing data without an approved data-rights model;
+- competitor analysis is a decision-support layer, not a guarantee of market success;
+- saved candidate locations are private customer planning records and must be scoped to the verified organization;
+- this feature must not expose PixelRing CRM data, customer request data, or private supplier files across organizations.
+
+Target concepts:
+
+- `CustomerCandidateLocation`
+- `CustomerCandidateLocationSource`
+- `CustomerCompetitorLocation`
+- `CustomerCompetitorCategory`
+- `CustomerDeliveryCoverageScenario`
+- `CustomerLocationComparison`
+- `CustomerRentalListingReference`
+
+These names are planning names, not required final Prisma model names.
+
+### Suppliers And Logistics Map
+
+Suppliers are a future business-portal module for customers that operate multiple physical locations.
+
+The goal is to let a verified business account understand its logistics network:
+
+- where each object/location is;
+- which current suppliers serve which locations;
+- which suppliers are primary, backup, candidate, or inactive;
+- whether distance, delivery windows, coverage zones, or commercial terms create operational risk;
+- where a new or backup supplier would improve coverage.
+
+Planned supplier tools:
+
+- interactive map that overlays customer objects and suppliers;
+- supplier card file with contact, category, service area, delivery logic, terms, notes, and status;
+- ability to attach one supplier to many objects, or manage suppliers per object;
+- search bar for discovering and comparing potential suppliers by geography, category, coverage, delivery capability, and commercial conditions;
+- ability to mark searched suppliers on the map and save them as backup or candidate suppliers.
+
+Guardrail:
+
+- this must remain a customer-side logistics and supplier-management tool, not a public marketplace, contractor directory, or "find a master" product;
+- PixelRing's own service execution and partner operations remain separate from the customer's private supplier file;
+- supplier search results must not expose private customer, CRM, or internal partner data.
+
+Target concepts:
+
+- `CustomerSupplier`
+- `CustomerSupplierLocation`
+- `CustomerSupplierCategory`
+- `CustomerSupplierCoverageArea`
+- `CustomerObjectSupplierLink`
+- `CustomerSupplierEvaluation`
+
+These names are planning names, not required final Prisma model names.
+
 ## Block Interaction Logic
 
 The portal should behave as one connected workspace, not independent screens.
@@ -954,6 +1038,7 @@ Object detail should link back to:
 
 - requests filtered by object;
 - assets filtered by object;
+- suppliers serving this object;
 - documents filtered by object;
 - reports filtered by object.
 
@@ -1159,6 +1244,65 @@ Acceptance:
 - restaurant/HORECA materials, print, banners, stickers, and clothing are represented;
 - asset actions route back into request creation.
 
+### Stage 6b: Supplier Map Planning Prototype
+
+Goal:
+
+- reserve the customer-side supplier and logistics map as a future portal module after objects and assets are understandable.
+
+Scope:
+
+- supplier navigation item and preview surface;
+- object/supplier map concept;
+- supplier file card concept;
+- primary, backup, candidate, inactive supplier statuses;
+- search concept for potential suppliers by geography, category, delivery capability, coverage, and commercial terms;
+- save searched suppliers into the customer's supplier file as candidate or backup suppliers.
+
+Data approach:
+
+- start as product documentation and UI prototype only;
+- do not create database migrations until object persistence, asset persistence, and portal organization access are stable;
+- any demo data must be clearly customer-owned supplier data, not PixelRing internal partner data.
+
+Acceptance:
+
+- the module helps a business plan logistics across its own locations;
+- supplier search does not present PixelRing as a marketplace or directory;
+- private supplier files are scoped to the verified organization;
+- backup supplier marking is separated from operational CRM assignment and PixelRing partner operations.
+
+### Stage 6c: Location Intelligence Planning Prototype
+
+Goal:
+
+- reserve the new-location search and competitor map as a future portal module for business expansion decisions.
+
+Scope:
+
+- map mode for candidate locations;
+- manual candidate/favorite location saving;
+- competitor layer around a selected location;
+- delivery coverage layer for radius, travel time, or service-area assumptions;
+- supplier/logistics overlay for candidate location feasibility;
+- rental listing reference concept, including future API integration only after approval;
+- comparison view for multiple candidate locations.
+
+Data approach:
+
+- start as product documentation and UI prototype only;
+- candidate locations may be customer-entered demo data;
+- competitor and rental listing data require approved public/licensed/external data sources before production use;
+- do not create database migrations until portal organization access and object/location persistence are stable.
+
+Acceptance:
+
+- the module helps a business evaluate where to open a new object;
+- competitor visibility is the primary decision layer;
+- rental-listing integrations are documented as future optional integrations, not current functionality;
+- saved candidate locations are private to the verified organization;
+- no third-party data is scraped, stored, or displayed without an approved data-rights model.
+
 ### Stage 7: Reports, Warranties, Documents
 
 Goal:
@@ -1277,12 +1421,34 @@ Suggested first user-visible result:
 - Whether phone verification is included in portal access or remains recovery-only.
 - Organization/member data model.
 - Object and asset persistence model.
+- Supplier file and logistics-map data model.
+- Whether supplier discovery uses manual entry first, curated datasets, or external search/integration later.
+- Candidate-location and competitor-map data model.
+- Approved source strategy for competitor locations, delivery coverage, and commercial rental listings.
 - Which documents are customer-visible in the first portal release.
 - Whether quotes can be approved in the portal before billing models exist.
 - Retention periods for reports, attachments, and completed request data.
 - Whether multilingual portal copy is CMS-managed or `messages/*.json` first.
 
 ## Progress Log
+
+### 2026-05-11
+
+- Current sprint/block: Client Portal future location-intelligence module planning.
+- Done: added the planned Location Intelligence module, candidate-location map, competitor layer, delivery coverage layer, rental-listing reference/API concept, planning-stage target concepts, Stage 6c boundaries, and open decisions.
+- In progress: new-location search remains documentation-only and not implemented in application code.
+- Next action: decide whether a future portal design pass should combine objects, suppliers, and candidate locations into one map workspace or keep them as separate map modes.
+- Blockers/risks: competitor and rental listing data require approved public/licensed/customer-provided sources; the module must avoid unapproved scraping, unsupported success claims, and cross-organization data exposure.
+- Updated documents: `docs/04_client_portal/client_portal_implementation_plan.md`, `docs/04_client_portal/client_portal_prototype_functional_map.md`, `docs/04_client_portal/Маркетинговая стратегия и план развития платформы контроля объектов и рекламных активов.md`, `PROGRESS.md`.
+
+### 2026-05-11
+
+- Current sprint/block: Client Portal future supplier/logistics module planning.
+- Done: added the planned customer-side Suppliers module, supplier/logistics map concept, supplier search and backup-supplier workflow, future route/navigation reservation, planning-stage target concepts, Stage 6b boundaries, and open decisions.
+- In progress: supplier map remains documentation-only and not implemented in application code.
+- Next action: after owner approval, decide whether the next portal design pass should prototype the supplier map screen or keep focus on existing object/request portal work.
+- Blockers/risks: supplier search can blur into marketplace/directory positioning if not constrained; supplier files require organization-scoped privacy, authorization, and clear separation from PixelRing internal partner operations.
+- Updated documents: `docs/04_client_portal/client_portal_implementation_plan.md`, `docs/04_client_portal/client_portal_prototype_functional_map.md`, `docs/04_client_portal/Маркетинговая стратегия и план развития платформы контроля объектов и рекламных активов.md`, `PROGRESS.md`.
 
 ### 2026-04-28
 
