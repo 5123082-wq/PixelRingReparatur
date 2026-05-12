@@ -280,7 +280,9 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
     }
 
     void connectRealtime().catch((error) => {
-      console.error('CRM realtime connection failed:', error);
+      if (!isDisposed) {
+        console.error('CRM realtime connection failed:', error);
+      }
     });
 
     return () => {

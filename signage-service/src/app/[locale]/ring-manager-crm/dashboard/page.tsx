@@ -173,7 +173,9 @@ export default function AdminDashboardPage() {
     }
 
     void connectRealtime().catch((error) => {
-      console.error('CRM list realtime connection failed:', error);
+      if (!isDisposed) {
+        console.error('CRM list realtime connection failed:', error);
+      }
     });
 
     return () => {
