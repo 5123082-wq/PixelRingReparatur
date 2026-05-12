@@ -13,6 +13,21 @@ Planned base documents:
 
 ## Progress Log
 
+### 2026-05-11
+**CRM Operational Object Map Concept**
+- **Status**: Planned / documentation-only.
+- **Done**:
+  - Added the future internal CRM map concept for repaired, diagnosed-only, installed/serviced, active, and recurring customer objects.
+  - Documented manager/admin filters by customer, organization, trading point, work type, case status, date range, region, source channel, and assigned operator/team.
+  - Added privacy guardrails separating the internal CRM map from customer-facing portal maps and public status flows.
+- **In Progress**:
+  - No application code, geocoding, database model, or migration exists for this map yet.
+- **Next Action**:
+  - Decide whether the first CRM map planning pass should derive locations from existing case service-location data or wait for a dedicated service-object model.
+- **Blockers/Risks**:
+  - Customer trading-point networks and operational history are sensitive business data and require strict CRM authorization before map access or export.
+- **Updated Documents**: `docs/06_crm/README.md`, `docs/06_crm/crm_requests_and_clients.md`, `PROGRESS.md`
+
 ### 2026-05-07
 **Telegram Photo Attachments MVP**
 - **Status**: In progress (implementation baseline added)

@@ -122,3 +122,20 @@ When reporting work:
 - keep reasoning concrete and tied to the repository;
 - separate verified facts from assumptions;
 - mention residual risks or missing verification when they remain.
+
+## Russian-Facing Terminology Rule
+
+When writing for the project owner in Russian, especially in strategy, planning, audits, legal/compliance notes, SEO/GEO notes, or website-copy work, do not leave important German or English terms unexplained.
+
+Required pattern:
+
+- provide a Russian translation or short explanation immediately in parentheses after every important German or English term, label, website phrase, CTA, legal term, section name, or proposed public wording;
+- repeat the translation each time the term appears in a new point or list item, not only on first mention;
+- apply this to draft website copy and recommendations as well as final document text.
+
+Examples:
+
+- `Impressum` (обязательные сведения о компании)
+- `Anfrage starten` (начать заявку)
+- `claim safety` (безопасность публичных обещаний)
+- `B2B/B2C boundary` (граница между бизнес-клиентами и частными клиентами)

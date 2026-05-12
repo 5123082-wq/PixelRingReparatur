@@ -2,12 +2,12 @@
   "HomePage": {
     "title": "PixelRing Onarım",
     "hero_title_prefix": "PixelRing:",
-    "hero_title_accent": "Tabela Onarımı",
-    "hero_title_suffix": "ve Servis, profesyonel, hızlı.",
-    "description": "Bir dakikadan kısa sürede onarım talebinizi başlatın. Fotoğraf yükleyin veya mesaj yazın. Reklam tabelalarınızı yeniden ışıldatacağız — verimli ve zahmetsiz.",
-    "cta_primary": "Talebi Başlat",
+    "hero_title_accent": "Onarım ve servis",
+    "hero_title_suffix": "reklam sistemleri ve ışıklı reklamlar için.",
+    "description": "PixelRing, işletmelerin ticari lokasyonlarındaki arızalı reklam sistemleri, LED elemanları ve görsel altyapı sorunlarında destek olur. Talebi fotoğraf veya kısa açıklama ile başlatın — bilgileri inceler ve sonraki adımı koordine ederiz.",
+    "cta_primary": "Talep başlat",
     "cta_secondary": "Fotoğraf Gönder",
-    "trust_badge": "Gerçek bir servis şirketi, aracı bir pazar yeri değil",
+    "trust_badge": "Tek iletişim noktası. Yapılandırılmış servis süreci. Net koordinasyon.",
     "badge_label": "Acil durumlar için tepki süresi"
   },
   "Nav": {
@@ -116,27 +116,32 @@
     ]
   },
   "Bento": {
-    "title": "Nasıl Çalışır",
+    "title": "Nasıl işler?",
     "steps": [
       {
-        "title": "Talep Gönder",
-        "description": "Yapay zekamız metninizi, fotoğraflarınızı veya sesli mesajınızı anında yakalar."
+        "title": "Talep gönderin",
+        "description": "Sorunu kısaca açıklayın veya bir fotoğraf gönderin. AI asistanı durumu anlamaya ve ilk ön değerlendirmeyi yapmaya yardımcı olur.",
+        "highlight": "Teknik ayrıntıları bilmeniz gerekmez."
       },
       {
-        "title": "Detayları Netleştir",
-        "description": "Deneyimli bir proje yöneticisi talebi inceler ve çalışma kapsamını belirler."
+        "title": "Uzman incelemesi",
+        "description": "İlk değerlendirmeden sonra bir uzman bilgileri inceler, gerekirse ek sorular sorar ve en uygun sonraki adımı belirler.",
+        "highlight": "Bir sonraki adımın ne olduğunu hızlıca anlarsınız."
       },
       {
-        "title": "Uzman Ataması",
-        "description": "Görevinizi ağımızdaki en uygun uzmanla eşleştiririz."
+        "title": "Çözümü netleştirme",
+        "description": "İş kapsamı, süre, objeye erişim ve uygulama şekli netleştirilir. Ne yapılacağını ve hangi koşullarda yapılacağını bilirsiniz.",
+        "highlight": "Sürpriz yok, gereksiz koordinasyon yok."
       },
       {
-        "title": "Uygulama",
-        "description": "Çalışmalar zamanında ve en yüksek teknik standartlarda gerçekleştirilir."
+        "title": "İşlerin uygulanması",
+        "description": "Onaydan sonra işler koordine edilir ve uzmanlar tarafından uygulanır. PixelRing talebiniz için merkezi iletişim noktası olarak kalır.",
+        "highlight": "Tek süreç. Tek sorumluluk noktası."
       },
       {
-        "title": "Garanti",
-        "description": "Yapılan tüm işlemler için tam teknik garanti alırsınız."
+        "title": "Garanti ve servis",
+        "description": "Tamamlanan işler açık garanti koşullarıyla desteklenir; talep ve obje PixelRing servis geçmişinde izlenebilir kalır.",
+        "highlight": "PixelRing işletmeniz için merkezi servis noktası olmaya devam eder."
       }
     ]
   },
@@ -337,6 +342,10 @@
     "chat_open_button": "Sohbeti aç",
     "chat_placeholder": "Mesajınızı buraya yazın...",
     "chat_auth_hint": "Yazışmayı başlatmak için giriş yapın",
+    "chat_gate_title": "Sohbeti müşteri portalında açın",
+    "chat_gate_body": "Mesajları, belgeleri ve sonraki adımları güvenli şekilde gösterebilmek için kayıt olmanız ve erişimi doğrulamanız gerekir. Girişten sonra sohbet ve servis geçmişi tek yerde kalır.",
+    "chat_gate_primary": "Portala git",
+    "chat_gate_secondary": "Daha sonra",
     "progress_steps": {
       "accepted": "Kabul edildi",
       "diagnostics": "Teşhis",
