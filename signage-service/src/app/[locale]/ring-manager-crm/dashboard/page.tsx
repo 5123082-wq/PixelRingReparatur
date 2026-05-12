@@ -184,28 +184,28 @@ export default function AdminDashboardPage() {
   }, [fetchCases]);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4 md:gap-6">
       {/* Header */}
-      <div className="flex justify-between items-center bg-zinc-900 border border-zinc-800 p-6 rounded-xl shadow-sm">
-        <div>
+      <div className="flex flex-col gap-4 bg-zinc-900 border border-zinc-800 p-4 rounded-xl shadow-sm sm:flex-row sm:items-center sm:justify-between md:p-6">
+        <div className="min-w-0">
           <h1 className="text-2xl font-bold text-white tracking-tight">Заявки</h1>
           <p className="text-sm text-zinc-400 mt-1">
             Управление заявками и коммуникация CRM
             {lastLiveUpdateAt && (
-              <span className="ml-3 text-[11px] font-semibold uppercase tracking-wider text-emerald-400">
+              <span className="mt-1 block text-[11px] font-semibold uppercase tracking-wider text-emerald-400 sm:ml-3 sm:mt-0 sm:inline">
                 Live updated {new Date(lastLiveUpdateAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
             )}
           </p>
         </div>
-        <Button onClick={() => setShowCreateForm(true)}>
+        <Button onClick={() => setShowCreateForm(true)} className="w-full sm:w-auto">
           + Новая заявка
         </Button>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-4 items-end bg-zinc-900/50 border border-zinc-800/50 p-4 rounded-xl">
-        <div className="flex-1 min-w-[240px]">
+      <div className="grid gap-3 bg-zinc-900/50 border border-zinc-800/50 p-4 rounded-xl md:grid-cols-[minmax(240px,1fr)_16rem_12rem_auto] md:items-end md:gap-4">
+        <div className="min-w-0">
           <Input
             placeholder="Поиск по PR, имени, email, телефону..."
             value={search}
@@ -214,14 +214,14 @@ export default function AdminDashboardPage() {
           />
         </div>
 
-        <div className="w-64">
+        <div className="min-w-0">
           <StatusChecklistFilter
             selectedStatuses={statusFilters}
             onChange={setStatusFilters}
           />
         </div>
 
-        <div className="w-48">
+        <div className="min-w-0">
           <Select
             value={channelFilter}
             onChange={(e) => setChannelFilter(e.target.value)}
@@ -233,7 +233,7 @@ export default function AdminDashboardPage() {
           </Select>
         </div>
 
-        <Button onClick={() => fetchCases()} variant="secondary" className="px-5">
+        <Button onClick={() => fetchCases()} variant="secondary" className="w-full px-5 md:w-auto">
           Найти
         </Button>
       </div>
@@ -252,16 +252,61 @@ export default function AdminDashboardPage() {
       {/* Table */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-sm">
         {loading ? (
-          <div className="flex justify-center items-center h-64">
+          <div className="flex justify-center items-center min-h-64">
             <p className="text-zinc-500 font-medium">Загрузка...</p>
           </div>
         ) : cases.length === 0 ? (
-          <div className="flex flex-col justify-center items-center h-64 gap-3">
+          <div className="flex flex-col justify-center items-center min-h-64 gap-3">
             <div className="text-4xl">📭</div>
             <p className="text-zinc-500 font-medium">Заявок не найдено</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+          <div className="divide-y divide-zinc-800/70 md:hidden">
+            {cases.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => router.push(withLocalePath(locale, `/ring-manager-crm/dashboard/${c.id}`))}
+                className={`block w-full px-4 py-4 text-left transition-colors hover:bg-zinc-800/50 ${c.unreadCustomerMessages > 0 ? 'bg-blue-500/[0.08]' : ''}`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className={`font-mono text-sm font-semibold ${c.unreadCustomerMessages > 0 ? 'text-blue-300' : 'text-blue-400'}`}>
+                        {c.publicRequestNumber || '—'}
+                      </span>
+                      {c.unreadCustomerMessages > 0 && (
+                        <span className="rounded-full bg-blue-500 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white">
+                          {c.unreadCustomerMessages} new
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-2 font-medium text-zinc-100">{c.customerName || 'Без имени'}</div>
+                    <div className="mt-0.5 truncate text-xs text-zinc-500">
+                      {c.customerEmail || c.customerPhone || '—'}
+                    </div>
+                  </div>
+                  <Badge variant={STATUS_LABELS[c.status]?.variant || 'default'} className="shrink-0">
+                    {STATUS_LABELS[c.status]?.label || c.status}
+                  </Badge>
+                </div>
+
+                <div className="mt-3 text-sm text-zinc-300">
+                  <div className={`${c.unreadCustomerMessages > 0 ? 'font-semibold text-zinc-100' : 'text-zinc-400'} line-clamp-2`}>
+                    {c.lastMessage?.preview || c.summary || '—'}
+                  </div>
+                </div>
+
+                <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-zinc-500">
+                  <span>{CHANNEL_LABELS[c.originChannel] || c.originChannel}</span>
+                  <span>{formatActivityTime(c.lastActivityAt)}</span>
+                  {c.assignedOperator && <span className="truncate">Оператор: {c.assignedOperator}</span>}
+                </div>
+              </button>
+            ))}
+          </div>
+
+          <div className="hidden overflow-x-auto md:block">
             <table className="w-full text-left text-sm whitespace-nowrap">
               <thead className="bg-zinc-950/50 text-xs text-zinc-400 uppercase tracking-wider border-b border-zinc-800">
                 <tr>
@@ -324,12 +369,13 @@ export default function AdminDashboardPage() {
               </tbody>
             </table>
           </div>
+          </>
         )}
       </div>
 
       {/* Pagination */}
       {pagination && pagination.totalPages > 1 && (
-        <div className="flex justify-center items-center gap-4 py-8">
+        <div className="flex flex-wrap justify-center items-center gap-3 py-6 md:gap-4 md:py-8">
           <Button
             variant="secondary"
             size="sm"
@@ -390,7 +436,7 @@ function StatusChecklistFilter({
         <span className="text-xs text-zinc-500 transition-transform group-open:rotate-180">▾</span>
       </summary>
 
-      <div className="absolute left-0 top-12 z-50 w-full overflow-hidden rounded-xl border border-zinc-700 bg-zinc-950 shadow-2xl">
+      <div className="absolute left-0 top-12 z-50 w-full min-w-[220px] overflow-hidden rounded-xl border border-zinc-700 bg-zinc-950 shadow-2xl">
         <label className="flex cursor-pointer items-center gap-3 border-b border-zinc-800 px-4 py-3 text-sm font-semibold text-zinc-100 hover:bg-zinc-900">
           <input
             type="checkbox"
@@ -464,7 +510,7 @@ function CreateCaseForm({
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8 w-full max-w-lg shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div className="max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-xl border border-zinc-800 bg-zinc-900 p-4 shadow-2xl sm:p-8" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-xl font-bold text-white mb-6">Новая заявка</h2>
 
         {result ? (
@@ -493,7 +539,7 @@ function CreateCaseForm({
               onChange={(e) => setForm({ ...form, customerName: e.target.value })}
             />
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
               <Input
                 label="Email"
                 placeholder="ivan@example.com"
@@ -508,7 +554,7 @@ function CreateCaseForm({
               />
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
               <Select
                 label="Канал обращения"
                 value={form.originChannel}
@@ -544,7 +590,7 @@ function CreateCaseForm({
               rows={3}
             />
 
-            <div className="flex gap-3 justify-end mt-4">
+            <div className="flex flex-col-reverse gap-3 justify-end mt-4 sm:flex-row">
               <Button type="button" variant="ghost" onClick={onClose}>
                 Отмена
               </Button>

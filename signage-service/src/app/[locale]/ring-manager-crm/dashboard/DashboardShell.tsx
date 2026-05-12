@@ -34,9 +34,28 @@ export default function CrmDashboardShell({
   ];
 
   return (
-    <div className="flex min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-blue-500/30 selection:text-white">
+    <div className="flex min-h-screen w-full bg-zinc-950 text-zinc-100 font-sans selection:bg-blue-500/30 selection:text-white">
+      <header className="fixed inset-x-0 top-0 z-30 flex h-14 items-center justify-between border-b border-zinc-800 bg-zinc-950/95 px-4 backdrop-blur md:hidden">
+        <button
+          onClick={() => router.push(withLocalePath(locale, '/ring-manager-crm/dashboard'))}
+          className="flex min-w-0 items-center gap-2 text-left"
+        >
+          <span className="text-xl leading-none">📦</span>
+          <span className="truncate text-base font-bold tracking-tight text-white">
+            PixelRing CRM
+          </span>
+        </button>
+        <button
+          onClick={handleLogout}
+          disabled={loggingOut}
+          className="rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-300 transition-colors hover:border-red-900/50 hover:bg-red-950/30 hover:text-red-400 disabled:opacity-50"
+        >
+          {loggingOut ? '...' : 'Выход'}
+        </button>
+      </header>
+
       {/* Sidebar */}
-      <aside className="w-64 bg-zinc-900/50 backdrop-blur-xl border-r border-zinc-800/50 flex flex-col p-6 shrink-0 relative z-10 shadow-[4px_0_24px_rgba(0,0,0,0.2)]">
+      <aside className="hidden w-64 bg-zinc-900/50 backdrop-blur-xl border-r border-zinc-800/50 md:flex flex-col p-6 shrink-0 relative z-10 shadow-[4px_0_24px_rgba(0,0,0,0.2)]">
         <div className="flex items-center gap-3 px-2 mb-10">
           <span className="text-2xl drop-shadow-md">📦</span>
           <span className="text-lg font-bold text-white tracking-tight bg-gradient-to-r from-blue-400 to-indigo-300 bg-clip-text text-transparent">
@@ -77,8 +96,8 @@ export default function CrmDashboardShell({
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 p-8 md:p-12 overflow-y-auto bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-zinc-900/40 via-zinc-950 to-zinc-950 max-h-screen relative">
-        <div className="max-w-[1400px] mx-auto w-full relative z-10">
+      <main className="min-w-0 flex-1 overflow-y-auto bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-zinc-900/40 via-zinc-950 to-zinc-950 px-4 pb-8 pt-20 md:max-h-screen md:p-12 relative">
+        <div className="mx-auto w-full max-w-[1400px] relative z-10">
           {children}
         </div>
       </main>

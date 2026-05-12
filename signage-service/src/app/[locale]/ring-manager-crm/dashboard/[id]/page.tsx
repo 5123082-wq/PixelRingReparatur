@@ -388,8 +388,8 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
     return () => cancelAnimationFrame(frameId);
   }, [activeTab, caseId]);
 
-  if (loading) return <div className="flex h-screen items-center justify-center bg-zinc-950 text-zinc-500 font-medium tracking-tighter animate-pulse uppercase">System Loading...</div>;
-  if (loadError) return <div className="flex h-screen items-center justify-center bg-zinc-950 text-red-400 font-mono text-xs uppercase p-10 text-center">{loadError}</div>;
+  if (loading) return <div className="flex min-h-[60vh] items-center justify-center bg-zinc-950 text-zinc-500 font-medium tracking-tighter animate-pulse uppercase md:h-screen">System Loading...</div>;
+  if (loadError) return <div className="flex min-h-[60vh] items-center justify-center bg-zinc-950 text-red-400 font-mono text-xs uppercase p-10 text-center md:h-screen">{loadError}</div>;
   if (!caseData) return null;
 
   const currentStatusObj = STATUS_OPTIONS.find((s) => s.value === caseData.status);
@@ -424,18 +424,18 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
   const detectedLocation = locMatch ? locMatch[1].trim() : null;
 
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden bg-zinc-950 font-sans selection:bg-indigo-500/30">
+    <div className="flex min-h-[calc(100vh-96px)] flex-col overflow-hidden rounded-xl border border-white/[0.03] bg-zinc-950 font-sans selection:bg-indigo-500/30 md:h-[calc(100vh-64px)] md:rounded-none md:border-0">
       
-      <header className="shrink-0 flex justify-between items-center bg-zinc-950/40 backdrop-blur-xl px-4 sm:px-8 py-4 border-b border-white/[0.03] z-40">
-        <div className="flex items-center gap-6">
+      <header className="shrink-0 flex flex-col gap-3 bg-zinc-950/40 backdrop-blur-xl px-4 py-4 border-b border-white/[0.03] z-40 sm:px-8 md:flex-row md:items-center md:justify-between">
+        <div className="flex min-w-0 items-center gap-3 sm:gap-6">
           <button
             onClick={() => router.push(withLocalePath(locale, '/ring-manager-crm/dashboard'))}
-            className="flex items-center gap-2 text-[10px] font-bold text-zinc-500 hover:text-white transition-all uppercase tracking-widest"
+            className="flex shrink-0 items-center gap-2 text-[10px] font-bold text-zinc-500 hover:text-white transition-all uppercase tracking-widest"
           >
              <span className="text-sm">←</span> <span className="hidden sm:inline">BACK</span>
           </button>
           
-          <h1 className="text-lg sm:text-2xl font-black text-white tracking-tight flex items-center gap-3">
+          <h1 className="flex min-w-0 flex-wrap items-center gap-2 text-base font-black text-white tracking-tight sm:gap-3 sm:text-2xl">
             {caseData.publicRequestNumber || 'CASE #'+caseData.id.slice(0,6)}
             {currentStatusObj && (
               <Badge variant={currentStatusObj.variant} className="text-[9px] uppercase font-black tracking-[0.2em] px-2 py-0.5 rounded-sm border-white/5">
@@ -445,15 +445,15 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
           </h1>
         </div>
 
-        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all ${hasCustomerSession ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500 shadow-[0_0_15px_-5px_#10b981]' : 'border-zinc-800 text-zinc-600'}`}>
+        <div className={`flex w-fit items-center gap-2 px-3 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all ${hasCustomerSession ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500 shadow-[0_0_15px_-5px_#10b981]' : 'border-zinc-800 text-zinc-600'}`}>
            <div className={`w-1.5 h-1.5 rounded-full ${hasCustomerSession ? 'bg-emerald-500' : 'bg-zinc-700'}`}></div>
            {hasCustomerSession ? 'CUSTOMER ACTIVE' : 'OFFLINE'}
         </div>
       </header>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden md:flex-row">
 
-        <aside className="w-[320px] shrink-0 border-r border-white/[0.03] bg-zinc-950 flex flex-col z-30 overflow-y-auto no-scrollbar pb-20 pt-8 px-8 space-y-10">
+        <aside className="shrink-0 border-b border-white/[0.03] bg-zinc-950 flex max-h-[40vh] flex-col z-30 overflow-y-auto no-scrollbar px-4 py-5 space-y-6 md:max-h-none md:w-[320px] md:border-b-0 md:border-r md:pb-20 md:pt-8 md:px-8 md:space-y-10">
 
           {/* Section: Project Context (DETECTED) */}
           {(detectedType || detectedLocation) && (
@@ -562,8 +562,8 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
           </section>
         </aside>
 
-        <main className="flex flex-1 min-h-0 flex-col bg-zinc-950 overflow-hidden">
-          <nav className="shrink-0 flex items-center h-16 px-8 border-b border-white/[0.03] gap-10">
+        <main className="flex flex-1 min-h-[60vh] flex-col bg-zinc-950 overflow-hidden md:min-h-0">
+          <nav className="shrink-0 flex h-14 items-center gap-6 overflow-x-auto border-b border-white/[0.03] px-4 no-scrollbar md:h-16 md:px-8 md:gap-10">
              {ACTIVE_TABS.map((tid) => (
                <button
                  key={tid} onClick={() => setActiveTab(tid)}
@@ -579,7 +579,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
             <AnimatePresence mode="wait">
               {activeTab === 'client' && (
                 <motion.div key="chat" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-1 min-h-0 flex-col">
-                   <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-6 sm:px-12 py-10 no-scrollbar scroll-smooth">
+                   <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-4 py-6 no-scrollbar scroll-smooth sm:px-12 sm:py-10">
                       <div className="max-w-3xl mx-auto w-full space-y-10">
                          {timelineEvents.map((event) => {
                             if (event.type === 'status') {
@@ -603,7 +603,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                                     <span className={`w-1 h-1 rounded-full ${isAiAssistant ? 'bg-indigo-400 animate-pulse' : isNote ? 'bg-amber-500' : isCustomer ? 'bg-zinc-700' : 'bg-indigo-500'}`} />
                                     {isNote ? 'INTERNAL NOTE' : isAiAssistant ? 'AI ASSISTANT' : (m.authorName || (isCustomer ? 'CLIENT' : 'OPERATOR'))}
                                  </div>
-                                 <div className={`max-w-[80%] px-5 py-3.5 rounded-2xl text-[14px] leading-relaxed ${isNote ? 'bg-amber-500/10 border border-amber-500/20 text-amber-200' : isCustomer ? 'bg-zinc-900 text-zinc-300 border border-white/5' : 'bg-indigo-600 text-white shadow-xl shadow-indigo-950/20'}`}>
+                                 <div className={`max-w-[92%] px-4 py-3 rounded-2xl text-[14px] leading-relaxed sm:max-w-[80%] sm:px-5 sm:py-3.5 ${isNote ? 'bg-amber-500/10 border border-amber-500/20 text-amber-200' : isCustomer ? 'bg-zinc-900 text-zinc-300 border border-white/5' : 'bg-indigo-600 text-white shadow-xl shadow-indigo-950/20'}`}>
                                     {m.body}
                                  </div>
                                  <span className="mt-2 text-[8px] font-bold text-zinc-700 uppercase tracking-widest">{new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
@@ -614,10 +614,10 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                       </div>
                    </div>
 
-                   <div className="shrink-0 px-6 pb-6 pt-4">
+                   <div className="shrink-0 px-3 pb-3 pt-3 sm:px-6 sm:pb-6 sm:pt-4">
                      <div className="mx-auto w-full max-w-2xl">
                       <div className={`rounded-3xl border ${replyMode === 'internal' ? 'bg-amber-950/30 border-amber-500/20' : 'bg-zinc-900 border-white/5'} backdrop-blur-3xl overflow-hidden shadow-2xl`}>
-                         <div className="flex h-10 border-b border-white/5 px-6 items-center gap-6">
+                         <div className="flex min-h-10 flex-wrap border-b border-white/5 px-4 py-2 items-center gap-x-5 gap-y-2 sm:px-6">
                             {REPLY_MODES.map(m => (
                               <button key={m} onClick={() => setReplyMode(m)} className={`text-[8px] font-black tracking-widest uppercase ${replyMode === m ? 'text-indigo-500' : 'text-zinc-600'}`}>
                                  {m === 'customer' ? (telegramConversation ? 'Reply via Telegram' : 'Reply to client') : 'Internal Note'}
@@ -652,7 +652,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
               )}
 
               {activeTab === 'history' && (
-                <motion.div key="history" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 overflow-y-auto px-12 py-12 no-scrollbar">
+                <motion.div key="history" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 overflow-y-auto px-4 py-6 no-scrollbar sm:px-12 sm:py-12">
                    <div className="max-w-2xl mx-auto space-y-8">
                       {caseData.auditLogs.map(log => (
                         <div key={log.id} className="flex gap-8 group">
