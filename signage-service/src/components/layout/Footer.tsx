@@ -164,7 +164,7 @@ const Footer = ({ content }: { content?: FooterContent | null }) => {
           <div className="flex flex-col">
             <ColHeading>{col2Title}</ColHeading>
             <nav className="flex flex-col gap-3" aria-label="Service">
-              {/* "Anfrage starten" fires the site-wide chat event */}
+              {/* The primary service CTA fires the site-wide chat event */}
               <button
                 onClick={() => window.dispatchEvent(new Event('openChat'))}
                 className={`${linkCls} text-left cursor-pointer`}

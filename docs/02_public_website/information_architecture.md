@@ -223,18 +223,19 @@ Mobile menu должно быть коротким.
 ## 7. CTA-архитектура
 
 ### 7.1. Основной CTA сайта
-**Подать заявку**
+**Service starten** (запустить сервис)
 
 ### 7.2. Вторичные CTA
-- Отправить фото
+- Problem übergeben (передать проблему/задачу)
+- Service anfragen (запросить сервис)
 - Написать в WhatsApp
 - Написать в Telegram
 - Позвонить
-- Нужна помощь
+- Status prüfen (проверить статус)
 
 ### 7.3. CTA-иерархия
-1. Начать заявку
-2. Отправить фото
+1. Service starten (запустить сервис)
+2. Problem übergeben (передать проблему/задачу)
 3. Продолжить в мессенджере
 4. Позвонить
 
@@ -443,8 +444,8 @@ Start repair intake
 7. CTA
 
 ### 11.5. Recommended CTA
-- Отправить фото поломки
-- Начать заявку на ремонт
+- Problem übergeben (передать проблему/задачу)
+- Service starten (запустить сервис)
 
 ---
 
@@ -845,7 +846,7 @@ SEO-страницы не должны ломать trust-first UX.
 3. **Описание симптомов**: Как пользователь видит проблему.
 4. **Причины**: Список возможных технических неисправностей.
 5. **Решение (наш сервис)**: Как мы это исправляем и почему это нельзя делать самостоятельно.
-6. **CTA**: "Записаться на диагностику" или "Отправить фото поломки".
+6. **CTA**: `Problem übergeben` (передать проблему/задачу) или `Service starten` (запустить сервис).
 
 ### 31.3. Технические требования (GEO)
 - Обязательная разметка HowTo или FAQPage.
@@ -867,6 +868,15 @@ SEO-страницы не должны ломать trust-first UX.
 ---
 
 ## Progress Log
+
+### 2026-05-13 — Public CTA System Unified
+
+- Current sprint/block: Public Website, CTA and conversion microcopy normalization
+- Done: owner approved the cross-language CTA roles; fallback messages, hardcoded public route labels, and published CMS labels now use `Service starten` (запустить сервис) for the main entry, `Problem übergeben` (передать проблему/задачу) for problem-led flows, `Service anfragen` (запросить сервис) for B2B/service-contract contexts, `Anfrage senden` (отправить заявку) only inside forms, `Status prüfen` (проверить статус) for status lookup, and `Dringenden Fall melden` (сообщить о срочном случае) for urgent cases.
+- In progress: visual owner QA across header, homepage, problem pages, service page, business page, references, and contact form.
+- Next action: review the changed CTA labels in browser across DE/EN/RU/TR/PL/AR and approve any page-specific wording refinements.
+- Blockers/risks: some older CMS navigation labels and non-CTA page copy still need separate page-by-page localization cleanup; this pass intentionally focused on CTA text and supporting CTA microcopy.
+- Updated documents: `PROGRESS.md`, `docs/02_public_website/information_architecture.md`, `docs/01_strategy/new/Block 9 — Messaging & Conversion.md`, `docs/07_content_ai_seo/copy_system.md`
 
 ### 2026-05-12 — Homepage Process Block Content Updated
 

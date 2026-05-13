@@ -4,9 +4,9 @@
     "hero_title_prefix": "PixelRing:",
     "hero_title_accent": "Naprawa i serwis",
     "hero_title_suffix": "reklam oraz reklamy świetlnej.",
-    "description": "PixelRing wspiera firmy przy uszkodzonych nośnikach reklamowych, elementach LED i infrastrukturze wizualnej w lokalizacjach komercyjnych. Rozpocznij zgłoszenie od zdjęcia albo krótkiego opisu — sprawdzimy informacje i skoordynujemy kolejny krok.",
-    "cta_primary": "Rozpocznij zgłoszenie",
-    "cta_secondary": "Wyślij zdjęcie",
+    "description": "PixelRing wspiera firmy przy uszkodzonych nośnikach reklamowych, elementach LED i infrastrukturze wizualnej w lokalizacjach komercyjnych. Zacznij od krótkiego opisu albo zdjęcia — sprawdzimy informacje i skoordynujemy kolejny krok.",
+    "cta_primary": "Rozpocznij serwis",
+    "cta_secondary": "Przekaż zgłoszenie",
     "trust_badge": "Jeden kontakt. Uporządkowany proces serwisowy. Jasna koordynacja.",
     "badge_label": "Czas reakcji dla pilnych przypadków"
   },
@@ -17,7 +17,7 @@
     "references": "Realizacje",
     "about": "O Nas",
     "account_status": "Konto i Status",
-    "submit_request": "Wyslij Zgloszenie",
+    "submit_request": "Rozpocznij serwis",
     "warranty": "Gwarancja",
     "status": "Status",
     "support": "Pomoc",
@@ -49,37 +49,43 @@
     "contact": "Kontakt"
   },
   "Trust": {
-    "titleStart": "Dość skomplikowanych",
-    "titleAccent": "portali i pośredników",
-    "titleEnd": "My po prostu naprawiamy.",
-    "description": "Najkrótsza droga między usterką a lśniącą fasadą. Bezpośrednia realizacja przez nasze atelier techniczne – bez zbędnych marż platform sprzedażowych.",
-    "cta_label": "Poproś o bezpłatną konsultację",
-    "cta_subtext": "Odpowiedź zazwyczaj w ciągu 15 minut.",
+    "pretitle": "PRZEWAGA",
+    "titleStart": "Dlaczego firmy",
+    "titleAccent": "wybierają PixelRing",
+    "titleEnd": "",
+    "description": "Nie portal, nie przypadkowy fachowiec i nie rozproszona koordynacja. PixelRing przyjmuje zgłoszenie, pomaga zrozumieć problem, organizuje wykonanie prac i pozostawia obiekt pod opieką serwisową.",
+    "cta_label": "Rozpocznij serwis",
+    "cta_subtext": "Zacznij od krótkiego opisu albo zdjęcia.",
     "stats": [
       {
-        "label": "Bezpośredni serwis",
-        "value": "Bez pośredników",
-        "description": "Nie jesteśmy platformą ani marketplacem. Rozmawiasz bezpośrednio z technikami, którzy naprawiają Twoją reklamę. Oszczędzaj czas i do 30% na prowizjach."
+        "label": "BEZPOŚREDNI SERWIS",
+        "value": "Bez portali i pośredników",
+        "description": "PixelRing przyjmuje zgłoszenie jako jedna firma serwisowa: od pierwszego kontaktu przez koordynację prac po dalszą opiekę. Klient nie szuka wykonawców, nie porównuje przypadkowych kontaktów i nie tłumaczy zadania każdemu uczestnikowi od nowa.",
+        "highlight": "Jedno zgłoszenie — jeden punkt odpowiedzialności."
       },
       {
-        "label": "Rzemiosło",
-        "value": "Standard Atelier",
-        "description": "Każda naprawa odbywa się zgodnie z naszą zasadą atelier: precyzja w każdym detalu, aby Twoja reklama lśniła jak nowa przez lata."
+        "label": "BUDŻET",
+        "value": "AI obniża koszt startu",
+        "description": "Wstępne zgłoszenie pomaga obsłużyć asystent AI: zbiera zdjęcia, opis i podstawowe dane przed podłączeniem specjalisty.",
+        "highlight": "Oszczędzamy na wstępnym opracowaniu informacji, nie na jakości."
       },
       {
-        "label": "Budżet",
-        "value": "Oszczędność przez naprawę",
-        "description": "Po co kupować nowe? Ratujemy 90% uszkodzonych systemów. Naprawa jest nie tylko bardziej ekologiczna, ale też znacznie tańsza niż wymiana."
-      },
-      {
-        "label": "Jasność",
+        "label": "JASNOŚĆ",
         "value": "Status online",
-        "description": "Koniec z niepewnością. Śledź postępy naprawy w dowolnym momencie online za pośrednictwem swojego osobistego panelu statusu."
+        "description": "Bez niepewności. Klient widzi przebieg zgłoszenia w koncie PixelRing: od przyjęcia zgłoszenia przez uzgodnienie i wykonanie prac po opiekę serwisową.",
+        "highlight": "Mniej niepewności — więcej kontroli."
       },
       {
-        "label": "Ekspres",
-        "value": "Reakcja 24h",
-        "description": "W przypadku krytycznych awarii jesteśmy na miejscu natychmiast. Gwarantujemy: Twoja lokalizacja nie zostanie w ciemności."
+        "label": "ODPOWIEDZIALNOŚĆ",
+        "value": "PixelRing prowadzi proces",
+        "description": "Koordynujemy zgłoszenie od pierwszego kontaktu do wykonania prac i pozostajemy centralnym punktem kontaktu dla obiektu.",
+        "highlight": "Nie musisz ręcznie łączyć wszystkich uczestników."
+      },
+      {
+        "label": "GWARANCJA I SERWIS",
+        "value": "Obiekt pozostaje pod opieką",
+        "description": "Wszystkie wykonane prace są objęte warunkami gwarancji, a obiekt otrzymuje status serwisowy w systemie PixelRing.",
+        "highlight": "PixelRing pozostaje punktem wsparcia dla biznesu."
       }
     ],
     "features": [
@@ -100,7 +106,7 @@
       },
       {
         "id": "photo",
-        "title": "Wyślij zdjęcie",
+        "title": "Przekaż zgłoszenie",
         "label": "Prześlij zdjęcia"
       },
       {
@@ -119,7 +125,7 @@
     "title": "Jak to działa",
     "steps": [
       {
-        "title": "Złóż zgłoszenie",
+        "title": "Rozpocznij serwis",
         "description": "Krótko opisz problem albo wyślij zdjęcie. Asystent AI pomaga rozpoznać sytuację i przygotować wstępną ocenę.",
         "highlight": "Nie musisz znać szczegółów technicznych."
       },
@@ -231,7 +237,7 @@
     "email": "E-mail",
     "messenger_label": "Napisz do nas bezpośrednio",
     "divider": "lub zostaw zapytanie",
-    "form_title": "Zostaw zapytanie",
+    "form_title": "Rozpocznij serwis",
     "field_name": "Twoje imię",
     "field_name_company": "Imię oraz firma (opcjonalnie)",
     "field_issue_type": "Typ problemu (opcjonalnie)",
@@ -244,7 +250,7 @@
     "field_photo": "📎 Załącz zdjęcie",
     "attach_photo_btn": "Załącz zdjęcie (opcjonalnie)",
     "form_footer": "Utworzymy zgłoszenie, nadamy numer PR i możesz kontynuować w Status.",
-    "submit": "Utwórz zgłoszenie",
+    "submit": "Wyślij zgłoszenie",
     "success_title": "Zgłoszenie utworzone!",
     "success_number_label": "Twój numer PR",
     "success_message": "Użyj Status z tym numerem, aby kontynuować.",
@@ -363,7 +369,7 @@
     "subtitle": "Jesteśmy zawsze dostępni w celu bezpłatnej konsultacji technicznej i wstępnej kalkulacji kosztów.",
     "connect_label": "SZYBKI KONTAKT PRZEZ KOMUNIKATORY",
     "write_us": "Napisz do nas",
-    "form_title": "Wyślij zgłoszenie",
+    "form_title": "Rozpocznij serwis",
     "form_subtitle": "Opisz swoje zadanie, a mianowicie skontaktujemy się z Tobą w ciągu 15 minut."
   },
   "Reviews": {
@@ -436,10 +442,10 @@
       }
     },
     "urgent_cases_title": "Pilne Przypadki",
-    "urgent_cases_desc": "W przypadku zapachu spalenizny, iskrzenia lub luźnych elementów, prosimy o natychmiastowe wyłączenie urządzenia i bezpośredni kontakt.",
+    "urgent_cases_desc": "W razie zagrożenia odłącz zasilanie i zachowaj odstęp.",
     "urgent_badge": "Pilne Ostrzeżenie Bezpieczeństwa",
     "call_technician": "Zadzwoń do technika",
-    "send_request": "Wyślij zgłoszenie",
+    "send_request": "Rozpocznij serwis",
     "symptoms_title": "Typowe Objawy",
     "symptoms_desc": "Wybierz objaw, aby uzyskać szczegółowe informacje o przyczynie i rozwiązaniu.",
     "all_articles": "Wszystkie Artykuły",
@@ -457,8 +463,8 @@
     "related_services_title": "Powiązane Usługi",
     "cta_title": "Potrzebujesz Pomocy Eksperta?",
     "cta_desc": "Prześlij nam zdjęcie problemu lub bezpośrednio rozpocznij zgłoszenie naprawy. Nasi specjaliści skontaktują się z Tobą wkrótce.",
-    "cta_primary": "Rozpocznij Diagnozę",
-    "cta_secondary": "Prześlij Zdjęcie",
+    "cta_primary": "Przekaż zgłoszenie",
+    "cta_secondary": "Rozpocznij serwis",
     "internal_links_title": "Popularne Tematy i Rozwiązania"
   },
   "Portal": {

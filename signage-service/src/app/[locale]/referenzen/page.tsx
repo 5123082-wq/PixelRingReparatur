@@ -98,7 +98,7 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     heroIntro:
       'Diese Beispiele zeigen, was defekt war, was PixelRing geprüft und umgesetzt hat und wie die Werbeanlage danach wieder wirkt. Ohne Kundennamen, genaue Adressen oder interne CRM-Daten.',
     heroPrimaryCta: 'Arbeiten ansehen',
-    heroSecondaryCta: 'Aehnliche Anfrage starten',
+    heroSecondaryCta: 'Ähnlichen Fall starten',
     heroTags: ['LED-Service', 'Leuchtkästen', 'Neon', 'Folien', 'Fassaden', 'Filialservice'],
     heroNoteTitle: 'Proof statt Galerie',
     heroNoteText:
@@ -133,12 +133,12 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     finalTitle: 'Zeigen Sie uns Ihr Schild, Ihre Fassade oder Ihr Werbeelement.',
     finalText:
       'Ein Foto reicht oft für die erste Einschätzung. PixelRing prüft den sichtbaren Zustand und klaert den nächsten sinnvollen Schritt.',
-    finalCta: 'Foto senden',
+    finalCta: 'Service starten',
     modalProblemLabel: 'Ausgangslage',
     modalWorkLabel: 'Umsetzung',
     modalResultLabel: 'Ergebnis',
     modalBeforeLabel: 'Vorher ansehen',
-    modalCta: 'Aehnliche Anfrage',
+    modalCta: 'Ähnlichen Fall starten',
     viewerAllLabel: 'Alle',
     viewerCloseLabel: 'Schliessen',
   },
@@ -151,7 +151,7 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     heroIntro:
       'These examples show what was wrong, what PixelRing checked and repaired, and how the advertising element looked after service. No customer names, exact addresses, or internal CRM data.',
     heroPrimaryCta: 'View work',
-    heroSecondaryCta: 'Start a similar request',
+    heroSecondaryCta: 'Start a similar case',
     heroTags: ['LED service', 'Lightboxes', 'Neon', 'Films', 'Facades', 'Branch service'],
     heroNoteTitle: 'Proof, not a vanity gallery',
     heroNoteText:
@@ -186,12 +186,12 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     finalTitle: 'Show us your sign, facade, or advertising element.',
     finalText:
       'A photo is often enough for the first assessment. PixelRing checks the visible condition and clarifies the next useful step.',
-    finalCta: 'Send photo',
+    finalCta: 'Start service',
     modalProblemLabel: 'Initial state',
     modalWorkLabel: 'Work done',
     modalResultLabel: 'Outcome',
     modalBeforeLabel: 'View before',
-    modalCta: 'Similar request',
+    modalCta: 'Start a similar case',
     viewerAllLabel: 'All',
     viewerCloseLabel: 'Close',
   },
@@ -204,7 +204,7 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     heroIntro:
       'На этой странице показано, что было неисправно, что PixelRing проверил и восстановил, и как рекламный элемент стал выглядеть после работы. Без имен клиентов, точных адресов и CRM-данных.',
     heroPrimaryCta: 'Смотреть работы',
-    heroSecondaryCta: 'Оставить похожую заявку',
+    heroSecondaryCta: 'Начать похожий случай',
     heroTags: ['LED-сервис', 'Световые короба', 'Неон', 'Пленки', 'Фасады', 'Сервис сетей'],
     heroNoteTitle: 'Доказательство, а не витрина',
     heroNoteText:
@@ -239,12 +239,12 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     finalTitle: 'Покажите нам вывеску, фасад или рекламный элемент.',
     finalText:
       'Для первичной оценки часто достаточно фотографии. PixelRing проверит видимое состояние и предложит следующий разумный шаг.',
-    finalCta: 'Отправить фото',
+    finalCta: 'Запустить сервис',
     modalProblemLabel: 'Исходное состояние',
     modalWorkLabel: 'Что сделано',
     modalResultLabel: 'Результат',
     modalBeforeLabel: 'Показать before',
-    modalCta: 'Похожая заявка',
+    modalCta: 'Начать похожий случай',
     viewerAllLabel: 'Все',
     viewerCloseLabel: 'Закрыть',
   },
@@ -257,7 +257,7 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     heroIntro:
       'Bu örnekler neyin bozuk olduğunu, PixelRing’in neyi kontrol edip onardığını ve reklam unsurunun servis sonrası nasıl göründüğünü gösterir. Müşteri adı, tam adres veya CRM verisi yoktur.',
     heroPrimaryCta: 'İşleri görüntüle',
-    heroSecondaryCta: 'Benzer talep başlat',
+    heroSecondaryCta: 'Benzer işlem başlat',
     heroTags: ['LED servis', 'Işıklı kutular', 'Neon', 'Filmler', 'Cepheler', 'Şube servisi'],
     heroNoteTitle: 'Galeri değil, kanıt',
     heroNoteText:
@@ -292,12 +292,12 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     finalTitle: 'Tabelanızı, cephenizi veya reklam unsurunuzu gösterin.',
     finalText:
       'İlk değerlendirme için çoğu zaman bir fotoğraf yeterlidir. PixelRing görünen durumu kontrol eder ve sonraki mantıklı adımı netleştirir.',
-    finalCta: 'Fotoğraf gönder',
+    finalCta: 'Servisi başlat',
     modalProblemLabel: 'Başlangıç durumu',
     modalWorkLabel: 'Yapılan iş',
     modalResultLabel: 'Sonuç',
     modalBeforeLabel: 'Öncesini gör',
-    modalCta: 'Benzer talep',
+    modalCta: 'Benzer işlem başlat',
     viewerAllLabel: 'Tümü',
     viewerCloseLabel: 'Kapat',
   },
@@ -310,7 +310,7 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     heroIntro:
       'Te przykłady pokazują, co było uszkodzone, co PixelRing sprawdził i naprawił oraz jak element reklamowy wyglądał po usłudze. Bez nazw klientów, dokładnych adresów i danych CRM.',
     heroPrimaryCta: 'Zobacz prace',
-    heroSecondaryCta: 'Zgłoś podobny problem',
+    heroSecondaryCta: 'Rozpocznij podobną sprawę',
     heroTags: ['Serwis LED', 'Kasetony', 'Neon', 'Folie', 'Elewacje', 'Serwis sieci'],
     heroNoteTitle: 'Dowód, nie galeria',
     heroNoteText:
@@ -345,12 +345,12 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     finalTitle: 'Pokaż nam swój szyld, fasadę lub element reklamowy.',
     finalText:
       'Do pierwszej oceny często wystarczy zdjęcie. PixelRing sprawdzi widoczny stan i ustali kolejny rozsądny krok.',
-    finalCta: 'Wyślij zdjęcie',
+    finalCta: 'Rozpocznij serwis',
     modalProblemLabel: 'Stan wyjściowy',
     modalWorkLabel: 'Wykonano',
     modalResultLabel: 'Efekt',
     modalBeforeLabel: 'Zobacz przed',
-    modalCta: 'Podobne zgłoszenie',
+    modalCta: 'Rozpocznij podobną sprawę',
     viewerAllLabel: 'Wszystkie',
     viewerCloseLabel: 'Zamknij',
   },
@@ -363,7 +363,7 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     heroIntro:
       'تعرض هذه الأمثلة ما كان معطلاً، وما فحصته PixelRing ونفذته، وكيف أصبح العنصر الإعلاني بعد الخدمة. لا أسماء عملاء، لا عناوين دقيقة، ولا بيانات CRM داخلية.',
     heroPrimaryCta: 'عرض الأعمال',
-    heroSecondaryCta: 'ابدأ طلباً مشابهاً',
+    heroSecondaryCta: 'ابدأ حالة مشابهة',
     heroTags: ['خدمة LED', 'صناديق مضيئة', 'نيون', 'أفلام', 'واجهات', 'خدمة الفروع'],
     heroNoteTitle: 'إثبات عمل لا معرض فقط',
     heroNoteText:
@@ -398,12 +398,12 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     finalTitle: 'أرنا لوحتك أو واجهتك أو العنصر الإعلاني لديك.',
     finalText:
       'غالباً تكفي صورة واحدة للتقييم الأولي. تفحص PixelRing الحالة الظاهرة وتوضح الخطوة العملية التالية.',
-    finalCta: 'إرسال صورة',
+    finalCta: 'ابدأ الخدمة',
     modalProblemLabel: 'الحالة الأولية',
     modalWorkLabel: 'العمل المنفذ',
     modalResultLabel: 'النتيجة',
     modalBeforeLabel: 'عرض قبل الإصلاح',
-    modalCta: 'طلب مشابه',
+    modalCta: 'ابدأ حالة مشابهة',
     viewerAllLabel: 'الكل',
     viewerCloseLabel: 'إغلاق',
   },

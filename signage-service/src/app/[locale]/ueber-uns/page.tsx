@@ -54,7 +54,7 @@ const CONTENT: Record<Locale, AboutContent> = {
       badge: 'Service für Werbeanlagen • Seit 2023',
       title: 'Ein verantwortlicher Servicepartner für Werbeanlagen',
       intro: 'PixelRing koordiniert Reparatur, Wartung, Montage und Audit aus einer Hand. Kein Marktplatz, keine anonyme Vermittlung: eine Anfrage, klare Verantwortung, Ausführung durch Fachleute.',
-      ctaPrimary: 'Anfrage starten',
+      ctaPrimary: 'Service starten',
       ctaSecondary: 'Rückruf anfordern'
     },
     stats: [
@@ -110,7 +110,7 @@ const CONTENT: Record<Locale, AboutContent> = {
     final: {
       title: 'Beschreiben Sie Ihre Aufgabe rund um die Werbeanlage',
       description: 'Beschreiben Sie Ihr Anliegen. Wir prüfen die Angaben, klären offene Punkte und führen Sie zum nächsten sinnvollen Schritt.',
-      button: 'Jetzt anfragen'
+      button: 'Service starten'
     }
   },
   en: {
@@ -120,7 +120,7 @@ const CONTENT: Record<Locale, AboutContent> = {
       badge: 'Signage service • Since 2023',
       title: 'One Accountable Service Partner for Signage Systems',
       intro: 'PixelRing coordinates repair, maintenance, installation, and audits from one place. No marketplace, no anonymous broker: one request, clear responsibility, specialist execution.',
-      ctaPrimary: 'Submit a Request',
+      ctaPrimary: 'Start service',
       ctaSecondary: 'Request Callback'
     },
     stats: [
@@ -176,7 +176,7 @@ const CONTENT: Record<Locale, AboutContent> = {
     final: {
       title: 'Describe the Task Around Your Signage System',
       description: 'Describe your issue. We review the details, clarify open points, and guide you toward the next practical step.',
-      button: 'Inquire Now'
+      button: 'Start service'
     }
   },
   ru: {
@@ -186,7 +186,7 @@ const CONTENT: Record<Locale, AboutContent> = {
       badge: 'Сервис вывесок • С 2023 года',
       title: 'Один ответственный сервисный партнёр для рекламных систем',
       intro: 'PixelRing координирует ремонт, обслуживание, монтаж и аудит из одной точки. Не маркетплейс и не анонимный посредник: одна заявка, понятная ответственность, работа специалистов.',
-      ctaPrimary: 'Оставить заявку',
+      ctaPrimary: 'Запустить сервис',
       ctaSecondary: 'Заказать звонок'
     },
     stats: [
@@ -242,7 +242,7 @@ const CONTENT: Record<Locale, AboutContent> = {
     final: {
       title: 'Опишите задачу по вашей рекламной установке',
       description: 'Опишите проблему с вывеской или рекламной системой. Мы проверим детали, уточним открытые вопросы и подскажем следующий практичный шаг.',
-      button: 'Запросить сейчас'
+      button: 'Запустить сервис'
     }
   },
   tr: {
@@ -252,7 +252,7 @@ const CONTENT: Record<Locale, AboutContent> = {
       badge: 'Tabela servisi • 2023\'ten beri',
       title: 'Reklam Sistemleri İçin Tek Sorumlu Servis Ortağı',
       intro: 'PixelRing onarım, bakım, montaj ve denetimi tek noktadan koordine eder. Pazar yeri veya anonim aracı değil: tek talep, net sorumluluk, uzman uygulama.',
-      ctaPrimary: 'Talep Oluştur',
+      ctaPrimary: 'Servisi başlat',
       ctaSecondary: 'Beni Ara'
     },
     stats: [
@@ -308,7 +308,7 @@ const CONTENT: Record<Locale, AboutContent> = {
     final: {
       title: 'Reklam Sisteminizle İlgili Görevi Açıklayın',
       description: 'Sorununuzu açıklayın. Bilgileri kontrol eder, açık noktaları netleştirir ve sizi bir sonraki pratik adıma yönlendiririz.',
-      button: 'Şimdi Sorun'
+      button: 'Servisi başlat'
     }
   },
   pl: {
@@ -318,7 +318,7 @@ const CONTENT: Record<Locale, AboutContent> = {
       badge: 'Serwis reklam • Od 2023',
       title: 'Jeden odpowiedzialny partner serwisowy dla systemów reklamowych',
       intro: 'PixelRing koordynuje naprawy, konserwację, montaż i audyty z jednego miejsca. Nie marketplace i nie anonimowy pośrednik: jedno zgłoszenie, jasna odpowiedzialność, wykonanie przez specjalistów.',
-      ctaPrimary: 'Złóż zapytanie',
+      ctaPrimary: 'Rozpocznij serwis',
       ctaSecondary: 'Zamów oddzwonienie'
     },
     stats: [
@@ -374,7 +374,7 @@ const CONTENT: Record<Locale, AboutContent> = {
     final: {
       title: 'Opisz zadanie dotyczące Twojej reklamy',
       description: 'Opisz problem. Sprawdzimy informacje, wyjaśnimy otwarte punkty i wskażemy kolejny praktyczny krok.',
-      button: 'Zapytaj teraz'
+      button: 'Rozpocznij serwis'
     }
   },
   ar: {
@@ -384,7 +384,7 @@ const CONTENT: Record<Locale, AboutContent> = {
       badge: 'خدمة اللوحات الإعلانية • منذ 2023',
       title: 'شريك خدمة واحد مسؤول عن أنظمة الإعلانات',
       intro: 'ينسق بكسل رينج الإصلاح والصيانة والتركيب والتدقيق من نقطة واحدة. لسنا سوقاً ولا وسيطاً مجهولاً: طلب واحد، مسؤولية واضحة، وتنفيذ بواسطة مختصين.',
-      ctaPrimary: 'أرسل طلبك',
+      ctaPrimary: 'ابدأ الخدمة',
       ctaSecondary: 'اطلب اتصالاً'
     },
     stats: [
@@ -440,7 +440,7 @@ const CONTENT: Record<Locale, AboutContent> = {
     final: {
       title: 'صِف المهمة المتعلقة بنظامك الإعلاني',
       description: 'صِف المشكلة. نراجع التفاصيل ونوضح النقاط المفتوحة ونرشدك إلى الخطوة العملية التالية.',
-      button: 'اطلب الآن'
+      button: 'ابدأ الخدمة'
     }
   }
 };

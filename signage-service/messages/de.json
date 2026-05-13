@@ -4,9 +4,9 @@
     "hero_title_prefix": "PixelRing:",
     "hero_title_accent": "Reparatur und Service",
     "hero_title_suffix": "für Werbeanlagen und Lichtwerbung.",
-    "description": "PixelRing unterstützt Unternehmen bei defekten Werbeanlagen, LED-Elementen und visueller Infrastruktur an Geschäftsstandorten. Starten Sie die Anfrage mit Foto oder kurzer Beschreibung — wir prüfen die Angaben und koordinieren den nächsten Schritt.",
-    "cta_primary": "Anfrage starten",
-    "cta_secondary": "Foto senden",
+    "description": "PixelRing unterstützt Unternehmen bei defekten Werbeanlagen, LED-Elementen und visueller Infrastruktur an Geschäftsstandorten. Starten Sie mit kurzer Beschreibung oder Foto — wir prüfen die Angaben und koordinieren den nächsten Schritt.",
+    "cta_primary": "Service starten",
+    "cta_secondary": "Problem übergeben",
     "trust_badge": "Ein Ansprechpartner. Ein strukturierter Serviceprozess. Klare Koordination.",
     "badge_label": "Reaktionszeit für dringende Fälle"
   },
@@ -17,7 +17,7 @@
     "references": "Referenzen",
     "about": "Über uns",
     "account_status": "Kundenkonto & Status",
-    "submit_request": "Anfrage senden",
+    "submit_request": "Service starten",
     "warranty": "Garantie",
     "status": "Status",
     "support": "Support",
@@ -49,37 +49,43 @@
     "contact": "Kontakt"
   },
   "Trust": {
-    "titleStart": "Schluss mit",
-    "titleAccent": "komplizierten Portalen",
-    "titleEnd": "Wir reparieren einfach.",
-    "description": "Der kürzeste Weg zwischen einem Defekt und einer leuchtenden Fassade. Direkte Umsetzung durch unser technisches Atelier – ohne Umwege über Verkaufsplattformen.",
-    "cta_label": "Kostenlose Beratung anfordern",
-    "cta_subtext": "Antwort in der Regel innerhalb von 15 Min.",
+    "pretitle": "VORTEIL",
+    "titleStart": "Warum Unternehmen",
+    "titleAccent": "PixelRing wählen",
+    "titleEnd": "",
+    "description": "Kein Portal, kein zufälliger Monteur und keine verstreute Koordination. PixelRing nimmt die Anfrage an, hilft bei der Einordnung des Problems, organisiert die Ausführung und begleitet das Objekt im Service.",
+    "cta_label": "Service starten",
+    "cta_subtext": "Starten Sie mit kurzer Beschreibung oder Foto.",
     "stats": [
       {
-        "label": "Direktservice",
-        "value": "Keine Vermittler",
-        "description": "Wir sind keine Plattform. Sie sprechen direkt mit den Technikern, die Ihre Anlage reparieren. Sparen Sie Zeit und bis zu 30% Gebühren."
+        "label": "DIREKTSERVICE",
+        "value": "Ohne Portale und Vermittler",
+        "description": "PixelRing nimmt Ihre Anfrage als einheitliche Servicefirma an: vom ersten Kontakt über die Koordination der Arbeiten bis zur weiteren Betreuung. Der Kunde sucht keine Auftragnehmer, vergleicht keine zufälligen Kontakte und erklärt die Aufgabe nicht jedem Beteiligten neu.",
+        "highlight": "Eine Anfrage — eine verantwortliche Servicestelle."
       },
       {
-        "label": "Handwerk",
-        "value": "Meister-Standard",
-        "description": "Jede Reparatur folgt unserem Atelier-Prinzip: Präzision bis ins kleinste Detail, damit Ihre Werbung jahrelang wie neu strahlt."
+        "label": "BUDGET",
+        "value": "KI reduziert den Startaufwand",
+        "description": "Die erste Anfrage wird vom KI-Assistenten vorbereitet: Er sammelt Fotos, Beschreibung und Basisdaten, bevor ein Spezialist übernimmt.",
+        "highlight": "Wir sparen bei der ersten Informationsaufnahme, nicht bei der Qualität."
       },
       {
-        "label": "Budget-Check",
-        "value": "Sparen durch Erhalt",
-        "description": "Warum neu kaufen? Wir retten 90% der defekten Anlagen. Reparatur ist nicht nur nachhaltiger, sondern schont massiv Ihr Budget."
+        "label": "KLARHEIT",
+        "value": "Status online",
+        "description": "Keine Ungewissheit. Der Kunde sieht den Verlauf der Anfrage im PixelRing Kundenbereich: von der Annahme über Abstimmung und Ausführung bis zur Servicebegleitung.",
+        "highlight": "Weniger Ungewissheit — mehr Kontrolle."
       },
       {
-        "label": "Klarheit",
-        "value": "Live Status-Check",
-        "description": "Keine Ungewissheit mehr. Verfolgen Sie den Fortschritt Ihrer Reparatur jederzeit online über Ihr persönliches Dashboard."
+        "label": "VERANTWORTUNG",
+        "value": "PixelRing führt den Prozess",
+        "description": "Wir koordinieren die Anfrage vom ersten Kontakt bis zur Ausführung der Arbeiten und bleiben die zentrale Kontaktstelle für das Objekt.",
+        "highlight": "Sie müssen die Beteiligten nicht selbst zusammenführen."
       },
       {
-        "label": "Express",
-        "value": "24h Reaktion",
-        "description": "Bei kritischen Ausfällen sind wir sofort zur Stelle. Wir lassen Ihren Standort nicht im Dunkeln stehen – garantiert."
+        "label": "GARANTIE UND SERVICE",
+        "value": "Das Objekt bleibt in Betreuung",
+        "description": "Alle ausgeführten Arbeiten werden von Garantiebedingungen begleitet, und das Objekt erhält einen Servicestatus im PixelRing System.",
+        "highlight": "PixelRing bleibt die Servicestelle für Ihr Unternehmen."
       }
     ],
     "features": [
@@ -100,7 +106,7 @@
       },
       {
         "id": "photo",
-        "title": "Foto senden",
+        "title": "Problem übergeben",
         "label": "Laden Sie Bilder hoch"
       },
       {
@@ -119,7 +125,7 @@
     "title": "Wie es funktioniert",
     "steps": [
       {
-        "title": "Anfrage stellen",
+        "title": "Service starten",
         "description": "Beschreiben Sie kurz das Problem oder senden Sie ein Foto. Der KI-Assistent hilft, die Situation einzuordnen und eine erste Vorprüfung zu erstellen.",
         "highlight": "Sie müssen sich nicht mit technischen Details auskennen."
       },
@@ -231,7 +237,7 @@
     "email": "E-Mail",
     "messenger_label": "Direkt schreiben",
     "divider": "oder Anfrage hinterlassen",
-    "form_title": "Anfrage stellen",
+    "form_title": "Service starten",
     "field_name": "Ihr Name",
     "field_name_company": "Name und Firma (optional)",
     "field_issue_type": "Typ der Anfrage (optional)",
@@ -244,7 +250,7 @@
     "field_photo": "📎 Foto anhängen",
     "attach_photo_btn": "Foto beifügen (optional)",
     "form_footer": "Wir erstellen die Anfrage, vergeben eine PR-Nummer, und Sie können mit Status weitermachen.",
-    "submit": "Anfrage erstellen",
+    "submit": "Anfrage senden",
     "success_title": "Anfrage erstellt!",
     "success_number_label": "Ihre PR-Nummer",
     "success_message": "Nutzen Sie Status mit dieser Nummer, um fortzufahren.",
@@ -363,7 +369,7 @@
     "subtitle": "Wir sind jederzeit für eine kostenlose technische Beratung und vorläufige Kostenkalkulation erreichbar.",
     "connect_label": "SCHNELLER KONTAKT ÜBER MESSENGER",
     "write_us": "Schreiben Sie uns",
-    "form_title": "Anfrage senden",
+    "form_title": "Service starten",
     "form_subtitle": "Beschreiben Sie Ihre Aufgabe. Wir melden uns in der Regel innerhalb von 15 Minuten."
   },
   "Reviews": {
@@ -436,10 +442,10 @@
       }
     },
     "urgent_cases_title": "Dringende Fälle",
-    "urgent_cases_desc": "Bei Brandgeruch, Funkenbildung oder lockeren Bauteilen schalten Sie die Anlage bitte sofort ab und kontaktieren Sie uns direkt.",
+    "urgent_cases_desc": "Bei Gefahr Strom abschalten und Abstand halten.",
     "urgent_badge": "Dringliche Sicherheitswarnung",
     "call_technician": "Techniker anrufen",
-    "send_request": "Anfrage senden",
+    "send_request": "Service starten",
     "symptoms_title": "Typische Symptome",
     "symptoms_desc": "Wählen Sie ein Symptom aus, um detaillierte Informationen zur Ursache und Lösung zu erhalten.",
     "all_articles": "Alle Artikel",
@@ -457,8 +463,8 @@
     "related_services_title": "Passende Leistungen",
     "cta_title": "Benötigen Sie Expertenhilfe?",
     "cta_desc": "Senden Sie uns ein Foto des Problems oder starten Sie direkt eine Reparaturanfrage. Unsere Spezialisten melden sich umgehend.",
-    "cta_primary": "Diagnose starten",
-    "cta_secondary": "Foto hochladen",
+    "cta_primary": "Problem übergeben",
+    "cta_secondary": "Service starten",
     "internal_links_title": "Beliebte Themen & Lösungen"
   },
   "Portal": {

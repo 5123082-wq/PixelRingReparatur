@@ -182,13 +182,14 @@ export type BentoGridCmsContent = {
 };
 
 export type TrustCmsContent = {
+  pretitle?: string;
   titleStart?: string;
   titleAccent?: string;
   titleEnd?: string;
   description?: string;
   cta_label?: string;
   cta_subtext?: string;
-  stats?: { value?: string; label?: string; description?: string }[];
+  stats?: { value?: string; label?: string; description?: string; highlight?: string }[];
   features?: { icon?: string; label?: string }[];
 };
 
@@ -1123,6 +1124,7 @@ export async function getHomePageCmsContent(
       : undefined,
     trust: trust
       ? {
+          pretitle: getBlockText(trust, 'pretitle'),
           titleStart: getBlockText(trust, 'titleStart'),
           titleAccent: getBlockText(trust, 'titleAccent'),
           titleEnd: getBlockText(trust, 'titleEnd'),
@@ -1133,6 +1135,7 @@ export async function getHomePageCmsContent(
             value: typeof s.value === 'string' ? s.value : undefined,
             label: typeof s.label === 'string' ? s.label : undefined,
             description: typeof s.description === 'string' ? s.description : undefined,
+            highlight: typeof s.highlight === 'string' ? s.highlight : undefined,
           })),
           features: getBlockObjectList(trust, 'features')?.map(f => ({
             icon: typeof f.icon === 'string' ? f.icon : undefined,

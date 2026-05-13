@@ -34,7 +34,7 @@ const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
     : rawStats.slice(0, 5);
 
   return (
-    <section className="relative w-full bg-[#0E1A2B] py-24 overflow-hidden">
+    <section className="relative w-full bg-[#0E1A2B] py-20 overflow-hidden">
       {/* Background decorations */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-[#B8643E]/10 rounded-full blur-[120px]" />
@@ -42,21 +42,30 @@ const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
-        <div className="flex flex-col gap-16">
+        <div className="flex flex-col gap-12">
           
           {/* HEADER */}
           <div className="flex flex-col gap-6 max-w-4xl">
-            <h2 className="text-[40px] md:text-[56px] font-extrabold text-white leading-[1.1] tracking-tight">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-[2px] bg-[#B8643E]" />
+              <span className="text-[#B8643E] font-bold tracking-[0.2em] uppercase text-[12px]">
+                {content?.pretitle || safeT('pretitle', 'ADVANTAGE')}
+              </span>
+            </div>
+            <h2 className="text-[38px] md:text-[52px] font-extrabold text-white leading-[1.08] tracking-tight">
               <span>{content?.titleStart || safeT('titleStart', 'Genug')}</span>
               <br />
               <span className="text-[#B8643E] relative inline-block">
                 {content?.titleAccent || safeT('titleAccent', 'komplizierte Portale')}
                 <span className="absolute -bottom-2 left-0 w-full h-1 bg-[#B8643E]/30 rounded-full" />
               </span>
-              <br />
-              <span>{content?.titleEnd || safeT('titleEnd', 'Wir reparieren einfach.')}</span>
+              {(content?.titleEnd || safeT('titleEnd', '')) ? (
+                <>
+                  <br />
+                  <span>{content?.titleEnd || safeT('titleEnd', '')}</span>
+                </>
+              ) : null}
             </h2>
-            <div className="w-20 h-1.5 bg-gradient-to-r from-[#B8643E] to-transparent rounded-full" />
             <p className="text-[18px] md:text-[22px] text-white/70 leading-relaxed font-medium max-w-2xl">
               {content?.description || safeT('description', 'Direkte Ausführung in нашем техническом ателье.')}
             </p>
@@ -69,27 +78,32 @@ const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
               return (
                 <div 
                   key={idx}
-                  className={`group relative p-8 rounded-[32px] border transition-all duration-500 overflow-hidden
+                  className={`group relative p-7 rounded-[28px] border transition-all duration-500 overflow-hidden
                     ${isLarge 
                       ? 'md:col-span-2 lg:col-span-2 bg-gradient-to-br from-[#B8643E] to-[#8E4B2E] border-white/10 shadow-2xl shadow-[#B8643E]/20' 
                       : 'bg-white/5 border-white/10 backdrop-blur-md'}
                     hover:shadow-2xl hover:-translate-y-1`}
                 >
-                  <div className="relative z-10 flex flex-col h-full justify-between gap-8">
-                    <div>
+                  <div className="relative z-10 flex h-full flex-col justify-between gap-7">
+                    <div className="flex flex-col gap-4">
                       <div className="flex items-center gap-3 mb-6">
                         <span className={`px-4 py-1.5 rounded-full text-[12px] font-bold uppercase tracking-widest
                           ${isLarge ? 'bg-white/20 text-white' : 'bg-[#B8643E]/10 text-[#B8643E]'}`}>
                           {stat.label}
                         </span>
                       </div>
-                      <h3 className={`text-[32px] md:text-[40px] font-black leading-tight mb-4 tracking-tighter text-white`}>
+                      <h3 className="text-[28px] md:text-[34px] font-black leading-tight tracking-tighter text-white">
                         {stat.value}
                       </h3>
-                      <p className={`text-[17px] md:text-[18px] leading-relaxed max-w-md ${isLarge ? 'text-white/90' : 'text-white/50'}`}>
+                      <p className={`text-[16px] md:text-[17px] leading-relaxed max-w-xl ${isLarge ? 'text-white/88' : 'text-white/58'}`}>
                         {stat.description}
                       </p>
                     </div>
+                    {stat.highlight ? (
+                      <p className={`border-t pt-4 text-[15px] font-extrabold leading-snug ${isLarge ? 'border-white/25 text-white' : 'border-white/10 text-white/86'}`}>
+                        {stat.highlight}
+                      </p>
+                    ) : null}
                   </div>
 
                   {/* Decorative circle */}

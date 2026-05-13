@@ -4,9 +4,9 @@
     "hero_title_prefix": "PixelRing:",
     "hero_title_accent": "إصلاح وخدمة",
     "hero_title_suffix": "للوحات الإعلانية والإعلانات المضيئة.",
-    "description": "تدعم PixelRing الشركات عند تعطل اللوحات الإعلانية وعناصر LED والبنية البصرية في المواقع التجارية. ابدأ الطلب بصورة أو وصف قصير — نراجع التفاصيل وننسق الخطوة التالية.",
-    "cta_primary": "ابدأ الطلب",
-    "cta_secondary": "أرسل صورة",
+    "description": "تدعم PixelRing الشركات عند تعطل اللوحات الإعلانية وعناصر LED والبنية البصرية في المواقع التجارية. ابدأ بوصف قصير أو صورة — نراجع التفاصيل وننسق الخطوة التالية.",
+    "cta_primary": "ابدأ الخدمة",
+    "cta_secondary": "أرسل المشكلة",
     "trust_badge": "جهة تواصل واحدة. عملية خدمة منظمة. تنسيق واضح.",
     "badge_label": "وقت الاستجابة للحالات الطارئة"
   },
@@ -17,7 +17,7 @@
     "references": "الاعمال المنجزة",
     "about": "من نحن",
     "account_status": "الحساب والحالة",
-    "submit_request": "إرسال الطلب",
+    "submit_request": "ابدأ الخدمة",
     "warranty": "الضمان",
     "status": "الحالة",
     "support": "الدعم",
@@ -49,37 +49,43 @@
     "contact": "اتصل بنا"
   },
   "Trust": {
-    "titleStart": "وداعاً",
-    "titleAccent": "للبوابات المعقدة والوسطاء",
-    "titleEnd": "نحن ببساطة نقوم بالإصلاح.",
-    "description": "أقصر طريق بين العطل والواجهة المضيئة. تنفيذ مباشر من ورشتنا التقنية – لا داعي للمرور عبر منصات المبيعات أو دفع عمولات إضافية.",
-    "cta_label": "اطلب استشارة مجانية",
-    "cta_subtext": "الرد عادةً خلال 15 دقيقة.",
+    "pretitle": "ميزة",
+    "titleStart": "لماذا تختار الشركات",
+    "titleAccent": "PixelRing",
+    "titleEnd": "",
+    "description": "ليست بوابة، وليس فنيّاً عشوائياً، وليست تنسيقاً متفرقاً. تستقبل PixelRing الطلب، تساعد في فهم المشكلة، تنظم تنفيذ الأعمال، وتبقي الموقع ضمن المتابعة الخدمية.",
+    "cta_label": "ابدأ الخدمة",
+    "cta_subtext": "ابدأ بوصف قصير أو صورة.",
     "stats": [
       {
         "label": "خدمة مباشرة",
-        "value": "لا وسطاء",
-        "description": "نحن لسنا منصة أو وسيطاً. أنت تتحدث مباشرة مع الفنيين الذين يصلحون نظامك. وفر الوقت وما يصل إلى 30٪ من العمولات."
-      },
-      {
-        "label": "حرفية عالية",
-        "value": "معيار الورشة الفنية",
-        "description": "كل عملية إصلاح تتبع مبدأ الورشة الفنية لدينا: الدقة حتى أصغر التفاصيل، لضمان بقاء لوحاتك مشرقة كالجديدة لسنوات."
+        "value": "بدون بوابات أو وسطاء",
+        "description": "تستقبل PixelRing الطلب كشركة خدمة واحدة: من أول تواصل إلى تنسيق الأعمال والمتابعة اللاحقة. لا يبحث العميل عن مقاولين، ولا يقارن جهات عشوائية، ولا يشرح المهمة من جديد لكل طرف.",
+        "highlight": "طلب واحد — نقطة مسؤولية واحدة."
       },
       {
         "label": "الميزانية",
-        "value": "التوفير عبر الترميم",
-        "description": "لماذا تشتري جديداً؟ نحن ننقذ 90٪ من الأنظمة المعطلة. الإصلاح ليس فقط أكثر استدامة، بل يحمي ميزانيتك بشكل كبير مقارنة بالاستبدال الكامل."
+        "value": "يساعد AI في خفض تكلفة البداية",
+        "description": "يساعد مساعد AI في معالجة الطلب الأولي: يجمع الصور والوصف والبيانات الأساسية قبل انضمام المختص.",
+        "highlight": "نوفر في معالجة المعلومات الأولية، وليس في جودة العمل."
       },
       {
-        "label": "وضوح",
-        "value": "متابعة الحالة مباشرة",
-        "description": "لا مزيد من الحيرة. تتبع تقدم عملية الإصلاح في أي وقت عبر الإنترنت من خلال لوحة التحكم الشخصية الخاصة بك."
+        "label": "الوضوح",
+        "value": "حالة الطلب أونلاين",
+        "description": "لا مزيد من عدم الوضوح. يرى العميل مسار الطلب في حساب PixelRing: من قبول الطلب إلى التنسيق، تنفيذ الأعمال، والمتابعة الخدمية.",
+        "highlight": "غموض أقل — تحكم أكبر."
       },
       {
-        "label": "سريع",
-        "value": "استجابة خلال 24 ساعة",
-        "description": "في حالات الأعطال الحرجة، نكون هناك فوراً. لن نترك موقعك في الظلام – نضمن لك ذلك."
+        "label": "المسؤولية",
+        "value": "PixelRing تقود العملية",
+        "description": "ننسق الطلب من أول تواصل حتى تنفيذ الأعمال، ونبقى نقطة الاتصال المركزية للموقع.",
+        "highlight": "لا تحتاج إلى ربط جميع الأطراف يدوياً."
+      },
+      {
+        "label": "الضمان والخدمة",
+        "value": "يبقى الموقع تحت المتابعة",
+        "description": "ترافق جميع الأعمال المنجزة شروط ضمان، ويحصل الموقع على حالة خدمة داخل نظام PixelRing.",
+        "highlight": "تبقى PixelRing نقطة دعم للأعمال."
       }
     ],
     "features": [
@@ -100,7 +106,7 @@
       },
       {
         "id": "photo",
-        "title": "أرسل صورة",
+        "title": "أرسل المشكلة",
         "label": "قم بتحميل الصور"
       },
       {
@@ -119,7 +125,7 @@
     "title": "كيف يعمل الأمر",
     "steps": [
       {
-        "title": "إرسال الطلب",
+        "title": "ابدأ الخدمة",
         "description": "اشرح المشكلة باختصار أو أرسل صورة. يساعد مساعد الذكاء الاصطناعي في فهم الحالة وإجراء مراجعة أولية.",
         "highlight": "لا تحتاج إلى معرفة التفاصيل التقنية."
       },
@@ -231,7 +237,7 @@
     "email": "البريد الإلكتروني",
     "messenger_label": "اكتب لنا مباشرة",
     "divider": "أو اترك طلبًا",
-    "form_title": "اترك طلبًا",
+    "form_title": "ابدأ الخدمة",
     "field_name": "اسمك",
     "field_name_company": "الاسم والشركة (اختياري)",
     "field_issue_type": "نوع المشكلة (اختياري)",
@@ -244,7 +250,7 @@
     "field_photo": "📎 إرفاق صورة",
     "attach_photo_btn": "إرفاق صورة (اختياري)",
     "form_footer": "سننشئ الطلب، ونصدر رقم PR، ويمكنك المتابعة عبر Status.",
-    "submit": "إنشاء الطلب",
+    "submit": "إرسال الطلب",
     "success_title": "تم إنشاء الطلب!",
     "success_number_label": "رقم PR الخاص بك",
     "success_message": "استخدم Status مع هذا الرقم للمتابعة.",
@@ -363,7 +369,7 @@
     "subtitle": "نحن متاحون دائمًا للاستشارة الفنية المجانية وتقييم التكلفة الأولي.",
     "connect_label": "اتصال سريع عبر المراسلات",
     "write_us": "اكتب لنا",
-    "form_title": "إرسال طلب",
+    "form_title": "ابدأ الخدمة",
     "form_subtitle": "صف مهمتك، وسنعاود الاتصال بك خلال 15 دقيقة."
   },
   "Reviews": {
@@ -436,10 +442,10 @@
       }
     },
     "urgent_cases_title": "Urgent Cases",
-    "urgent_cases_desc": "In case of burning smell, sparking, or loose components, please switch off the system immediately and contact us directly.",
+    "urgent_cases_desc": "عند وجود خطر، افصل التيار وابتعد عن الموقع.",
     "urgent_badge": "Urgent Safety Warning",
     "call_technician": "Call Technician",
-    "send_request": "Send Request",
+    "send_request": "ابدأ الخدمة",
     "symptoms_title": "Typical Symptoms",
     "symptoms_desc": "Select a symptom to get detailed information on the cause and solution.",
     "all_articles": "All Articles",
@@ -457,8 +463,8 @@
     "related_services_title": "Related Services",
     "cta_title": "Need Expert Help?",
     "cta_desc": "Send us a photo of the problem or start a repair request directly. Our specialists will get back to you shortly.",
-    "cta_primary": "Start Diagnosis",
-    "cta_secondary": "Upload Photo",
+    "cta_primary": "أرسل المشكلة",
+    "cta_secondary": "ابدأ الخدمة",
     "internal_links_title": "Popular Topics & Solutions"
   },
   "Portal": {
