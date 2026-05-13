@@ -6,6 +6,7 @@ This folder covers how the site should be understood by search engines and AI an
 
 Planned base documents:
 - `copy_system.md`
+- `cta_labels_master.md`
 - `knowledge_base_strategy.md`
 - `troubleshooting_content.md`
 - `seo_strategy.md`

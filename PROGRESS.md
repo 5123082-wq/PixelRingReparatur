@@ -14,10 +14,15 @@ Short global status only. Detailed session notes belong to folder-level `Progres
 
 ## Last Updated
 
+- Date: 2026-05-13
+- Updated by: Codex
+- **Current Stage**: Public website CTA system unified across fallback messages, key public routes, and published CMS pages for DE/EN/RU/TR/PL/AR. Main CTA is now `Service starten` with localized equivalents; RU main CTA refined to `Запустить сервис`. Form submit/status/urgent/problem/B2B CTA roles are separated. Master CTA source-of-truth document added at `docs/07_content_ai_seo/cta_labels_master.md`.
+- **Next Action**: Owner reviews header, homepage, problem, service, business, references, and contact-form CTA labels visually on the local site; future CTA renames should start from the master CTA document.
+
 - Date: 2026-05-12
 - Updated by: Codex
-- **Current Stage**: Homepage `Wie es funktioniert` block rewritten and restyled; layout now uses 40/30/30 top-row proportions and 30/70 bottom-row proportions, with the fifth card as the wide accent result card containing a result photo and original PixelRing service stamp anchored to the photo corner. Block 9 CTA guidance changed from `Anfrage starten` to `Anfrage stellen`.
-- **Next Action**: Owner reviews the updated process block visually on the local site, then approves comments or moves to the next homepage block.
+- **Current Stage**: Homepage `Wie es funktioniert` block rewritten and restyled; layout now uses 40/30/30 top-row proportions and 30/70 bottom-row proportions, with the fifth card as the wide accent result card containing a result photo and original PixelRing service stamp anchored to the photo corner. Homepage advantage/trust block rewritten as `ADVANTAGE`/`VORTEIL` concept, localized across DE/EN/RU/TR/PL/AR, and published CMS home pages updated in the database.
+- **Next Action**: Owner reviews the updated process and advantage blocks visually on the local site, then approves comments or moves to the next homepage block.
 
 - Date: 2026-05-12
 - Updated by: Codex

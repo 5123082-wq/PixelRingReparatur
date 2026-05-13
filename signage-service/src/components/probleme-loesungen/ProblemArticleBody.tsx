@@ -17,7 +17,7 @@ function getArticleBodyLabels(locale: string) {
       urgent: 'Wann es dringend ist',
       process: 'Wie PixelRing vorgeht',
       scope: 'Was den Umfang beeinflusst',
-      cta: 'Anfrage mit Foto starten',
+      cta: 'Problem übergeben',
       back: 'Zur Übersicht',
     };
   }
@@ -29,7 +29,7 @@ function getArticleBodyLabels(locale: string) {
     urgent: 'When it is urgent',
     process: 'How PixelRing proceeds',
     scope: 'What affects scope',
-    cta: 'Start request with photo',
+    cta: 'Send the issue',
     back: 'Back to overview',
   };
 }

@@ -4,9 +4,9 @@
     "hero_title_prefix": "PixelRing:",
     "hero_title_accent": "Onarım ve servis",
     "hero_title_suffix": "reklam sistemleri ve ışıklı reklamlar için.",
-    "description": "PixelRing, işletmelerin ticari lokasyonlarındaki arızalı reklam sistemleri, LED elemanları ve görsel altyapı sorunlarında destek olur. Talebi fotoğraf veya kısa açıklama ile başlatın — bilgileri inceler ve sonraki adımı koordine ederiz.",
-    "cta_primary": "Talep başlat",
-    "cta_secondary": "Fotoğraf Gönder",
+    "description": "PixelRing, işletmelerin ticari lokasyonlarındaki arızalı reklam sistemleri, LED elemanları ve görsel altyapı sorunlarında destek olur. Kısa bir açıklama veya fotoğrafla başlayın — bilgileri inceler ve sonraki adımı koordine ederiz.",
+    "cta_primary": "Servisi başlat",
+    "cta_secondary": "Sorunu ilet",
     "trust_badge": "Tek iletişim noktası. Yapılandırılmış servis süreci. Net koordinasyon.",
     "badge_label": "Acil durumlar için tepki süresi"
   },
@@ -17,7 +17,7 @@
     "references": "Referanslar",
     "about": "Hakkimizda",
     "account_status": "Hesap ve Durum",
-    "submit_request": "Talep Gonder",
+    "submit_request": "Servisi başlat",
     "warranty": "Garanti",
     "status": "Durum",
     "support": "Destek",
@@ -49,37 +49,43 @@
     "contact": "İletişim"
   },
   "Trust": {
-    "titleStart": "Karmaşık portallara",
-    "titleAccent": "ve aracılara son",
-    "titleEnd": "Biz sadece tamir ediyoruz.",
-    "description": "Arıza ile parlayan bir cephe arasındaki en kısa yol. Teknik atölyemiz tarafından doğrudan uygulama – satış platformları üzerinden dolambaçlı yollar yok.",
-    "cta_label": "Ücretsiz Danışmanlık Alın",
-    "cta_subtext": "Genellikle 15 dk içinde yanıtlanır.",
+    "pretitle": "AVANTAJ",
+    "titleStart": "İşletmeler neden",
+    "titleAccent": "PixelRing'i seçiyor",
+    "titleEnd": "",
+    "description": "Portal değil, rastgele usta değil, dağınık koordinasyon değil. PixelRing talebi alır, sorunu anlamaya yardımcı olur, işleri organize eder ve objeyi servis desteğinde tutar.",
+    "cta_label": "Servisi başlat",
+    "cta_subtext": "Kısa bir açıklama veya fotoğrafla başlayın.",
     "stats": [
       {
-        "label": "Doğrudan Servis",
-        "value": "Aracı Yok",
-        "description": "Biz bir pazar yeri veya platform değiliz. Sisteminizi tamir eden uzmanlarla doğrudan konuşursunuz. Zamandan ve %30'a varan komisyonlardan tasarruf edin."
+        "label": "DOĞRUDAN SERVİS",
+        "value": "Portal ve aracı yok",
+        "description": "PixelRing talebi tek bir servis şirketi olarak alır: ilk iletişimden işlerin koordinasyonuna ve sonraki desteğe kadar. Müşteri yüklenici aramaz, rastgele kişileri karşılaştırmaz ve görevi her katılımcıya yeniden anlatmaz.",
+        "highlight": "Tek talep — tek sorumluluk noktası."
       },
       {
-        "label": "Ustalık",
-        "value": "Atölye Standartı",
-        "description": "Her tamir atölye prensibimizi takip eder: Reklamınızın yıllarca yeni gibi parlamasını sağlamak için en küçük ayrıntıya kadar hassasiyet."
+        "label": "BÜTÇE",
+        "value": "AI başlangıç maliyetini düşürür",
+        "description": "İlk talebin işlenmesine AI asistanı yardımcı olur: uzman devreye girmeden önce fotoğrafları, açıklamayı ve temel bilgileri toplar.",
+        "highlight": "İlk bilgi işleme maliyetinden tasarruf ederiz, kaliteden değil."
       },
       {
-        "label": "Bütçe",
-        "value": "Onararak Tasarruf Et",
-        "description": "Neden yeni almalı? Arızalı sistemlerin %90'ını kurtarıyoruz. Tamir sadece daha sürdürülebilir değil, aynı zamanda bütçenizi de korur."
+        "label": "NETLİK",
+        "value": "Online durum",
+        "description": "Belirsizlik yok. Müşteri, talebin kabulünden koordinasyona, işlerin uygulanmasına ve servis desteğine kadar süreci PixelRing hesabında görür.",
+        "highlight": "Daha az belirsizlik — daha fazla kontrol."
       },
       {
-        "label": "Netlik",
-        "value": "Canlı Durum Takibi",
-        "description": "Artık belirsizlik yok. Tamirinizin ilerlemesini kişisel paneliniz üzerinden istediğiniz zaman çevrimiçi olarak takip edin."
+        "label": "SORUMLULUK",
+        "value": "PixelRing süreci yönetir",
+        "description": "Talebi ilk iletişimden işlerin uygulanmasına kadar koordine eder ve obje için merkezi iletişim noktası olarak kalırız.",
+        "highlight": "Tüm katılımcıları manuel olarak birleştirmeniz gerekmez."
       },
       {
-        "label": "Ekspres",
-        "value": "24 Saat Tepki",
-        "description": "Kritik arızalarda hemen yanınızdayız. Lokasyonunuzu karanlıkta bırakmayacağız – garanti ediyoruz."
+        "label": "GARANTİ VE SERVİS",
+        "value": "Obje destek altında kalır",
+        "description": "Tamamlanan tüm işler garanti koşullarıyla desteklenir ve obje PixelRing sisteminde servis statüsü alır.",
+        "highlight": "PixelRing işletmeniz için destek noktası olarak kalır."
       }
     ],
     "features": [
@@ -100,7 +106,7 @@
       },
       {
         "id": "photo",
-        "title": "Fotoğraf Gönder",
+        "title": "Sorunu ilet",
         "label": "Görselleri yükleyin"
       },
       {
@@ -119,7 +125,7 @@
     "title": "Nasıl işler?",
     "steps": [
       {
-        "title": "Talep gönderin",
+        "title": "Servisi başlat",
         "description": "Sorunu kısaca açıklayın veya bir fotoğraf gönderin. AI asistanı durumu anlamaya ve ilk ön değerlendirmeyi yapmaya yardımcı olur.",
         "highlight": "Teknik ayrıntıları bilmeniz gerekmez."
       },
@@ -231,7 +237,7 @@
     "email": "E-posta",
     "messenger_label": "Doğrudan yazın",
     "divider": "veya talep bırakın",
-    "form_title": "Talep Gönderin",
+    "form_title": "Servisi başlat",
     "field_name": "Adınız",
     "field_name_company": "Adınız ve Şirketiniz (isteğe bağlı)",
     "field_issue_type": "Sorun türü (isteğe bağlı)",
@@ -244,7 +250,7 @@
     "field_photo": "📎 Fotoğraf ekle",
     "attach_photo_btn": "Fotoğraf ekle (isteğe bağlı)",
     "form_footer": "Talebi oluşturacağız, bir PR numarası vereceğiz ve Status ile devam edebilirsiniz.",
-    "submit": "Talep oluştur",
+    "submit": "Talebi gönder",
     "success_title": "Talep oluşturuldu!",
     "success_number_label": "PR numaranız",
     "success_message": "Devam etmek için bu numarayla Status'u kullanın.",
@@ -363,7 +369,7 @@
     "subtitle": "Ücretsiz teknik danışmanlık ve ön maliyet değerlendirmesi için her zaman hizmetinizdeyiz.",
     "connect_label": "MESSENGER ÜZERİNDEN HIZLI İLETİŞİM",
     "write_us": "Bize yazın",
-    "form_title": "Talep Gönder",
+    "form_title": "Servisi başlat",
     "form_subtitle": "Görevinizi açıklayın, 15 dakika içinde size geri döneceğiz."
   },
   "Reviews": {
@@ -436,10 +442,10 @@
       }
     },
     "urgent_cases_title": "Urgent Cases",
-    "urgent_cases_desc": "In case of burning smell, sparking, or loose components, please switch off the system immediately and contact us directly.",
+    "urgent_cases_desc": "Tehlike varsa elektriği kapatın ve mesafe bırakın.",
     "urgent_badge": "Urgent Safety Warning",
     "call_technician": "Call Technician",
-    "send_request": "Send Request",
+    "send_request": "Servisi başlat",
     "symptoms_title": "Typical Symptoms",
     "symptoms_desc": "Select a symptom to get detailed information on the cause and solution.",
     "all_articles": "All Articles",
@@ -457,8 +463,8 @@
     "related_services_title": "Related Services",
     "cta_title": "Need Expert Help?",
     "cta_desc": "Send us a photo of the problem or start a repair request directly. Our specialists will get back to you shortly.",
-    "cta_primary": "Start Diagnosis",
-    "cta_secondary": "Upload Photo",
+    "cta_primary": "Sorunu ilet",
+    "cta_secondary": "Servisi başlat",
     "internal_links_title": "Popular Topics & Solutions"
   },
   "Portal": {

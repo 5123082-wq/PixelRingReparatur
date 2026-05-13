@@ -110,7 +110,7 @@ export default function ChatRequestConfirmCard({
           disabled={submitting}
           className="flex-1 rounded-[14px] bg-[#0E1A2B] py-2.5 text-[13px] font-bold text-white transition-all hover:bg-[#1a2e47] active:scale-[0.98] disabled:opacity-50"
         >
-          {submitting ? 'Wird gesendet ...' : 'Neue Anfrage erstellen'}
+          {submitting ? 'Wird gesendet ...' : 'Anfrage senden'}
         </button>
         <button
           type="button"

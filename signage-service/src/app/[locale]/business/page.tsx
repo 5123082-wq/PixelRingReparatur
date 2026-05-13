@@ -58,7 +58,7 @@ const CONTENT: Record<Locale, BusinessContent> = {
     metaDescription: 'Komplexer Service und Wartung für Geschäftskunden. Restaurants, Einzelhandel und Netzwerke. Alles aus einer Hand mit eigenem Kundenportal.',
     heroTitle: 'Komplexer Service für Ihre Standorte',
     heroIntro: 'Professionelle Betreuung Ihrer Werbeanlagen, Leuchtreklamen und Printmedien. Wir lösen die Probleme an Ihren Verkaufsstellen, bevor sie Ihren Kunden auffallen.',
-    heroCta: 'Geschäftskunden-Anfrage',
+    heroCta: 'Service anfragen',
     heroImage: '/images/business/hero.png',
     targetTitle: 'Für jede Unternehmensgröße',
     targetIntro: 'Egal ob einzelner Standort oder Filialnetzwerk: Wir schließen Ihre Lücken im Rahmen eines umfassenden Servicevertrags.',
@@ -86,14 +86,14 @@ const CONTENT: Record<Locale, BusinessContent> = {
     trustIntro: 'Geben Sie die Verantwortung für Ihre sichtbare Marke in die Hände von Spezialisten.',
     finalHeadline: 'Bereit für einen reibungslosen Betriebsablauf?',
     finalText: 'Kontaktieren Sie uns für ein individuelles Service-Audit Ihrer Standorte.',
-    finalCta: 'Service-Paket anfragen'
+    finalCta: 'Service anfragen'
   },
   en: {
     metaTitle: 'B2B Service & Maintenance for Signage | PixelRing',
     metaDescription: 'Complex service and maintenance for business clients. Restaurants, retail, and networks. Everything from a single source with your own customer portal.',
     heroTitle: 'Comprehensive Service for Your Locations',
     heroIntro: 'Professional care for your signage, illuminated advertising, and print media. We solve problems at your points of sale before your customers notice.',
-    heroCta: 'Business Inquiry',
+    heroCta: 'Request service',
     heroImage: '/images/business/hero.png',
     targetTitle: 'For Every Business Size',
     targetIntro: 'Whether a single location or a branch network: We cover your gaps within a comprehensive service contract.',
@@ -121,14 +121,14 @@ const CONTENT: Record<Locale, BusinessContent> = {
     trustIntro: 'Place the responsibility for your visible brand in the hands of specialists.',
     finalHeadline: 'Ready for smooth operations?',
     finalText: 'Contact us for an individual service audit of your locations.',
-    finalCta: 'Request Service Package'
+    finalCta: 'Request service'
   },
   ru: {
     metaTitle: 'B2B Сервис и обслуживание вывесок | PixelRing',
     metaDescription: 'Комплексный сервис и обслуживание для бизнеса. Рестораны, ритейл и сети. Все из одного источника с личным кабинетом.',
     heroTitle: 'Комплексный подход к обслуживанию объектов',
     heroIntro: 'Профессиональное обслуживание вывесок, световой рекламы и печатной продукции. Мы закрываем боли владельцев бизнеса, обеспечивая идеальный вид точек продаж.',
-    heroCta: 'Оставить B2B-заявку',
+    heroCta: 'Запросить сервис',
     heroImage: '/images/business/hero.png',
     targetTitle: 'Для бизнеса любого масштаба',
     targetIntro: 'Будь то ресторан, автосалон или сеть магазинов — мы решаем проблемные места комплексно в рамках договора обслуживания.',
@@ -156,14 +156,14 @@ const CONTENT: Record<Locale, BusinessContent> = {
     trustIntro: 'Делегируйте технические и визуальные проблемы специалистам.',
     finalHeadline: 'Готовы к безупречной работе ваших объектов?',
     finalText: 'Свяжитесь с нами для первичного аудита.',
-    finalCta: 'Начать сотрудничество'
+    finalCta: 'Запросить сервис'
   },
   tr: {
     metaTitle: 'B2B Servis ve Tabela Bakımı | PixelRing',
     metaDescription: 'İşletmeler için kapsamlı servis. Restoranlar, perakende ve ağlar. Kendi müşteri portalınızla tek elden çözüm.',
     heroTitle: 'Lokasyonlarınız için Kapsamlı Hizmet',
     heroIntro: 'Tabelalarınız ve baskı malzemeleriniz için profesyonel bakım. Sorunları müşterileriniz fark etmeden çözüyoruz.',
-    heroCta: 'B2B Talebi Gönder',
+    heroCta: 'Servis talep et',
     heroImage: '/images/business/hero.png',
     targetTitle: 'Her İşletme Büyüklüğü İçin',
     targetIntro: 'Tek şube veya zincir mağaza fark etmeksizin tüm eksiklerinizi servis sözleşmemizle kapatıyoruz.',
@@ -191,14 +191,14 @@ const CONTENT: Record<Locale, BusinessContent> = {
     trustIntro: 'Görünür markanızın sorumluluğunu uzmanlara bırakın.',
     finalHeadline: 'Sorunsuz bir operasyona hazır mısınız?',
     finalText: 'Şubeleriniz için bir ön denetim ayarlamak üzere bizimle iletişime geçin.',
-    finalCta: 'Servis Talep Et'
+    finalCta: 'Servis talep et'
   },
   pl: {
     metaTitle: 'B2B Serwis i Konserwacja Szyldów | PixelRing',
     metaDescription: 'Kompleksowy serwis i konserwacja dla biznesu. Restauracje, sieci handlowe. Wszystko z jednego źródła z portalem klienta.',
     heroTitle: 'Kompleksowa Obsługa Twoich Lokalizacji',
     heroIntro: 'Profesjonalna opieka nad szyldami i materiałami drukowanymi. Rozwiązujemy problemy, zanim zauważą je Twoi klienci.',
-    heroCta: 'Zapytanie B2B',
+    heroCta: 'Zapytaj o serwis',
     heroImage: '/images/business/hero.png',
     targetTitle: 'Dla Firm Każdej Wielkości',
     targetIntro: 'Niezależnie od tego, czy masz jeden lokal, czy sieć: w ramach umowy serwisowej zajmiemy się wszystkim.',
@@ -226,14 +226,14 @@ const CONTENT: Record<Locale, BusinessContent> = {
     trustIntro: 'Przekaż opiekę nad wizualnym aspektem marki profesjonalistom.',
     finalHeadline: 'Gotowy na bezproblemowe działanie?',
     finalText: 'Skontaktuj się z nami w celu przeprowadzenia audytu.',
-    finalCta: 'Zapytaj o Serwis'
+    finalCta: 'Zapytaj o serwis'
   },
   ar: {
     metaTitle: 'خدمات وصيانة الشركات | بكسل رينج',
     metaDescription: 'خدمات شاملة وصيانة للشركات، المطاعم، شبكات التجزئة. كل شيء من مصدر واحد مع بوابة خاصة للعميل.',
     heroTitle: 'خدمة شاملة لمواقعك التجارية',
     heroIntro: 'رعاية احترافية للوحات الإعلانية والمواد المطبوعة. نحن نحل المشاكل في نقاط البيع الخاصة بك قبل أن يلاحظها عملاؤك.',
-    heroCta: 'طلب خدمة للشركات',
+    heroCta: 'اطلب الخدمة',
     heroImage: '/images/business/hero.png',
     targetTitle: 'لجميع أحجام الشركات',
     targetIntro: 'سواء كان موقعاً واحداً أو شبكة فروع: نحن نغطي احتياجاتك من خلال عقد خدمة شامل.',
@@ -261,7 +261,7 @@ const CONTENT: Record<Locale, BusinessContent> = {
     trustIntro: 'اترك مسؤولية صورتك التجارية للمتخصصين.',
     finalHeadline: 'هل أنت مستعد لعمليات خالية من المشاكل؟',
     finalText: 'اتصل بنا لإجراء تدقيق لمواقعك.',
-    finalCta: 'طلب باقة الخدمة'
+    finalCta: 'اطلب الخدمة'
   }
 };
 
