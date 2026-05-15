@@ -8,6 +8,7 @@ import Logo from '../common/Logo';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 import ContactModal from '../common/ContactModal';
 import ChatModal from '../common/ChatModal';
+import ServiceActionButton from '../common/ServiceActionButton';
 
 type HeaderLink = {
   label: string;
@@ -161,12 +162,11 @@ const Header = ({ content }: { content?: HeaderContent | null }) => {
                   {requestLabel}
                 </Link>
               ) : (
-                <button
-                  onClick={() => setIsModalOpen(true)}
-                  className="hidden shrink-0 lg:block whitespace-nowrap px-6 py-2.5 bg-[#B8643E] hover:bg-[#A65835] text-[#FFFDF9] text-[16px] font-medium rounded-full shadow-lg shadow-[#B8643E33] transition-all"
-                >
-                  {requestLabel}
-                </button>
+                <ServiceActionButton
+                  label={requestLabel}
+                  onOpenContact={() => setIsModalOpen(true)}
+                  onOpenChat={() => setIsChatOpen(true)}
+                />
               )}
 
               <button

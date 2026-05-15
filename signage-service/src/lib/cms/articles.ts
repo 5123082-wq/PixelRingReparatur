@@ -208,3 +208,65 @@ export async function getPublishedSymptomArticleByPublicSlug(
     publicSlug,
   };
 }
+
+/**
+ * Loads title + publicSlug for a set of public slugs.
+ * Used by the cross-linking section on article pages.
+ */
+export async function getPublishedSymptomArticleTitlesByPublicSlugs(
+  locale: string,
+  publicSlugs: string[]
+): Promise<Array<{ publicSlug: string; title: string }>> {
+  const cmsSlugs = publicSlugs
+    .map((ps) => ({ publicSlug: ps, cmsSlug: CMS_SLUG_BY_PROBLEM_ARTICLE_SLUG[ps] }))
+    .filter((entry): entry is { publicSlug: string; cmsSlug: string } => !!entry.cmsSlug);
+
+  if (cmsSlugs.length === 0) return [];
+
+  const rows = await prisma.cmsArticle.findMany({
+    where: {
+      locale,
+      type: CmsArticleType.SYMPTOM,
+      status: 'PUBLISHED',
+      deletedAt: null,
+      slug: { in: cmsSlugs.map((e) => e.cmsSlug) },
+    },
+    select: { slug: true, title: true },
+  });
+
+  const titleByCmsSlug = new Map(rows.map((r) => [r.slug, r.title]));
+
+  return cmsSlugs
+    .filter((e) => titleByCmsSlug.has(e.cmsSlug))
+    .map((e) => ({
+      publicSlug: e.publicSlug,
+      title: titleByCmsSlug.get(e.cmsSlug)!,
+    }));
+}
+
+/**
+ * Loads title + publicSlug for ALL published symptom articles.
+ * Used by the article-page navigation sidebar.
+ */
+export async function getAllPublishedSymptomArticleNavItems(
+  locale: string
+): Promise<Array<{ publicSlug: string; title: string; sortOrder: number }>> {
+  const rows = await prisma.cmsArticle.findMany({
+    where: {
+      locale,
+      type: CmsArticleType.SYMPTOM,
+      status: 'PUBLISHED',
+      deletedAt: null,
+    },
+    select: { slug: true, title: true, sortOrder: true },
+    orderBy: [{ sortOrder: 'asc' }, { title: 'asc' }],
+  });
+
+  return rows
+    .map((r) => {
+      const publicSlug = PROBLEM_ARTICLE_SLUG_BY_CMS_SLUG[r.slug];
+      if (!publicSlug) return null;
+      return { publicSlug, title: r.title, sortOrder: r.sortOrder };
+    })
+    .filter(Boolean) as Array<{ publicSlug: string; title: string; sortOrder: number }>;
+}

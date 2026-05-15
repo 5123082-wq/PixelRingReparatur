@@ -40,7 +40,7 @@ const FooterCTA = ({ content }: { content?: FooterCtaContent | null }) => {
           {/* Left Column: Text & Messengers */}
           <div className="flex flex-col justify-between gap-12 lg:gap-0 lg:py-6">
             <div className="flex flex-col gap-6 ltr:text-left rtl:text-right">
-              <h2 className="text-[36px] md:text-[44px] xl:text-[56px] font-extrabold text-white leading-[1.1] tracking-tight">
+              <h2 className="text-[34px] md:text-[42px] xl:text-[44px] font-extrabold text-white leading-[1.1] tracking-[0]">
                 {content?.title ?? t('title')}
               </h2>
               <p className="text-[17px] md:text-[19px] text-white/70 max-w-xl leading-relaxed">
@@ -113,7 +113,7 @@ const FooterCTA = ({ content }: { content?: FooterCtaContent | null }) => {
             
             <div className="flex flex-col gap-8 relative z-10">
               <div className="flex flex-col gap-3 ltr:text-left rtl:text-right">
-                <h3 className="text-[28px] md:text-[32px] font-bold text-white tracking-tight leading-tight">
+                <h3 className="text-[24px] md:text-[28px] font-bold text-white tracking-[0] leading-tight">
                   {content?.formTitle ?? t('form_title')}
                 </h3>
                 <p className="text-[16px] text-white/60 leading-relaxed max-w-[340px]">

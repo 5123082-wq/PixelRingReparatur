@@ -6,6 +6,9 @@ type ProblemArticleBodyProps = {
   locale: string;
   article: PublicProblemArticle;
   problemIntent: ProblemIntent;
+  relatedArticles?: Array<{ publicSlug: string; title: string }>;
+  navItems?: Array<{ publicSlug: string; title: string; sortOrder: number }>;
+  currentSlug?: string;
 };
 
 function getArticleBodyLabels(locale: string) {
@@ -19,6 +22,78 @@ function getArticleBodyLabels(locale: string) {
       scope: 'Was den Umfang beeinflusst',
       cta: 'Problem übergeben',
       back: 'Zur Übersicht',
+      sidebarTitle: 'Fall mit Foto klären',
+      sidebarDescription: 'Senden Sie ein Foto und eine kurze Beschreibung. PixelRing prüft den Fall und koordiniert die nächsten Schritte.',
+      relatedTitle: 'Ähnliche Probleme',
+      navTitle: 'Alle Probleme & Lösungen',
+    };
+  }
+
+  if (locale === 'ru') {
+    return {
+      shortAnswer: 'Короткий ответ',
+      causes: 'Частые причины',
+      safeChecks: 'Что можно безопасно проверить',
+      urgent: 'Когда это срочно',
+      process: 'Как действует PixelRing',
+      scope: 'Что влияет на объём работ',
+      cta: 'Передать задачу',
+      back: 'К обзору',
+      sidebarTitle: 'Уточнить по фото',
+      sidebarDescription: 'Отправьте фото и короткое описание. PixelRing проверит случай и согласует следующие шаги.',
+      relatedTitle: 'Похожие проблемы',
+      navTitle: 'Все проблемы и решения',
+    };
+  }
+
+  if (locale === 'tr') {
+    return {
+      shortAnswer: 'Kısa cevap',
+      causes: 'Yaygın nedenler',
+      safeChecks: 'Güvenli kontroller',
+      urgent: 'Ne zaman acil',
+      process: 'PixelRing nasıl ilerler',
+      scope: 'Kapsamı ne etkiler',
+      cta: 'Sorunu ilet',
+      back: 'Genel bakışa dön',
+      sidebarTitle: 'Fotoğrafla durumu netleştirin',
+      sidebarDescription: 'Bir fotoğraf ve kısa bir açıklama gönderin. PixelRing durumu inceler ve sonraki adımları koordine eder.',
+      relatedTitle: 'Benzer sorunlar',
+      navTitle: 'Tüm sorunlar ve çözümler',
+    };
+  }
+
+  if (locale === 'pl') {
+    return {
+      shortAnswer: 'Krótka odpowiedź',
+      causes: 'Częste przyczyny',
+      safeChecks: 'Bezpieczne kontrole',
+      urgent: 'Kiedy sprawa jest pilna',
+      process: 'Jak działa PixelRing',
+      scope: 'Co wpływa na zakres',
+      cta: 'Przekaż zgłoszenie',
+      back: 'Powrót do przeglądu',
+      sidebarTitle: 'Wyjaśnij sprawę zdjęciem',
+      sidebarDescription: 'Wyślij zdjęcie i krótki opis. PixelRing sprawdzi sprawę i skoordynuje kolejne kroki.',
+      relatedTitle: 'Podobne problemy',
+      navTitle: 'Wszystkie problemy i rozwiązania',
+    };
+  }
+
+  if (locale === 'ar') {
+    return {
+      shortAnswer: 'إجابة قصيرة',
+      causes: 'الأسباب الشائعة',
+      safeChecks: 'فحوصات آمنة',
+      urgent: 'متى تكون الحالة عاجلة',
+      process: 'كيف يتصرف PixelRing',
+      scope: 'ما يؤثر على النطاق',
+      cta: 'أرسل المشكلة',
+      back: 'العودة للنظرة العامة',
+      sidebarTitle: 'وضّح المشكلة بصورة',
+      sidebarDescription: 'أرسل صورة ووصفًا قصيرًا. PixelRing يراجع الحالة وينسق الخطوات التالية.',
+      relatedTitle: 'مشكلات مشابهة',
+      navTitle: 'جميع المشكلات والحلول',
     };
   }
 
@@ -31,36 +106,114 @@ function getArticleBodyLabels(locale: string) {
     scope: 'What affects scope',
     cta: 'Send the issue',
     back: 'Back to overview',
+    sidebarTitle: 'Clarify the issue with a photo',
+    sidebarDescription: 'Send a photo and a short description. PixelRing reviews the case and coordinates the next steps.',
+    relatedTitle: 'Related problems',
+    navTitle: 'All problems & solutions',
   };
 }
 
 function renderMarkdownLite(content: string) {
-  return content
-    .split(/\n{2,}/)
-    .map((block) => block.trim())
-    .filter(Boolean)
-    .map((block) => {
-      const lines = block.split('\n').map((line) => line.trim()).filter(Boolean);
-      const listItems = lines
-        .filter((line) => line.startsWith('- '))
-        .map((line) => line.slice(2).trim())
-        .filter(Boolean);
+  const blocks: string[] = [];
+  const rawLines = content.split('\n');
+  let buffer: string[] = [];
 
-      if (listItems.length === lines.length) {
-        return (
-          <ul key={block} className="space-y-2">
-            {listItems.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-[#B8643E]" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        );
+  // Group lines into blocks, keeping table rows together
+  for (const line of rawLines) {
+    const trimmed = line.trim();
+    if (trimmed === '') {
+      if (buffer.length > 0) {
+        blocks.push(buffer.join('\n'));
+        buffer = [];
       }
+    } else {
+      // If we're switching between table and non-table lines, split block
+      const isTableLine = trimmed.startsWith('|');
+      const lastIsTable = buffer.length > 0 && buffer[buffer.length - 1].trim().startsWith('|');
+      if (buffer.length > 0 && isTableLine !== lastIsTable) {
+        blocks.push(buffer.join('\n'));
+        buffer = [];
+      }
+      buffer.push(trimmed);
+    }
+  }
+  if (buffer.length > 0) blocks.push(buffer.join('\n'));
 
-      return <p key={block}>{block.replace(/^#+\s*/, '')}</p>;
-    });
+  return blocks.map((block, blockIndex) => {
+    const lines = block.split('\n').map((l) => l.trim()).filter(Boolean);
+
+    // --- Horizontal rule ---
+    if (lines.length === 1 && /^-{3,}$/.test(lines[0])) {
+      return <hr key={blockIndex} className="my-6 border-[#E7DDD3]" />;
+    }
+
+    // --- Table ---
+    if (lines.length >= 2 && lines.every((l) => l.startsWith('|'))) {
+      const parseRow = (row: string) =>
+        row.split('|').slice(1, -1).map((cell) => cell.trim());
+
+      const headerCells = parseRow(lines[0]);
+      // Skip separator row (|---|---|)
+      const dataStartIndex = /^\|[\s-:|]+\|$/.test(lines[1]) ? 2 : 1;
+      const dataRows = lines.slice(dataStartIndex).map(parseRow);
+
+      return (
+        <div key={blockIndex} className="overflow-x-auto rounded-[16px] border border-[#E7DDD3]">
+          <table className="w-full text-left text-[15px]">
+            <thead>
+              <tr className="border-b border-[#E7DDD3] bg-[#F7F1E8]">
+                {headerCells.map((cell, i) => (
+                  <th key={i} className="px-4 py-3 font-bold text-[#0E1A2B]">{cell}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {dataRows.map((row, ri) => (
+                <tr key={ri} className="border-b border-[#E7DDD3] last:border-0">
+                  {row.map((cell, ci) => (
+                    <td key={ci} className="px-4 py-3 text-[#4E5A5A]">{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+
+    // --- Bullet list ---
+    const listItems = lines
+      .filter((line) => line.startsWith('- '))
+      .map((line) => line.slice(2).trim())
+      .filter(Boolean);
+
+    if (listItems.length === lines.length) {
+      return (
+        <ul key={blockIndex} className="space-y-2">
+          {listItems.map((item, itemIndex) => (
+            <li key={itemIndex} className="flex gap-2">
+              <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-[#B8643E]" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      );
+    }
+
+    // --- Heading ---
+    if (lines.length === 1 && lines[0].startsWith('#')) {
+      const match = lines[0].match(/^(#{1,4})\s+(.*)/);
+      if (match) {
+        const level = match[1].length;
+        const text = match[2];
+        if (level <= 2) return <h2 key={blockIndex} className="text-xl font-bold text-[#0E1A2B] mt-6">{text}</h2>;
+        return <h3 key={blockIndex} className="text-lg font-bold text-[#0E1A2B] mt-4">{text}</h3>;
+      }
+    }
+
+    // --- Paragraph ---
+    return <p key={blockIndex}>{block.replace(/^#+\s*/, '')}</p>;
+  });
 }
 
 function BulletSection({
@@ -102,6 +255,9 @@ export default function ProblemArticleBody({
   locale,
   article,
   problemIntent,
+  relatedArticles,
+  navItems,
+  currentSlug,
 }: ProblemArticleBodyProps) {
   const labels = getArticleBodyLabels(locale);
   const knowledgeLabels = getProblemKnowledgeLabels(locale);
@@ -161,17 +317,65 @@ export default function ProblemArticleBody({
           <p className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-[#B8643E]">
             PixelRing
           </p>
-          <h2 className="mt-3 text-2xl font-black text-[#0E1A2B]">
-            Fall mit Foto klären
-          </h2>
+          <h3 className="mt-3 text-2xl font-black text-[#0E1A2B]">
+            {labels.sidebarTitle}
+          </h3>
           <p className="mt-3 text-[15px] leading-7 text-[#4E5A5A]">
-            Senden Sie ein Foto und eine kurze Beschreibung. PixelRing prüft den Fall und koordiniert die nächsten Schritte.
+            {labels.sidebarDescription}
           </p>
           <div className="mt-5">
             <ProblemRequestButton label={labels.cta} problemIntent={problemIntent} />
           </div>
+
+          {navItems && navItems.length > 0 && (
+            <details className="mt-6 border-t border-[#E7DDD3] pt-5 lg:open" open>
+              <summary className="cursor-pointer text-[13px] font-extrabold uppercase tracking-[0.14em] text-[#B8643E] lg:pointer-events-none lg:list-none">
+                {labels.navTitle}
+              </summary>
+              <nav aria-label={labels.navTitle}>
+                <ul className="mt-3 space-y-1">
+                  {navItems.map((item) => {
+                    const isCurrent = item.publicSlug === currentSlug;
+                    return (
+                      <li key={item.publicSlug}>
+                        {isCurrent ? (
+                          <span className="block rounded-xl bg-[#F7F1E8] px-3 py-2 text-[14px] font-bold text-[#0E1A2B]">
+                            {item.title}
+                          </span>
+                        ) : (
+                          <a
+                            href={`/${locale}/probleme-loesungen/${item.publicSlug}`}
+                            className="block rounded-xl px-3 py-2 text-[14px] text-[#4E5A5A] transition-colors hover:bg-[#F7F1E8] hover:text-[#0E1A2B]"
+                          >
+                            {item.title}
+                          </a>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </nav>
+            </details>
+          )}
         </aside>
       </div>
+
+      {relatedArticles && relatedArticles.length > 0 && (
+        <section className="mx-auto max-w-6xl px-4 pb-12 sm:px-6">
+          <h2 className="text-2xl font-black text-[#0E1A2B]">{labels.relatedTitle}</h2>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {relatedArticles.map((related) => (
+              <a
+                key={related.publicSlug}
+                href={`/${locale}/probleme-loesungen/${related.publicSlug}`}
+                className="rounded-[18px] border border-[#E7DDD3] bg-[#FFFDF9] px-5 py-4 text-[16px] font-bold text-[#3E4A48] transition-colors hover:border-[#B8643E]/45 hover:bg-[#FFF7F1]"
+              >
+                {related.title}
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
     </article>
   );
 }

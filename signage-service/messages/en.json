@@ -122,7 +122,7 @@
     ]
   },
   "Bento": {
-    "title": "How it works",
+    "title": "How our service works",
     "steps": [
       {
         "title": "Start service",
@@ -131,12 +131,12 @@
       },
       {
         "title": "Specialist review",
-        "description": "After the initial assessment, a specialist reviews the information, asks follow-up questions if needed, and defines the right next step.",
+        "description": "After the initial assessment, our specialist reviews the information, asks follow-up questions if needed, and defines the right next step.",
         "highlight": "You quickly understand what should happen next."
       },
       {
         "title": "Agree on the solution",
-        "description": "Scope, timing, access to the site, and the execution format are clarified. You know what will be done and under which conditions.",
+        "description": "Scope, cost, timing, access to the site, and the execution format are clarified. You know what will be done and under which conditions.",
         "highlight": "No surprises and no unnecessary coordination."
       },
       {
@@ -240,23 +240,25 @@
     "internal_links_title": "Popular Topics & Solutions"
   },
   "Roadmap": {
-    "title": "What happens after the request?",
+    "subtitle": "After sending",
+    "title": "What happens after you send the request?",
+    "description": "After the form, the request enters the PixelRing service process: we store the details, issue a PR number, review the case and name the next step.",
     "steps": [
       {
-        "title": "Confirmation",
-        "description": "Instant acknowledgement of your request via AI."
+        "title": "Request in the system",
+        "description": "PixelRing stores the task description, photos, site address and contact for follow-up."
       },
       {
-        "title": "Assignment",
-        "description": "A dedicated manager is assigned to you within 15 minutes."
+        "title": "PR number",
+        "description": "You receive a request number. It keeps the status and conversation tied to this case."
       },
       {
-        "title": "Technical Audit",
-        "description": "Audit of the task and final cost calculation."
+        "title": "Request review",
+        "description": "A specialist checks the description, photos and site details: what happened, where is the sign, what details are missing?"
       },
       {
-        "title": "Execution",
-        "description": "On-time implementation by our experts on site."
+        "title": "Next step",
+        "description": "PixelRing explains what is needed next: clarify details, prepare an assessment, align a proposal or organize a site visit."
       }
     ]
   },

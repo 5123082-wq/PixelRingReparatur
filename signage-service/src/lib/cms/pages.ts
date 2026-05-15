@@ -212,6 +212,8 @@ export type ReviewCmsContent = {
 
 export type RoadmapCmsContent = {
   title?: string;
+  subtitle?: string;
+  description?: string;
   steps?: { title?: string; description?: string }[];
 };
 
@@ -1085,7 +1087,6 @@ export async function getHomePageCmsContent(
   const coverage = getEnabledBlock(page, 'cardList', ['coverageSection']);
   const excellence = getEnabledBlock(page, 'cardList', ['excellenceSection']);
   const reviews = getEnabledBlock(page, 'reviewList', ['reviewsSection']);
-  const roadmap = getEnabledBlock(page, 'cardList', ['roadmapSection']);
   const faq = getEnabledBlock(page, 'faqList', ['faqSection']);
 
   const content: HomePageCmsContent = {
@@ -1173,15 +1174,6 @@ export async function getHomePageCmsContent(
           })),
         }
       : undefined,
-    roadmap: roadmap
-      ? {
-          title: getBlockText(roadmap, 'title'),
-          steps: getBlockObjectList(roadmap, 'steps')?.map(s => ({
-            title: typeof s.title === 'string' ? s.title : undefined,
-            description: typeof s.description === 'string' ? s.description : undefined,
-          })),
-        }
-      : undefined,
     faq: faq
       ? {
           title: getBlockText(faq, 'title'),
@@ -1200,7 +1192,6 @@ export async function getHomePageCmsContent(
   const hasCoverage = !!coverage;
   const hasExcellence = !!excellence;
   const hasReviews = !!reviews;
-  const hasRoadmap = !!roadmap;
   const hasFaq = !!faq;
 
   if (content.hero?.assetUrl) {
@@ -1209,7 +1200,7 @@ export async function getHomePageCmsContent(
     );
   }
 
-  return hasHero || hasIntake || hasBento || hasTrust || hasCoverage || hasExcellence || hasReviews || hasRoadmap || hasFaq ? content : null;
+  return hasHero || hasIntake || hasBento || hasTrust || hasCoverage || hasExcellence || hasReviews || hasFaq ? content : null;
 }
 
 

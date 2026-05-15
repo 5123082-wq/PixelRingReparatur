@@ -122,7 +122,7 @@
     ]
   },
   "Bento": {
-    "title": "Jak to działa",
+    "title": "Jak działa nasz serwis",
     "steps": [
       {
         "title": "Rozpocznij serwis",
@@ -131,12 +131,12 @@
       },
       {
         "title": "Weryfikacja przez specjalistę",
-        "description": "Po wstępnej ocenie specjalista analizuje informacje, w razie potrzeby zadaje pytania i określa najlepszy kolejny krok.",
+        "description": "Po wstępnej ocenie nasz specjalista analizuje informacje, w razie potrzeby zadaje pytania i określa najlepszy kolejny krok.",
         "highlight": "Szybko wiesz, co należy zrobić dalej."
       },
       {
         "title": "Uzgodnienie rozwiązania",
-        "description": "Ustalany jest zakres prac, terminy, dostęp do obiektu i sposób wykonania. Wiesz, co zostanie zrobione i na jakich warunkach.",
+        "description": "Ustalany jest zakres prac, koszt, terminy, dostęp do obiektu i sposób wykonania. Wiesz, co zostanie zrobione i na jakich warunkach.",
         "highlight": "Bez niespodzianek i zbędnej koordynacji."
       },
       {
@@ -188,23 +188,25 @@
     ]
   },
   "Roadmap": {
-    "title": "Co dzieje się po wysłaniu zapytania?",
+    "subtitle": "Po wyslaniu",
+    "title": "Co dzieje sie po wyslaniu zgloszenia?",
+    "description": "Po formularzu zgloszenie trafia do procesu serwisowego PixelRing: zapisujemy dane, nadajemy numer PR, sprawdzamy sprawe i wskazujemy nastepny krok.",
     "steps": [
       {
-        "title": "Potwierdzenie",
-        "description": "Natychmiastowe potwierdzenie otrzymania zapytania przez AI."
+        "title": "Zgloszenie w systemie",
+        "description": "PixelRing zapisuje opis zadania, zdjecia, adres obiektu i kontakt do dalszych pytan."
       },
       {
-        "title": "Przypisanie",
-        "description": "Dedykowany menedżer zostanie do Ciebie przypisany в ciągu 15 minut."
+        "title": "Numer PR",
+        "description": "Otrzymujesz numer zgloszenia. Dzieki niemu status i rozmowa pozostaja przypisane do tej sprawy."
       },
       {
-        "title": "Audyt techniczny",
-        "description": "Audyt zadania i ostateczna kalkulacja kosztów."
+        "title": "Sprawdzenie zgloszenia",
+        "description": "Specjalista sprawdza opis, zdjecia i dane obiektu: co sie stalo, gdzie jest reklama i jakich szczegolow brakuje."
       },
       {
-        "title": "Realizacja",
-        "description": "Terminowe wykonanie przez naszych ekspertów na miejscu."
+        "title": "Nastepny krok",
+        "description": "PixelRing informuje, co jest potrzebne dalej: doprecyzowanie danych, ocena, uzgodnienie oferty albo organizacja wizyty."
       }
     ]
   },

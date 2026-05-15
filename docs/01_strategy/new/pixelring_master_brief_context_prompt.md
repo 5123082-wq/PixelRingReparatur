@@ -34,6 +34,32 @@
 
 Если есть конфликт между старым `master_brief.md` и новыми блоками, использовать новые блоки.
 
+### 1.1. Approved Website Messaging Baseline — 2026-05-13
+
+Текущая утвержденная baseline (базовая линия) для публичного сайта после review (проверки) главной страницы и CTA (призывов к действию):
+
+- PixelRing должен звучать как one accountable service company (одна ответственная сервисная компания), а не marketplace (маркетплейс), contractor directory (каталог подрядчиков) или lead broker (посредник по лидам).
+- Главный публичный CTA (призыв к действию) в немецкой canonical-first (канонической немецкой) версии: `Service starten` (запустить сервис).
+- Главный русский CTA (призыв к действию): `Запустить сервис`.
+- Header pattern (паттерн верхнего меню): `Kundenkonto & Status | Service starten` (аккаунт/статус клиента + запустить сервис).
+- Главная подпись под CTA (призывом к действию): `Starten Sie mit kurzer Beschreibung oder Foto.` (начните с короткого описания или фото).
+- CTA roles (роли призывов к действию) разделены: `Service starten` (запустить сервис) для общего входа, `Problem übergeben` (передать проблему/задачу) для problem-led flows (сценариев от проблемы), `Service anfragen` (запросить сервис) для B2B/service contexts (бизнес- и сервисных контекстов), `Anfrage senden` (отправить заявку) только внутри формы, `Status prüfen` (проверить статус) для существующего обращения, `Dringenden Fall melden` (сообщить о срочном случае) для urgent context (срочного контекста).
+- Homepage messaging (сообщения главной страницы) должен продавать не “заявку” и не “фото”, а начало управляемого сервисного процесса PixelRing.
+- Process/trust direction (направление процесса и доверия) на главной: один вход, короткое описание или фото, AI помогает структурировать обращение, дальше подключается человеческий специалист, PixelRing координирует следующий шаг.
+
+Активный source of truth (источник правды) для названий кнопок:
+
+- `docs/07_content_ai_seo/cta_labels_master.md`
+
+Активные документы, которые фиксируют этот baseline (базовую линию):
+
+- `docs/01_strategy/new/Block 9 — Messaging & Conversion.md`
+- `docs/07_content_ai_seo/copy_system.md`
+- `docs/02_public_website/information_architecture.md`
+- `docs/07_content_ai_seo/cta_labels_master.md`
+
+Если будущий агент меняет публичные CTA (призывы к действию), сначала обновить `cta_labels_master.md`, затем синхронизировать code (код), CMS (систему управления контентом) и связанные docs (документы).
+
 ---
 
 ## 2. Required Reading Order (обязательный порядок чтения)
@@ -348,6 +374,7 @@ PixelRing является:
 Для сайта:
 
 - `docs/02_public_website/german_site_audit.md`
+- `docs/02_public_website/information_architecture.md`
 - `docs/02_public_website/page_plan_leistungen.md`
 - `docs/02_public_website/page_plan_solutions.md`
 - `docs/02_public_website/page_plan_business.md`
@@ -365,11 +392,19 @@ PixelRing является:
 - `docs/00_project_overview/project_state_and_roadmap.md`
 - `signage-service/`
 
+Для контента, CTA (призывов к действию), SEO/GEO (поисковой и географической видимости):
+
+- `docs/07_content_ai_seo/copy_system.md`
+- `docs/07_content_ai_seo/cta_labels_master.md`
+- `docs/07_content_ai_seo/geo_optimization_strategy.md`
+
 ---
 
 ## 11. Current Status (текущий статус)
 
 Block 1-9 (Блоки 1-9) созданы.
+
+Approved website messaging baseline (утвержденная базовая линия сообщений сайта) от 2026-05-13 зафиксирована в этом документе и в `docs/07_content_ai_seo/cta_labels_master.md`.
 
 Следующий логичный этап:
 
