@@ -8,7 +8,6 @@ import TrustSection from "@/components/sections/TrustSection";
 import CoverageMap from "@/components/sections/CoverageMap";
 import ExcellenceCarousel from "@/components/sections/ExcellenceCarousel";
 import ReviewsSection from "@/components/sections/ReviewsSection";
-import RoadmapSection from "@/components/sections/RoadmapSection";
 import FAQSection from "@/components/sections/FAQSection";
 import FooterCTA from "@/components/sections/FooterCTA";
 import { getHomePageCmsContent, getGlobalPageCmsContent } from "@/lib/cms/pages";
@@ -93,7 +92,6 @@ export default async function HomePage({
           {homeCms?.coverage && <CoverageMap content={homeCms.coverage} />}
           {homeCms?.excellence && <ExcellenceCarousel content={homeCms.excellence} />}
           {homeCms?.reviews && <ReviewsSection content={homeCms.reviews} />}
-          {homeCms?.roadmap && <RoadmapSection content={homeCms.roadmap} />}
           {homeCms?.faq && <FAQSection content={homeCms.faq} />}
           {globalCms?.footerCta && <FooterCTA content={globalCms.footerCta} />}
         </main>

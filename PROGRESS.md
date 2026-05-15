@@ -14,10 +14,20 @@ Short global status only. Detailed session notes belong to folder-level `Progres
 
 ## Last Updated
 
+- Date: 2026-05-15
+- Updated by: Antigravity
+- **Current Stage**: Problem card grid on `/[locale]/probleme-loesungen` unified to equal-height cards. CSS `line-clamp-2` on solution text and `line-clamp-3` on shortAnswer (Kurz erklärt) ensure consistent card dimensions regardless of content length. Full text remains in DOM for SEO crawlers; visual truncation with `…` signals clickability. Flex layout with `mt-auto` pins the Kurz erklärt section to the card bottom. Article navigation sidebar previously implemented on every `[slug]` page.
+- **Next Action**: Consider automating slug mapping (publicSlug in CMS) so new articles appear in nav without code changes. Enrich remaining 8 articles to full depth.
+
+- Date: 2026-05-14
+- Updated by: Antigravity
+- **Current Stage**: Article SEO/GEO architecture upgraded across 5 tracks: (1) Article JSON-LD on every `/[slug]` page, (2) sidebar CTA localized for DE/EN/RU/TR/PL/AR, (3) heading hierarchy fixed (`h2`→`h3` sidebar), (4) cross-linking "Related problems" section on article pages, (5) enriched flicker article seeded for DE/EN/RU with full diagnostic table, 10 causes, ~4500 words per locale.
+- **Next Action**: Visual QA of enriched article pages in browser. Consider enriching remaining 8 articles to the same depth.
+
 - Date: 2026-05-13
 - Updated by: Codex
-- **Current Stage**: Public website CTA system unified across fallback messages, key public routes, and published CMS pages for DE/EN/RU/TR/PL/AR. Main CTA is now `Service starten` with localized equivalents; RU main CTA refined to `Запустить сервис`. Form submit/status/urgent/problem/B2B CTA roles are separated. Master CTA source-of-truth document added at `docs/07_content_ai_seo/cta_labels_master.md`.
-- **Next Action**: Owner reviews header, homepage, problem, service, business, references, and contact-form CTA labels visually on the local site; future CTA renames should start from the master CTA document.
+- **Current Stage**: Public website CTA system unified across fallback messages, key public routes, and published CMS pages for DE/EN/RU/TR/PL/AR. Homepage `Was passiert nach dem Absenden?` / `Что происходит после отправки?` follow-up block was hidden from the public homepage after owner review rejected the concept and copy logic. Header service CTA now has a desktop hover/focus contact rail for WhatsApp, Telegram, and site chat.
+- **Next Action**: Rework the post-submit communication concept from scratch before showing this block again; do not restore the current roadmap/follow-up block without owner approval.
 
 - Date: 2026-05-12
 - Updated by: Codex

@@ -121,7 +121,7 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="flex flex-col gap-4">
-            <h2 className="text-[32px] md:text-[44px] font-bold text-[#0E1A2B] leading-tight">
+            <h2 className="text-[32px] md:text-[42px] font-bold text-[#0E1A2B] leading-[1.1] tracking-[0]">
               {content?.title || ''}
             </h2>
             <p className="text-[16px] md:text-[18px] text-[#72665D] max-w-xl">
@@ -219,7 +219,7 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
                     #{item.tag}
                   </span>
                   <div className="flex flex-col gap-2">
-                    <h3 className="text-[26px] sm:text-[32px] font-bold leading-tight">
+                    <h3 className="text-[22px] sm:text-[26px] font-bold leading-tight tracking-[0]">
                       {item.title}
                     </h3>
                     <p className="text-[14px] sm:text-[16px] text-white/80 leading-relaxed line-clamp-2">

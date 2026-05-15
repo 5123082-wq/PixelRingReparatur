@@ -127,8 +127,8 @@ const CONTENT: Record<Locale, SolutionsContent> = {
         id: 'flicker',
         intent: 'flickering-light',
         title: 'Werbeanlage flackert',
-        symptom: 'Das Licht wirkt instabil, flackert oder fällt kurzzeitig aus.',
-        solution: 'Wir klären, ob LED-Module, Netzteile, Controller, Kontakte oder Feuchtigkeit eine Rolle spielen.',
+        symptom: 'Das Licht ist instabil, flackert, pulsiert oder fällt kurzzeitig aus.',
+        solution: 'PixelRing klärt, ob die Ursache beim Netzteil, Kontakt, Feuchtigkeit, Controller oder den LED-Modulen liegt.',
       },
       {
         id: 'uneven-led',
@@ -255,7 +255,7 @@ const CONTENT: Record<Locale, SolutionsContent> = {
     problemCta: 'Send the issue',
     problems: [
       { id: 'no-light', intent: 'sign-not-lighting', title: 'Sign does not light up', symptom: 'The installation stays dark or starts unreliably.', solution: 'PixelRing checks typical causes such as power supply, transformer, wiring, moisture and control units.' },
-      { id: 'flicker', intent: 'flickering-light', title: 'Sign flickers', symptom: 'The light is unstable, flickers or drops out briefly.', solution: 'We clarify whether LED modules, power supplies, controllers, contacts or moisture may be involved.' },
+      { id: 'flicker', intent: 'flickering-light', title: 'Sign flickers', symptom: 'The light is unstable, flickers, pulses, or cuts out briefly.', solution: 'PixelRing identifies whether the cause is the power supply, connections, moisture, controller or LED modules.' },
       { id: 'uneven-led', intent: 'uneven-led-light', title: 'Uneven LED brightness', symptom: 'Some areas are darker, patchy or visibly different.', solution: 'The system is checked for modules, supply lines, ageing and suitable repair or replacement steps.' },
       { id: 'letter-out', intent: 'letter-not-lighting', title: 'One letter is not lighting', symptom: 'Only part of the lettering or one letter has failed.', solution: 'PixelRing narrows down local causes such as module, connection, wiring or element condition.' },
       { id: 'rain-fail', intent: 'rain-failure', title: 'Sign fails after rain', symptom: 'After rain or moisture, the sign fails, flickers or switches off.', solution: 'We treat this as a possible sign of moisture, sealing, corrosion or electrical protection shutdown.' },
@@ -315,7 +315,7 @@ const CONTENT: Record<Locale, SolutionsContent> = {
     problemCta: 'Передать задачу',
     problems: [
       { id: 'no-light', intent: 'sign-not-lighting', title: 'Вывеска не светится', symptom: 'Конструкция остается темной или включается нестабильно.', solution: 'PixelRing проверяет типовые причины: питание, блок, подключение, влагу и управление.' },
-      { id: 'flicker', intent: 'flickering-light', title: 'Вывеска мерцает', symptom: 'Свет нестабилен, мигает или кратковременно пропадает.', solution: 'Мы уточняем, могут ли быть причиной LED-модули, блоки питания, контроллеры, контакты или влажность.' },
+      { id: 'flicker', intent: 'flickering-light', title: 'Вывеска мерцает', symptom: 'Свет работает нестабильно, мигает, пульсирует или кратковременно пропадает.', solution: 'PixelRing уточняет, связана ли причина с питанием, контактами, влагой, контроллером или LED-модулями.' },
       { id: 'uneven-led', intent: 'uneven-led-light', title: 'LED светит неравномерно', symptom: 'Отдельные зоны темнее, пятнами или заметно отличаются по яркости.', solution: 'Проверяются модули, подводка, старение и целесообразность ремонта или замены.' },
       { id: 'letter-out', intent: 'letter-not-lighting', title: 'Не светится отдельная буква', symptom: 'Выпала часть надписи или один элемент.', solution: 'PixelRing локализует возможную причину: модуль, соединение, проводка или состояние элемента.' },
       { id: 'rain-fail', intent: 'rain-failure', title: 'Вывеска отключается после дождя', symptom: 'После дождя появляются отключения, мерцание или сбои.', solution: 'Это может указывать на влагу, герметичность, коррозию или защитное отключение.' },

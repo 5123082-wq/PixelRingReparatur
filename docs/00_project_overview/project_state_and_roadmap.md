@@ -54,6 +54,11 @@ Implemented:
 - Next.js App Router project structure under `signage-service/src/app/`.
 - Localized public routes.
 - Public home route.
+- Approved multilingual CTA system for DE, EN, RU, TR, PL, and AR:
+  - canonical DE main CTA: `Service starten`;
+  - RU main CTA: `Запустить сервис`;
+  - CTA roles separated for main entry, problem handoff, B2B/service request, form submit, status lookup, and urgent cases;
+  - active CTA source of truth: `docs/07_content_ai_seo/cta_labels_master.md`.
 - Public support routes:
   - `/support`
   - `/support/[slug]`
@@ -513,7 +518,17 @@ Use these as current or active planning sources:
 - `docs/README.md`
 - `docs/00_project_overview/documentation_structure_plan.md`
 - `docs/00_project_overview/document_migration_matrix.md`
-- `docs/01_strategy/master_brief.md`
+- `docs/01_strategy/new/pixelring_master_brief_context_prompt.md`
+- `docs/01_strategy/new/Block 1 — Company Core.md`
+- `docs/01_strategy/new/Block 2 — Service Scope.md`
+- `docs/01_strategy/new/Block 3 — Geography & Availability.md`
+- `docs/01_strategy/new/Block 4 — Target Customers.md`
+- `docs/01_strategy/new/Block 5 — Customer Promise.md`
+- `docs/01_strategy/new/Block 6 — Product & Operating Model.md`
+- `docs/01_strategy/new/Block 7 — SEO & GEO Strategy.md`
+- `docs/01_strategy/new/Block 8 — Legal & German Compliance Guardrails.md`
+- `docs/01_strategy/new/Block 9 — Messaging & Conversion.md`
+- `docs/01_strategy/master_brief.md` — legacy summary; lower priority than `docs/01_strategy/new/`.
 - `docs/01_strategy/mvp_roadmap.md`
 - `docs/02_public_website/information_architecture.md`
 - `docs/02_public_website/user_journey_flows.md`
@@ -522,6 +537,7 @@ Use these as current or active planning sources:
 - `docs/05_admin_platform/page_content_cms_plan.md`
 - `docs/06_crm/crm_requests_and_clients.md`
 - `docs/07_content_ai_seo/copy_system.md`
+- `docs/07_content_ai_seo/cta_labels_master.md`
 - `docs/07_content_ai_seo/geo_optimization_strategy.md`
 - `docs/07_content_ai_seo/troubleshooting_content_plan.md`
 - `docs/08_ai_assistant/ai_conversation_design.md`

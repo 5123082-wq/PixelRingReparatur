@@ -122,7 +122,7 @@
     ]
   },
   "Bento": {
-    "title": "Nasıl işler?",
+    "title": "Servisimiz nasıl işler?",
     "steps": [
       {
         "title": "Servisi başlat",
@@ -131,12 +131,12 @@
       },
       {
         "title": "Uzman incelemesi",
-        "description": "İlk değerlendirmeden sonra bir uzman bilgileri inceler, gerekirse ek sorular sorar ve en uygun sonraki adımı belirler.",
+        "description": "İlk değerlendirmeden sonra uzmanımız bilgileri inceler, gerekirse ek sorular sorar ve en uygun sonraki adımı belirler.",
         "highlight": "Bir sonraki adımın ne olduğunu hızlıca anlarsınız."
       },
       {
         "title": "Çözümü netleştirme",
-        "description": "İş kapsamı, süre, objeye erişim ve uygulama şekli netleştirilir. Ne yapılacağını ve hangi koşullarda yapılacağını bilirsiniz.",
+        "description": "İş kapsamı, maliyet, süre, objeye erişim ve uygulama şekli netleştirilir. Ne yapılacağını ve hangi koşullarda yapılacağını bilirsiniz.",
         "highlight": "Sürpriz yok, gereksiz koordinasyon yok."
       },
       {
@@ -188,23 +188,25 @@
     ]
   },
   "Roadmap": {
-    "title": "Talepten Sonra Ne Olur?",
+    "subtitle": "Gonderim sonrasi",
+    "title": "Talebi gonderdikten sonra ne olur?",
+    "description": "Formdan sonra talep PixelRing servis surecine girer: bilgileri kaydederiz, PR numarasi veririz, talebi inceleriz ve sonraki adimi soyleriz.",
     "steps": [
       {
-        "title": "Onay",
-        "description": "Talebinizin yapay zeka üzerinden anında onaylanması."
+        "title": "Talep sistemde",
+        "description": "PixelRing is tanimini, fotograflari, obje adresini ve geri donus icin iletisim bilgisini kaydeder."
       },
       {
-        "title": "Atama",
-        "description": "Size 15 dakika içinde özel bir yönetici atanır."
+        "title": "PR numarasi",
+        "description": "Bir talep numarasi alirsiniz. Durum ve yazisma bu basvuruya bagli kalir."
       },
       {
-        "title": "Teknik Denetim",
-        "description": "Görevin denetimi ve nihai maliyet hesaplaması."
+        "title": "Talep kontrolu",
+        "description": "Uzman aciklamayi, fotograflari ve obje bilgilerini kontrol eder: ne oldu, tabela nerede, hangi detaylar eksik?"
       },
       {
-        "title": "Uygulama",
-        "description": "Uzmanlarımız tarafından yerinde zamanında uygulama."
+        "title": "Sonraki adim",
+        "description": "PixelRing bundan sonra ne gerektigini soyler: bilgileri netlestirmek, degerlendirme hazirlamak, teklifi konusmak veya servis ziyareti organize etmek."
       }
     ]
   },

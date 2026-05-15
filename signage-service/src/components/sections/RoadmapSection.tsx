@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useState } from 'react';
 import { RoadmapCmsContent } from '@/lib/cms/pages';
 
 interface RoadmapSectionProps {
@@ -8,6 +9,8 @@ interface RoadmapSectionProps {
 }
 
 const RoadmapSection = ({ content }: RoadmapSectionProps) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+
   const StepIcon = ({ index }: { index: number }) => {
     const iconSize = "w-6 h-6";
     const icons = [
@@ -41,76 +44,123 @@ const RoadmapSection = ({ content }: RoadmapSectionProps) => {
     title: cmsStep.title || '',
     description: cmsStep.description || '',
   }));
+  const eyebrow = content?.subtitle?.trim();
+  const description = content?.description?.trim();
+  const activeNumber = String(activeIndex + 1).padStart(2, '0');
 
   return (
-    <section className="relative w-full bg-[#F5F8FA] py-24 px-6 overflow-hidden">
-      {/* Decorative Background Elements */}
-      <div className="absolute top-1/2 left-1/4 w-[400px] h-[400px] bg-[#9FBFE030] rounded-full blur-[100px] -translate-y-1/2 pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[300px] h-[300px] bg-[#B8643E10] rounded-full blur-[80px] pointer-events-none" />
+    <section className="relative w-full bg-[#F7F1E8] pt-12 pb-20 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 relative">
+        <div className="grid gap-8 lg:grid-cols-[0.64fr_1.9fr] lg:items-start">
+          <div className="relative flex flex-col gap-4 pr-0 lg:pr-8">
+            <div className="relative z-10 flex flex-col gap-3">
+              {eyebrow ? (
+                <div className="flex items-center gap-3">
+                  <div className="h-px w-7 bg-[#C7A58F]" />
+                  <span className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#A88775]">
+                    {eyebrow}
+                  </span>
+                </div>
+              ) : null}
+              <h2 className="max-w-[360px] text-[24px] md:text-[28px] font-extrabold leading-[1.12] tracking-tight text-[#0E1A2B]">
+                {content?.title || ''}
+              </h2>
+            </div>
+            <div className="relative z-10 flex items-end justify-between gap-5">
+              {description ? (
+                <p className="max-w-[330px] text-[13px] leading-relaxed text-[#72665D]/74">
+                  {description}
+                </p>
+              ) : null}
+              <div className="relative h-10 w-14 shrink-0 overflow-hidden text-right" aria-hidden="true">
+                <span
+                  key={activeNumber}
+                  className="absolute inset-0 text-[34px] font-black leading-none text-[#D9C7BA]/60 transition-all duration-500 motion-safe:animate-[roadmap-number-in_500ms_ease-out]"
+                >
+                  {activeNumber}
+                </span>
+              </div>
+            </div>
+          </div>
 
-      <div className="max-w-7xl mx-auto flex flex-col gap-16 relative z-10">
-        <div className="flex flex-col gap-4 text-center">
-          <h2 className="text-[40px] md:text-[52px] font-bold text-[#0E1A2B] leading-tight flex flex-col md:block">
-            {content?.title || ''}
-          </h2>
-          <div className="w-16 h-1.5 bg-[#B8643E] rounded-full mx-auto" />
-        </div>
+          <div className={`grid grid-cols-1 gap-3 md:gap-4 ${
+            steps.length === 3 ? 'md:grid-cols-3' :
+            steps.length === 4 ? 'md:grid-cols-4' :
+            steps.length === 2 ? 'md:grid-cols-2' :
+            'md:grid-cols-4'
+          }`}>
+            {steps.map((step, index) => {
+              const isActive = activeIndex === index;
 
-        <div className="relative group/line">
-          {/* Connecting Line with Dynamic Glow */}
-          <div className="absolute top-[72px] left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#0E1A2B15] to-transparent hidden md:block" />
-          
-          <div className={`grid grid-cols-1 gap-2 md:gap-6 relative ${
-              steps.length === 3 ? 'md:grid-cols-3' :
-              steps.length === 4 ? 'md:grid-cols-4' :
-              steps.length === 2 ? 'md:grid-cols-2' :
-              'md:grid-cols-4'
-            }`}>
-            {steps.map((step, index) => (
-              <div key={index} className="flex flex-col group w-full max-w-[320px] mx-auto md:max-w-none">
-                
-                {/* Unified Card */}
-                <div className="flex flex-col bg-white/40 backdrop-blur-sm rounded-[32px] border border-white/60 shadow-lg shadow-[#0E1A2B04] group-hover:shadow-2xl group-hover:shadow-[#0E1A2B10] group-hover:-translate-y-2 transition-all duration-500 overflow-hidden flex-grow relative z-10 w-full">
-                  
-                  {/* Top part: Icon & Number Background */}
-                  <div className="relative p-6 flex flex-col items-center md:items-start justify-center bg-white/60 group-hover:bg-white transition-colors duration-500 border-b border-black/5">
-                    {/* Number */}
-                    <div className="absolute top-4 right-6 text-[44px] font-black text-[#0E1A2B] opacity-[0.03] group-hover:opacity-[0.08] transition-opacity duration-500 pointer-events-none tracking-tighter">
+              return (
+                <article
+                  key={index}
+                  tabIndex={0}
+                  onMouseEnter={() => setActiveIndex(index)}
+                  onFocus={() => setActiveIndex(index)}
+                  onClick={() => setActiveIndex(index)}
+                  className={`group relative flex min-h-[150px] cursor-default flex-col gap-3.5 rounded-[18px] border outline-none transition-all duration-500 md:min-h-[168px] ${
+                    isActive
+                      ? 'border-[#E1CCBD]/70 bg-white/40 shadow-[0_10px_26px_rgba(14,26,43,0.025)]'
+                      : 'border-transparent bg-transparent hover:border-[#E7DDD3]/70 hover:bg-white/28 focus-visible:border-[#E7DDD3]/70 focus-visible:bg-white/28'
+                  }`}
+                  aria-label={`${index + 1}. ${step.title}`}
+                >
+                  <div className="flex items-center justify-between gap-4 px-4 pt-5">
+                    <div className={`flex h-9 w-9 items-center justify-center rounded-[13px] border transition-all duration-500 ${
+                      isActive
+                        ? 'border-[#D8B9A4] bg-[#F7F1E8] text-[#A45F42]'
+                        : 'border-[#E7DDD3]/80 bg-transparent text-[#B28E7A]/80 group-hover:border-[#D8B9A4]'
+                    }`}>
+                      <StepIcon index={index} />
+                    </div>
+                    <span className={`text-[13px] font-black tracking-[0.18em] transition-all duration-500 ${
+                      isActive ? 'text-[#A45F42]' : 'text-[#D9C7BA]/85'
+                    }`}>
                       0{index + 1}
-                    </div>
-                    
-                    {/* Icon Wrapper */}
-                    <div className="relative w-24 h-24 md:w-20 md:h-20 rounded-3xl bg-white shadow-[0_10px_30px_rgba(14,26,43,0.06)] border border-black/5 flex items-center justify-center text-[#B8643E] group-hover:bg-[#B8643E] group-hover:text-white transition-all duration-500 z-10">
-                      <div className="scale-[1.15] group-hover:scale-[1.25] transition-transform duration-500">
-                        <StepIcon index={index} />
-                      </div>
-                    </div>
+                    </span>
                   </div>
 
-                  {/* Bottom part: Text Content */}
-                  <div className="flex flex-col gap-3 p-6 pt-5 bg-transparent flex-grow text-center md:text-left">
-                    <h3 className="text-[20px] font-bold text-[#0E1A2B] leading-tight">
+                  <div className="flex flex-1 flex-col gap-2.5 px-4 pb-5">
+                    <h3 className={`text-[18px] font-extrabold leading-tight transition-colors duration-500 ${
+                      isActive ? 'text-[#0E1A2B]' : 'text-[#18263A]'
+                    }`}>
                       {step.title}
                     </h3>
-                    <p className="text-[15px] text-[#0E1A2BA0] leading-relaxed line-clamp-3 group-hover:line-clamp-none transition-all duration-500">
+                    <p className={`text-[13px] leading-[1.55] transition-colors duration-500 ${
+                      isActive ? 'text-[#5F544D]' : 'text-[#72665D]/82'
+                    }`}>
                       {step.description}
                     </p>
                   </div>
-                </div>
 
-                {/* Arrow Connector (Mobile Only) */}
-                {index < steps.length - 1 && (
-                  <div className="md:hidden flex justify-center py-3 text-[#B8643E] opacity-50 transition-opacity group-hover:opacity-100">
-                    <svg className="w-6 h-6 animate-bounce" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12 4V20M12 20L6 14M12 20L18 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                )}
-              </div>
-            ))}
+                  {index < steps.length - 1 && (
+                    <div className={`hidden md:block absolute right-[-14px] top-[34px] z-10 transition-all duration-500 ${
+                      isActive ? 'text-[#A45F42]/80' : 'text-[#D0B7A5]/70'
+                    }`}>
+                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 5L16 12L9 19" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                  )}
+                </article>
+              );
+            })}
           </div>
         </div>
       </div>
+      <style jsx>{`
+        @keyframes roadmap-number-in {
+          0% {
+            opacity: 0;
+            transform: translateY(18px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </section>
   );
 };

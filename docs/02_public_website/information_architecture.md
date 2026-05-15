@@ -869,6 +869,24 @@ SEO-страницы не должны ломать trust-first UX.
 
 ## Progress Log
 
+### 2026-05-14 — Header Service CTA Contact Rail
+
+- Current sprint/block: Public Website, header CTA interaction refinement
+- Done: added a dedicated desktop header `ServiceActionButton` component for the main service CTA; on hover/focus it expands a left-side action rail with WhatsApp, Telegram, and site chat actions while keeping the primary `Service starten` / `Запустить сервис` action available; mobile menu CTA behavior remains unchanged
+- In progress: owner visual review of the hover animation on `/ru`
+- Next action: approve the interaction or tune motion timing, spacing, and icon order after browser review
+- Blockers/risks: hover interaction is desktop-only by design; touch devices keep the existing tap flow
+- Updated documents: `PROGRESS.md`, `docs/02_public_website/information_architecture.md`
+
+### 2026-05-13 — Homepage Follow-Up Block Repositioned
+
+- Current sprint/block: Public Website, homepage page-by-page content review, `Was passiert nach dem Absenden?` / `Что происходит после отправки?` block
+- Done: owner selected option 1; moved the follow-up block directly after `Wie es funktioniert`; redesigned it from a large separate blue roadmap section into a compact airy lower-emphasis handoff timeline without heavy frame/dark panel styling; added interactive active-card highlighting with a smoothly changing 01/02/03/04 number; rewrote DE, EN, RU, TR, PL, and AR fallback copy; updated published CMS `home/roadmapSection` blocks for all MVP locales; removed unverified instant-AI and 15-minute assignment claims from this block; after further RU review, owner rejected the concept/copy logic and the block was hidden from the public homepage render
+- In progress: post-submit communication concept paused
+- Next action: rework the post-submit block from scratch before restoring it to the homepage
+- Blockers/risks: current CMS/fallback roadmap copy remains stored but is intentionally not rendered; other homepage areas still contain older claims such as broad geography, warranty, and response wording that need separate block-by-block review
+- Updated documents: `PROGRESS.md`, `docs/02_public_website/information_architecture.md`
+
 ### 2026-05-13 — Public CTA System Unified
 
 - Current sprint/block: Public Website, CTA and conversion microcopy normalization

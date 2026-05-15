@@ -48,12 +48,13 @@ const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
           <div className="flex flex-col gap-6 max-w-4xl">
             <div className="flex items-center gap-3">
               <div className="w-8 h-[2px] bg-[#B8643E]" />
-              <span className="text-[#B8643E] font-bold tracking-[0.2em] uppercase text-[12px]">
+              <span className="text-[#B8643E] font-bold tracking-[0.16em] uppercase text-[12px]">
                 {content?.pretitle || safeT('pretitle', 'ADVANTAGE')}
               </span>
             </div>
-            <h2 className="text-[38px] md:text-[52px] font-extrabold text-white leading-[1.08] tracking-tight">
+            <h2 className="text-[34px] md:text-[42px] font-black text-white leading-[1.1] tracking-[0]">
               <span>{content?.titleStart || safeT('titleStart', 'Genug')}</span>
+              {' '}
               <br />
               <span className="text-[#B8643E] relative inline-block">
                 {content?.titleAccent || safeT('titleAccent', 'komplizierte Portale')}
@@ -66,7 +67,7 @@ const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
                 </>
               ) : null}
             </h2>
-            <p className="text-[18px] md:text-[22px] text-white/70 leading-relaxed font-medium max-w-2xl">
+            <p className="text-[16px] md:text-[17px] text-white/70 leading-[1.55] max-w-2xl">
               {content?.description || safeT('description', 'Direkte Ausführung in нашем техническом ателье.')}
             </p>
           </div>
@@ -92,10 +93,10 @@ const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
                           {stat.label}
                         </span>
                       </div>
-                      <h3 className="text-[28px] md:text-[34px] font-black leading-tight tracking-tighter text-white">
+                      <h3 className="text-[22px] md:text-[26px] font-bold leading-tight tracking-[0] text-white">
                         {stat.value}
                       </h3>
-                      <p className={`text-[16px] md:text-[17px] leading-relaxed max-w-xl ${isLarge ? 'text-white/88' : 'text-white/58'}`}>
+                      <p className={`text-[15px] md:text-[16px] leading-[1.55] max-w-xl ${isLarge ? 'text-white/88' : 'text-white/58'}`}>
                         {stat.description}
                       </p>
                     </div>

@@ -363,6 +363,15 @@ AI не должен:
 
 ## Progress Log
 
+### 2026-05-13
+
+- Current sprint/block: Website messaging baseline and CTA source-of-truth alignment.
+- Done: Confirmed that this `master_brief.md` remains a legacy summary with lower priority than `docs/01_strategy/new/`; documented the approved public website messaging baseline in `docs/01_strategy/new/pixelring_master_brief_context_prompt.md`; added `docs/07_content_ai_seo/cta_labels_master.md` as the active source of truth for CTA labels across DE, EN, RU, TR, PL, and AR.
+- In progress: Owner visual review of the updated public site CTA labels and homepage messaging.
+- Next action: Use `docs/07_content_ai_seo/cta_labels_master.md` for any future button renaming, then synchronize messages, code, CMS, and related docs.
+- Blockers/risks: Future agents must not use this legacy master brief to override the newer Block 1-9 strategy files or the CTA master document.
+- Updated documents: `docs/01_strategy/new/pixelring_master_brief_context_prompt.md`, `docs/00_project_overview/project_state_and_roadmap.md`, `docs/01_strategy/master_brief.md`, `PROGRESS.md`.
+
 ### 2026-05-12
 
 - Current sprint/block: Strategy handoff and source-of-truth cleanup.

@@ -104,13 +104,13 @@ export default function ProblemKnowledgeGrid({
           return (
             <article
               key={problem.id}
-              className="min-h-[360px] rounded-[22px] border border-[#E7DDD3] bg-[#FFFDF9] p-5 shadow-sm transition-[border-color,box-shadow] hover:border-[#B8643E]/45 hover:shadow-md"
+              className="flex min-h-[360px] flex-col rounded-[22px] border border-[#E7DDD3] bg-[#FFFDF9] p-5 shadow-sm transition-[border-color,box-shadow] hover:border-[#B8643E]/45 hover:shadow-md"
             >
               <button
                 type="button"
                 aria-controls={`knowledge-preview-${problem.id}`}
                 onClick={() => setModalProblemId(problem.id)}
-                className="group flex w-full cursor-pointer flex-col rounded-[16px] text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B8643E] rtl:text-right"
+                className="group flex w-full flex-1 cursor-pointer flex-col rounded-[16px] text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B8643E] rtl:text-right"
               >
                 <span className="flex items-start justify-between gap-4">
                   <span className="text-[13px] font-extrabold text-[#B8643E]/55">
@@ -137,15 +137,17 @@ export default function ProblemKnowledgeGrid({
               {knowledge ? (
                 <div
                   id={`knowledge-preview-${problem.id}`}
-                  className="mt-5 cursor-pointer border-t border-[#E7DDD3] pt-5 text-[15px] leading-7 text-[#3E4A48]"
+                  className="mt-auto cursor-pointer border-t border-[#E7DDD3] pt-5 text-[15px] leading-7 text-[#3E4A48]"
                   onClick={() => setModalProblemId(problem.id)}
                 >
                   <h4 className="text-[13px] font-extrabold uppercase tracking-[0.12em] text-[#B8643E]">
                     {articleLabels.preview}
                   </h4>
-                  <p className="mt-2 rounded-[18px] bg-[#FFF7F1] px-4 py-3 text-[#31413F] ring-1 ring-[#F0D2C2] transition-colors hover:bg-[#FFF0E6] hover:text-[#0E1A2B]">
-                    {knowledge.shortAnswer ?? problem.solution}
-                  </p>
+                  <div className="mt-2 overflow-hidden rounded-[18px] bg-[#FFF7F1] px-4 py-3 ring-1 ring-[#F0D2C2] transition-colors hover:bg-[#FFF0E6] hover:text-[#0E1A2B]">
+                    <p className="line-clamp-4 text-[#31413F]">
+                      {knowledge.shortAnswer ?? problem.solution}
+                    </p>
+                  </div>
                 </div>
               ) : null}
             </article>
