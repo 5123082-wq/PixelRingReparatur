@@ -11,6 +11,7 @@ import ReviewsSection from "@/components/sections/ReviewsSection";
 import FAQSection from "@/components/sections/FAQSection";
 import FooterCTA from "@/components/sections/FooterCTA";
 import { getHomePageCmsContent, getGlobalPageCmsContent } from "@/lib/cms/pages";
+import { buildLanguageAlternates, buildLocaleUrl, buildSiteUrl } from "@/lib/seo";
 
 const HOME_METADATA: Record<string, { title: string; description: string }> = {
   de: {
@@ -45,6 +46,68 @@ const HOME_METADATA: Record<string, { title: string; description: string }> = {
   },
 };
 
+const HOME_OG_IMAGE_PATH = '/uploads/cms-media/1778015697577-d5a238a08cc1-wide-hero-service-result.png';
+
+const OPEN_GRAPH_LOCALES: Record<string, string> = {
+  de: 'de_DE',
+  en: 'en_US',
+  ru: 'ru_RU',
+  tr: 'tr_TR',
+  pl: 'pl_PL',
+  ar: 'ar_AR',
+};
+
+function buildHomeJsonLd(locale: string, metadata: { title: string; description: string }) {
+  const pageUrl = buildLocaleUrl(locale);
+  const organizationId = `${buildSiteUrl('/')}#organization`;
+  const websiteId = `${buildSiteUrl('/')}#website`;
+  const serviceId = `${pageUrl}#signage-service`;
+
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': organizationId,
+        name: 'PixelRing Reparatur',
+        url: buildSiteUrl('/'),
+        logo: buildSiteUrl('/icon.png'),
+      },
+      {
+        '@type': 'WebSite',
+        '@id': websiteId,
+        name: 'PixelRing Reparatur',
+        url: buildSiteUrl('/'),
+        publisher: {
+          '@id': organizationId,
+        },
+        inLanguage: ['de', 'en', 'ru', 'tr', 'pl', 'ar'],
+      },
+      {
+        '@type': 'Service',
+        '@id': serviceId,
+        name: metadata.title,
+        description: metadata.description,
+        provider: {
+          '@id': organizationId,
+        },
+        areaServed: {
+          '@type': 'Country',
+          name: 'Germany',
+        },
+        serviceType: [
+          'Schilder-Reparatur',
+          'Lichtwerbung-Service',
+          'Montage',
+          'Branding-Service',
+        ],
+        url: pageUrl,
+        inLanguage: locale,
+      },
+    ],
+  };
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -58,6 +121,29 @@ export async function generateMetadata({
     description: metadata.description,
     alternates: {
       canonical: `/${locale}`,
+      languages: buildLanguageAlternates(''),
+    },
+    openGraph: {
+      title: metadata.title,
+      description: metadata.description,
+      url: buildLocaleUrl(locale),
+      siteName: 'PixelRing Reparatur',
+      locale: OPEN_GRAPH_LOCALES[locale] ?? OPEN_GRAPH_LOCALES.de,
+      type: 'website',
+      images: [
+        {
+          url: buildSiteUrl(HOME_OG_IMAGE_PATH),
+          width: 1821,
+          height: 864,
+          alt: 'PixelRing Reparatur service result for signage and light advertising.',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: metadata.title,
+      description: metadata.description,
+      images: [buildSiteUrl(HOME_OG_IMAGE_PATH)],
     },
   };
 }
@@ -68,6 +154,8 @@ export default async function HomePage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  const metadata = HOME_METADATA[locale] ?? HOME_METADATA.de;
+  const jsonLd = buildHomeJsonLd(locale, metadata);
 
   try {
     const [globalCms, homeCms] = await Promise.all([
@@ -83,6 +171,12 @@ export default async function HomePage({
 
     return (
       <div className="min-h-screen flex flex-col bg-[#F7F1E8]">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+          }}
+        />
         <Header content={globalCms?.header} />
         <main className="flex-1">
           {homeCms?.hero && <HeroSection content={homeCms.hero} />}

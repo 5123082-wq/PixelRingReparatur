@@ -1,8 +1,7 @@
 import { cookies } from 'next/headers';
 
-import PortalAccessRequired from '@/components/portal/PortalAccessRequired';
 import PortalDashboard from '@/components/portal/PortalDashboard';
-import PortalDemoGate from '@/components/portal/PortalDemoGate';
+import PortalEntry from '@/components/portal/PortalEntry';
 import { prisma } from '@/lib/prisma';
 import {
   PORTAL_DEMO_COOKIE_NAME,
@@ -38,14 +37,10 @@ export default async function PortalPage() {
     return <PortalDashboard organization={portalDemoOrganization} />;
   }
 
-  if (isPortalDemoEnabled()) {
-    return (
-      <PortalDemoGate
-        demoEnabled={isPortalDemoEnabled()}
-        demoEmail={getPortalDemoEmail()}
-      />
-    );
-  }
-
-  return <PortalAccessRequired />;
+  return (
+    <PortalEntry
+      demoEnabled={isPortalDemoEnabled()}
+      demoEmail={getPortalDemoEmail()}
+    />
+  );
 }

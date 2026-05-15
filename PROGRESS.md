@@ -10,9 +10,14 @@ Short global status only. Detailed session notes belong to folder-level `Progres
 - **Website CMS & Admin Platform**: CMS starter implemented (Pages, Articles, Media Library, SEO, AI config). 3-column MODX-style redesign implemented.
 - **AI Assistant**: Intake MVP implemented (session-scoped, deterministic triggers, repeat-contact confirmation flow).
 - **Security & Audit**: Admin login, HTTP-only cookies, role splitting, CSRF/Rate-limit starter implemented.
-- **Client Portal**: Prototype approved. Stage 2.5 read-only demo implementation merged (dashboard, requests, objects). Stage 2.6 production identity foundation implemented in code: claim-link email verification, portal users, verified emails, request access grants, and IONOS SMTP support. Portal migrations still need explicit application before server testing.
+- **Client Portal**: Prototype approved. Stage 2.5 read-only demo implementation merged (dashboard, requests, objects). Stage 2.6 production identity foundation implemented in code: claim-link email verification, portal users, verified emails, request access grants, and IONOS SMTP support. Stage 2.7 account-first portal entry added: `/portal` now supports e-mail magic-link login/registration and an empty verified dashboard before the first request.
 
 ## Last Updated
+
+- Date: 2026-05-16
+- Updated by: Codex
+- **Current Stage**: Client Portal account-first entry added: unauthenticated `/portal` now presents login/registration, existing-request status, and new-request paths instead of a dead-end verification gate; verified e-mail users can enter an empty portal dashboard before any request is linked.
+- **Next Action**: Fix/verify IONOS SMTP credentials on Vercel, redeploy, and test e-mail magic-link login plus existing claim-link flow end to end.
 
 - Date: 2026-05-16
 - Updated by: Codex

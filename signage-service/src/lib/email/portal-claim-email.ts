@@ -5,8 +5,9 @@ import nodemailer from 'nodemailer';
 type PortalVerificationEmailInput = {
   to: string;
   verificationUrl: string;
-  publicRequestNumber: string;
+  publicRequestNumber?: string | null;
   expiresAt: Date;
+  mode?: 'claim' | 'login';
 };
 
 type PortalVerificationEmailResult =
@@ -24,24 +25,46 @@ function escapeHtml(value: string): string {
 }
 
 function buildTextEmail(input: PortalVerificationEmailInput): string {
-  return [
+  const isLogin = input.mode === 'login' || !input.publicRequestNumber;
+  const lines = [
     'PixelRing Kundenportal',
     '',
-    `Anfrage: ${input.publicRequestNumber}`,
-    '',
-    'Bitte bestaetigen Sie Ihre E-Mail-Adresse, um den Kundenportal-Zugang fuer diese Anfrage zu aktivieren:',
-    input.verificationUrl,
+  ];
+
+  if (isLogin) {
+    lines.push(
+      'Bitte bestaetigen Sie Ihre E-Mail-Adresse, um den Kundenportal-Zugang zu aktivieren:',
+      input.verificationUrl
+    );
+  } else {
+    lines.push(
+      `Anfrage: ${input.publicRequestNumber}`,
+      '',
+      'Bitte bestaetigen Sie Ihre E-Mail-Adresse, um den Kundenportal-Zugang fuer diese Anfrage zu aktivieren:',
+      input.verificationUrl
+    );
+  }
+
+  return [
+    ...lines,
     '',
     `Dieser Link ist gueltig bis: ${input.expiresAt.toISOString()}`,
     '',
-    'Wenn Sie diese Anfrage nicht gestellt haben, ignorieren Sie diese E-Mail.',
+    'Wenn Sie diese Anfrage oder Anmeldung nicht gestartet haben, ignorieren Sie diese E-Mail.',
   ].join('\n');
 }
 
 function buildHtmlEmail(input: PortalVerificationEmailInput): string {
   const verificationUrl = escapeHtml(input.verificationUrl);
-  const publicRequestNumber = escapeHtml(input.publicRequestNumber);
+  const publicRequestNumber = input.publicRequestNumber ? escapeHtml(input.publicRequestNumber) : '';
   const expiresAt = escapeHtml(input.expiresAt.toISOString());
+  const isLogin = input.mode === 'login' || !input.publicRequestNumber;
+  const body = isLogin
+    ? 'Bitte bestaetigen Sie diese E-Mail-Adresse. Danach oeffnet sich Ihr Kundenportal.'
+    : `Ihre Anfrage <strong>${publicRequestNumber}</strong> kann mit dem Kundenportal verbunden werden.`;
+  const secondBody = isLogin
+    ? 'Wenn noch keine Anfrage vorhanden ist, koennen Sie nach dem Login eine neue Anfrage starten oder eine bestehende Anfrage pruefen.'
+    : 'Bitte bestaetigen Sie diese E-Mail-Adresse. Danach oeffnet sich Ihr Kundenportal.';
 
   return `<!doctype html>
 <html>
@@ -50,11 +73,11 @@ function buildHtmlEmail(input: PortalVerificationEmailInput): string {
       <div style="background:#ffffff;border:1px solid #eadfd4;border-radius:20px;padding:28px;">
         <p style="margin:0 0 12px;color:#b8643e;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;">PixelRing Kundenportal</p>
         <h1 style="margin:0 0 16px;font-size:24px;line-height:1.2;color:#111827;">E-Mail-Adresse bestaetigen</h1>
-        <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#4b5563;">Ihre Anfrage <strong>${publicRequestNumber}</strong> kann mit dem Kundenportal verbunden werden.</p>
-        <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#4b5563;">Bitte bestaetigen Sie diese E-Mail-Adresse. Danach oeffnet sich Ihr Kundenportal.</p>
+        <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#4b5563;">${body}</p>
+        <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#4b5563;">${secondBody}</p>
         <a href="${verificationUrl}" style="display:inline-block;background:#b8643e;color:#ffffff;text-decoration:none;border-radius:14px;padding:14px 18px;font-size:15px;font-weight:700;">E-Mail bestaetigen</a>
         <p style="margin:24px 0 0;font-size:12px;line-height:1.5;color:#6b7280;">Gueltig bis: ${expiresAt}</p>
-        <p style="margin:12px 0 0;font-size:12px;line-height:1.5;color:#6b7280;">Wenn Sie diese Anfrage nicht gestellt haben, ignorieren Sie diese E-Mail.</p>
+        <p style="margin:12px 0 0;font-size:12px;line-height:1.5;color:#6b7280;">Wenn Sie diese Anfrage oder Anmeldung nicht gestartet haben, ignorieren Sie diese E-Mail.</p>
       </div>
     </div>
   </body>
@@ -128,7 +151,9 @@ async function sendViaSmtp(input: PortalVerificationEmailInput): Promise<PortalV
   const result = await transport.sendMail({
     from,
     to: input.to,
-    subject: `PixelRing Kundenportal: ${input.publicRequestNumber}`,
+    subject: input.publicRequestNumber
+      ? `PixelRing Kundenportal: ${input.publicRequestNumber}`
+      : 'PixelRing Kundenportal: E-Mail bestaetigen',
     text: buildTextEmail(input),
     html: buildHtmlEmail(input),
   });
@@ -165,7 +190,9 @@ async function sendViaResend(input: PortalVerificationEmailInput): Promise<Porta
     body: JSON.stringify({
       from,
       to: input.to,
-      subject: `PixelRing Kundenportal: ${input.publicRequestNumber}`,
+      subject: input.publicRequestNumber
+        ? `PixelRing Kundenportal: ${input.publicRequestNumber}`
+        : 'PixelRing Kundenportal: E-Mail bestaetigen',
       text: buildTextEmail(input),
       html: buildHtmlEmail(input),
     }),

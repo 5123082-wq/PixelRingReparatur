@@ -5,6 +5,8 @@ import React, { useState, useEffect, useRef } from 'react';
 interface LocationPickerProps {
   value: string;
   onChange: (val: string) => void;
+  inputId?: string;
+  ariaLabel?: string;
   placeholder?: string;
   className?: string;
   variant?: 'light' | 'dark';
@@ -22,7 +24,15 @@ interface PhotonFeature {
   };
 }
 
-const LocationPicker = ({ value, onChange, placeholder, className, variant = 'light' }: LocationPickerProps) => {
+const LocationPicker = ({
+  value,
+  onChange,
+  inputId,
+  ariaLabel,
+  placeholder,
+  className,
+  variant = 'light',
+}: LocationPickerProps) => {
   const [query, setQuery] = useState(value);
   const [suggestions, setSuggestions] = useState<PhotonFeature[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -97,6 +107,7 @@ const LocationPicker = ({ value, onChange, placeholder, className, variant = 'li
   return (
     <div className="relative flex flex-col gap-1 w-full" ref={wrapperRef}>
       <input
+        id={inputId}
         type="text"
         value={query}
         onChange={(e) => {
@@ -105,6 +116,7 @@ const LocationPicker = ({ value, onChange, placeholder, className, variant = 'li
         }}
         onFocus={() => { if (suggestions.length > 0) setIsOpen(true) }}
         autoComplete="new-password"
+        aria-label={ariaLabel}
         placeholder={placeholder}
         className={className}
       />

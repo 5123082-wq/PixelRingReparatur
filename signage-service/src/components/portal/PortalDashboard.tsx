@@ -174,7 +174,7 @@ export default function PortalDashboard({
                   onClick={() => setActiveTab('messages')}
                   className="rounded-xl border border-[#E3D8CA] bg-white px-4 py-3 text-[14px] font-black text-[#0F1C2B] shadow-sm transition hover:border-[#C46E43]"
                 >
-                  4 уведомления
+                  {organization.messages.length} уведомления
                 </button>
                 <button
                   type="button"
@@ -291,6 +291,10 @@ function Overview({
   const t = useTranslations('Portal');
   const waitingActions = organization.requiredActions.slice(0, 3);
 
+  if (organization.requests.length === 0) {
+    return <EmptyPortalOverview onTabChange={onTabChange} />;
+  }
+
   return (
     <div className="grid gap-5">
       <section className="rounded-2xl bg-[#0D1B2A] p-5 text-white shadow-sm">
@@ -326,6 +330,70 @@ function Overview({
           <DocumentCards title="Документы preview" documents={availableDocuments.slice(0, 3)} emptyLabel="Нет документов." compact />
         </aside>
       </div>
+    </div>
+  );
+}
+
+function EmptyPortalOverview({ onTabChange }: { onTabChange: (tab: TabKey) => void }) {
+  return (
+    <div className="grid gap-5">
+      <section className="rounded-2xl bg-[#0D1B2A] p-6 text-white shadow-sm">
+        <p className="text-[12px] font-black uppercase tracking-[0.18em] text-[#F6C7A7]">
+          Konto bereit
+        </p>
+        <h2 className="mt-3 max-w-3xl text-[28px] font-black leading-tight">
+          Ihr Kundenportal ist eingerichtet.
+        </h2>
+        <p className="mt-3 max-w-4xl text-[15px] leading-7 text-white/72">
+          Es sind noch keine Anfragen mit diesem Konto verbunden. Sie koennen eine neue Anfrage starten oder eine bestehende PR-Nummer ueber die Statuspruefung verifizieren.
+        </p>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={() => onTabChange('new-request')}
+            className="rounded-xl bg-[#C46E43] px-4 py-3 text-[14px] font-black text-white"
+          >
+            Neue Anfrage starten
+          </button>
+          <Link
+            href="/status"
+            className="rounded-xl bg-white/10 px-4 py-3 text-[14px] font-black text-white transition hover:bg-white/15"
+          >
+            Bestehende Anfrage pruefen
+          </Link>
+        </div>
+      </section>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <MetricCard label="Aktive Anfragen" value={0} meta="Noch keine Anfrage verbunden" />
+        <MetricCard label="Dokumente" value={0} meta="Nach der ersten Anfrage sichtbar" />
+        <MetricCard label="Konto" value={1} meta="Verified E-Mail aktiv" />
+      </div>
+
+      <section className="rounded-2xl border border-[#E3D8CA] bg-white p-5 shadow-sm">
+        <h2 className="text-[20px] font-black">Naechster sinnvoller Schritt</h2>
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
+          <button
+            type="button"
+            onClick={() => onTabChange('new-request')}
+            className="rounded-2xl border border-[#EFE6DC] bg-[#FFFDFC] p-4 text-left transition hover:border-[#C46E43]/60"
+          >
+            <strong className="block text-[16px]">Neue Anfrage aus dem Konto starten</strong>
+            <span className="mt-1 block text-[13px] leading-5 text-[#7B7168]">
+              Fuer Reparatur, Diagnose, Wartung oder eine neue Servicefrage.
+            </span>
+          </button>
+          <Link
+            href="/status"
+            className="rounded-2xl border border-[#EFE6DC] bg-[#FFFDFC] p-4 text-left transition hover:border-[#C46E43]/60"
+          >
+            <strong className="block text-[16px]">Bestehende Anfrage finden</strong>
+            <span className="mt-1 block text-[13px] leading-5 text-[#7B7168]">
+              PR-Nummer plus Telefon oder E-Mail pruefen, ohne private Daten nur per Nummer zu oeffnen.
+            </span>
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }

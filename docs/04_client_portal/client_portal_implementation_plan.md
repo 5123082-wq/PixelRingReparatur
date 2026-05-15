@@ -1420,6 +1420,15 @@ Suggested first user-visible result:
 
 ### 2026-05-16
 
+- Current sprint/block: Client Portal account-first entry and passwordless login.
+- Done: replaced the unauthenticated `/[locale]/portal` dead-end with an entry screen that supports e-mail login/registration, existing request status lookup, and new request start paths; added account-first e-mail magic-link API routes and verification page; allowed portal sessions without a linked case so a verified user can open an empty portal dashboard; added an empty-dashboard state for accounts with no linked requests.
+- In progress: existing claim-link verification remains the request-bound access path; connecting an already existing PR-number directly from inside the portal is still a separate follow-up flow.
+- Next action: fix/verify IONOS SMTP credentials on Vercel, redeploy, test account-first e-mail login, then add “bestehende Anfrage verbinden” from inside the verified portal.
+- Blockers/risks: SMTP currently rejects the configured credentials in local testing; standalone portal accounts have no organization/member model yet and must not expose request data until a request is explicitly verified and linked.
+- Updated documents: `docs/04_client_portal/client_portal_implementation_plan.md`, `PROGRESS.md`.
+
+### 2026-05-16
+
 - Current sprint/block: Client Portal production identity and IONOS SMTP readiness.
 - Done: added IONOS-compatible SMTP delivery for portal verification emails using `noreply@pixel-ring.com`; added production portal identity models (`PortalUser`, `PortalUserEmail`, `PortalCaseAccess`) and session linkage; updated claim verification so a verified email creates/updates a portal user and grants access to the claimed request; changed `/[locale]/portal` and request detail routes to render real request-scoped portal data for verified portal sessions instead of requiring demo mode.
 - In progress: the production portal now has a minimal verified-email/request-access foundation, while object/location/asset persistence, organization membership, standalone login, customer document/report downloads, and portal-created requests remain deferred.

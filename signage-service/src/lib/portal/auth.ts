@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import { SessionScope, type PrismaClient } from '@prisma/client';
+import { SessionScope, type Prisma, type PrismaClient } from '@prisma/client';
 
 import { getPortalDemoEmail, isPortalDemoEnabled } from './demo-data';
 import {
@@ -11,6 +11,8 @@ export const PORTAL_DEMO_COOKIE_NAME = 'pixelring_portal_demo';
 export const PORTAL_DEMO_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 8;
 export const PORTAL_SESSION_COOKIE_NAME = 'pixelring_portal_session';
 export const PORTAL_SESSION_MAX_AGE_SECONDS = 60 * 60 * 8;
+
+type PortalAuthDb = PrismaClient | Prisma.TransactionClient;
 
 export type PortalSessionContext = {
   sessionId: string;
@@ -52,9 +54,9 @@ export function getPortalSessionExpiryDate(now: Date): Date {
 }
 
 export async function createPortalSession(
-  db: PrismaClient,
+  db: PortalAuthDb,
   input: {
-    caseId: string;
+    caseId?: string | null;
     portalUserId: string;
     email: string;
     userAgent?: string | null;
@@ -69,7 +71,7 @@ export async function createPortalSession(
     data: {
       tokenHash: hashCaseSessionToken(token),
       scope: SessionScope.PORTAL_AUTH,
-      caseId: input.caseId,
+      caseId: input.caseId ?? null,
       portalUserId: input.portalUserId,
       contactMethod: 'EMAIL',
       contactValue: normalizePortalEmail(input.email),
@@ -124,7 +126,6 @@ export async function getPortalSessionContext(
     session.scope !== SessionScope.PORTAL_AUTH ||
     session.revokedAt ||
     session.expiresAt <= new Date() ||
-    !session.caseId ||
     !session.portalUserId ||
     !session.contactValue ||
     session.portalUser?.status !== 'ACTIVE'

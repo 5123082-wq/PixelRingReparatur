@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useId, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import LocationPicker from './LocationPicker';
@@ -26,6 +26,13 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const formId = useId();
+  const nameInputId = `${formId}-contact-name-company`;
+  const contactInputId = `${formId}-contact-method`;
+  const issueTypeInputId = `${formId}-contact-issue-type`;
+  const locationInputId = `${formId}-contact-location`;
+  const messageInputId = `${formId}-contact-message`;
+  const fileInputId = `${formId}-contact-attachments`;
 
   const adjustHeight = () => {
     const textarea = textareaRef.current;
@@ -174,7 +181,11 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
     >
       <div className="flex flex-col gap-3 sm:gap-4 overflow-y-auto pr-1 -mr-1 pb-4">
         <div className="flex flex-col gap-1">
+          <label htmlFor={nameInputId} className="sr-only">
+            {t('field_name_company')}
+          </label>
           <input
+            id={nameInputId}
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -189,7 +200,11 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
         </div>
 
         <div className="flex flex-col gap-1">
+          <label htmlFor={contactInputId} className="sr-only">
+            {t('field_contact')}
+          </label>
           <input
+            id={contactInputId}
             type="text"
             required
             value={contact}
@@ -205,7 +220,11 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
         </div>
 
         <div className="flex flex-col gap-1">
+          <label htmlFor={issueTypeInputId} className="sr-only">
+            {t('field_issue_type') || 'Typ der Anfrage (optional)'}
+          </label>
           <select
+            id={issueTypeInputId}
             value={issueType}
             onChange={(e) => setIssueType(e.target.value)}
             className={`w-full px-5 sm:px-6 py-3 sm:py-3.5 border rounded-2xl outline-none focus:ring-1 transition-all duration-300 text-[14px] sm:text-[15px] appearance-none cursor-pointer ${
@@ -228,7 +247,12 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
         </div>
 
         <div className="flex flex-col gap-1 z-40 relative">
+          <label htmlFor={locationInputId} className="sr-only">
+            {t('field_location') || 'Adresse oder Ort (optional)'}
+          </label>
           <LocationPicker
+            inputId={locationInputId}
+            ariaLabel={t('field_location') || 'Adresse oder Ort (optional)'}
             value={location}
             onChange={setLocation}
             variant={variant}
@@ -242,7 +266,11 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
         </div>
 
         <div className="flex flex-col gap-1">
+          <label htmlFor={messageInputId} className="sr-only">
+            {t('field_message')}
+          </label>
           <textarea
+            id={messageInputId}
             ref={textareaRef}
             rows={2}
             required
@@ -267,6 +295,7 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
                 <button
                   type="button"
                   onClick={() => removeFile(i)}
+                  aria-label={`${t('attach_photo_btn')}: ${f.name}`}
                   className="w-5 h-5 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/40 text-white text-[10px] transition-colors"
                 >
                   ×
@@ -318,6 +347,7 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
                 {t('attach_photo_btn')}
               </span>
               <input
+                id={fileInputId}
                 type="file"
                 ref={fileInputRef}
                 onChange={(e) => {
@@ -326,6 +356,7 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
                 }}
                 accept="image/*,video/*"
                 multiple
+                aria-label={t('attach_photo_btn')}
                 className="hidden"
               />
             </button>
