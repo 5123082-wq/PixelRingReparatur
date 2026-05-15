@@ -28,6 +28,7 @@ Current implementation is best described as:
 - internal CRM starter for request/case operations;
 - internal CMS/admin platform starter for content, media, SEO, and AI configuration;
 - persisted AI chat and knowledge-backed assistant starter;
+- first request-bound client-portal production identity foundation;
 - security and audit starter;
 - not yet a full customer portal or full business operations platform.
 
@@ -282,6 +283,31 @@ Still incomplete:
 - richer customer/contact management;
 - structured operations dashboards.
 
+### Client Portal Identity Foundation
+
+Started:
+
+- read-only portal routes;
+- request-bound portal claim links;
+- 24-hour claim-link lifetime;
+- 30-minute email verification links;
+- portal claim link creation after public request intake;
+- CRM button for issuing a new claim link for a case;
+- IONOS-compatible SMTP verification email delivery;
+- portal users with verified email records;
+- request-level portal access grants;
+- HTTP-only production portal sessions.
+
+Still incomplete:
+
+- standalone portal login without a request claim;
+- organization/member portal access;
+- object/location/asset persistence for portal views;
+- customer-visible document/report/warranty downloads;
+- portal-created request flow;
+- SMS/voice or operator-assisted phone recovery;
+- server deployment, migration application, and rollout testing.
+
 ### AI Assistant
 
 Started:
@@ -352,11 +378,14 @@ Recommended near-term priorities:
     - deterministic cache revalidation policy;
     - adapter boundary for channel/external connectors;
     - retry/idempotency and failure visibility controls.
-8. Define customer portal identity before implementation:
-    - individual vs organization accounts;
-    - employees/member roles;
-    - recovery model;
-    - visible request data rules.
+8. Continue customer portal identity implementation:
+    - apply and test the pending portal migrations;
+    - configure IONOS SMTP password and production email env vars;
+    - define standalone portal login;
+    - define individual vs organization accounts;
+    - define employees/member roles;
+    - define phone recovery model;
+    - define visible request data rules.
 9. Define security baseline before production:
     - admin identity model;
     - RBAC;
@@ -392,11 +421,8 @@ Future scope:
 
 Not implemented now:
 
-- portal routes;
-- customer account model;
 - customer login/signup flow;
-- email magic link or OTP flow;
-- customer-facing dashboard;
+- standalone email magic-link or OTP flow;
 - organization/member access model.
 
 ### Organizations And Employees

@@ -118,39 +118,53 @@ enum SessionScope {
   PORTAL_AUTH
 }
 
+enum PortalUserStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum PortalCaseAccessSource {
+  CLAIM_LINK
+  ADMIN
+  IMPORT
+}
+
 model Case {
-  id                    String                 @id @default(uuid()) @db.Uuid
-  publicRequestNumber   String?                @unique
-  status                CaseStatus             @default(DRAFT)
-  originChannel         CaseOriginChannel
-  customerName          String?
-  customerEmail         String?
-  customerPhone         String?
-  assignedOperator      String?
-  customerProfileId     String?                @db.Uuid
-  primaryContactMethod  PrimaryContactMethod?
-  primaryContactValue   String?
-  summary               String?                @db.Text
-  description           String?                @db.Text
-  locale                String?
-  aiEnabled             Boolean                @default(true)
-  aiPausedAt            DateTime?
-  aiPausedReason        String?
-  crmLeadId             String?
-  crmCaseId             String?
-  numberIssuedAt        DateTime?
-  formalizedAt          DateTime?
-  statusUpdatedAt       DateTime?
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
-  messages              Message[]
-  attachments           Attachment[]
-  sessions              Session[]
-  externalConversations ExternalConversation[]
-  customerProfile       CustomerProfile?       @relation(fields: [customerProfileId], references: [id], onDelete: SetNull)
-  statusEvents          CaseStatusEvent[]
-  auditLogs             AdminAuditLog[]
-  readStates            CaseReadState[]
+  id                       String                    @id @default(uuid()) @db.Uuid
+  publicRequestNumber      String?                   @unique
+  status                   CaseStatus                @default(DRAFT)
+  originChannel            CaseOriginChannel
+  customerName             String?
+  customerEmail            String?
+  customerPhone            String?
+  assignedOperator         String?
+  customerProfileId        String?                   @db.Uuid
+  primaryContactMethod     PrimaryContactMethod?
+  primaryContactValue      String?
+  summary                  String?                   @db.Text
+  description              String?                   @db.Text
+  locale                   String?
+  aiEnabled                Boolean                   @default(true)
+  aiPausedAt               DateTime?
+  aiPausedReason           String?
+  crmLeadId                String?
+  crmCaseId                String?
+  numberIssuedAt           DateTime?
+  formalizedAt             DateTime?
+  statusUpdatedAt          DateTime?
+  createdAt                DateTime                  @default(now())
+  updatedAt                DateTime                  @updatedAt
+  messages                 Message[]
+  attachments              Attachment[]
+  sessions                 Session[]
+  portalClaimLinks         PortalClaimLink[]
+  portalEmailVerifications PortalEmailVerification[]
+  portalCaseAccesses       PortalCaseAccess[]
+  externalConversations    ExternalConversation[]
+  customerProfile          CustomerProfile?          @relation(fields: [customerProfileId], references: [id], onDelete: SetNull)
+  statusEvents             CaseStatusEvent[]
+  auditLogs                AdminAuditLog[]
+  readStates               CaseReadState[]
 
   @@index([status, updatedAt])
   @@index([originChannel, createdAt])
@@ -278,6 +292,7 @@ model Session {
   tokenHash        String                @unique
   scope            SessionScope          @default(ANONYMOUS_DRAFT)
   caseId           String?               @db.Uuid
+  portalUserId     String?               @db.Uuid
   operatorTakeover Boolean               @default(false)
   contactMethod    PrimaryContactMethod?
   contactValue     String?
@@ -290,10 +305,12 @@ model Session {
   createdAt        DateTime              @default(now())
   updatedAt        DateTime              @updatedAt
   case             Case?                 @relation(fields: [caseId], references: [id], onDelete: SetNull)
+  portalUser       PortalUser?           @relation(fields: [portalUserId], references: [id], onDelete: SetNull)
   messages         Message[]
   uploads          Attachment[]          @relation("SessionUploads")
 
   @@index([caseId, expiresAt])
+  @@index([portalUserId, expiresAt])
   @@index([expiresAt])
   @@index([contactMethod, contactValue])
   @@map("sessions")
@@ -319,26 +336,121 @@ model AdminUser {
 }
 
 model AdminSession {
-  id           String            @id @default(uuid()) @db.Uuid
-  adminUserId  String            @db.Uuid
-  tokenHash    String            @unique
-  role         AdminRole         @default(MANAGER)
-  label        String?
-  ipAddress    String?
-  userAgent    String?
-  lastSeenAt   DateTime?
-  expiresAt    DateTime
-  revokedAt    DateTime?
-  createdAt    DateTime          @default(now())
-  adminUser    AdminUser         @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
-  statusEvents CaseStatusEvent[] @relation("CaseStatusEventActor")
-  auditLogs    AdminAuditLog[]   @relation("AdminAuditLogActor")
+  id               String            @id @default(uuid()) @db.Uuid
+  adminUserId      String            @db.Uuid
+  tokenHash        String            @unique
+  role             AdminRole         @default(MANAGER)
+  label            String?
+  ipAddress        String?
+  userAgent        String?
+  lastSeenAt       DateTime?
+  expiresAt        DateTime
+  revokedAt        DateTime?
+  createdAt        DateTime          @default(now())
+  adminUser        AdminUser         @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  statusEvents     CaseStatusEvent[] @relation("CaseStatusEventActor")
+  auditLogs        AdminAuditLog[]   @relation("AdminAuditLogActor")
+  portalClaimLinks PortalClaimLink[] @relation("PortalClaimLinkCreatedBy")
 
   @@index([expiresAt])
   @@index([role])
   @@index([adminUserId, expiresAt])
   @@index([revokedAt])
   @@map("admin_sessions")
+}
+
+model PortalClaimLink {
+  id                      String                    @id @default(uuid()) @db.Uuid
+  tokenHash               String                    @unique
+  caseId                  String                    @db.Uuid
+  locale                  String?
+  prefillEmail            String?
+  requestedEmail          String?
+  createdByAdminSessionId String?                   @db.Uuid
+  lastOpenedAt            DateTime?
+  expiresAt               DateTime
+  consumedAt              DateTime?
+  revokedAt               DateTime?
+  createdAt               DateTime                  @default(now())
+  updatedAt               DateTime                  @updatedAt
+  case                    Case                      @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  createdByAdminSession   AdminSession?             @relation("PortalClaimLinkCreatedBy", fields: [createdByAdminSessionId], references: [id], onDelete: SetNull)
+  emailVerifications      PortalEmailVerification[]
+
+  @@index([caseId, expiresAt])
+  @@index([expiresAt])
+  @@index([revokedAt])
+  @@map("portal_claim_links")
+}
+
+model PortalEmailVerification {
+  id              String          @id @default(uuid()) @db.Uuid
+  tokenHash       String          @unique
+  claimLinkId     String          @db.Uuid
+  caseId          String          @db.Uuid
+  email           String
+  emailNormalized String
+  expiresAt       DateTime
+  verifiedAt      DateTime?
+  consumedAt      DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  claimLink       PortalClaimLink @relation(fields: [claimLinkId], references: [id], onDelete: Cascade)
+  case            Case            @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@index([caseId, emailNormalized])
+  @@index([claimLinkId, expiresAt])
+  @@index([expiresAt])
+  @@map("portal_email_verifications")
+}
+
+model PortalUser {
+  id                     String             @id @default(uuid()) @db.Uuid
+  displayName            String?
+  primaryEmail           String
+  primaryEmailNormalized String             @unique
+  status                 PortalUserStatus   @default(ACTIVE)
+  lastLoginAt            DateTime?
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+  emails                 PortalUserEmail[]
+  caseAccesses           PortalCaseAccess[]
+  sessions               Session[]
+
+  @@index([status, updatedAt])
+  @@map("portal_users")
+}
+
+model PortalUserEmail {
+  id              String     @id @default(uuid()) @db.Uuid
+  portalUserId    String     @db.Uuid
+  email           String
+  emailNormalized String     @unique
+  verifiedAt      DateTime
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  portalUser      PortalUser @relation(fields: [portalUserId], references: [id], onDelete: Cascade)
+
+  @@index([portalUserId, verifiedAt])
+  @@map("portal_user_emails")
+}
+
+model PortalCaseAccess {
+  id           String                 @id @default(uuid()) @db.Uuid
+  portalUserId String                 @db.Uuid
+  caseId       String                 @db.Uuid
+  source       PortalCaseAccessSource @default(CLAIM_LINK)
+  grantedAt    DateTime               @default(now())
+  revokedAt    DateTime?
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+  portalUser   PortalUser             @relation(fields: [portalUserId], references: [id], onDelete: Cascade)
+  case         Case                   @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@unique([portalUserId, caseId])
+  @@index([caseId, revokedAt])
+  @@index([portalUserId, revokedAt])
+  @@map("portal_case_accesses")
 }
 
 model CaseStatusEvent {

@@ -239,6 +239,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
                 'CASE_INTERNAL_NOTE_CREATED',
                 'CASE_ASSIGNMENT_CHANGED',
                 'CASE_CUSTOMER_PROFILE_SYNCED',
+                'CASE_PORTAL_CLAIM_LINK_CREATED',
               ],
             },
           },

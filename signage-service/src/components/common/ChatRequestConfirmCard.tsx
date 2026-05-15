@@ -18,6 +18,7 @@ export default function ChatRequestConfirmCard({
   const [error, setError] = useState('');
   const [done, setDone] = useState(false);
   const [requestNumber, setRequestNumber] = useState('');
+  const [portalClaimUrl, setPortalClaimUrl] = useState('');
 
   const handleConfirm = async () => {
     if (!prefill?.contact) {
@@ -41,13 +42,14 @@ export default function ChatRequestConfirmCard({
       fd.append('isFromChat', 'true');
 
       const res = await fetch('/api/contact', { method: 'POST', body: fd });
-      const data = await res.json() as { publicRequestNumber?: string; error?: string };
+      const data = await res.json() as { publicRequestNumber?: string; portalClaimUrl?: string; error?: string };
 
       if (!res.ok || !data.publicRequestNumber) {
         throw new Error(data.error ?? 'Fehler beim Senden.');
       }
 
       setRequestNumber(data.publicRequestNumber);
+      setPortalClaimUrl(data.portalClaimUrl ?? '');
       setDone(true);
       onSuccess?.(data.publicRequestNumber);
     } catch (err) {
@@ -66,8 +68,16 @@ export default function ChatRequestConfirmCard({
           <p className="text-xl font-black tracking-widest text-[#0E1A2B]">{requestNumber}</p>
         </div>
         <p className="mt-3 text-[12px] leading-relaxed text-[#72665D]">
-          Ein Kundenkonto fuer alle Anfragen ist als naechster Schritt geplant. Bis dahin koennen Sie den Status ueber die Anfragenummer verfolgen.
+          Sie koennen den Status verfolgen oder den Zugang zum Kundenportal ueber die Portal-Verknuepfung vorbereiten.
         </p>
+        {portalClaimUrl && (
+          <a
+            href={portalClaimUrl}
+            className="mt-3 inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#0E1A2B] hover:underline"
+          >
+            Kundenportal vorbereiten →
+          </a>
+        )}
       </div>
     );
   }

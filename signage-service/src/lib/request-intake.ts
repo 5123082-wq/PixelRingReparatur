@@ -13,6 +13,7 @@ import {
 } from './case-session';
 import type { StoredAttachmentInput } from './attachments';
 import { ensurePublicRequestNumberForCase } from './request-number';
+import { createPortalClaimLink } from './portal/claim';
 
 export type IntakeContactMethod = 'EMAIL' | 'PHONE';
 
@@ -29,6 +30,8 @@ export type WebsiteRequestInput = {
   message: string;
   userAgent?: string | null;
   ipAddress?: string | null;
+  locale?: string | null;
+  origin?: string | null;
   attachments?: StoredAttachmentInput[];
   existingSessionId?: string | null;
   existingSessionToken?: string | null;
@@ -38,6 +41,8 @@ export type WebsiteRequestInput = {
 export type WebsiteRequestResult = {
   caseId: string;
   publicRequestNumber: string;
+  portalClaimUrl: string;
+  portalClaimExpiresAt: string;
   sessionToken: string;
   photoReceived: boolean;
 };
@@ -135,6 +140,7 @@ export async function createWebsiteRequest(
         customerPhone: parsedContact.customerPhone,
         primaryContactMethod: parsedContact.method,
         primaryContactValue: parsedContact.value,
+        locale: input.locale?.trim() || null,
         summary: buildSummary(input.message),
         description: input.message.trim(),
         formalizedAt: now,
@@ -269,9 +275,35 @@ export async function createWebsiteRequest(
       });
     }
 
+    const portalClaimLink = await createPortalClaimLink(tx, {
+      caseId: createdCase.id,
+      locale: input.locale,
+      origin: input.origin,
+      now,
+    });
+
+    await tx.message.create({
+      data: {
+        caseId: createdCase.id,
+        sessionId: session.id,
+        channel: input.isFromChat ? CaseOriginChannel.WEBSITE_CHAT : CaseOriginChannel.WEBSITE_FORM,
+        authorRole: MessageAuthorRole.SYSTEM,
+        authorName: 'Portal Access',
+        body: [
+          `Kundenportal-Link: ${portalClaimLink.url}`,
+          '',
+          'Dieser Link ist 24 Stunden gueltig und startet die E-Mail-Bestaetigung fuer das Kundenportal.',
+        ].join('\n'),
+        isCustomerVisible: true,
+        sentAt: now,
+      },
+    });
+
     return {
       caseId: createdCase.id,
       publicRequestNumber,
+      portalClaimUrl: portalClaimLink.url,
+      portalClaimExpiresAt: portalClaimLink.expiresAt.toISOString(),
       sessionToken: finalSessionToken,
       photoReceived: attachments.length + linkedSessionAttachmentCount > 0,
     };

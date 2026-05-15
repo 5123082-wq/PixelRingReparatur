@@ -166,7 +166,7 @@ export async function PortalRequestNotFound({
   return (
     <PortalFrame
       organization={organization}
-      badge={t('demoBadge')}
+      badge="Kundenportal"
       title={t('detail.unknownTitle')}
       subtitle={t('detail.unknownDescription')}
     >

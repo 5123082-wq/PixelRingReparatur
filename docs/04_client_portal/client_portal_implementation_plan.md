@@ -285,39 +285,24 @@ These decisions are fixed for the first real implementation pass.
 
 ### Portal Entry And Authentication
 
-Portal access is email-first.
+Detailed account and verification rules are defined in `accounts_and_identity.md`.
 
-There are two supported entry scenarios:
+The implementation decision is:
 
-1. Request-first user:
-   - the customer creates a service request first;
-   - email is required before the customer can enter the full portal;
-   - after request creation, the customer can choose to open the portal;
-   - the customer verifies email;
-   - after verification, the customer sets a password;
-   - the portal session is created only after successful verification/authentication.
-2. Direct portal user:
-   - the customer opens `/[locale]/portal` or `/[locale]/portal/login`;
-   - the customer enters email;
-   - the system verifies email through a standard email verification flow;
-   - if the email belongs to an eligible customer/organization, the customer can set or use a password;
-   - if no linked account exists, the UI must show a safe generic state and should not leak whether a private customer record exists.
-
-Decision:
-
-- use email verification first;
-- password setup comes after email verification;
-- password recovery/magic-link recovery can be added later or during the same auth foundation if implementation scope allows;
+- public request intake may continue to accept either phone or email;
+- full portal access requires verified email;
+- passwordless magic link is the preferred first production login method;
+- phone may support status lookup, recovery, or operator-assisted verification, but is not the default portal identity;
 - portal sessions must use HTTP-only cookies;
 - no portal auth tokens in `localStorage`;
 - request number alone is never a login method.
 
 Security requirements:
 
-- password must be hashed with the project's approved password hashing approach;
+- login and verification responses must avoid account, request, or contact enumeration;
 - login and verification attempts must be rate-limited;
 - verification tokens must be single-use, short-lived, and stored hashed if persisted;
-- responses for unknown emails must be generic;
+- responses for unknown emails, request numbers, or claim attempts must be generic;
 - logout and session expiry are required before production.
 
 ### Stage 1 Demo Mode
@@ -1418,7 +1403,8 @@ Suggested first user-visible result:
 ## Open Decisions Before Later Stages
 
 - Exact verified email magic-link provider and session model.
-- Whether phone verification is included in portal access or remains recovery-only.
+- Whether the first production beta needs SMS/voice OTP or starts with operator-assisted phone recovery.
+- Exact same-device case-access lifetime for portal claim.
 - Organization/member data model.
 - Object and asset persistence model.
 - Supplier file and logistics-map data model.
@@ -1431,6 +1417,33 @@ Suggested first user-visible result:
 - Whether multilingual portal copy is CMS-managed or `messages/*.json` first.
 
 ## Progress Log
+
+### 2026-05-16
+
+- Current sprint/block: Client Portal production identity and IONOS SMTP readiness.
+- Done: added IONOS-compatible SMTP delivery for portal verification emails using `noreply@pixel-ring.com`; added production portal identity models (`PortalUser`, `PortalUserEmail`, `PortalCaseAccess`) and session linkage; updated claim verification so a verified email creates/updates a portal user and grants access to the claimed request; changed `/[locale]/portal` and request detail routes to render real request-scoped portal data for verified portal sessions instead of requiring demo mode.
+- In progress: the production portal now has a minimal verified-email/request-access foundation, while object/location/asset persistence, organization membership, standalone login, customer document/report downloads, and portal-created requests remain deferred.
+- Next action: owner adds `SMTP_PASSWORD` and production database URLs in hosting env vars; apply both pending portal migrations to the server database; deploy preview and test real e-mail verification through IONOS.
+- Blockers/risks: SMTP deliverability depends on IONOS mailbox credentials and domain SPF/DKIM; migrations must be applied only after confirming the target database and backup/snapshot state.
+- Updated documents: `docs/04_client_portal/accounts_and_identity.md`, `docs/04_client_portal/client_portal_implementation_plan.md`, `docs/00_project_overview/project_state_and_roadmap.md`, `PROGRESS.md`.
+
+### 2026-05-15
+
+- Current sprint/block: Client Portal claim-link verification bridge.
+- Done: implemented the first request-bound portal access bridge in `signage-service`: claim links are created after request intake and from the CRM case page; claim links are valid for 24 hours; customers can confirm or add email; email verification links are valid for 30 minutes; verified users receive an HTTP-only portal session and are redirected into the current test portal.
+- In progress: the bridge intentionally opens the existing demo/test portal, not a customer-specific production dashboard. The Prisma migration file exists but has not been applied to the configured database in this pass.
+- Next action: confirm applying the database migration, configure a real email sender (`RESEND_API_KEY` and `PORTAL_EMAIL_FROM`), then test the full flow with a real email: public request -> claim link -> email verification -> test portal.
+- Blockers/risks: production portal authorization is still narrower than the future product needs; organization/member access, standalone portal login, logout/session management UI, SMS/voice recovery, and customer-specific dashboard data remain separate stages.
+- Updated documents: `docs/04_client_portal/accounts_and_identity.md`, `docs/04_client_portal/client_portal_implementation_plan.md`, `docs/00_project_overview/project_state_and_roadmap.md`, `PROGRESS.md`.
+
+### 2026-05-15
+
+- Current sprint/block: Client Portal accounts and identity documentation.
+- Done: added `accounts_and_identity.md` as the source document for portal verification paths; confirmed that public request intake may use phone or email, while full portal access requires verified email; defined trust levels, request-first phone/email paths, phone-only recovery boundaries, passwordless magic-link direction, and security baseline.
+- In progress: production identity remains documentation-only; no migrations or application code were changed in this pass.
+- Next action: decide the first production beta identity scope: email provider, magic-link lifetime, same-device claim lifetime, and whether phone recovery starts with SMS/voice OTP or operator-assisted verification.
+- Blockers/risks: phone-only users without same-device access cannot be safely linked to a new portal email without additional proof; open self-registration and organization membership require separate authorization design.
+- Updated documents: `docs/04_client_portal/accounts_and_identity.md`, `docs/04_client_portal/client_portal_implementation_plan.md`, `docs/04_client_portal/README.md`, `PROGRESS.md`.
 
 ### 2026-05-11
 
