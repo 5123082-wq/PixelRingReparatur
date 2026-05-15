@@ -1,9 +1,22 @@
 import crypto from 'node:crypto';
+import { SessionScope, type PrismaClient } from '@prisma/client';
 
 import { getPortalDemoEmail, isPortalDemoEnabled } from './demo-data';
+import {
+  createCaseSessionToken,
+  hashCaseSessionToken,
+} from '@/lib/case-session';
 
 export const PORTAL_DEMO_COOKIE_NAME = 'pixelring_portal_demo';
 export const PORTAL_DEMO_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 8;
+export const PORTAL_SESSION_COOKIE_NAME = 'pixelring_portal_session';
+export const PORTAL_SESSION_MAX_AGE_SECONDS = 60 * 60 * 8;
+
+export type PortalSessionContext = {
+  sessionId: string;
+  portalUserId: string;
+  email: string;
+};
 
 export function normalizePortalEmail(value: string): string {
   return value.trim().toLowerCase();
@@ -32,4 +45,122 @@ export function verifyPortalDemoCookie(value: string | undefined | null): boolea
   }
 
   return crypto.timingSafeEqual(Buffer.from(value), Buffer.from(expected));
+}
+
+export function getPortalSessionExpiryDate(now: Date): Date {
+  return new Date(now.getTime() + PORTAL_SESSION_MAX_AGE_SECONDS * 1000);
+}
+
+export async function createPortalSession(
+  db: PrismaClient,
+  input: {
+    caseId: string;
+    portalUserId: string;
+    email: string;
+    userAgent?: string | null;
+    ipAddress?: string | null;
+    now?: Date;
+  }
+): Promise<string> {
+  const now = input.now ?? new Date();
+  const token = createCaseSessionToken();
+
+  await db.session.create({
+    data: {
+      tokenHash: hashCaseSessionToken(token),
+      scope: SessionScope.PORTAL_AUTH,
+      caseId: input.caseId,
+      portalUserId: input.portalUserId,
+      contactMethod: 'EMAIL',
+      contactValue: normalizePortalEmail(input.email),
+      verifiedAt: now,
+      lastSeenAt: now,
+      expiresAt: getPortalSessionExpiryDate(now),
+      userAgent: input.userAgent ?? null,
+      ipAddress: input.ipAddress ?? null,
+    },
+    select: { id: true },
+  });
+
+  return token;
+}
+
+export async function verifyPortalSessionCookie(
+  db: PrismaClient,
+  value: string | undefined | null
+): Promise<boolean> {
+  return (await getPortalSessionContext(db, value)) !== null;
+}
+
+export async function getPortalSessionContext(
+  db: PrismaClient,
+  value: string | undefined | null
+): Promise<PortalSessionContext | null> {
+  if (!value) {
+    return null;
+  }
+
+  const session = await db.session.findUnique({
+    where: { tokenHash: hashCaseSessionToken(value) },
+    select: {
+      id: true,
+      scope: true,
+      revokedAt: true,
+      expiresAt: true,
+      caseId: true,
+      portalUserId: true,
+      contactValue: true,
+      portalUser: {
+        select: {
+          id: true,
+          status: true,
+        },
+      },
+    },
+  });
+
+  if (
+    !session ||
+    session.scope !== SessionScope.PORTAL_AUTH ||
+    session.revokedAt ||
+    session.expiresAt <= new Date() ||
+    !session.caseId ||
+    !session.portalUserId ||
+    !session.contactValue ||
+    session.portalUser?.status !== 'ACTIVE'
+  ) {
+    return null;
+  }
+
+  await db.session.update({
+    where: { id: session.id },
+    data: { lastSeenAt: new Date() },
+    select: { id: true },
+  });
+
+  return {
+    sessionId: session.id,
+    portalUserId: session.portalUserId,
+    email: normalizePortalEmail(session.contactValue),
+  };
+}
+
+export async function revokePortalSessionCookie(
+  db: PrismaClient,
+  value: string | undefined | null
+): Promise<void> {
+  if (!value) {
+    return;
+  }
+
+  await db.session.updateMany({
+    where: {
+      tokenHash: hashCaseSessionToken(value),
+      scope: SessionScope.PORTAL_AUTH,
+      revokedAt: null,
+    },
+    data: {
+      revokedAt: new Date(),
+    },
+  });
 }

@@ -10,9 +10,19 @@ Short global status only. Detailed session notes belong to folder-level `Progres
 - **Website CMS & Admin Platform**: CMS starter implemented (Pages, Articles, Media Library, SEO, AI config). 3-column MODX-style redesign implemented.
 - **AI Assistant**: Intake MVP implemented (session-scoped, deterministic triggers, repeat-contact confirmation flow).
 - **Security & Audit**: Admin login, HTTP-only cookies, role splitting, CSRF/Rate-limit starter implemented.
-- **Client Portal**: Prototype approved. Stage 2.5 read-only demo implementation merged (dashboard, requests, objects). Future supplier/logistics map and location-intelligence concepts documented.
+- **Client Portal**: Prototype approved. Stage 2.5 read-only demo implementation merged (dashboard, requests, objects). Stage 2.6 production identity foundation implemented in code: claim-link email verification, portal users, verified emails, request access grants, and IONOS SMTP support. Portal migrations still need explicit application before server testing.
 
 ## Last Updated
+
+- Date: 2026-05-16
+- Updated by: Codex
+- **Current Stage**: Client Portal production readiness advanced: IONOS SMTP via `noreply@pixel-ring.com` is supported through env vars, and the portal now creates/uses `PortalUser`, `PortalUserEmail`, and `PortalCaseAccess` instead of opening only the demo/test portal after verification.
+- **Next Action**: Owner adds `SMTP_PASSWORD` plus production DB env vars on hosting, then apply pending portal migrations and validate the real claim-link -> e-mail -> portal flow on preview.
+
+- Date: 2026-05-15
+- Updated by: Codex
+- **Current Stage**: Client Portal claim-link bridge implemented for testing: request intake and CRM can create a 24-hour case-bound portal link; customer verifies or adds email through a 30-minute email link; successful verification opens the existing test portal through HTTP-only cookies.
+- **Next Action**: Apply the portal claim-link migration after owner confirmation, configure real email delivery, then test public request -> claim link -> email verification -> test portal with a real email.
 
 - Date: 2026-05-15
 - Updated by: Antigravity

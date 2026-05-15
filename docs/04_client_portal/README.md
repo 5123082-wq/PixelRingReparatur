@@ -7,11 +7,11 @@ Current migrated documents:
 - `full_customer_portal_plan.md`
 - `client_portal_implementation_plan.md`
 - `client_portal_prototype_functional_map.md`
+- `accounts_and_identity.md`
 - `Маркетинговая стратегия и план развития платформы контроля объектов и рекламных активов.md`
 
 Planned base documents:
 - `client_portal_blueprint.md`
-- `accounts_and_identity.md`
 - `organizations_and_members.md`
 - `portal_rbac.md`
 - `request_tracking.md`

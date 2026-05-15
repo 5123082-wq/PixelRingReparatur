@@ -116,12 +116,25 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const renderMessageBody = (text: string) => {
-    // Regex for PR-XXXX-XXXX format
-    const prRegex = /([A-Z]{2,8}-[A-Z0-9]{4}-[A-Z0-9]{4})/g;
-    const parts = text.split(prRegex);
+    const tokenRegex = /(https?:\/\/[^\s]+|[A-Z]{2,8}-[A-Z0-9]{4}-[A-Z0-9]{4})/g;
+    const parts = text.split(tokenRegex);
     
     return parts.map((part, i) => {
-      if (i % 2 === 1) {
+      if (/^https?:\/\//.test(part)) {
+        return (
+          <a
+            key={i}
+            href={part}
+            className="underline font-black decoration-current hover:opacity-60 transition-all"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {part}
+          </a>
+        );
+      }
+
+      if (/^[A-Z]{2,8}-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(part)) {
         return (
           <Link
             key={i}

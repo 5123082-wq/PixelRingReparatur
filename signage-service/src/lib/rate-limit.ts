@@ -133,3 +133,10 @@ export const PORTAL_DEMO_AUTH_LIMIT: RateLimitConfig = {
   windowMs: 5 * 60 * 1000,
   prefix: 'portal-demo-auth',
 };
+
+/** Portal claim/email verification: 5 attempts per 5 minutes per IP */
+export const PORTAL_CLAIM_LIMIT: RateLimitConfig = {
+  maxRequests: 5,
+  windowMs: 5 * 60 * 1000,
+  prefix: 'portal-claim',
+};

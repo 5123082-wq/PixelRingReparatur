@@ -15,6 +15,7 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [publicRequestNumber, setPublicRequestNumber] = useState('');
+  const [portalClaimUrl, setPortalClaimUrl] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [name, setName] = useState('');
   const [contact, setContact] = useState('');
@@ -64,6 +65,7 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
       const data = (await response.json()) as {
         error?: string;
         publicRequestNumber?: string;
+        portalClaimUrl?: string;
       };
 
       if (!response.ok) {
@@ -79,6 +81,7 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
       }
 
       setPublicRequestNumber(data.publicRequestNumber);
+      setPortalClaimUrl(data.portalClaimUrl ?? '');
       setIsSuccess(true);
       setName('');
       setContact('');
@@ -152,6 +155,14 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
         >
           {t('open_status')}
         </Link>
+        {portalClaimUrl && (
+          <a
+            href={portalClaimUrl}
+            className="mt-3 inline-flex items-center justify-center rounded-full border border-[#B8643E]/30 bg-white px-5 py-3 text-[14px] font-semibold text-[#B8643E] transition-colors hover:bg-[#F7F1E8]"
+          >
+            Kundenportal vorbereiten
+          </a>
+        )}
       </div>
     );
   }

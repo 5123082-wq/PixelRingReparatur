@@ -39,6 +39,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
   const [error, setError] = useState('');
   const [done, setDone] = useState(false);
   const [requestNumber, setRequestNumber] = useState('');
+  const [portalClaimUrl, setPortalClaimUrl] = useState('');
   const fileRef = React.useRef<HTMLInputElement>(null);
 
   if (done) {
@@ -65,6 +66,14 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
         >
           Status verfolgen →
         </a>
+        {portalClaimUrl && (
+          <a
+            href={portalClaimUrl}
+            className="mt-3 inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#0E1A2B] hover:underline"
+          >
+            Kundenportal vorbereiten →
+          </a>
+        )}
       </div>
     );
   }
@@ -90,13 +99,14 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
       files.forEach(f => fd.append('files', f));
 
       const res = await fetch('/api/contact', { method: 'POST', body: fd });
-      const data = await res.json() as { publicRequestNumber?: string; error?: string };
+      const data = await res.json() as { publicRequestNumber?: string; portalClaimUrl?: string; error?: string };
 
       if (!res.ok || !data.publicRequestNumber) {
         throw new Error(data.error ?? 'Fehler beim Senden.');
       }
 
       setRequestNumber(data.publicRequestNumber);
+      setPortalClaimUrl(data.portalClaimUrl ?? '');
       setDone(true);
       onSuccess?.(data.publicRequestNumber);
     } catch (err) {

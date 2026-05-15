@@ -145,6 +145,8 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
   const [sendingReply, setSendingReply] = useState(false);
   const [replyFeedback, setReplyFeedback] = useState('');
   const [issuingPr, setIssuingPr] = useState(false);
+  const [creatingPortalLink, setCreatingPortalLink] = useState(false);
+  const [portalClaimUrl, setPortalClaimUrl] = useState('');
 
   const isScrolledNearBottom = useCallback(() => {
     const el = scrollRef.current;
@@ -347,6 +349,30 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
     }
   }
 
+  async function createPortalClaimLink() {
+    if (creatingPortalLink || !caseData?.publicRequestNumber) return;
+    setCreatingPortalLink(true);
+    setReplyFeedback('');
+    setPortalClaimUrl('');
+    try {
+      const res = await adminFetch(`/api/admin/cases/${id}/portal-claim-link`, {
+        method: 'POST',
+      });
+      const data = await res.json().catch(() => null) as { portalClaimUrl?: string; error?: string } | null;
+
+      if (!res.ok || !data?.portalClaimUrl) {
+        setReplyFeedback(data?.error || 'Portal link could not be created.');
+        return;
+      }
+
+      setPortalClaimUrl(data.portalClaimUrl);
+      setReplyFeedback('Portal claim link created.');
+      await fetchCase();
+    } finally {
+      setCreatingPortalLink(false);
+    }
+  }
+
   async function updateAssignment() {
     setUpdatingAssignment(true);
     try {
@@ -501,6 +527,21 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                   <Button onClick={issuePublicRequestNumber} disabled={issuingPr} variant="primary" size="sm" className="w-full font-black text-[10px] h-8 uppercase">
                     {issuingPr ? 'Issuing...' : 'Issue PR'}
                   </Button>
+                )}
+                {caseData.publicRequestNumber && (
+                  <div className="space-y-2">
+                    <Button onClick={createPortalClaimLink} disabled={creatingPortalLink} variant="primary" size="sm" className="w-full font-black text-[10px] h-8 uppercase">
+                      {creatingPortalLink ? 'Creating...' : 'Create portal link'}
+                    </Button>
+                    {portalClaimUrl && (
+                      <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-2 text-[10px] leading-relaxed text-emerald-200">
+                        <div className="mb-1 font-black uppercase tracking-widest">Portal link</div>
+                        <a href={portalClaimUrl} target="_blank" rel="noreferrer" className="break-all underline">
+                          {portalClaimUrl}
+                        </a>
+                      </div>
+                    )}
+                  </div>
                 )}
              </div>
           </section>

@@ -5,12 +5,30 @@ import { checkRateLimit, getClientIP, CONTACT_LIMIT } from '@/lib/rate-limit';
 import { createWebsiteRequest } from '@/lib/request-intake';
 import { CASE_SESSION_COOKIE_NAME } from '@/lib/case-session';
 import { sendAdminTelegramNotification } from '@/lib/admin-telegram-notifications';
+import { DEFAULT_SITE_LOCALE, SITE_LOCALES, type SiteLocale } from '@/lib/seo';
 import {
   AttachmentValidationError,
   deleteAttachment,
   storeAttachment,
   type StoredAttachmentInput,
 } from '@/lib/attachments';
+
+function inferRequestLocale(request: NextRequest): SiteLocale {
+  const referer = request.headers.get('referer');
+
+  try {
+    const url = referer ? new URL(referer) : request.nextUrl;
+    const locale = url.pathname.split('/').filter(Boolean)[0];
+
+    if (SITE_LOCALES.includes(locale as SiteLocale)) {
+      return locale as SiteLocale;
+    }
+  } catch {
+    // Fall back to the canonical locale.
+  }
+
+  return DEFAULT_SITE_LOCALE;
+}
 
 export async function POST(request: NextRequest) {
   const ip = getClientIP(request);
@@ -83,6 +101,8 @@ export async function POST(request: NextRequest) {
       contact,
       message: finalMessage,
       userAgent: request.headers.get('user-agent'),
+      locale: inferRequestLocale(request),
+      origin: request.headers.get('origin') || request.nextUrl.origin,
       ipAddress:
         request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null,
       attachments: storedAttachments,
@@ -107,6 +127,8 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({
       success: true,
       publicRequestNumber: result.publicRequestNumber,
+      portalClaimUrl: result.portalClaimUrl,
+      portalClaimExpiresAt: result.portalClaimExpiresAt,
       photoReceived: result.photoReceived,
     });
 

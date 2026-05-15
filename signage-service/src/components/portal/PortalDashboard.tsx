@@ -164,7 +164,7 @@ export default function PortalDashboard({
           <div className="mx-auto max-w-[1520px] p-4 sm:p-6 lg:p-8">
             <header className="mb-5 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
-                <p className="text-[12px] font-black uppercase tracking-[0.18em] text-[#B8643E]">{t('demoBadge')} · Client Portal</p>
+                <p className="text-[12px] font-black uppercase tracking-[0.18em] text-[#B8643E]">Kundenportal · Client Portal</p>
                 <h1 className="mt-1 text-[30px] font-black leading-tight sm:text-[40px]">{pageTitle(activeTab, organization.name)}</h1>
                 <p className="mt-1 max-w-4xl text-[15px] text-[#6F665D]">{pageSubtitle(activeTab)}</p>
               </div>
@@ -217,7 +217,7 @@ export default function PortalDashboard({
             )}
             {activeTab === 'assets' && <AssetInventory organization={organization} objectsById={objectsById} />}
             {activeTab === 'maintenance' && <MaintenancePanel organization={organization} objectsById={objectsById} />}
-            {activeTab === 'reports' && <DocumentCards title="Фотоотчеты" documents={reportDocuments} emptyLabel="Нет доступных demo-отчетов." />}
+            {activeTab === 'reports' && <DocumentCards title="Фотоотчеты" documents={reportDocuments} emptyLabel="Нет доступных отчетов." />}
             {activeTab === 'warranties' && <WarrantyPanel organization={organization} warrantyDocuments={warrantyDocuments} objectsById={objectsById} />}
             {activeTab === 'offers' && <OffersPanel documents={offerDocuments} />}
             {activeTab === 'billing' && <BillingPreview invoices={invoiceDocuments} />}
@@ -263,7 +263,7 @@ function pageSubtitle(activeTab: TabKey) {
     maintenance: 'Профилактические визиты, сервисные окна и повторяющиеся договоренности.',
     reports: 'Клиентские отчеты до/после, диагностика, выполненные работы и PDF для архива.',
     warranties: 'Сроки, условия и гарантийные обращения по выполненным работам.',
-    offers: 'Сметы можно просматривать, согласования остаются demo-only до безопасных mutations.',
+    offers: 'Сметы можно просматривать, согласования будут включены после отдельного безопасного этапа.',
     billing: 'Будущий раздел для customer-visible финансовых документов. Платежи не входят в текущий MVP.',
     documents: 'Единое место для PDF, актов, гарантий, отчетов и согласованных смет.',
     team: 'B2B-доступы: кто может создавать заявки, видеть документы и согласовывать расходы.',
@@ -486,7 +486,7 @@ function NewRequestPreview({ organization }: { organization: PortalDemoOrganizat
           <button type="button" className="rounded-xl bg-[#C46E43] px-4 py-3 text-[14px] font-black text-white">Отправить на проверку</button>
           <button type="button" className="rounded-xl border border-[#E3D8CA] bg-white px-4 py-3 text-[14px] font-black">Добавить фото</button>
         </div>
-        <p className="mt-4 text-[12px] text-[#7B7168]">Demo-only: форма пока не создает production-заявку и не загружает файлы.</p>
+        <p className="mt-4 text-[12px] text-[#7B7168]">Создание заявок из портала будет включено отдельным этапом. Сейчас используйте основную форму заявки.</p>
       </section>
       <TimelineCard
         title="Как это работает"
@@ -841,7 +841,7 @@ function OffersPanel({ documents }: { documents: PortalDocument[] }) {
               <tr key={document.id} className="border-b border-[#F1E9DF] last:border-0">
                 <td className="py-4 pe-4 font-black">{document.title}<div className="text-[12px] font-normal text-[#7B7168]">{document.description}</div></td>
                 <td className="py-4 pe-4">{document.relatedTo}</td>
-                <td className="py-4 pe-4">Demo</td>
+                <td className="py-4 pe-4">Preview</td>
                 <td className="py-4 pe-4"><span className="rounded-full bg-[#FFF3E8] px-3 py-1 text-[11px] font-black text-[#A85F23]">{document.status}</span></td>
                 <td className="py-4"><button type="button" className="rounded-xl bg-[#C46E43] px-4 py-2 text-[13px] font-black text-white">Согласовать</button></td>
               </tr>
@@ -938,8 +938,8 @@ function SettingsPreview({ organization }: { organization: PortalDemoOrganizatio
       <InfoList
         title="Аккаунт"
         rows={[
-          ['Email', `${organization.demoEmail} · verified demo`],
-          ['Вход', 'HTTP-only demo cookie'],
+          ['Email', `${organization.demoEmail} · verified`],
+          ['Вход', 'HTTP-only portal session'],
           ['Язык', `${organization.languagePreference.toUpperCase()} canonical · RU review copy`],
         ]}
       />
