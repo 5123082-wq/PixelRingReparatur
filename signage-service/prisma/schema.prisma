@@ -147,6 +147,7 @@ model Case {
   customerProfileId        String?                   @db.Uuid
   primaryContactMethod     PrimaryContactMethod?
   primaryContactValue      String?
+  serviceLocation          String?                   @db.Text
   summary                  String?                   @db.Text
   description              String?                   @db.Text
   locale                   String?
@@ -315,12 +316,31 @@ model Session {
   portalUser       PortalUser?           @relation(fields: [portalUserId], references: [id], onDelete: SetNull)
   messages         Message[]
   uploads          Attachment[]          @relation("SessionUploads")
+  intakeDraft      SessionIntakeDraft?
 
   @@index([caseId, expiresAt])
   @@index([portalUserId, expiresAt])
   @@index([expiresAt])
   @@index([contactMethod, contactValue])
   @@map("sessions")
+}
+
+model SessionIntakeDraft {
+  id              String   @id @default(uuid()) @db.Uuid
+  sessionId       String   @unique @db.Uuid
+  customerName    String?
+  customerEmail   String?
+  customerPhone   String?
+  serviceLocation String?  @db.Text
+  issueType       String?
+  summary         String?  @db.Text
+  locale          String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  session         Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([updatedAt])
+  @@map("session_intake_drafts")
 }
 
 model AdminUser {

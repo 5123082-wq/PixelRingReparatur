@@ -14,6 +14,7 @@ import {
 import type { StoredAttachmentInput } from './attachments';
 import { ensurePublicRequestNumberForCase } from './request-number';
 import { createPortalClaimLink } from './portal/claim';
+import { syncCaseCustomerProfile } from './customer-profiles';
 
 export type IntakeContactMethod = 'EMAIL' | 'PHONE';
 
@@ -27,6 +28,7 @@ export type ParsedContact = {
 export type WebsiteRequestInput = {
   name?: string;
   contact: string;
+  serviceLocation?: string | null;
   message: string;
   userAgent?: string | null;
   ipAddress?: string | null;
@@ -140,6 +142,7 @@ export async function createWebsiteRequest(
         customerPhone: parsedContact.customerPhone,
         primaryContactMethod: parsedContact.method,
         primaryContactValue: parsedContact.value,
+        serviceLocation: input.serviceLocation?.trim() || null,
         locale: input.locale?.trim() || null,
         summary: buildSummary(input.message),
         description: input.message.trim(),
@@ -205,6 +208,16 @@ export async function createWebsiteRequest(
         numberIssuedAt: now,
         statusUpdatedAt: now,
       },
+    });
+
+    await syncCaseCustomerProfile(tx, {
+      caseId: createdCase.id,
+      customerName: input.name?.trim() || null,
+      customerEmail: parsedContact.customerEmail,
+      customerPhone: parsedContact.customerPhone,
+      serviceAddress: input.serviceLocation?.trim() || null,
+      preferredLanguage: input.locale?.trim() || null,
+      preferredContactMethod: parsedContact.method,
     });
 
     let session;
