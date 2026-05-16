@@ -9,8 +9,8 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 Latest checkpoint:
 
 - Date: 2026-05-16
-- Current stage: agent startup context optimized with staged reading and `Context Beacon` sections in the core orientation documents.
-- Next action: monitor whether future sessions can start from the beacon layer, then add matching beacons to large domain README files if needed.
+- Current stage: AI chat intake now restores a structured request-success card with PR number, status CTA, portal claim CTA, and safe attachment rendering after request creation.
+- Next action: deploy and verify the live Russian chat flow from request creation to portal claim e-mail code/password setup.
 
 Active tracks:
 
@@ -18,7 +18,7 @@ Active tracks:
 - Request & Status Flow: implemented intake, session tracking, status lookup, and PR numbers; keep customer privacy boundaries from `docs/00_project_overview/project_state_and_roadmap.md`.
 - Manager CRM: starter implemented; operational planning belongs in `docs/06_crm/`.
 - Website CMS & Admin Platform: starter implemented; CMS/admin work belongs in `docs/05_admin_platform/`.
-- AI Assistant: intake MVP implemented; assistant behavior belongs in `docs/08_ai_assistant/`.
+- AI Assistant: intake MVP implemented with consent-gated form opening; assistant behavior belongs in `docs/08_ai_assistant/`.
 - Security & Audit: starter implemented; security/privacy work belongs in `docs/10_security_privacy/`.
 - Client Portal: production identity foundation and password/code auth implemented in code; portal planning belongs in `docs/04_client_portal/`.
 - Engineering/Ops: maintenance and deployment notes belong in `docs/09_engineering/` and `docs/11_operations/`.
@@ -37,12 +37,17 @@ Read deep when:
 - **Request & Status Flow**: Implemented (Intake, session tracking, customer status lookup, PR-numbers). Reimagined Tracking Page MVP designed.
 - **Manager CRM**: CRM starter implemented (Case detail, assignment, internal notes, operator takeover). Object-level auth hardened. Future internal operational object map concept documented.
 - **Website CMS & Admin Platform**: CMS starter implemented (Pages, Articles, Media Library, SEO, AI config). 3-column MODX-style redesign implemented.
-- **AI Assistant**: Intake MVP implemented (session-scoped, deterministic triggers, repeat-contact confirmation flow).
+- **AI Assistant**: Intake MVP implemented (session-scoped, consent-gated triggers, repeat-contact confirmation flow).
 - **Security & Audit**: Admin login, HTTP-only cookies, role splitting, CSRF/Rate-limit starter implemented.
 - **Client Portal**: Prototype approved. Stage 2.5 read-only demo implementation merged (dashboard, requests, objects). Stage 2.6 production identity foundation implemented in code: claim-link email verification, portal users, verified emails, request access grants, and IONOS SMTP support. Stage 2.8 replaces magic-link portal auth with e-mail code plus password registration/login/reset, preserving empty verified dashboard and request-bound claim links.
 - **Engineering/Ops**: Open maintenance note recorded for future Postgres SSL connection-string cleanup before the next `pg`/Prisma/migration-tooling dependency upgrade.
 
 ## Last Updated
+
+- Date: 2026-05-16
+- Updated by: Codex
+- **Current Stage**: AI chat intake now asks what happened first, offers request creation, and opens the form only after explicit user consent; chat intake prefill now includes detected name and address/location where available.
+- **Next Action**: Deploy and verify the live Russian flow: "у меня новая проблема" should not open the form until the user describes the issue and agrees to create a request.
 
 - Date: 2026-05-16
 - Updated by: Codex

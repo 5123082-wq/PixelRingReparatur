@@ -5,6 +5,7 @@ type CustomerProfileSyncInput = {
   customerName: string | null;
   customerEmail: string | null;
   customerPhone: string | null;
+  serviceAddress?: string | null;
   preferredLanguage: string | null;
   preferredContactMethod: PrimaryContactMethod | null;
 };
@@ -124,6 +125,10 @@ export async function syncCaseCustomerProfile(
       profilePatch.preferredContactMethod = input.preferredContactMethod;
     }
 
+    if (hasText(input.serviceAddress)) {
+      profilePatch.serviceAddress = input.serviceAddress.trim();
+    }
+
     await tx.customerProfile.update({
       where: { id: profileId },
       data: profilePatch,
@@ -141,6 +146,9 @@ export async function syncCaseCustomerProfile(
           ? input.preferredLanguage.trim()
           : null,
         preferredContactMethod: input.preferredContactMethod,
+        serviceAddress: hasText(input.serviceAddress)
+          ? input.serviceAddress.trim()
+          : null,
       },
       select: { id: true },
     });

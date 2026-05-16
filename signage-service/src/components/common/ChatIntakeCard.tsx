@@ -18,6 +18,8 @@ export type IntakePrefill = {
   issueType?: string;
   contact?: string;
   contactMode?: ContactMode;
+  name?: string;
+  location?: string;
   summary?: string;
   hasSessionAttachments?: boolean;
   needsPhoto?: boolean;
@@ -32,7 +34,8 @@ type Props = {
 export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
   const [contactMode, setContactMode] = useState<ContactMode>(prefill?.contactMode ?? 'phone');
   const [contact, setContact] = useState(prefill?.contact ?? '');
-  const [name, setName] = useState('');
+  const [name, setName] = useState(prefill?.name ?? '');
+  const [location, setLocation] = useState(prefill?.location ?? '');
   const [issueType, setIssueType] = useState(prefill?.issueType ?? '');
   const [files, setFiles] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -88,6 +91,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
       const fd = new FormData();
       fd.append('name', name);
       fd.append('contact', contact);
+      fd.append('location', location);
       fd.append(
         'message',
         prefill?.summary
@@ -190,6 +194,15 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
         value={name}
         onChange={e => setName(e.target.value)}
         placeholder="Ihr Name (optional)"
+        className="w-full px-3 py-2 text-[13px] rounded-[12px] border border-[#E7DDD3] bg-white text-[#0E1A2B] focus:outline-none focus:border-[#B8643E] placeholder-[#72665D]/40"
+      />
+
+      {/* Location optional */}
+      <input
+        type="text"
+        value={location}
+        onChange={e => setLocation(e.target.value)}
+        placeholder="Adresse / Standort (optional)"
         className="w-full px-3 py-2 text-[13px] rounded-[12px] border border-[#E7DDD3] bg-white text-[#0E1A2B] focus:outline-none focus:border-[#B8643E] placeholder-[#72665D]/40"
       />
 

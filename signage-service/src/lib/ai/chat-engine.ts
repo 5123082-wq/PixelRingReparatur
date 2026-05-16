@@ -9,6 +9,7 @@ import {
 } from './safety-filter';
 import type { AiRuntimeConfig } from './config';
 import { getAiRuntimeConfig } from './config';
+import { redactAssistantVisiblePii } from './pii-redaction';
 import { buildSystemPrompt } from './system-prompt';
 
 type ChatRole = 'user' | 'assistant';
@@ -22,6 +23,7 @@ export type GenerateChatReplyInput = {
   locale?: string;
   message: string;
   history: ChatHistoryItem[];
+  privacyContext?: string | null;
   operatorTakeover?: boolean;
   publicRequestNumber?: string | null;
 };
@@ -30,6 +32,8 @@ export type IntakePrefill = {
   issueType?: string;
   contact?: string;
   contactMode?: 'phone' | 'email';
+  name?: string;
+  location?: string;
   summary?: string;
   hasSessionAttachments?: boolean;
   needsPhoto?: boolean;
@@ -62,7 +66,17 @@ function parseIntakeMarker(text: string): {
   const cleanText = text.replace(INTAKE_MARKER_RE, '').trim();
 
   try {
-    const prefill = JSON.parse(match[1]) as IntakePrefill;
+    const rawPrefill = JSON.parse(match[1]) as IntakePrefill;
+    const prefill: IntakePrefill = {};
+
+    if (typeof rawPrefill.issueType === 'string') {
+      prefill.issueType = rawPrefill.issueType;
+    }
+
+    if (typeof rawPrefill.summary === 'string') {
+      prefill.summary = redactAssistantVisiblePii(rawPrefill.summary);
+    }
+
     return { cleanText, suggestIntake: true, intakePrefill: prefill };
   } catch {
     return { cleanText, suggestIntake: true };
@@ -185,7 +199,13 @@ export async function generateChatReply(
         ? input.publicRequestNumber
         : null,
     });
-    const aiText = await callOpenAI(config, systemPrompt, input.message, history);
+    const privacyContext = input.privacyContext?.trim();
+    const aiText = await callOpenAI(
+      config,
+      systemPrompt,
+      privacyContext ? `${input.message}\n\n[Privacy context: ${privacyContext}]` : input.message,
+      history
+    );
 
     if (aiText) {
       const outputVerdict = guardChatReply(
@@ -195,7 +215,8 @@ export async function generateChatReply(
       );
 
       if (outputVerdict.allowed) {
-        const { cleanText, suggestIntake, intakePrefill } = parseIntakeMarker(aiText);
+        const redactedAiText = redactAssistantVisiblePii(aiText);
+        const { cleanText, suggestIntake, intakePrefill } = parseIntakeMarker(redactedAiText);
         return {
           text: cleanText,
           intent: incomingVerdict.intent,

@@ -5,6 +5,8 @@ import { checkRateLimit, getClientIP, CONTACT_LIMIT } from '@/lib/rate-limit';
 import { createWebsiteRequest } from '@/lib/request-intake';
 import { CASE_SESSION_COOKIE_NAME } from '@/lib/case-session';
 import { sendAdminTelegramNotification } from '@/lib/admin-telegram-notifications';
+import { getSessionIntakeDraft } from '@/lib/ai/intake-draft';
+import { redactPiiForAi } from '@/lib/ai/pii-redaction';
 import { DEFAULT_SITE_LOCALE, SITE_LOCALES, type SiteLocale } from '@/lib/seo';
 import {
   AttachmentValidationError,
@@ -44,15 +46,17 @@ export async function POST(request: NextRequest) {
 
   try {
     const formData = await request.formData();
-    const name = String(formData.get('name') ?? '').trim();
-    const contact = String(formData.get('contact') ?? '').trim();
+    let name = String(formData.get('name') ?? '').trim();
+    let contact = String(formData.get('contact') ?? '').trim();
     const message = String(formData.get('message') ?? '').trim();
     const issueType = String(formData.get('issueType') ?? '').trim();
-    const location = String(formData.get('location') ?? '').trim();
+    let location = String(formData.get('location') ?? '').trim();
     const isFromChat = formData.get('isFromChat') === 'true';
 
     let existingSessionId: string | null = null;
     let existingSessionToken: string | null = null;
+    let draftContactKnown = false;
+    let draftLocationKnown = false;
 
     if (isFromChat) {
       const { resolveChatSession } = await import('@/lib/ai/chat-session');
@@ -65,6 +69,12 @@ export async function POST(request: NextRequest) {
       if (resolved) {
         existingSessionId = resolved.session.id;
         existingSessionToken = resolved.cookieToken || token;
+        const draft = await getSessionIntakeDraft(prisma, resolved.session.id);
+        name = name || draft?.customerName || '';
+        contact = contact || draft?.customerEmail || draft?.customerPhone || '';
+        location = location || draft?.serviceLocation || '';
+        draftContactKnown = Boolean(draft?.customerEmail || draft?.customerPhone);
+        draftLocationKnown = Boolean(draft?.serviceLocation);
       }
     }
 
@@ -90,7 +100,6 @@ export async function POST(request: NextRequest) {
 
     const messageParts = [];
     if (issueType) messageParts.push(`Тип: ${issueType}`);
-    if (location) messageParts.push(`Локация: ${location}`);
     
     const finalMessage = messageParts.length > 0 
       ? `${messageParts.join(' | ')}\n\n${message}`
@@ -99,6 +108,7 @@ export async function POST(request: NextRequest) {
     const result = await createWebsiteRequest(prisma, {
       name,
       contact,
+      serviceLocation: location,
       message: finalMessage,
       userAgent: request.headers.get('user-agent'),
       locale: inferRequestLocale(request),
@@ -115,10 +125,13 @@ export async function POST(request: NextRequest) {
       kind: 'website_request_created',
       caseId: result.caseId,
       publicRequestNumber: result.publicRequestNumber,
-      customerName: name || null,
-      contactLabel: contact,
+      customerName: null,
+      contactLabel: contact || draftContactKnown ? 'Contact provided' : null,
       originLabel: isFromChat ? 'Website chat' : 'Website form',
-      messagePreview: finalMessage,
+      messagePreview: [
+        redactPiiForAi(finalMessage),
+        location || draftLocationKnown ? 'Location provided' : null,
+      ].filter(Boolean).join('\n'),
       isNewCase: true,
     }).catch((telegramError) => {
       console.error('Admin Telegram request notification failed:', telegramError);

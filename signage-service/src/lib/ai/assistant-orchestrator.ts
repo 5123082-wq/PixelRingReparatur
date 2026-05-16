@@ -7,6 +7,7 @@ import {
   type ChatHistoryItem,
   type IntakePrefill,
 } from './chat-engine';
+import { buildPiiPresenceContext, redactPiiForAi, redactPiiFromText } from './pii-redaction';
 
 export type AssistantChannelCapability =
   | 'rich_intake_card'
@@ -42,7 +43,7 @@ function mapHistoryRole(authorRole: MessageAuthorRole): ChatHistoryItem['role'] 
 }
 
 function sanitizeHistoryBody(value: string): string {
-  return value.replace(/<<SHOW_LANGUAGE_SELECTOR>>/g, '').trim();
+  return redactPiiForAi(value.replace(/<<SHOW_LANGUAGE_SELECTOR>>/g, '').trim());
 }
 
 function buildActions(input: {
@@ -95,10 +96,12 @@ export async function runAssistantTurn(
     }))
     .filter((message) => message.body.length > 0);
 
+  const redactedLatest = redactPiiFromText(input.latestCustomerMessage);
   const reply = await generateChatReply({
     locale: input.locale ?? undefined,
-    message: input.latestCustomerMessage,
+    message: redactedLatest.redactedText,
     history,
+    privacyContext: buildPiiPresenceContext(redactedLatest.extracted),
     publicRequestNumber: input.publicRequestNumber ?? null,
   });
   const text = reply.text.trim();

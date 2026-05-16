@@ -254,6 +254,15 @@ export function guardChatReply(
     };
   }
 
+  if (/https?:\/\/|\/portal\/claim\?token=|Kundenportal-Link:/i.test(text)) {
+    return {
+      allowed: false,
+      intent: 'refusal',
+      refusalText: getRefusalText(locale),
+      reason: 'assistant-link',
+    };
+  }
+
   return verdict;
 }
 
@@ -262,42 +271,42 @@ export function buildFallbackReply(intent: SafetyIntent, locale?: string): strin
 
   const replies: Record<SupportedLocale, Record<SafetyIntent, string>> = {
     de: {
-      request: 'Bitte senden Sie kurz Gerätetyp, Problem und Ihre Kontaktdaten. Danach kann ich die Anfrage weiter formalisiert vorbereiten.',
+      request: 'Bitte beschreiben Sie kurz, was passiert ist. Kontaktdaten erfassen wir anschließend ueber das sichere Formular im Chat.',
       status: 'Wenn Sie bereits eine PR-Nummer haben, können Sie den Status direkt auf der Status-Seite prüfen. Geben Sie dazu PR-Nummer und die bei der Anfrage verwendete Kontaktmethode ein.',
       human: 'Ein menschlicher Mitarbeiter kann den Vorgang übernehmen. Wenn Sie möchten, kann ich Ihre Anfrage kurz zusammenfassen und an den Operator übergeben.',
       refusal: getRefusalText('de'),
       general: 'Ich bin hier fuer PixelRing-Servicefragen da. Wenn es um eine Beschilderung, Lichtwerbung, Reparatur, Montage oder eine bestehende Anfrage geht, beschreiben Sie kurz, was passiert ist.',
     },
     en: {
-      request: 'Please share the device type, the issue, and a contact method. Then I can help prepare the repair request.',
+      request: 'Please briefly describe what happened. Contact details can be collected afterwards through the secure form in chat.',
       status: 'If you already have a PR number, you can check the request status on the Status page using the PR number and the contact method used for the request.',
       human: 'A human operator can take over. If you want, I can summarize the request and hand it off to the operator.',
       refusal: getRefusalText('en'),
       general: 'I am here for PixelRing service questions. If this is about signage, lighting, repair, installation, or an existing request, briefly describe what happened.',
     },
     ru: {
-      request: 'Пожалуйста, отправьте тип устройства, описание проблемы и контакт. После этого я помогу подготовить заявку.',
+      request: 'Пожалуйста, коротко опишите, что случилось. Контактные данные можно будет указать после этого в защищённой форме внутри чата.',
       status: 'Если у вас уже есть PR-номер, проверьте статус на странице Status по PR-номеру и контакту, который использовался при оформлении.',
       human: 'Может подключиться человек-оператор. Если хотите, я кратко подытожу заявку и передам ее оператору.',
       refusal: getRefusalText('ru'),
       general: 'Я здесь по вопросам сервиса PixelRing. Если речь о вывеске, подсветке, ремонте, монтаже или существующей заявке, коротко опишите, что случилось.',
     },
     tr: {
-      request: 'Lütfen cihaz türünü, sorunu ve bir iletişim bilgisini gönderin. Sonra talebi hazırlamaya yardımcı olabilirim.',
+      request: 'Lutfen kisaca ne oldugunu aciklayin. Iletisim bilgileri daha sonra sohbet icindeki guvenli formdan alinabilir.',
       status: 'Eğer zaten bir PR numaranız varsa, Status sayfasında PR numarası ve talepte kullanılan iletişim bilgisi ile durumu kontrol edebilirsiniz.',
       human: 'Bir insan operatör devralabilir. İsterseniz talebi kısaca özetleyip operatöre aktarabilirim.',
       refusal: getRefusalText('tr'),
       general: 'PixelRing servis konulari icin buradayim. Konu tabela, aydinlatma, onarim, montaj veya mevcut bir talepse lutfen ne oldugunu kisaca yazin.',
     },
     pl: {
-      request: 'Proszę podać typ urządzenia, problem i dane kontaktowe. Wtedy pomogę przygotować zgłoszenie.',
+      request: 'Opisz krotko, co sie stalo. Dane kontaktowe mozna pozniej podac w bezpiecznym formularzu w czacie.',
       status: 'Jeśli masz już numer PR, możesz sprawdzić status na stronie Status, podając numer PR i kontakt użyty przy zgłoszeniu.',
       human: 'Może przejąć to człowiek-operator. Jeśli chcesz, mogę krótko podsumować zgłoszenie i przekazać je operatorowi.',
       refusal: getRefusalText('pl'),
       general: 'Jestem tutaj w sprawach serwisu PixelRing. Jesli chodzi o oznakowanie, reklame swietlna, naprawe, montaz albo istniejace zgloszenie, opisz krotko, co sie stalo.',
     },
     ar: {
-      request: 'يرجى إرسال نوع الجهاز والمشكلة ووسيلة تواصل. بعد ذلك يمكنني المساعدة في إعداد الطلب.',
+      request: 'يرجى وصف ما حدث بإيجاز. يمكن إدخال بيانات التواصل لاحقاً عبر النموذج الآمن داخل الدردشة.',
       status: 'إذا كان لديك رقم PR بالفعل، يمكنك التحقق من الحالة في صفحة Status باستخدام رقم PR ووسيلة التواصل المستخدمة في الطلب.',
       human: 'يمكن لمشغل بشري أن يتولى المحادثة. إذا أردت، يمكنني تلخيص الطلب وتسليمه للمشغل.',
       refusal: getRefusalText('ar'),

@@ -2,7 +2,7 @@
 
 ## Status: MVP Implemented
 
-**Last updated:** 2026-04-26
+**Last updated:** 2026-05-16
 
 ---
 
@@ -13,13 +13,14 @@ The website chat (`ChatModal`) now supports in-chat request creation.
 ### Flow
 
 1. User opens the chat and describes the problem.
-2. AI asks one clarifying question to identify the issue type.
-3. Once the problem is understood, the AI appends `<<SHOW_INTAKE:{...}>>` to its reply.
-4. The backend strips the marker and returns `suggestIntake: true` + `intakePrefill` in the POST response.
-5. The frontend renders an `ChatIntakeCard` component inline in the chat stream.
-6. The card collects: issue type (pre-filled), contact (phone or email toggle, pre-filled from the current chat when detected), optional name, optional photo/video.
-7. On submit, the card calls `POST /api/contact` — the same endpoint used by the contact form.
-8. A success state shows the `publicRequestNumber` with a link to status tracking.
+2. AI asks short clarifying questions until it knows at least what happened or what service is needed.
+3. Once the problem is understood, the AI offers to help create the request but does not open the form yet.
+4. Only after the user explicitly agrees, the AI appends `<<SHOW_INTAKE:{...}>>` to its reply or the backend consent guard opens the card.
+5. The backend strips the marker and returns `suggestIntake: true` + `intakePrefill` in the POST response.
+6. The frontend renders an `ChatIntakeCard` component inline in the chat stream.
+7. The card collects: issue type (pre-filled), contact (phone or email toggle, pre-filled from the current chat when detected), optional name, optional address/location, optional photo/video.
+8. On submit, the card calls `POST /api/contact` — the same endpoint used by the contact form.
+9. A success state shows the `publicRequestNumber` with a link to status tracking.
 
 ### Current prefill behavior
 
@@ -29,13 +30,15 @@ Current extracted fields:
 
 - `issueType` — from the AI marker or simple service-keyword inference.
 - `contact` and `contactMode` — email or phone detected in the current chat.
+- `name` — detected from simple self-introduction patterns when available.
+- `location` — detected from address/location/standort patterns when available.
 - `summary` — the latest useful problem description, ignoring contact-only and file-only messages.
 - `hasSessionAttachments` — whether the current chat session already contains uploaded files.
 - `needsPhoto` — `false` when the session already has attachments, otherwise `true`.
 
 If a user uploads a photo/video in the chat before creating a request, the file metadata is already stored as a chat attachment. When the request is created from the same chat session, those existing session attachments are linked to the new case so the user does not need to upload the same file again.
 
-The backend also has a deterministic intake fallback for the current unresolved intake window. If the AI forgets to emit the `<<SHOW_INTAKE:{...}>>` marker but the current chat window already contains both a usable problem summary and a contact method, `/api/chat/messages` still returns `suggestIntake: true`. This prevents the UI from waiting indefinitely after an AI reply such as "I will create the request".
+The backend also has a deterministic intake fallback for the current unresolved intake window. It no longer opens the form just because the current chat window contains contact data and a problem summary. It requires a usable problem summary plus explicit request-creation consent, or an AI marker that passed the same consent-oriented conversation rules. This prevents the UI from opening a form immediately after low-signal messages such as "I have a new problem" / "у меня новая проблема".
 
 The current intake window starts after the latest successful request registration message (`Anfrage erfolgreich registriert. Nummer: ...`). Older contact details, photos, and summaries from already-created requests must not reopen the form on later small talk or status questions.
 
@@ -193,6 +196,33 @@ Full localization (DE, EN, RU, TR, PL, AR) is planned using `next-intl` translat
 ---
 
 ## Progress Log
+
+### 2026-05-16 — Request success card and portal CTA
+
+- Sprint/block: AI Chat Intake / Post-submit request handoff UX
+- Done: chat history now restores successful request registration as a structured card with PR number, status CTA, active portal claim CTA, expiry text, and privacy copy; raw `Kundenportal-Link:` system messages remain hidden from the transcript; persisted attachments no longer render private storage keys as broken image URLs and instead show safe file cards while local unsaved previews still render inline.
+- In progress: local/browser verification and production redeploy remain separate.
+- Next action: verify the Russian chat request flow end to end: submit request, reopen chat history, open the portal claim link, complete e-mail code/password setup, and confirm the request appears in the portal.
+- Blockers/risks: portal claim e-mail delivery still depends on working SMTP configuration; expired claim links cannot be reconstructed from hashed tokens and require a newly generated link.
+- Updated documents: `PROGRESS.md`, `docs/08_ai_assistant/ai_chat_intake.md`
+
+### 2026-05-16 — Privacy-safe intake test support
+
+- Sprint/block: AI Chat Intake / Privacy-safe request handoff
+- Done: added focused `node:test` coverage for the chat-intake PII redaction helper without changing production chat behavior
+- In progress: the test currently catches a partial address-redaction gap: street text is replaced, but postal code/city can remain visible after a comma
+- Next action: fix the helper address redaction, then rerun `node --experimental-strip-types --experimental-specifier-resolution=node --test scripts/test-chat-pii-redaction.proposed.test.ts`
+- Blockers/risks: plain Node import is blocked by the existing unresolved `server-only` dependency, so this test uses a local source-loading fallback for the helper
+- Updated documents: `docs/08_ai_assistant/ai_chat_intake.md`
+
+### 2026-05-16 — Consent-gated intake card opening
+
+- Sprint/block: AI Chat Intake / Request handoff behavior
+- Done: chat intake now requires a useful problem description plus explicit consent before auto-opening the form; low-signal new-problem messages no longer count as request summaries; the assistant prompt now asks what happened first, then offers request creation, then emits the intake marker only after agreement; intake prefill now supports detected name and address/location and sends location through `/api/contact`
+- In progress: browser-level QA remains blocked in the current Codex in-app browser because local navigation returned `ERR_BLOCKED_BY_CLIENT`
+- Next action: verify the live chat flow after deploy with the sequence "у меня новая проблема" -> assistant asks what happened -> user describes issue -> assistant offers form -> user agrees -> form opens with prefilled data
+- Blockers/risks: name and address extraction are heuristic; real LLM output can still vary, so the backend consent guard remains the primary safety layer
+- Updated documents: `PROGRESS.md`, `docs/08_ai_assistant/ai_chat_intake.md`
 
 ### 2026-04-26 — MVP AI Intake implementation
 

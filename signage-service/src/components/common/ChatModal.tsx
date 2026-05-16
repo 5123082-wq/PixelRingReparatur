@@ -15,7 +15,12 @@ type ChatMessage = {
   authorRole: ChatAuthorRole;
   body: string;
   createdAt: string;
-  attachments?: { id: string; storageKey: string; originalFilename: string | null }[];
+  attachments?: { id: string; storageKey: string; originalFilename: string | null; mimeType?: string | null }[];
+  requestRegistration?: {
+    publicRequestNumber: string;
+    portalClaimUrl?: string;
+    portalClaimExpiresAt?: string;
+  };
 };
 
 type AttachmentPreview = {
@@ -30,7 +35,12 @@ type ChatApiResponse = {
     authorRole?: string;
     body?: string;
     createdAt?: string;
-    attachments?: { id: string; storageKey: string; originalFilename: string | null }[];
+    attachments?: { id: string; storageKey: string; originalFilename: string | null; mimeType?: string | null }[];
+    requestRegistration?: {
+      publicRequestNumber?: string;
+      portalClaimUrl?: string;
+      portalClaimExpiresAt?: string;
+    };
   }>;
   operatorTakeover?: boolean;
   suggestIntake?: boolean;
@@ -54,14 +64,28 @@ function normalizeMessage(message: {
   authorRole?: string;
   body?: string;
   createdAt?: string;
-  attachments?: { id: string; storageKey: string; originalFilename: string | null }[];
+  attachments?: { id: string; storageKey: string; originalFilename: string | null; mimeType?: string | null }[];
+  requestRegistration?: {
+    publicRequestNumber?: string;
+    portalClaimUrl?: string;
+    portalClaimExpiresAt?: string;
+  };
 }): ChatMessage {
+  const publicRequestNumber = message.requestRegistration?.publicRequestNumber?.trim();
+
   return {
     id: message.id ?? `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     authorRole: isChatAuthorRole(message.authorRole) ? message.authorRole : 'SYSTEM',
     body: message.body ?? '',
     createdAt: message.createdAt ?? new Date().toISOString(),
     attachments: message.attachments,
+    requestRegistration: publicRequestNumber
+      ? {
+          publicRequestNumber,
+          portalClaimUrl: message.requestRegistration?.portalClaimUrl,
+          portalClaimExpiresAt: message.requestRegistration?.portalClaimExpiresAt,
+        }
+      : undefined,
   };
 }
 
@@ -94,6 +118,141 @@ function getRolePalette(role: ChatAuthorRole) {
     bubble: 'bg-white/80 backdrop-blur-md text-[#0E1A2B] border border-black/5 rounded-tl-[4px]',
     meta: 'text-[#72665D]/70',
   };
+}
+
+function getRequestCardCopy(locale: string) {
+  if (locale === 'ru') {
+    return {
+      label: 'Заявка зарегистрирована',
+      number: 'Номер заявки',
+      status: 'Проверить статус',
+      portal: 'Активировать кабинет',
+      privacy:
+        'PR-номер показывает только статус. Приватные данные откроются после подтверждения e-mail и пароля.',
+      portalMissing:
+        'Ссылка на кабинет больше не активна. При необходимости специалист PixelRing отправит новую ссылку.',
+      validUntil: 'Ссылка активна до',
+    };
+  }
+
+  return {
+    label: 'Anfrage registriert',
+    number: 'Anfragenummer',
+    status: 'Status pruefen',
+    portal: 'Kundenportal aktivieren',
+    privacy:
+      'Die PR-Nummer zeigt nur den Status. Private Daten werden erst nach E-Mail-Code und Passwort geoeffnet.',
+    portalMissing:
+      'Der Portal-Link ist nicht mehr aktiv. PixelRing kann bei Bedarf einen neuen Link senden.',
+    validUntil: 'Link gueltig bis',
+  };
+}
+
+function ChatRequestSuccessCard({
+  locale,
+  registration,
+}: {
+  locale: string;
+  registration: NonNullable<ChatMessage['requestRegistration']>;
+}) {
+  const copy = getRequestCardCopy(locale);
+  const expiresAt = registration.portalClaimExpiresAt
+    ? new Date(registration.portalClaimExpiresAt)
+    : null;
+
+  return (
+    <div className="w-full max-w-[520px] rounded-[22px] border border-[#E2D4C7] bg-[#FFFDF9] p-4 shadow-sm">
+      <div className="flex items-start gap-3">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#B8643E]/10 text-[#B8643E]">
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.4} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-[13px] font-black text-[#0E1A2B]">{copy.label}</p>
+          <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.16em] text-[#72665D]">{copy.number}</p>
+          <p className="mt-1 break-all text-[22px] font-black tracking-[0.08em] text-[#0E1A2B]">
+            {registration.publicRequestNumber}
+          </p>
+        </div>
+      </div>
+
+      <p className="mt-3 rounded-[14px] bg-[#F7F1E8] px-3 py-2 text-[12px] leading-5 text-[#5E554E]">
+        {copy.privacy}
+      </p>
+
+      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+        {registration.portalClaimUrl ? (
+          <a
+            href={registration.portalClaimUrl}
+            className="inline-flex min-h-11 items-center justify-center rounded-[14px] bg-[#0E1A2B] px-4 py-2 text-center text-[13px] font-black text-white transition-colors hover:bg-[#1A2E47]"
+          >
+            {copy.portal}
+          </a>
+        ) : (
+          <div className="rounded-[14px] border border-[#E7DDD3] bg-white px-3 py-2 text-[12px] leading-5 text-[#72665D]">
+            {copy.portalMissing}
+          </div>
+        )}
+        <Link
+          href={{
+            pathname: '/status',
+            query: { request: registration.publicRequestNumber },
+          }}
+          className="inline-flex min-h-11 items-center justify-center rounded-[14px] border border-[#E7DDD3] bg-white px-4 py-2 text-center text-[13px] font-black text-[#0E1A2B] transition-colors hover:border-[#B8643E]"
+        >
+          {copy.status}
+        </Link>
+      </div>
+
+      {expiresAt && (
+        <p className="mt-3 text-[11px] font-semibold text-[#72665D]">
+          {copy.validUntil}: {expiresAt.toLocaleString(locale === 'ru' ? 'ru-RU' : 'de-DE')}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function isLocalPreviewImageSrc(value: string | null | undefined): value is string {
+  return Boolean(value && (value.startsWith('blob:') || value.startsWith('data:image/')));
+}
+
+function ChatAttachmentList({
+  attachments,
+}: {
+  attachments: NonNullable<ChatMessage['attachments']>;
+}) {
+  return (
+    <div className="mt-3 flex flex-wrap gap-2">
+      {attachments.map((att) => (
+        isLocalPreviewImageSrc(att.storageKey) ? (
+          <div key={att.id} className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-white/10">
+            {/* eslint-disable-next-line @next/next/no-img-element -- Local object URLs are only used for immediate unsaved previews. */}
+            <img
+              src={att.storageKey}
+              alt={att.originalFilename || 'Attachment'}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        ) : (
+          <div key={att.id} className="flex min-h-14 max-w-[240px] items-center gap-2 rounded-xl border border-black/5 bg-white/70 px-3 py-2 text-[#0E1A2B]">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#B8643E]/10 text-[#B8643E]">
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+              </svg>
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-[12px] font-black">{att.originalFilename || 'Attachment'}</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#72665D]">
+                Datei empfangen
+              </p>
+            </div>
+          </div>
+        )
+      ))}
+    </div>
+  );
 }
 
 const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
@@ -167,6 +326,9 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
       setOperatorTakeover(Boolean(data?.operatorTakeover));
       setIntakePrefill(data?.intakePrefill ?? undefined);
       setIntakeMode(data?.intakeMode ?? 'full_form');
+      if (data?.suggestIntake) {
+        setShowIntakeCard(true);
+      }
       hasLoadedRef.current = true;
     } catch {
       setErrorMessage(DEFAULT_CHAT_ERROR);
@@ -405,6 +567,23 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
             return messages.map((message, idx) => {
               if (message.body.startsWith('[SILENT]')) return null;
               const p = getRolePalette(message.authorRole);
+
+              if (message.requestRegistration) {
+                return (
+                  <div key={message.id}>
+                    <div className={`flex flex-col ${p.container} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
+                      <span className={`mb-1 text-[10px] font-bold uppercase tracking-[0.18em] ${p.label}`}>
+                        {getRoleLabel(message.authorRole)}
+                      </span>
+                      <ChatRequestSuccessCard locale={locale} registration={message.requestRegistration} />
+                      <span className={`mx-2 mt-1.5 text-[9px] font-bold uppercase tracking-widest ${p.meta}`}>
+                        {formatTimestamp(message.createdAt)}
+                      </span>
+                    </div>
+                  </div>
+                );
+              }
+
               return (
                 <div key={message.id}>
                   <div className={`flex flex-col ${p.container} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
@@ -422,18 +601,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
                       )}
 
                       {message.attachments && message.attachments.length > 0 && (
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          {message.attachments.map(att => (
-                            <div key={att.id} className="relative rounded-xl overflow-hidden bg-white/10 flex-shrink-0" style={{ width: '80px', height: '80px' }}>
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img
-                                src={att.storageKey}
-                                alt={att.originalFilename || 'Attachment'}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          ))}
-                        </div>
+                        <ChatAttachmentList attachments={message.attachments} />
                       )}
                     </div>
                     <span className={`mx-2 mt-1.5 text-[9px] font-bold uppercase tracking-widest ${p.meta}`}>

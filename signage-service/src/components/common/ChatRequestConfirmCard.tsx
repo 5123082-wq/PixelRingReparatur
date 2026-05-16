@@ -14,15 +14,40 @@ export default function ChatRequestConfirmCard({
   onSuccess,
   onEditContact,
 }: Props) {
+  const [contact, setContact] = useState(prefill?.contact ?? '');
+  const [name, setName] = useState(prefill?.name ?? '');
+  const [location, setLocation] = useState(prefill?.location ?? '');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [done, setDone] = useState(false);
   const [requestNumber, setRequestNumber] = useState('');
   const [portalClaimUrl, setPortalClaimUrl] = useState('');
 
+  const hasContact = contact.trim().length > 0;
+  const hasName = name.trim().length > 0;
+  const hasLocation = location.trim().length > 0;
+  const hasSummary = Boolean(prefill?.summary?.trim());
+  const shouldShowContactInput = !prefill?.contact?.trim();
+  const shouldShowNameInput = !prefill?.name?.trim();
+  const shouldShowLocationInput = !prefill?.location?.trim();
+
+  const saveDraft = async () => {
+    const fd = new FormData();
+    fd.append('name', name);
+    fd.append('contact', contact);
+    fd.append('location', location);
+    fd.append('issueType', prefill?.issueType ?? '');
+    fd.append('summary', prefill?.summary ?? '');
+
+    await fetch('/api/chat/intake-draft', {
+      method: 'POST',
+      body: fd,
+    }).catch(() => undefined);
+  };
+
   const handleConfirm = async () => {
-    if (!prefill?.contact) {
-      onEditContact?.();
+    if (!hasContact) {
+      setError('Bitte geben Sie eine Kontaktinformation an.');
       return;
     }
 
@@ -31,14 +56,16 @@ export default function ChatRequestConfirmCard({
 
     try {
       const fd = new FormData();
-      fd.append('contact', prefill.contact);
+      fd.append('name', name);
+      fd.append('contact', contact);
+      fd.append('location', location);
       fd.append(
         'message',
-        prefill.summary
+        prefill?.summary
           ? `Chat-Anfrage. Typ: ${prefill.issueType || 'Nicht angegeben'}\n\n${prefill.summary}`
-          : `Chat-Anfrage. Typ: ${prefill.issueType || 'Nicht angegeben'}`
+          : `Chat-Anfrage. Typ: ${prefill?.issueType || 'Nicht angegeben'}`
       );
-      fd.append('issueType', prefill.issueType ?? '');
+      fd.append('issueType', prefill?.issueType ?? '');
       fd.append('isFromChat', 'true');
 
       const res = await fetch('/api/contact', { method: 'POST', body: fd });
@@ -93,19 +120,64 @@ export default function ChatRequestConfirmCard({
         <p className="text-[13px] font-bold text-[#0E1A2B]">Neue Anfrage bestaetigen</p>
       </div>
 
-      <div className="space-y-2 rounded-[12px] bg-white/75 px-3 py-3 text-[12px] text-[#72665D]">
+      <div className="grid grid-cols-2 gap-2 rounded-[12px] bg-white/75 px-3 py-3 text-[12px] text-[#72665D]">
         <p>
-          Kontakt: <span className="font-semibold text-[#0E1A2B]">{prefill?.contact ?? 'nicht angegeben'}</span>
+          Kontakt: <span className="font-semibold text-[#0E1A2B]">{hasContact ? 'vorhanden' : 'fehlt'}</span>
         </p>
-        {prefill?.summary && (
-          <p>
-            Anliegen: <span className="font-semibold text-[#0E1A2B]">{prefill.summary}</span>
-          </p>
-        )}
+        <p>
+          Name: <span className="font-semibold text-[#0E1A2B]">{hasName ? 'vorhanden' : 'optional'}</span>
+        </p>
+        <p>
+          Standort: <span className="font-semibold text-[#0E1A2B]">{hasLocation ? 'vorhanden' : 'optional'}</span>
+        </p>
+        <p>
+          Anliegen: <span className="font-semibold text-[#0E1A2B]">{hasSummary ? 'erfasst' : 'kurz beschreiben'}</span>
+        </p>
         {prefill?.hasSessionAttachments && (
-          <p>Bereits im Chat gesendete Dateien werden mit dieser Anfrage verbunden.</p>
+          <p className="col-span-2">Chat-Dateien werden mit dieser Anfrage verbunden.</p>
         )}
       </div>
+
+      {shouldShowContactInput && (
+        <div className="space-y-1.5">
+          <label className="text-[11px] font-semibold uppercase tracking-wide text-[#72665D]">
+            Kontakt *
+          </label>
+          <input
+            type="text"
+            value={contact}
+            onChange={(e) => setContact(e.target.value)}
+            onBlur={() => void saveDraft()}
+            placeholder="+49 ... oder name@example.com"
+            className="w-full rounded-[12px] border border-[#E7DDD3] bg-white px-3 py-2 text-[13px] text-[#0E1A2B] placeholder-[#72665D]/40 focus:border-[#B8643E] focus:outline-none"
+          />
+        </div>
+      )}
+
+      {(shouldShowNameInput || shouldShowLocationInput) && (
+        <div className="grid gap-2 sm:grid-cols-2">
+          {shouldShowNameInput && (
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onBlur={() => void saveDraft()}
+              placeholder="Ihr Name (optional)"
+              className="w-full rounded-[12px] border border-[#E7DDD3] bg-white px-3 py-2 text-[13px] text-[#0E1A2B] placeholder-[#72665D]/40 focus:border-[#B8643E] focus:outline-none"
+            />
+          )}
+          {shouldShowLocationInput && (
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              onBlur={() => void saveDraft()}
+              placeholder="Adresse / Standort (optional)"
+              className="w-full rounded-[12px] border border-[#E7DDD3] bg-white px-3 py-2 text-[13px] text-[#0E1A2B] placeholder-[#72665D]/40 focus:border-[#B8643E] focus:outline-none"
+            />
+          )}
+        </div>
+      )}
 
       <p className="rounded-[10px] bg-white/70 px-3 py-2 text-[12px] leading-relaxed text-[#72665D]">
         Fuer wiederkehrende Kunden ist ein persoenliches Konto geplant, damit alle Anfragen und Nachrichten an einem Ort sichtbar sind.
@@ -127,7 +199,7 @@ export default function ChatRequestConfirmCard({
           onClick={onEditContact}
           className="rounded-[14px] border border-[#E7DDD3] bg-white px-4 py-2.5 text-[13px] font-semibold text-[#72665D] transition-colors hover:border-[#B8643E]"
         >
-          Kontakt aendern
+          Details bearbeiten
         </button>
       </div>
     </div>
