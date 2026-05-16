@@ -291,7 +291,9 @@ The implementation decision is:
 
 - public request intake may continue to accept either phone or email;
 - full portal access requires verified email;
-- passwordless magic link is the preferred first production login method;
+- portal registration uses a short e-mail code followed by customer-chosen password;
+- portal login uses e-mail plus password;
+- password reset uses a short e-mail code followed by a new customer-chosen password;
 - phone may support status lookup, recovery, or operator-assisted verification, but is not the default portal identity;
 - portal sessions must use HTTP-only cookies;
 - no portal auth tokens in `localStorage`;
@@ -301,7 +303,7 @@ Security requirements:
 
 - login and verification responses must avoid account, request, or contact enumeration;
 - login and verification attempts must be rate-limited;
-- verification tokens must be single-use, short-lived, and stored hashed if persisted;
+- e-mail codes and verification tokens must be single-use, short-lived, attempt-limited, and stored hashed if persisted;
 - responses for unknown emails, request numbers, or claim attempts must be generic;
 - logout and session expiry are required before production.
 
@@ -515,7 +517,7 @@ Mandatory baseline:
 - public request number is never treated as authorization;
 - all request detail, object detail, document, report, warranty, and asset views must be scoped by verified customer/organization access;
 - generic error responses for failed access or lookup to reduce enumeration risk;
-- rate limiting for login/magic link, lookup, message send, request creation, upload, and document download;
+- rate limiting for login, email-code verification, lookup, message send, request creation, upload, and document download;
 - server-side validation for every portal form;
 - upload MIME/size validation and safe storage keys;
 - customer-visible documents and media served only through authorized routes or short-lived signed URLs;
@@ -846,7 +848,9 @@ Initial phase:
 
 Target phase:
 
-- verified email magic-link login;
+- verified email code plus password registration;
+- e-mail plus password login;
+- password reset through short e-mail code;
 - authenticated portal session in HTTP-only cookie;
 - request-to-customer linkage via server-side checks.
 
@@ -1402,7 +1406,8 @@ Suggested first user-visible result:
 
 ## Open Decisions Before Later Stages
 
-- Exact verified email magic-link provider and session model.
+- Exact production e-mail code deliverability provider and monitoring.
+- Whether portal session lifetime should stay at 8 hours or become longer for customer convenience.
 - Whether the first production beta needs SMS/voice OTP or starts with operator-assisted phone recovery.
 - Exact same-device case-access lifetime for portal claim.
 - Organization/member data model.
@@ -1417,6 +1422,15 @@ Suggested first user-visible result:
 - Whether multilingual portal copy is CMS-managed or `messages/*.json` first.
 
 ## Progress Log
+
+### 2026-05-16
+
+- Current sprint/block: Client Portal e-mail code plus password auth.
+- Done: replaced account-first magic-link auth with registration by e-mail code then password, e-mail plus password login, password reset by e-mail code, hashed password storage, hashed short-code storage with TTL/attempt limits, and code-based portal auth e-mails without required clickable login links; preserved HTTP-only portal session cookie and empty verified dashboard; refactored claim-link UI/API so an existing logged-in user can connect the case directly, while an unauthenticated user verifies e-mail by code, sets a password, and receives request-level `PortalCaseAccess`.
+- In progress: local/browser verification and production redeploy remain separate; old magic-link endpoints now return inactive responses, while historical `PortalEmailVerification` rows remain as archival schema compatibility.
+- Next action: configure/verify IONOS SMTP credentials on Vercel, redeploy, then test registration, login, password reset, empty dashboard, and claim-link access end to end.
+- Blockers/risks: SMTP deliverability still depends on valid IONOS credentials and domain mail setup; standalone portal accounts still have no organization/member model and must not expose request data until a request is explicitly verified and linked.
+- Updated documents: `docs/04_client_portal/client_portal_implementation_plan.md`, `docs/04_client_portal/accounts_and_identity.md`, `PROGRESS.md`.
 
 ### 2026-05-16
 

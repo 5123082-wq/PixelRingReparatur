@@ -115,7 +115,7 @@ export function buildPortalClaimMessage(input: {
     `Anfrage: ${input.publicRequestNumber}`,
     `Link: ${input.claimUrl}`,
     '',
-    'Der Link ist 24 Stunden gueltig. Er oeffnet noch keine privaten Daten, sondern startet die E-Mail-Bestaetigung fuer das Kundenportal.',
+    'Der Link ist 24 Stunden gueltig. Er oeffnet noch keine privaten Daten, sondern startet die E-Mail-Code-Bestaetigung fuer das Kundenportal.',
     `Gueltig bis: ${input.expiresAt.toISOString()}`,
   ].join('\n');
 }

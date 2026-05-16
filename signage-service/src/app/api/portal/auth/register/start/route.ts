@@ -2,39 +2,28 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { sendPortalCodeEmail } from '@/lib/email/portal-claim-email';
 import { prisma } from '@/lib/prisma';
-import { createPortalClaimAccessCode } from '@/lib/portal/login';
-import { checkRateLimit, getClientIP, PORTAL_CLAIM_LIMIT } from '@/lib/rate-limit';
+import { createPortalSignupCode } from '@/lib/portal/login';
+import { checkRateLimit, getClientIP, PORTAL_AUTH_LIMIT } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   const ip = getClientIP(request);
-  const limit = checkRateLimit(ip, PORTAL_CLAIM_LIMIT);
+  const limit = checkRateLimit(ip, PORTAL_AUTH_LIMIT);
 
   if (!limit.allowed) {
     return NextResponse.json(
-      { success: false, message: 'Please try again later.' },
+      { success: false, message: 'Bitte versuchen Sie es spaeter erneut.' },
       { status: 429, headers: { 'Retry-After': String(Math.ceil(limit.resetMs / 1000)) } }
     );
   }
 
   try {
-    const body = (await request.json().catch(() => null)) as
-      | {
-          token?: unknown;
-          email?: unknown;
-        }
-      | null;
-
-    const token = typeof body?.token === 'string' ? body.token : '';
+    const body = (await request.json().catch(() => null)) as { email?: unknown } | null;
     const email = typeof body?.email === 'string' ? body.email : '';
-
-    const code = await createPortalClaimAccessCode(prisma, {
-      claimToken: token,
-      email,
-    });
+    const code = await createPortalSignupCode(prisma, { email });
 
     if (!code.ok) {
       return NextResponse.json(
-        { success: false, message: 'Verification could not be started.' },
+        { success: false, message: 'Bitte geben Sie eine gueltige E-Mail-Adresse ein.' },
         { status: 400 }
       );
     }
@@ -42,23 +31,21 @@ export async function POST(request: NextRequest) {
     const delivery = await sendPortalCodeEmail({
       to: code.email,
       code: code.code,
-      publicRequestNumber: code.publicRequestNumber,
       expiresAt: code.expiresAt,
-      mode: 'claim-access',
+      mode: 'signup',
     });
 
     return NextResponse.json({
       success: true,
-      email: code.email,
       sent: delivery.sent,
       devCode: delivery.sent || process.env.NODE_ENV === 'production' ? undefined : code.code,
       expiresAt: code.expiresAt.toISOString(),
     });
   } catch (error) {
-    console.error('Portal claim verification start failed:', error);
+    console.error('Portal signup code creation failed:', error);
 
     return NextResponse.json(
-      { success: false, message: 'Verification could not be started.' },
+      { success: false, message: 'Der Code konnte nicht gesendet werden.' },
       { status: 400 }
     );
   }

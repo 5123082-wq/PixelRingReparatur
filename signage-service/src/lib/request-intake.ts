@@ -292,7 +292,7 @@ export async function createWebsiteRequest(
         body: [
           `Kundenportal-Link: ${portalClaimLink.url}`,
           '',
-          'Dieser Link ist 24 Stunden gueltig und startet die E-Mail-Bestaetigung fuer das Kundenportal.',
+          'Dieser Link ist 24 Stunden gueltig und startet die E-Mail-Code-Bestaetigung fuer das Kundenportal.',
         ].join('\n'),
         isCustomerVisible: true,
         sentAt: now,

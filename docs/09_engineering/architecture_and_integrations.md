@@ -802,6 +802,26 @@ Lead не должен “повисать” без owner.
 - structured monitoring + alert ownership;
 - staging -> UAT -> release gate with rollback-ready path.
 
+### 20.2. Open maintenance note: Postgres SSL connection strings
+
+Date noted: 2026-05-16.
+
+During `npm run db:status` and `npm run db:deploy`, the migration runner showed a `pg` / `pg-connection-string` warning:
+
+- current `sslmode=prefer`, `sslmode=require`, or `sslmode=verify-ca` values are being treated as aliases for `sslmode=verify-full`;
+- a future major version of `pg` / `pg-connection-string` may switch these modes to standard libpq behavior.
+
+This is not an active portal-auth migration blocker and did not prevent the 2026-05-16 portal password/code migration from applying.
+
+Before the next dependency upgrade that touches `pg`, `pg-connection-string`, Prisma, `@prisma/adapter-pg`, or database migration tooling, review all database connection strings in local env files and hosting env vars.
+
+Preferred decision:
+
+- use explicit `sslmode=verify-full` if the project wants to preserve the current stricter certificate verification behavior;
+- use `uselibpqcompat=true&sslmode=require` only if the database provider requires libpq-compatible behavior and that tradeoff is intentionally accepted.
+
+Do not change production database URLs silently during unrelated product work. Treat this as a small deployment-hardening task with connection testing before and after the env change.
+
 ---
 
 ## 21. Что делать следующим документом

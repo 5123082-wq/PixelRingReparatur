@@ -1,7 +1,9 @@
+import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 
 import PortalClaimForm from '@/components/portal/PortalClaimForm';
 import { prisma } from '@/lib/prisma';
+import { getPortalSessionContext, PORTAL_SESSION_COOKIE_NAME } from '@/lib/portal/auth';
 import { getPortalClaimContext } from '@/lib/portal/claim';
 
 function InvalidClaim() {
@@ -39,6 +41,11 @@ export default async function PortalClaimPage({
 
   const { token } = await searchParams;
   const claim = await getPortalClaimContext(prisma, token);
+  const cookieStore = await cookies();
+  const portalSession = await getPortalSessionContext(
+    prisma,
+    cookieStore.get(PORTAL_SESSION_COOKIE_NAME)?.value
+  );
 
   if (!claim.ok) {
     return <InvalidClaim />;
@@ -50,6 +57,7 @@ export default async function PortalClaimPage({
       publicRequestNumber={claim.publicRequestNumber}
       prefillEmail={claim.prefillEmail}
       expiresAt={claim.expiresAt}
+      isAuthenticated={Boolean(portalSession)}
     />
   );
 }

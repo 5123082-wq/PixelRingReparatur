@@ -2,17 +2,19 @@ import 'server-only';
 
 import nodemailer from 'nodemailer';
 
-type PortalVerificationEmailInput = {
+type PortalCodeEmailMode = 'signup' | 'password-reset' | 'claim-access';
+
+type PortalCodeEmailInput = {
   to: string;
-  verificationUrl: string;
-  publicRequestNumber?: string | null;
+  code: string;
   expiresAt: Date;
-  mode?: 'claim' | 'login';
+  mode: PortalCodeEmailMode;
+  publicRequestNumber?: string | null;
 };
 
-type PortalVerificationEmailResult =
+type PortalCodeEmailResult =
   | { sent: true; provider: 'smtp' | 'resend'; providerId?: string }
-  | { sent: false; reason: 'missing_config'; verificationUrl: string };
+  | { sent: false; reason: 'missing_config' };
 
 type EmailProvider = 'smtp' | 'resend' | 'none';
 
@@ -24,47 +26,48 @@ function escapeHtml(value: string): string {
     .replace(/"/g, '&quot;');
 }
 
-function buildTextEmail(input: PortalVerificationEmailInput): string {
-  const isLogin = input.mode === 'login' || !input.publicRequestNumber;
-  const lines = [
-    'PixelRing Kundenportal',
-    '',
-  ];
-
-  if (isLogin) {
-    lines.push(
-      'Bitte bestaetigen Sie Ihre E-Mail-Adresse, um den Kundenportal-Zugang zu aktivieren:',
-      input.verificationUrl
-    );
-  } else {
-    lines.push(
-      `Anfrage: ${input.publicRequestNumber}`,
-      '',
-      'Bitte bestaetigen Sie Ihre E-Mail-Adresse, um den Kundenportal-Zugang fuer diese Anfrage zu aktivieren:',
-      input.verificationUrl
-    );
+function introForMode(input: PortalCodeEmailInput): string {
+  if (input.mode === 'password-reset') {
+    return 'Mit diesem Code koennen Sie ein neues Passwort fuer Ihr PixelRing Kundenportal festlegen.';
   }
 
+  if (input.mode === 'claim-access' && input.publicRequestNumber) {
+    return `Mit diesem Code verbinden Sie die Anfrage ${input.publicRequestNumber} mit Ihrem PixelRing Kundenportal.`;
+  }
+
+  return 'Mit diesem Code bestaetigen Sie Ihre E-Mail-Adresse und erstellen Ihr PixelRing Kundenportal.';
+}
+
+function subjectForMode(input: PortalCodeEmailInput): string {
+  if (input.mode === 'password-reset') {
+    return 'PixelRing Kundenportal: Passwort-Code';
+  }
+
+  if (input.mode === 'claim-access' && input.publicRequestNumber) {
+    return `PixelRing Kundenportal: Code fuer ${input.publicRequestNumber}`;
+  }
+
+  return 'PixelRing Kundenportal: Bestaetigungscode';
+}
+
+function buildTextEmail(input: PortalCodeEmailInput): string {
   return [
-    ...lines,
+    'PixelRing Kundenportal',
     '',
-    `Dieser Link ist gueltig bis: ${input.expiresAt.toISOString()}`,
+    introForMode(input),
     '',
-    'Wenn Sie diese Anfrage oder Anmeldung nicht gestartet haben, ignorieren Sie diese E-Mail.',
+    `Code: ${input.code}`,
+    '',
+    `Dieser Code ist gueltig bis: ${input.expiresAt.toISOString()}`,
+    '',
+    'Wenn Sie diese Anmeldung nicht gestartet haben, ignorieren Sie diese E-Mail.',
   ].join('\n');
 }
 
-function buildHtmlEmail(input: PortalVerificationEmailInput): string {
-  const verificationUrl = escapeHtml(input.verificationUrl);
-  const publicRequestNumber = input.publicRequestNumber ? escapeHtml(input.publicRequestNumber) : '';
+function buildHtmlEmail(input: PortalCodeEmailInput): string {
+  const code = escapeHtml(input.code);
+  const intro = escapeHtml(introForMode(input));
   const expiresAt = escapeHtml(input.expiresAt.toISOString());
-  const isLogin = input.mode === 'login' || !input.publicRequestNumber;
-  const body = isLogin
-    ? 'Bitte bestaetigen Sie diese E-Mail-Adresse. Danach oeffnet sich Ihr Kundenportal.'
-    : `Ihre Anfrage <strong>${publicRequestNumber}</strong> kann mit dem Kundenportal verbunden werden.`;
-  const secondBody = isLogin
-    ? 'Wenn noch keine Anfrage vorhanden ist, koennen Sie nach dem Login eine neue Anfrage starten oder eine bestehende Anfrage pruefen.'
-    : 'Bitte bestaetigen Sie diese E-Mail-Adresse. Danach oeffnet sich Ihr Kundenportal.';
 
   return `<!doctype html>
 <html>
@@ -72,12 +75,11 @@ function buildHtmlEmail(input: PortalVerificationEmailInput): string {
     <div style="max-width:560px;margin:0 auto;padding:32px 20px;">
       <div style="background:#ffffff;border:1px solid #eadfd4;border-radius:20px;padding:28px;">
         <p style="margin:0 0 12px;color:#b8643e;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;">PixelRing Kundenportal</p>
-        <h1 style="margin:0 0 16px;font-size:24px;line-height:1.2;color:#111827;">E-Mail-Adresse bestaetigen</h1>
-        <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#4b5563;">${body}</p>
-        <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#4b5563;">${secondBody}</p>
-        <a href="${verificationUrl}" style="display:inline-block;background:#b8643e;color:#ffffff;text-decoration:none;border-radius:14px;padding:14px 18px;font-size:15px;font-weight:700;">E-Mail bestaetigen</a>
+        <h1 style="margin:0 0 16px;font-size:24px;line-height:1.2;color:#111827;">Ihr Bestaetigungscode</h1>
+        <p style="margin:0 0 22px;font-size:15px;line-height:1.6;color:#4b5563;">${intro}</p>
+        <div style="display:inline-block;border:1px solid #eadfd4;background:#fbf8f3;border-radius:16px;padding:16px 22px;font-size:30px;font-weight:800;letter-spacing:.18em;color:#111827;">${code}</div>
         <p style="margin:24px 0 0;font-size:12px;line-height:1.5;color:#6b7280;">Gueltig bis: ${expiresAt}</p>
-        <p style="margin:12px 0 0;font-size:12px;line-height:1.5;color:#6b7280;">Wenn Sie diese Anfrage oder Anmeldung nicht gestartet haben, ignorieren Sie diese E-Mail.</p>
+        <p style="margin:12px 0 0;font-size:12px;line-height:1.5;color:#6b7280;">Wenn Sie diese Anmeldung nicht gestartet haben, ignorieren Sie diese E-Mail.</p>
       </div>
     </div>
   </body>
@@ -116,7 +118,7 @@ function parseBooleanEnv(value: string | undefined, fallback: boolean): boolean 
   return ['1', 'true', 'yes', 'on'].includes(value.trim().toLowerCase());
 }
 
-async function sendViaSmtp(input: PortalVerificationEmailInput): Promise<PortalVerificationEmailResult> {
+async function sendViaSmtp(input: PortalCodeEmailInput): Promise<PortalCodeEmailResult> {
   const host = process.env.SMTP_HOST?.trim();
   const port = parseIntegerEnv(process.env.SMTP_PORT, 587);
   const secure = parseBooleanEnv(process.env.SMTP_SECURE, port === 465);
@@ -133,7 +135,6 @@ async function sendViaSmtp(input: PortalVerificationEmailInput): Promise<PortalV
     return {
       sent: false,
       reason: 'missing_config',
-      verificationUrl: input.verificationUrl,
     };
   }
 
@@ -151,9 +152,7 @@ async function sendViaSmtp(input: PortalVerificationEmailInput): Promise<PortalV
   const result = await transport.sendMail({
     from,
     to: input.to,
-    subject: input.publicRequestNumber
-      ? `PixelRing Kundenportal: ${input.publicRequestNumber}`
-      : 'PixelRing Kundenportal: E-Mail bestaetigen',
+    subject: subjectForMode(input),
     text: buildTextEmail(input),
     html: buildHtmlEmail(input),
   });
@@ -165,7 +164,7 @@ async function sendViaSmtp(input: PortalVerificationEmailInput): Promise<PortalV
   };
 }
 
-async function sendViaResend(input: PortalVerificationEmailInput): Promise<PortalVerificationEmailResult> {
+async function sendViaResend(input: PortalCodeEmailInput): Promise<PortalCodeEmailResult> {
   const apiKey = process.env.RESEND_API_KEY?.trim();
   const from = process.env.PORTAL_EMAIL_FROM?.trim();
 
@@ -177,7 +176,6 @@ async function sendViaResend(input: PortalVerificationEmailInput): Promise<Porta
     return {
       sent: false,
       reason: 'missing_config',
-      verificationUrl: input.verificationUrl,
     };
   }
 
@@ -190,9 +188,7 @@ async function sendViaResend(input: PortalVerificationEmailInput): Promise<Porta
     body: JSON.stringify({
       from,
       to: input.to,
-      subject: input.publicRequestNumber
-        ? `PixelRing Kundenportal: ${input.publicRequestNumber}`
-        : 'PixelRing Kundenportal: E-Mail bestaetigen',
+      subject: subjectForMode(input),
       text: buildTextEmail(input),
       html: buildHtmlEmail(input),
     }),
@@ -211,9 +207,9 @@ async function sendViaResend(input: PortalVerificationEmailInput): Promise<Porta
   };
 }
 
-export async function sendPortalVerificationEmail(
-  input: PortalVerificationEmailInput
-): Promise<PortalVerificationEmailResult> {
+export async function sendPortalCodeEmail(
+  input: PortalCodeEmailInput
+): Promise<PortalCodeEmailResult> {
   const provider = selectedEmailProvider();
 
   if (provider === 'smtp') {
@@ -229,15 +225,15 @@ export async function sendPortalVerificationEmail(
       throw new Error('Portal email provider is not configured.');
     }
 
-    console.info('Portal verification email dev fallback:', {
+    console.info('Portal code email dev fallback:', {
       to: input.to,
-      verificationUrl: input.verificationUrl,
+      mode: input.mode,
+      expiresAt: input.expiresAt.toISOString(),
     });
 
     return {
       sent: false,
       reason: 'missing_config',
-      verificationUrl: input.verificationUrl,
     };
   }
 

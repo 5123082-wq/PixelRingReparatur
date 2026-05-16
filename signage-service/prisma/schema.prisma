@@ -129,6 +129,12 @@ enum PortalCaseAccessSource {
   IMPORT
 }
 
+enum PortalEmailCodePurpose {
+  SIGNUP
+  PASSWORD_RESET
+  CLAIM_ACCESS
+}
+
 model Case {
   id                       String                    @id @default(uuid()) @db.Uuid
   publicRequestNumber      String?                   @unique
@@ -159,6 +165,7 @@ model Case {
   sessions                 Session[]
   portalClaimLinks         PortalClaimLink[]
   portalEmailVerifications PortalEmailVerification[]
+  portalEmailCodes         PortalEmailCode[]
   portalCaseAccesses       PortalCaseAccess[]
   externalConversations    ExternalConversation[]
   customerProfile          CustomerProfile?          @relation(fields: [customerProfileId], references: [id], onDelete: SetNull)
@@ -376,6 +383,7 @@ model PortalClaimLink {
   case                    Case                      @relation(fields: [caseId], references: [id], onDelete: Cascade)
   createdByAdminSession   AdminSession?             @relation("PortalClaimLinkCreatedBy", fields: [createdByAdminSessionId], references: [id], onDelete: SetNull)
   emailVerifications      PortalEmailVerification[]
+  emailCodes              PortalEmailCode[]
 
   @@index([caseId, expiresAt])
   @@index([expiresAt])
@@ -409,6 +417,8 @@ model PortalUser {
   displayName            String?
   primaryEmail           String
   primaryEmailNormalized String             @unique
+  passwordHash           String?
+  passwordSetAt          DateTime?
   status                 PortalUserStatus   @default(ACTIVE)
   lastLoginAt            DateTime?
   createdAt              DateTime           @default(now())
@@ -419,6 +429,31 @@ model PortalUser {
 
   @@index([status, updatedAt])
   @@map("portal_users")
+}
+
+model PortalEmailCode {
+  id                    String                 @id @default(uuid()) @db.Uuid
+  email                 String
+  emailNormalized       String
+  codeHash              String
+  verificationTokenHash String?                @unique
+  purpose               PortalEmailCodePurpose
+  claimLinkId           String?                @db.Uuid
+  caseId                String?                @db.Uuid
+  expiresAt             DateTime
+  verifiedAt            DateTime?
+  consumedAt            DateTime?
+  attempts              Int                    @default(0)
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  claimLink             PortalClaimLink?       @relation(fields: [claimLinkId], references: [id], onDelete: Cascade)
+  case                  Case?                  @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@index([emailNormalized, purpose, expiresAt])
+  @@index([claimLinkId, purpose, expiresAt])
+  @@index([caseId, purpose, expiresAt])
+  @@index([expiresAt])
+  @@map("portal_email_codes")
 }
 
 model PortalUserEmail {

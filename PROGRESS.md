@@ -10,14 +10,15 @@ Short global status only. Detailed session notes belong to folder-level `Progres
 - **Website CMS & Admin Platform**: CMS starter implemented (Pages, Articles, Media Library, SEO, AI config). 3-column MODX-style redesign implemented.
 - **AI Assistant**: Intake MVP implemented (session-scoped, deterministic triggers, repeat-contact confirmation flow).
 - **Security & Audit**: Admin login, HTTP-only cookies, role splitting, CSRF/Rate-limit starter implemented.
-- **Client Portal**: Prototype approved. Stage 2.5 read-only demo implementation merged (dashboard, requests, objects). Stage 2.6 production identity foundation implemented in code: claim-link email verification, portal users, verified emails, request access grants, and IONOS SMTP support. Stage 2.7 account-first portal entry added: `/portal` now supports e-mail magic-link login/registration and an empty verified dashboard before the first request.
+- **Client Portal**: Prototype approved. Stage 2.5 read-only demo implementation merged (dashboard, requests, objects). Stage 2.6 production identity foundation implemented in code: claim-link email verification, portal users, verified emails, request access grants, and IONOS SMTP support. Stage 2.8 replaces magic-link portal auth with e-mail code plus password registration/login/reset, preserving empty verified dashboard and request-bound claim links.
+- **Engineering/Ops**: Open maintenance note recorded for future Postgres SSL connection-string cleanup before the next `pg`/Prisma/migration-tooling dependency upgrade.
 
 ## Last Updated
 
 - Date: 2026-05-16
 - Updated by: Codex
-- **Current Stage**: Client Portal account-first entry added: unauthenticated `/portal` now presents login/registration, existing-request status, and new-request paths instead of a dead-end verification gate; verified e-mail users can enter an empty portal dashboard before any request is linked.
-- **Next Action**: Fix/verify IONOS SMTP credentials on Vercel, redeploy, and test e-mail magic-link login plus existing claim-link flow end to end.
+- **Current Stage**: Client Portal password/code auth implemented and migration applied: registration uses e-mail code then password, login uses e-mail plus password, reset uses e-mail code, and claim links hand off to the same verified account flow.
+- **Next Action**: Configure/verify IONOS SMTP credentials on Vercel, redeploy, then test registration, login, reset, empty dashboard, and claim-link access end to end.
 
 - Date: 2026-05-16
 - Updated by: Codex

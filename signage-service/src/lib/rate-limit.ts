@@ -140,3 +140,10 @@ export const PORTAL_CLAIM_LIMIT: RateLimitConfig = {
   windowMs: 5 * 60 * 1000,
   prefix: 'portal-claim',
 };
+
+/** Portal account auth: 8 attempts per 5 minutes per IP */
+export const PORTAL_AUTH_LIMIT: RateLimitConfig = {
+  maxRequests: 8,
+  windowMs: 5 * 60 * 1000,
+  prefix: 'portal-auth',
+};
