@@ -13,11 +13,11 @@ The repository is intentionally split:
 
 ## Start Here
 
-Before broad product, documentation, CRM, CMS, AI assistant, client portal, or security work:
+Use staged context loading before broad product, documentation, CRM, CMS, AI assistant, client portal, or security work:
 
-1. Read `docs/README.md`.
-2. Read `docs/00_project_overview/project_state_and_roadmap.md`.
-3. Read the domain-specific folder README for the area you are touching.
+1. Read the `Context Beacon` sections in `PROGRESS.md`, `docs/README.md`, and `docs/00_project_overview/project_state_and_roadmap.md`.
+2. Read the full current-state, roadmap, or domain document only when the task touches that domain, the beacon explicitly points there, or shallow context leaves material uncertainty.
+3. Read the domain-specific folder README for the area you are touching, starting with its top-level orientation and then going deeper only as needed.
 4. Treat `docs/13_references_archive/` as historical reference only unless a current document explicitly marks a specific part as active.
 
 For application code work:
@@ -54,9 +54,11 @@ These rules must not override the collaboration rule, product guardrails, securi
 
 ## Skill Reference
 
-For detailed operating guidance, use the shared skill document:
+For detailed operating guidance, use the shared skill document on demand:
 
 - `SKILL.md`
+
+Do not read `SKILL.md` by default. Read it when planning a substantial implementation, resolving ambiguity, editing sensitive documentation, or when a task needs the expanded shared workflow.
 
 If the skill guidance conflicts with repository instructions, this `AGENTS.md` file wins.
 

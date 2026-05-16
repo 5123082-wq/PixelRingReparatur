@@ -135,10 +135,14 @@ export default function ProblemKnowledgeGrid({
               </button>
 
               {knowledge ? (
-                <div
+                <a
                   id={`knowledge-preview-${problem.id}`}
-                  className="mt-auto cursor-pointer border-t border-[#E7DDD3] pt-5 text-[15px] leading-7 text-[#3E4A48]"
-                  onClick={() => setModalProblemId(problem.id)}
+                  href={`/${locale}/probleme-loesungen/${knowledge.articleSlug}`}
+                  className="mt-auto block cursor-pointer border-t border-[#E7DDD3] pt-5 text-[15px] leading-7 text-[#3E4A48] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B8643E]"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setModalProblemId(problem.id);
+                  }}
                 >
                   <h4 className="text-[13px] font-extrabold uppercase tracking-[0.12em] text-[#B8643E]">
                     {articleLabels.preview}
@@ -148,7 +152,7 @@ export default function ProblemKnowledgeGrid({
                       {knowledge.shortAnswer ?? problem.solution}
                     </p>
                   </div>
-                </div>
+                </a>
               ) : null}
             </article>
           );

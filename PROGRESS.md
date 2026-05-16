@@ -2,6 +2,35 @@
 
 Short global status only. Detailed session notes belong to folder-level `Progress Log` sections.
 
+## Context Beacon
+
+Purpose: fast global orientation before work. Read this beacon first; read the historical entries below only when continuing an older track or when the current task depends on those details.
+
+Latest checkpoint:
+
+- Date: 2026-05-16
+- Current stage: agent startup context optimized with staged reading and `Context Beacon` sections in the core orientation documents.
+- Next action: monitor whether future sessions can start from the beacon layer, then add matching beacons to large domain README files if needed.
+
+Active tracks:
+
+- Public Website: implemented multilingual public site; current SEO/indexing and content QA work continues in `docs/02_public_website/` and `docs/07_content_ai_seo/`.
+- Request & Status Flow: implemented intake, session tracking, status lookup, and PR numbers; keep customer privacy boundaries from `docs/00_project_overview/project_state_and_roadmap.md`.
+- Manager CRM: starter implemented; operational planning belongs in `docs/06_crm/`.
+- Website CMS & Admin Platform: starter implemented; CMS/admin work belongs in `docs/05_admin_platform/`.
+- AI Assistant: intake MVP implemented; assistant behavior belongs in `docs/08_ai_assistant/`.
+- Security & Audit: starter implemented; security/privacy work belongs in `docs/10_security_privacy/`.
+- Client Portal: production identity foundation and password/code auth implemented in code; portal planning belongs in `docs/04_client_portal/`.
+- Engineering/Ops: maintenance and deployment notes belong in `docs/09_engineering/` and `docs/11_operations/`.
+- Agent Rules: staged context loading documented in `AGENTS.md` and `docs/12_agent_rules/README.md`.
+
+Read deep when:
+
+- continuing a specific older checkpoint from the log below;
+- updating a module's current status;
+- checking what changed on a date;
+- preparing deployment, migration, or owner-review follow-up from a prior entry.
+
 ## Current Modules
 
 - **Public Website**: Implemented (Homepage, Support, Problems & Solutions, B2B, References, About, Legal). CMS integration partial. About RU language pass complete. DE QA cleanup completed; legal pages now preserve CMS as source of truth with page-specific stale validation.
@@ -14,6 +43,16 @@ Short global status only. Detailed session notes belong to folder-level `Progres
 - **Engineering/Ops**: Open maintenance note recorded for future Postgres SSL connection-string cleanup before the next `pg`/Prisma/migration-tooling dependency upgrade.
 
 ## Last Updated
+
+- Date: 2026-05-16
+- Updated by: Codex
+- **Current Stage**: Agent startup context optimized with staged reading and `Context Beacon` sections in `PROGRESS.md`, `docs/README.md`, and `docs/00_project_overview/project_state_and_roadmap.md`; `SKILL.md` is now explicitly on-demand.
+- **Next Action**: Monitor future sessions for whether domain README files need matching beacons.
+
+- Date: 2026-05-16
+- Updated by: Codex
+- **Current Stage**: Google indexing crawlability cleanup implemented: problem article cards now expose crawlable links, article `hreflang`/sitemap alternates are limited to published locales, temporary missing-locale article fallback serves English content as `noindex`, and article `lastmod` now uses CMS update time.
+- **Next Action**: Deploy, verify live `/sitemap.xml`, inspect DE/EN/RU article URLs plus PL/TR/AR fallback article URLs in Google Search Console, then request indexing for German canonical pages first.
 
 - Date: 2026-05-16
 - Updated by: Codex

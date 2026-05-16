@@ -350,6 +350,7 @@
     "chat_open_button": "Chat öffnen",
     "chat_placeholder": "Ihre Nachricht...",
     "chat_auth_hint": "Melden Sie sich an, um den Chat zu starten",
+    "chat_session_hint": "Der Chatzugang ist fuer diese Anfrage aktiv",
     "chat_gate_title": "Chat im Kundenportal öffnen",
     "chat_gate_body": "Damit Korrespondenz, Dokumente und nächste Schritte sicher sichtbar werden, müssen Sie sich registrieren und den Zugriff verifizieren. Danach bleiben Chat und Serviceverlauf an einem Ort.",
     "chat_gate_primary": "Zum Portal",

@@ -10,7 +10,14 @@ import {
   getPublishedSymptomArticleByPublicSlug,
   getPublishedSymptomArticleTitlesByPublicSlugs,
 } from '@/lib/cms/articles';
-import { SITE_BASE_URL } from '@/lib/seo';
+import type { PublicProblemArticle } from '@/lib/cms/articles';
+import {
+  DEFAULT_SITE_LOCALE,
+  SITE_BASE_URL,
+  SITE_LOCALES,
+  buildLanguageAlternatesForLocales,
+} from '@/lib/seo';
+import type { SiteLocale } from '@/lib/seo';
 import type { ProblemIntent } from '@/lib/content/problem-knowledge';
 
 const INTENT_BY_PUBLIC_SLUG: Record<string, ProblemIntent> = {
@@ -23,6 +30,14 @@ const INTENT_BY_PUBLIC_SLUG: Record<string, ProblemIntent> = {
   'folie-ist-ausgeblichen': 'faded-film',
   'werbeanlage-wackelt': 'loose-sign',
   'dringende-reparatur-werbeanlage': 'urgent-safety-risk',
+};
+
+const FALLBACK_ARTICLE_LOCALE: SiteLocale = 'en';
+
+type ArticleResolution = {
+  article: PublicProblemArticle | null;
+  contentLocale: SiteLocale;
+  isFallback: boolean;
 };
 
 /** Fallback related-article map when CmsArticle.relatedSlugs is empty */
@@ -42,13 +57,55 @@ function buildGermanFallbackDescription(title: string): string {
   return `Erfahren Sie, warum ${title} auftreten kann, was Sie sicher prüfen können und wie PixelRing die nächsten Schritte koordiniert.`;
 }
 
+async function getPublishedArticleLocales(publicSlug: string): Promise<SiteLocale[]> {
+  const checks = await Promise.all(
+    SITE_LOCALES.map(async (locale) => {
+      const localizedArticle = await getPublishedSymptomArticleByPublicSlug(locale, publicSlug);
+      return localizedArticle ? locale : null;
+    })
+  );
+
+  return checks.filter((locale): locale is SiteLocale => Boolean(locale));
+}
+
+async function resolveArticle(locale: string, slug: string): Promise<ArticleResolution> {
+  const article = await getPublishedSymptomArticleByPublicSlug(locale, slug);
+
+  if (article) {
+    return {
+      article,
+      contentLocale: locale as SiteLocale,
+      isFallback: false,
+    };
+  }
+
+  if (locale === FALLBACK_ARTICLE_LOCALE) {
+    return {
+      article: null,
+      contentLocale: FALLBACK_ARTICLE_LOCALE,
+      isFallback: false,
+    };
+  }
+
+  const fallbackArticle = await getPublishedSymptomArticleByPublicSlug(
+    FALLBACK_ARTICLE_LOCALE,
+    slug
+  );
+
+  return {
+    article: fallbackArticle,
+    contentLocale: FALLBACK_ARTICLE_LOCALE,
+    isFallback: Boolean(fallbackArticle),
+  };
+}
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const { locale, slug } = await params;
-  const article = await getPublishedSymptomArticleByPublicSlug(locale, slug);
+  const { article, contentLocale, isFallback } = await resolveArticle(locale, slug);
 
   if (!article) {
     return {
@@ -65,12 +122,41 @@ export async function generateMetadata({
     (locale === 'de'
       ? buildGermanFallbackDescription(article.title)
       : article.shortAnswer ?? article.title);
+  const articlePath = `/probleme-loesungen/${article.publicSlug}`;
+
+  if (isFallback) {
+    return {
+      title,
+      description,
+      robots: {
+        index: false,
+        follow: true,
+      },
+      alternates: {
+        canonical: `/${contentLocale}${articlePath}`,
+      },
+    };
+  }
+
+  const publishedLocales = await getPublishedArticleLocales(article.publicSlug);
+  const defaultLocale = publishedLocales.includes(DEFAULT_SITE_LOCALE)
+    ? DEFAULT_SITE_LOCALE
+    : publishedLocales[0];
 
   return {
     title,
     description,
     alternates: {
-      canonical: `/${locale}/probleme-loesungen/${article.publicSlug}`,
+      canonical: `/${locale}${articlePath}`,
+      ...(defaultLocale
+        ? {
+            languages: buildLanguageAlternatesForLocales(
+              publishedLocales,
+              articlePath,
+              defaultLocale
+            ),
+          }
+        : {}),
     },
   };
 }
@@ -81,20 +167,27 @@ export default async function ProblemArticlePage({
   params: Promise<{ locale: string; slug: string }>;
 }) {
   const { locale, slug } = await params;
-  const [globalCms, article, navItems] = await Promise.all([
+  const [globalCms, resolved] = await Promise.all([
     getGlobalPageCmsContent(locale),
-    getPublishedSymptomArticleByPublicSlug(locale, slug),
-    getAllPublishedSymptomArticleNavItems(locale),
+    resolveArticle(locale, slug),
   ]);
+  const { article, contentLocale, isFallback } = resolved;
 
   if (!article) {
     notFound();
   }
 
+  const [navItems, relatedArticles] = await Promise.all([
+    getAllPublishedSymptomArticleNavItems(contentLocale),
+    getPublishedSymptomArticleTitlesByPublicSlugs(
+      contentLocale,
+      RELATED_MAP[article.publicSlug] ?? []
+    ),
+  ]);
   const problemIntent = INTENT_BY_PUBLIC_SLUG[article.publicSlug] ?? 'sign-not-lighting';
 
   /* --- Article JSON-LD for rich results & AI citation --- */
-  const canonicalUrl = `${SITE_BASE_URL}/${locale}/probleme-loesungen/${article.publicSlug}`;
+  const canonicalUrl = `${SITE_BASE_URL}/${contentLocale}/probleme-loesungen/${article.publicSlug}`;
   const articleJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -116,12 +209,6 @@ export default async function ProblemArticlePage({
     },
   };
 
-  /* --- Related articles for cross-linking --- */
-  const relatedSlugs = RELATED_MAP[article.publicSlug] ?? [];
-  const relatedArticles = relatedSlugs.length > 0
-    ? await getPublishedSymptomArticleTitlesByPublicSlugs(locale, relatedSlugs)
-    : [];
-
   return (
     <div className="min-h-screen bg-[#F7F1E8] text-[#15202A]">
       <script
@@ -137,6 +224,7 @@ export default async function ProblemArticlePage({
           relatedArticles={relatedArticles}
           navItems={navItems}
           currentSlug={slug}
+          fallbackContentLocale={isFallback ? contentLocale : undefined}
         />
       </main>
       <Footer content={globalCms?.footer} />

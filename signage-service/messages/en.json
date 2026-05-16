@@ -402,6 +402,7 @@
     "chat_open_button": "Open Chat",
     "chat_placeholder": "Write your message here...",
     "chat_auth_hint": "Log in to start correspondence",
+    "chat_session_hint": "Chat access is active for this request",
     "chat_gate_title": "Open chat in your portal",
     "chat_gate_body": "To show messages, documents, and next steps safely, you need to register and verify access. After login, the chat and service history stay in one place.",
     "chat_gate_primary": "Go to portal",

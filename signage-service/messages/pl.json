@@ -350,6 +350,7 @@
     "chat_open_button": "Otwórz chat",
     "chat_placeholder": "Napisz wiadomość tutaj...",
     "chat_auth_hint": "Zaloguj się, aby rozpocząć korespondencję",
+    "chat_session_hint": "Dostęp do chatu jest aktywny dla tego zgłoszenia",
     "chat_gate_title": "Otwórz chat w panelu klienta",
     "chat_gate_body": "Aby bezpiecznie pokazać wiadomości, dokumenty i kolejne kroki zgłoszenia, musisz się zarejestrować i potwierdzić dostęp. Po zalogowaniu chat i historia serwisu będą w jednym miejscu.",
     "chat_gate_primary": "Przejdź do panelu",

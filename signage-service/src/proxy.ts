@@ -25,6 +25,10 @@ function buildLocalePath(locale: string, path: string) {
   return `/${locale}${path}`;
 }
 
+function isProblemArticlePath(path: string) {
+  return /^\/probleme-loesungen\/[^/]+\/?$/.test(path);
+}
+
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const { locale, stripped } = stripLocale(pathname);
@@ -74,7 +78,13 @@ export default async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  return intlMiddleware(request);
+  const response = intlMiddleware(request);
+
+  if (isProblemArticlePath(stripped)) {
+    response.headers.delete('Link');
+  }
+
+  return response;
 }
 
 export const config = {

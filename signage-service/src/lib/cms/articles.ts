@@ -44,6 +44,7 @@ export type PublicSymptomArticle = {
   seoDescription: string | null;
   canonicalUrl: string | null;
   sortOrder: number;
+  updatedAt: Date;
 };
 
 export type PublicProblemArticle = PublicSymptomArticle & {
@@ -156,6 +157,7 @@ export async function getPublishedSymptomArticles(
       seoDescription: true,
       canonicalUrl: true,
       sortOrder: true,
+      updatedAt: true,
     },
     orderBy: [{ sortOrder: 'asc' }, { updatedAt: 'desc' }],
   });
@@ -196,6 +198,7 @@ export async function getPublishedSymptomArticleByPublicSlug(
       seoDescription: true,
       canonicalUrl: true,
       sortOrder: true,
+      updatedAt: true,
     },
   });
 

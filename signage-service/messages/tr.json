@@ -350,6 +350,7 @@
     "chat_open_button": "Sohbeti aç",
     "chat_placeholder": "Mesajınızı buraya yazın...",
     "chat_auth_hint": "Yazışmayı başlatmak için giriş yapın",
+    "chat_session_hint": "Bu talep için sohbet erişimi aktif",
     "chat_gate_title": "Sohbeti müşteri portalında açın",
     "chat_gate_body": "Mesajları, belgeleri ve sonraki adımları güvenli şekilde gösterebilmek için kayıt olmanız ve erişimi doğrulamanız gerekir. Girişten sonra sohbet ve servis geçmişi tek yerde kalır.",
     "chat_gate_primary": "Portala git",

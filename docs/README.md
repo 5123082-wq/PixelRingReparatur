@@ -2,6 +2,38 @@
 
 This directory is the main documentation hub for the PixelRing Reparatur project.
 
+## Context Beacon
+
+Purpose: documentation map and domain router. For startup orientation, read this beacon and the folder list. Read deeper only for the domain you are touching.
+
+Repository split:
+
+- `docs/` contains planning, product rules, execution documents, and domain specs.
+- `signage-service/` contains the Next.js application.
+- Root `AGENTS.md` contains project-wide rules.
+- `signage-service/AGENTS.md` contains application-specific rules.
+
+Start depth:
+
+- Shallow: read this beacon, `PROGRESS.md` beacon, and `00_project_overview/project_state_and_roadmap.md` beacon.
+- Domain: read the relevant folder README when a task touches that area.
+- Deep: read full domain documents, progress logs, or roadmap sections only when editing that area or when shallow context is insufficient.
+
+Primary domain routes:
+
+- Public website and UX: `02_public_website/`
+- Design system: `03_design_system/`
+- Client portal: `04_client_portal/`
+- Admin platform and CMS: `05_admin_platform/`
+- CRM and operational cases: `06_crm/`
+- Content, SEO, GEO, and AI visibility: `07_content_ai_seo/`
+- AI assistant behavior: `08_ai_assistant/`
+- Engineering: `09_engineering/`
+- Security and privacy: `10_security_privacy/`
+- Operations: `11_operations/`
+- Agent rules: `12_agent_rules/`
+- Historical references only: `13_references_archive/`
+
 The goal of this documentation is to keep product strategy, public website UX, customer portal, admin platform, CRM, engineering, security, operations, and AI/content decisions separated enough that future work can grow without mixing unrelated concerns.
 
 ## Repository Layout
@@ -15,9 +47,9 @@ Run application commands from `signage-service/` unless a command explicitly say
 
 ## How To Start
 
-1. Read this file first.
-2. Read `00_project_overview/` for the current product map and documentation structure.
-3. Read the domain-specific folder for the task you are working on.
+1. Read the `Context Beacon` sections in this file, `../PROGRESS.md`, and `00_project_overview/project_state_and_roadmap.md`.
+2. Use the folder map below to choose the domain-specific folder for the task.
+3. Read the domain-specific README and deeper documents only when the task touches that area or the shallow context is not enough.
 4. For application code work, also read `../signage-service/AGENTS.md` and inspect `../signage-service/package.json`.
 5. Treat archived documents as reference material only unless a current folder document explicitly points to them.
 

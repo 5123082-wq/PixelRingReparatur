@@ -9,6 +9,7 @@ type ProblemArticleBodyProps = {
   relatedArticles?: Array<{ publicSlug: string; title: string }>;
   navItems?: Array<{ publicSlug: string; title: string; sortOrder: number }>;
   currentSlug?: string;
+  fallbackContentLocale?: string;
 };
 
 function getArticleBodyLabels(locale: string) {
@@ -26,6 +27,8 @@ function getArticleBodyLabels(locale: string) {
       sidebarDescription: 'Senden Sie ein Foto und eine kurze Beschreibung. PixelRing prüft den Fall und koordiniert die nächsten Schritte.',
       relatedTitle: 'Ähnliche Probleme',
       navTitle: 'Alle Probleme & Lösungen',
+      hubEyebrow: 'Probleme & Lösungen',
+      fallbackNotice: 'Dieser Artikel ist vorübergehend auf Englisch verfügbar. Anfrage und Service bleiben auf Ihrer Sprache möglich.',
     };
   }
 
@@ -43,6 +46,8 @@ function getArticleBodyLabels(locale: string) {
       sidebarDescription: 'Отправьте фото и короткое описание. PixelRing проверит случай и согласует следующие шаги.',
       relatedTitle: 'Похожие проблемы',
       navTitle: 'Все проблемы и решения',
+      hubEyebrow: 'Проблемы и решения',
+      fallbackNotice: 'Эта статья временно доступна на английском. Заявку и сервис можно продолжить на выбранном языке.',
     };
   }
 
@@ -60,6 +65,8 @@ function getArticleBodyLabels(locale: string) {
       sidebarDescription: 'Bir fotoğraf ve kısa bir açıklama gönderin. PixelRing durumu inceler ve sonraki adımları koordine eder.',
       relatedTitle: 'Benzer sorunlar',
       navTitle: 'Tüm sorunlar ve çözümler',
+      hubEyebrow: 'Sorunlar ve çözümler',
+      fallbackNotice: 'Bu makale geçici olarak İngilizce sunuluyor. Talep ve servis süreci seçtiğiniz dilde devam edebilir.',
     };
   }
 
@@ -77,6 +84,8 @@ function getArticleBodyLabels(locale: string) {
       sidebarDescription: 'Wyślij zdjęcie i krótki opis. PixelRing sprawdzi sprawę i skoordynuje kolejne kroki.',
       relatedTitle: 'Podobne problemy',
       navTitle: 'Wszystkie problemy i rozwiązania',
+      hubEyebrow: 'Problemy i rozwiązania',
+      fallbackNotice: 'Ten artykuł jest tymczasowo dostępny po angielsku. Zgłoszenie i obsługa mogą być kontynuowane w wybranym języku.',
     };
   }
 
@@ -94,6 +103,8 @@ function getArticleBodyLabels(locale: string) {
       sidebarDescription: 'أرسل صورة ووصفًا قصيرًا. PixelRing يراجع الحالة وينسق الخطوات التالية.',
       relatedTitle: 'مشكلات مشابهة',
       navTitle: 'جميع المشكلات والحلول',
+      hubEyebrow: 'المشكلات والحلول',
+      fallbackNotice: 'هذه المقالة متاحة مؤقتًا باللغة الإنجليزية. يمكن متابعة الطلب والخدمة بلغتك المختارة.',
     };
   }
 
@@ -110,6 +121,8 @@ function getArticleBodyLabels(locale: string) {
     sidebarDescription: 'Send a photo and a short description. PixelRing reviews the case and coordinates the next steps.',
     relatedTitle: 'Related problems',
     navTitle: 'All problems & solutions',
+    hubEyebrow: 'Problems & solutions',
+    fallbackNotice: 'This article is temporarily available in English. The request and service process can continue in your selected language.',
   };
 }
 
@@ -258,6 +271,7 @@ export default function ProblemArticleBody({
   relatedArticles,
   navItems,
   currentSlug,
+  fallbackContentLocale,
 }: ProblemArticleBodyProps) {
   const labels = getArticleBodyLabels(locale);
   const knowledgeLabels = getProblemKnowledgeLabels(locale);
@@ -274,11 +288,16 @@ export default function ProblemArticleBody({
             {labels.back}
           </a>
           <p className="mt-8 text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#F4C7A9]">
-            Probleme & Lösungen
+            {labels.hubEyebrow}
           </p>
           <h1 className="mt-4 text-4xl font-black leading-[1.05] sm:text-6xl">
             {article.title}
           </h1>
+          {fallbackContentLocale && (
+            <p className="mt-5 max-w-3xl rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-[15px] font-bold leading-7 text-white/82">
+              {labels.fallbackNotice}
+            </p>
+          )}
           {article.symptomLabel && (
             <p className="mt-6 max-w-3xl text-lg font-bold leading-8 text-white/78">
               {article.symptomLabel}

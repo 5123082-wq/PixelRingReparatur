@@ -1,12 +1,44 @@
 # Project State And Roadmap
 
+## Context Beacon
+
+Purpose: current-state boundary and roadmap index. Read this beacon for startup orientation; read full sections only when the task touches the area or when exact current/planned status matters.
+
+Exists now:
+
+- multilingual public website with request intake and status lookup;
+- internal CRM starter for request/case operations;
+- internal CMS/admin platform starter for content, media, SEO, and AI configuration;
+- persisted AI chat and knowledge-backed assistant starter;
+- first request-bound client-portal production identity foundation;
+- security and audit starter.
+
+Do not assume these exist unless verified in code:
+
+- full client portal;
+- user accounts beyond the implemented portal identity foundation;
+- organizations or customer employees/members;
+- invoices, payments, or billing;
+- structured photo reports;
+- warranty module;
+- full RBAC;
+- Bitrix24 production sync;
+- retention, deletion, and export workflows.
+
+Read deep when:
+
+- changing product scope, roadmap, current-state claims, or owner-facing strategy;
+- touching CRM, CMS, AI assistant, client portal, security/privacy, or request tracking behavior;
+- deciding whether a feature is implemented, partial, planned, or future-only;
+- using archived or historical material as potential active guidance.
+
 ## Status
 
 This document is the main current-state map for PixelRing Reparatur.
 
 It separates what is implemented now, what is started but incomplete, what is planned next, what belongs to the future platform, and which documents must not be treated as current implementation guidance.
 
-Use this file before starting broad product, documentation, CRM, CMS, AI assistant, client portal, or security work.
+Use the `Context Beacon` in this file before starting broad product, documentation, CRM, CMS, AI assistant, client portal, or security work. Read the full relevant sections when the task touches their domain or exact implementation status matters.
 
 ## Current Product State
 

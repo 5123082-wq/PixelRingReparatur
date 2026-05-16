@@ -58,10 +58,20 @@ export function buildLocaleUrl(locale: string, path = ''): string {
 }
 
 export function buildLanguageAlternates(path = ''): Record<string, string> {
+  return buildLanguageAlternatesForLocales(SITE_LOCALES, path);
+}
+
+export function buildLanguageAlternatesForLocales(
+  locales: readonly SiteLocale[],
+  path = '',
+  defaultLocale: SiteLocale = DEFAULT_SITE_LOCALE
+): Record<string, string> {
+  const defaultLocaleForPath = locales.includes(defaultLocale) ? defaultLocale : locales[0];
+
   return {
     ...Object.fromEntries(
-    SITE_LOCALES.map((locale) => [locale, buildLocaleUrl(locale, path)])
+      locales.map((locale) => [locale, buildLocaleUrl(locale, path)])
     ),
-    'x-default': buildLocaleUrl(DEFAULT_SITE_LOCALE, path),
+    ...(defaultLocaleForPath ? { 'x-default': buildLocaleUrl(defaultLocaleForPath, path) } : {}),
   };
 }

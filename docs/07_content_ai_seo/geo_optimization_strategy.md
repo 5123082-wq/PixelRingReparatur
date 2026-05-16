@@ -390,6 +390,35 @@ Hub усиливает:
 
 ## 13. Progress Log
 
+### 2026-05-16 | Google Indexing Crawlability Cleanup
+
+**Done:**
+- Added crawlable article links from the `Probleme & Lösungen` (проблемы и решения) overview cards so Googlebot (краулер Google) can discover symptom articles through normal internal links.
+- Limited article `hreflang` (языковые alternate-ссылки) and `sitemap` (карта сайта) alternates to locales where the symptom article is actually published.
+- Suppressed the automatic article HTTP `Link` (HTTP-заголовок со ссылками) header from `next-intl` (библиотека интернационализации Next.js) because it listed unpublished PL/TR/AR article URLs.
+- Added temporary missing-locale article fallback: PL/TR/AR article URLs can show the English article for users, but metadata uses `noindex` (запрет индексации) and `canonical` (канонический URL) to the English article until real localized content exists.
+- Article `lastmod` (дата последнего изменения в sitemap) now uses CMS article `updatedAt` (дата обновления записи CMS) instead of generating a fresh timestamp for every sitemap render.
+
+**In Progress:**
+- Live deployment and Google Search Console (панель Google для проверки индексации) validation are still pending.
+
+**Next Action:**
+- Deploy the app, verify live `/sitemap.xml` (карта сайта), inspect DE/EN/RU canonical article URLs and PL/TR/AR fallback article URLs in Google Search Console (панель Google для проверки индексации), then request indexing for German canonical pages first.
+
+**Blockers/Risks:**
+- PL/TR/AR article pages should remain temporary fallback pages until real localized content is published; they should not be added back to `hreflang` (языковые alternate-ссылки) or `sitemap` (карта сайта) as indexable articles before that.
+
+**Updated Documents:**
+- `PROGRESS.md`
+- `docs/07_content_ai_seo/geo_optimization_strategy.md`
+- `signage-service/src/app/sitemap.ts`
+- `signage-service/src/lib/seo.ts`
+- `signage-service/src/proxy.ts`
+- `signage-service/src/app/[locale]/probleme-loesungen/[slug]/page.tsx`
+- `signage-service/src/components/probleme-loesungen/ProblemKnowledgeGrid.tsx`
+- `signage-service/src/components/probleme-loesungen/ProblemArticleBody.tsx`
+- `signage-service/src/lib/cms/articles.ts`
+
 ### 2026-05-06 | Google Indexing Readiness
 **Done:**
 - Selected `https://www.pixel-ring.com` as the canonical public search domain for generated metadata, robots, and sitemap URLs.

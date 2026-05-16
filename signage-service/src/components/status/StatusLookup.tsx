@@ -119,6 +119,9 @@ export default function StatusLookup({
   const chatGateSecondary = t.has('chat_gate_secondary')
     ? t('chat_gate_secondary')
     : chatGateFallback.secondary;
+  const chatSessionHint = t.has('chat_session_hint')
+    ? t('chat_session_hint')
+    : t('chat_auth_hint');
   const isCancelled = result?.status === 'CANCELLED';
   const progressWidth = result
     ? progressWidthByStatus[result.status] ?? '10%'
@@ -343,7 +346,14 @@ export default function StatusLookup({
             <div className="absolute inset-0 flex items-center justify-center z-20">
               <button
                 type="button"
-                onClick={() => setIsChatPromptOpen(true)}
+                onClick={() => {
+                  if (result) {
+                    window.dispatchEvent(new Event('openChat'));
+                    return;
+                  }
+
+                  setIsChatPromptOpen(true);
+                }}
                 className="bg-white border border-black/10 px-8 py-4 rounded-full font-bold text-[14px] shadow-2xl flex items-center gap-3 hover:scale-105 transition-transform active:scale-95"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
@@ -357,7 +367,7 @@ export default function StatusLookup({
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
           </div>
           <p className="text-center text-[10px] text-[#64748B]/60 mt-2 font-medium italic">
-            {t('chat_auth_hint')}
+            {result ? chatSessionHint : t('chat_auth_hint')}
           </p>
         </div>
       </div>

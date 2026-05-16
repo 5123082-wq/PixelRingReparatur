@@ -13,6 +13,15 @@ Planned base documents:
 
 ## Progress Log
 
+### 2026-05-16
+
+- Current sprint/block: staged context loading
+- Done: added context-beacon workflow to root startup instructions and key overview documents so agents can start shallow and read deeper only when task scope requires it
+- In progress: keeping startup context compact while preserving hard product, security, and documentation guardrails
+- Next action: monitor future sessions for whether the beacon layer is enough or whether domain README files need matching beacons
+- Blockers/risks: over-compression must not hide current-state boundaries, archive boundaries, or confirmation requirements
+- Updated documents: `AGENTS.md`, `PROGRESS.md`, `docs/README.md`, `docs/00_project_overview/project_state_and_roadmap.md`, `docs/12_agent_rules/README.md`
+
 ### 2026-04-15
 
 - Current sprint/block: agent rules alignment
