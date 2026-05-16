@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     const response = NextResponse.json({
       success: true,
-      redirectTo: `/${result.locale}/portal`,
+      redirectTo: '/portal',
       publicRequestNumber: result.publicRequestNumber,
     });
 

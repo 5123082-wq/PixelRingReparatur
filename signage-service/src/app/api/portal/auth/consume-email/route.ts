@@ -6,7 +6,6 @@ import {
   PORTAL_SESSION_MAX_AGE_SECONDS,
 } from '@/lib/portal/auth';
 import { consumePortalLoginVerification } from '@/lib/portal/login';
-import { normalizePortalLocale } from '@/lib/portal/claim';
 import { checkRateLimit, getClientIP, PORTAL_CLAIM_LIMIT } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
@@ -23,12 +22,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = (await request.json().catch(() => null)) as {
       token?: unknown;
-      locale?: unknown;
     } | null;
     const token = typeof body?.token === 'string' ? body.token : '';
-    const locale = normalizePortalLocale(
-      typeof body?.locale === 'string' ? body.locale : 'de'
-    );
     const result = await consumePortalLoginVerification(prisma, {
       token,
       userAgent: request.headers.get('user-agent'),
@@ -44,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     const response = NextResponse.json({
       success: true,
-      redirectTo: `/${locale}/portal`,
+      redirectTo: '/portal',
     });
 
     response.cookies.set({
