@@ -12,6 +12,7 @@ export default function PortalLogoutButton() {
   async function logout() {
     setIsLoggingOut(true);
     try {
+      await fetch('/api/portal/auth/logout', { method: 'POST' });
       await fetch('/api/portal/demo-auth', { method: 'DELETE' });
       router.refresh();
     } finally {

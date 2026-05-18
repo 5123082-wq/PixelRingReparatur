@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import LocationPicker, { type SelectedLocation } from './LocationPicker';
 
 type ContactMode = 'phone' | 'email';
 
@@ -36,6 +37,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
   const [contact, setContact] = useState(prefill?.contact ?? '');
   const [name, setName] = useState(prefill?.name ?? '');
   const [location, setLocation] = useState(prefill?.location ?? '');
+  const [selectedLocation, setSelectedLocation] = useState<SelectedLocation | null>(null);
   const [issueType, setIssueType] = useState(prefill?.issueType ?? '');
   const [files, setFiles] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -92,6 +94,11 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
       fd.append('name', name);
       fd.append('contact', contact);
       fd.append('location', location);
+      if (selectedLocation) {
+        fd.append('locationLatitude', String(selectedLocation.latitude));
+        fd.append('locationLongitude', String(selectedLocation.longitude));
+        fd.append('locationSource', selectedLocation.source);
+      }
       fd.append(
         'message',
         prefill?.summary
@@ -198,10 +205,10 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
       />
 
       {/* Location optional */}
-      <input
-        type="text"
+      <LocationPicker
         value={location}
-        onChange={e => setLocation(e.target.value)}
+        onChange={setLocation}
+        onLocationSelect={setSelectedLocation}
         placeholder="Adresse / Standort (optional)"
         className="w-full px-3 py-2 text-[13px] rounded-[12px] border border-[#E7DDD3] bg-white text-[#0E1A2B] focus:outline-none focus:border-[#B8643E] placeholder-[#72665D]/40"
       />

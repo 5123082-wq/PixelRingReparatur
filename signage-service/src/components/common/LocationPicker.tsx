@@ -5,14 +5,21 @@ import React, { useState, useEffect, useRef } from 'react';
 interface LocationPickerProps {
   value: string;
   onChange: (val: string) => void;
+  onLocationSelect?: (location: SelectedLocation | null) => void;
   inputId?: string;
   ariaLabel?: string;
   placeholder?: string;
+  onBlur?: () => void;
+  disabled?: boolean;
+  maxLength?: number;
   className?: string;
   variant?: 'light' | 'dark';
 }
 
 interface PhotonFeature {
+  geometry?: {
+    coordinates?: [number, number];
+  };
   properties: {
     name?: string;
     city?: string;
@@ -24,12 +31,41 @@ interface PhotonFeature {
   };
 }
 
+export type SelectedLocation = {
+  label: string;
+  latitude: number;
+  longitude: number;
+  source: 'photon';
+};
+
+function isFiniteCoordinate(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value);
+}
+
+function buildLocationLabel(feature: PhotonFeature): string {
+  const p = feature.properties;
+  const streetLine = [p.street, p.housenumber].filter(Boolean).join(' ');
+  const localityLine = [p.postcode, p.city].filter(Boolean).join(' ');
+  const parts = [
+    p.name && p.name !== p.street ? p.name : null,
+    streetLine || p.street || null,
+    localityLine || p.state || null,
+    p.country,
+  ].filter(Boolean);
+
+  return Array.from(new Set(parts)).join(', ');
+}
+
 const LocationPicker = ({
   value,
   onChange,
+  onLocationSelect,
   inputId,
   ariaLabel,
   placeholder,
+  onBlur,
+  disabled,
+  maxLength,
   className,
   variant = 'light',
 }: LocationPickerProps) => {
@@ -37,6 +73,7 @@ const LocationPicker = ({
   const [suggestions, setSuggestions] = useState<PhotonFeature[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const lastSelectedLabelRef = useRef('');
 
   useEffect(() => {
     setQuery(value);
@@ -54,7 +91,7 @@ const LocationPicker = ({
 
   useEffect(() => {
     const fetchSuggestions = async () => {
-      if (query.trim().length < 3) {
+      if (disabled || query.trim().length < 3) {
         setSuggestions([]);
         return;
       }
@@ -70,20 +107,35 @@ const LocationPicker = ({
     };
 
     const debounceId = setTimeout(() => {
-      if (query !== value) {
+      if (query !== lastSelectedLabelRef.current) {
         fetchSuggestions();
       }
     }, 500);
 
     return () => clearTimeout(debounceId);
-  }, [query, value]);
+  }, [disabled, query, value]);
 
   const handleSelect = (feature: PhotonFeature) => {
-    const p = feature.properties;
-    const parts = [p.name, p.street, p.housenumber, p.postcode, p.city, p.state].filter(Boolean);
-    const label = Array.from(new Set(parts)).join(', ');
+    const label = buildLocationLabel(feature);
+    const [longitude, latitude] = feature.geometry?.coordinates ?? [];
+
+    lastSelectedLabelRef.current = label;
     setQuery(label);
     onChange(label);
+    if (
+      onLocationSelect &&
+      isFiniteCoordinate(latitude) &&
+      isFiniteCoordinate(longitude)
+    ) {
+      onLocationSelect({
+        label,
+        latitude,
+        longitude,
+        source: 'photon',
+      });
+    } else {
+      onLocationSelect?.(null);
+    }
     setIsOpen(false);
   };
 
@@ -111,10 +163,16 @@ const LocationPicker = ({
         type="text"
         value={query}
         onChange={(e) => {
-           setQuery(e.target.value);
-           if (!e.target.value) onChange('');
+           const nextValue = e.target.value;
+           lastSelectedLabelRef.current = '';
+           setQuery(nextValue);
+           onChange(nextValue);
+           onLocationSelect?.(null);
         }}
         onFocus={() => { if (suggestions.length > 0) setIsOpen(true) }}
+        onBlur={onBlur}
+        disabled={disabled}
+        maxLength={maxLength}
         autoComplete="new-password"
         aria-label={ariaLabel}
         placeholder={placeholder}

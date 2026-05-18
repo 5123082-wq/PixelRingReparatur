@@ -32,6 +32,24 @@ function inferRequestLocale(request: NextRequest): SiteLocale {
   return DEFAULT_SITE_LOCALE;
 }
 
+function readCoordinate(value: FormDataEntryValue | null, min: number, max: number): number | null {
+  if (typeof value !== 'string' || !value.trim()) {
+    return null;
+  }
+
+  const parsed = Number(value);
+
+  return Number.isFinite(parsed) && parsed >= min && parsed <= max ? parsed : null;
+}
+
+function readLocationSource(value: FormDataEntryValue | null): string | null {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  return value.trim() === 'photon' ? 'photon' : null;
+}
+
 export async function POST(request: NextRequest) {
   const ip = getClientIP(request);
   const limit = checkRateLimit(ip, CONTACT_LIMIT);
@@ -51,6 +69,9 @@ export async function POST(request: NextRequest) {
     const message = String(formData.get('message') ?? '').trim();
     const issueType = String(formData.get('issueType') ?? '').trim();
     let location = String(formData.get('location') ?? '').trim();
+    let serviceLatitude = readCoordinate(formData.get('locationLatitude'), -90, 90);
+    let serviceLongitude = readCoordinate(formData.get('locationLongitude'), -180, 180);
+    let serviceLocationSource = readLocationSource(formData.get('locationSource'));
     const isFromChat = formData.get('isFromChat') === 'true';
 
     let existingSessionId: string | null = null;
@@ -72,7 +93,12 @@ export async function POST(request: NextRequest) {
         const draft = await getSessionIntakeDraft(prisma, resolved.session.id);
         name = name || draft?.customerName || '';
         contact = contact || draft?.customerEmail || draft?.customerPhone || '';
-        location = location || draft?.serviceLocation || '';
+        if (!location) {
+          location = draft?.serviceLocation || '';
+          serviceLatitude = draft?.serviceLatitude ?? null;
+          serviceLongitude = draft?.serviceLongitude ?? null;
+          serviceLocationSource = draft?.serviceLocationSource ?? null;
+        }
         draftContactKnown = Boolean(draft?.customerEmail || draft?.customerPhone);
         draftLocationKnown = Boolean(draft?.serviceLocation);
       }
@@ -109,6 +135,9 @@ export async function POST(request: NextRequest) {
       name,
       contact,
       serviceLocation: location,
+      serviceLatitude,
+      serviceLongitude,
+      serviceLocationSource,
       message: finalMessage,
       userAgent: request.headers.get('user-agent'),
       locale: inferRequestLocale(request),
@@ -145,15 +174,17 @@ export async function POST(request: NextRequest) {
       photoReceived: result.photoReceived,
     });
 
-    response.cookies.set({
-      name: CASE_SESSION_COOKIE_NAME,
-      value: result.sessionToken,
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 180,
-    });
+    if (result.sessionToken) {
+      response.cookies.set({
+        name: CASE_SESSION_COOKIE_NAME,
+        value: result.sessionToken,
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+        path: '/',
+        maxAge: 60 * 60 * 24 * 180,
+      });
+    }
 
     return response;
   } catch (error) {

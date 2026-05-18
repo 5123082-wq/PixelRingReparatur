@@ -52,6 +52,12 @@ export type PortalRequestMessage = {
   author: PortalMessageAuthor;
   sentAt: string;
   body: string;
+  attachments?: {
+    id: string;
+    storageKey: string;
+    originalFilename: string | null;
+    mimeType?: string | null;
+  }[];
 };
 
 export type PortalRequestTimelineItem = {
@@ -92,6 +98,13 @@ export type PortalRequest = {
   updatedAt: string;
   summary: string;
   nextStep: string;
+  customerName?: string | null;
+  serviceLocation?: string | null;
+  serviceLatitude?: number | null;
+  serviceLongitude?: number | null;
+  serviceLocationSource?: string | null;
+  contactEmail?: string | null;
+  contactPhone?: string | null;
 };
 
 export type PortalDocument = {

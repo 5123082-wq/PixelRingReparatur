@@ -39,7 +39,7 @@ export default async function PortalRequestDetailPage({
     );
 
     if (result?.detail) {
-      return <PortalRequestDetail {...result.detail} />;
+      return <PortalRequestDetail {...result.detail} canPostMessages />;
     }
 
     if (result?.organization) {
@@ -68,5 +68,5 @@ export default async function PortalRequestDetailPage({
     return <PortalRequestNotFound organization={portalDemoOrganization} />;
   }
 
-  return <PortalRequestDetail {...detail} />;
+  return <PortalRequestDetail {...detail} canPostMessages={false} />;
 }

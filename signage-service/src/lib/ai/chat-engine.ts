@@ -26,6 +26,8 @@ export type GenerateChatReplyInput = {
   privacyContext?: string | null;
   operatorTakeover?: boolean;
   publicRequestNumber?: string | null;
+  requestBoundPortal?: boolean;
+  newRequestUrl?: string | null;
 };
 
 export type IntakePrefill = {
@@ -84,6 +86,18 @@ function parseIntakeMarker(text: string): {
 }
 
 const DEFAULT_MODEL = 'gpt-4o-mini';
+
+function buildPortalNewRequestRedirect(locale?: string, newRequestUrl = '/portal'): string {
+  if (locale === 'ru') {
+    return `Я не могу оформить новую заявку внутри чата текущей заявки, чтобы не смешать обращения. Откройте новую заявку в кабинете: ${newRequestUrl}`;
+  }
+
+  if (locale === 'en') {
+    return `I cannot create a new request inside the chat for this current request because the two issues must stay separate. Open a new request in the portal: ${newRequestUrl}`;
+  }
+
+  return `Ich kann eine neue Anfrage nicht im Chat der aktuellen Anfrage anlegen, damit die Vorgaenge getrennt bleiben. Oeffnen Sie die neue Anfrage im Portal: ${newRequestUrl}`;
+}
 
 function normalizeHistory(
   history: ChatHistoryItem[],
@@ -198,6 +212,8 @@ export async function generateChatReply(
       publicRequestNumber: shouldExposeRequestNumber
         ? input.publicRequestNumber
         : null,
+      requestBoundPortal: input.requestBoundPortal,
+      newRequestUrl: input.newRequestUrl,
     });
     const privacyContext = input.privacyContext?.trim();
     const aiText = await callOpenAI(
@@ -217,6 +233,17 @@ export async function generateChatReply(
       if (outputVerdict.allowed) {
         const redactedAiText = redactAssistantVisiblePii(aiText);
         const { cleanText, suggestIntake, intakePrefill } = parseIntakeMarker(redactedAiText);
+
+        if (input.requestBoundPortal && suggestIntake) {
+          return {
+            text: buildPortalNewRequestRedirect(input.locale, input.newRequestUrl || '/portal'),
+            intent: 'request',
+            provider: 'openai',
+            model: config.model || DEFAULT_MODEL,
+            suggestIntake: false,
+          };
+        }
+
         return {
           text: cleanText,
           intent: incomingVerdict.intent,
@@ -229,6 +256,15 @@ export async function generateChatReply(
     }
   } catch (error) {
     console.error('AI chat generation failed:', error);
+  }
+
+  if (input.requestBoundPortal && incomingVerdict.intent === 'request') {
+    return {
+      text: buildPortalNewRequestRedirect(input.locale, input.newRequestUrl || '/portal'),
+      intent: incomingVerdict.intent,
+      provider: 'fallback',
+      suggestIntake: false,
+    };
   }
 
   return {

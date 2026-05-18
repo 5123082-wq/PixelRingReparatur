@@ -6,6 +6,9 @@ type CustomerProfileSyncInput = {
   customerEmail: string | null;
   customerPhone: string | null;
   serviceAddress?: string | null;
+  serviceLatitude?: number | null;
+  serviceLongitude?: number | null;
+  serviceLocationSource?: string | null;
   preferredLanguage: string | null;
   preferredContactMethod: PrimaryContactMethod | null;
 };
@@ -129,6 +132,18 @@ export async function syncCaseCustomerProfile(
       profilePatch.serviceAddress = input.serviceAddress.trim();
     }
 
+    if (typeof input.serviceLatitude === 'number') {
+      profilePatch.serviceLatitude = input.serviceLatitude;
+    }
+
+    if (typeof input.serviceLongitude === 'number') {
+      profilePatch.serviceLongitude = input.serviceLongitude;
+    }
+
+    if (hasText(input.serviceLocationSource)) {
+      profilePatch.serviceLocationSource = input.serviceLocationSource.trim();
+    }
+
     await tx.customerProfile.update({
       where: { id: profileId },
       data: profilePatch,
@@ -148,6 +163,15 @@ export async function syncCaseCustomerProfile(
         preferredContactMethod: input.preferredContactMethod,
         serviceAddress: hasText(input.serviceAddress)
           ? input.serviceAddress.trim()
+          : null,
+        serviceLatitude: typeof input.serviceLatitude === 'number'
+          ? input.serviceLatitude
+          : null,
+        serviceLongitude: typeof input.serviceLongitude === 'number'
+          ? input.serviceLongitude
+          : null,
+        serviceLocationSource: hasText(input.serviceLocationSource)
+          ? input.serviceLocationSource.trim()
           : null,
       },
       select: { id: true },

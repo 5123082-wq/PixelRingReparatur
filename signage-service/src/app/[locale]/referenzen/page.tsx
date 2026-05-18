@@ -5,6 +5,7 @@ import Header from '@/components/layout/Header';
 import ReferencesExperience, {
   type CategoryItem,
   type GalleryItem,
+  type ReportHook,
   type ReferencesContent,
   type ReferenceCase,
   type ReportRow,
@@ -107,9 +108,13 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     recentTitle: 'Vorher sichtbar. Danach wieder betriebsbereit.',
     recentIntro:
       'Die Karten bewegen sich horizontal. Im Fokus oder Hover sehen Sie den problemorientierten Vorher-Zustand; ein Klick oeffnet den kompakten Reparaturbericht.',
-    reportTitle: 'Kurze Reparaturberichte statt dekorativer Bildwand',
+    reportTitle: 'Ein Schild darf nicht müde aussehen',
     reportIntro:
-      'Referenzen sollen erklaeren, warum eine Reparatur vertrauenswuerdig ist. Deshalb bleibt jedes Beispiel knapp, technisch und disclosure-safe.',
+      'Dunkle Buchstaben, Flackern, ein verschmutzter Leuchtkasten oder lose Folie sind nicht nur ein Defekt. Für Menschen auf der Straße wirkt der Standort schnell geschlossen, vernachlässigt oder unsicher.',
+    reportHooks: [
+      { id: 'seconds', title: 'Passanten entscheiden in Sekunden.', text: 'Laut FedEx Office betraten 76% der Befragten ein unbekanntes Geschäft wegen seiner Beschilderung; 68% kauften etwas, weil ein Schild ihre Aufmerksamkeit gewann. Wenn das Licht ausfällt, verliert der Standort diesen ersten Moment.' },
+      { id: 'trust', title: 'Schlechtes Licht kostet Vertrauen.', text: '52% der Menschen gehen weniger gern in ein Geschäft mit schlecht gemachten Schildern. Die Sign Research Foundation nennt Fälle, in denen gezielte Updates der Außenbeschilderung bis zu 16% mehr Wochenumsatz brachten.' },
+    ],
     reports: [
       { id: 'r1', type: 'LED-Buchstaben', issue: 'Einzelne Elemente waren dunkel, die Wortmarke wirkte unvollstaendig.', outcome: 'Module ersetzt, Helligkeit angeglichen, Lesbarkeit wiederhergestellt.' },
       { id: 'r2', type: 'Leuchtkasten', issue: 'Unregelmaessige Ausleuchtung und verschmutzte Innenflächen.', outcome: 'Innen gereinigt, LED-Strecke geprüft, Lichtfeld stabilisiert.' },
@@ -160,9 +165,13 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     recentTitle: 'Before it was visible. After it was operational again.',
     recentIntro:
       'The cards move horizontally. Hover or focus shows the problem-oriented before state; click opens a compact repair report.',
-    reportTitle: 'Short repair reports instead of a decorative wall',
+    reportTitle: 'A sign should not look tired',
     reportIntro:
-      'References should explain why a repair is trustworthy, so every example stays concise, technical, and safe to disclose.',
+      'Dark letters, flickering light, a dirty lightbox, or peeling window film are not just defects. To someone passing by, they can make a location feel closed, neglected, or unreliable.',
+    reportHooks: [
+      { id: 'seconds', title: 'People decide in seconds.', text: 'FedEx Office found that 76% of consumers entered a store they had never visited because of its signs, and 68% bought a product or service because a sign caught their eye. If the light fails, the business loses that first chance.' },
+      { id: 'trust', title: 'Bad light weakens trust.', text: '52% of people are less willing to enter a store with poorly made signage. Sign Research Foundation cites cases where targeted exterior sign updates produced up to 16% higher weekly sales.' },
+    ],
     reports: [
       { id: 'r1', type: 'LED letters', issue: 'Several elements were dark and the wordmark looked incomplete.', outcome: 'Modules replaced, brightness matched, readability restored.' },
       { id: 'r2', type: 'Lightbox', issue: 'Uneven lighting and dirty internal surfaces.', outcome: 'Interior cleaned, LED path checked, light field stabilized.' },
@@ -213,9 +222,13 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     recentTitle: 'До было заметно. После снова работает.',
     recentIntro:
       'Карточки двигаются горизонтально. При наведении показывается исходное состояние, по клику открывается краткий ремонтный отчет.',
-    reportTitle: 'Короткие отчеты вместо декоративной галереи',
+    reportTitle: 'Вывеска не должна выглядеть уставшей',
     reportIntro:
-      'Примеры должны объяснять, почему ремонту можно доверять. Поэтому каждый кейс остается коротким, техническим и безопасным по раскрытию данных.',
+      'Потухшие буквы, мерцание, грязный световой короб или отклеенная пленка — это не просто дефект. Для человека с улицы это быстрый сигнал: место выглядит закрытым, заброшенным или неаккуратным.',
+    reportHooks: [
+      { id: 'seconds', title: 'Прохожий решает за секунды.', text: 'В исследовании FedEx Office 76% людей заходили в незнакомый магазин из-за вывески, а 68% покупали товар или услугу, потому что знак привлек внимание. Если свет не работает, бизнес теряет этот первый шанс.' },
+      { id: 'trust', title: 'Плохой свет бьет по доверию.', text: '52% людей менее охотно заходят в место с плохо сделанной вывеской. По данным Sign Research Foundation, обновление наружной вывески в отдельных кейсах давало до 16% роста недельных продаж.' },
+    ],
     reports: [
       { id: 'r1', type: 'LED-буквы', issue: 'Отдельные элементы не горели, название выглядело неполным.', outcome: 'Модули заменены, яркость выровнена, читаемость восстановлена.' },
       { id: 'r2', type: 'Световой короб', issue: 'Подсветка была неравномерной, внутри заметны загрязнения.', outcome: 'Внутренняя часть очищена, LED-линия проверена, свет стабилизирован.' },
@@ -266,9 +279,13 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     recentTitle: 'Önce sorun görünüyordu. Sonra tekrar çalışır hale geldi.',
     recentIntro:
       'Kartlar yatay hareket eder. Hover veya focus problem odaklı önceki durumu gösterir; tıklama kısa raporu açar.',
-    reportTitle: 'Dekoratif galeri yerine kısa onarım raporları',
+    reportTitle: 'Tabela yorgun görünmemeli',
     reportIntro:
-      'Referanslar onarıma neden güvenileceğini anlatmalıdır. Bu yüzden her örnek kısa, teknik ve paylaşımı güvenlidir.',
+      'Sönmüş harfler, titreyen ışık, kirli bir ışıklı kutu veya kalkmış film sadece teknik arıza değildir. Sokaktan bakan biri için işletme kapalı, bakımsız veya güvensiz görünebilir.',
+    reportHooks: [
+      { id: 'seconds', title: 'İnsanlar saniyeler içinde karar verir.', text: 'FedEx Office araştırmasına göre tüketicilerin %76’sı tabelası sayesinde daha önce gitmediği bir mağazaya girdi; %68’i de dikkatini çeken bir tabela nedeniyle ürün veya hizmet satın aldı. Işık çalışmıyorsa işletme bu ilk şansı kaybeder.' },
+      { id: 'trust', title: 'Kötü ışık güveni zayıflatır.', text: 'İnsanların %52’si kötü yapılmış tabelası olan bir yere girmeye daha az isteklidir. Sign Research Foundation, dış tabela güncellemelerinin bazı örneklerde haftalık satışları %16’ya kadar artırdığını bildirir.' },
+    ],
     reports: [
       { id: 'r1', type: 'LED harfler', issue: 'Bazı elemanlar karanlıktı ve marka yazısı eksik görünüyordu.', outcome: 'Modüller değiştirildi, parlaklık eşitlendi, okunabilirlik geri geldi.' },
       { id: 'r2', type: 'Işıklı kutu', issue: 'Işık dağılımı düzensizdi ve iç yüzey kirliydi.', outcome: 'İç bölüm temizlendi, LED hattı kontrol edildi, ışık alanı stabilize edildi.' },
@@ -319,9 +336,13 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     recentTitle: 'Przedtem problem był widoczny. Potem obiekt znów działał.',
     recentIntro:
       'Karty przesuwają się poziomo. Hover lub focus pokazuje stan przed naprawą; kliknięcie otwiera krótki raport.',
-    reportTitle: 'Krótkie raporty zamiast dekoracyjnej ściany zdjęć',
+    reportTitle: 'Szyld nie powinien wyglądać na zmęczony',
     reportIntro:
-      'Realizacje powinny wyjaśniać, dlaczego naprawie można zaufać, dlatego przykłady są krótkie, techniczne i bezpieczne.',
+      'Zgaszone litery, migające światło, brudny kaseton albo odklejająca się folia to nie tylko usterka. Dla osoby z ulicy lokal może wyglądać na zamknięty, zaniedbany albo mało wiarygodny.',
+    reportHooks: [
+      { id: 'seconds', title: 'Ludzie decydują w kilka sekund.', text: 'Według FedEx Office 76% konsumentów weszło do nieznanego sklepu dzięki jego oznakowaniu, a 68% kupiło produkt lub usługę, bo szyld przyciągnął uwagę. Jeśli światło nie działa, firma traci tę pierwszą szansę.' },
+      { id: 'trust', title: 'Złe światło osłabia zaufanie.', text: '52% osób mniej chętnie wchodzi do miejsca ze źle wykonaną reklamą. Sign Research Foundation podaje przypadki, w których celowa aktualizacja zewnętrznego szyldu dawała do 16% wzrostu tygodniowej sprzedaży.' },
+    ],
     reports: [
       { id: 'r1', type: 'Litery LED', issue: 'Część elementów była ciemna, a znak wyglądał na niepełny.', outcome: 'Wymieniono moduły, wyrównano jasność, przywrócono czytelność.' },
       { id: 'r2', type: 'Kaseton', issue: 'Nierówne światło i zabrudzone powierzchnie wewnętrzne.', outcome: 'Wnętrze oczyszczono, tor LED sprawdzono, pole świetlne ustabilizowano.' },
@@ -372,9 +393,13 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     recentTitle: 'كان الخلل واضحاً. ثم عاد العنصر للعمل.',
     recentIntro:
       'تتحرك البطاقات أفقياً. عند التركيز أو التحويم تظهر حالة ما قبل الإصلاح؛ النقر يفتح تقريراً مختصراً.',
-    reportTitle: 'تقارير إصلاح قصيرة بدلاً من معرض زخرفي',
+    reportTitle: 'يجب ألا تبدو اللافتة متعبة',
     reportIntro:
-      'يجب أن تشرح المراجع سبب الثقة بالإصلاح، لذلك تبقى الأمثلة مختصرة وتقنية وآمنة من ناحية الخصوصية.',
+      'الحروف المطفأة، الوميض، الصندوق المضيء المتسخ أو الفيلم المتقشر ليست مجرد أعطال. بالنسبة لمن يمر في الشارع قد يبدو المكان مغلقاً أو مهملاً أو غير موثوق.',
+    reportHooks: [
+      { id: 'seconds', title: 'الناس يقررون خلال ثوانٍ.', text: 'وجدت دراسة FedEx Office أن 76% من المستهلكين دخلوا متجراً لم يزوروه من قبل بسبب لافتته، وأن 68% اشتروا منتجاً أو خدمة لأن اللافتة جذبت انتباههم. إذا تعطل الضوء، يخسر الموقع هذه الفرصة الأولى.' },
+      { id: 'trust', title: 'الإضاءة السيئة تضعف الثقة.', text: '52% من الناس أقل استعداداً لدخول مكان ذي لافتة رديئة التنفيذ. وتشير Sign Research Foundation إلى حالات رفعت فيها تحديثات الواجهة الخارجية المبيعات الأسبوعية حتى 16%.' },
+    ],
     reports: [
       { id: 'r1', type: 'حروف LED', issue: 'بعض العناصر كانت مطفأة وكان اسم العلامة غير مكتمل.', outcome: 'تم تبديل الوحدات، توحيد السطوع، واستعادة الوضوح.' },
       { id: 'r2', type: 'صندوق مضيء', issue: 'إضاءة غير متساوية وأسطح داخلية متسخة.', outcome: 'تم تنظيف الداخل، فحص مسار LED، وتثبيت مجال الإضاءة.' },
@@ -543,6 +568,7 @@ export default async function ReferenzenPage({
     const recentIntroBlock = getBlock(page, 'textSection', ['recentIntroBlock']);
     const casesBlock = getBlock(page, 'cardList', ['casesBlock', 'cases']);
     const reportIntroBlock = getBlock(page, 'textSection', ['reportIntroBlock']);
+    const reportHooksBlock = getBlock(page, 'cardList', ['reportHooksBlock']);
     const reportsBlock = getBlock(page, 'cardList', ['reportsBlock']);
     const galleryIntroBlock = getBlock(page, 'textSection', ['galleryIntroBlock']);
     const galleryItemsBlock = getBlock(page, 'cardList', ['galleryItemsBlock']);
@@ -576,6 +602,7 @@ export default async function ReferenzenPage({
 
       reportTitle: safeText(reportIntroBlock, 'title') || staticContent.reportTitle,
       reportIntro: safeText(reportIntroBlock, 'description') || staticContent.reportIntro,
+      reportHooks: (safeList(reportHooksBlock, 'items')?.map((item, i) => ({ id: item.id || `report-hook-${i}`, ...item })) as ReportHook[] | undefined) || staticContent.reportHooks,
       reports: (safeList(reportsBlock, 'items')?.map((item, i) => ({ id: item.id || `report-${i}`, ...item })) as ReportRow[] | undefined) || staticContent.reports,
 
       galleryEyebrow: safeText(galleryIntroBlock, 'pretitle') || staticContent.galleryEyebrow,

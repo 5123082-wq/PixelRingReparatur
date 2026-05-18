@@ -8,9 +8,9 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 
 Latest checkpoint:
 
-- Date: 2026-05-16
-- Current stage: AI chat intake now restores a structured request-success card with PR number, status CTA, portal claim CTA, and safe attachment rendering after request creation.
-- Next action: deploy and verify the live Russian chat flow from request creation to portal claim e-mail code/password setup.
+- Date: 2026-05-18
+- Current stage: Client portal request detail supports customer-side editing with audit/chat diff logs, separates request contact from portal account owner, and request-bound portal chat now answers through AI without creating new requests inside the existing request chat.
+- Next action: apply the service-location coordinate migration to the intended database, then verify portal request editing, AI replies, and request creation flows against real persisted data after deploy.
 
 Active tracks:
 
@@ -20,7 +20,7 @@ Active tracks:
 - Website CMS & Admin Platform: starter implemented; CMS/admin work belongs in `docs/05_admin_platform/`.
 - AI Assistant: intake MVP implemented with consent-gated form opening; assistant behavior belongs in `docs/08_ai_assistant/`.
 - Security & Audit: starter implemented; security/privacy work belongs in `docs/10_security_privacy/`.
-- Client Portal: production identity foundation and password/code auth implemented in code; portal planning belongs in `docs/04_client_portal/`.
+- Client Portal: production identity, password/code auth, portal-created requests, compact dashboard without global chat, modal-like split request detail, request-bound customer messages with AI replies, site-style attachment composer, customer-side editable request details with diff chat logs, safe read model, and dedicated logout implemented in code; portal planning belongs in `docs/04_client_portal/`.
 - Engineering/Ops: maintenance and deployment notes belong in `docs/09_engineering/` and `docs/11_operations/`.
 - Agent Rules: staged context loading documented in `AGENTS.md` and `docs/12_agent_rules/README.md`.
 
@@ -34,7 +34,7 @@ Read deep when:
 ## Current Modules
 
 - **Public Website**: Implemented (Homepage, Support, Problems & Solutions, B2B, References, About, Legal). CMS integration partial. About RU language pass complete. DE QA cleanup completed; legal pages now preserve CMS as source of truth with page-specific stale validation.
-- **Request & Status Flow**: Implemented (Intake, session tracking, customer status lookup, PR-numbers). Reimagined Tracking Page MVP designed.
+- **Request & Status Flow**: Implemented (Intake, session tracking, customer status lookup, PR-numbers). Photon address autocomplete with optional coordinate persistence added for request creation.
 - **Manager CRM**: CRM starter implemented (Case detail, assignment, internal notes, operator takeover). Object-level auth hardened. Future internal operational object map concept documented.
 - **Website CMS & Admin Platform**: CMS starter implemented (Pages, Articles, Media Library, SEO, AI config). 3-column MODX-style redesign implemented.
 - **AI Assistant**: Intake MVP implemented (session-scoped, consent-gated triggers, repeat-contact confirmation flow).
@@ -43,6 +43,21 @@ Read deep when:
 - **Engineering/Ops**: Open maintenance note recorded for future Postgres SSL connection-string cleanup before the next `pg`/Prisma/migration-tooling dependency upgrade.
 
 ## Last Updated
+
+- Date: 2026-05-18
+- Updated by: Codex
+- **Current Stage**: Client portal request detail can now edit request contact and address/object fields while preserving request number and creation/opening dates; every saved change writes audit data and a customer-visible chat diff. The details card separates request contact from portal account owner, and request-bound portal chat now calls the AI assistant while forbidding in-chat creation of another request.
+- **Next Action**: Apply the pending service-location coordinate migration to the target database and verify portal request editing, AI replies, and real persisted request flows after deploy.
+
+- Date: 2026-05-17
+- Updated by: Codex
+- **Current Stage**: Client Portal core request MVP implemented: authenticated portal request creation, compact portal dashboard without global chat, modal-like split request workspace, request-bound customer messages with site-style attachment composer, safe portal read model, dedicated logout endpoint, and focused portal MVP tests.
+- **Next Action**: Deploy and verify registration/login, empty dashboard, portal-created request, request detail, customer message, and logout with real e-mail/session data.
+
+- Date: 2026-05-17
+- Updated by: Antigravity
+- **Current Stage**: Master design system specification file `DESIGN.md` created in the repository root, documenting the exact as-built visual style, color palette tokens, typography, grids, layout rules, and premium visual components of the main website.
+- **Next Action**: Utilize the visual specifications in `DESIGN.md` for consistent UI development across all new customer-facing pages and upcoming verified client portal modules.
 
 - Date: 2026-05-16
 - Updated by: Codex

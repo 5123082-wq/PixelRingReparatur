@@ -10,6 +10,13 @@ import type {
   PortalRequestStatus,
   PortalRequestTimelineItem,
 } from './types';
+import {
+  customerSafePortalCaseSummary,
+  customerSafePortalCaseTitle,
+  customerSafePortalMessageBody,
+  customerSafeTimelineDescriptionForStatus,
+  isInternalPortalAccessMessage,
+} from './safe-read-model';
 
 type PortalDb = PrismaClient | Prisma.TransactionClient;
 
@@ -20,8 +27,10 @@ type PortalCaseRecord = {
   customerName: string | null;
   customerEmail: string | null;
   customerPhone: string | null;
-  summary: string | null;
-  description: string | null;
+  serviceLocation: string | null;
+  serviceLatitude: number | null;
+  serviceLongitude: number | null;
+  serviceLocationSource: string | null;
   locale: string | null;
   numberIssuedAt: Date | null;
   statusUpdatedAt: Date | null;
@@ -34,6 +43,12 @@ type PortalCaseRecord = {
     body: string;
     sentAt: Date | null;
     createdAt: Date;
+    attachments: {
+      id: string;
+      storageKey: string;
+      originalFilename: string | null;
+      mimeType: string;
+    }[];
   }[];
   attachments: {
     id: string;
@@ -50,13 +65,16 @@ type PortalCaseRecord = {
 };
 
 const VIRTUAL_OBJECT_ID = 'service-requests';
+function portalLocale(locale?: string | null): string {
+  return locale === 'ru' ? 'ru-RU' : 'de-DE';
+}
 
-function formatDate(value: Date | null | undefined): string {
+function formatDate(value: Date | null | undefined, locale?: string | null): string {
   if (!value) {
-    return 'Noch nicht gesetzt';
+    return locale === 'ru' ? 'Пока не указано' : 'Noch nicht gesetzt';
   }
 
-  return new Intl.DateTimeFormat('de-DE', {
+  return new Intl.DateTimeFormat(portalLocale(locale), {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -92,7 +110,29 @@ function mapStatus(status: CaseStatus): PortalRequestStatus {
   }
 }
 
-function nextStepForStatus(status: CaseStatus): string {
+function nextStepForStatus(status: CaseStatus, locale?: string | null): string {
+  if (locale === 'ru') {
+    switch (status) {
+      case 'WAITING_FOR_CUSTOMER':
+        return 'PixelRing ожидает ваш ответ или дополнительные данные.';
+      case 'IN_PROGRESS':
+        return 'Заявка в работе. PixelRing координирует следующие шаги.';
+      case 'ON_HOLD':
+        return 'Заявка временно на паузе. Ваш контакт сообщит следующий шаг.';
+      case 'READY_FOR_PICKUP':
+        return 'Следующий рабочий шаг подготовлен.';
+      case 'COMPLETED':
+        return 'Заявка завершена.';
+      case 'CANCELLED':
+        return 'Заявка закрыта.';
+      case 'DRAFT':
+      case 'FORMALIZED':
+      case 'NUMBER_ISSUED':
+      case 'UNDER_REVIEW':
+        return 'PixelRing проверяет заявку и готовит обработку.';
+    }
+  }
+
   switch (status) {
     case 'WAITING_FOR_CUSTOMER':
       return 'Wir warten auf eine Rueckmeldung oder zusaetzliche Informationen von Ihnen.';
@@ -126,23 +166,14 @@ function mapMessageAuthor(role: MessageAuthorRole): PortalMessageAuthor {
 }
 
 function titleForCase(caseRecord: PortalCaseRecord): string {
-  if (caseRecord.summary?.trim()) {
-    return caseRecord.summary.trim();
-  }
-
-  return `Anfrage ${caseRecord.publicRequestNumber}`;
+  return customerSafePortalCaseTitle({
+    publicRequestNumber: caseRecord.publicRequestNumber,
+    messages: caseRecord.messages,
+  });
 }
 
 function summaryForCase(caseRecord: PortalCaseRecord): string {
-  if (caseRecord.description?.trim()) {
-    return caseRecord.description.trim();
-  }
-
-  if (caseRecord.summary?.trim()) {
-    return caseRecord.summary.trim();
-  }
-
-  return 'Die Anfrage wurde im PixelRing System registriert.';
+  return customerSafePortalCaseSummary(caseRecord.messages);
 }
 
 function mapCaseToPortalRequest(caseRecord: PortalCaseRecord): PortalRequest {
@@ -153,10 +184,17 @@ function mapCaseToPortalRequest(caseRecord: PortalCaseRecord): PortalRequest {
     title: titleForCase(caseRecord),
     status: mapStatus(caseRecord.status),
     priority: caseRecord.status === 'WAITING_FOR_CUSTOMER' ? 'high' : 'normal',
-    openedAt: formatDate(caseRecord.numberIssuedAt || caseRecord.createdAt),
-    updatedAt: formatDate(caseRecord.statusUpdatedAt || caseRecord.updatedAt),
+    openedAt: formatDate(caseRecord.numberIssuedAt || caseRecord.createdAt, caseRecord.locale),
+    updatedAt: formatDate(caseRecord.statusUpdatedAt || caseRecord.updatedAt, caseRecord.locale),
     summary: summaryForCase(caseRecord),
-    nextStep: nextStepForStatus(caseRecord.status),
+    nextStep: nextStepForStatus(caseRecord.status, caseRecord.locale),
+    customerName: caseRecord.customerName,
+    serviceLocation: caseRecord.serviceLocation,
+    serviceLatitude: caseRecord.serviceLatitude,
+    serviceLongitude: caseRecord.serviceLongitude,
+    serviceLocationSource: caseRecord.serviceLocationSource,
+    contactEmail: caseRecord.customerEmail,
+    contactPhone: caseRecord.customerPhone,
   };
 }
 
@@ -165,9 +203,9 @@ function mapTimeline(caseRecord: PortalCaseRecord): PortalRequestTimelineItem[] 
     id: event.id,
     requestId: caseRecord.id,
     state: event.toStatus === caseRecord.status ? 'active' as const : 'done' as const,
-    title: nextStepForStatus(event.toStatus),
-    description: event.reason || `Status: ${event.toStatus}`,
-    occurredAt: formatDate(event.createdAt),
+    title: nextStepForStatus(event.toStatus, caseRecord.locale),
+    description: customerSafeTimelineDescriptionForStatus(event.toStatus, caseRecord.locale),
+    occurredAt: formatDate(event.createdAt, caseRecord.locale),
   }));
 
   if (events.length > 0) {
@@ -180,8 +218,10 @@ function mapTimeline(caseRecord: PortalCaseRecord): PortalRequestTimelineItem[] 
       requestId: caseRecord.id,
       state: 'active',
       title: 'Anfrage registriert',
-      description: 'Die Anfrage wurde im PixelRing System angelegt.',
-      occurredAt: formatDate(caseRecord.numberIssuedAt || caseRecord.createdAt),
+      description: caseRecord.locale === 'ru'
+        ? 'Заявка создана в системе PixelRing.'
+        : 'Die Anfrage wurde im PixelRing System angelegt.',
+      occurredAt: formatDate(caseRecord.numberIssuedAt || caseRecord.createdAt, caseRecord.locale),
     },
   ];
 }
@@ -192,7 +232,7 @@ function mapAttachments(caseRecord: PortalCaseRecord): PortalCustomerAttachment[
     requestId: caseRecord.id,
     filename: attachment.originalFilename || 'Anhang',
     fileType: attachment.mimeType,
-    uploadedAt: formatDate(attachment.createdAt),
+    uploadedAt: formatDate(attachment.createdAt, caseRecord.locale),
     status: 'received',
   }));
 }
@@ -205,13 +245,15 @@ function buildOrganization(input: {
 }): PortalDemoOrganization {
   const contactName = customerNameForPortal(input.email, input.displayName);
   const requests = input.cases.map(mapCaseToPortalRequest);
+  const locale = input.cases[0]?.locale || 'de';
+  const isRu = locale === 'ru';
 
   return {
     id: input.portalUserId,
     name: contactName,
     plan: 'Start',
     demoEmail: input.email,
-    languagePreference: 'de',
+    languagePreference: locale,
     contacts: [
       {
         id: 'primary-contact',
@@ -224,24 +266,27 @@ function buildOrganization(input: {
     objects: [
       {
         id: VIRTUAL_OBJECT_ID,
-        name: 'Ihre PixelRing Anfragen',
+        name: isRu ? 'Ваши заявки PixelRing' : 'Ihre PixelRing Anfragen',
         city: '',
-        address: 'Noch keinem Objekt zugeordnet',
-        purpose: 'Service requests and customer communication',
-        accessNotes: 'Nur fuer verifizierte Portal-Sitzungen sichtbar.',
+        address: isRu ? 'Объект пока не задан' : 'Noch keinem Objekt zugeordnet',
+        purpose: isRu ? 'Сервисные заявки и клиентская переписка' : 'Service requests and customer communication',
+        accessNotes: isRu ? 'Видно только в verified portal session.' : 'Nur fuer verifizierte Portal-Sitzungen sichtbar.',
         responsibleContactIds: ['primary-contact'],
       },
     ],
     assets: [],
     requests,
     messages: input.cases.flatMap((caseRecord) =>
-      caseRecord.messages.map((message) => ({
-        id: message.id,
-        requestId: caseRecord.id,
-        author: mapMessageAuthor(message.authorRole),
-        sentAt: formatDate(message.sentAt || message.createdAt),
-        body: message.body,
-      }))
+      caseRecord.messages
+        .filter((message) => !isInternalPortalAccessMessage(message.body))
+        .map((message) => ({
+          id: message.id,
+          requestId: caseRecord.id,
+          author: mapMessageAuthor(message.authorRole),
+          sentAt: formatDate(message.sentAt || message.createdAt),
+          body: customerSafePortalMessageBody(message.body),
+          attachments: message.attachments,
+        }))
     ),
     requestTimeline: input.cases.flatMap(mapTimeline),
     customerAttachments: input.cases.flatMap(mapAttachments),
@@ -276,8 +321,10 @@ async function getPortalUserWithCases(db: PortalDb, portalUserId: string) {
               customerName: true,
               customerEmail: true,
               customerPhone: true,
-              summary: true,
-              description: true,
+              serviceLocation: true,
+              serviceLatitude: true,
+              serviceLongitude: true,
+              serviceLocationSource: true,
               locale: true,
               numberIssuedAt: true,
               statusUpdatedAt: true,
@@ -297,6 +344,17 @@ async function getPortalUserWithCases(db: PortalDb, portalUserId: string) {
                   body: true,
                   sentAt: true,
                   createdAt: true,
+                  attachments: {
+                    where: {
+                      isCustomerVisible: true,
+                    },
+                    select: {
+                      id: true,
+                      storageKey: true,
+                      originalFilename: true,
+                      mimeType: true,
+                    },
+                  },
                 },
               },
               attachments: {
