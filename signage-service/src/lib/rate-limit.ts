@@ -147,3 +147,24 @@ export const PORTAL_AUTH_LIMIT: RateLimitConfig = {
   windowMs: 5 * 60 * 1000,
   prefix: 'portal-auth',
 };
+
+/** Portal request creation: 5 requests per 10 minutes per IP */
+export const PORTAL_REQUEST_LIMIT: RateLimitConfig = {
+  maxRequests: 5,
+  windowMs: 10 * 60 * 1000,
+  prefix: 'portal-request',
+};
+
+/** Portal request detail updates: 10 updates per 10 minutes per IP */
+export const PORTAL_REQUEST_UPDATE_LIMIT: RateLimitConfig = {
+  maxRequests: 10,
+  windowMs: 10 * 60 * 1000,
+  prefix: 'portal-request-update',
+};
+
+/** Portal request messages: 20 messages per minute per IP */
+export const PORTAL_MESSAGE_LIMIT: RateLimitConfig = {
+  maxRequests: 20,
+  windowMs: 60 * 1000,
+  prefix: 'portal-message',
+};

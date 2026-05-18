@@ -29,6 +29,9 @@ export type WebsiteRequestInput = {
   name?: string;
   contact: string;
   serviceLocation?: string | null;
+  serviceLatitude?: number | null;
+  serviceLongitude?: number | null;
+  serviceLocationSource?: string | null;
   message: string;
   userAgent?: string | null;
   ipAddress?: string | null;
@@ -38,14 +41,18 @@ export type WebsiteRequestInput = {
   existingSessionId?: string | null;
   existingSessionToken?: string | null;
   isFromChat?: boolean;
+  portalUser?: {
+    portalUserId: string;
+    portalSessionId: string;
+  } | null;
 };
 
 export type WebsiteRequestResult = {
   caseId: string;
   publicRequestNumber: string;
-  portalClaimUrl: string;
-  portalClaimExpiresAt: string;
-  sessionToken: string;
+  portalClaimUrl?: string;
+  portalClaimExpiresAt?: string;
+  sessionToken?: string;
   photoReceived: boolean;
 };
 
@@ -143,6 +150,9 @@ export async function createWebsiteRequest(
         primaryContactMethod: parsedContact.method,
         primaryContactValue: parsedContact.value,
         serviceLocation: input.serviceLocation?.trim() || null,
+        serviceLatitude: input.serviceLatitude ?? null,
+        serviceLongitude: input.serviceLongitude ?? null,
+        serviceLocationSource: input.serviceLocationSource?.trim() || null,
         locale: input.locale?.trim() || null,
         summary: buildSummary(input.message),
         description: input.message.trim(),
@@ -216,6 +226,9 @@ export async function createWebsiteRequest(
       customerEmail: parsedContact.customerEmail,
       customerPhone: parsedContact.customerPhone,
       serviceAddress: input.serviceLocation?.trim() || null,
+      serviceLatitude: input.serviceLatitude ?? null,
+      serviceLongitude: input.serviceLongitude ?? null,
+      serviceLocationSource: input.serviceLocationSource?.trim() || null,
       preferredLanguage: input.locale?.trim() || null,
       preferredContactMethod: parsedContact.method,
     });
@@ -223,7 +236,17 @@ export async function createWebsiteRequest(
     let session;
     let finalSessionToken = sessionToken;
     let linkedSessionAttachmentCount = 0;
-    if (input.existingSessionId && input.existingSessionToken) {
+    if (input.portalUser) {
+      session = await tx.session.update({
+        where: { id: input.portalUser.portalSessionId },
+        data: {
+          caseId: createdCase.id,
+          lastSeenAt: now,
+        },
+        select: { id: true },
+      });
+      finalSessionToken = '';
+    } else if (input.existingSessionId && input.existingSessionToken) {
       session = await tx.session.update({
         where: { id: input.existingSessionId },
         data: {
@@ -286,6 +309,35 @@ export async function createWebsiteRequest(
           isCustomerVisible: true,
         })),
       });
+    }
+
+    if (input.portalUser) {
+      await tx.portalCaseAccess.upsert({
+        where: {
+          portalUserId_caseId: {
+            portalUserId: input.portalUser.portalUserId,
+            caseId: createdCase.id,
+          },
+        },
+        create: {
+          portalUserId: input.portalUser.portalUserId,
+          caseId: createdCase.id,
+          source: 'ADMIN',
+          grantedAt: now,
+        },
+        update: {
+          source: 'ADMIN',
+          grantedAt: now,
+          revokedAt: null,
+        },
+        select: { id: true },
+      });
+
+      return {
+        caseId: createdCase.id,
+        publicRequestNumber,
+        photoReceived: attachments.length + linkedSessionAttachmentCount > 0,
+      };
     }
 
     const portalClaimLink = await createPortalClaimLink(tx, {

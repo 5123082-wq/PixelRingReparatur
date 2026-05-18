@@ -1,13 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { prisma } from '@/lib/prisma';
 import {
   PORTAL_DEMO_COOKIE_MAX_AGE_SECONDS,
   PORTAL_DEMO_COOKIE_NAME,
-  PORTAL_SESSION_COOKIE_NAME,
   createPortalDemoCookieValue,
   isValidPortalDemoEmail,
-  revokePortalSessionCookie,
 } from '@/lib/portal/auth';
 import { isPortalDemoEnabled } from '@/lib/portal/demo-data';
 import { checkRateLimit, getClientIP, PORTAL_DEMO_AUTH_LIMIT } from '@/lib/rate-limit';
@@ -52,24 +49,10 @@ export async function POST(request: NextRequest) {
   return response;
 }
 
-export async function DELETE(request: NextRequest) {
-  await revokePortalSessionCookie(
-    prisma,
-    request.cookies.get(PORTAL_SESSION_COOKIE_NAME)?.value
-  );
-
+export async function DELETE() {
   const response = NextResponse.json({ success: true });
   response.cookies.set({
     name: PORTAL_DEMO_COOKIE_NAME,
-    value: '',
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    path: '/',
-    maxAge: 0,
-  });
-  response.cookies.set({
-    name: PORTAL_SESSION_COOKIE_NAME,
     value: '',
     httpOnly: true,
     sameSite: 'lax',

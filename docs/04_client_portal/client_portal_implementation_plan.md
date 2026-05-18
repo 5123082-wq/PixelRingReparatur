@@ -1423,6 +1423,24 @@ Suggested first user-visible result:
 
 ## Progress Log
 
+### 2026-05-18
+
+- Current sprint/block: Client Portal request detail editing, request-bound AI chat, and new request address UX.
+- Done: portal-created requests now use the shared Photon (бесплатный адресный автокомплит на базе OpenStreetMap) address picker, submit optional coordinates/source with the service location, and show the saved service location as a Google Maps (ссылка на Google Maps) link in request detail. Request detail now also lets a verified portal user edit request contact name, e-mail, phone, and address/object while preserving the request number, creation date, opening date, and portal account owner; every saved change writes an audit entry and a customer-visible chat message with compact `from -> to` diff lines. The request-bound portal chat now calls the AI assistant after customer messages, but runs in a mode that must not create another request inside the existing request chat and instead points new-problem requests back to the portal.
+- In progress: database migration for service-location coordinates exists but must be applied to the intended environment before persisted coordinates are available outside code/build checks; portal edit and AI reply flows are locally build/test verified but still need deploy/live data verification.
+- Next action: after migration/deploy, verify a portal-created request with selected address, request detail map link, fallback manual address entry, customer-side request detail edits with chat diff logging, and AI replies in an existing request chat.
+- Blockers/risks: object/location persistence and organization-scoped asset maps remain future modules; address edits clear old stored coordinates until a dedicated address picker is added to the edit form; portal AI replies depend on the same AI provider configuration as the public chat and fall back when no provider is configured.
+- Updated documents: `docs/04_client_portal/client_portal_implementation_plan.md`, `docs/02_public_website/information_architecture.md`, `PROGRESS.md`.
+
+### 2026-05-17
+
+- Current sprint/block: Client Portal core request MVP.
+- Done: implemented safe portal read model filtering for portal claim links, customer-safe status timeline text, customer-safe request title/summary from customer-visible messages instead of raw CRM fields, dedicated `/api/portal/auth/logout`, authenticated `POST /api/portal/requests`, request-bound `POST /api/portal/requests/[publicRequestNumber]/messages` with the site-style chat UI and customer-visible image/video attachment upload, portal mutation origin checks, demo read-only separation for write forms, compact portal dashboard without a global chat/notifications page, modal-like split request detail with left-side task data/files/result and right-side request chat, and focused `test:portal-mvp` coverage.
+- In progress: local render/API checks are passing; full production e-mail/session E2E remains after deploy.
+- Next action: verify `/de/portal` and `/ru/portal` on preview/live with registration/login, empty dashboard, portal-created request, request detail, customer message, and logout.
+- Blockers/risks: portal chat attachments now have a baseline upload/display path, but secure download authorization and broader document/file workflows remain separate; no customer-side realtime portal channel yet; new request grants reuse the existing `ADMIN` `PortalCaseAccess.source` value until a dedicated portal-created source is approved via migration; Telegram linking, reports/warranties, billing, organizations, and RBAC remain deferred.
+- Updated documents: `docs/04_client_portal/client_portal_implementation_plan.md`, `PROGRESS.md`.
+
 ### 2026-05-16
 
 - Current sprint/block: Client Portal e-mail code plus password auth.

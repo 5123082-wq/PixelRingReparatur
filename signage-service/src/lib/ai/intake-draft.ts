@@ -7,6 +7,9 @@ import type { ExtractedPii } from './pii-redaction';
 type DraftDb = PrismaClient | Prisma.TransactionClient;
 
 export type SessionIntakeDraftPatch = ExtractedPii & {
+  serviceLatitude?: number | null;
+  serviceLongitude?: number | null;
+  serviceLocationSource?: string | null;
   issueType?: string;
   summary?: string;
   locale?: string;
@@ -47,6 +50,13 @@ function buildUpdateData(
   if (clean(patch.customerEmail)) data.customerEmail = patch.customerEmail?.trim();
   if (clean(patch.customerPhone)) data.customerPhone = patch.customerPhone?.trim();
   if (clean(patch.serviceLocation)) data.serviceLocation = patch.serviceLocation?.trim();
+  if ('serviceLatitude' in patch) data.serviceLatitude = patch.serviceLatitude ?? null;
+  if ('serviceLongitude' in patch) data.serviceLongitude = patch.serviceLongitude ?? null;
+  if ('serviceLocationSource' in patch) {
+    data.serviceLocationSource = clean(patch.serviceLocationSource)
+      ? patch.serviceLocationSource?.trim()
+      : null;
+  }
   if (clean(patch.issueType)) data.issueType = patch.issueType?.trim();
   if (clean(patch.summary)) data.summary = patch.summary?.trim();
   if (clean(patch.locale)) data.locale = patch.locale?.trim();
@@ -66,6 +76,9 @@ function buildCreateData(
     customerEmail: typeof data.customerEmail === 'string' ? data.customerEmail : null,
     customerPhone: typeof data.customerPhone === 'string' ? data.customerPhone : null,
     serviceLocation: typeof data.serviceLocation === 'string' ? data.serviceLocation : null,
+    serviceLatitude: typeof data.serviceLatitude === 'number' ? data.serviceLatitude : null,
+    serviceLongitude: typeof data.serviceLongitude === 'number' ? data.serviceLongitude : null,
+    serviceLocationSource: typeof data.serviceLocationSource === 'string' ? data.serviceLocationSource : null,
     issueType: typeof data.issueType === 'string' ? data.issueType : null,
     summary: typeof data.summary === 'string' ? data.summary : null,
     locale: typeof data.locale === 'string' ? data.locale : null,

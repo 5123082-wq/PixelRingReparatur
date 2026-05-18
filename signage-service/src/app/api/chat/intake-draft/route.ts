@@ -30,6 +30,24 @@ function splitContact(contact: string | undefined): {
     : { customerPhone: contact.trim() };
 }
 
+function readCoordinate(value: FormDataEntryValue | null, min: number, max: number): number | null {
+  if (typeof value !== 'string' || !value.trim()) {
+    return null;
+  }
+
+  const parsed = Number(value);
+
+  return Number.isFinite(parsed) && parsed >= min && parsed <= max ? parsed : null;
+}
+
+function readLocationSource(value: FormDataEntryValue | null): string | null {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  return value.trim() === 'photon' ? 'photon' : null;
+}
+
 export async function POST(request: NextRequest) {
   const ip = getClientIP(request);
   const limit = checkRateLimit(ip, CHAT_MESSAGE_LIMIT);
@@ -68,6 +86,9 @@ export async function POST(request: NextRequest) {
       customerEmail: firstNonEmpty(String(formData.get('customerEmail') ?? ''), split.customerEmail),
       customerPhone: firstNonEmpty(String(formData.get('customerPhone') ?? ''), split.customerPhone),
       serviceLocation: String(formData.get('location') ?? '').trim(),
+      serviceLatitude: readCoordinate(formData.get('locationLatitude'), -90, 90),
+      serviceLongitude: readCoordinate(formData.get('locationLongitude'), -180, 180),
+      serviceLocationSource: readLocationSource(formData.get('locationSource')),
       issueType: String(formData.get('issueType') ?? '').trim(),
       summary: String(formData.get('summary') ?? '').trim(),
       locale: String(formData.get('locale') ?? '').trim(),

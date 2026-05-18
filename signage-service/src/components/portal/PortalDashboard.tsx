@@ -9,13 +9,13 @@ import type {
 } from '@/lib/portal/types';
 import { Link, useRouter } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type FormEvent } from 'react';
+import LocationPicker, { type SelectedLocation } from '@/components/common/LocationPicker';
 
 type TabKey =
   | 'overview'
   | 'requests'
   | 'new-request'
-  | 'messages'
   | 'objects'
   | 'assets'
   | 'maintenance'
@@ -49,7 +49,6 @@ const NAV_GROUPS: { label: string; items: { key: TabKey; icon: string; label: st
       { key: 'overview', icon: '▦', label: 'Обзор' },
       { key: 'requests', icon: '☷', label: 'Мои заявки' },
       { key: 'new-request', icon: '+', label: 'Новая заявка' },
-      { key: 'messages', icon: '◌', label: 'Чат и уведомления' },
     ],
   },
   {
@@ -76,8 +75,10 @@ const NAV_GROUPS: { label: string; items: { key: TabKey; icon: string; label: st
 
 export default function PortalDashboard({
   organization,
+  canCreateRequests = false,
 }: {
   organization: PortalDemoOrganization;
+  canCreateRequests?: boolean;
 }) {
   const t = useTranslations('Portal');
   const router = useRouter();
@@ -102,6 +103,7 @@ export default function PortalDashboard({
   async function logout() {
     setIsLoggingOut(true);
     try {
+      await fetch('/api/portal/auth/logout', { method: 'POST' });
       await fetch('/api/portal/demo-auth', { method: 'DELETE' });
       router.refresh();
     } finally {
@@ -115,37 +117,37 @@ export default function PortalDashboard({
   }
 
   return (
-    <main className="min-h-screen bg-[#F3EFE7] text-[#0F1C2B]">
-      <div className="grid min-h-screen lg:grid-cols-[258px_1fr]">
+    <main className="min-h-screen bg-[#EEF2F6] text-[#0F1C2B]">
+      <div className="grid min-h-screen lg:grid-cols-[232px_1fr]">
         <aside className="border-b border-white/10 bg-[#0D1B2A] text-white lg:h-screen lg:overflow-y-auto lg:border-b-0">
-          <div className="flex min-h-full flex-col p-4">
-            <Link href="/" className="mb-5 inline-flex w-fit items-center gap-3 text-[15px] font-black uppercase tracking-[0.16em]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#C46E43] text-[15px] text-white">P</span>
+          <div className="flex min-h-full flex-col p-3">
+            <Link href="/" className="mb-4 inline-flex w-fit items-center gap-2.5 text-[12px] font-black uppercase tracking-[0.16em]">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#C46E43] text-[13px] text-white">P</span>
               PixelRing
             </Link>
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.055] p-4">
-              <strong className="block text-[15px]">{organization.name}</strong>
-              <span className="mt-1 block text-[12px] text-white/55">{t('planLabel', { plan: organization.plan })} · verified email</span>
+            <div className="rounded-xl border border-white/10 bg-white/[0.055] p-3">
+              <strong className="block text-[13px]">{organization.name}</strong>
+              <span className="mt-1 block text-[11px] leading-4 text-white/55">{t('planLabel', { plan: organization.plan })} · verified email</span>
             </div>
 
-            <nav className="mt-6 grid gap-5">
+            <nav className="mt-4 grid gap-4">
               {NAV_GROUPS.map((group) => (
                 <div key={group.label}>
-                  <p className="mb-2 px-2 text-[11px] font-black uppercase tracking-[0.22em] text-white/28">{group.label}</p>
+                  <p className="mb-1.5 px-2 text-[10px] font-black uppercase tracking-[0.2em] text-white/28">{group.label}</p>
                   <div className="grid gap-1">
                     {group.items.map((item) => (
                       <button
                         key={item.key}
                         type="button"
                         onClick={() => setActiveTab(item.key)}
-                        className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-start text-[14px] font-bold transition ${
+                        className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-start text-[12px] font-bold transition ${
                           activeTab === item.key
                             ? 'bg-[#C46E43] text-white shadow-sm'
                             : 'text-white/58 hover:bg-white/[0.07] hover:text-white'
                         }`}
                       >
-                        <span className="flex h-5 w-5 items-center justify-center text-[13px]">{item.icon}</span>
+                        <span className="flex h-4 w-4 items-center justify-center text-[11px]">{item.icon}</span>
                         <span>{item.label}</span>
                       </button>
                     ))}
@@ -154,32 +156,25 @@ export default function PortalDashboard({
               ))}
             </nav>
 
-            <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.045] p-4 text-[12px] leading-5 text-white/50 lg:mt-auto">
+            <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.045] p-3 text-[11px] leading-5 text-white/50 lg:mt-auto">
               {t('safeBoundary')}
             </div>
           </div>
         </aside>
 
         <section className="min-w-0 lg:h-screen lg:overflow-y-auto">
-          <div className="mx-auto max-w-[1520px] p-4 sm:p-6 lg:p-8">
-            <header className="mb-5 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div className="mx-auto max-w-none p-3 sm:p-4 lg:p-5">
+            <header className="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
-                <p className="text-[12px] font-black uppercase tracking-[0.18em] text-[#B8643E]">Kundenportal · Client Portal</p>
-                <h1 className="mt-1 text-[30px] font-black leading-tight sm:text-[40px]">{pageTitle(activeTab, organization.name)}</h1>
-                <p className="mt-1 max-w-4xl text-[15px] text-[#6F665D]">{pageSubtitle(activeTab)}</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#B8643E]">Kundenportal · Client Portal</p>
+                <h1 className="mt-1 text-[22px] font-black leading-tight sm:text-[28px]">{pageTitle(activeTab, organization.name)}</h1>
+                <p className="mt-1 max-w-3xl text-[13px] text-[#6F665D]">{pageSubtitle(activeTab)}</p>
               </div>
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
-                  onClick={() => setActiveTab('messages')}
-                  className="rounded-xl border border-[#E3D8CA] bg-white px-4 py-3 text-[14px] font-black text-[#0F1C2B] shadow-sm transition hover:border-[#C46E43]"
-                >
-                  {organization.messages.length} уведомления
-                </button>
-                <button
-                  type="button"
                   onClick={() => setActiveTab('new-request')}
-                  className="rounded-xl bg-[#C46E43] px-4 py-3 text-[14px] font-black text-white shadow-sm transition hover:bg-[#AA5934]"
+                  className="rounded-lg bg-[#C46E43] px-3 py-2 text-[12px] font-black text-white shadow-sm transition hover:bg-[#AA5934]"
                 >
                   + Создать заявку
                 </button>
@@ -187,7 +182,7 @@ export default function PortalDashboard({
                   type="button"
                   onClick={logout}
                   disabled={isLoggingOut}
-                  className="rounded-xl border border-[#E3D8CA] bg-white px-4 py-3 text-[14px] font-black text-[#6F665D] shadow-sm transition hover:border-[#C46E43] disabled:opacity-60"
+                  className="rounded-lg border border-[#DCE3EA] bg-white px-3 py-2 text-[12px] font-black text-[#6F665D] shadow-sm transition hover:border-[#C46E43] disabled:opacity-60"
                 >
                   {isLoggingOut ? t('logoutLoading') : t('logout')}
                 </button>
@@ -205,8 +200,7 @@ export default function PortalDashboard({
               />
             )}
             {activeTab === 'requests' && <RequestsTable requests={organization.requests} objectsById={objectsById} onTabChange={setActiveTab} />}
-            {activeTab === 'new-request' && <NewRequestPreview organization={organization} />}
-            {activeTab === 'messages' && <MessagesPanel organization={organization} objectsById={objectsById} />}
+            {activeTab === 'new-request' && <NewRequestForm organization={organization} canCreateRequests={canCreateRequests} />}
             {activeTab === 'objects' && (
               <ObjectsWorkspace
                 organization={organization}
@@ -236,7 +230,6 @@ function pageTitle(activeTab: TabKey, organizationName: string) {
     overview: `Добрый день, ${organizationName}.`,
     requests: 'Мои заявки',
     'new-request': 'Новая заявка',
-    messages: 'Чат и уведомления',
     objects: 'Объекты',
     assets: 'Оборудование и рекламные активы',
     maintenance: 'План ТО',
@@ -257,7 +250,6 @@ function pageSubtitle(activeTab: TabKey) {
     overview: 'Здесь собраны заявки, объекты, отчеты, гарантии и действия, которые требуют вашего решения.',
     requests: 'Клиентские статусы, сообщения, документы и следующие действия без внутренних CRM-деталей.',
     'new-request': 'Быстрый старт для ремонта, гарантии, профилактики или консультации. Номер появляется только после подтверждения контакта.',
-    messages: 'Единая история клиентских сообщений по заявкам, без показа внутренних заметок операторов.',
     objects: 'Торговые точки как центры ответственности: контакты, состав рекламных активов, ремонты, счета и затраты.',
     assets: 'Не только вывески: наружная и внутренняя реклама, меню, печать, баннеры, наклейки, навигация и одежда персонала.',
     maintenance: 'Профилактические визиты, сервисные окна и повторяющиеся договоренности.',
@@ -296,35 +288,35 @@ function Overview({
   }
 
   return (
-    <div className="grid gap-5">
-      <section className="rounded-2xl bg-[#0D1B2A] p-5 text-white shadow-sm">
-        <h2 className="text-[18px] font-black">PixelAI Concierge</h2>
-        <p className="mt-3 max-w-5xl text-[15px] leading-7 text-white/72">
+    <div className="grid gap-3">
+      <section className="rounded-xl bg-[#0D1B2A] p-4 text-white shadow-sm">
+        <h2 className="text-[15px] font-black">PixelAI Concierge</h2>
+        <p className="mt-2 max-w-5xl text-[13px] leading-6 text-white/72">
           По вашим активным заявкам есть {waitingActions.length} действия: согласовать смету, подтвердить окно визита и дополнить фото для подготовки материалов.
         </p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          <button type="button" onClick={() => onTabChange('requests')} className="rounded-xl bg-[#C46E43] px-4 py-3 text-[14px] font-black text-white">
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button type="button" onClick={() => onTabChange('requests')} className="rounded-lg bg-[#C46E43] px-3 py-2 text-[12px] font-black text-white">
             Открыть действия
           </button>
-          <button type="button" className="rounded-xl bg-white/10 px-4 py-3 text-[14px] font-black text-white">
+          <button type="button" className="rounded-lg bg-white/10 px-3 py-2 text-[12px] font-black text-white">
             Напомнить позже
           </button>
         </div>
       </section>
 
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-3 md:grid-cols-4">
         <MetricCard label="Активные заявки" value={activeRequests.length} meta={`${waitingActions.length} требуют решения`} />
         <MetricCard label={t('metrics.objects')} value={organization.objects.length} meta="Berlin · Potsdam" />
         <MetricCard label="Гарантии" value={organization.documents.filter((document) => document.type === 'WARRANTY').length} meta="1 preview заблокирован" />
         <MetricCard label="Плановое ТО" value={serviceAssets.length} meta="Ближайший визит: 30.04" />
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[1fr_380px]">
-        <div className="grid gap-5">
+      <div className="grid gap-3 xl:grid-cols-[1fr_320px]">
+        <div className="grid gap-3">
           <ActionList organization={organization} objectsById={objectsById} />
           <RequestsTable requests={activeRequests.slice(0, 3)} objectsById={objectsById} compact onTabChange={onTabChange} />
         </div>
-        <aside className="grid content-start gap-5">
+        <aside className="grid content-start gap-3">
           <UpcomingEvents organization={organization} objectsById={objectsById} />
           <ObjectHealth organization={organization} />
           <DocumentCards title="Документы preview" documents={availableDocuments.slice(0, 3)} emptyLabel="Нет документов." compact />
@@ -400,10 +392,10 @@ function EmptyPortalOverview({ onTabChange }: { onTabChange: (tab: TabKey) => vo
 
 function MetricCard({ label, value, meta }: { label: string; value: number; meta: string }) {
   return (
-    <div className="rounded-2xl border border-[#E3D8CA] bg-white p-5 shadow-sm">
-      <div className="text-[34px] font-black text-[#0F1C2B]">{value}</div>
-      <div className="mt-1 text-[12px] font-black uppercase tracking-[0.14em] text-[#6F665D]">{label}</div>
-      <p className="mt-2 text-[13px] text-[#7B7168]">{meta}</p>
+    <div className="rounded-xl border border-[#DCE3EA] bg-white p-4 shadow-sm">
+      <div className="text-[24px] font-black leading-none text-[#0F1C2B]">{value}</div>
+      <div className="mt-2 text-[10px] font-black uppercase tracking-[0.14em] text-[#6F665D]">{label}</div>
+      <p className="mt-1 text-[12px] text-[#7B7168]">{meta}</p>
     </div>
   );
 }
@@ -418,12 +410,12 @@ function ActionList({
   const t = useTranslations('Portal');
 
   return (
-    <section className="rounded-2xl border border-[#E3D8CA] bg-white p-5 shadow-sm">
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-[20px] font-black">Требует действия</h2>
-        <span className="rounded-full bg-[#FFF3E8] px-3 py-1 text-[12px] font-black text-[#A85F23]">{organization.requiredActions.length} задачи</span>
+    <section className="rounded-xl border border-[#DCE3EA] bg-white p-4 shadow-sm">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <h2 className="text-[17px] font-black">Требует действия</h2>
+        <span className="rounded-full bg-[#FFF3E8] px-2.5 py-1 text-[11px] font-black text-[#A85F23]">{organization.requiredActions.length} задачи</span>
       </div>
-      <div className="grid gap-3">
+      <div className="grid gap-2.5">
         {organization.requiredActions.map((action) => {
           const request = organization.requests.find((item) => item.id === action.requestId);
           if (!request) return null;
@@ -432,15 +424,15 @@ function ActionList({
             <Link
               key={action.id}
               href={`/portal/requests/${request.publicRequestNumber}`}
-              className="grid gap-3 rounded-2xl border border-[#EFE6DC] bg-[#FFFDFC] p-4 transition hover:border-[#C46E43]/50 md:grid-cols-[1fr_auto] md:items-center"
+              className="grid gap-2 rounded-xl border border-[#E5EAF0] bg-[#FFFDFC] p-3 transition hover:border-[#C46E43]/50 md:grid-cols-[1fr_auto] md:items-center"
             >
               <div>
-                <h3 className="text-[16px] font-black">{actionTitle(action.type)}</h3>
-                <p className="mt-1 text-[13px] text-[#6F665D]">
+                <h3 className="text-[14px] font-black">{actionTitle(action.type)}</h3>
+                <p className="mt-1 text-[12px] text-[#6F665D]">
                   {request.publicRequestNumber} · {objectsById.get(request.objectId)?.name} · {action.description}
                 </p>
               </div>
-              <span className="w-fit rounded-xl bg-[#F2E1D5] px-4 py-2 text-[13px] font-black text-[#A45531]">
+              <span className="w-fit rounded-lg bg-[#F2E1D5] px-3 py-1.5 text-[11px] font-black text-[#A45531]">
                 {t('detail.previewOnly')}
               </span>
             </Link>
@@ -471,46 +463,46 @@ function RequestsTable({
   const t = useTranslations('Portal');
 
   return (
-    <section className="rounded-2xl border border-[#E3D8CA] bg-white p-5 shadow-sm">
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-[20px] font-black">{compact ? 'Активные заявки' : 'Мои заявки'}</h2>
+    <section className="rounded-xl border border-[#DCE3EA] bg-white p-4 shadow-sm">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <h2 className="text-[17px] font-black">{compact ? 'Активные заявки' : 'Мои заявки'}</h2>
         {!compact && (
-          <button type="button" onClick={() => onTabChange('new-request')} className="rounded-xl bg-[#C46E43] px-4 py-2.5 text-[13px] font-black text-white">
+          <button type="button" onClick={() => onTabChange('new-request')} className="rounded-lg bg-[#C46E43] px-3 py-2 text-[12px] font-black text-white">
             + Новая заявка
           </button>
         )}
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-[860px] w-full border-collapse text-left text-[14px]">
+        <table className="min-w-[760px] w-full border-collapse text-left text-[12px]">
           <thead>
-            <tr className="border-b border-[#EFE6DC] text-[11px] font-black uppercase tracking-[0.14em] text-[#7B7168]">
-              <th className="py-3 pe-4">PR-номер</th>
-              <th className="py-3 pe-4">Работа</th>
-              <th className="py-3 pe-4">Объект</th>
-              <th className="py-3 pe-4">Статус</th>
-              <th className="py-3 pe-4">Следующее действие</th>
-              <th className="py-3" />
+            <tr className="border-b border-[#E5EAF0] text-[10px] font-black uppercase tracking-[0.14em] text-[#7B7168]">
+              <th className="py-2 pe-3">PR-номер</th>
+              <th className="py-2 pe-3">Работа</th>
+              <th className="py-2 pe-3">Объект</th>
+              <th className="py-2 pe-3">Статус</th>
+              <th className="py-2 pe-3">Следующее действие</th>
+              <th className="py-2" />
             </tr>
           </thead>
           <tbody>
             {requests.map((request) => (
-              <tr key={request.id} className="border-b border-[#F1E9DF] align-top last:border-0">
-                <td className="py-4 pe-4 font-mono font-black text-[#0F1C2B]">{request.publicRequestNumber}</td>
-                <td className="py-4 pe-4 font-bold">{request.title}</td>
-                <td className="py-4 pe-4 text-[#6F665D]">{objectsById.get(request.objectId)?.name}</td>
-                <td className="py-4 pe-4">
-                  <span className={`inline-flex rounded-full border px-3 py-1 text-[11px] font-black ${statusTone[request.status]}`}>
+              <tr key={request.id} className="border-b border-[#EEF2F6] align-top last:border-0">
+                <td className="py-3 pe-3 font-mono font-black text-[#0F1C2B]">{request.publicRequestNumber}</td>
+                <td className="py-3 pe-3 font-bold">{request.title}</td>
+                <td className="py-3 pe-3 text-[#6F665D]">{objectsById.get(request.objectId)?.name}</td>
+                <td className="py-3 pe-3">
+                  <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-black ${statusTone[request.status]}`}>
                     {t(`requestStatus.${request.status}`)}
                   </span>
                 </td>
-                <td className="py-4 pe-4 text-[#6F665D]">{request.nextStep}</td>
-                <td className="py-4">
+                <td className="py-3 pe-3 text-[#6F665D]">{request.nextStep}</td>
+                <td className="py-3">
                   {request.status === 'COMPLETED' ? (
-                    <button type="button" onClick={() => onTabChange('reports')} className="rounded-xl border border-[#E3D8CA] px-4 py-2 text-[13px] font-black">
+                    <button type="button" onClick={() => onTabChange('reports')} className="rounded-lg border border-[#DCE3EA] px-3 py-1.5 text-[11px] font-black">
                       Отчет
                     </button>
                   ) : (
-                    <Link href={`/portal/requests/${request.publicRequestNumber}`} className="inline-flex rounded-xl bg-[#F2E1D5] px-4 py-2 text-[13px] font-black text-[#A45531]">
+                    <Link href={`/portal/requests/${request.publicRequestNumber}`} className="inline-flex rounded-lg bg-[#F2E1D5] px-3 py-1.5 text-[11px] font-black text-[#A45531]">
                       Открыть
                     </Link>
                   )}
@@ -524,44 +516,164 @@ function RequestsTable({
   );
 }
 
-function NewRequestPreview({ organization }: { organization: PortalDemoOrganization }) {
+function NewRequestForm({
+  organization,
+  canCreateRequests,
+}: {
+  organization: PortalDemoOrganization;
+  canCreateRequests: boolean;
+}) {
+  const router = useRouter();
+  const [issueType, setIssueType] = useState('Reparatur');
+  const [serviceLocation, setServiceLocation] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState<SelectedLocation | null>(null);
+  const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [feedback, setFeedback] = useState('');
+  const [error, setError] = useState('');
+  const categories = [
+    ['Reparatur', 'Nicht leuchtet, flackert, defekt'],
+    ['Wartung', 'Pruefung, Reinigung, vorbeugender Service'],
+    ['Montage', 'Neue Montage oder Umbau'],
+    ['Garantie', 'Rueckfrage zu ausgefuehrten Arbeiten'],
+  ];
+
+  async function submitRequest(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!canCreateRequests) {
+      setError('Diese Demo-Vorschau speichert keine neuen Anfragen. Melden Sie sich mit einem verifizierten Portal-Konto an.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setFeedback('');
+    setError('');
+
+    try {
+      const response = await fetch('/api/portal/requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          issueType,
+          serviceLocation,
+          serviceLatitude: selectedLocation?.latitude ?? null,
+          serviceLongitude: selectedLocation?.longitude ?? null,
+          serviceLocationSource: selectedLocation?.source ?? null,
+          message,
+        }),
+      });
+      const data = (await response.json().catch(() => null)) as {
+        success?: boolean;
+        redirectTo?: string;
+        publicRequestNumber?: string;
+        message?: string;
+      } | null;
+
+      if (!response.ok || !data?.success) {
+        throw new Error(data?.message || 'Die Anfrage konnte nicht erstellt werden.');
+      }
+
+      setFeedback(`Anfrage ${data.publicRequestNumber} wurde erstellt.`);
+      router.push(data.redirectTo || '/portal');
+      router.refresh();
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Die Anfrage konnte nicht erstellt werden.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <div className="grid gap-5 xl:grid-cols-[1fr_380px]">
-      <section className="rounded-2xl border border-[#E3D8CA] bg-white p-5 shadow-sm">
-        <h2 className="mb-4 text-[20px] font-black">Что нужно сделать?</h2>
+      <form id="new-request" onSubmit={submitRequest} className="scroll-mt-6 rounded-2xl border border-[#E3D8CA] bg-white p-5 shadow-sm">
+        <h2 className="mb-4 text-[20px] font-black">Neue Anfrage starten</h2>
         <div className="mb-5 grid gap-3 md:grid-cols-3">
-          {[
-            ['Ремонт', 'Не горит, мигает, шумит'],
-            ['Гарантия', 'Проверить гарантийный случай'],
-            ['Плановое ТО', 'Профилактический осмотр'],
-          ].map(([title, meta]) => (
-            <button key={title} type="button" className="rounded-2xl border border-[#EFE6DC] bg-[#FFFDFC] p-4 text-left transition hover:border-[#C46E43]/60">
+          {categories.map(([title, meta]) => (
+            <button
+              key={title}
+              type="button"
+              onClick={() => setIssueType(title)}
+              className={`rounded-2xl border p-4 text-left transition ${
+                issueType === title
+                  ? 'border-[#C46E43] bg-[#FFF3E8]'
+                  : 'border-[#EFE6DC] bg-[#FFFDFC] hover:border-[#C46E43]/60'
+              }`}
+            >
               <strong className="block text-[16px]">{title}</strong>
               <span className="mt-1 block text-[13px] text-[#7B7168]">{meta}</span>
             </button>
           ))}
         </div>
         <div className="grid gap-4 md:grid-cols-2">
-          <DemoField label="Объект" value={organization.objects[0]?.name || 'Pixel Ring GmbH'} />
-          <DemoField label="Приоритет" value="Обычный" />
+          <label className="block">
+            <span className="mb-1 block text-[12px] font-black text-[#6F665D]">Kategorie</span>
+            <input
+              value={issueType}
+              onChange={(event) => setIssueType(event.target.value)}
+              disabled={isSubmitting || !canCreateRequests}
+              className="h-12 w-full rounded-xl border border-[#E3D8CA] bg-[#FBF8F3] px-3 text-[14px] font-semibold text-[#0F1C2B] outline-none transition focus:border-[#C46E43] disabled:opacity-60"
+              maxLength={80}
+            />
+          </label>
+          <label className="block">
+            <span className="mb-1 block text-[12px] font-black text-[#6F665D]">Standort oder Objekt</span>
+            <LocationPicker
+              value={serviceLocation}
+              onChange={setServiceLocation}
+              onLocationSelect={setSelectedLocation}
+              disabled={isSubmitting || !canCreateRequests}
+              maxLength={500}
+              placeholder={organization.objects[0]?.address || 'Adresse oder Objektname'}
+              className="h-12 w-full rounded-xl border border-[#E3D8CA] bg-[#FBF8F3] px-3 text-[14px] font-semibold text-[#0F1C2B] outline-none transition focus:border-[#C46E43] disabled:opacity-60"
+            />
+          </label>
           <div className="md:col-span-2">
-            <DemoField label="Описание" value="Что произошло, где видно проблему, есть ли фото или видео..." muted />
+            <label className="block">
+              <span className="mb-1 block text-[12px] font-black text-[#6F665D]">Beschreibung</span>
+              <textarea
+                value={message}
+                onChange={(event) => setMessage(event.target.value)}
+                disabled={isSubmitting || !canCreateRequests}
+                required
+                minLength={5}
+                maxLength={4000}
+                placeholder="Was ist passiert, wo ist das Problem sichtbar, was soll PixelRing pruefen?"
+                className="min-h-[150px] w-full rounded-xl border border-[#E3D8CA] bg-[#FBF8F3] px-3 py-3 text-[14px] font-semibold leading-6 text-[#0F1C2B] outline-none transition focus:border-[#C46E43] disabled:opacity-60"
+              />
+            </label>
           </div>
-          <DemoField label="Желаемое окно" value="30.04, 09:00-11:00" />
-          <DemoField label="Контакт для подтверждения" value={organization.demoEmail} />
+          <DemoField label="Kontakt" value={organization.demoEmail} />
+          <DemoField
+            label="Sicherheit"
+            value={canCreateRequests ? 'Wird mit diesem Portal-Konto verbunden' : 'Demo-Vorschau ohne Speichern'}
+          />
         </div>
         <div className="mt-5 flex flex-wrap gap-2">
-          <button type="button" className="rounded-xl bg-[#C46E43] px-4 py-3 text-[14px] font-black text-white">Отправить на проверку</button>
-          <button type="button" className="rounded-xl border border-[#E3D8CA] bg-white px-4 py-3 text-[14px] font-black">Добавить фото</button>
+          <button
+            type="submit"
+            disabled={isSubmitting || !canCreateRequests}
+            className="rounded-xl bg-[#C46E43] px-4 py-3 text-[14px] font-black text-white transition hover:bg-[#AA5934] disabled:opacity-60"
+          >
+            {isSubmitting ? 'Wird erstellt ...' : canCreateRequests ? 'Anfrage erstellen' : 'Nur mit verifiziertem Konto'}
+          </button>
+          <button type="button" disabled className="rounded-xl border border-[#E3D8CA] bg-white px-4 py-3 text-[14px] font-black text-[#7B7168] opacity-70">
+            Dateien folgen spaeter
+          </button>
         </div>
-        <p className="mt-4 text-[12px] text-[#7B7168]">Создание заявок из портала будет включено отдельным этапом. Сейчас используйте основную форму заявки.</p>
-      </section>
+        {feedback && <p className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[13px] font-bold text-emerald-800">{feedback}</p>}
+        {error && <p className="mt-4 rounded-xl border border-[#F2C5BB] bg-[#FFF1EF] px-4 py-3 text-[13px] font-bold text-[#A94732]">{error}</p>}
+        <p className="mt-4 text-[12px] text-[#7B7168]">
+          {canCreateRequests
+            ? 'Die Anfrage erhaelt sofort eine PR-Nummer und wird nur mit diesem verifizierten Portal-Konto verbunden.'
+            : 'Demo-Daten bleiben read-only. Neue Anfragen werden erst mit einer echten Portal-Session gespeichert.'}
+        </p>
+      </form>
       <TimelineCard
         title="Как это работает"
         items={[
-          ['Черновик', 'Вы описываете задачу. AI может помочь уточнить проблему.'],
-          ['Контактное подтверждение', 'PR-номер показывается только после проверенного email или телефона.'],
-          ['Рабочая заявка', 'Координатор подтверждает план, сроки и нужные материалы.'],
+          ['Portal-Konto', 'Die Anfrage nutzt Ihre bestaetigte Portal-E-Mail.'],
+          ['PR-Nummer', 'Die neue Anfrage wird direkt mit Ihrem Konto verbunden.'],
+          ['Bearbeitung', 'PixelRing prueft die Details und meldet sich im Anfrageverlauf.'],
         ]}
       />
     </div>
@@ -576,40 +688,6 @@ function DemoField({ label, value, muted = false }: { label: string; value: stri
         {value}
       </div>
     </label>
-  );
-}
-
-function MessagesPanel({
-  organization,
-  objectsById,
-}: {
-  organization: PortalDemoOrganization;
-  objectsById: Map<string, PortalObject>;
-}) {
-  return (
-    <div className="grid gap-5 xl:grid-cols-2">
-      <section className="rounded-2xl border border-[#E3D8CA] bg-white p-5 shadow-sm">
-        <h2 className="mb-4 text-[20px] font-black">Входящие</h2>
-        <div className="grid gap-3">
-          {organization.messages.slice(-5).reverse().map((message) => {
-            const request = organization.requests.find((item) => item.id === message.requestId);
-            return (
-              <Link key={message.id} href={request ? `/portal/requests/${request.publicRequestNumber}` : '/portal'} className="rounded-2xl border border-[#EFE6DC] bg-[#FFFDFC] p-4 transition hover:border-[#C46E43]/60">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 className="font-black">{message.author}</h3>
-                    <p className="mt-1 text-[13px] text-[#6F665D]">{request?.publicRequestNumber} · {objectsById.get(request?.objectId || '')?.name}</p>
-                  </div>
-                  <span className="rounded-full bg-[#EEF3FB] px-3 py-1 text-[11px] font-black text-[#42526B]">{message.sentAt}</span>
-                </div>
-                <p className="mt-3 text-[14px] leading-6 text-[#4D4741]">{message.body}</p>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
-      <UpcomingEvents organization={organization} objectsById={objectsById} />
-    </div>
   );
 }
 
@@ -1046,17 +1124,17 @@ function UpcomingEvents({
 
 function TimelineCard({ title, items }: { title: string; items: readonly (readonly [string, string])[] }) {
   return (
-    <section className="rounded-2xl border border-[#E3D8CA] bg-white p-5 shadow-sm">
-      <h2 className="mb-4 text-[20px] font-black">{title}</h2>
-      <div className="grid gap-4">
+    <section className="rounded-xl border border-[#DCE3EA] bg-white p-4 shadow-sm">
+      <h2 className="mb-3 text-[17px] font-black">{title}</h2>
+      <div className="grid gap-3">
         {items.map(([heading, body], index) => (
-          <div key={`${heading}-${index}`} className="grid grid-cols-[28px_1fr] gap-3">
-            <span className={`mt-1 flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-black ${index === 0 ? 'bg-[#C46E43] text-white' : 'bg-[#EFE6DC] text-[#6F665D]'}`}>
+          <div key={`${heading}-${index}`} className="grid grid-cols-[24px_1fr] gap-2.5">
+            <span className={`mt-0.5 flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-black ${index === 0 ? 'bg-[#C46E43] text-white' : 'bg-[#EFE6DC] text-[#6F665D]'}`}>
               {index + 1}
             </span>
             <div>
-              <h3 className="font-black">{heading}</h3>
-              <p className="mt-1 text-[13px] leading-5 text-[#6F665D]">{body}</p>
+              <h3 className="text-[13px] font-black">{heading}</h3>
+              <p className="mt-1 text-[12px] leading-5 text-[#6F665D]">{body}</p>
             </div>
           </div>
         ))}
@@ -1067,9 +1145,9 @@ function TimelineCard({ title, items }: { title: string; items: readonly (readon
 
 function ObjectHealth({ organization }: { organization: PortalDemoOrganization }) {
   return (
-    <section className="rounded-2xl border border-[#E3D8CA] bg-white p-5 shadow-sm">
-      <h2 className="mb-4 text-[20px] font-black">Здоровье объектов</h2>
-      <div className="grid gap-4">
+    <section className="rounded-xl border border-[#DCE3EA] bg-white p-4 shadow-sm">
+      <h2 className="mb-3 text-[17px] font-black">Здоровье объектов</h2>
+      <div className="grid gap-3">
         {organization.objects.map((object) => {
           const assets = organization.assets.filter((asset) => asset.objectId === object.id);
           const attention = assets.filter((asset) => asset.status === 'SERVICE_NEEDED' || asset.status === 'WATCH').length;
@@ -1077,10 +1155,10 @@ function ObjectHealth({ organization }: { organization: PortalDemoOrganization }
           return (
             <div key={object.id}>
               <div className="mb-2 flex items-center justify-between gap-3">
-                <strong>{object.name}</strong>
-                <span className="rounded-full bg-[#FFF3E8] px-3 py-1 text-[11px] font-black text-[#A85F23]">{score}%</span>
+                <strong className="text-[13px]">{object.name}</strong>
+                <span className="rounded-full bg-[#FFF3E8] px-2.5 py-0.5 text-[10px] font-black text-[#A85F23]">{score}%</span>
               </div>
-              <div className="h-2 overflow-hidden rounded-full bg-[#EFE6DC]">
+              <div className="h-1.5 overflow-hidden rounded-full bg-[#EFE6DC]">
                 <span className="block h-full rounded-full bg-[#C46E43]" style={{ width: `${score}%` }} />
               </div>
             </div>
@@ -1105,18 +1183,18 @@ function DocumentCards({
   const t = useTranslations('Portal');
 
   return (
-    <section className="rounded-2xl border border-[#E3D8CA] bg-white p-5 shadow-sm">
-      <h2 className="mb-4 text-[20px] font-black">{title}</h2>
+    <section className="rounded-xl border border-[#DCE3EA] bg-white p-4 shadow-sm">
+      <h2 className="mb-3 text-[17px] font-black">{title}</h2>
       {documents.length === 0 ? (
-        <p className="text-[14px] text-[#7B7168]">{emptyLabel}</p>
+        <p className="text-[12px] text-[#7B7168]">{emptyLabel}</p>
       ) : (
-        <div className={`grid gap-3 ${compact ? '' : 'md:grid-cols-2 xl:grid-cols-3'}`}>
+        <div className={`grid gap-2.5 ${compact ? '' : 'md:grid-cols-2 xl:grid-cols-3'}`}>
           {documents.map((document) => (
-            <article key={document.id} className="rounded-2xl border border-[#EFE6DC] bg-[#FFFDFC] p-4">
-              <span className="rounded-full bg-[#EEF3FB] px-3 py-1 text-[11px] font-black text-[#42526B]">{t(`documentType.${document.type}`)}</span>
-              <h3 className="mt-3 font-black">{document.title}</h3>
-              <p className="mt-2 text-[13px] leading-5 text-[#6F665D]">{document.description || document.relatedTo}</p>
-              <button type="button" className="mt-4 rounded-xl border border-[#E3D8CA] px-4 py-2 text-[13px] font-black">PDF preview</button>
+            <article key={document.id} className="rounded-xl border border-[#E5EAF0] bg-[#FFFDFC] p-3">
+              <span className="rounded-full bg-[#EEF3FB] px-2.5 py-0.5 text-[10px] font-black text-[#42526B]">{t(`documentType.${document.type}`)}</span>
+              <h3 className="mt-2 text-[13px] font-black">{document.title}</h3>
+              <p className="mt-1 text-[12px] leading-5 text-[#6F665D]">{document.description || document.relatedTo}</p>
+              <button type="button" className="mt-3 rounded-lg border border-[#DCE3EA] px-3 py-1.5 text-[11px] font-black">PDF preview</button>
             </article>
           ))}
         </div>

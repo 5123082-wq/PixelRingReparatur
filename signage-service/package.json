@@ -12,6 +12,7 @@
     "test:cms-article-workflow": "node --experimental-strip-types --experimental-specifier-resolution=node --test scripts/test-cms-article-workflow.test.ts",
     "test:admin-runtime": "node --experimental-strip-types --experimental-specifier-resolution=node --test scripts/test-admin-runtime.test.ts",
     "test:admin-e2e-smoke": "node --experimental-strip-types --experimental-specifier-resolution=node --test scripts/test-admin-e2e-smoke.test.ts",
+    "test:portal-mvp": "node --experimental-strip-types --experimental-specifier-resolution=node --test scripts/test-portal-mvp.test.ts",
     "admin:bootstrap": "node scripts/bootstrap-admin-users.mjs",
     "db:generate": "prisma generate",
     "db:migrate": "node scripts/migration-manager.mjs create",

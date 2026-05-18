@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import type { IntakePrefill } from './ChatIntakeCard';
+import LocationPicker, { type SelectedLocation } from './LocationPicker';
 
 type Props = {
   prefill?: IntakePrefill;
@@ -17,6 +18,7 @@ export default function ChatRequestConfirmCard({
   const [contact, setContact] = useState(prefill?.contact ?? '');
   const [name, setName] = useState(prefill?.name ?? '');
   const [location, setLocation] = useState(prefill?.location ?? '');
+  const [selectedLocation, setSelectedLocation] = useState<SelectedLocation | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [done, setDone] = useState(false);
@@ -36,6 +38,11 @@ export default function ChatRequestConfirmCard({
     fd.append('name', name);
     fd.append('contact', contact);
     fd.append('location', location);
+    if (selectedLocation) {
+      fd.append('locationLatitude', String(selectedLocation.latitude));
+      fd.append('locationLongitude', String(selectedLocation.longitude));
+      fd.append('locationSource', selectedLocation.source);
+    }
     fd.append('issueType', prefill?.issueType ?? '');
     fd.append('summary', prefill?.summary ?? '');
 
@@ -59,6 +66,11 @@ export default function ChatRequestConfirmCard({
       fd.append('name', name);
       fd.append('contact', contact);
       fd.append('location', location);
+      if (selectedLocation) {
+        fd.append('locationLatitude', String(selectedLocation.latitude));
+        fd.append('locationLongitude', String(selectedLocation.longitude));
+        fd.append('locationSource', selectedLocation.source);
+      }
       fd.append(
         'message',
         prefill?.summary
@@ -167,10 +179,10 @@ export default function ChatRequestConfirmCard({
             />
           )}
           {shouldShowLocationInput && (
-            <input
-              type="text"
+            <LocationPicker
               value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              onChange={setLocation}
+              onLocationSelect={setSelectedLocation}
               onBlur={() => void saveDraft()}
               placeholder="Adresse / Standort (optional)"
               className="w-full rounded-[12px] border border-[#E7DDD3] bg-white px-3 py-2 text-[13px] text-[#0E1A2B] placeholder-[#72665D]/40 focus:border-[#B8643E] focus:outline-none"

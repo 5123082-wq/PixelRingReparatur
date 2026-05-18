@@ -148,6 +148,9 @@ model Case {
   primaryContactMethod     PrimaryContactMethod?
   primaryContactValue      String?
   serviceLocation          String?                   @db.Text
+  serviceLatitude          Float?
+  serviceLongitude         Float?
+  serviceLocationSource    String?
   summary                  String?                   @db.Text
   description              String?                   @db.Text
   locale                   String?
@@ -195,6 +198,9 @@ model CustomerProfile {
   preferredContactMethod PrimaryContactMethod?
   companyName            String?
   serviceAddress         String?               @db.Text
+  serviceLatitude        Float?
+  serviceLongitude       Float?
+  serviceLocationSource  String?
   consentNotes           String?               @db.Text
   createdAt              DateTime              @default(now())
   updatedAt              DateTime              @updatedAt
@@ -332,6 +338,9 @@ model SessionIntakeDraft {
   customerEmail   String?
   customerPhone   String?
   serviceLocation String?  @db.Text
+  serviceLatitude Float?
+  serviceLongitude Float?
+  serviceLocationSource String?
   issueType       String?
   summary         String?  @db.Text
   locale          String?

@@ -44,6 +44,12 @@ export type ReportRow = {
   outcome: string;
 };
 
+export type ReportHook = {
+  id?: string;
+  title: string;
+  text: string;
+};
+
 export type ReferencesContent = {
   locale: Locale;
   badge: string;
@@ -59,6 +65,7 @@ export type ReferencesContent = {
   recentIntro: string;
   reportTitle: string;
   reportIntro: string;
+  reportHooks: ReportHook[];
   reports: ReportRow[];
   galleryEyebrow: string;
   galleryTitle: string;
@@ -105,30 +112,30 @@ const GALLERY_SECTION_TITLES: Record<Locale, string> = {
   ar: 'معرض الأعمال',
 };
 
-const REPORT_HOOKS: Record<Locale, Array<{ title: string; text: string }>> = {
+const REPORT_HOOKS: Record<Locale, ReportHook[]> = {
   de: [
-    { title: 'Keine Deko-Galerie.', text: 'Nur sichtbare Arbeit, Ausgangslage und Ergebnis.' },
-    { title: 'Proof ohne CRM.', text: 'Keine Namen, Adressen oder internen Vorgangsdetails.' },
+    { title: 'Passanten entscheiden in Sekunden.', text: 'Laut FedEx Office betraten 76% der Befragten ein unbekanntes Geschäft wegen seiner Beschilderung; 68% kauften etwas, weil ein Schild ihre Aufmerksamkeit gewann. Wenn das Licht ausfällt, verliert der Standort diesen ersten Moment.' },
+    { title: 'Schlechtes Licht kostet Vertrauen.', text: '52% der Menschen gehen weniger gern in ein Geschäft mit schlecht gemachten Schildern. Die Sign Research Foundation nennt Fälle, in denen gezielte Updates der Außenbeschilderung bis zu 16% mehr Wochenumsatz brachten.' },
   ],
   en: [
-    { title: 'Not a decorative gallery.', text: 'Only visible work, starting point, and outcome.' },
-    { title: 'Proof without CRM.', text: 'No names, addresses, or internal case details.' },
+    { title: 'People decide in seconds.', text: 'FedEx Office found that 76% of consumers entered a store they had never visited because of its signs, and 68% bought a product or service because a sign caught their eye. If the light fails, the business loses that first chance.' },
+    { title: 'Bad light weakens trust.', text: '52% of people are less willing to enter a store with poorly made signage. Sign Research Foundation cites cases where targeted exterior sign updates produced up to 16% higher weekly sales.' },
   ],
   ru: [
-    { title: 'Не витрина, а доказательство.', text: 'Только видимая работа, исходное состояние и результат.' },
-    { title: 'Без CRM и приватных данных.', text: 'Без имен, адресов, номеров заявок и внутренних деталей.' },
+    { title: 'Прохожий решает за секунды.', text: 'В исследовании FedEx Office 76% людей заходили в незнакомый магазин из-за вывески, а 68% покупали товар или услугу, потому что знак привлек внимание. Если свет не работает, бизнес теряет этот первый шанс.' },
+    { title: 'Плохой свет бьет по доверию.', text: '52% людей менее охотно заходят в место с плохо сделанной вывеской. По данным Sign Research Foundation, обновление наружной вывески в отдельных кейсах давало до 16% роста недельных продаж.' },
   ],
   tr: [
-    { title: 'Dekoratif galeri değil.', text: 'Sadece görünen iş, başlangıç durumu ve sonuç.' },
-    { title: 'CRM olmadan kanıt.', text: 'İsim, adres veya dahili vaka detayı yok.' },
+    { title: 'İnsanlar saniyeler içinde karar verir.', text: 'FedEx Office araştırmasına göre tüketicilerin %76’sı tabelası sayesinde daha önce gitmediği bir mağazaya girdi; %68’i de dikkatini çeken bir tabela nedeniyle ürün veya hizmet satın aldı. Işık çalışmıyorsa işletme bu ilk şansı kaybeder.' },
+    { title: 'Kötü ışık güveni zayıflatır.', text: 'İnsanların %52’si kötü yapılmış tabelası olan bir yere girmeye daha az isteklidir. Sign Research Foundation, dış tabela güncellemelerinin bazı örneklerde haftalık satışları %16’ya kadar artırdığını bildirir.' },
   ],
   pl: [
-    { title: 'Nie dekoracyjna galeria.', text: 'Tylko widoczna praca, stan wyjściowy i efekt.' },
-    { title: 'Dowód bez CRM.', text: 'Bez nazw, adresów i wewnętrznych szczegółów zleceń.' },
+    { title: 'Ludzie decydują w kilka sekund.', text: 'Według FedEx Office 76% konsumentów weszło do nieznanego sklepu dzięki jego oznakowaniu, a 68% kupiło produkt lub usługę, bo szyld przyciągnął uwagę. Jeśli światło nie działa, firma traci tę pierwszą szansę.' },
+    { title: 'Złe światło osłabia zaufanie.', text: '52% osób mniej chętnie wchodzi do miejsca ze źle wykonaną reklamą. Sign Research Foundation podaje przypadki, w których celowa aktualizacja zewnętrznego szyldu dawała do 16% wzrostu tygodniowej sprzedaży.' },
   ],
   ar: [
-    { title: 'ليس معرضاً زخرفياً.', text: 'فقط العمل الظاهر والحالة الأولية والنتيجة.' },
-    { title: 'إثبات بدون CRM.', text: 'بدون أسماء أو عناوين أو تفاصيل داخلية.' },
+    { title: 'الناس يقررون خلال ثوانٍ.', text: 'وجدت دراسة FedEx Office أن 76% من المستهلكين دخلوا متجراً لم يزوروه من قبل بسبب لافتته، وأن 68% اشتروا منتجاً أو خدمة لأن اللافتة جذبت انتباههم. إذا تعطل الضوء، يخسر الموقع هذه الفرصة الأولى.' },
+    { title: 'الإضاءة السيئة تضعف الثقة.', text: '52% من الناس أقل استعداداً لدخول مكان ذي لافتة رديئة التنفيذ. وتشير Sign Research Foundation إلى حالات رفعت فيها تحديثات الواجهة الخارجية المبيعات الأسبوعية حتى 16%.' },
   ],
 };
 
@@ -163,6 +170,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
   const [activeFilter, setActiveFilter] = useState(content.viewerAllLabel);
   const [isPromoModalOpen, setIsPromoModalOpen] = useState(false);
   const isRtl = content.locale === 'ar';
+  const reportHooks = content.reportHooks?.length ? content.reportHooks : REPORT_HOOKS[content.locale];
 
   const heroSlides = useMemo(
     () =>
@@ -591,12 +599,6 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
               >
                 {content.heroPrimaryCta}
               </a>
-              <LeistungenRequestButton
-                label={content.heroSecondaryCta}
-                serviceIntent="diagnose"
-                variant="secondary"
-                className="!border-white/32 !bg-white/10 !text-white hover:!bg-white/18"
-              />
             </div>
             <div className="max-w-xl border-t border-white/18 pt-4 text-white/76 lg:w-[420px] lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
               <strong className="block text-[16px] font-black text-white sm:text-[18px]">{content.heroNoteTitle}</strong>
@@ -664,8 +666,8 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
           <h2 className={SECTION_HEADING_CLASS}>{content.reportTitle}</h2>
           <p className={SECTION_INTRO_CLASS}>{content.reportIntro}</p>
           <div className="mt-8 grid gap-5 md:grid-cols-2">
-            {REPORT_HOOKS[content.locale].map((hook) => (
-              <article key={hook.title} className="border-l-2 border-[#B8643E] pl-5">
+            {reportHooks.map((hook) => (
+              <article key={hook.id ?? hook.title} className="border-l-2 border-[#B8643E] pl-5">
                 <h3 className="text-2xl font-black leading-tight text-[#0E1A2B] sm:text-[28px]">{hook.title}</h3>
                 <p className="mt-3 text-[16px] font-semibold leading-7 text-[#5D6662]">{hook.text}</p>
               </article>

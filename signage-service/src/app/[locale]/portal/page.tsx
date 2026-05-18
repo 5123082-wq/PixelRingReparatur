@@ -27,14 +27,14 @@ export default async function PortalPage() {
     );
 
     if (organization) {
-      return <PortalDashboard organization={organization} />;
+      return <PortalDashboard organization={organization} canCreateRequests />;
     }
   }
 
   const hasDemoAccess = verifyPortalDemoCookie(cookieStore.get(PORTAL_DEMO_COOKIE_NAME)?.value);
 
   if (hasDemoAccess) {
-    return <PortalDashboard organization={portalDemoOrganization} />;
+    return <PortalDashboard organization={portalDemoOrganization} canCreateRequests={false} />;
   }
 
   return (

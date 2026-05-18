@@ -28,6 +28,8 @@ export type RunAssistantTurnInput = {
   latestCustomerMessage: string;
   publicRequestNumber?: string | null;
   capabilities?: AssistantChannelCapability[];
+  requestBoundPortal?: boolean;
+  newRequestUrl?: string | null;
 };
 
 export type RunAssistantTurnResult = {
@@ -54,7 +56,7 @@ function buildActions(input: {
 }): AssistantAction[] {
   const actions: AssistantAction[] = [];
 
-  if (input.suggestIntake) {
+  if (input.suggestIntake && input.capabilities.includes('rich_intake_card')) {
     actions.push({
       type: 'show_intake',
       prefill: input.intakePrefill,
@@ -103,6 +105,8 @@ export async function runAssistantTurn(
     history,
     privacyContext: buildPiiPresenceContext(redactedLatest.extracted),
     publicRequestNumber: input.publicRequestNumber ?? null,
+    requestBoundPortal: input.requestBoundPortal,
+    newRequestUrl: input.newRequestUrl,
   });
   const text = reply.text.trim();
 

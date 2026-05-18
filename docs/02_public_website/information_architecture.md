@@ -869,6 +869,15 @@ SEO-страницы не должны ломать trust-first UX.
 
 ## Progress Log
 
+### 2026-05-18 — Photon Address Autocomplete For Intake
+
+- Current sprint/block: Public Website, request intake address UX
+- Done: extended the shared address field to use Photon (бесплатный адресный автокомплит на базе OpenStreetMap) as a reusable autocomplete source; selected addresses now preserve normalized text plus optional coordinates/source for request creation; public contact intake keeps manual entry as fallback.
+- In progress: production database migration for stored coordinates is pending target-database confirmation/application.
+- Next action: after migration/deploy, verify the live public request form with a selected address and with manual address entry.
+- Blockers/risks: public Photon (публичный сервер Photon/Komoot) has no commercial SLA; if traffic grows or quality is insufficient, switch the provider behind the shared field without changing form UX.
+- Updated documents: `PROGRESS.md`, `docs/02_public_website/information_architecture.md`, `docs/04_client_portal/client_portal_implementation_plan.md`
+
 ### 2026-05-14 — Header Service CTA Contact Rail
 
 - Current sprint/block: Public Website, header CTA interaction refinement

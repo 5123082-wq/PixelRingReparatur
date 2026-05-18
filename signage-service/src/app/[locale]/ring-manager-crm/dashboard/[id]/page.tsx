@@ -25,6 +25,10 @@ type CaseDetail = {
   aiEnabled: boolean;
   aiPausedAt: string | null;
   aiPausedReason: string | null;
+  serviceLocation: string | null;
+  serviceLatitude: number | null;
+  serviceLongitude: number | null;
+  serviceLocationSource: string | null;
   summary: string | null;
   description: string | null;
   createdAt: string;
@@ -115,6 +119,23 @@ function formatStatusLabel(status: string | null | undefined) {
 
 function getCaseRealtimeChannelName(caseId: string): string {
   return `private:case:${caseId}`;
+}
+
+function buildGoogleMapsUrl(input: {
+  address: string;
+  latitude?: number | null;
+  longitude?: number | null;
+}): string {
+  if (
+    typeof input.latitude === 'number' &&
+    Number.isFinite(input.latitude) &&
+    typeof input.longitude === 'number' &&
+    Number.isFinite(input.longitude)
+  ) {
+    return `https://www.google.com/maps/search/?api=1&query=${input.latitude},${input.longitude}`;
+  }
+
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(input.address)}`;
 }
 
 export default function CaseDetailPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
@@ -447,9 +468,16 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
   // Extract metadata (Robust regex for Тип/Type and Локация/Location)
   const firstCustomerMessage = caseData.messages.find(m => m.authorRole === 'CUSTOMER')?.body || '';
   const typeMatch = firstCustomerMessage.match(/(?:Тип|Type):\s*(.*?)(?:\s*\||$)/i);
-  const locMatch = firstCustomerMessage.match(/(?:Локация|Location):\s*(.*?)(?:\s*\||$|\n)/i);
+  const locMatch = firstCustomerMessage.match(/(?:Локация|Location|Standort):\s*(.*?)(?:\s*\||$|\n)/i);
   const detectedType = typeMatch ? typeMatch[1].trim() : null;
-  const detectedLocation = locMatch ? locMatch[1].trim() : null;
+  const detectedLocation = caseData.serviceLocation || (locMatch ? locMatch[1].trim() : null);
+  const detectedLocationHref = detectedLocation
+    ? buildGoogleMapsUrl({
+        address: detectedLocation,
+        latitude: caseData.serviceLatitude,
+        longitude: caseData.serviceLongitude,
+      })
+    : null;
 
   return (
     <div className="flex min-h-[calc(100vh-96px)] flex-col overflow-hidden rounded-xl border border-white/[0.03] bg-zinc-950 font-sans selection:bg-indigo-500/30 md:h-[calc(100vh-64px)] md:rounded-none md:border-0">
@@ -500,7 +528,18 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                  {detectedLocation && (
                    <div className="flex justify-between items-baseline">
                       <span className="text-[10px] font-bold text-zinc-500 uppercase">Location</span>
-                      <span className="text-xs font-semibold text-indigo-300 font-mono">{detectedLocation}</span>
+                      {detectedLocationHref ? (
+                        <a
+                          href={detectedLocationHref}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-xs font-semibold text-indigo-300 font-mono hover:text-indigo-200 hover:underline"
+                        >
+                          {detectedLocation}
+                        </a>
+                      ) : (
+                        <span className="text-xs font-semibold text-indigo-300 font-mono">{detectedLocation}</span>
+                      )}
                    </div>
                  )}
               </div>

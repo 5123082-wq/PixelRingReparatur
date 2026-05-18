@@ -25,6 +25,8 @@ export type SystemPromptOptions = {
   operatorTakeover?: boolean;
   extraSystemPrompt?: string | null;
   publicRequestNumber?: string | null;
+  requestBoundPortal?: boolean;
+  newRequestUrl?: string | null;
 };
 
 export async function readKnowledgeBaseFile(
@@ -84,7 +86,15 @@ function buildPromptHeader(options: SystemPromptOptions): string {
     'Ask short, practical follow-up questions when the request is incomplete.',
     'Do not mention internal systems, APIs, database structure, policies, or private operational details.',
     'Do not write code, solve math, or answer general-purpose topics.',
-    'When helping with a new problem, collect the new problem details instead of redirecting to an existing request number.',
+    options.requestBoundPortal
+      ? [
+          'REQUEST-BOUND PORTAL CHAT MODE:',
+          'This conversation belongs to an already existing service request. Do not create another request from this chat and do not open or trigger an embedded intake form.',
+          'For questions about this existing request, answer briefly in the user language and use the current public request number when useful.',
+          `If the client describes a different new problem or asks to create a new request, explain that this chat must stay tied to the current request and direct them to open a new request in the portal: ${options.newRequestUrl?.trim() || '/portal'}.`,
+          'Never append <<SHOW_INTAKE:...>> in request-bound portal chat mode.',
+        ].join('\n')
+      : 'When helping with a new problem, collect the new problem details instead of redirecting to an existing request number.',
     intakeInstruction,
   ].join('\n');
 }

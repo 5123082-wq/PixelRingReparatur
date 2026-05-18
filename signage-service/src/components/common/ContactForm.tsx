@@ -3,7 +3,7 @@
 import React, { useId, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
-import LocationPicker from './LocationPicker';
+import LocationPicker, { type SelectedLocation } from './LocationPicker';
 
 interface ContactFormProps {
   onSuccess?: (publicRequestNumber: string) => void;
@@ -22,6 +22,7 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
   const [message, setMessage] = useState('');
   const [issueType, setIssueType] = useState('');
   const [location, setLocation] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState<SelectedLocation | null>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -59,6 +60,11 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
       formData.append('message', message);
       formData.append('issueType', issueType);
       formData.append('location', location);
+      if (selectedLocation) {
+        formData.append('locationLatitude', String(selectedLocation.latitude));
+        formData.append('locationLongitude', String(selectedLocation.longitude));
+        formData.append('locationSource', selectedLocation.source);
+      }
 
       files.forEach((file) => {
         formData.append('files', file);
@@ -95,6 +101,7 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
       setMessage('');
       setIssueType('');
       setLocation('');
+      setSelectedLocation(null);
       setFiles([]);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -255,6 +262,7 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
             ariaLabel={t('field_location') || 'Adresse oder Ort (optional)'}
             value={location}
             onChange={setLocation}
+            onLocationSelect={setSelectedLocation}
             variant={variant}
             placeholder={t('field_location') || 'Adresse oder Ort (optional)'}
             className={`w-full px-5 sm:px-6 py-3 sm:py-3.5 border rounded-2xl outline-none focus:ring-1 transition-all duration-300 text-[14px] sm:text-[15px] ${
