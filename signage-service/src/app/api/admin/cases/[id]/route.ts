@@ -277,6 +277,20 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
             where: {
               customerProfileId: caseRecord.customerProfile.id,
               id: { not: caseRecord.id },
+              ...(actor.role === 'MANAGER'
+                ? {
+                    AND: [
+                      {
+                        OR: [
+                          { assignedOperator: null },
+                          { assignedOperator: actor.adminUserId },
+                          { assignedOperator: actor.email },
+                          ...(actor.displayName ? [{ assignedOperator: actor.displayName }] : []),
+                        ],
+                      },
+                    ],
+                  }
+                : {}),
             },
             select: {
               id: true,

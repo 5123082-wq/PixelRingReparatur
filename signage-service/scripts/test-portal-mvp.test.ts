@@ -369,12 +369,19 @@ test('portal request detail update stores audit log and customer-visible diff me
   assert.equal(caseRecord.serviceLatitude, null);
   assert.equal(caseRecord.serviceLongitude, null);
   assert.equal(caseRecord.serviceLocationSource, null);
-  assert.equal(messages.length, 1);
+  assert.equal(messages.length, 2);
   assert.equal(messages[0].authorRole, MessageAuthorRole.SYSTEM);
   assert.equal(messages[0].isCustomerVisible, true);
-  assert.match(messages[0].body, /Name: "Old Name" -> "New Name"/);
-  assert.match(messages[0].body, /Adresse \/ Objekt: "Old Street 1" -> "New Street 2"/);
+  assert.match(messages[0].body, /Name wurde geaendert\./);
+  assert.match(messages[0].body, /Adresse \/ Objekt wurde geaendert\./);
+
+  assert.equal(messages[1].authorRole, MessageAuthorRole.SYSTEM);
+  assert.equal(messages[1].isCustomerVisible, false);
+  assert.match(messages[1].body, /Name: "Old Name" -> "New Name"/);
+  assert.match(messages[1].body, /Adresse \/ Objekt: "Old Street 1" -> "New Street 2"/);
+
   assert.equal(auditLogs.length, 1);
   assert.equal(auditLogs[0].action, 'PORTAL_CASE_DETAILS_UPDATED');
   assert.equal(auditLogs[0].details.changes.length, 4);
+  assert.equal(auditLogs[0].details.changes[0].to, '[REDACTED]');
 });

@@ -67,16 +67,14 @@ Avoid:
 
 ## Page Structure
 
-The approved page has six main sections:
+The current implemented page has four main sections:
 
 1. Hero
-2. Reparatur, Diagnose und Montage von Werbeanlagen
-3. Druckprodukte, Branding und Werbematerialien
-4. Wartung & Servicevertraege
-5. So laeuft Ihre Anfrage ab
-6. Rahmenbedingungen & finaler CTA
+2. Servicebereiche for five core service areas
+3. Wartung & Servicevertraege
+4. Rahmenbedingungen & finaler CTA
 
-AI-assisted intake must not be a separate block on this page. A short neutral note such as `Ihre Angaben werden digital strukturiert aufgenommen` is acceptable if needed, but can be omitted.
+AI-assisted intake and step-by-step process explanation are not separate blocks on this page.
 
 ## Section 1 — Hero
 
@@ -104,60 +102,39 @@ Visual note:
 - If illustrative before/after imagery is used, label it `Beispielhafte Darstellung`.
 - If a real case is used, label it `Projektbeispiel` only when publication rights are confirmed.
 
-## Section 2 — Reparatur, Diagnose und Montage von Werbeanlagen
+## Section 2 — Servicebereiche
 
-Format: accordion service cards.
+Format: five large service cards.
 
 SEO/accessibility requirement:
 
-- accordion content must exist in the initial HTML;
 - H2 for the section;
 - H3 for each card;
-- short card descriptions must be visible before expansion;
-- details must not be fetched only after click;
-- controls must be keyboard accessible.
+- visible descriptions and detail rows must exist in the initial HTML;
+- CTA buttons must keep the existing request-intent flow;
+- responsive layout must avoid text overflow in DE, EN, RU, TR, PL, and AR.
 
 H2:
 
-`Reparatur, Diagnose und Montage von Werbeanlagen`
+`Servicebereiche für Werbeanlagen und Standortwerbung`
 
 Intro:
 
-`Von der ersten Sichtprüfung bis zur Reparatur, Demontage oder Neuinstallation: PixelRing prüft den Zustand Ihrer Werbeanlage und koordiniert die passenden nächsten Schritte.`
+`PixelRing bündelt Reparatur, Modernisierung, Diagnose, Montage und Werbematerialien in einem geführten Serviceprozess.`
 
 Approved cards:
 
-- `Diagnose & Vor-Ort-Prüfung`
-- `Elektrik, Lichtwerbung & LED-Service`
-- `Reparatur von Konstruktion & Befestigung`
-- `Reinigung, Pflege & optische Instandsetzung`
-- `Montage, Demontage & Versetzung`
-- `Reparatur prüfen — Ersatzlösung nur wenn sinnvoll`
+- `Reparatur & Wartung von Außenwerbung`
+- `Modernisierung von Lichtwerbung & LED-Systemen`
+- `Inspektion, Audit & Diagnose von Werbeanlagen`
+- `Montage, Demontage & Versetzung von Werbeanlagen`
+- `Druckprodukte, Branding & Werbematerialien`
 
 Key repair-vs-replacement line:
 
 `Unser erster Fokus liegt auf der Reparatur und sinnvollen Instandsetzung bestehender Werbeanlagen. Sollte eine Reparatur technisch oder wirtschaftlich nicht empfehlenswert sein, können wir Ihnen auch eine passende Ersatzlösung oder neue Konstruktion anbieten.`
 
-## Section 3 — Druckprodukte, Branding und Werbematerialien
-
-Format: four visible cards, lighter than the repair accordion.
-
-H2:
-
-`Druckprodukte, Branding und Werbematerialien für Geschäftsstandorte`
-
-Intro:
-
-`PixelRing unterstützt Unternehmen auch bei der laufenden Versorgung mit Werbematerialien — von Druckdaten und Gestaltung bis zu Folien, Bannern, Postern und Standort-Branding.`
-
-Approved cards:
-
-- `Design & Druckdaten`
-- `Druckprodukte & Werbemittel`
-- `Folierung & Beschriftung`
-- `Versorgung von Filialen & Standorten`
-
-## Section 4 — Wartung & Servicevertraege
+## Section 3 — Wartung & Servicevertraege
 
 Goal: introduce recurring maintenance/service contracts as a commercial path without building the full future subscription system inside this page.
 
@@ -192,27 +169,7 @@ CTA: `Servicevertrag anfragen`
 
 Secondary CTA: `Audit für Standort anfragen`
 
-## Section 5 — So laeuft Ihre Anfrage ab
-
-Goal: reduce uncertainty by explaining the workflow.
-
-H2:
-
-`So läuft Ihre Anfrage ab`
-
-Steps:
-
-1. `Anfrage senden` — describe the issue and upload photos if helpful.
-2. `Prüfung des Umfangs` — PixelRing checks whether remote assessment is enough or an on-site appointment is sensible.
-3. `Empfehlung erhalten` — recommendation may be repair, maintenance, replacement, printed product, mounting, or new construction.
-4. `Angebot & Freigabe` — concrete services and conditions are agreed before commissioning.
-5. `Koordination & Umsetzung` — PixelRing coordinates execution through its specialist team and qualified partners.
-
-Optional neutral intake note:
-
-`Ihre Angaben werden digital strukturiert aufgenommen.`
-
-## Section 6 — Rahmenbedingungen & Final CTA
+## Section 4 — Rahmenbedingungen & Final CTA
 
 H2:
 
@@ -391,6 +348,24 @@ Implementation sequence:
 5. Verification: build/lint, check `/de/leistungen`, check at least one RTL locale route, verify no 404 header link.
 
 ## Progress Log
+
+### 2026-05-20 — Leistungen Process Block Removed
+
+- Current sprint/block: Public Website, Leistungen page content reduction
+- Done: Removed the `So läuft Ihre Anfrage ab` / `Как проходит заявка` process section from the rendered Leistungen page after owner review.
+- In progress: Owner visual review of the shorter `/ru/leistungen` page.
+- Next action: Confirm whether the remaining final framework/CTA block should stay after the service and maintenance sections.
+- Blockers/risks: None for the removed section; the deleted process block is no longer rendered or carried in the static page content.
+- Updated documents: `PROGRESS.md`, `docs/02_public_website/page_plan_leistungen.md`, `signage-service/src/app/[locale]/leistungen/page.tsx`.
+
+### 2026-05-20 — Leistungen Service Showcase Restructure
+
+- Current sprint/block: Public Website, Leistungen service presentation refinement
+- Done: Replaced the separate repair accordion and print/branding card block with one five-card service showcase covering repair/maintenance, LED modernization, inspection/audit/diagnostics, mounting/dismantling/relocation, and print/branding materials. Kept the repair-first/replacement-only-if-needed principle as a shared focus note instead of a separate card.
+- In progress: Owner visual review of `/ru/leistungen` and `/ar/leistungen`.
+- Next action: Confirm service-card order, image fit, and text wrapping on desktop/mobile, then decide whether this block should later become CMS-editable.
+- Blockers/risks: The new showcase remains static fallback content; current CMS merge logic is intentionally not expanded in this pass.
+- Updated documents: `PROGRESS.md`, `docs/02_public_website/page_plan_leistungen.md`, `docs/02_public_website/page_brief_about.md`, `signage-service/src/app/[locale]/leistungen/page.tsx`, `signage-service/src/app/[locale]/ueber-uns/page.tsx`.
 
 ### 2026-04-25 — Leistungen Final Plan
 

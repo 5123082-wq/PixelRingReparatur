@@ -1,0 +1,150 @@
+eroTitle: 'خدمة شاملة لمواقعك التجارية',
+        heroIntro: 'رعاية احترافية للوحات الإعلانية والمواد المطبوعة. نحن نحل المشاكل في نقاط البيع الخاصة بك قبل أن يلاحظها عملاؤك.',
+        heroCta: 'اطلب الخدمة',
+        heroImage: '/images/business/hero.png',
+        targetTitle: 'لجميع أحجام الشركات',
+        targetIntro: 'سواء كان موقعاً واحداً أو شبكة فروع: نحن نغطي احتياجاتك من خلال عقد خدمة شامل.',
+        targetGroups: [
+            {
+                id: 'restaurants',
+                title: 'المطاعم والمقاهي',
+                description: 'إصلاح النيون، وتغيير القوائم والملصقات الممزقة أو المتسخة.'
+            },
+            {
+                id: 'salons',
+                title: 'صالونات التجميل',
+                description: 'العناية بواجهات النوافذ واللوحات المضيئة الأنيقة.'
+            },
+            {
+                id: 'dealers',
+                title: 'معارض السيارات',
+                description: 'صيانة اللوحات الإعلانية الكبيرة ولوحات الواجهات.'
+            },
+            {
+                id: 'retail',
+                title: 'شبكات التجزئة',
+                description: 'عمليات موحدة لضمان صورة متسقة للعلامة التجارية في جميع المواقع.'
+            }
+        ],
+        auditTitle: 'عقد الصيانة والتدقيق الدوري',
+        auditIntro: 'صيانة كاملة بناءً على نموذج اشتراك. نقوم بانتظام بفحص حالة اللوحات، ووجود وجودة المواد المطبوعة داخل المحل، ونقوم بتغيير القوائم أو الملصقات القديمة أو الممزقة.',
+        auditBenefits: [
+            {
+                id: 'a1',
+                title: 'فحص دوري',
+                description: 'نقوم بالتدقيق الاستباقي لحالة الإعلانات والمواد المطبوعة.'
+            },
+            {
+                id: 'a2',
+                title: 'تناسق العلامة التجارية',
+                description: 'الاستبدال الفوري للملصقات الممزقة والقوائم القديمة.'
+            },
+            {
+                id: 'a3',
+                title: 'تكاليف يمكن التنبؤ بها',
+                description: 'أسعار خدمات ثابتة بدلاً من الإصلاحات المفاجئة.'
+            }
+        ],
+        platformTitle: 'تحكم كامل في بوابة العميل الخاصة بك',
+        platformIntro: 'نمنحك وصولاً كاملاً إلى لوحتك الخاصة على منصتنا. يمكنك متابعة جميع الطلبات وتاريخ الصيانة لأعمالك.',
+        platformBenefits: [
+            {
+                id: 'p1',
+                title: 'تتبع مباشر',
+                description: 'تتبع حالة كل إصلاح في جميع مراحله.'
+            },
+            {
+                id: 'p2',
+                title: 'تقارير تدقيق مفصلة',
+                description: 'نقدم تفاصيل كاملة عما يحدث في كل موقع مع الصور.'
+            },
+            {
+                id: 'p3',
+                title: 'مصدر واحد للتواصل',
+                description: 'جميع الضمانات والتنسيق بين المقاولين تقع على عاتقنا.'
+            }
+        ],
+        trustTitle: 'المسؤولية والضمانات',
+        trustIntro: 'اترك مسؤولية صورتك التجارية للمتخصصين.',
+        finalHeadline: 'هل أنت مستعد لعمليات خالية من المشاكل؟',
+        finalText: 'اتصل بنا لإجراء تدقيق لمواقعك.',
+        finalCta: 'اطلب الخدمة'
+    }
+};
+async function generateMetadata({ params }) {
+    const resolvedParams = await params;
+    const locale = resolvedParams?.locale || 'de';
+    const tContent = CONTENT[locale] || CONTENT.de;
+    const cms = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$cms$2f$pages$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["getBusinessPageCmsContent"])(locale);
+    return {
+        title: cms?.hero?.title || tContent.metaTitle,
+        description: cms?.hero?.description || tContent.metaDescription,
+        alternates: {
+            canonical: `/${locale}/business`
+        }
+    };
+}
+async function BusinessPage({ params }) {
+    const resolvedParams = await params;
+    const locale = resolvedParams?.locale || 'de';
+    const tContent = CONTENT[locale] || CONTENT.de;
+    const isRtl = locale === 'ar';
+    const globalCms = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$cms$2f$pages$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["getGlobalPageCmsContent"])(locale);
+    const businessCms = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$cms$2f$pages$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["getBusinessPageCmsContent"])(locale);
+    // Merge CMS data if available
+    const content = {
+        ...tContent,
+        heroTitle: businessCms?.hero?.title || tContent.heroTitle,
+        heroIntro: businessCms?.hero?.description || tContent.heroIntro,
+        heroCta: businessCms?.hero?.cta || tContent.heroCta,
+        heroImage: businessCms?.hero?.image || tContent.heroImage,
+        heroImageAlt: businessCms?.hero?.imageAlt || businessCms?.hero?.title || tContent.heroTitle,
+        heroFallbackSrc: businessCms?.hero?.fallbackSrc,
+        targetTitle: businessCms?.target?.title || tContent.targetTitle,
+        targetIntro: businessCms?.target?.description || tContent.targetIntro,
+        targetGroups: businessCms?.target?.items?.length ? tContent.targetGroups.map((group, i)=>({
+                ...group,
+                title: businessCms.target?.items?.[i]?.title || group.title,
+                description: businessCms.target?.items?.[i]?.description || group.description
+            })) : tContent.targetGroups,
+        auditTitle: businessCms?.audit?.title || tContent.auditTitle,
+        auditIntro: businessCms?.audit?.description || tContent.auditIntro,
+        auditBenefits: businessCms?.audit?.items?.length ? tContent.auditBenefits.map((benefit, i)=>({
+                ...benefit,
+                title: businessCms.audit?.items?.[i]?.title || benefit.title,
+                description: businessCms.audit?.items?.[i]?.description || benefit.description
+            })) : tContent.auditBenefits,
+        platformTitle: businessCms?.platform?.title || tContent.platformTitle,
+        platformIntro: businessCms?.platform?.description || tContent.platformIntro,
+        platformBenefits: businessCms?.platform?.items?.length ? tContent.platformBenefits.map((benefit, i)=>({
+                ...benefit,
+                title: businessCms.platform?.items?.[i]?.title || benefit.title,
+                description: businessCms.platform?.items?.[i]?.description || benefit.description
+            })) : tContent.platformBenefits,
+        trustTitle: businessCms?.trust?.title || tContent.trustTitle,
+        trustIntro: businessCms?.trust?.description || tContent.trustIntro,
+        finalHeadline: businessCms?.final?.title || tContent.finalHeadline,
+        finalText: businessCms?.final?.description || tContent.finalText,
+        finalCta: businessCms?.final?.primaryLabel || tContent.finalCta,
+        heroEnabled: businessCms?.hero?.enabled,
+        targetEnabled: businessCms?.target?.enabled,
+        auditEnabled: businessCms?.audit?.enabled,
+        platformEnabled: businessCms?.platform?.enabled,
+        trustEnabled: businessCms?.trust?.enabled,
+        finalEnabled: businessCms?.final?.enabled
+    };
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        className: `flex min-h-screen flex-col bg-[#F7F1E8] ${isRtl ? 'rtl' : 'ltr'}`,
+        dir: isRtl ? 'rtl' : 'ltr',
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$layout$2f$Header$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
+                content: globalCms?.header
+            }, void 0, false, {
+                fileName: "[project]/src/app/[locale]/business/page.tsx",
+                lineNumber: 353,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
+                className: "flex-grow",
+                children: [
+                    content.heroEnabled !== false && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$

@@ -286,7 +286,7 @@
     "request_number_field": "PR-номер",
     "request_placeholder": "PR-XXXX-XXXX",
     "contact_field": "Телефон или email",
-    "contact_placeholder": "Использовались для формализации заявки",
+    "contact_placeholder": "Телефон или email из заявки",
     "cookie_restore_hint": "Если вы уже создавали заявку с этого устройства, можно пропустить поля и позволить signed cookie восстановить доступ автоматически.",
     "submit": "Проверить статус",
     "submit_loading": "Проверяем...",

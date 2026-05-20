@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/routing';
+import { Link, usePathname } from '@/i18n/routing';
 import Logo from '../common/Logo';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 import ContactModal from '../common/ContactModal';
@@ -25,8 +25,59 @@ type HeaderContent = {
   requestHref?: string | null;
 };
 
+type NavLink = {
+  name: string;
+  href: string;
+};
+
+const LOCALE_PREFIX_REGEX = /^\/(de|en|ru|tr|pl|ar)(?=\/|$)/;
+
+function normalizeNavPath(path: string): string {
+  const pathWithoutQuery = path.split(/[?#]/)[0] || '/';
+  const pathWithoutLocale = pathWithoutQuery.replace(LOCALE_PREFIX_REGEX, '') || '/';
+
+  return pathWithoutLocale !== '/' && pathWithoutLocale.endsWith('/')
+    ? pathWithoutLocale.slice(0, -1)
+    : pathWithoutLocale;
+}
+
+function isActiveNavPath(pathname: string, href: string): boolean {
+  if (!href.startsWith('/')) {
+    return false;
+  }
+
+  const currentPath = normalizeNavPath(pathname);
+  const targetPath = normalizeNavPath(href);
+
+  return currentPath === targetPath || currentPath.startsWith(`${targetPath}/`);
+}
+
+function DesktopNavLink({ link, isActive }: { link: NavLink; isActive: boolean }) {
+  return (
+    <Link
+      href={link.href}
+      aria-current={isActive ? 'page' : undefined}
+      className={`relative whitespace-nowrap rounded-full px-3.5 py-1.5 text-[15px] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]/40 ${
+        isActive
+          ? 'font-semibold text-[#0E1A2B]'
+          : 'font-medium text-[#72665D] hover:text-[#B8643E] hover:bg-white/24 focus-visible:bg-white/24'
+      }`}
+    >
+      {isActive && (
+        <motion.span
+          layoutId="active-nav-pill"
+          className="absolute inset-0 rounded-full border border-[#E7DDD3] bg-white/80 shadow-[0_4px_12px_rgba(14,26,43,0.05)] backdrop-blur-md"
+          transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+        />
+      )}
+      <span className="relative z-10">{link.name}</span>
+    </Link>
+  );
+}
+
 const Header = ({ content }: { content?: HeaderContent | null }) => {
   const t = useTranslations('Nav');
+  const pathname = usePathname();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -54,7 +105,7 @@ const Header = ({ content }: { content?: HeaderContent | null }) => {
         !link.name.startsWith('Nav.')
     );
 
-  const navLinks = (hasValidCmsNavLinks ? cmsNavLinks : fallbackNavLinks).map((link, index) => {
+  const navLinks: NavLink[] = (hasValidCmsNavLinks ? cmsNavLinks : fallbackNavLinks).map((link, index) => {
     if (index === 0) {
       return { ...link, href: '/leistungen' };
     }
@@ -73,6 +124,7 @@ const Header = ({ content }: { content?: HeaderContent | null }) => {
 
     return link;
   });
+  const activeNavHref = navLinks.find((link) => isActiveNavPath(pathname, link.href))?.href ?? null;
   const servicePill = content?.servicePill || '';
   const accountStatusLabel =
     content?.accountStatusLabel && !content.accountStatusLabel.startsWith('Nav.')
@@ -129,7 +181,7 @@ const Header = ({ content }: { content?: HeaderContent | null }) => {
   return (
     <>
       {/* Placeholder to prevent layout shift when header becomes fixed */}
-      <div className="h-[72px] lg:h-[112px] w-full shrink-0" />
+      <div className="h-[72px] lg:h-[120px] w-full shrink-0" />
       <header className="fixed top-0 z-50 w-full bg-[#EEF3FBA3] backdrop-blur-[10.5px] border-b border-[#E7DDD3]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex min-h-[72px] items-center justify-between gap-3">
@@ -191,21 +243,19 @@ const Header = ({ content }: { content?: HeaderContent | null }) => {
             <motion.div
               initial={false}
               animate={{ 
-                height: isScrolled ? 0 : 40,
+                height: isScrolled ? 0 : 48,
                 opacity: isScrolled ? 0 : 1
               }}
               transition={{ duration: 0.3, ease: 'easeInOut' }}
               className="overflow-hidden"
             >
-              <nav className="flex items-center justify-center gap-8 border-t border-[#E7DDD3]/70 py-2">
+              <nav className="flex items-center justify-center gap-5 border-t border-[#E7DDD3]/70 py-1.5">
                 {navLinks.map((link) => (
-                  <Link
+                  <DesktopNavLink
                     key={link.name}
-                    href={link.href}
-                    className="whitespace-nowrap text-[15px] font-medium text-[#72665D] hover:text-[#B8643E] transition-colors relative group"
-                  >
-                    {link.name}
-                  </Link>
+                    link={link}
+                    isActive={activeNavHref === link.href}
+                  />
                 ))}
               </nav>
             </motion.div>
@@ -227,11 +277,15 @@ const Header = ({ content }: { content?: HeaderContent | null }) => {
                     <motion.div
                       initial={false}
                       animate={{
-                        width: isDesktopNavOpen ? 760 : 160,
-                        height: isDesktopNavOpen ? 56 : 36,
+                        width: isDesktopNavOpen ? 760 : 192,
+                        height: isDesktopNavOpen ? 56 : 24,
                       }}
                       transition={{ type: 'spring', stiffness: 400, damping: 35 }}
-                      className="relative flex items-center justify-center overflow-hidden border border-t-0 border-[#D9C7BA] bg-[#FFFDF9]/98 shadow-xl backdrop-blur-md rounded-b-[20px] outline-none"
+                      className={`relative flex items-center justify-center overflow-hidden border border-t-0 rounded-b-[20px] outline-none backdrop-blur-md transition-[background-color,border-color,box-shadow] duration-200 group ${
+                        isDesktopNavOpen
+                          ? 'border-[#D9C7BA] bg-[#FFFDF9]/95 shadow-xl'
+                          : 'border-[#D9C7BA]/60 bg-white/75 shadow-md'
+                      }`}
                     >
                       {!isDesktopNavOpen && (
                         <motion.div
@@ -239,11 +293,16 @@ const Header = ({ content }: { content?: HeaderContent | null }) => {
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
-                          className="flex items-center justify-center gap-2"
+                          className="flex items-center justify-center"
                         >
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-[#72665D]/60">Menu</span>
-                          <svg className="h-4 w-4 text-[#72665D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                          <svg
+                            className="h-4 w-4 text-[#72665D] transition-transform duration-300 group-hover:translate-y-0.5"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                           </svg>
                         </motion.div>
                       )}
@@ -256,16 +315,14 @@ const Header = ({ content }: { content?: HeaderContent | null }) => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.15, delay: 0.1 }}
-                            className="flex items-center justify-center gap-8 px-8"
+                            className="flex items-center justify-center gap-5 px-8"
                           >
                             {navLinks.map((link) => (
-                              <Link
+                              <DesktopNavLink
                                 key={link.name}
-                                href={link.href}
-                                className="whitespace-nowrap text-[15px] font-medium text-[#72665D] hover:text-[#B8643E] transition-colors"
-                              >
-                                {link.name}
-                              </Link>
+                                link={link}
+                                isActive={activeNavHref === link.href}
+                              />
                             ))}
                           </motion.nav>
                         )}
@@ -283,19 +340,28 @@ const Header = ({ content }: { content?: HeaderContent | null }) => {
         <div className="lg:hidden fixed inset-x-0 bottom-0 top-[80px] bg-white z-[9999] overflow-y-auto flex flex-col">
           <nav className="flex flex-col p-8 gap-8 min-h-full bg-white">
             <div className="flex flex-col gap-2">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  onClick={() => setIsMenuOpen(false)}
-                  className="text-[24px] font-bold text-[#72665D] hover:text-[#B8643E] transition-colors py-4 border-b border-[#E7DDD3] flex items-center justify-between group"
-                >
-                  <span>{link.name}</span>
-                  <svg className="w-5 h-5 text-[#B8643E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
-              ))}
+              {navLinks.map((link) => {
+                const isActive = activeNavHref === link.href;
+
+                return (
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    aria-current={isActive ? 'page' : undefined}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`flex items-center justify-between rounded-2xl border px-4 py-4 text-[24px] font-bold transition-colors ${
+                      isActive
+                        ? 'border-[#E7DDD3] bg-[#F7F1E8] text-[#0E1A2B] shadow-[0_10px_26px_rgba(14,26,43,0.07)]'
+                        : 'border-transparent text-[#72665D] hover:bg-[#F7F1E8]/45 hover:text-[#B8643E]'
+                    }`}
+                  >
+                    <span>{link.name}</span>
+                    <svg className="w-5 h-5 text-[#B8643E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                );
+              })}
             </div>
 
             <div className="mt-8 mb-12 space-y-8">

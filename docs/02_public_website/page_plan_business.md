@@ -45,8 +45,19 @@ The page targets B2B clients: single-location businesses, chains, agencies, and 
 - [x] Generated Hero Image and saved to `public/images/business/hero.png`.
 - [x] Implemented `src/app/[locale]/business/page.tsx` with all content for 6 locales and responsive layout.
 
-## Progress Log
-- **2026-04-25 (Current Sprint)**: 
+- **2026-05-20 (Current Sprint)**: 
+  - **Done**: 
+    - Redesigned target groups section with a custom interactive `BusinessShowcase` client component. Supported 7 sectors, 6 locales (DE, EN, RU, TR, PL, AR).
+    - Compacted layout: hid B2B sector title, removed bottom CTA button, adjusted padding for symmetrical spacing.
+    - Layout & Scale Refinements: Restored the original 12-column desktop grid (4 columns for selector tabs, 8 columns for showcase card) and implemented a cinematic, flatter image aspect ratio (`lg:aspect-[21/10]`) on desktop to prevent vertical overflow/scrolling.
+    - Two-Panel Diagonal Showcase: Redesigned the photo container to split diagonally into two panels (Left: Exterior, Right: Interior) with cursor pointer and hover/brightness transitions. Removed the third middle panel (staff/menu) to make the interactive audit experience concise and aligned with owner feedback. Updated all 6 locales' hotspot definitions to match the two-panel layout.
+    - Drag & Swipe Interaction: Implemented full mouse and touch-based drag/swipe handlers with transition duration toggling (instant during drag, 500ms ease-out on release). Added a glowing dual-layer SVG divider line, a glassmorphic circular handle, and localized drag hints (tooltips) for all 6 locales. Fully restored the Arabic translation block and resolved compilation blockers. Verified production build success.
+  - **In Progress**: None.
+  - **Next Action**: Owner reviews the completed interactive diagonal photo showcase on `/de/business`.
+  - **Blockers/Risks**: None.
+  - **Updated Documents**: `docs/02_public_website/page_plan_business.md`, `PROGRESS.md`, `signage-service/src/components/sections/BusinessShowcase.tsx`.
+
+- **2026-04-25**: 
   - **Done**: Created page plan. Generated hero asset. Implemented `page.tsx` with all requested B2B content (Target groups, Subscription/Audit, Platform Cabinet). Added CMS support in `pages.ts`.
-  - **In Progress**: Waiting for user review.
-  - **Next Action**: Link page in navigation or proceed to next page.
+  - **In Progress**: Completed baseline implementation.
+  - **Next Action**: Wait for owner design feedback.

@@ -286,7 +286,7 @@
     "request_number_field": "Anfragenummer",
     "request_placeholder": "PR-XXXX-XXXX",
     "contact_field": "Telefon oder E-Mail",
-    "contact_placeholder": "Zur Formalisierung der Anfrage verwendet",
+    "contact_placeholder": "Telefon oder E-Mail aus der Anfrage",
     "cookie_restore_hint": "Wenn Sie dieses Gerät bereits zum Erstellen der Anfrage genutzt haben, können Sie die Felder überspringen und den Zugriff über das signierte Cookie wiederherstellen.",
     "submit": "Status prüfen",
     "submit_loading": "Wird geprüft...",

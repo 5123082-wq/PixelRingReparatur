@@ -566,7 +566,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
 
   return (
     <main className="flex-grow bg-white text-[#101418]">
-      <section className="relative isolate flex h-[calc(100svh-112px)] min-h-[620px] overflow-hidden bg-[#08111C] sm:h-[calc(100svh-128px)] sm:min-h-[560px] lg:min-h-[590px]">
+      <section className="relative isolate flex h-[440px] overflow-hidden bg-[#08111C] sm:h-[500px] lg:h-[560px]">
         {heroSlides.map((src, index) => (
           <Image
             key={src}
@@ -580,40 +580,16 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
             }`}
           />
         ))}
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,11,18,0.84),rgba(5,11,18,0.58)_42%,rgba(5,11,18,0.18)_72%,rgba(5,11,18,0.54)),linear-gradient(180deg,rgba(5,11,18,0.28),rgba(5,11,18,0.08)_38%,rgba(5,11,18,0.78))]" />
-        <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col justify-end px-5 pb-8 pt-12 sm:px-8 sm:pb-10 lg:px-10 lg:pb-12">
-          <div className="max-w-4xl">
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-white/68 sm:text-[12px]">{content.badge}</p>
-            <h1 className="mt-5 max-w-4xl text-[38px] font-black leading-[1.02] text-white sm:text-[56px] lg:text-[68px] xl:text-[76px]">
+        <div className="absolute inset-0 bg-gradient-to-t from-[#08111C]/82 via-[#08111C]/28 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#08111C]/48 via-[#08111C]/12 to-transparent rtl:bg-gradient-to-l" />
+        <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col justify-end px-5 pb-12 sm:px-8 sm:pb-14 lg:px-10 lg:pb-16">
+          <div className="max-w-[860px]">
+            <h1 className="max-w-[860px] text-[36px] font-black leading-[1.05] text-white sm:text-[52px] lg:text-[60px]">
               {content.heroTitle}
             </h1>
-            <p className="mt-5 max-w-3xl text-[16px] font-medium leading-7 text-white/82 sm:text-[18px] sm:leading-8">
+            <p className="mt-5 max-w-[720px] text-[16px] font-semibold leading-relaxed text-white/88 sm:text-[18px]">
               {content.heroIntro}
             </p>
-          </div>
-          <div className="mt-7 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div className="flex flex-wrap gap-3">
-              <a
-                href="#recent-work"
-                className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-6 py-3 text-[15px] font-extrabold text-[#101418] transition-colors hover:bg-white/88 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              >
-                {content.heroPrimaryCta}
-              </a>
-            </div>
-            <div className="max-w-xl border-t border-white/18 pt-4 text-white/76 lg:w-[420px] lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
-              <strong className="block text-[16px] font-black text-white sm:text-[18px]">{content.heroNoteTitle}</strong>
-              <p className="mt-2 text-[14px] font-medium leading-6 sm:text-[15px]">{content.heroNoteText}</p>
-            </div>
-          </div>
-          <div className="mt-7 flex items-center gap-2" aria-hidden="true">
-            {heroSlides.map((src, index) => (
-              <span
-                key={`${src}-indicator`}
-                className={`h-1.5 rounded-full transition-all duration-700 ${
-                  index === activeHeroSlide ? 'w-12 bg-white' : 'w-5 bg-white/34'
-                }`}
-              />
-            ))}
           </div>
         </div>
       </section>

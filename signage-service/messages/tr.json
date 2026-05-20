@@ -286,7 +286,7 @@
     "request_number_field": "Talep numarası",
     "request_placeholder": "PR-XXXX-XXXX",
     "contact_field": "Telefon veya e-posta",
-    "contact_placeholder": "Talebi resmileştirmek için kullanıldı",
+    "contact_placeholder": "Talepte kullanılan telefon veya e-posta",
     "cookie_restore_hint": "Bu cihazı talebi oluşturmak için zaten kullandıysanız alanları boş bırakabilir ve imzalı cookie'nin erişimi otomatik olarak geri getirmesine izin verebilirsiniz.",
     "submit": "Durumu kontrol et",
     "submit_loading": "Kontrol ediliyor...",

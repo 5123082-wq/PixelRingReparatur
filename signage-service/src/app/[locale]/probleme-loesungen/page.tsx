@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react';
 
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
+import CmsImage from '@/components/common/CmsImage';
 import ProblemKnowledgeGrid from '@/components/probleme-loesungen/ProblemKnowledgeGrid';
 import ProblemRequestButton from '@/components/probleme-loesungen/ProblemRequestButton';
 import { type ProblemIntent } from '@/lib/content/problem-knowledge';
@@ -671,68 +672,64 @@ export default async function ProblemeLoesungenPage({
       <Header content={globalCms?.header} />
       <main>
         {content.heroEnabled !== false && (
-          <section className="relative overflow-hidden bg-[#0E1A2B] text-white">
-            <div className="absolute inset-0 opacity-20">
-              <div className="absolute left-[8%] top-12 h-40 w-40 rounded-full border border-white/20" />
-              <div className="absolute bottom-10 right-[10%] h-64 w-64 rounded-full border border-[#B8643E]/45" />
-            </div>
-            <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[1fr_0.78fr] lg:items-center">
-              <div>
-                <div className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/8 px-4 py-2 text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#F4C7A9]">
-                  <span className="h-2 w-2 rounded-full bg-[#B8643E]" />
-                  {content.badge}
-                </div>
-                <h1 className="mt-7 max-w-4xl text-4xl font-black leading-[1.05] sm:text-6xl">
+          <>
+            <section className="relative h-[440px] overflow-hidden bg-[#0E1A2B] text-white sm:h-[500px] lg:h-[560px]">
+              <CmsImage
+                src="/images/references/circuit-repair.webp"
+                alt={content.heroTitle}
+                fill
+                priority
+                className="object-cover opacity-85"
+                sizes="100vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0E1A2B]/82 via-[#0E1A2B]/28 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0E1A2B]/48 via-[#0E1A2B]/12 to-transparent rtl:bg-gradient-to-l" />
+
+              <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-4 pb-12 sm:px-6 sm:pb-14 lg:pb-16">
+                <h1 className="max-w-[860px] text-[36px] font-black leading-[1.05] text-white sm:text-[52px] lg:text-[60px]">
                   {content.heroTitle}
                 </h1>
-                <p className="mt-7 max-w-3xl text-lg leading-8 text-white/78 sm:text-xl">
+                <p className="mt-5 max-w-[720px] text-[16px] font-semibold leading-relaxed text-white/88 sm:text-[18px]">
                   {content.heroIntro}
                 </p>
-                <p className="mt-5 max-w-2xl text-[15px] font-bold leading-7 text-[#F4C7A9]">
-                  {content.heroTrust}
-                </p>
-                <div className="mt-9 flex flex-wrap gap-3">
-                  <ProblemRequestButton label={content.primaryCta} problemIntent="sign-not-lighting" />
-                  <ProblemRequestButton
-                    label={content.secondaryCta}
-                    problemIntent="peeling-film"
-                    variant="secondary"
-                  />
-                </div>
               </div>
-              <div className="rounded-[32px] border border-white/12 bg-white/[0.07] p-5 shadow-2xl backdrop-blur">
-                <div className="rounded-[24px] bg-[#F7F1E8] p-5 text-[#0E1A2B]">
-                  <div className="flex items-center justify-between gap-4 border-b border-[#D9C7BA] pb-4">
+            </section>
+
+            <section className="bg-white px-4 py-8 sm:px-6 sm:py-10">
+              <div className="mx-auto max-w-7xl">
+                <div className="rounded-[28px] border border-[#D8E2EE] bg-[#F7F1E8] p-5 text-[#0E1A2B] shadow-[0_16px_45px_rgba(14,26,43,0.07)] sm:p-6">
+                  <div className="grid gap-6 lg:grid-cols-[0.7fr_1.3fr] lg:items-center">
                     <div>
                       <p className="text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#B8643E]">
                         PixelRing Check
                       </p>
                       <p className="mt-1 text-lg font-black">{content.impactBefore} / {content.impactAfter}</p>
+                      <p className="mt-3 max-w-md text-[14px] font-semibold leading-6 text-[#4A5568]">
+                        {content.heroTrust}
+                      </p>
                     </div>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0E1A2B] text-white">
-                      !
+
+                    <div className="grid gap-4 md:grid-cols-3">
+                      {content.metrics.slice(0, 3).map((metric) => (
+                        <div key={metric.label}>
+                          <div className="mb-2 flex items-center justify-between text-[13px] font-bold">
+                            <span>{metric.label}</span>
+                            <span className="text-[#24594D]">{metric.after}%</span>
+                          </div>
+                          <div className="h-3 overflow-hidden rounded-full bg-[#E7DDD3]">
+                            <div
+                              className="metric-fill h-full rounded-full bg-[#7BA190]"
+                              style={{ '--metric-target': `${metric.after}%` } as CSSProperties}
+                            />
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  </div>
-                  <div className="mt-5 space-y-4">
-                    {content.metrics.slice(0, 3).map((metric) => (
-                      <div key={metric.label}>
-                        <div className="mb-2 flex items-center justify-between text-[13px] font-bold">
-                          <span>{metric.label}</span>
-                          <span className="text-[#24594D]">{metric.after}%</span>
-                        </div>
-                        <div className="h-3 overflow-hidden rounded-full bg-[#E7DDD3]">
-                          <div
-                            className="metric-fill h-full rounded-full bg-[#7BA190]"
-                            style={{ '--metric-target': `${metric.after}%` } as CSSProperties}
-                          />
-                        </div>
-                      </div>
-                    ))}
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          </>
         )}
 
         {content.problemEnabled !== false && (

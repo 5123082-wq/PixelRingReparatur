@@ -338,7 +338,7 @@
     "request_number_field": "Request number",
     "request_placeholder": "PR-XXXX-XXXX",
     "contact_field": "Phone or email",
-    "contact_placeholder": "Used to formalize the request",
+    "contact_placeholder": "Phone or email used on the request",
     "cookie_restore_hint": "If you already used this device to create the request, you can skip the fields and let the signed cookie restore access automatically.",
     "submit": "Check status",
     "submit_loading": "Checking...",
