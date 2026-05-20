@@ -6,6 +6,7 @@ import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestBu
 import { getGlobalPageCmsContent, getBusinessPageCmsContent } from '@/lib/cms/pages';
 import Image from 'next/image';
 import CmsImage from '@/components/common/CmsImage';
+import BusinessShowcase from '@/components/sections/BusinessShowcase';
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
 
@@ -348,45 +349,34 @@ export default async function BusinessPage({
   };
 
   return (
-    <div className={`flex min-h-screen flex-col bg-[#F7F1E8] ${isRtl ? 'rtl' : 'ltr'}`} dir={isRtl ? 'rtl' : 'ltr'}>
+    <div className={`flex min-h-screen flex-col overflow-x-hidden bg-[#F7F1E8] ${isRtl ? 'rtl' : 'ltr'}`} dir={isRtl ? 'rtl' : 'ltr'}>
       <Header content={globalCms?.header} />
 
       <main className="flex-grow">
         {content.heroEnabled !== false && (
-          <section className="relative w-full bg-[#0E1A2B] pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden">
+          <section className="relative h-[440px] w-full overflow-hidden bg-[#0E1A2B] sm:h-[500px] lg:h-[560px]">
             <div className="absolute inset-0 z-0">
               <CmsImage
                 src={content.heroImage}
                 fallbackSrc={content.heroFallbackSrc}
                 alt={content.heroImageAlt || content.heroTitle}
                 fill
-                className="object-cover opacity-40 mix-blend-overlay"
+                className="object-cover opacity-85"
                 priority
+                sizes="100vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0E1A2B] via-[#0E1A2B]/80 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0E1A2B]/82 via-[#0E1A2B]/28 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0E1A2B]/48 via-[#0E1A2B]/12 to-transparent rtl:bg-gradient-to-l" />
             </div>
 
-            <div className="relative z-10 max-w-7xl mx-auto px-6">
-              <div className="max-w-3xl">
-                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-1.5 backdrop-blur-md">
-                  <div className="h-2 w-2 rounded-full bg-[#B8643E] animate-pulse" />
-                  <span className="text-[13px] font-bold uppercase tracking-wider text-white">
-                    B2B Services
-                  </span>
-                </div>
-                <h1 className="text-[42px] font-extrabold leading-[1.1] text-white sm:text-[56px] lg:text-[64px] tracking-tight">
+            <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col justify-end px-6 pb-12 sm:pb-14 lg:pb-16">
+              <div className="max-w-[800px]">
+                <h1 className="text-[36px] font-extrabold leading-[1.05] tracking-tight text-white sm:text-[52px] lg:text-[60px]">
                   {content.heroTitle}
                 </h1>
-                <p className="mt-8 text-[18px] leading-relaxed text-white/80 sm:text-[22px]">
+                <p className="mt-5 max-w-[700px] text-[16px] font-semibold leading-relaxed text-white/88 sm:text-[18px]">
                   {content.heroIntro}
                 </p>
-                <div className="mt-10 flex gap-4">
-                  <LeistungenRequestButton
-                    label={content.heroCta}
-                    serviceIntent="wartung-servicevertrag"
-                    className="!min-h-[56px] !px-8 !text-[16px]"
-                  />
-                </div>
               </div>
             </div>
           </section>
@@ -405,19 +395,7 @@ export default async function BusinessPage({
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {content.targetGroups.map((group) => (
-                  <div key={group.id} className="bg-[#F8FAFC] rounded-2xl p-8 border border-[#E2E8F0] hover:shadow-lg hover:border-[#B8643E]/30 transition-all duration-300">
-                    <div className="w-12 h-12 rounded-full bg-[#B8643E]/10 flex items-center justify-center mb-6">
-                      <svg className="w-6 h-6 text-[#B8643E]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                      </svg>
-                    </div>
-                    <h3 className="text-[20px] font-bold text-[#0D1B2A] mb-3">{group.title}</h3>
-                    <p className="text-[#4A5568] text-[15px] leading-relaxed">{group.description}</p>
-                  </div>
-                ))}
-              </div>
+              <BusinessShowcase locale={locale} />
             </div>
           </section>
         )}

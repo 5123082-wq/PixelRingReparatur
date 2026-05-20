@@ -637,6 +637,23 @@ export function serializeCmsPage(page: CmsPageRecord): CmsPageResponse {
   };
 }
 
+function isCmsDatabaseUnavailableError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+
+  const code = 'code' in error ? error.code : undefined;
+  if (typeof code === 'string' && ['P1000', 'P1001', 'P1002'].includes(code)) {
+    return true;
+  }
+
+  const message = 'message' in error ? error.message : undefined;
+  return (
+    typeof message === 'string' &&
+    /can't reach database server|connection terminated|connection refused|timeout/i.test(message)
+  );
+}
+
 export async function getPublishedCmsPage(
   pageKey: CmsPageKey,
   locale: string
@@ -682,6 +699,13 @@ export async function getPublishedCmsPage(
       canonicalUrl: page.canonicalUrl,
     };
   } catch (error) {
+    if (isCmsDatabaseUnavailableError(error)) {
+      console.warn(
+        `CMS unavailable for ${pageKey}/${locale}; using local fallback content.`
+      );
+      return null;
+    }
+
     console.error(`CMS page fallback for ${pageKey}/${locale}:`, error);
     return null;
   }

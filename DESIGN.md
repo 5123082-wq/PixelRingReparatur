@@ -18,7 +18,8 @@ The PixelRing brand uses a carefully curated, harmonious palette of warm, natura
 
 ### 1.2 Background Tones
 
-*   **Soft Slate Blue Background (`#EEF3FB`)**: Soft cool tint used at the top of the website (e.g., Hero Section) to make the first screen welcoming and highly professional.
+*   **Soft Slate Blue Background (`#EEF3FB`)**: Soft cool tint used at the top of the website (e.g., Hero Section) to make the first screen welcoming and highly 
+professional.
 *   **Warm Editorial Beige Background (`#F9F6F2`)**: Warm, premium, magazine-style cream shade used in dense content areas (FAQ, reviews, or info blocks) to increase readability and feel high-end.
 *   **Sandy Card Background (`#F4EDE450`)**: A light hover overlay for buttons and interactive items inside beige cards.
 

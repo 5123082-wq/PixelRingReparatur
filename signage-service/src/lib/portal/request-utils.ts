@@ -220,16 +220,22 @@ async function findPortalGrantedCase(
   });
 }
 
-function buildPortalDetailsChangeSummary(changes: {
-  label: string;
-  from: string | null;
-  to: string | null;
-}[]): string {
+function buildPortalDetailsChangeSummary(
+  changes: { label: string; from: string | null; to: string | null }[],
+  isInternal: boolean
+): string {
+  if (isInternal) {
+    return [
+      '[INTERNAL NOTE] Daten der Anfrage wurden aktualisiert:',
+      ...changes.map((change) =>
+        `- ${change.label}: ${formatDiffValue(change.from)} -> ${formatDiffValue(change.to)}`
+      ),
+    ].join('\n');
+  }
+
   return [
     'Daten der Anfrage wurden aktualisiert:',
-    ...changes.map((change) =>
-      `- ${change.label}: ${formatDiffValue(change.from)} -> ${formatDiffValue(change.to)}`
-    ),
+    ...changes.map((change) => `- ${change.label} wurde geaendert.`),
   ].join('\n');
 }
 
@@ -357,7 +363,8 @@ export async function updatePortalRequestDetailsForUser(
       : nextCustomerPhone
         ? 'PHONE'
         : null;
-    const notificationBody = buildPortalDetailsChangeSummary(changes);
+    const notificationBody = buildPortalDetailsChangeSummary(changes, false);
+    const internalNotificationBody = buildPortalDetailsChangeSummary(changes, true);
     const serviceLocationChanged =
       normalizeValueForCompare(caseRecord.serviceLocation) !== normalizeValueForCompare(nextServiceLocation);
 
@@ -402,6 +409,20 @@ export async function updatePortalRequestDetailsForUser(
       select: { id: true },
     });
 
+    await tx.message.create({
+      data: {
+        caseId: caseRecord.id,
+        sessionId: input.portalSessionId,
+        channel: CaseOriginChannel.WEBSITE_CHAT,
+        authorRole: MessageAuthorRole.SYSTEM,
+        authorName: 'System (Internal)',
+        body: internalNotificationBody,
+        isCustomerVisible: false,
+        sentAt: now,
+      },
+      select: { id: true },
+    });
+
     await tx.adminAuditLog.create({
       data: {
         action: 'PORTAL_CASE_DETAILS_UPDATED',
@@ -413,8 +434,8 @@ export async function updatePortalRequestDetailsForUser(
           portalSessionId: input.portalSessionId,
           changes: changes.map((change) => ({
             field: change.field,
-            from: change.from,
-            to: change.to,
+            from: change.from ? '[REDACTED]' : null,
+            to: change.to ? '[REDACTED]' : null,
           })),
         },
         ipAddress: input.ipAddress ?? null,

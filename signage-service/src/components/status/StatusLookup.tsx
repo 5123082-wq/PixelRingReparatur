@@ -292,17 +292,31 @@ export default function StatusLookup({
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="grid gap-3 sm:grid-cols-[1fr_auto]">
+              <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                 <input
+                  id="status-request-number"
+                  name="requestNumber"
                   value={requestNumber}
                   onChange={(e) => setRequestNumber(e.target.value.toUpperCase())}
+                  aria-label={t('request_number_field')}
                   placeholder={t('request_placeholder')}
+                  className="w-full bg-[#FAF9F6] border border-[#E5D8C9] rounded-xl px-5 py-3.5 text-[15px] text-[#0A111F] outline-none focus:border-[#C26E45] transition-all"
+                />
+                <input
+                  id="status-contact"
+                  name="contact"
+                  type="text"
+                  autoCapitalize="none"
+                  value={contact}
+                  onChange={(e) => setContact(e.target.value)}
+                  aria-label={t('contact_field')}
+                  placeholder={t.has('contact_placeholder') ? t('contact_placeholder') : 'E-Mail oder Telefon'}
                   className="w-full bg-[#FAF9F6] border border-[#E5D8C9] rounded-xl px-5 py-3.5 text-[15px] text-[#0A111F] outline-none focus:border-[#C26E45] transition-all"
                 />
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full sm:w-auto bg-[#C26E45] hover:bg-[#A65835] text-white font-bold px-7 py-3.5 text-[15px] rounded-xl transition-all shadow-lg disabled:opacity-60"
+                  className="w-full bg-[#C26E45] hover:bg-[#A65835] text-white font-bold px-7 py-3.5 text-[15px] rounded-xl transition-all shadow-lg disabled:opacity-60"
                 >
                   {isSubmitting ? t('submit_loading') : t('submit')}
                 </button>

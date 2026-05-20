@@ -286,7 +286,7 @@
     "request_number_field": "Numer zgłoszenia",
     "request_placeholder": "PR-XXXX-XXXX",
     "contact_field": "Telefon lub e-mail",
-    "contact_placeholder": "Użyte do sformalizowania zgłoszenia",
+    "contact_placeholder": "Telefon lub e-mail użyty w zgłoszeniu",
     "cookie_restore_hint": "Jeśli to urządzenie było już użyte do utworzenia zgłoszenia, możesz pominąć pola i pozwolić podpisanemu cookie przywrócić dostęp automatycznie.",
     "submit": "Sprawdź status",
     "submit_loading": "Sprawdzanie...",

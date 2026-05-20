@@ -4,8 +4,9 @@ import Header from '@/components/layout/Header';
 import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestButton';
 import { getGlobalPageCmsContent } from '@/lib/cms/pages';
 import CmsImage from '@/components/common/CmsImage';
-import ServiceStamp from '@/components/common/ServiceStamp';
 import React from 'react';
+import ServiceSimulator from '@/components/sections/ServiceSimulator';
+import AboutVideoPlayer from '@/components/sections/AboutVideoPlayer';
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
 
@@ -14,12 +15,13 @@ type AboutContent = {
   metaDescription: string;
   hero: {
     badge: string;
-    title: string;
-    intro: string;
+    titlePrefix: string;
+    titleAccent: string;
+    intro: string[];
+    benefits: { title: string; description: string }[];
     ctaPrimary: string;
     ctaSecondary: string;
   };
-  stats: { value: string; label: string }[];
   services: { id: string; title: string; description: string }[];
   about: {
     title: string;
@@ -30,6 +32,8 @@ type AboutContent = {
     title: string;
     description: string;
     features: string[];
+    mediaLabel: string;
+    playLabel: string;
     cta: string;
   };
   deepDive: {
@@ -41,141 +45,152 @@ type AboutContent = {
   }[];
   final: {
     title: string;
-    description: string;
     button: string;
   };
 };
 
 const CONTENT: Record<Locale, AboutContent> = {
   de: {
-    metaTitle: 'Über uns – Servicepartner für Werbeanlagen | PixelRing',
-    metaDescription: 'PixelRing ist ein verantwortlicher Servicepartner für Reparatur, Wartung, Modernisierung und Audit von Werbeanlagen.',
+    metaTitle: 'Über uns | Servicepartner für Werbeanlagen | PixelRing',
+    metaDescription: 'PixelRing begleitet Reparatur, Wartung, Modernisierung und Prüfung von Werbeanlagen mit einem klaren Ansprechpartner.',
     hero: {
-      badge: 'Service für Werbeanlagen • Seit 2023',
-      title: 'Ein verantwortlicher Servicepartner für Werbeanlagen',
-      intro: 'PixelRing koordiniert Reparatur, Wartung, Montage und Audit aus einer Hand. Kein Marktplatz, keine anonyme Vermittlung: eine Anfrage, klare Verantwortung, Ausführung durch Fachleute.',
-      ctaPrimary: 'Service starten',
+      badge: 'Über PixelRing SERVICE',
+      titlePrefix: 'PixelRing: Service für Werbeanlagen, die sichtbar bleiben sollen',
+      titleAccent: '',
+      intro: [
+        'Wir helfen Unternehmen dabei, Werbeanlagen, Leuchtreklamen und sichtbare Markenelemente zuverlässig in Betrieb zu halten.',
+        'Wenn eine Anlage ausfällt, beschädigt ist oder nicht mehr zum Markenauftritt passt, klären wir zuerst, was sinnvoll ist: reparieren, modernisieren oder ersetzen.'
+      ],
+      benefits: [
+        { title: 'Ein Ansprechpartner', description: 'Ihre Anfrage, die Abstimmung und die nächsten Schritte laufen an einer Stelle zusammen.' },
+        { title: 'Erst prüfen, dann handeln', description: 'Wir schauen, was wirklich nötig ist, bevor Teile ersetzt oder größere Arbeiten geplant werden.' },
+        { title: 'Nachvollziehbarer Verlauf', description: 'Wichtige Informationen zum Standort und zur Anlage bleiben für spätere Servicefälle greifbar.' }
+      ],
+      ctaPrimary: 'Werbeanlage prüfen lassen',
       ctaSecondary: 'Rückruf anfordern'
     },
-    stats: [
-      { value: '2023', label: 'Service für Werbeanlagen' },
-      { value: '100+', label: 'Abgeschlossene Servicefälle' },
-      { value: '50+', label: 'Betreute Anlagen' },
-      { value: '1', label: 'Verantwortlicher Ansprechpartner' }
-    ],
     services: [
-      { id: 's1', title: 'Schilder-Reparatur', description: 'Schnelle Instandsetzung von Gehäusen und Fronten.' },
-      { id: 's2', title: 'Lichttechnik', description: 'Umrüstung auf hocheffiziente LED-Systeme.' },
-      { id: 's3', title: 'Wartungsservice', description: 'Präventive Pflege für lange Lebensdauer.' },
-      { id: 's4', title: 'Objektaudit', description: 'Strukturelle Prüfung und Dokumentation.' }
+      { id: 'restaurants', title: 'Gastronomie und Hotels', description: 'Für Cafés, Restaurants, Bars und Hotels. Wir kümmern uns um Leuchtwerbung, Menükästen und Eingangsbereiche, wenn etwas nicht mehr passt.' },
+      { id: 'retail', title: 'Einzelhandel und Salons', description: 'Für Läden, Filialen, Supermärkte und Salons. Sichtbare Fassaden, lesbare Schilder und funktionierende Beleuchtung bleiben im Blick.' },
+      { id: 'clinics', title: 'Praxen und Apotheken', description: 'Für Arztpraxen, medizinische Zentren und Apotheken. Beschilderung und Licht müssen zuverlässig, klar und gepflegt wirken.' },
+      { id: 'offices', title: 'Büros und Autohäuser', description: 'Für Kanzleien, Büros, Showrooms und Autohäuser. Wir betreuen Außenauftritt, Orientierung und Servicearbeiten am Objekt.' }
     ],
     about: {
       title: 'So arbeitet PixelRing',
       cta: 'Mehr erfahren',
       accordions: [
-        { title: 'Unsere Mission', content: 'Wir glauben, dass Qualität aus direktem Kontakt entsteht. Kein Vermittler, kein Subunternehmer. Sie sprechen mit den Ingenieuren, die Ihre Anlage reparieren.' },
-        { title: 'Unsere Vision', content: 'Ein verlässlicher Servicepartner für transparente und technologisch unterstützte Instandhaltung von Werbesystemen zu sein.' },
-        { title: 'Meister-Standard', content: 'Jede Arbeit folgt unseren strengen Qualitätsrichtlinien: millimetergenaue Ausführung und dokumentierte Prozesse.' }
+        { title: 'Warum PixelRing SERVICE entstanden ist', content: 'Wenn eine Werbeanlage ausfällt, ist oft unklar, wer zuständig ist: Werbetechnik, Elektrik, Montage, Druckerei oder Hersteller. PixelRing SERVICE nimmt diese Anfrage auf und bringt Ordnung in die nächsten Schritte.' },
+        { title: 'Ein Ansprechpartner mit klarer Begleitung', content: 'PixelRing SERVICE ist keine anonyme Vermittlungsplattform. Wir klären die Aufgabe, sammeln die wichtigen Informationen und halten die Kommunikation an einer Stelle zusammen.' },
+        { title: 'Ein fester Serviceablauf', content: 'Jeder Fall wird nachvollziehbar bearbeitet: Was wurde gemeldet, was ist geprüft, welche Maßnahme ist sinnvoll und was sollte als Nächstes passieren. So bleibt das Ergebnis auch später verständlich.' },
+        { title: 'Wenn es mehrere Standorte gibt', content: 'Bei mehreren Standorten hilft ein einheitlicher Ablauf. Die Informationen werden ähnlich aufgenommen, die Dokumentation bleibt vergleichbar und dringende Themen lassen sich besser einordnen.' },
+        { title: 'Die passenden Fachleute koordiniert', content: 'Werbeanlagen verbinden Lichttechnik, Konstruktion, Folien, Druck und Montage. PixelRing SERVICE koordiniert je nach Aufgabe die passenden Fachleute, damit der Kunde nicht alles parallel steuern muss.' }
       ]
     },
     quality: {
-      title: 'Qualität, die für sich spricht',
-      description: 'Qualität zeigt sich bei uns in präziser Diagnose, sauberer Ausführung, verständlicher Dokumentation und einem stabilen Ergebnis am Objekt.',
-      features: ['Präzise Diagnose', 'Saubere Ausführung', 'Praktische Reparaturlösungen', 'Nachvollziehbare Dokumentation'],
+      title: 'PixelRing in Arbeit',
+      description: 'Diagnose, Licht, Befestigung, Montage. Ausschnitte aus dem Servicealltag.',
+      features: ['Diagnose', 'Licht', 'Montage'],
+      mediaLabel: 'Video',
+      playLabel: 'Video starten',
       cta: 'Referenzen ansehen'
     },
     deepDive: [
       {
         id: 'dd1',
         title: 'Reparatur & Wartung von Außenwerbung',
-        description: 'Professionelle Instandsetzung von Werbeanlagen, Leuchtwerbung und Außenwerbung. Wir verlängern die Lebensdauer Ihrer Anlagen durch gezielte Eingriffe.',
-        specs: [{ label: 'Reaktionszeit', value: 'Unter 24h' }, { label: 'Material', value: 'Zertifiziert' }, { label: 'Personal', value: 'Eigene Techniker' }],
+        description: 'Reparatur und Wartung von Werbeanlagen, Leuchtwerbung und Außenwerbung. Ziel ist eine passende Maßnahme statt unnötigem Austausch.',
+        specs: [{ label: 'Ablauf', value: 'Prüfung zuerst' }, { label: 'Material', value: 'Passend zum Objekt' }, { label: 'Service', value: 'Koordiniert' }],
         cta: 'Details ansehen'
       },
       {
         id: 'dd2',
         title: 'Modernisierung von Lichtwerbung & LED-Systemen',
-        description: 'Umrüstung alter Leuchtschriften auf moderne LED-Technik. Sparen Sie bis zu 70% Energiekosten bei gleicher Leuchtkraft.',
-        specs: [{ label: 'Ersparnis', value: 'Bis 70%' }, { label: 'Garantie', value: '24 Monate' }, { label: 'Technik', value: 'Top-Tier LED' }],
+        description: 'Modernisierung alter Leuchtschriften und LED-Systeme, wenn Reparatur allein nicht mehr sinnvoll ist.',
+        specs: [{ label: 'Ziel', value: 'Weniger Ausfälle' }, { label: 'Planung', value: 'Nach Befund' }, { label: 'Technik', value: 'Objektbezogen' }],
         cta: 'Jetzt umrüsten'
       },
       {
         id: 'dd3',
         title: 'Inspektion & Audit von Werbeanlagen',
-        description: 'Prüfung von Standsicherheit, Befestigungen und elektrischer Sicherheit Ihrer Werbeanlagen inklusive digitalem Prüfprotokoll.',
-        specs: [{ label: 'Reichweite', value: 'Deutschlandweit' }, { label: 'Protokoll', value: 'PR-Digital' }, { label: 'Prüfung', value: 'Nach VDE/DIN' }],
+        description: 'Sichtprüfung, technische Einschätzung und Dokumentation von Zustand, Befestigung und elektrischen Auffälligkeiten.',
+        specs: [{ label: 'Ergebnis', value: 'Dokumentiert' }, { label: 'Priorität', value: 'Nach Risiko' }, { label: 'Nächster Schritt', value: 'Klar benannt' }],
         cta: 'Audit buchen'
       }
     ],
     final: {
-      title: 'Beschreiben Sie Ihre Aufgabe rund um die Werbeanlage',
-      description: 'Beschreiben Sie Ihr Anliegen. Wir prüfen die Angaben, klären offene Punkte und führen Sie zum nächsten sinnvollen Schritt.',
+      title: 'Werbeanlage reparieren oder prüfen lassen?',
       button: 'Service starten'
     }
   },
   en: {
-    metaTitle: 'About Us – Service Partner for Signage Systems | PixelRing',
-    metaDescription: 'PixelRing is one accountable service partner for signage repair, maintenance, modernization, and audits.',
+    metaTitle: 'About us | Signage service partner | PixelRing',
+    metaDescription: 'PixelRing helps companies handle signage repair, maintenance, modernization, and checks through one clear service contact.',
     hero: {
-      badge: 'Signage service • Since 2023',
-      title: 'One Accountable Service Partner for Signage Systems',
-      intro: 'PixelRing coordinates repair, maintenance, installation, and audits from one place. No marketplace, no anonymous broker: one request, clear responsibility, specialist execution.',
-      ctaPrimary: 'Start service',
-      ctaSecondary: 'Request Callback'
+      badge: 'About PixelRing SERVICE',
+      titlePrefix: 'PixelRing: service for signs that need to stay visible',
+      titleAccent: '',
+      intro: [
+        'We help businesses keep signs, illuminated advertising, and visible brand elements working and looking right.',
+        'When a sign stops lighting, gets damaged, or no longer fits the brand, we first clarify what makes sense: repair, modernization, or replacement.'
+      ],
+      benefits: [
+        { title: 'One service contact', description: 'Your request, coordination, and next steps stay in one place.' },
+        { title: 'Check first', description: 'We look at what is actually needed before planning replacement or larger work.' },
+        { title: 'Useful history', description: 'Important details about the location and system stay available for future service.' }
+      ],
+      ctaPrimary: 'Have your sign checked',
+      ctaSecondary: 'Request a callback'
     },
-    stats: [
-      { value: '2023', label: 'Signage service' },
-      { value: '100+', label: 'Completed service cases' },
-      { value: '50+', label: 'Supported systems' },
-      { value: '1', label: 'Accountable contact' }
-    ],
     services: [
-      { id: 's1', title: 'Sign Repair', description: 'Fast repair of enclosures and fronts.' },
-      { id: 's2', title: 'Lighting Tech', description: 'Retrofitting to high-efficiency LED.' },
-      { id: 's3', title: 'Maintenance', description: 'Preventive care for long life.' },
-      { id: 's4', title: 'Site Audit', description: 'Structural testing and documentation.' }
+      { id: 'restaurants', title: 'Restaurants and hotels', description: 'For cafés, restaurants, bars, and hotels. We help with illuminated signs, menu displays, and entrance areas when something stops working or looks worn.' },
+      { id: 'retail', title: 'Retail and salons', description: 'For stores, supermarkets, chains, and salons. Storefront signs, window lighting, and visible brand elements need to stay clear and reliable.' },
+      { id: 'clinics', title: 'Practices and pharmacies', description: 'For medical practices, clinics, and pharmacies. Clear signage and dependable lighting help visitors find the right place.' },
+      { id: 'offices', title: 'Offices and dealerships', description: 'For offices, law firms, showrooms, and car dealerships. We support exterior branding, wayfinding, and on-site service work.' }
     ],
     about: {
-      title: 'How PixelRing Works',
-      cta: 'Learn More',
+      title: 'How PixelRing works',
+      cta: 'Learn more',
       accordions: [
-        { title: 'Our Mission', content: 'We believe quality comes from direct contact. No broker, no subcontractor. You speak with the engineers who repair your installation.' },
-        { title: 'Our Vision', content: 'To be a reliable service partner for transparent, technology-supported maintenance of signage systems.' },
-        { title: 'Meister-Standard', content: 'Every job follows our strict quality guidelines: millimetre-accurate execution and documented processes.' }
+        { title: 'Why PixelRing SERVICE exists', content: 'When a sign fails, it is not always clear who should handle it: signage company, electrician, installer, printer, or manufacturer. PixelRing SERVICE takes the request and turns it into a clear next step.' },
+        { title: 'One contact with clear guidance', content: 'PixelRing SERVICE is not an anonymous marketplace. We clarify the task, collect the important details, and keep communication in one place.' },
+        { title: 'A fixed service flow', content: 'Each case follows a clear path: what was reported, what was checked, what action makes sense, and what should happen next. That keeps the result understandable later.' },
+        { title: 'When there is more than one location', content: 'For companies with several locations, a consistent process helps. Information is collected in a similar way, documentation stays comparable, and urgent topics are easier to prioritize.' },
+        { title: 'The right specialists coordinated', content: 'Signs combine lighting, structures, films, print, and installation. PixelRing SERVICE coordinates the right people for the task so the client does not have to manage several contacts at once.' }
       ]
     },
     quality: {
-      title: 'Quality That Speaks for Itself',
-      description: 'For us, quality means precise diagnosis, clean execution, clear documentation, and a stable result on site.',
-      features: ['Precise Diagnosis', 'Clean Execution', 'Practical Repair Solutions', 'Clear Documentation'],
-      cta: 'View References'
+      title: 'PixelRing at work',
+      description: 'Diagnostics, light, fixing points, installation. Short moments from the service process.',
+      features: ['Diagnostics', 'Light', 'Installation'],
+      mediaLabel: 'Video',
+      playLabel: 'Play video',
+      cta: 'View references'
     },
     deepDive: [
       {
         id: 'dd1',
         title: 'Outdoor Advertising Repair & Maintenance',
-        description: 'Professional repair of signage systems, illuminated advertising, and outdoor advertising. We extend the life of your systems through targeted interventions.',
-        specs: [{ label: 'Response', value: 'Under 24h' }, { label: 'Material', value: 'Certified' }, { label: 'Staff', value: 'In-house' }],
+        description: 'Repair and maintenance for signage, illuminated advertising, and outdoor brand elements. The goal is the right measure, not unnecessary replacement.',
+        specs: [{ label: 'Flow', value: 'Check first' }, { label: 'Material', value: 'Site-specific' }, { label: 'Service', value: 'Coordinated' }],
         cta: 'View Details'
       },
       {
         id: 'dd2',
         title: 'Modernization of Illuminated Signs & LED Systems',
-        description: 'Retrofitting old illuminated signs to modern LED technology. Save up to 70% in energy costs.',
-        specs: [{ label: 'Savings', value: 'Up to 70%' }, { label: 'Warranty', value: '24 Months' }, { label: 'Tech', value: 'Top-Tier LED' }],
+        description: 'Modernization of older illuminated signs and LED systems when simple repair is no longer the best option.',
+        specs: [{ label: 'Goal', value: 'Fewer failures' }, { label: 'Planning', value: 'Based on findings' }, { label: 'Tech', value: 'Project-specific' }],
         cta: 'Retrofit Now'
       },
       {
         id: 'dd3',
         title: 'Inspection & Audit of Signage Systems',
-        description: 'Inspection of structural stability, fixings, and electrical safety of your signage, including digital inspection protocol.',
-        specs: [{ label: 'Coverage', value: 'Nationwide' }, { label: 'Protocol', value: 'PR-Digital' }, { label: 'Standards', value: 'VDE/DIN' }],
+        description: 'Visual checks, technical assessment, and documentation of condition, fixings, and visible electrical issues.',
+        specs: [{ label: 'Result', value: 'Documented' }, { label: 'Priority', value: 'Risk-based' }, { label: 'Next step', value: 'Clearly named' }],
         cta: 'Book Audit'
       }
     ],
     final: {
-      title: 'Describe the Task Around Your Signage System',
-      description: 'Describe your issue. We review the details, clarify open points, and guide you toward the next practical step.',
+      title: 'Need signage repair or inspection?',
       button: 'Start service'
     }
   },
@@ -183,37 +198,44 @@ const CONTENT: Record<Locale, AboutContent> = {
     metaTitle: 'О нас – сервисный партнёр для рекламных систем | PixelRing',
     metaDescription: 'PixelRing — один ответственный сервисный партнёр для ремонта, обслуживания, модернизации и аудита рекламных систем.',
     hero: {
-      badge: 'Сервис вывесок • С 2023 года',
-      title: 'Один ответственный сервисный партнёр для рекламных систем',
-      intro: 'PixelRing координирует ремонт, обслуживание, монтаж и аудит из одной точки. Не маркетплейс и не анонимный посредник: одна заявка, понятная ответственность, работа специалистов.',
-      ctaPrimary: 'Запустить сервис',
+      badge: 'О PixelRing SERVICE',
+      titlePrefix: 'PixelRing: сервис, который продлевает жизнь вашему бренду',
+      titleAccent: '',
+      intro: [
+        'Мы помогаем компаниям поддерживать рекламные конструкции, вывески и элементы визуального оформления в идеальном и рабочем состоянии.',
+        'Если оборудование перестало светиться, получило повреждения или больше не соответствует высоким стандартам вашего бренда, мы подберем оптимальное решение: от точечного ремонта и модернизации до полной замены конструкции.'
+      ],
+      benefits: [
+        { title: 'Один подрядчик', description: 'Берем на себя всю координацию: от вашей первой заявки до финального монтажа.' },
+        { title: 'Понятный процесс', description: 'Мы чиним то, что можно починить, и меняем только то, что нужно заменить.' },
+        { title: 'Сервис и история', description: 'Сохраняем историю обслуживания каждой локации, чтобы управлять брендингом было легко.' }
+      ],
+      ctaPrimary: 'Проверить рекламную установку',
       ctaSecondary: 'Заказать звонок'
     },
-    stats: [
-      { value: '2023', label: 'Сервис рекламных систем' },
-      { value: '100+', label: 'Закрытых сервисных случаев' },
-      { value: '50+', label: 'Обслуживаемых установок' },
-      { value: '1', label: 'Ответственный контакт' }
-    ],
     services: [
-      { id: 's1', title: 'Ремонт вывесок', description: 'Быстрое восстановление корпусов и фасадов.' },
-      { id: 's2', title: 'Светотехника', description: 'Модернизация и установка LED-систем.' },
-      { id: 's3', title: 'Обслуживание', description: 'Профилактика для долгого срока службы.' },
-      { id: 's4', title: 'Аудит объектов', description: 'Проверка конструкций и документация.' }
+      { id: 'restaurants', title: 'Гастрономия и Отели', description: 'Для кафе, ресторанов, баров и отелей. Поддерживаем в идеальном состоянии световые меню, вывески и входные группы.' },
+      { id: 'retail', title: 'Ритейл и Салоны красоты', description: 'Для магазинов, супермаркетов, торговых сетей и салонов красоты. Яркие витрины и исправное освещение для привлечения покупателей.' },
+      { id: 'clinics', title: 'Клиники и Аптеки', description: 'Для медицинских центров, стоматологий и аптек. Четкая навигация и надежное дежурное освещение для пациентов.' },
+      { id: 'offices', title: 'Офисы и Автосалоны', description: 'Для бизнес-центров, офисов компаний, адвокатских бюро и автодилеров. Представительский брендинг и точное обслуживание на объекте.' }
     ],
     about: {
       title: 'Как работает PixelRing',
       cta: 'Узнать больше',
       accordions: [
-        { title: 'Наша миссия', content: 'Мы убеждены: качество рождается из прямого контакта. Никаких посредников и субподрядчиков. Вы общаетесь с инженерами напрямую.' },
-        { title: 'Наше видение', content: 'Быть надёжным сервисным партнёром для прозрачного и технологически поддержанного обслуживания рекламных систем.' },
-        { title: 'Стандарт Meister', content: 'Каждая работа следует строгим правилам качества: точность до миллиметра и задокументированные процессы.' }
+        { title: 'Почему появился PixelRing SERVICE', content: 'PixelRing появился в 2023 году из конкретного наблюдения: найти надёжного исполнителя для ремонта вывески или световой рекламы в Германии сложнее, чем кажется. Одни берутся только за монтаж, другие занимаются только электрикой, третьи не выезжают в другой район. Мы решили закрыть эту нишу: один сервисный партнёр, который берёт задачу целиком, от диагностики до монтажа.' },
+        { title: 'Один контакт — понятное сопровождение', content: 'PixelRing SERVICE — не анонимная платформа и не биржа мастеров. Мы уточняем задачу, собираем важные детали, проверяем ситуацию на объекте или по материалам и держим коммуникацию в одной точке.' },
+        { title: 'Внутренний сервисный стандарт', content: 'Каждый случай ведётся по понятному алгоритму: что было заявлено, что проверено, какая мера выглядит разумной и какой следующий шаг рекомендуется. Так появляется документация, полезная для ремонта, модернизации или дальнейшего обслуживания.' },
+        { title: 'Когда объектов больше одного', content: 'Для бизнеса с несколькими точками помогает единый порядок: одинаковый сбор информации, сопоставимая документация и понятная приоритизация. В зависимости от задачи PixelRing SERVICE может фиксировать историю по отдельным локациям и упрощать будущие решения.' },
+        { title: 'Координация подходящих специалистов', content: 'Рекламные конструкции объединяют светотехнику, конструкции, плёнки, печать и монтаж. PixelRing SERVICE координирует подходящих специалистов под конкретную задачу, чтобы клиенту не приходилось параллельно управлять несколькими контактами.' }
       ]
     },
     quality: {
-      title: 'Качество, которое говорит само за себя',
-      description: 'О качестве нашей работы говорят точная диагностика, чистое выполнение, понятная документация и стабильный результат на объекте.',
-      features: ['Точная диагностика', 'Чистое выполнение', 'Практичные решения', 'Понятная документация'],
+      title: 'PixelRing в работе',
+      description: 'Диагностика, свет, крепления, монтаж. То, что обычно остаётся за кадром.',
+      features: ['Диагностика', 'Свет', 'Монтаж'],
+      mediaLabel: 'Видео',
+      playLabel: 'Запустить видео',
       cta: 'Смотреть примеры работ'
     },
     deepDive: [
@@ -240,206 +262,223 @@ const CONTENT: Record<Locale, AboutContent> = {
       }
     ],
     final: {
-      title: 'Опишите задачу по вашей рекламной установке',
-      description: 'Опишите проблему с вывеской или рекламной системой. Мы проверим детали, уточним открытые вопросы и подскажем следующий практичный шаг.',
+      title: 'Нужен ремонт или диагностика?',
       button: 'Запустить сервис'
     }
   },
   tr: {
-    metaTitle: 'Hakkımızda – Reklam Sistemleri Teknik Atölyesi | PixelRing',
-    metaDescription: 'PixelRing, tabela onarımı, bakımı ve profesyonel denetim için teknik bir atölyedir. Kendi mühendislerimiz, Meister-Standart.',
+    metaTitle: 'Hakkımızda | Tabela ve reklam sistemleri servisi | PixelRing',
+    metaDescription: 'PixelRing, tabela ve reklam sistemlerinin onarım, bakım, modernizasyon ve kontrol süreçlerini tek bir iletişim noktasıyla yönetir.',
     hero: {
-      badge: 'Tabela servisi • 2023\'ten beri',
-      title: 'Reklam Sistemleri İçin Tek Sorumlu Servis Ortağı',
-      intro: 'PixelRing onarım, bakım, montaj ve denetimi tek noktadan koordine eder. Pazar yeri veya anonim aracı değil: tek talep, net sorumluluk, uzman uygulama.',
-      ctaPrimary: 'Servisi başlat',
-      ctaSecondary: 'Beni Ara'
+      badge: 'PixelRing SERVICE hakkında',
+      titlePrefix: 'PixelRing: tabelalarınız görünür kalınca marka da görünür kalır',
+      titleAccent: '',
+      intro: [
+        'İşletmelerin tabelalarını, ışıklı reklamlarını ve görünür marka öğelerini çalışır ve düzenli durumda tutmasına yardımcı oluyoruz.',
+        'Bir tabela yanmadığında, hasar gördüğünde veya artık markaya yakışmadığında önce neyin mantıklı olduğunu netleştiririz: onarım, modernizasyon veya değişim.'
+      ],
+      benefits: [
+        { title: 'Tek muhatap', description: 'Talebiniz, koordinasyon ve sonraki adımlar tek noktadan ilerler.' },
+        { title: 'Önce kontrol', description: 'Değişim veya büyük iş planlamadan önce gerçekten ne gerektiğine bakarız.' },
+        { title: 'Takip edilebilir geçmiş', description: 'Konum ve sistemle ilgili önemli bilgiler sonraki servis işleri için elde kalır.' }
+      ],
+      ctaPrimary: 'Tabelanızı kontrol ettirin',
+      ctaSecondary: 'Geri arama iste'
     },
-    stats: [
-      { value: '2023', label: 'Tabela servisi' },
-      { value: '100+', label: 'Tamamlanan servis vakası' },
-      { value: '50+', label: 'Desteklenen sistem' },
-      { value: '1', label: 'Sorumlu iletişim' }
-    ],
     services: [
-      { id: 's1', title: 'Tabela Onarımı', description: 'Gövde ve cephelerin hızlı onarımı.' },
-      { id: 's2', title: 'Aydınlatma', description: 'Yüksek verimli LED sistemlerine dönüşüm.' },
-      { id: 's3', title: 'Bakım Servisi', description: 'Uzun ömür için önleyici bakım.' },
-      { id: 's4', title: 'Saha Denetimi', description: 'Yapısal test ve dökümantasyon.' }
+      { id: 'restaurants', title: 'Restoranlar ve oteller', description: 'Kafe, restoran, bar ve oteller için. Işıklı tabela, menü panosu ve giriş alanlarında sorun olduğunda süreci toparlarız.' },
+      { id: 'retail', title: 'Mağazalar ve salonlar', description: 'Mağazalar, marketler, zincir işletmeler ve güzellik salonları için. Vitrin, tabela ve aydınlatmanın net görünmesi gerekir.' },
+      { id: 'clinics', title: 'Muayenehaneler ve eczaneler', description: 'Tıp merkezleri, muayenehaneler ve eczaneler için. Yönlendirme ve ışık müşterinin yeri kolay bulmasına yardım eder.' },
+      { id: 'offices', title: 'Ofisler ve galeriler', description: 'Ofisler, hukuk büroları, showroomlar ve otomobil galerileri için. Dış görünüm, yönlendirme ve yerinde servis işlerini destekleriz.' }
     ],
     about: {
-      title: 'PixelRing Nasıl Çalışır',
-      cta: 'Daha Fazla Bilgi',
+      title: 'PixelRing nasıl çalışır?',
+      cta: 'Daha fazla bilgi',
       accordions: [
-        { title: 'Misyonumuz', content: 'Kalitenin doğrudan temastan doğduğuna inanıyoruz. Aracı yok, taşeron yok. Tesisatınızı onaran mühendislerle konuşursunuz.' },
-        { title: 'Vizyonumuz', content: 'Tabela sistemlerinin şeffaf ve teknoloji destekli bakımı için güvenilir bir servis ortağı olmak.' },
-        { title: 'Meister-Standart', content: 'Her iş, katı kalite yönergelerimizi takip eder: milimetre düzeyinde hassasiyet ve belgelenmiş süreçler.' }
+        { title: 'PixelRing SERVICE neden var?', content: 'Bir tabela arızalandığında kimin bakacağı her zaman belli değildir: reklamcı, elektrikçi, montaj ekibi, matbaa veya üretici. PixelRing SERVICE talebi alır ve sonraki adımı anlaşılır hale getirir.' },
+        { title: 'Tek muhatap, net takip', content: 'PixelRing SERVICE anonim bir pazar yeri değildir. İşi netleştirir, önemli bilgileri toplar ve iletişimi tek noktada tutar.' },
+        { title: 'Sabit bir servis akışı', content: 'Her işte aynı temel sorular cevaplanır: Ne bildirildi, ne kontrol edildi, hangi işlem mantıklı ve sonraki adım ne olmalı. Böylece sonuç daha sonra da anlaşılır kalır.' },
+        { title: 'Birden fazla konum varsa', content: 'Birden fazla şubesi olan işletmeler için tutarlı süreç önemlidir. Bilgiler benzer şekilde alınır, dokümantasyon karşılaştırılabilir olur ve acil konular daha kolay sıralanır.' },
+        { title: 'Doğru uzmanların koordinasyonu', content: 'Tabelalar ışık, konstrüksiyon, folyo, baskı ve montaj işlerini bir araya getirir. PixelRing SERVICE, göreve uygun kişileri koordine eder; müşteri aynı anda birkaç tarafı yönetmek zorunda kalmaz.' }
       ]
     },
     quality: {
-      title: 'Kendini Kanıtlayan Kalite',
-      description: 'Bizim için kalite; doğru teşhis, temiz uygulama, anlaşılır dokümantasyon ve sahada istikrarlı sonuç demektir.',
-      features: ['Doğru teşhis', 'Temiz uygulama', 'Pratik onarım çözümleri', 'Anlaşılır dokümantasyon'],
-      cta: 'Referansları Gör'
+      title: 'PixelRing iş başında',
+      description: 'Teşhis, ışık, bağlantılar, montaj. Servis sürecinden kısa anlar.',
+      features: ['Teşhis', 'Işık', 'Montaj'],
+      mediaLabel: 'Video',
+      playLabel: 'Videoyu başlat',
+      cta: 'Referansları gör'
     },
     deepDive: [
       {
         id: 'dd1',
         title: 'Dış Mekan Reklamlarının Onarımı ve Bakımı',
-        description: 'Tabela, ışıklı reklam ve dış mekan reklam sistemlerinin profesyonel onarımı. Hedefli müdahalelerle sistemlerinizin ömrünü uzatıyoruz.',
-        specs: [{ label: 'Yanıt', value: '24 saat altı' }, { label: 'Malzeme', value: 'Sertifikalı' }, { label: 'Personel', value: 'Öz Tekniker' }],
-        cta: 'Detayları Gör'
+        description: 'Tabela, ışıklı reklam ve dış mekan reklam öğeleri için onarım ve bakım. Gereksiz değişim yerine doğru müdahaleyi hedefleriz.',
+        specs: [{ label: 'Akış', value: 'Önce kontrol' }, { label: 'Malzeme', value: 'İşe uygun' }, { label: 'Servis', value: 'Koordineli' }],
+        cta: 'Detayları gör'
       },
       {
         id: 'dd2',
         title: 'Işıklı Reklam ve LED Sistemlerinin Modernizasyonu',
-        description: 'Eski tabelaların modern LED teknolojisine dönüştürülmesi. Enerjiden %70 tasarruf edin.',
-        specs: [{ label: 'Tasarruf', value: '%70\'e kadar' }, { label: 'Garanti', value: '24 Ay' }, { label: 'Teknoloji', value: 'Top-Tier LED' }],
-        cta: 'Dönüşümü Başlat'
+        description: 'Basit onarım yeterli olmadığında eski ışıklı tabelalar ve LED sistemleri için modernizasyon planlarız.',
+        specs: [{ label: 'Hedef', value: 'Daha az arıza' }, { label: 'Planlama', value: 'Tespitten sonra' }, { label: 'Teknoloji', value: 'Projeye göre' }],
+        cta: 'Modernizasyon iste'
       },
       {
         id: 'dd3',
         title: 'Reklam Sistemleri İçin İnceleme ve Denetim',
-        description: 'Tabela ve reklam sistemlerinizin taşıyıcılık, bağlantı ve elektrik güvenliğini dijital raporla kontrol ederiz.',
-        specs: [{ label: 'Kapsam', value: 'Tüm Almanya' }, { label: 'Protokol', value: 'PR-Dijital' }, { label: 'Standart', value: 'VDE/DIN' }],
-        cta: 'Denetim Randevusu'
+        description: 'Sistemin durumu, bağlantıları ve görünür elektriksel sorunları için kontrol ve anlaşılır dokümantasyon.',
+        specs: [{ label: 'Sonuç', value: 'Belgelenir' }, { label: 'Öncelik', value: 'Riske göre' }, { label: 'Sonraki adım', value: 'Netleşir' }],
+        cta: 'Kontrol iste'
       }
     ],
     final: {
-      title: 'Reklam Sisteminizle İlgili Görevi Açıklayın',
-      description: 'Sorununuzu açıklayın. Bilgileri kontrol eder, açık noktaları netleştirir ve sizi bir sonraki pratik adıma yönlendiririz.',
+      title: 'Tabela onarımı veya kontrolü mü gerekiyor?',
       button: 'Servisi başlat'
     }
   },
   pl: {
-    metaTitle: 'O nas – Atelier techniczne systemów reklamowych | PixelRing',
-    metaDescription: 'PixelRing to techniczne atelier napraw, konserwacji i profesjonalnego audytu systemów reklamowych. Własni inżynierowie, standard Meister.',
+    metaTitle: 'O nas | Serwis szyldów i systemów reklamowych | PixelRing',
+    metaDescription: 'PixelRing pomaga firmom prowadzić naprawy, konserwację, modernizację i kontrolę szyldów przez jeden jasny punkt kontaktu.',
     hero: {
-      badge: 'Serwis reklam • Od 2023',
-      title: 'Jeden odpowiedzialny partner serwisowy dla systemów reklamowych',
-      intro: 'PixelRing koordynuje naprawy, konserwację, montaż i audyty z jednego miejsca. Nie marketplace i nie anonimowy pośrednik: jedno zgłoszenie, jasna odpowiedzialność, wykonanie przez specjalistów.',
-      ctaPrimary: 'Rozpocznij serwis',
-      ctaSecondary: 'Zamów oddzwonienie'
+      badge: 'O PixelRing SERVICE',
+      titlePrefix: 'PixelRing: serwis dla szyldów, które mają pozostać widoczne',
+      titleAccent: '',
+      intro: [
+        'Pomagamy firmom utrzymać szyldy, reklamy świetlne i widoczne elementy marki w dobrym stanie technicznym i wizualnym.',
+        'Gdy szyld przestaje świecić, zostaje uszkodzony albo nie pasuje już do wizerunku marki, najpierw ustalamy, co ma sens: naprawa, modernizacja czy wymiana.'
+      ],
+      benefits: [
+        { title: 'Jeden kontakt', description: 'Zgłoszenie, koordynacja i kolejne kroki pozostają w jednym miejscu.' },
+        { title: 'Najpierw sprawdzenie', description: 'Zanim planujemy wymianę lub większe prace, ustalamy, co naprawdę jest potrzebne.' },
+        { title: 'Czytelna historia', description: 'Ważne informacje o lokalizacji i instalacji zostają dostępne przy kolejnych pracach serwisowych.' }
+      ],
+      ctaPrimary: 'Zleć sprawdzenie reklamy',
+      ctaSecondary: 'Poproś o telefon'
     },
-    stats: [
-      { value: '2023', label: 'Serwis systemów reklamowych' },
-      { value: '100+', label: 'Zamkniętych spraw serwisowych' },
-      { value: '50+', label: 'Obsługiwanych instalacji' },
-      { value: '1', label: 'Odpowiedzialny kontakt' }
-    ],
     services: [
-      { id: 's1', title: 'Naprawa szyldów', description: 'Szybka naprawa obudów i frontów.' },
-      { id: 's2', title: 'Technika świetlna', description: 'Modernizacja na systemy LED.' },
-      { id: 's3', title: 'Serwis konserwacyjny', description: 'Profilaktyka dla długiej żywotności.' },
-      { id: 's4', title: 'Audyt obiektów', description: 'Testy strukturalne i dokumentacja.' }
+      { id: 'restaurants', title: 'Restauracje i hotele', description: 'Dla kawiarni, restauracji, barów i hoteli. Pomagamy przy szyldach świetlnych, tablicach menu i strefach wejściowych, gdy coś nie działa albo wygląda słabo.' },
+      { id: 'retail', title: 'Sklepy i salony', description: 'Dla sklepów, supermarketów, sieci handlowych i salonów. Szyld, witryna i światło powinny być czytelne i zadbane.' },
+      { id: 'clinics', title: 'Gabinety i apteki', description: 'Dla gabinetów, centrów medycznych i aptek. Oznakowanie i światło pomagają klientom szybko znaleźć właściwe miejsce.' },
+      { id: 'offices', title: 'Biura i salony samochodowe', description: 'Dla biur, kancelarii, showroomów i salonów samochodowych. Wspieramy wygląd zewnętrzny, oznakowanie i prace serwisowe na miejscu.' }
     ],
     about: {
-      title: 'Jak Pracuje PixelRing',
+      title: 'Jak pracuje PixelRing',
       cta: 'Dowiedz się więcej',
       accordions: [
-        { title: 'Nasza misja', content: 'Wierzymy, że jakość rodzi się z bezpośredniego kontaktu. Bez pośredników. Rozmawiasz z inżynierami, którzy naprawiają Twoją instalację.' },
-        { title: 'Nasza wizja', content: 'Być wiarygodnym partnerem serwisowym dla przejrzystej, wspieranej technologią konserwacji systemów reklamowych.' },
-        { title: 'Standard Meister', content: 'Każda praca podąża za surowymi wytycznymi: milimetrowa precyzja i udokumentowane procesy.' }
+        { title: 'Po co powstał PixelRing SERVICE', content: 'Gdy szyld przestaje działać, nie zawsze wiadomo, do kogo się zwrócić: firmy reklamowej, elektryka, montażysty, drukarni czy producenta. PixelRing SERVICE przyjmuje zgłoszenie i porządkuje następny krok.' },
+        { title: 'Jeden kontakt i jasne prowadzenie', content: 'PixelRing SERVICE nie jest anonimową platformą ani giełdą zleceń. Wyjaśniamy zadanie, zbieramy ważne informacje i utrzymujemy komunikację w jednym miejscu.' },
+        { title: 'Stały przebieg serwisu', content: 'W każdej sprawie trzeba odpowiedzieć na proste pytania: co zgłoszono, co sprawdzono, jakie działanie ma sens i co powinno wydarzyć się dalej. Dzięki temu wynik pozostaje zrozumiały także później.' },
+        { title: 'Gdy jest więcej niż jedna lokalizacja', content: 'Przy kilku lokalizacjach pomaga spójny proces. Informacje zbiera się podobnie, dokumentację łatwiej porównać, a pilne tematy można szybciej ustawić w kolejności.' },
+        { title: 'Koordynacja właściwych specjalistów', content: 'Szyldy łączą światło, konstrukcję, folie, druk i montaż. PixelRing SERVICE koordynuje właściwe osoby do danego zadania, aby klient nie musiał prowadzić kilku rozmów naraz.' }
       ]
     },
     quality: {
-      title: 'Jakość, która mówi sama za siebie',
-      description: 'Jakość oznacza dla nas dokładną diagnozę, czyste wykonanie, zrozumiałą dokumentację i stabilny rezultat na obiekcie.',
-      features: ['Dokładna diagnoza', 'Czyste wykonanie', 'Praktyczne rozwiązania', 'Zrozumiała dokumentacja'],
+      title: 'PixelRing w pracy',
+      description: 'Diagnostyka, światło, mocowania, montaż. Krótkie momenty z procesu serwisowego.',
+      features: ['Diagnostyka', 'Światło', 'Montaż'],
+      mediaLabel: 'Wideo',
+      playLabel: 'Odtwórz wideo',
       cta: 'Zobacz referencje'
     },
     deepDive: [
       {
         id: 'dd1',
         title: 'Naprawa i konserwacja reklamy zewnętrznej',
-        description: 'Profesjonalna naprawa szyldów, reklamy świetlnej i systemów reklamy zewnętrznej. Przedłużamy życie Twoich instalacji.',
-        specs: [{ label: 'Reakcja', value: 'Poniżej 24h' }, { label: 'Materiały', value: 'Certyfikowane' }, { label: 'Personel', value: 'Własni technicy' }],
+        description: 'Naprawa i konserwacja szyldów, reklamy świetlnej i zewnętrznych elementów marki. Chodzi o właściwe działanie, nie o niepotrzebną wymianę.',
+        specs: [{ label: 'Przebieg', value: 'Najpierw kontrola' }, { label: 'Materiały', value: 'Dobór do obiektu' }, { label: 'Serwis', value: 'Koordynowany' }],
         cta: 'Zobacz szczegóły'
       },
       {
         id: 'dd2',
         title: 'Modernizacja reklamy świetlnej i systemów LED',
-        description: 'Modernizacja starych neonów na technologię LED. Oszczędność do 70% energii.',
-        specs: [{ label: 'Oszczędność', value: 'Do 70%' }, { label: 'Gwarancja', value: '24 miesiące' }, { label: 'Technika', value: 'Top-Tier LED' }],
-        cta: 'Zmodernizuj teraz'
+        description: 'Modernizacja starszych szyldów świetlnych i systemów LED, gdy sama naprawa nie jest już najlepszym rozwiązaniem.',
+        specs: [{ label: 'Cel', value: 'Mniej awarii' }, { label: 'Plan', value: 'Po ocenie' }, { label: 'Technika', value: 'Dobór do projektu' }],
+        cta: 'Zapytaj o modernizację'
       },
       {
         id: 'dd3',
         title: 'Inspekcja i audyt systemów reklamowych',
-        description: 'Sprawdzamy stabilność, mocowania i bezpieczeństwo elektryczne systemów reklamowych wraz z protokołem cyfrowym.',
-        specs: [{ label: 'Zasięg', value: 'Całe Niemcy' }, { label: 'Protokół', value: 'PR-Digital' }, { label: 'Normy', value: 'VDE/DIN' }],
-        cta: 'Zamów audyt'
+        description: 'Kontrola stanu instalacji, mocowań i widocznych problemów elektrycznych wraz z czytelną dokumentacją.',
+        specs: [{ label: 'Wynik', value: 'Udokumentowany' }, { label: 'Priorytet', value: 'Według ryzyka' }, { label: 'Następny krok', value: 'Jasno opisany' }],
+        cta: 'Poproś o kontrolę'
       }
     ],
     final: {
-      title: 'Opisz zadanie dotyczące Twojej reklamy',
-      description: 'Opisz problem. Sprawdzimy informacje, wyjaśnimy otwarte punkty i wskażemy kolejny praktyczny krok.',
+      title: 'Potrzebna naprawa albo kontrola reklamy?',
       button: 'Rozpocznij serwis'
     }
   },
   ar: {
-    metaTitle: 'من نحن – ورشة تقنية لأنظمة الإعلانات | بكسل رينج',
-    metaDescription: 'بكسل رينج هي ورشة تقنية متخصصة في إصلاح وصيانة وتدقيق أنظمة الإعلانات الخارجية. مهندسون متخصصون، معيار مايستر.',
+    metaTitle: 'من نحن | خدمة اللوحات وأنظمة الإعلانات | بكسل رينج',
+    metaDescription: 'تساعد بكسل رينج الشركات في إصلاح وصيانة وتحديث وفحص اللوحات الإعلانية من خلال نقطة تواصل واضحة.',
     hero: {
-      badge: 'خدمة اللوحات الإعلانية • منذ 2023',
-      title: 'شريك خدمة واحد مسؤول عن أنظمة الإعلانات',
-      intro: 'ينسق بكسل رينج الإصلاح والصيانة والتركيب والتدقيق من نقطة واحدة. لسنا سوقاً ولا وسيطاً مجهولاً: طلب واحد، مسؤولية واضحة، وتنفيذ بواسطة مختصين.',
-      ctaPrimary: 'ابدأ الخدمة',
-      ctaSecondary: 'اطلب اتصالاً'
+      badge: 'حول PixelRing SERVICE',
+      titlePrefix: 'بكسل رينج: خدمة تساعد لوحاتكم على البقاء واضحة ومرئية',
+      titleAccent: '',
+      intro: [
+        'نساعد الشركات في الحفاظ على اللوحات المضيئة واللافتات والعناصر البصرية للعلامة التجارية بحالة جيدة وواضحة.',
+        'عندما تتوقف لوحة عن الإضاءة، أو تتعرض للتلف، أو لا تعود مناسبة لصورة العلامة، نحدد أولاً ما هو الأنسب: إصلاح، تحديث، أو استبدال.'
+      ],
+      benefits: [
+        { title: 'جهة تواصل واحدة', description: 'يبقى الطلب والتنسيق والخطوات التالية في مكان واحد.' },
+        { title: 'الفحص أولاً', description: 'نراجع ما هو مطلوب فعلاً قبل التخطيط للاستبدال أو الأعمال الأكبر.' },
+        { title: 'سجل واضح', description: 'تبقى المعلومات المهمة عن الموقع واللوحة متاحة لأعمال الخدمة اللاحقة.' }
+      ],
+      ctaPrimary: 'اطلب فحص اللافتة',
+      ctaSecondary: 'اطلب معاودة الاتصال'
     },
-    stats: [
-      { value: '2023', label: 'خدمة أنظمة الإعلانات' },
-      { value: '100+', label: 'حالة خدمة مكتملة' },
-      { value: '50+', label: 'منشأة مدعومة' },
-      { value: '1', label: 'جهة اتصال مسؤولة' }
-    ],
     services: [
-      { id: 's1', title: 'إصلاح اللوحات', description: 'إصلاح سريع للهياكل والواجهات.' },
-      { id: 's2', title: 'تقنيات الإضاءة', description: 'التحويل إلى أنظمة LED عالية الكفاءة.' },
-      { id: 's3', title: 'خدمة الصيانة', description: 'عناية وقائية لعمر أطول.' },
-      { id: 's4', title: 'تدقيق المواقع', description: 'اختبارات هيكلية وتوثيق.' }
+      { id: 'restaurants', title: 'المطاعم والفنادق', description: 'للمقاهي والمطاعم والفنادق. نساعد عند تعطل اللوحات المضيئة أو لوحات القوائم أو عندما تبدو منطقة الدخول بحاجة إلى عناية.' },
+      { id: 'retail', title: 'المتاجر والصالونات', description: 'للمتاجر والسوبرماركت والسلاسل التجارية وصالونات التجميل. الواجهة واللوحة والإضاءة يجب أن تبقى واضحة ومرتبة.' },
+      { id: 'clinics', title: 'العيادات والصيدليات', description: 'للعيادات والمراكز الطبية والصيدليات. تساعد اللوحات الواضحة والإضاءة الجيدة الزوار على الوصول بسهولة.' },
+      { id: 'offices', title: 'المكاتب ومعارض السيارات', description: 'للمكاتب وشركات الخدمات والمعارض. ندعم الواجهة الخارجية والإرشاد وأعمال الخدمة في الموقع.' }
     ],
     about: {
       title: 'كيف يعمل بكسل رينج',
-      cta: 'لمعرفة المزيد',
+      cta: 'اعرف المزيد',
       accordions: [
-        { title: 'مهمتنا', content: 'نؤمن بأن الجودة تنبع من التواصل المباشر. لا وسيط ولا مقاول. أنت تتحدث مع المهندسين الذين يصلحون منشأتك.' },
-        { title: 'رؤيتنا', content: 'أن نكون شريك خدمة موثوقاً للصيانة الشفافة والمدعومة تقنياً لأنظمة الإعلانات.' },
-        { title: 'معيار مايستر', content: 'يتبع كل عمل معاييرنا الصارمة للجودة: دقة بالمليمتر وعمليات موثقة.' }
+        { title: 'لماذا توجد PixelRing SERVICE؟', content: 'عندما تتعطل لوحة إعلانية، لا يكون من الواضح دائماً من يجب أن يتولى الأمر: شركة لوحات، كهربائي، فريق تركيب، مطبعة أو الشركة المصنعة. تأخذ PixelRing SERVICE الطلب وتحوّله إلى خطوة تالية واضحة.' },
+        { title: 'جهة تواصل واحدة ومتابعة واضحة', content: 'PixelRing SERVICE ليست منصة مجهولة ولا سوقاً للحرفيين. نوضح المهمة، نجمع المعلومات المهمة، ونحافظ على التواصل في مكان واحد.' },
+        { title: 'مسار خدمة ثابت', content: 'في كل حالة نجيب عن الأسئلة الأساسية: ما الذي تم الإبلاغ عنه، ما الذي تم فحصه، ما الإجراء المناسب، وما الخطوة التالية. بهذه الطريقة يبقى القرار مفهوماً لاحقاً.' },
+        { title: 'عندما يكون لديكم أكثر من موقع', content: 'للشركات التي لديها عدة مواقع، يساعد وجود مسار موحد. يتم جمع المعلومات بطريقة متقاربة، وتبقى الوثائق قابلة للمقارنة، ويمكن ترتيب الأولويات بوضوح.' },
+        { title: 'تنسيق المختصين المناسبين', content: 'تجمع اللوحات الإعلانية بين الإضاءة، والهياكل، والأفلام، والطباعة، والتركيب. تنسق PixelRing SERVICE الأشخاص المناسبين حسب المهمة، حتى لا يضطر العميل إلى إدارة عدة جهات في الوقت نفسه.' }
       ]
     },
     quality: {
-      title: 'جودة تتحدث عن نفسها',
-      description: 'تعني الجودة لدينا تشخيصاً دقيقاً وتنفيذاً نظيفاً وتوثيقاً واضحاً ونتيجة مستقرة في الموقع.',
-      features: ['تشخيص دقيق', 'تنفيذ نظيف', 'حلول إصلاح عملية', 'توثيق واضح'],
+      title: 'PixelRing أثناء العمل',
+      description: 'تشخيص، إضاءة، تثبيت، تركيب. لقطات قصيرة من مسار الخدمة.',
+      features: ['تشخيص', 'إضاءة', 'تركيب'],
+      mediaLabel: 'فيديو',
+      playLabel: 'تشغيل الفيديو',
       cta: 'مشاهدة المراجع'
     },
     deepDive: [
       {
         id: 'dd1',
         title: 'إصلاح وصيانة الإعلانات الخارجية',
-        description: 'إصلاح احترافي للوحات والإعلانات المضيئة وأنظمة الإعلانات الخارجية. نطيل عمر أنظمتك بتدخلات محددة.',
-        specs: [{ label: 'الاستجابة', value: 'خلال 24 ساعة' }, { label: 'المواد', value: 'معتمدة' }, { label: 'الطاقم', value: 'فنيونا الخاصون' }],
+        description: 'إصلاح وصيانة اللوحات والإعلانات المضيئة والعناصر الخارجية للعلامة. الهدف هو الإجراء المناسب، وليس الاستبدال غير الضروري.',
+        specs: [{ label: 'المسار', value: 'الفحص أولاً' }, { label: 'المواد', value: 'حسب الموقع' }, { label: 'الخدمة', value: 'منسقة' }],
         cta: 'مشاهدة التفاصيل'
       },
       {
         id: 'dd2',
         title: 'تحديث الإعلانات المضيئة وأنظمة LED',
-        description: 'تحويل اللوحات القديمة إلى تقنية LED الحديثة. وفر حتى 70% من تكاليف الطاقة.',
-        specs: [{ label: 'التوفير', value: 'حتى 70%' }, { label: 'الضمان', value: '24 شهراً' }, { label: 'التقنية', value: 'Top-Tier LED' }],
-        cta: 'حول الآن'
+        description: 'تحديث اللوحات المضيئة القديمة وأنظمة LED عندما لا يكون الإصلاح البسيط هو الخيار الأفضل.',
+        specs: [{ label: 'الهدف', value: 'أعطال أقل' }, { label: 'التخطيط', value: 'بعد التقييم' }, { label: 'التقنية', value: 'حسب المشروع' }],
+        cta: 'اطلب التحديث'
       },
       {
         id: 'dd3',
         title: 'فحص وتدقيق أنظمة الإعلانات',
-        description: 'نفحص الثبات والتثبيت والسلامة الكهربائية لأنظمة الإعلانات مع بروتوكول رقمي.',
-        specs: [{ label: 'التغطية', value: 'أنحاء ألمانيا' }, { label: 'البروتوكول', value: 'PR-Digital' }, { label: 'المعايير', value: 'VDE/DIN' }],
-        cta: 'احجز تدقيقاً'
+        description: 'فحص حالة اللوحة والتثبيت والمشكلات الكهربائية الظاهرة مع توثيق واضح.',
+        specs: [{ label: 'النتيجة', value: 'موثقة' }, { label: 'الأولوية', value: 'حسب المخاطر' }, { label: 'الخطوة التالية', value: 'واضحة' }],
+        cta: 'اطلب فحصاً'
       }
     ],
     final: {
-      title: 'صِف المهمة المتعلقة بنظامك الإعلاني',
-      description: 'صِف المشكلة. نراجع التفاصيل ونوضح النقاط المفتوحة ونرشدك إلى الخطوة العملية التالية.',
+      title: 'هل تحتاج إلى إصلاح أو فحص اللافتة؟',
       button: 'ابدأ الخدمة'
     }
   }
@@ -448,34 +487,22 @@ const CONTENT: Record<Locale, AboutContent> = {
 const PAGE_LABELS: Record<Locale, {
   teamLabel: string;
   expertAlt: string;
-  trustPills: string[];
   quickServicesTitle: string;
   serviceCardCta: string;
   materialTitle: string;
-  materialDescription: string;
   materialBrands: string[];
-  deepDiveTitle: string;
-  deepDiveDescription: string;
-  allServices: string;
   testimonialsTitle: string;
-  testimonialsDescription: string;
   testimonials: { name: string; role: string; text: string }[];
   emailPlaceholder: string;
 }> = {
   de: {
-    teamLabel: 'Service-Team',
+    teamLabel: 'Servis ekibi',
     expertAlt: 'PixelRing Service-Team',
-    trustPills: ['Keine Vermittlung', 'Eine Anfrage', 'Ausführung durch Fachleute'],
-    quickServicesTitle: 'Dienstleistungen für Sie',
-    serviceCardCta: 'Mehr erfahren',
-    materialTitle: 'Materialien und Systeme, mit denen wir arbeiten',
-    materialDescription: 'Wir setzen je nach Aufgabe auf bewährte Folien, LED-Komponenten, Netzteile, PMMA und Aluminiumverbundplatten etablierter Hersteller.',
+    quickServicesTitle: 'Für wen ist PixelRing?',
+    serviceCardCta: 'Branche ansehen',
+    materialTitle: 'Materialien und Lieferpartner',
     materialBrands: ['3M', 'ORAFOL', 'Samsung LED', 'Tridonic', 'Mean Well', 'PLEXIGLAS®', 'DIBOND®', 'Avery Dennison'],
-    deepDiveTitle: 'Servicebereiche für Werbeanlagen',
-    deepDiveDescription: 'Unsere spezialisierten Reparatur- und Wartungsleistungen erhalten den Wert und die Sicherheit Ihrer Werbeanlagen.',
-    allServices: 'Alle Services',
     testimonialsTitle: 'Rückmeldungen aus Servicefällen',
-    testimonialsDescription: 'Anonymisierte Stimmen aus Reparatur-, Wartungs- und Audit-Anfragen.',
     testimonials: [
       { name: 'Filialbetrieb', role: 'Standortnetz Berlin', text: 'PixelRing hat die defekte Leuchtwerbung strukturiert aufgenommen, die Reparatur sauber dokumentiert und den Betrieb schnell wiederhergestellt.' },
       { name: 'Gastronomiegruppe', role: 'Mehrere Standorte', text: 'Für uns zählt Verlässlichkeit. Die Kommunikation war klar, der Termin realistisch und das Ergebnis passte zum Markenauftritt.' },
@@ -486,17 +513,11 @@ const PAGE_LABELS: Record<Locale, {
   en: {
     teamLabel: 'Service Team',
     expertAlt: 'PixelRing service team',
-    trustPills: ['No brokerage', 'One request', 'Specialist execution'],
-    quickServicesTitle: 'Services for Your Signage Systems',
-    serviceCardCta: 'Learn more',
-    materialTitle: 'Materials and Systems We Work With',
-    materialDescription: 'Depending on the task, we use proven films, LED components, power supplies, PMMA, and aluminium composite panels from established manufacturers.',
+    quickServicesTitle: 'Who is PixelRing for?',
+    serviceCardCta: 'View sector',
+    materialTitle: 'Materials and supply partners',
     materialBrands: ['3M', 'ORAFOL', 'Samsung LED', 'Tridonic', 'Mean Well', 'PLEXIGLAS®', 'DIBOND®', 'Avery Dennison'],
-    deepDiveTitle: 'Service Areas for Signage Systems',
-    deepDiveDescription: 'Explore repair and maintenance categories designed to preserve the value and safety of your signage systems.',
-    allServices: 'All Services',
-    testimonialsTitle: 'Feedback From Service Cases',
-    testimonialsDescription: 'Anonymized feedback from repair, maintenance, and audit requests.',
+    testimonialsTitle: 'Feedback from service cases',
     testimonials: [
       { name: 'Retail operator', role: 'Berlin location network', text: 'PixelRing documented the issue clearly, repaired the illuminated sign, and helped us restore the storefront quickly.' },
       { name: 'Hospitality group', role: 'Multiple locations', text: 'The team communicated clearly, kept the service window realistic, and delivered a result that matched our brand standards.' },
@@ -505,19 +526,13 @@ const PAGE_LABELS: Record<Locale, {
     emailPlaceholder: 'Email address'
   },
   ru: {
-    teamLabel: 'Service-Team',
+    teamLabel: 'Servis ekibi',
     expertAlt: 'Сервисная команда PixelRing',
-    trustPills: ['Не посредник', 'Одна заявка', 'Работа специалистов'],
-    quickServicesTitle: 'Услуги для ваших рекламных систем',
-    serviceCardCta: 'Подробнее',
-    materialTitle: 'Материалы и системы, с которыми мы работаем',
-    materialDescription: 'В зависимости от задачи мы используем проверенные плёнки, LED-компоненты, блоки питания, PMMA и алюминиевые композитные панели известных производителей.',
+    quickServicesTitle: 'Для кого PixelRing?',
+    serviceCardCta: 'Смотреть отрасль',
+    materialTitle: 'Премиальные материалы и поставщики',
     materialBrands: ['3M', 'ORAFOL', 'Samsung LED', 'Tridonic', 'Mean Well', 'PLEXIGLAS®', 'DIBOND®', 'Avery Dennison'],
-    deepDiveTitle: 'Сервисные направления PixelRing',
-    deepDiveDescription: 'Ремонт, модернизация и аудит рекламных систем, которые помогают сохранить внешний вид, безопасность и ценность объекта.',
-    allServices: 'Все услуги',
     testimonialsTitle: 'Отзывы из сервисных случаев',
-    testimonialsDescription: 'Анонимизированные отзывы по заявкам на ремонт, обслуживание и аудит.',
     testimonials: [
       { name: 'Филиальный бизнес', role: 'Розничная сеть, Берлин', text: 'PixelRing быстро разобрался с неисправной световой вывеской, понятно зафиксировал проблему и вернул фасад в рабочее состояние.' },
       { name: 'Гастрономическая группа', role: 'Несколько локаций', text: 'Для нас важны сроки и единый стандарт бренда. Команда заранее согласовала окно работ и аккуратно закрыла задачу без лишней переписки.' },
@@ -528,63 +543,45 @@ const PAGE_LABELS: Record<Locale, {
   tr: {
     teamLabel: 'Service-Team',
     expertAlt: 'PixelRing servis ekibi',
-    trustPills: ['Aracı yok', 'Tek talep', 'Uzman uygulama'],
-    quickServicesTitle: 'Reklam Sistemleriniz İçin Hizmetler',
-    serviceCardCta: 'Daha fazla bilgi',
-    materialTitle: 'Çalıştığımız Malzemeler ve Sistemler',
-    materialDescription: 'Göreve bağlı olarak köklü üreticilerin folyo, LED bileşenleri, güç kaynakları, PMMA ve alüminyum kompozit panellerini kullanırız.',
+    quickServicesTitle: 'PixelRing kimler için?',
+    serviceCardCta: 'Sektörü incele',
+    materialTitle: 'Malzemeler ve tedarik ortakları',
     materialBrands: ['3M', 'ORAFOL', 'Samsung LED', 'Tridonic', 'Mean Well', 'PLEXIGLAS®', 'DIBOND®', 'Avery Dennison'],
-    deepDiveTitle: 'Reklam Sistemleri İçin Servis Alanları',
-    deepDiveDescription: 'Tabela sistemlerinizin değerini ve güvenliğini korumaya yönelik onarım ve bakım kategorileri.',
-    allServices: 'Tüm Hizmetler',
-    testimonialsTitle: 'Servis Vakalarından Geri Bildirimler',
-    testimonialsDescription: 'Onarım, bakım ve denetim taleplerinden anonimleştirilmiş geri bildirimler.',
+    testimonialsTitle: 'Servis işlerinden geri bildirimler',
     testimonials: [
-      { name: 'Şube işletmesi', role: 'Berlin lokasyon ağı', text: 'PixelRing arızayı net belgeledi, ışıklı tabelayı onardı ve mağaza cephesini hızlıca çalışır hale getirdi.' },
-      { name: 'Gastronomi grubu', role: 'Birden fazla lokasyon', text: 'Ekip net iletişim kurdu, servis zamanını gerçekçi planladı ve marka standardımıza uygun sonuç teslim etti.' },
-      { name: 'Tıp merkezi', role: 'Tesis yönetimi', text: 'Denetim raporu pratikti ve bakım ile güvenlik önceliklerimizi belirlememize yardımcı oldu.' }
+      { name: 'Şube işletmesi', role: 'Berlin lokasyon ağı', text: 'PixelRing arızayı anlaşılır şekilde kayda aldı, ışıklı tabelayı onardı ve mağaza cephesini kısa sürede tekrar çalışır hale getirdi.' },
+      { name: 'Restoran grubu', role: 'Birden fazla konum', text: 'İletişim netti, servis zamanı gerçekçi planlandı ve sonuç marka görünümümüze uydu.' },
+      { name: 'Tıp merkezi', role: 'Tesis yönetimi', text: 'Kontrol raporu pratikti. Bakım ve güvenlik konularında neye önce bakmamız gerektiğini netleştirdi.' }
     ],
     emailPlaceholder: 'E-posta adresi'
   },
   pl: {
-    teamLabel: 'Service-Team',
+    teamLabel: 'Zespół serwisowy',
     expertAlt: 'Zespół serwisowy PixelRing',
-    trustPills: ['Bez pośrednictwa', 'Jedno zgłoszenie', 'Realizacja przez specjalistów'],
-    quickServicesTitle: 'Usługi dla Twoich systemów reklamowych',
-    serviceCardCta: 'Dowiedz się więcej',
-    materialTitle: 'Materiały i systemy, z którymi pracujemy',
-    materialDescription: 'W zależności od zadania stosujemy sprawdzone folie, komponenty LED, zasilacze, PMMA i płyty kompozytowe aluminiowe uznanych producentów.',
+    quickServicesTitle: 'Dla kogo jest PixelRing?',
+    serviceCardCta: 'Zobacz branżę',
+    materialTitle: 'Materiały i partnerzy dostaw',
     materialBrands: ['3M', 'ORAFOL', 'Samsung LED', 'Tridonic', 'Mean Well', 'PLEXIGLAS®', 'DIBOND®', 'Avery Dennison'],
-    deepDiveTitle: 'Obszary serwisowe dla systemów reklamowych',
-    deepDiveDescription: 'Kategorie napraw i konserwacji, które pomagają zachować wartość i bezpieczeństwo systemów reklamowych.',
-    allServices: 'Wszystkie usługi',
     testimonialsTitle: 'Opinie ze spraw serwisowych',
-    testimonialsDescription: 'Anonimowe głosy z napraw, konserwacji i audytów.',
     testimonials: [
-      { name: 'Operator oddziału', role: 'Sieć lokalizacji w Berlinie', text: 'PixelRing jasno udokumentował problem, naprawił podświetlany szyld i szybko przywrócił estetykę fasady.' },
-      { name: 'Grupa gastronomiczna', role: 'Kilka lokalizacji', text: 'Zespół komunikował się jasno, realistycznie zaplanował termin i dostarczył wynik zgodny ze standardem marki.' },
-      { name: 'Centrum medyczne', role: 'Facility management', text: 'Raport z audytu był praktyczny i pomógł ustalić priorytety konserwacji oraz bezpieczeństwa.' }
+      { name: 'Operator oddziału', role: 'Sieć lokalizacji w Berlinie', text: 'PixelRing jasno opisał problem, naprawił podświetlany szyld i szybko przywrócił fasadę do porządku.' },
+      { name: 'Grupa restauracyjna', role: 'Kilka lokalizacji', text: 'Komunikacja była prosta, termin realny, a efekt pasował do naszego standardu wizualnego.' },
+      { name: 'Centrum medyczne', role: 'Zarządzanie obiektem', text: 'Raport z kontroli był praktyczny i pomógł ustalić, które prace serwisowe są najważniejsze.' }
     ],
     emailPlaceholder: 'Adres e-mail'
   },
   ar: {
     teamLabel: 'فريق الخدمة',
     expertAlt: 'فريق خدمة بكسل رينج',
-    trustPills: ['بدون وسيط', 'طلب واحد', 'تنفيذ متخصص'],
-    quickServicesTitle: 'خدمات لأنظمة الإعلانات لديك',
-    serviceCardCta: 'اعرف المزيد',
-    materialTitle: 'المواد والأنظمة التي نعمل معها',
-    materialDescription: 'نستخدم حسب المهمة أفلاماً ومكونات LED ومزودات طاقة ومواد PMMA وألواح ألمنيوم مركبة من جهات تصنيع معروفة.',
+    quickServicesTitle: 'من هم عملاء بكسل رينج؟',
+    serviceCardCta: 'عرض القطاع',
+    materialTitle: 'المواد وشركاء التوريد',
     materialBrands: ['3M', 'ORAFOL', 'Samsung LED', 'Tridonic', 'Mean Well', 'PLEXIGLAS®', 'DIBOND®', 'Avery Dennison'],
-    deepDiveTitle: 'مجالات الخدمة لأنظمة الإعلانات',
-    deepDiveDescription: 'خدمات إصلاح وصيانة تساعد في الحفاظ على قيمة أنظمة الإعلانات وسلامتها.',
-    allServices: 'كل الخدمات',
-    testimonialsTitle: 'ملاحظات من حالات الخدمة',
-    testimonialsDescription: 'آراء مجهولة من طلبات الإصلاح والصيانة والتدقيق.',
+    testimonialsTitle: 'آراء من أعمال الخدمة',
     testimonials: [
-      { name: 'مشغل فرع', role: 'شبكة مواقع في برلين', text: 'وثق فريق بكسل رينج المشكلة بوضوح، وأصلح اللوحة المضيئة، وساعدنا على إعادة الواجهة إلى حالتها التشغيلية بسرعة.' },
-      { name: 'مجموعة ضيافة', role: 'عدة مواقع', text: 'كان التواصل واضحاً، ونافذة الخدمة واقعية، والنتيجة متوافقة مع معايير علامتنا التجارية.' },
-      { name: 'مركز طبي', role: 'إدارة المرافق', text: 'كان تقرير التدقيق عملياً وساعدنا على تحديد أولويات الصيانة والسلامة في الموقع.' }
+      { name: 'مشغل فرع', role: 'شبكة مواقع في برلين', text: 'سجل فريق بكسل رينج المشكلة بوضوح، وأصلح اللوحة المضيئة، وساعدنا على إعادة الواجهة إلى وضعها العملي.' },
+      { name: 'مجموعة مطاعم', role: 'عدة مواقع', text: 'كان التواصل واضحاً، والموعد واقعياً، والنتيجة مناسبة لشكل علامتنا التجارية.' },
+      { name: 'مركز طبي', role: 'إدارة المرافق', text: 'كان تقرير الفحص عملياً وساعدنا على تحديد أعمال الصيانة الأكثر أهمية.' }
     ],
     emailPlaceholder: 'عنوان البريد الإلكتروني'
   }
@@ -626,107 +623,55 @@ export default async function AboutPage({
       <Header content={globalCms?.header} />
 
       <main className="flex-grow pt-0">
-        {/* HERO SECTION - Strictly Proportioned to Reference Screenshot */}
-        <section className="px-6 pt-8 md:pt-12 pb-0">
-          <div className="mx-auto max-w-7xl">
-            {/* Row 1: Large Title */}
-            <div className="mb-8 md:mb-12">
-              <h1 className="text-[42px] md:text-[56px] lg:text-[68px] font-black leading-[1.05] text-[#0E1A2B] tracking-tight max-w-4xl">
-                {tContent.hero.title}
-              </h1>
-            </div>
+        {/* HERO SECTION */}
+        <section className="px-6 py-12 md:py-16 overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-[600px] h-[500px] bg-white/50 rounded-full blur-[120px] -translate-y-1/3 translate-x-1/4 pointer-events-none" />
 
-            {/* Row 2: Large Image & Balanced Content Stack */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
-              {/* Left: Prominent Image */}
-              <div className="lg:col-span-7 relative">
-                <div className="relative h-[300px] md:h-[400px] lg:h-[420px] rounded-[48px] overflow-hidden shadow-2xl">
-                  <CmsImage
-                    src="/images/about/hero_signage_workshop.png"
-                    alt={tContent.hero.title}
-                    fill
-                    sizes="(min-width: 1024px) 58vw, 100vw"
-                    className="object-cover"
-                    priority
-                  />
+          <div className="mx-auto max-w-7xl relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+              {/* Left Column: Content & Benefits */}
+              <div className="lg:col-span-7 flex flex-col gap-6">
+                <div>
+                  <div className="mb-4 md:mb-5 inline-flex text-[11px] md:text-[12px] font-black uppercase tracking-[0.24em] text-[#B8643E]">
+                    {tContent.hero.badge}
+                  </div>
+                  <h1 className="text-[34px] sm:text-[40px] md:text-[50px] lg:text-[54px] font-black leading-[1.08] tracking-tight text-[#0E1A2B]">
+                    {tContent.hero.titlePrefix}
+                  </h1>
                 </div>
 
-                {/* Authentic Embossed Watermark Stamp */}
-                <ServiceStamp
-                  idPrefix="about-hero-stamp"
-                  className="absolute -bottom-6 -right-6 md:-bottom-10 md:-right-10 z-10 w-32 h-32 md:w-40 md:h-40 pointer-events-none opacity-95"
-                />
-              </div>
-
-              {/* Right: Content Stack (Spanning Image Height) */}
-              <div className="lg:col-span-5 flex flex-col justify-between py-2">
-                <p className="text-[18px] md:text-[20px] text-[#4A5568] leading-relaxed max-w-md">
-                  {tContent.hero.intro}
-                </p>
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {pageLabels.trustPills.map((pill) => (
-                    <span key={pill} className="rounded-full border border-[#B8643E]/20 bg-white/70 px-4 py-2 text-[13px] font-bold text-[#0E1A2B] shadow-sm">
-                      {pill}
-                    </span>
+                <div className="space-y-3 max-w-[640px]">
+                  {tContent.hero.intro.map((paragraph, idx) => (
+                    <p key={idx} className="text-[16px] md:text-[17px] text-[#4A5568] leading-relaxed">
+                      {paragraph}
+                    </p>
                   ))}
                 </div>
 
-                <div className="space-y-8">
-                  {/* Avatar Stack */}
-                  <div className="flex items-center gap-4">
-                    <div className="flex -space-x-4">
-                      {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="relative w-12 h-12 rounded-full border-4 border-[#F7F1E8] overflow-hidden bg-gray-200 shadow-sm">
-                           <CmsImage
-                             src={`/images/about/team/service-team-${i}.png`}
-                             alt={pageLabels.expertAlt}
-                             fill
-                             sizes="48px"
-                             className="object-cover"
-                           />
-                        </div>
-                      ))}
-                      <div className="w-12 h-12 rounded-full border-4 border-[#F7F1E8] bg-[#0E1A2B] flex items-center justify-center text-white shadow-sm">
-                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                         </svg>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-[#0E1A2B]/10">
+                  {tContent.hero.benefits.map((benefit, idx) => (
+                    <div key={idx} className="flex flex-col gap-1.5">
+                      <div className="flex items-center gap-2 text-[#0E1A2B] font-bold text-[14px] md:text-[15px]">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#B8643E] shrink-0" />
+                        {benefit.title}
                       </div>
+                      <p className="text-[#6B7788] text-[13px] leading-snug">
+                        {benefit.description}
+                      </p>
                     </div>
-                    <div className="text-[14px] font-bold text-[#0E1A2B]/40 uppercase tracking-widest">
-                       {pageLabels.teamLabel}
-                    </div>
-                  </div>
-
-                  {/* Buttons */}
-                  <div className="flex flex-wrap gap-4">
-                    <LeistungenRequestButton
-                      label={tContent.hero.ctaPrimary}
-                      serviceIntent="about-page"
-                      className="bg-[#B8643E] hover:bg-[#A65835] text-white px-7 py-4 text-[16px] font-semibold rounded-full shadow-lg shadow-[#B8643E]/30 transition-all duration-200 active:scale-95"
-                    />
-                  </div>
+                  ))}
                 </div>
+              </div>
+
+              {/* Right Column: Interactive Diagnostic Simulator */}
+              <div className="lg:col-span-5 flex justify-center lg:justify-end">
+                <ServiceSimulator locale={locale} />
               </div>
             </div>
           </div>
         </section>
 
-        {/* Stats Section - Directly following the Hero but clearly separated */}
-        <section className="px-6 py-16">
-          <div className="mx-auto max-w-7xl">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 py-12 border-t border-[#0E1A2B]/5">
-               {tContent.stats.map((stat, i) => (
-                 <div key={i} className="flex flex-col">
-                    <div className="text-[48px] lg:text-[64px] font-black text-[#0E1A2B] leading-none mb-2">{stat.value}</div>
-                    <div className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#B8643E]">{stat.label}</div>
-                 </div>
-               ))}
-            </div>
-          </div>
-        </section>
-
-
-        {/* QUICK SERVICES SECTION */}
+        {/* TARGET AUDIENCE / SECTORS SECTION */}
         <section className="px-6 py-24 bg-white">
            <div className="mx-auto max-w-7xl">
               <div className="mb-16">
@@ -734,18 +679,50 @@ export default async function AboutPage({
                  <div className="h-1 w-24 bg-[#B8643E]" />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                 {tContent.services.map((service, i) => (
-                   <div key={service.id} className={`p-8 rounded-[32px] border transition-all duration-300 hover:shadow-xl ${i === 0 ? 'bg-[#0E1A2B] text-white border-[#0E1A2B]' : 'bg-[#F8FAFC] border-[#E2E8F0] text-[#0E1A2B]'}`}>
-                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-8 ${i === 0 ? 'bg-[#B8643E]' : 'bg-[#0E1A2B]/5'}`}>
-                         <svg className={`w-6 h-6 ${i === 0 ? 'text-white' : 'text-[#B8643E]'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                         </svg>
-                      </div>
-                      <h3 className="text-[20px] font-bold mb-4">{service.title}</h3>
-                      <p className={`text-[15px] leading-relaxed mb-6 ${i === 0 ? 'text-white/70' : 'text-[#4A5568]'}`}>{service.description}</p>
-                      <a href={`${localePath}/leistungen`} className={`text-[14px] font-bold uppercase tracking-wider underline decoration-2 underline-offset-8 transition-colors ${i === 0 ? 'hover:text-[#B8643E]' : 'hover:text-[#B8643E]'}`}>{pageLabels.serviceCardCta}</a>
-                   </div>
-                 ))}
+                 {tContent.services.map((service) => {
+                   // Helper to render modern icons for each target group
+                   const renderGroupIcon = (id: string) => {
+                     const iconClass = "w-6 h-6 text-[#B8643E]";
+                     switch (id) {
+                       case 'restaurants':
+                         return (
+                           <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                           </svg>
+                         );
+                       case 'retail':
+                         return (
+                           <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                           </svg>
+                         );
+                       case 'clinics':
+                         return (
+                           <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                           </svg>
+                         );
+                       case 'offices':
+                       default:
+                         return (
+                           <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 2 2z" />
+                           </svg>
+                         );
+                     }
+                   };
+
+                   return (
+                     <div key={service.id} className="flex flex-col h-full p-8 rounded-[32px] border border-[#E2E8F0] bg-[#F8FAFC] text-[#0E1A2B] transition-all duration-300 hover:shadow-xl hover:border-[#B8643E]/30">
+                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-8 bg-[#0E1A2B]/5">
+                           {renderGroupIcon(service.id)}
+                        </div>
+                        <h3 className="text-[20px] font-bold mb-4">{service.title}</h3>
+                        <p className="text-[15px] leading-relaxed mb-6 text-[#4A5568]">{service.description}</p>
+                        <a href={`${localePath}/business?sector=${service.id}`} className="mt-auto text-[14px] font-bold uppercase tracking-wider underline decoration-2 underline-offset-8 transition-colors hover:text-[#B8643E] inline-block">{pageLabels.serviceCardCta}</a>
+                     </div>
+                   );
+                 })}
               </div>
            </div>
         </section>
@@ -753,19 +730,16 @@ export default async function AboutPage({
         {/* ABOUT SECTION WITH COLLAGE & ACCORDIONS */}
         <section className="px-6 py-24 overflow-hidden">
            <div className="mx-auto max-w-7xl">
-              <div className="grid lg:grid-cols-2 gap-20 items-center">
-                 {/* Collage */}
-                 <div className="relative">
-                    <div className="relative h-[500px] w-full rounded-[40px] overflow-hidden shadow-2xl">
-                       <CmsImage src="/images/about/about_collage_1.png" alt="Collage 1" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
-                    </div>
-                    <div className="absolute -bottom-10 -right-10 hidden md:block h-[300px] w-[300px] rounded-[40px] border-[12px] border-[#F7F1E8] overflow-hidden shadow-2xl">
-                       <CmsImage src="/images/about/about_collage_2.png" alt="Collage 2" fill sizes="300px" className="object-cover" />
+              <div className="grid lg:grid-cols-[460px_minmax(0,1fr)] gap-10 lg:gap-12 items-start">
+                 {/* Visual */}
+                 <div className="relative w-full max-w-[520px] lg:max-w-[460px] mx-auto lg:mx-0">
+                    <div className="relative h-[460px] md:h-[560px] lg:h-[640px] w-full rounded-[36px] overflow-hidden shadow-2xl">
+                       <CmsImage src="/images/about/about_collage_1.png" alt="Collage 1" fill sizes="(min-width: 1024px) 460px, 100vw" className="object-cover object-center" />
                     </div>
                  </div>
 
                  {/* Text Content */}
-                 <div>
+                 <div className="min-w-0 w-full">
                     <div className="mb-12">
                        <h2 className="text-[42px] font-black text-[#0E1A2B]">{tContent.about.title}</h2>
                     </div>
@@ -773,10 +747,10 @@ export default async function AboutPage({
                     <div className="space-y-2">
                        {tContent.about.accordions.map((item, i) => (
                          <div key={i} className="border-b border-[#0E1A2B]/10 py-6">
-                            <details className="group">
-                               <summary className="flex cursor-pointer list-none items-center justify-between text-[20px] font-bold text-[#0E1A2B] group-open:text-[#B8643E]">
-                                  {item.title}
-                                  <span className="transition-transform duration-300 group-open:rotate-180">
+                            <details name="about-process" className="group">
+                               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[20px] font-bold text-[#0E1A2B] group-open:text-[#B8643E]">
+                                  <span className="min-w-0">{item.title}</span>
+                                  <span className="shrink-0 transition-transform duration-300 group-open:rotate-180">
                                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                      </svg>
@@ -799,7 +773,6 @@ export default async function AboutPage({
            <div className="mx-auto max-w-7xl">
               <div className="text-center mb-16">
                  <h2 className="text-[32px] font-black text-[#0E1A2B]">{pageLabels.materialTitle}</h2>
-                 <p className="mx-auto mt-4 max-w-3xl text-[16px] leading-relaxed text-[#4A5568]">{pageLabels.materialDescription}</p>
               </div>
               <div className="relative overflow-hidden border-y border-[#0E1A2B]/5 py-6 [mask-image:linear-gradient(90deg,transparent,black_12%,black_88%,transparent)]">
                  <style>{`
@@ -823,44 +796,34 @@ export default async function AboutPage({
            </div>
         </section>
 
-        {/* QUALITY SECTION */}
+        {/* VIDEO-FIRST ABOUT SECTION */}
         <section className="px-6 py-24 bg-white">
            <div className="mx-auto max-w-7xl">
-              <div className="grid lg:grid-cols-2 gap-20 items-center">
-                 <div className="relative group cursor-pointer">
-                    <div className="relative h-[450px] w-full rounded-[40px] overflow-hidden shadow-2xl">
-                       <CmsImage src="/images/about/quality_video.png" alt="Video preview" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
-                       <div className="absolute inset-0 bg-[#0E1A2B]/20 transition-colors group-hover:bg-[#0E1A2B]/10" />
-                       <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-24 h-24 rounded-full bg-[#B8643E] flex items-center justify-center text-white shadow-2xl transform transition-transform group-hover:scale-110">
-                             <svg className="w-10 h-10 ml-1" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z" />
-                             </svg>
-                          </div>
-                       </div>
-                    </div>
+              <div className="grid lg:grid-cols-[1.25fr_0.75fr] gap-12 lg:gap-16 items-center">
+                 <div className="relative">
+                    <AboutVideoPlayer
+                      mediaLabel={tContent.quality.mediaLabel}
+                      playLabel={tContent.quality.playLabel}
+                      posterSrc="/images/about/quality_video.png"
+                      videoSrc="/videos/about-workshop-service.mp4"
+                    />
                  </div>
 
-                 <div>
-                    <h2 className="text-[42px] font-black text-[#0E1A2B] leading-tight mb-8">
+                 <div className="max-w-xl">
+                    <h2 className="text-[40px] font-black text-[#0E1A2B] leading-tight mb-5 md:text-[48px]">
                        {tContent.quality.title}
                     </h2>
-                    <p className="text-[18px] text-[#4A5568] leading-relaxed mb-10">
+                    <p className="text-[19px] text-[#4A5568] leading-relaxed mb-7">
                        {tContent.quality.description}
                     </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6 mb-12">
-                       {tContent.quality.features.map((feature, i) => (
-                         <div key={i} className="flex items-center gap-4">
-                            <div className="shrink-0 w-6 h-6 rounded-full bg-[#10B981] flex items-center justify-center">
-                               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                               </svg>
-                            </div>
-                            <span className="font-bold text-[#0E1A2B] text-[15px]">{feature}</span>
-                         </div>
+                    <div className="flex flex-wrap gap-3">
+                       {tContent.quality.features.map((feature) => (
+                         <span key={feature} className="rounded-full border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2 text-[13px] font-black text-[#0E1A2B]">
+                            {feature}
+                         </span>
                        ))}
                     </div>
-                    <a href={`${localePath}/referenzen`} className="inline-flex rounded-full bg-[#FFB347] px-10 py-4 text-[#0E1A2B] font-bold hover:bg-[#FFA327] transition-colors">
+                    <a href={`${localePath}/referenzen`} className="mt-8 inline-flex text-[15px] font-black text-[#B8643E] underline decoration-[#DAB08A] underline-offset-4 hover:text-[#8E4B2F]">
                        {tContent.quality.cta}
                     </a>
                  </div>
@@ -868,85 +831,28 @@ export default async function AboutPage({
            </div>
         </section>
 
-        {/* FEATURED SERVICES SECTION (Style matched to Construction Projects) */}
-        <section className="px-6 py-24 bg-[#F8FAFC]">
-           <div className="mx-auto max-w-7xl">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-8">
-                 <div>
-                    <h2 className="text-[42px] font-black text-[#0E1A2B] mb-4">{pageLabels.deepDiveTitle}</h2>
-                    <p className="text-[#4A5568] max-w-2xl">{pageLabels.deepDiveDescription}</p>
-                 </div>
-                 <a href={`${localePath}/leistungen`} className="rounded-full bg-[#FFB347] px-8 py-3 text-[#0E1A2B] font-bold text-[14px]">
-                    {pageLabels.allServices}
-                 </a>
-              </div>
-
-              <div className="space-y-16">
-                 {tContent.deepDive.map((item, i) => (
-                   <div key={item.id} className="bg-white rounded-[40px] p-8 md:p-12 shadow-sm border border-[#E2E8F0] overflow-hidden">
-                      <div className={`flex flex-col lg:flex-row gap-12 items-center ${i % 2 !== 0 ? 'lg:flex-row-reverse' : ''}`}>
-                         {/* Text Content Side */}
-                         <div className="lg:w-1/2">
-                            <h3 className="text-[32px] font-black text-[#0E1A2B] mb-4">{item.title}</h3>
-                            <p className="text-[16px] text-[#4A5568] leading-relaxed mb-10">{item.description}</p>
-
-                            <div className="space-y-4 mb-10">
-                               {item.specs.map((spec, j) => (
-                                 <div key={j} className="flex border-b border-gray-100 pb-3 last:border-0">
-                                    <span className="w-1/3 text-[14px] font-bold text-[#4A5568]">{spec.label}:</span>
-                                    <span className="w-2/3 text-[14px] text-[#0E1A2B] font-medium">{spec.value}</span>
-                                 </div>
-                               ))}
-                            </div>
-
-                            <a href={`${localePath}/leistungen`} className="inline-flex rounded-full bg-[#48BB78] px-8 py-3 text-white font-bold text-[14px] hover:bg-[#38A169] transition-colors">
-                               {item.cta}
-                            </a>
-                         </div>
-
-                         {/* Image Side */}
-                         <div className="lg:w-1/2 w-full">
-                            <div className="relative h-[350px] md:h-[450px] rounded-[32px] overflow-hidden shadow-xl">
-                               <CmsImage src={`/images/about/service_deep_${i+1}.png`} alt={item.title} fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
-                            </div>
-                         </div>
-                      </div>
-                   </div>
-                 ))}
-              </div>
-           </div>
-        </section>
-
         {/* TESTIMONIALS SECTION (Why Say Our Customers) */}
-        <section className="px-6 py-24 bg-white">
+        <section className="px-6 py-14 bg-white">
            <div className="mx-auto max-w-7xl">
-              <div className="text-center mb-20">
-                 <h2 className="text-[42px] font-black text-[#0E1A2B] mb-4">{pageLabels.testimonialsTitle}</h2>
-                 <p className="text-[#4A5568] max-w-2xl mx-auto">{pageLabels.testimonialsDescription}</p>
+              <div className="mb-8 border-b border-[#E2E8F0] pb-6">
+                 <h2 className="max-w-3xl text-[30px] font-black leading-[1.08] text-[#0E1A2B] md:text-[38px]">{pageLabels.testimonialsTitle}</h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                  {pageLabels.testimonials.map((testimonial, i) => (
-                   <div key={i} className="bg-[#F8FAFC] rounded-[32px] p-8 border border-[#E2E8F0]">
-                      <div className="flex items-center gap-4 mb-6">
-                         <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden">
-                            <div className="flex h-full w-full items-center justify-center bg-[#0E1A2B] text-[13px] font-black uppercase text-white">
+                   <div key={i} className="flex min-h-[210px] flex-col rounded-lg border border-[#D8E2EE] bg-[#F8FAFC] p-5 shadow-sm">
+                      <div className="mb-5 flex items-start gap-3">
+                         <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg">
+                            <div className="flex h-full w-full items-center justify-center bg-[#0E1A2B] text-[12px] font-black uppercase text-white">
                               {testimonial.name.slice(0, 2)}
                             </div>
                          </div>
-                         <div>
-                            <div className="font-bold text-[#0E1A2B]">{testimonial.name}</div>
-                            <div className="text-[12px] text-[#4A5568]">{testimonial.role}</div>
-                         </div>
-                         <div className="ml-auto flex gap-1">
-                            {[1, 2, 3, 4, 5].map(star => (
-                              <svg key={star} className="w-3 h-3 text-[#FFB347]" fill="currentColor" viewBox="0 0 20 20">
-                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                              </svg>
-                            ))}
+                         <div className="min-w-0">
+                            <div className="text-[15px] font-black leading-snug text-[#0E1A2B]">{testimonial.name}</div>
+                            <div className="mt-1 text-[12px] leading-5 text-[#4A5568]">{testimonial.role}</div>
                          </div>
                       </div>
-                      <p className="text-[15px] text-[#4A5568] leading-relaxed italic">&ldquo;{testimonial.text}&rdquo;</p>
+                      <p className="mt-auto border-l-2 border-[#C66A3D] pl-4 text-[14px] leading-6 text-[#40516A]">&ldquo;{testimonial.text}&rdquo;</p>
                    </div>
                  ))}
               </div>
@@ -954,30 +860,17 @@ export default async function AboutPage({
         </section>
 
         {/* FINAL CTA */}
-        <section className="px-6 py-24 sm:py-32">
-           <div className="mx-auto max-w-7xl">
-              <div className="relative bg-[#0E1A2B] rounded-[60px] p-12 md:p-24 overflow-hidden text-center">
-                 {/* Decorative elements */}
-                 <div className="absolute top-0 right-0 h-64 w-64 bg-[#B8643E]/10 blur-[100px]" />
-                 <div className="absolute bottom-0 left-0 h-64 w-64 bg-blue-500/10 blur-[100px]" />
+        <section className="bg-white px-6 py-8 sm:py-10">
+           <div className="mx-auto flex max-w-7xl flex-col gap-5 rounded-[28px] border border-[#D8E2EE] bg-[#EAF1F7] px-6 py-7 shadow-[0_16px_45px_rgba(14,26,43,0.07)] md:flex-row md:items-center md:justify-between md:px-9">
+              <h2 className="max-w-2xl text-[25px] font-black leading-[1.12] text-[#0E1A2B] md:text-[32px]">
+                 {tContent.final.title}
+              </h2>
 
-                 <div className="relative z-10 max-w-2xl mx-auto">
-                    <h2 className="text-[42px] md:text-[56px] font-black text-white leading-[1.1] mb-8">
-                       {tContent.final.title}
-                    </h2>
-                    <p className="text-[18px] md:text-[20px] text-white/70 leading-relaxed mb-12">
-                       {tContent.final.description}
-                    </p>
-
-                    <div className="flex justify-center">
-                       <LeistungenRequestButton
-                         label={tContent.final.button}
-                         serviceIntent="about-page-final"
-                         className="min-h-16 bg-[#B8643E] px-10 py-4 text-[16px] font-bold text-white hover:bg-[#9E5332]"
-                       />
-                    </div>
-                 </div>
-              </div>
+              <LeistungenRequestButton
+                label={tContent.final.button}
+                serviceIntent="about-page-final"
+                className="min-h-12 self-start bg-[#B8643E] px-6 py-3 text-[14px] font-bold text-white hover:bg-[#9E5332] md:self-auto"
+              />
            </div>
         </section>
       </main>

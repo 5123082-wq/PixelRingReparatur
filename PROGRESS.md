@@ -8,9 +8,9 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 
 Latest checkpoint:
 
-- Date: 2026-05-18
-- Current stage: Client portal request detail supports customer-side editing with audit/chat diff logs, separates request contact from portal account owner, and request-bound portal chat now answers through AI without creating new requests inside the existing request chat.
-- Next action: apply the service-location coordinate migration to the intended database, then verify portal request editing, AI replies, and request creation flows against real persisted data after deploy.
+- Date: 2026-05-21
+- Current stage: Applied the calmer photo-first hero pattern to `/leistungen`, `/probleme-loesungen`, `/business`, and `/referenzen`.
+- Next action: Owner reviews `/de/probleme-loesungen`, `/de/business`, and `/de/referenzen` for hero crop, first-screen rhythm, and the preserved PixelRing Check block.
 
 Active tracks:
 
@@ -43,6 +43,166 @@ Read deep when:
 - **Engineering/Ops**: Open maintenance note recorded for future Postgres SSL connection-string cleanup before the next `pg`/Prisma/migration-tooling dependency upgrade.
 
 ## Last Updated
+
+- Date: 2026-05-21
+- Updated by: Codex
+- **Current Stage**: Applied the calmer photo-first hero pattern to `/probleme-loesungen`, `/business`, and `/referenzen`: lower hero height, bottom-left text, softer image gradients, and no in-hero CTA/slider controls. Preserved the `PixelRing Check` before/after block on `/probleme-loesungen` as a separate section below the hero.
+- **Next Action**: Owner reviews `/de/probleme-loesungen`, `/de/business`, and `/de/referenzen` for hero crop, first-screen rhythm, and the preserved PixelRing Check block.
+
+- Date: 2026-05-21
+- Updated by: Codex
+- **Current Stage**: Shortened and simplified the `/leistungen` hero into a calmer photo-first section: lower height, bottom-left text, lighter image treatment, and no visible slider controls or in-hero CTA.
+- **Next Action**: Owner reviews `/de/leistungen` for hero height, photo crop, and first-screen breathing room.
+
+- Date: 2026-05-20
+- Updated by: Codex
+- **Current Stage**: Simplified the final `/ueber-uns` CTA into one light rounded container with only the headline and service button, avoiding nested visual wrappers.
+- **Next Action**: Owner reviews `/de/ueber-uns` for final CTA color, spacing, and page ending rhythm.
+
+- Date: 2026-05-20
+- Updated by: Codex
+- **Current Stage**: Completed a non-Russian `/ueber-uns` copy QA pass for DE, EN, TR, PL, and AR, removing machine-translation phrasing, long-dash patterns, mixed Arabic/Russian text, and unsupported claim wording while leaving RU unchanged.
+- **Next Action**: Owner reviews non-RU About pages visually, especially Turkish, Polish, and Arabic.
+
+- Date: 2026-05-20
+- Updated by: Codex
+- **Current Stage**: Removed the generic KPI/statistics strip (`2023`, `100+`, `50+`, `1`) from `/ueber-uns`; the page now flows from the hero directly into the audience section.
+- **Next Action**: Owner reviews `/de/ueber-uns` for spacing and flow after the KPI removal.
+
+- Date: 2026-05-20
+- Updated by: Codex
+- **Current Stage**: Updated the Russian `/ueber-uns` final CTA headline from repair/check wording to `Нужен ремонт или диагностика?`.
+- **Next Action**: Owner reviews the shortened Russian final CTA headline on `/ru/ueber-uns`.
+
+- Date: 2026-05-20
+- Updated by: Codex
+- **Current Stage**: Reworded the `/ueber-uns` materials-section heading across locales from "materials/systems we work with" to premium materials and supply partners.
+- **Next Action**: Owner reviews the updated Russian materials heading on `/ru/ueber-uns`.
+
+- Date: 2026-05-20
+- Updated by: Codex
+- **Current Stage**: Removed the `/ueber-uns` materials-section description line across locales and cleaned the unused material description label from page code.
+- **Next Action**: Owner reviews the shortened materials block on `/ru/ueber-uns`.
+
+- Date: 2026-05-20
+- Updated by: Codex
+- **Current Stage**: Removed the `/ueber-uns` final CTA supporting sentence across locales and cleaned the unused final description field from page code.
+- **Next Action**: Owner reviews the shortened Russian final CTA on `/ru/ueber-uns`.
+
+- Date: 2026-05-20
+- Updated by: Codex
+- **Current Stage**: Replaced the fake `/ueber-uns` video preview with a generated 7-second workshop MP4, native video controls, and a visible localized play button overlay.
+- **Next Action**: Owner reviews the updated `/ru/ueber-uns` video block and decides whether to replace the generated clip with real footage later.
+
+- Date: 2026-05-20
+- Updated by: Codex
+- **Current Stage**: Rewrote the `/ueber-uns` final CTA copy across locales from vague "describe the task" wording to a direct repair/inspection service prompt.
+- **Next Action**: Owner reviews the updated Russian CTA wording on `/ru/ueber-uns`.
+
+- Date: 2026-05-20
+- Updated by: Codex
+- **Current Stage**: Removed the temporary testimonials description line from `/ueber-uns` and cleaned the unused localized label fields from the page code.
+- **Next Action**: Owner reviews the updated `/ru/ueber-uns` testimonials header without the placeholder description.
+
+- Date: 2026-05-20
+- Updated by: Codex
+- **Current Stage**: Minimized the `/ueber-uns` final CTA from a large dark panel into a compact separator-and-action strip with smaller typography and standard button scale.
+- **Next Action**: Owner reviews the updated `/ru/ueber-uns` final CTA for vertical rhythm and whether the closing action is still prominent enough.
+
+- Date: 2026-05-20
+- Updated by: Codex
+- **Current Stage**: Tightened the `/ueber-uns` testimonials block from a tall classic review section into a shorter proof strip with compact header, denser cards, and clearer quote hierarchy.
+- **Next Action**: Owner reviews the updated `/ru/ueber-uns` testimonials block for readability and vertical rhythm.
+
+- Date: 2026-05-20
+- Updated by: Codex
+- **Current Stage**: Removed the remaining `/ueber-uns` services routing CTA block headed `Сервисные направления PixelRing` after owner review. The About page now flows from the video-first work section directly into testimonials and the final CTA.
+- **Next Action**: Owner reviews the shortened `/ru/ueber-uns` page and decides whether the testimonials block should stay.
+
+- Date: 2026-05-20
+- Updated by: Codex
+- **Current Stage**: Reworked the About page quality section into a video-first block with a large poster, short caption, compact service tags, and a subtle references link instead of a long quality checklist.
+- **Next Action**: Owner reviews the `/ru/ueber-uns` video-first block and decides whether to provide a real video asset to replace the poster.
+
+- Date: 2026-05-20
+- Updated by: Codex
+- **Current Stage**: Removed the `So läuft Ihre Anfrage ab` / `Как проходит заявка` process block from the Leistungen page after owner review. The services page now moves from service showcase and maintenance toward the final framework/CTA block without the five-step process section.
+- **Next Action**: Owner reviews the shorter `/ru/leistungen` page and decides whether the remaining final framework/CTA block should stay.
+
+- Date: 2026-05-20
+- Updated by: Codex
+- **Current Stage**: Restructured the Leistungen page service presentation into five large cards: repair/maintenance, LED modernization, inspection/audit/diagnostics, mounting/dismantling/relocation, and print/branding materials. The About page now uses a short services CTA instead of duplicating the service-card catalogue.
+- **Next Action**: Owner reviews the updated services showcase on `/ru/leistungen` and checks `/ru/ueber-uns` no longer reads like the services page.
+
+- Date: 2026-05-20
+- Updated by: Antigravity
+- **Current Stage**: Redesigned the B2B interactive photo showcase on `/business` page to split diagonally into two panels (Left: Exterior, Right: Interior), deleting the middle staff/menu panel. Restored standard 12-column grid layout (col-span-4 sidebar, col-span-8 right card) and changed desktop collage aspect ratio to a flatter cinematic aspect ratio (`lg:aspect-[21/10]`) to ensure it fits fully on-screen. Verified production build success.
+- **Next Action**: Owner reviews the updated two-panel diagonal interactive showcase layout.
+
+- Date: 2026-05-20
+- Updated by: Antigravity
+- **Current Stage**: Redesigned the B2B sector selector tabs on the `/business` page. Removed house icons from desktop buttons, converted desktop columns to a custom layout (`280px` fixed sidebar, expanding showcase card on the right), and implemented a premium, clickaway-enabled dropdown selector for mobile screens. Verified production build success.
+- **Next Action**: Owner reviews the redesigned sector selector and mobile dropdown on B2B page.
+
+- Date: 2026-05-20
+- Updated by: Antigravity
+- **Current Stage**: Removed the bottom CTA action button from the B2B interactive showcase (`/business` page) and adjusted padding to achieve perfect, symmetrical spacing on all sides (equal top/bottom and left/right margins). Checked Next.js compilation success.
+- **Next Action**: Owner reviews the updated visual layout on B2B page.
+
+- Date: 2026-05-20
+- Updated by: Antigravity
+- **Current Stage**: Compacted the B2B interactive showcase on the `/business` page by hiding the redundant large sector title, reducing card paddings, and tightening vertical gaps and min-heights. The full diagonal photo collage is now fully visible on the screen. Verified production build success.
+- **Next Action**: Owner reviews the compacted visual layout on B2B page.
+
+- Date: 2026-05-20
+- Updated by: Antigravity
+- **Current Stage**: Redesigned the details card in the interactive B2B showcase on `/business` page. Removed the separate Problems and Solutions columns, replaced them with a single "Scope of Work & Audit" description focused on active services, and removed the main sector description paragraph. Localized across 6 locales and verified production build success.
+- **Next Action**: Owner reviews the updated single-description card layout on B2B page.
+
+- Date: 2026-05-20
+- Updated by: Antigravity
+- **Current Stage**: Simplified the 3-panel diagonal showcase on the B2B page (`/business`) by removing all overlay footnotes, connector lines, and pulsing dots. Selection is now driven by direct cursor hover/click on the collage blocks, displaying the active block label inside the details banner at the top. Next.js production build verified.
+- **Next Action**: Owner reviews the simplified cursor-based B2B diagonal collage showcase.
+
+- Date: 2026-05-20
+- Updated by: Antigravity
+- **Current Stage**: Finalized the 3-panel diagonal presentation collage showcase for the Gastronomy & Restaurants sector on B2B page (`/business`). Restored the lost Arabic (AR) translations block, resolved the build-blocking syntax corruption, and verified clean compilation and build.
+- **Next Action**: Owner reviews the interactive 3-panel diagonal showcase slide presentation layout.
+
+- Date: 2026-05-20
+- Updated by: Antigravity
+- **Current Stage**: Implemented Option B (Visual-First) for the Gastronomy & Restaurants sector on the B2B page (`/business`). Added an interactive layout with a custom restaurant photo, pulsing hotspot markers, SVG connecting lines, frosted-glass text tooltips, and localization across all 6 locales (DE, EN, RU, TR, PL, AR). Passed local Next.js production build verification.
+- **Next Action**: Owner reviews the interactive photo hotspots layout in the Gastronomy & Restaurants B2B sector.
+
+- Date: 2026-05-20
+- Updated by: Antigravity
+- **Current Stage**: Upgraded header navigation styling. Fixed active capsule clipping; added a smooth sliding glass bubble with Framer Motion `layoutId`. Implemented Option A for the scrolled notch, rendering it as a sleek, wide 192px and thin 24px glassmorphic tab containing only a styled, centered 16px chevron arrow (removed "Menu" text). Added a subtle downward bounce hover effect and eliminated CSS transition conflicts for lag-free expansion.
+- **Next Action**: Owner reviews the refined header navigation and lag-free scroll notch behavior.
+
+- Date: 2026-05-20
+- Updated by: Antigravity
+- **Current Stage**: Integrated B2B Showcase sectors with the new target audience cards on the About Us page (`ueber-uns`). The cards feature specific industry SVGs, localized copy across 6 locales, and deep-link correctly to `/business?sector=...` query parameters to initialize the matching interactive view.
+- **Next Action**: Owner reviews the interactive B2B showcase and About Us page deep-linking integration.
+
+- Date: 2026-05-20
+- Updated by: Antigravity
+- **Current Stage**: Redesigned the B2B page sectors block using a custom interactive client component (`BusinessShowcase`). The component displays a vertical selection of 7 industries and a dark glassmorphic preview box with glowing CSS/SVG storefronts, problem lists, and request triggers.
+- **Next Action**: Owner reviews the interactive sectors showcase on the B2B business page.
+
+- Date: 2026-05-20
+- Updated by: Antigravity
+- **Current Stage**: Redesigned the "About Us" page Hero section, replacing the static split layout with a custom interactive diagnostics and live dispatch terminal widget (`ServiceSimulator`). The widget features interactive scanning simulation of a neon sign and a live dispatch ticker.
+- **Next Action**: Owner reviews the interactive terminal widget on the About page.
+
+- Date: 2026-05-19
+- Updated by: Codex
+- **Current Stage**: Public website header now marks the current main section with a static glass capsule active state. Hover states remain lighter and do not reuse the active border/shadow treatment.
+- **Next Action**: Owner reviews the header active navigation style, then continue fixing P1 audit blockers and update the audit finding resolution log after verification.
+
+- Date: 2026-05-18
+- Updated by: Codex
+- **Current Stage**: Production launch audit handoff document created in `docs/09_engineering/` with open P1/P2/P3 findings across security/privacy, portal/status, AI, database, frontend/i18n, and documentation. No fixes were applied.
+- **Next Action**: Fix P1 audit blockers first and update each finding's resolution log in the audit handoff document after verification.
 
 - Date: 2026-05-18
 - Updated by: Codex
