@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { Link } from '@/i18n/routing';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
 import CmsImage from '@/components/common/CmsImage';
@@ -28,15 +29,20 @@ type RepairCard = {
   details: string;
 };
 
-type SimpleCard = {
-  id: string;
-  intent: ServiceIntent;
+type Benefit = {
   title: string;
   text: string;
 };
 
-type MaintenanceTrack = {
+type CheckItem = {
+  label: string;
+  status: string;
+  statusType: 'ok' | 'plan' | 'urgent';
+};
+
+type SimpleCard = {
   id: string;
+  intent: ServiceIntent;
   title: string;
   text: string;
 };
@@ -66,14 +72,24 @@ type LeistungenContent = {
   brandingTitle: string;
   brandingIntro: string;
   brandingCards: SimpleCard[];
+  
+  maintenanceEyebrow: string;
   maintenanceTitle: string;
+  maintenanceTitleHighlight: string;
   maintenanceSubline: string;
-  maintenanceTracks: MaintenanceTrack[];
-  maintenanceBenefits: string[];
-  maintenanceDiscount: string;
+  maintenanceBenefits: Benefit[];
+  maintenancePanelTitle: string;
+  maintenancePanelSubtitle: string;
+  maintenancePanelTag: string;
+  maintenanceScoreTitle: string;
+  maintenanceScoreDesc: string;
+  maintenanceChecks: CheckItem[];
+  maintenanceFootLeft: string;
+  maintenanceFootRight: string;
   maintenanceBoundary: string;
   serviceContractCta: string;
   auditCta: string;
+
   frameTitle: string;
   trustPoints: string[];
   finalHeadline: string;
@@ -290,38 +306,37 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         text: 'Koordinierte Materialversorgung für Unternehmen mit einem oder mehreren Standorten.',
       },
     ],
-    maintenanceTitle: 'Wartung & Serviceverträge für sichtbare Standortqualität',
+    maintenanceEyebrow: 'Neues Service-Abo',
+    maintenanceTitle: 'Wissen Sie, was Ihre Kunden ',
+    maintenanceTitleHighlight: 'vor Ort wirklich sehen?',
     maintenanceSubline:
-      'PixelRing prüft, dokumentiert und betreut Werbeanlagen, Leuchtreklamen und Werbematerialien regelmäßig - damit Defekte, veraltete Materialien oder Sicherheitsrisiken nicht erst durch Kunden auffallen.',
-    maintenanceTracks: [
-      {
-        id: 'check',
-        title: 'Standort-Check',
-        text: 'Fotos, Zustand der Werbeanlagen, Licht, Folien, Poster, Menüs und sichtbare Schäden werden strukturiert geprüft.',
-      },
-      {
-        id: 'care',
-        title: 'Laufende Betreuung',
-        text: 'Planbare Prüfungen, Aufgabenliste, Empfehlungen für Reparatur, Pflege und Aktualisierung von Werbematerialien.',
-      },
-      {
-        id: 'network',
-        title: 'Für mehrere Standorte',
-        text: 'Einheitlicher Überblick über Filialen, Markenbild und Prioritäten: dringend, geplant oder beobachten.',
-      },
-    ],
+      'PixelRing prüft regelmäßig Werbeanlagen, Leuchtreklame, Folien und Printmedien — mit Foto-Report, klaren Prioritäten und planbarer Wartung pro Standort.',
     maintenanceBenefits: [
-      'Weniger Aufwand im Tagesgeschäft',
-      'Geplante Wartung statt nur reaktiver Notfallreparatur',
-      'Geeignet für Filialen und mehrere Standorte',
-      'Zentrale Koordination für Anlagen und Werbematerialien',
+      {
+        title: 'Regelmäßiger Check-up',
+        text: 'Monatlicher Blick auf Sichtbarkeit, Schäden, veraltete Materialien und dringende Aufgaben.',
+      },
+      {
+        title: 'Planbare Betreuung',
+        text: 'Ein Ansprechpartner, klare Reports und Service statt spontaner Notfall-Reparaturen.',
+      },
     ],
-    maintenanceDiscount:
-      'Bis zu 20% Vorteil auf ausgewählte Werbematerialien bei bestehendem Wartungs- oder Servicevertrag.',
+    maintenancePanelTitle: 'Standort-Scan',
+    maintenancePanelSubtitle: 'Beispielhafter Status nach einem Check-up',
+    maintenancePanelTag: 'Live Report',
+    maintenanceScoreTitle: 'Brand Health Score',
+    maintenanceScoreDesc: 'Alle sichtbaren Elemente werden dokumentiert: Licht, Folien, Print, Befestigung und Markenbild.',
+    maintenanceChecks: [
+      { label: 'Leuchtreklame außen', status: 'OK', statusType: 'ok' },
+      { label: 'Schaufensterfolie', status: 'Planen', statusType: 'plan' },
+      { label: 'Aktionsposter', status: 'Dringend', statusType: 'urgent' },
+    ],
+    maintenanceFootLeft: 'Audit → Report → Service',
+    maintenanceFootRight: 'Für einzelne Standorte und Filialnetze.',
     maintenanceBoundary:
       'Der Servicevertrag ersetzt keinen unbegrenzten Reparaturvertrag. Größere Reparaturen, Ersatzteile, Höhenarbeiten und Sonderfälle werden separat geprüft und abgestimmt.',
-    serviceContractCta: 'Servicevertrag besprechen',
-    auditCta: 'Standort-Audit anfragen',
+    serviceContractCta: 'Standort-Abo entdecken',
+    auditCta: 'Audit anfragen',
     frameTitle: 'Klarer Rahmen für Ihre Anfrage',
     trustPoints: [
       'Keine Vermittlungsplattform: Ihre Anfrage geht direkt an PixelRing.',
@@ -465,32 +480,37 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       { id: 'folierung', intent: 'folierung-beschriftung', title: 'Films & lettering', text: 'Lettering, films and visible brand elements for surfaces, windows and locations.' },
       { id: 'filialen', intent: 'druckprodukte-branding', title: 'Branch and location supply', text: 'Coordinated material supply for companies with one or more locations.' },
     ],
-    maintenanceTitle: 'Maintenance & service contracts: let signage be cared for instead of checking it yourself',
+    maintenanceEyebrow: 'New Service Subscription',
+    maintenanceTitle: 'Do you know what your customers ',
+    maintenanceTitleHighlight: 'actually see on site?',
     maintenanceSubline:
-      'PixelRing regularly checks, documents and supports signage, illuminated advertising and advertising materials so defects, outdated materials or safety risks are noticed before customers point them out.',
-    maintenanceTracks: [
+      'PixelRing regularly checks signage, illuminated advertising, vinyl, and print media — with photo reports, clear priorities, and planned maintenance per location.',
+    maintenanceBenefits: [
       {
-        id: 'check',
-        title: 'Location check',
-        text: 'Photos, signage condition, lighting, films, posters, menus and visible damage are reviewed in a structured way.',
+        title: 'Regular Check-up',
+        text: 'Monthly check of visibility, damage, outdated materials, and urgent tasks.',
       },
       {
-        id: 'care',
-        title: 'Ongoing care',
-        text: 'Planned checks, task lists and recommendations for repair, care and material updates.',
-      },
-      {
-        id: 'network',
-        title: 'For multiple locations',
-        text: 'One overview across branches, brand appearance and priorities: urgent, planned or observe.',
+        title: 'Planned Support',
+        text: 'One contact person, clear reports, and service instead of sudden emergency repairs.',
       },
     ],
-    maintenanceBenefits: ['Less day-to-day effort', 'Planned maintenance instead of only reactive emergency repair', 'Suitable for branches and multiple locations', 'Central coordination for signage and materials'],
-    maintenanceDiscount: 'Up to 20% benefit on selected advertising materials with an active maintenance or service contract.',
+    maintenancePanelTitle: 'Location Scan',
+    maintenancePanelSubtitle: 'Example status after a check-up',
+    maintenancePanelTag: 'Live Report',
+    maintenanceScoreTitle: 'Brand Health Score',
+    maintenanceScoreDesc: 'All visible elements are documented: lighting, vinyl, print, mountings, and brand image.',
+    maintenanceChecks: [
+      { label: 'Outdoor illuminated signage', status: 'OK', statusType: 'ok' },
+      { label: 'Storefront vinyl', status: 'Plan', statusType: 'plan' },
+      { label: 'Promo poster', status: 'Urgent', statusType: 'urgent' },
+    ],
+    maintenanceFootLeft: 'Audit → Report → Service',
+    maintenanceFootRight: 'For single locations and branch networks.',
     maintenanceBoundary:
-      'A service contract does not replace an unlimited repair contract. Larger repairs, spare parts, height work and special cases are checked and agreed separately.',
-    serviceContractCta: 'Discuss service contract',
-    auditCta: 'Request location audit',
+      'The service contract does not replace an unlimited repair agreement. Major repairs, spare parts, high-altitude work, and special cases are reviewed and agreed upon separately.',
+    serviceContractCta: 'Discover Location Subscription',
+    auditCta: 'Request Audit',
     frameTitle: 'A clear frame for your request',
     trustPoints: [
       'No marketplace: your request goes directly to PixelRing.',
@@ -633,32 +653,37 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       { id: 'folierung', intent: 'folierung-beschriftung', title: 'Пленки и надписи', text: 'Брендированные надписи, пленки и видимые элементы для поверхностей, окон и локаций.' },
       { id: 'filialen', intent: 'druckprodukte-branding', title: 'Снабжение филиалов и локаций', text: 'Координированное обеспечение материалами для одной или нескольких точек.' },
     ],
-    maintenanceTitle: 'Обслуживание и сервисные договоры: контроль рекламных конструкций без лишней нагрузки',
+    maintenanceEyebrow: 'Новая подписка на сервис (Service-Abo)',
+    maintenanceTitle: 'Знаете ли вы, что ваши клиенты ',
+    maintenanceTitleHighlight: 'видят на месте на самом деле?',
     maintenanceSubline:
-      'PixelRing регулярно проверяет, документирует и сопровождает рекламные конструкции, световую рекламу и рекламные материалы, чтобы дефекты, устаревшие материалы или риски безопасности не замечали первыми ваши клиенты.',
-    maintenanceTracks: [
+      'PixelRing регулярно проверяет рекламные конструкции, световую рекламу, пленки и полиграфию — с фотоотчетом, четкими приоритетами и планируемым обслуживанием для каждого филиала.',
+    maintenanceBenefits: [
       {
-        id: 'check',
-        title: 'Проверка объекта',
-        text: 'Фото, состояние вывесок, свет, пленки, постеры, меню и видимые повреждения проверяются по структуре.',
+        title: 'Регулярная проверка (Check-up)',
+        text: 'Ежемесячный контроль видимости, повреждений, износа материалов и срочных задач.',
       },
       {
-        id: 'care',
-        title: 'Постоянное сопровождение',
-        text: 'Плановые проверки, список задач и рекомендации по ремонту, уходу и обновлению рекламных материалов.',
-      },
-      {
-        id: 'network',
-        title: 'Для нескольких объектов',
-        text: 'Единый обзор по филиалам, внешнему виду бренда и приоритетам: срочно, планово или наблюдать.',
+        title: 'Плановое сопровождение',
+        text: 'Один контакт (персональный менеджер), понятные отчеты и сервис вместо внезапных аварийных ремонтов.',
       },
     ],
-    maintenanceBenefits: ['Меньше ежедневной нагрузки', 'Плановое обслуживание вместо только срочного ремонта', 'Подходит для филиалов и нескольких локаций', 'Центральная координация конструкций и материалов'],
-    maintenanceDiscount: 'До 20% выгоды на выбранные рекламные материалы при действующем договоре обслуживания или сервиса.',
+    maintenancePanelTitle: 'Сканирование локации',
+    maintenancePanelSubtitle: 'Пример статуса после регулярной проверки (Check-up)',
+    maintenancePanelTag: 'Отчет онлайн (Live Report)',
+    maintenanceScoreTitle: 'Индекс здоровья бренда (Brand Health Score)',
+    maintenanceScoreDesc: 'Все видимые элементы документируются: свет, пленки, печать, крепления и соответствие бренду.',
+    maintenanceChecks: [
+      { label: 'Наружная световая реклама', status: 'В порядке (OK)', statusType: 'ok' },
+      { label: 'Пленка на витринах', status: 'Запланировать', statusType: 'plan' },
+      { label: 'Промо-постер', status: 'Срочно', statusType: 'urgent' },
+    ],
+    maintenanceFootLeft: 'Аудит → Отчет → Обслуживание (Audit → Report → Service)',
+    maintenanceFootRight: 'Для отдельных точек и торговых сетей.',
     maintenanceBoundary:
-      'Сервисный договор не заменяет безлимитный договор на ремонт. Крупные ремонты, запчасти, высотные работы и особые случаи проверяются и согласуются отдельно.',
-    serviceContractCta: 'Обсудить сервисный договор',
-    auditCta: 'Запросить аудит объекта',
+      'Сервисный договор не заменяет безлимитный договор на ремонт. Крупный ремонт, запчасти, высотные работы и особые случаи рассматриваются и согласуются отдельно.',
+    serviceContractCta: 'Узнать про подписку на локацию (Standort-Abo)',
+    auditCta: 'Запросить аудит',
     frameTitle: 'Понятные рамки заявки',
     trustPoints: [
       'Не маркетплейс: заявка идет напрямую в PixelRing.',
@@ -801,32 +826,37 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       { id: 'folierung', intent: 'folierung-beschriftung', title: 'Folyo ve yazilama', text: 'Yuzeyler, vitrinler ve lokasyonlar icin marka yazilari ve folyo uygulamalari.' },
       { id: 'filialen', intent: 'druckprodukte-branding', title: 'Sube ve lokasyon tedarigi', text: 'Bir veya daha fazla lokasyon icin koordineli materyal tedarigi.' },
     ],
-    maintenanceTitle: 'Bakim ve servis sozlesmeleri: reklam sistemlerinizi kendiniz kontrol etmek yerine takip ettirin',
+    maintenanceEyebrow: 'Yeni Hizmet Aboneliği',
+    maintenanceTitle: 'Müşterilerinizin yerinde gerçekten ne gördüğünü ',
+    maintenanceTitleHighlight: 'biliyor musunuz?',
     maintenanceSubline:
-      'PixelRing reklam sistemlerini, ışıklı reklamları ve reklam materyallerini düzenli olarak kontrol eder, belgeler ve destekler; böylece arızalar, eski materyaller veya güvenlik riskleri önce müşteriler tarafından fark edilmez.',
-    maintenanceTracks: [
+      'PixelRing; şube başına fotoğraflı rapor, net öncelikler ve planlanabilir bakım ile reklam sistemlerini, ışıklı reklamları, folyoları ve basılı materyalleri düzenli olarak kontrol eder.',
+    maintenanceBenefits: [
       {
-        id: 'check',
-        title: 'Lokasyon kontrolü',
-        text: 'Fotoğraflar, tabela durumu, ışık, folyolar, posterler, menüler ve görünür hasarlar yapılandırılmış şekilde incelenir.',
+        title: 'Düzenli Check-up',
+        text: 'Görünürlük, hasarlar, eskiyen malzemeler ve acil işlere aylık bakış.',
       },
       {
-        id: 'care',
-        title: 'Sürekli destek',
-        text: 'Planlı kontroller, görev listeleri ve onarım, bakım ve materyal güncelleme önerileri.',
-      },
-      {
-        id: 'network',
-        title: 'Birden fazla lokasyon için',
-        text: 'Şubeler, marka görünümü ve öncelikler için tek genel bakış: acil, planlı veya izlenecek.',
+        title: 'Planlanabilir Destek',
+        text: 'Tek muhatap, net raporlar ve spontane acil durum onarımları yerine planlı hizmet.',
       },
     ],
-    maintenanceBenefits: ['Gunluk operasyonda daha az efor', 'Sadece acil onarim yerine planli bakim', 'Subeler ve birden fazla lokasyon icin uygun', 'Sistemler ve materyaller icin merkezi koordinasyon'],
-    maintenanceDiscount: 'Mevcut bakim veya servis sozlesmesiyle secili reklam materyallerinde %20ye kadar avantaj.',
+    maintenancePanelTitle: 'Lokasyon Taraması',
+    maintenancePanelSubtitle: 'Bir check-up sonrası örnek durum',
+    maintenancePanelTag: 'Live Report',
+    maintenanceScoreTitle: 'Brand Health Score',
+    maintenanceScoreDesc: 'Tüm görünür unsurlar belgelenir: Işık, folyolar, baskı, sabitleme ve marka imajı.',
+    maintenanceChecks: [
+      { label: 'Dış ışıklı reklam', status: 'OK', statusType: 'ok' },
+      { label: 'Vitrin folyosu', status: 'Planla', statusType: 'plan' },
+      { label: 'Kampanya posteri', status: 'Acil', statusType: 'urgent' },
+    ],
+    maintenanceFootLeft: 'Audit → Report → Service',
+    maintenanceFootRight: 'Tek tek lokasyonlar ve şube ağları için.',
     maintenanceBoundary:
       'Servis sözleşmesi sınırsız onarım sözleşmesinin yerine geçmez. Büyük onarımlar, yedek parçalar, yüksekte çalışma ve özel durumlar ayrıca kontrol edilir ve kararlaştırılır.',
-    serviceContractCta: 'Servis sözleşmesini görüş',
-    auditCta: 'Lokasyon denetimi talep et',
+    serviceContractCta: 'Standort-Abo Keşfet',
+    auditCta: 'Denetim Talep Et',
     frameTitle: 'Talebiniz icin net cerceve',
     trustPoints: [
       'Pazar yeri degil: talebiniz dogrudan PixelRinge gider.',
@@ -969,32 +999,37 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       { id: 'folierung', intent: 'folierung-beschriftung', title: 'Folie i oznakowanie', text: 'Napisy, folie i widoczne elementy marki dla powierzchni, okien i lokalizacji.' },
       { id: 'filialen', intent: 'druckprodukte-branding', title: 'Zaopatrzenie oddzialow i lokalizacji', text: 'Skoordynowane zaopatrzenie firm z jedna lub wieloma lokalizacjami.' },
     ],
-    maintenanceTitle: 'Konserwacja i umowy serwisowe: opieka nad reklama zamiast samodzielnej kontroli',
+    maintenanceEyebrow: 'Nowy abonament serwisowy',
+    maintenanceTitle: 'Czy wiesz, co Twoi klienci ',
+    maintenanceTitleHighlight: 'naprawdę widzą na miejscu?',
     maintenanceSubline:
-      'PixelRing regularnie sprawdza, dokumentuje i obsługuje reklamy, reklamy świetlne oraz materiały reklamowe, aby usterki, stare materiały lub ryzyka bezpieczeństwa nie zostały zauważone najpierw przez klientów.',
-    maintenanceTracks: [
+      'PixelRing regularnie sprawdza reklamy, neony, folie i materiały drukowane — z raportem fotograficznym, jasnymi priorytetami i planowaną konserwacją dla każdej lokalizacji.',
+    maintenanceBenefits: [
       {
-        id: 'check',
-        title: 'Kontrola lokalizacji',
-        text: 'Zdjęcia, stan reklam, światło, folie, plakaty, menu i widoczne uszkodzenia są sprawdzane w uporządkowany sposób.',
+        title: 'Regularny Check-up',
+        text: 'Miesięczna kontrola widoczności, uszkodzeń, przestarzałych materiałów i pilnych zadań.',
       },
       {
-        id: 'care',
-        title: 'Stała opieka',
-        text: 'Planowane kontrole, lista zadań oraz rekomendacje dotyczące naprawy, pielęgnacji i aktualizacji materiałów.',
-      },
-      {
-        id: 'network',
-        title: 'Dla wielu lokalizacji',
-        text: 'Jeden przegląd oddziałów, wyglądu marki i priorytetów: pilne, planowane albo do obserwacji.',
+        title: 'Planowane wsparcie',
+        text: 'Jeden kontakt, jasne raporty i serwis zamiast nagłych napraw awaryjnych.',
       },
     ],
-    maintenanceBenefits: ['Mniej pracy w codziennym dzialaniu', 'Planowana konserwacja zamiast tylko pilnych napraw', 'Dobre dla oddzialow i wielu lokalizacji', 'Centralna koordynacja instalacji i materialow'],
-    maintenanceDiscount: 'Do 20% korzysci na wybrane materialy reklamowe przy aktywnej umowie konserwacyjnej lub serwisowej.',
+    maintenancePanelTitle: 'Skanowanie lokalizacji',
+    maintenancePanelSubtitle: 'Przykładowy status po check-upie',
+    maintenancePanelTag: 'Live Report',
+    maintenanceScoreTitle: 'Brand Health Score',
+    maintenanceScoreDesc: 'Wszystkie widoczne elementy są dokumentowane: światło, folie, druk, mocowania i wizerunek marki.',
+    maintenanceChecks: [
+      { label: 'Reklama świetlna na zewnątrz', status: 'OK', statusType: 'ok' },
+      { label: 'Folia na witrynie', status: 'Zaplanuj', statusType: 'plan' },
+      { label: 'Plakat promocyjny', status: 'Pilne', statusType: 'urgent' },
+    ],
+    maintenanceFootLeft: 'Audit → Report → Service',
+    maintenanceFootRight: 'Dla pojedynczych punktów i sieci handlowych.',
     maintenanceBoundary:
       'Umowa serwisowa nie zastępuje nielimitowanej umowy naprawczej. Większe naprawy, części zamienne, prace wysokościowe i przypadki specjalne są sprawdzane i uzgadniane osobno.',
-    serviceContractCta: 'Omów umowę serwisową',
-    auditCta: 'Zapytaj o audyt lokalizacji',
+    serviceContractCta: 'Odkryj abonament lokalizacji',
+    auditCta: 'Zapytaj o audyt',
     frameTitle: 'Jasne ramy zgloszenia',
     trustPoints: [
       'To nie marketplace: zgloszenie trafia bezposrednio do PixelRing.',
@@ -1137,32 +1172,37 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       { id: 'folierung', intent: 'folierung-beschriftung', title: 'الأفلام والكتابة', text: 'كتابات وأفلام وعناصر علامة تجارية مرئية للأسطح والنوافذ والمواقع.' },
       { id: 'filialen', intent: 'druckprodukte-branding', title: 'إمداد الفروع والمواقع', text: 'إمداد منسق للمواد للشركات ذات موقع واحد أو عدة مواقع.' },
     ],
-    maintenanceTitle: 'الصيانة وعقود الخدمة: متابعة اللوحات بدلاً من فحصها بنفسك',
+    maintenanceEyebrow: 'اشتراك الخدمة الجديد',
+    maintenanceTitle: 'هل تعرف ما يراه عملاؤك ',
+    maintenanceTitleHighlight: 'على أرض الواقع حقاً؟',
     maintenanceSubline:
-      'تقوم PixelRing بفحص وتوثيق ومتابعة اللوحات والإعلانات المضيئة والمواد الإعلانية بانتظام، حتى لا تكون الأعطال أو المواد القديمة أو مخاطر السلامة أول ما يلاحظه العملاء.',
-    maintenanceTracks: [
+      'تقوم PixelRing بفحص اللوحات الإعلانية، والإعلانات المضيئة، والملصقات، والوسائط المطبوعة بانتظام — مع تقرير مصور، وأولويات واضحة، وصيانة مخططة لكل موقع.',
+    maintenanceBenefits: [
       {
-        id: 'check',
-        title: 'فحص الموقع',
-        text: 'تتم مراجعة الصور وحالة اللوحات والإضاءة والأفلام والملصقات والقوائم والأضرار الظاهرة بشكل منظم.',
+        title: 'فحص دوري منتظم',
+        text: 'متابعة شهرية للوضوح، والأضرار، والمواد القديمة، والمهام العاجلة.',
       },
       {
-        id: 'care',
-        title: 'متابعة مستمرة',
-        text: 'فحوصات مخططة، قائمة مهام وتوصيات للإصلاح والعناية وتحديث المواد الإعلانية.',
-      },
-      {
-        id: 'network',
-        title: 'لعدة مواقع',
-        text: 'نظرة موحدة على الفروع وصورة العلامة والأولويات: عاجل أو مخطط أو للمراقبة.',
+        title: 'رعاية مخططة ومدروسة',
+        text: 'مسؤول تواصل واحد، وتقارير واضحة، وخدمة مستمرة بدلاً من الإصلاحات الطارئة المفاجئة.',
       },
     ],
-    maintenanceBenefits: ['جهد يومي أقل', 'صيانة مخططة بدلاً من الإصلاح الطارئ فقط', 'مناسب للفروع وعدة مواقع', 'تنسيق مركزي للوحات والمواد'],
-    maintenanceDiscount: 'فائدة تصل إلى 20% على مواد إعلانية مختارة عند وجود عقد صيانة أو خدمة قائم.',
+    maintenancePanelTitle: 'مسح الموقع',
+    maintenancePanelSubtitle: 'حالة نموذجية بعد عملية الفحص',
+    maintenancePanelTag: 'تقرير مباشر',
+    maintenanceScoreTitle: 'مؤشر صحة العلامة',
+    maintenanceScoreDesc: 'يتم توثيق جميع العناصر المرئية: الإضاءة، والملصقات، والطباعة، والتثبيت، وصورة العلامة التجارية.',
+    maintenanceChecks: [
+      { label: 'الإعلانات المضيئة الخارجية', status: 'سليم', statusType: 'ok' },
+      { label: 'ملصقات الواجهة', status: 'جدولة', statusType: 'plan' },
+      { label: 'ملصق الحملة', status: 'عاجل', statusType: 'urgent' },
+    ],
+    maintenanceFootLeft: 'Audit → Report → Service',
+    maintenanceFootRight: 'للمواقع الفردية وسلاسل الفروع.',
     maintenanceBoundary:
-      'عقد الخدمة لا يحل محل عقد إصلاح غير محدود. يتم فحص الإصلاحات الكبيرة وقطع الغيار والعمل على ارتفاعات والحالات الخاصة والاتفاق عليها بشكل منفصل.',
-    serviceContractCta: 'ناقش عقد الخدمة',
-    auditCta: 'اطلب فحص الموقع',
+      'لا يحل عقد الخدمة محل عقد إصلاح غير محدود. يتم فحص الإصلاحات الكبيرة، وقطع الغيار، والعمل على ارتفاعات، والحالات الخاصة والاتفاق عليها بشكل منفصل.',
+    serviceContractCta: 'اكتشف اشتراك المواقع',
+    auditCta: 'طلب فحص الموقع',
     frameTitle: 'إطار واضح لطلبك',
     trustPoints: [
       'ليست منصة وساطة: يذهب طلبك مباشرة إلى PixelRing.',
@@ -1246,14 +1286,36 @@ function mergeCmsContent(
           };
         })
       : fallback.brandingCards,
-    maintenanceTitle: fallback.maintenanceTitle,
-    maintenanceSubline: fallback.maintenanceSubline,
-    maintenanceTracks: fallback.maintenanceTracks,
-    maintenanceBenefits: fallback.maintenanceBenefits,
-    maintenanceDiscount: fallback.maintenanceDiscount,
+    maintenanceEyebrow: fallback.maintenanceEyebrow,
+    maintenanceTitle: cmsContent.maintenance?.title ?? fallback.maintenanceTitle,
+    maintenanceTitleHighlight: cmsContent.maintenance?.title ? '' : fallback.maintenanceTitleHighlight,
+    maintenanceSubline: cmsContent.maintenance?.description ?? fallback.maintenanceSubline,
+    maintenanceBenefits: cmsContent.maintenance?.items?.length
+      ? cmsContent.maintenance.items.map((item) => {
+          const match = item.match(/^([^:—–\-\|]+)([:—–\-\|])\s*(.*)$/);
+          if (match) {
+            return {
+              title: match[1].trim(),
+              text: match[3].trim(),
+            };
+          }
+          return {
+            title: item.trim(),
+            text: '',
+          };
+        })
+      : fallback.maintenanceBenefits,
+    maintenancePanelTitle: fallback.maintenancePanelTitle,
+    maintenancePanelSubtitle: fallback.maintenancePanelSubtitle,
+    maintenancePanelTag: fallback.maintenancePanelTag,
+    maintenanceScoreTitle: fallback.maintenanceScoreTitle,
+    maintenanceScoreDesc: fallback.maintenanceScoreDesc,
+    maintenanceChecks: fallback.maintenanceChecks,
+    maintenanceFootLeft: fallback.maintenanceFootLeft,
+    maintenanceFootRight: fallback.maintenanceFootRight,
     maintenanceBoundary: fallback.maintenanceBoundary,
-    serviceContractCta: fallback.serviceContractCta,
-    auditCta: fallback.auditCta,
+    serviceContractCta: cmsContent.maintenance?.cta ?? fallback.serviceContractCta,
+    auditCta: cmsContent.maintenance?.auditCta ?? fallback.auditCta,
     frameTitle: cmsContent.trust?.title ?? fallback.frameTitle,
     trustPoints: cmsContent.trust?.items ?? fallback.trustPoints,
     finalHeadline: cmsContent.trust?.finalHeadline ?? fallback.finalHeadline,
@@ -1368,64 +1430,546 @@ export default async function LeistungenPage({
         )}
 
         {content.maintenanceEnabled !== false && (
-          <section id="wartung-servicevertraege" className="scroll-mt-28 bg-[#0E1A2B] py-14 text-white sm:py-20">
+          <section id="wartung-servicevertraege" className="scroll-mt-28 bg-[#F8FAFC] py-14 sm:py-20">
             <div className="mx-auto max-w-7xl px-4 sm:px-6">
-              <div className="grid gap-10 lg:grid-cols-[0.86fr_1.14fr] lg:items-start">
-                <div>
-                  <h2 className="max-w-3xl text-3xl font-extrabold leading-[1.08] sm:text-5xl">
-                    {content.maintenanceTitle}
-                  </h2>
-                  <p className="mt-5 max-w-2xl text-lg leading-8 text-white/75">{content.maintenanceSubline}</p>
-                  <div className="mt-8 flex flex-wrap gap-3">
-                    <LeistungenRequestButton
-                      label={content.auditCta}
-                      serviceIntent="wartung-servicevertrag"
-                      className="min-w-[180px] whitespace-normal px-7 text-center"
-                    />
-                    <LeistungenRequestButton
-                      label={content.serviceContractCta}
-                      serviceIntent="wartung-servicevertrag"
-                      variant="secondary"
-                      className="min-w-[180px] whitespace-normal px-7 text-center"
-                    />
-                  </div>
+              <style dangerouslySetInnerHTML={{ __html: `
+                .pr-abo-mini {
+                  --pr-card: rgba(255, 255, 255, 0.075);
+                  --pr-card-strong: rgba(255, 255, 255, 0.12);
+                  --pr-line: rgba(255, 255, 255, 0.12);
+                  --pr-text: #f0f4f8;
+                  --pr-muted: rgba(240, 244, 248, 0.72);
+                  --pr-soft: rgba(240, 244, 248, 0.52);
+                  --pr-green: #6dff9f;
+                  --pr-orange: #e8a47a;
+                  --pr-red: #d96b45;
+                  --pr-radius-xl: 28px;
+                  --pr-radius-lg: 22px;
+                  --pr-radius-md: 16px;
+                  --pr-font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
-                  <p className="mt-8 rounded-[20px] border border-[#DAB08A]/35 bg-[#B8643E]/15 px-5 py-4 text-[15px] font-semibold leading-7 text-[#FFE6D6]">
-                    {content.maintenanceBoundary}
-                  </p>
-                </div>
+                  position: relative;
+                  isolation: isolate;
+                  width: 100%;
+                  margin: 0 auto;
+                  padding: 28px;
+                  overflow: hidden;
+                  border: 1px solid rgba(255, 255, 255, 0.11);
+                  border-radius: var(--pr-radius-xl);
+                  background:
+                    linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+                    radial-gradient(circle at 8% 10%, rgba(184, 100, 62, 0.18), transparent 38%),
+                    radial-gradient(circle at 90% 18%, rgba(123, 161, 144, 0.14), transparent 36%),
+                    linear-gradient(155deg, #0f1d2e 0%, #0E1A2B 55%, #111f30 100%);
+                  box-shadow: 0 8px 48px rgba(14, 26, 43, 0.32), 0 1px 0 rgba(255,255,255,0.07) inset;
+                  color: var(--pr-text);
+                  font-family: var(--pr-font);
+                  text-align: left;
+                }
 
-                <div className="space-y-5">
-                  <div className="grid gap-4 md:grid-cols-3">
-                    {content.maintenanceTracks.map((track, index) => (
-                      <article
-                        key={track.id}
-                        className="min-w-0 rounded-[22px] border border-white/[0.13] bg-white/[0.075] p-5 shadow-[0_18px_60px_rgba(0,0,0,0.18)]"
-                      >
-                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#7BA190] text-[13px] font-black text-[#0E1A2B]">
-                          {String(index + 1).padStart(2, '0')}
-                        </div>
-                        <h3 className="mt-5 break-words text-xl font-black leading-[1.1] text-white">{track.title}</h3>
-                        <p className="mt-3 text-[15px] leading-7 text-white/[0.76]">{track.text}</p>
-                      </article>
-                    ))}
-                  </div>
+                .pr-abo-mini::before {
+                  content: "";
+                  position: absolute;
+                  inset: 0;
+                  z-index: -2;
+                  opacity: 0.14;
+                  background-image:
+                    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+                  background-size: 38px 38px;
+                  mask-image: radial-gradient(circle at 70% 28%, black, transparent 72%);
+                  -webkit-mask-image: radial-gradient(circle at 70% 28%, black, transparent 72%);
+                }
 
-                  <div className="grid gap-4 md:grid-cols-[1fr_0.95fr]">
-                    <div className="rounded-[22px] border border-white/[0.12] bg-white/[0.06] p-5">
-                      <ul className="grid gap-3">
-                        {content.maintenanceBenefits.map((benefit) => (
-                          <li key={benefit} className="flex min-w-0 gap-3 text-[15px] font-semibold leading-6 text-white/[0.84]">
-                            <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#7BA190]" />
-                            <span className="min-w-0 break-words">{benefit}</span>
-                          </li>
-                        ))}
-                      </ul>
+                .pr-abo-mini::after {
+                  content: "";
+                  position: absolute;
+                  width: 320px;
+                  height: 320px;
+                  right: -120px;
+                  bottom: -160px;
+                  z-index: -1;
+                  border-radius: 999px;
+                  background: radial-gradient(circle, rgba(184, 100, 62, 0.18), transparent 68%);
+                  filter: blur(8px);
+                }
+
+                .pr-abo-mini__inner {
+                  display: grid;
+                  grid-template-columns: minmax(0, 1.15fr) minmax(310px, 0.85fr);
+                  gap: 26px;
+                  align-items: stretch;
+                }
+
+                .pr-abo-mini__content {
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  min-height: 390px;
+                }
+
+                .pr-abo-mini__eyebrow {
+                  display: inline-flex;
+                  width: fit-content;
+                  align-items: center;
+                  gap: 9px;
+                  margin: 0 0 18px;
+                  padding: 9px 12px;
+                  border: 1px solid rgba(255, 255, 255, 0.14);
+                  border-radius: 999px;
+                  background: rgba(255, 255, 255, 0.07);
+                  color: rgba(255, 255, 255, 0.82);
+                  font-size: 12px;
+                  font-weight: 750;
+                  letter-spacing: 0.12em;
+                  text-transform: uppercase;
+                  line-height: 1;
+                }
+
+                .pr-abo-mini__pulse {
+                  width: 8px;
+                  height: 8px;
+                  border-radius: 999px;
+                  background: var(--pr-green);
+                  box-shadow: 0 0 0 5px rgba(109, 255, 159, 0.12), 0 0 22px rgba(109, 255, 159, 0.45);
+                  animation: prPulse 2s infinite;
+                }
+
+                .pr-abo-mini h2 {
+                  max-width: 760px;
+                  margin: 0;
+                  color: var(--pr-text);
+                  font-size: clamp(32px, 4.7vw, 64px);
+                  line-height: 0.96;
+                  letter-spacing: -0.055em;
+                  text-wrap: balance;
+                  font-weight: 800;
+                }
+
+                .pr-abo-mini h2 span {
+                  background: linear-gradient(90deg, #ffffff 0%, #e8c4a8 36%, #c2734a 100%);
+                  -webkit-background-clip: text;
+                  background-clip: text;
+                  color: transparent;
+                }
+
+                .pr-abo-mini__lead {
+                  max-width: 650px;
+                  margin: 20px 0 0;
+                  color: var(--pr-muted);
+                  font-size: clamp(17px, 2vw, 21px);
+                  line-height: 1.48;
+                }
+
+                .pr-abo-mini__actions {
+                  display: flex;
+                  flex-wrap: wrap;
+                  gap: 12px;
+                  margin-top: 28px;
+                }
+
+                .pr-abo-mini__btn {
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  min-height: 48px;
+                  padding: 0 19px;
+                  border-radius: 999px;
+                  font-size: 14px;
+                  font-weight: 800;
+                  line-height: 1;
+                  text-decoration: none;
+                  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+                  cursor: pointer;
+                }
+
+                .pr-abo-mini__btn:hover {
+                  transform: translateY(-2px);
+                }
+
+                .pr-abo-mini__btn--primary {
+                  border: 1px solid rgba(255, 255, 255, 0.18);
+                  background: linear-gradient(135deg, #ff3152, #ff7043);
+                  color: #fff;
+                  box-shadow: 0 16px 42px rgba(255, 59, 87, 0.28);
+                }
+
+                .pr-abo-mini__btn--ghost {
+                  border: 1px solid rgba(255, 255, 255, 0.17);
+                  background: rgba(255, 255, 255, 0.06);
+                  color: #fff;
+                }
+
+                .pr-abo-mini__benefits {
+                  display: grid;
+                  grid-template-columns: repeat(2, minmax(0, 1fr));
+                  gap: 12px;
+                  max-width: 650px;
+                  margin-top: 28px;
+                }
+
+                .pr-abo-mini__benefit {
+                  padding: 16px;
+                  border: 1px solid rgba(255, 255, 255, 0.12);
+                  border-radius: var(--pr-radius-md);
+                  background: rgba(255, 255, 255, 0.055);
+                }
+
+                .pr-abo-mini__benefit strong {
+                  display: block;
+                  margin-bottom: 6px;
+                  color: #fff;
+                  font-size: 15px;
+                  letter-spacing: -0.015em;
+                  font-weight: 700;
+                }
+
+                .pr-abo-mini__benefit p {
+                  margin: 0;
+                  color: var(--pr-soft);
+                  font-size: 13px;
+                  line-height: 1.45;
+                }
+
+                .pr-abo-mini__boundary {
+                  margin-top: 24px;
+                  padding: 14px 18px;
+                  border: 1px solid rgba(255, 138, 61, 0.25);
+                  border-radius: var(--pr-radius-md);
+                  background: rgba(255, 138, 61, 0.08);
+                  color: rgba(255, 255, 255, 0.88);
+                  font-size: 13px;
+                  font-weight: 550;
+                  line-height: 1.45;
+                  max-width: 650px;
+                }
+
+                .pr-abo-mini__panel {
+                  position: relative;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  min-height: 390px;
+                  padding: 20px;
+                  border: 1px solid rgba(255, 255, 255, 0.14);
+                  border-radius: 26px;
+                  background:
+                    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05)),
+                    rgba(255, 255, 255, 0.04);
+                  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+                  backdrop-filter: blur(14px);
+                  -webkit-backdrop-filter: blur(14px);
+                }
+
+                .pr-abo-mini__panel-top {
+                  display: flex;
+                  justify-content: space-between;
+                  gap: 14px;
+                  align-items: flex-start;
+                  margin-bottom: 18px;
+                }
+
+                .pr-abo-mini__panel-title {
+                  margin: 0;
+                  color: #fff;
+                  font-size: 18px;
+                  font-weight: 850;
+                  letter-spacing: -0.02em;
+                }
+
+                .pr-abo-mini__panel-subtitle {
+                  margin: 4px 0 0;
+                  color: var(--pr-soft);
+                  font-size: 13px;
+                  line-height: 1.35;
+                }
+
+                .pr-abo-mini__tag {
+                  flex: 0 0 auto;
+                  padding: 7px 10px;
+                  border-radius: 999px;
+                  background: rgba(78, 228, 255, 0.12);
+                  color: #baf6ff;
+                  font-size: 11px;
+                  font-weight: 850;
+                  letter-spacing: 0.08em;
+                  text-transform: uppercase;
+                }
+
+                .pr-abo-mini__score {
+                  display: grid;
+                  grid-template-columns: 104px minmax(0, 1fr);
+                  gap: 15px;
+                  align-items: center;
+                  padding: 16px;
+                  border: 1px solid rgba(255, 255, 255, 0.12);
+                  border-radius: 20px;
+                  background: rgba(0, 0, 0, 0.22);
+                }
+
+                .pr-abo-mini__ring {
+                  display: grid;
+                  place-items: center;
+                  width: 104px;
+                  height: 104px;
+                  border-radius: 999px;
+                  background:
+                    radial-gradient(circle at center, #10131d 0 55%, transparent 56%),
+                    conic-gradient(var(--pr-green) 0 68%, var(--pr-orange) 68% 86%, var(--pr-red) 86% 100%);
+                  box-shadow: 0 0 34px rgba(109, 255, 159, 0.1);
+                }
+
+                .pr-abo-mini__ring span {
+                  display: block;
+                  color: #fff;
+                  font-size: 28px;
+                  font-weight: 900;
+                  letter-spacing: -0.06em;
+                }
+
+                .pr-abo-mini__score-copy strong {
+                  display: block;
+                  color: #fff;
+                  font-size: 16px;
+                  margin-bottom: 6px;
+                }
+
+                .pr-abo-mini__score-copy p {
+                  margin: 0;
+                  color: var(--pr-soft);
+                  font-size: 13px;
+                  line-height: 1.45;
+                }
+
+                .pr-abo-mini__checks {
+                  display: grid;
+                  gap: 10px;
+                  margin-top: 14px;
+                }
+
+                .pr-abo-mini__check {
+                  display: flex;
+                  justify-content: space-between;
+                  gap: 12px;
+                  align-items: center;
+                  padding: 13px 14px;
+                  border: 1px solid rgba(255, 255, 255, 0.11);
+                  border-radius: 16px;
+                  background: rgba(255, 255, 255, 0.055);
+                  color: rgba(255, 255, 255, 0.82);
+                  font-size: 13px;
+                }
+
+                .pr-abo-mini__status {
+                  flex: 0 0 auto;
+                  padding: 6px 9px;
+                  border-radius: 999px;
+                  font-size: 10px;
+                  font-weight: 900;
+                  letter-spacing: 0.08em;
+                  text-transform: uppercase;
+                }
+
+                .pr-abo-mini__status--ok {
+                  background: rgba(109, 255, 159, 0.13);
+                  color: #baffcf;
+                }
+
+                .pr-abo-mini__status--plan {
+                  background: rgba(255, 138, 61, 0.13);
+                  color: #ffd2ad;
+                }
+
+                .pr-abo-mini__status--urgent {
+                  background: rgba(255, 59, 87, 0.16);
+                  color: #ffc1ca;
+                }
+
+                .pr-abo-mini__foot {
+                  display: flex;
+                  justify-content: space-between;
+                  gap: 14px;
+                  align-items: center;
+                  margin-top: 18px;
+                  padding-top: 16px;
+                  border-top: 1px solid rgba(255, 255, 255, 0.11);
+                  color: var(--pr-soft);
+                  font-size: 12px;
+                  line-height: 1.35;
+                }
+
+                .pr-abo-mini__foot strong {
+                  color: #fff;
+                }
+
+                @keyframes prPulse {
+                  0% {
+                    box-shadow: 0 0 0 0 rgba(109, 255, 159, 0.5), 0 0 10px rgba(109, 255, 159, 0.5);
+                  }
+                  70% {
+                    box-shadow: 0 0 0 8px rgba(109, 255, 159, 0), 0 0 20px rgba(109, 255, 159, 0.2);
+                  }
+                  100% {
+                    box-shadow: 0 0 0 0 rgba(109, 255, 159, 0), 0 0 10px rgba(109, 255, 159, 0);
+                  }
+                }
+
+                @media (max-width: 900px) {
+                  .pr-abo-mini {
+                    padding: 22px;
+                  }
+
+                  .pr-abo-mini__inner {
+                    grid-template-columns: 1fr;
+                  }
+
+                  .pr-abo-mini__content,
+                  .pr-abo-mini__panel {
+                    min-height: initial;
+                  }
+                }
+
+                @media (max-width: 620px) {
+                  .pr-abo-mini {
+                    border-radius: 24px;
+                    padding: 18px;
+                  }
+
+                  .pr-abo-mini h2 {
+                    font-size: clamp(31px, 12vw, 46px);
+                  }
+
+                  .pr-abo-mini__benefits,
+                  .pr-abo-mini__score {
+                    grid-template-columns: 1fr;
+                  }
+
+                  .pr-abo-mini__ring {
+                    width: 96px;
+                    height: 96px;
+                  }
+
+                  .pr-abo-mini__actions,
+                  .pr-abo-mini__foot,
+                  .pr-abo-mini__panel-top {
+                    flex-direction: column;
+                    align-items: flex-start;
+                  }
+
+                  .pr-abo-mini__btn {
+                    width: 100%;
+                  }
+                }
+
+                /* RTL OVERRIDES */
+                html[dir="rtl"] .pr-abo-mini {
+                  text-align: right;
+                  background:
+                    linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+                    radial-gradient(circle at 92% 10%, rgba(184, 100, 62, 0.18), transparent 38%),
+                    radial-gradient(circle at 8% 18%, rgba(123, 161, 144, 0.14), transparent 36%),
+                    linear-gradient(155deg, #0f1d2e 0%, #0E1A2B 55%, #111f30 100%);
+                }
+
+                html[dir="rtl"] .pr-abo-mini::before {
+                  mask-image: radial-gradient(circle at 30% 28%, black, transparent 72%);
+                  -webkit-mask-image: radial-gradient(circle at 30% 28%, black, transparent 72%);
+                }
+
+                html[dir="rtl"] .pr-abo-mini::after {
+                  left: -120px;
+                  right: auto;
+                }
+
+                html[dir="rtl"] .pr-abo-mini h2 span {
+                  background: linear-gradient(-90deg, #ffffff 0%, #e8c4a8 36%, #c2734a 100%);
+                  -webkit-background-clip: text;
+                  background-clip: text;
+                  color: transparent;
+                }
+              `}} />
+
+              <div className="pr-abo-mini" aria-labelledby="pr-abo-mini-title">
+                <div className="pr-abo-mini__inner">
+                  <div className="pr-abo-mini__content">
+                    <p className="pr-abo-mini__eyebrow">
+                      <span className="pr-abo-mini__pulse"></span> {content.maintenanceEyebrow}
+                    </p>
+
+                    <h2 id="pr-abo-mini-title">
+                      {content.maintenanceTitle}
+                      {content.maintenanceTitleHighlight && (
+                        <span>{content.maintenanceTitleHighlight}</span>
+                      )}
+                    </h2>
+
+                    <p className="pr-abo-mini__lead">
+                      {content.maintenanceSubline}
+                    </p>
+
+                    <div className="pr-abo-mini__actions" aria-label="Standort-Abo Aktionen">
+                      <Link href="/service" className="pr-abo-mini__btn pr-abo-mini__btn--primary">
+                        {content.serviceContractCta}
+                      </Link>
+                      <LeistungenRequestButton
+                        label={content.auditCta}
+                        serviceIntent="wartung-servicevertrag"
+                        variant="dark-ghost"
+                        className="pr-abo-mini__btn pr-abo-mini__btn--ghost"
+                      />
                     </div>
-                    <p className="rounded-[22px] border border-[#DAB08A]/45 bg-[#B8643E]/20 px-5 py-5 text-[15px] font-bold leading-7 text-[#FFE6D6]">
-                      {content.maintenanceDiscount}
+
+                    <div className="pr-abo-mini__benefits" aria-label="Vorteile des PixelRing Standort-Abos">
+                      {content.maintenanceBenefits.map((benefit, idx) => (
+                        <article key={idx} className="pr-abo-mini__benefit">
+                          <strong>{benefit.title}</strong>
+                          <p>{benefit.text}</p>
+                        </article>
+                      ))}
+                    </div>
+
+                    <p className="pr-abo-mini__boundary">
+                      {content.maintenanceBoundary}
                     </p>
                   </div>
+
+                  <aside className="pr-abo-mini__panel" aria-label="Beispiel für Standort-Report">
+                    <div>
+                      <div className="pr-abo-mini__panel-top">
+                        <div>
+                          <p className="pr-abo-mini__panel-title">{content.maintenancePanelTitle}</p>
+                          <p className="pr-abo-mini__panel-subtitle">{content.maintenancePanelSubtitle}</p>
+                        </div>
+                        <span className="pr-abo-mini__tag">{content.maintenancePanelTag}</span>
+                      </div>
+
+                      <div className="pr-abo-mini__score">
+                        <div className="pr-abo-mini__ring" aria-label={`${content.maintenanceScoreTitle} 86`}>
+                          <span>86</span>
+                        </div>
+                        <div className="pr-abo-mini__score-copy">
+                          <strong>{content.maintenanceScoreTitle}</strong>
+                          <p>{content.maintenanceScoreDesc}</p>
+                        </div>
+                      </div>
+
+                      <div className="pr-abo-mini__checks">
+                        {content.maintenanceChecks.map((check, idx) => (
+                          <div key={idx} className="pr-abo-mini__check">
+                            <span>{check.label}</span>
+                            <span className={`pr-abo-mini__status pr-abo-mini__status--${check.statusType}`}>
+                              {check.status}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="pr-abo-mini__foot">
+                      <span><strong>{content.maintenanceFootLeft}</strong></span>
+                      <span>{content.maintenanceFootRight}</span>
+                    </div>
+                  </aside>
                 </div>
               </div>
             </div>

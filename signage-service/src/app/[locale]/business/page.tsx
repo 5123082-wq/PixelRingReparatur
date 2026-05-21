@@ -9,6 +9,7 @@ import CmsImage from '@/components/common/CmsImage';
 import BusinessShowcase from '@/components/sections/BusinessShowcase';
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
+const BUSINESS_PRESENTATION_HREF = '/downloads/pixelring-business-presentation.pdf';
 
 type TargetGroup = {
   id: string;
@@ -37,9 +38,12 @@ type BusinessContent = {
   auditTitle: string;
   auditIntro: string;
   auditBenefits: Benefit[];
+  auditCta: string;
   platformTitle: string;
   platformIntro: string;
   platformBenefits: Benefit[];
+  portalCta: string;
+  portalDemoCta: string;
   trustTitle: string;
   trustIntro: string;
   finalHeadline: string;
@@ -76,6 +80,7 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'a2', title: 'Markenkonsistenz', description: 'Zerrissene Poster, veraltete Speisekarten oder schmutzige Aufkleber werden erkannt und erneuert.' },
       { id: 'a3', title: 'Planbare Kosten', description: 'Feste Service-Raten (Abo-Modell) statt unberechenbarer Einzelreparaturen.' }
     ],
+    auditCta: 'Service-Audit anfragen',
     platformTitle: 'Volle Kontrolle in Ihrem Kundenportal',
     platformIntro: 'Wir bieten nicht nur Ausführung, sondern auch Transparenz. Mit einem Klick haben Sie den kompletten Überblick über alle Standorte, Audits und Reparaturstatus.',
     platformBenefits: [
@@ -83,6 +88,8 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'p2', title: 'Umfassender Audit-Report', description: 'Detaillierte Berichte über den Zustand jedes Standortes inkl. Foto-Dokumentation.' },
       { id: 'p3', title: 'Ein zentraler Ansprechpartner', description: 'Koordination aus einer Quelle. Keine Suche nach verschiedenen Dienstleistern.' }
     ],
+    portalCta: 'Kundenportal ansehen',
+    portalDemoCta: 'Präsentation herunterladen',
     trustTitle: 'Verantwortung & Koordination',
     trustIntro: 'Geben Sie die Verantwortung für Ihre sichtbare Marke in die Hände von Spezialisten.',
     finalHeadline: 'Bereit für einen reibungslosen Betriebsablauf?',
@@ -111,6 +118,7 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'a2', title: 'Brand Consistency', description: 'Torn posters, outdated menus, or dirty stickers are identified and renewed.' },
       { id: 'a3', title: 'Predictable Costs', description: 'Fixed service rates (subscription model) instead of unpredictable individual repairs.' }
     ],
+    auditCta: 'Request service audit',
     platformTitle: 'Full Control in Your Customer Portal',
     platformIntro: 'We offer not only execution but also transparency. With one click, you have a complete overview of all locations, audits, and repair statuses.',
     platformBenefits: [
@@ -118,6 +126,8 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'p2', title: 'Comprehensive Audit Report', description: 'Detailed reports on the condition of each location including photo documentation.' },
       { id: 'p3', title: 'One Central Contact', description: 'Coordination from a single source. No need to search for different service providers.' }
     ],
+    portalCta: 'View Customer Portal',
+    portalDemoCta: 'Download presentation',
     trustTitle: 'Responsibility & Coordination',
     trustIntro: 'Place the responsibility for your visible brand in the hands of specialists.',
     finalHeadline: 'Ready for smooth operations?',
@@ -140,12 +150,13 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'retail', title: 'Сетевой ритейл', description: 'Единые стандарты SLA для поддержания бренда во всех точках сети.' }
     ],
     auditTitle: 'Договор обслуживания и Регулярный аудит',
-    auditIntro: 'Мы предоставляем полное обслуживание в рамках своего рода подписки. В рамках регулярного аудита мы проверяем работоспособность конструкций, наличие и целостность печатной продукции внутри точек продаж. Заменяем старые, грязные или разорванные материалы.',
+    auditIntro: 'Мы берем на себя регулярное обслуживание ваших точек: проверяем вывески, световые конструкции и рекламные материалы, фиксируем проблемы и обновляем поврежденные элементы.',
     auditBenefits: [
       { id: 'a1', title: 'Регулярная инспекция', description: 'Проактивный аудит состояния вывесок и рекламных материалов на объекте.' },
       { id: 'a2', title: 'Контроль бренда', description: 'Своевременная замена испорченных меню, порванных плакатов и выцветших пленок.' },
       { id: 'a3', title: 'Подписочная модель', description: 'Прогнозируемые расходы вместо внезапных трат на срочные ремонты.' }
     ],
+    auditCta: 'Запросить аудит',
     platformTitle: 'Личный кабинет и прозрачность',
     platformIntro: 'Полный доступ к своему личному кабинету на платформе. Вы видите все статусы, заявки и историю ремонтов.',
     platformBenefits: [
@@ -153,6 +164,8 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'p2', title: 'Полный аудит точек', description: 'Предоставляем заказчику отчет о том, что происходит на его точках продаж.' },
       { id: 'p3', title: 'Один общий источник', description: 'Ответственность, гарантии и координация всех подрядчиков на нашей стороне.' }
     ],
+    portalCta: 'Личный кабинет',
+    portalDemoCta: 'Скачать презентацию',
     trustTitle: 'Ответственность и Гарантии',
     trustIntro: 'Делегируйте технические и визуальные проблемы специалистам.',
     finalHeadline: 'Готовы к безупречной работе ваших объектов?',
@@ -181,6 +194,7 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'a2', title: 'Marka Tutarlılığı', description: 'Yırtık posterler ve eski menüler anında yenilenir.' },
       { id: 'a3', title: 'Öngörülebilir Maliyet', description: 'Beklenmedik onarım masrafları yerine sabit hizmet paketleri.' }
     ],
+    auditCta: 'Servis denetimi talep et',
     platformTitle: 'Müşteri Portalınızda Tam Kontrol',
     platformIntro: 'Platformdaki kişisel hesabınıza tam erişim ile tüm talepleri ve onarım geçmişinizi takip edebilirsiniz.',
     platformBenefits: [
@@ -188,6 +202,8 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'p2', title: 'Kapsamlı Denetim Raporu', description: 'Her lokasyonun güncel durumu hakkında fotoğraflı detaylı raporlar.' },
       { id: 'p3', title: 'Tek Sorumlu', description: 'Tüm süreçlerin koordinasyonu ve garantisi bizim sorumluluğumuzda.' }
     ],
+    portalCta: 'Müşteri Portalı',
+    portalDemoCta: 'Sunumu indir',
     trustTitle: 'Sorumluluk ve Koordinasyon',
     trustIntro: 'Görünür markanızın sorumluluğunu uzmanlara bırakın.',
     finalHeadline: 'Sorunsuz bir operasyona hazır mısınız?',
@@ -216,6 +232,7 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'a2', title: 'Spójność Marki', description: 'Szybka wymiana zniszczonych plakatów i wyblakłych naklejek.' },
       { id: 'a3', title: 'Przewidywalne Koszty', description: 'Stałe stawki serwisowe zamiast niespodziewanych napraw.' }
     ],
+    auditCta: 'Zapytaj o audyt',
     platformTitle: 'Pełna Kontrola w Portalu Klienta',
     platformIntro: 'Zyskujesz pełny dostęp do osobistego panelu na naszej platformie. Śledź wszystkie zlecenia i historię obsługi Twojego biznesu.',
     platformBenefits: [
@@ -223,6 +240,8 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'p2', title: 'Raporty z Audytów', description: 'Dostarczamy szczegółowy przegląd tego, co dzieje się w każdym punkcie.' },
       { id: 'p3', title: 'Jedno Źródło Kontaktu', description: 'Gwarancja i koordynacja wszystkich prac leży po naszej stronie.' }
     ],
+    portalCta: 'Portal klienta',
+    portalDemoCta: 'Pobierz prezentację',
     trustTitle: 'Odpowiedzialność i Gwarancje',
     trustIntro: 'Przekaż opiekę nad wizualnym aspektem marki profesjonalistom.',
     finalHeadline: 'Gotowy na bezproblemowe działanie?',
@@ -251,6 +270,7 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'a2', title: 'تناسق العلامة التجارية', description: 'الاستبدال الفوري للملصقات الممزقة والقوائم القديمة.' },
       { id: 'a3', title: 'تكاليف يمكن التنبؤ بها', description: 'أسعار خدمات ثابتة بدلاً من الإصلاحات المفاجئة.' }
     ],
+    auditCta: 'طلب تدقيق الخدمة',
     platformTitle: 'تحكم كامل في بوابة العميل الخاصة بك',
     platformIntro: 'نمنحك وصولاً كاملاً إلى لوحتك الخاصة على منصتنا. يمكنك متابعة جميع الطلبات وتاريخ الصيانة لأعمالك.',
     platformBenefits: [
@@ -258,6 +278,8 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'p2', title: 'تقارير تدقيق مفصلة', description: 'نقدم تفاصيل كاملة عما يحدث في كل موقع مع الصور.' },
       { id: 'p3', title: 'مصدر واحد للتواصل', description: 'جميع الضمانات والتنسيق بين المقاولين تقع على عاتقنا.' }
     ],
+    portalCta: 'عرض بوابة العميل',
+    portalDemoCta: 'تنزيل العرض التقديمي',
     trustTitle: 'المسؤولية والضمانات',
     trustIntro: 'اترك مسؤولية صورتك التجارية للمتخصصين.',
     finalHeadline: 'هل أنت مستعد لعمليات خالية من المشاكل؟',
@@ -326,6 +348,7 @@ export default async function BusinessPage({
           description: businessCms.audit?.items?.[i]?.description || benefit.description,
         }))
       : tContent.auditBenefits,
+    auditCta: tContent.auditCta,
     platformTitle: businessCms?.platform?.title || tContent.platformTitle,
     platformIntro: businessCms?.platform?.description || tContent.platformIntro,
     platformBenefits: businessCms?.platform?.items?.length
@@ -335,6 +358,8 @@ export default async function BusinessPage({
           description: businessCms.platform?.items?.[i]?.description || benefit.description,
         }))
       : tContent.platformBenefits,
+    portalCta: tContent.portalCta,
+    portalDemoCta: tContent.portalDemoCta,
     trustTitle: businessCms?.trust?.title || tContent.trustTitle,
     trustIntro: businessCms?.trust?.description || tContent.trustIntro,
     finalHeadline: businessCms?.final?.title || tContent.finalHeadline,
@@ -402,54 +427,143 @@ export default async function BusinessPage({
 
         {/* AUDIT & SUBSCRIPTION */}
         {content.auditEnabled !== false && (
-          <section className="py-24 bg-[#EEF3FB] relative border-y border-[#E2E8F0]">
-            <div className="max-w-7xl mx-auto px-6">
-              <div className="grid lg:grid-cols-2 gap-16 items-center">
-                <div>
-                  <div className="inline-block px-3 py-1 bg-[#B8643E]/10 text-[#B8643E] rounded-full text-[14px] font-bold mb-6">
-                    Subscription Model
+          <section
+            className="relative overflow-hidden py-24 lg:py-32"
+            style={{
+              background:
+                'radial-gradient(circle at 14% 16%, rgba(184,100,62,0.10) 0%, transparent 28%), linear-gradient(180deg, #eef5fc 0%, #f7fbff 100%)',
+            }}
+          >
+            <div className="mx-auto max-w-7xl px-6">
+              <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+                {/* Copy */}
+                <div className="relative z-10">
+                  <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-[#B8643E]/10 px-4 py-2 text-[13px] font-extrabold tracking-wide text-[#8c4a2a] shadow-[inset_0_0_0_1px_rgba(184,100,62,0.10)]">
+                    <span className="inline-block h-2 w-2 rounded-full bg-[#B8643E] shadow-[0_0_0_4px_rgba(184,100,62,0.15)]" />
+                    Service-Abo
                   </div>
-                  <h2 className="text-[36px] font-extrabold text-[#0D1B2A] leading-tight mb-6">
+
+                  <h2 className="mt-4 text-[32px] font-black leading-[1.08] tracking-tight text-[#081827] sm:text-[38px] lg:text-[44px]">
                     {content.auditTitle}
                   </h2>
-                  <p className="text-[18px] text-[#4A5568] leading-relaxed mb-10">
+
+                  <p className="mt-6 max-w-[580px] text-[clamp(16px,1.3vw,20px)] leading-[1.6] tracking-[-0.01em] text-[#526174]">
                     {content.auditIntro}
                   </p>
 
-                  <div className="space-y-8">
+                  {/* Pill tags */}
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    {['Audit', 'Wartung', 'Brand Consistency', 'Planbare Service-Raten'].map((tag) => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center gap-2 rounded-full border border-[#dce7f1] bg-white/75 px-3 py-2 text-[13px] font-semibold text-[#324252]"
+                      >
+                        <span className="inline-block h-2 w-2 rounded-full bg-[#35b47a]" />
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Benefit cards */}
+                  <div className="mt-8 grid gap-3">
                     {content.auditBenefits.map((benefit, i) => (
-                      <div key={benefit.id} className="flex gap-4">
-                        <div className="shrink-0 w-10 h-10 rounded-full bg-white border border-[#D1D9E6] flex items-center justify-center text-[#B8643E] font-bold shadow-sm">
+                      <div
+                        key={benefit.id}
+                        className="grid grid-cols-[48px_1fr] items-start gap-4 rounded-[22px] border border-[#dce7f1]/80 bg-white/62 p-5 shadow-[0_10px_30px_rgba(8,24,39,0.05)] backdrop-blur-md"
+                      >
+                        <div className="grid h-12 w-12 place-items-center rounded-full bg-white text-[#B8643E] font-black shadow-[0_8px_20px_rgba(8,24,39,0.10),inset_0_0_0_1px_rgba(8,24,39,0.08)]">
                           {i + 1}
                         </div>
                         <div>
-                          <h4 className="text-[18px] font-bold text-[#0D1B2A] mb-2">{benefit.title}</h4>
-                          <p className="text-[#4A5568] text-[15px] leading-relaxed">{benefit.description}</p>
+                          <h3 className="text-[16px] font-black leading-snug tracking-tight text-[#081827] sm:text-[18px]">
+                            {benefit.title}
+                          </h3>
+                          <p className="mt-1.5 text-[14px] leading-[1.5] text-[#526174]">{benefit.description}</p>
                         </div>
                       </div>
                     ))}
                   </div>
+
+                  {/* CTAs */}
+                  <div className="mt-8 flex flex-wrap gap-3">
+                    <a
+                      href={`mailto:info@pixel-ring.com?subject=Service-Audit%20anfragen`}
+                      className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#081827] px-6 text-[15px] font-black text-white shadow-[0_18px_36px_rgba(8,24,39,0.20)] transition-transform duration-200 hover:-translate-y-0.5"
+                    >
+                      {content.auditCta}
+                    </a>
+                    <a
+                      href={BUSINESS_PRESENTATION_HREF}
+                      download
+                      className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-[#dce7f1] bg-white px-6 text-[15px] font-black text-[#081827] shadow-[0_10px_24px_rgba(8,24,39,0.08)] transition-transform duration-200 hover:-translate-y-0.5"
+                    >
+                      {content.portalDemoCta}
+                    </a>
+                  </div>
                 </div>
-                
-                <div className="relative h-[600px] w-full rounded-3xl overflow-hidden shadow-2xl">
-                  {/* Visual representation of an audit/storefront */}
-                  <Image
-                    src="/images/leistungen/hero-branding.png"
-                    alt="Audit & Maintenance"
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0E1A2B]/80 to-transparent" />
-                  <div className="absolute bottom-10 left-10 right-10">
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6">
-                      <div className="flex items-center gap-4 mb-4">
-                        <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
-                        <span className="text-white font-bold tracking-wide">Audit abgeschlossen</span>
+
+                {/* Visual */}
+                <div className="relative z-10 min-h-[520px] lg:min-h-[590px]">
+                  {/* Background photo */}
+                  <div className="absolute inset-0 overflow-hidden rounded-[34px]">
+                    <Image
+                      src="/images/leistungen/hero-branding.png"
+                      alt="Audit & Standort-Wartung"
+                      fill
+                      className="object-cover"
+                    />
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        background:
+                          'linear-gradient(90deg, rgba(8,24,39,0.68) 0%, rgba(8,24,39,0.25) 50%, rgba(8,24,39,0.04) 100%)',
+                      }}
+                    />
+                  </div>
+
+                  {/* Floating overview card */}
+                  <div
+                    aria-hidden="true"
+                    className="absolute left-5 top-6 z-10 w-[210px] rounded-2xl border border-white/20 bg-white/12 p-4 shadow-[0_20px_50px_rgba(8,24,39,0.22)] backdrop-blur-md"
+                  >
+                    <p className="mb-1 text-[11px] font-semibold uppercase tracking-widest text-white/60">Standortübersicht</p>
+                    <p className="mb-3 text-[28px] font-black leading-none text-white">24 Checks</p>
+                    <div className="space-y-1.5">
+                      {[
+                        { city: 'Berlin Mitte', status: 'OK', color: 'bg-[#35b47a]' },
+                        { city: 'Hamburg Store', status: 'Planen', color: 'bg-[#d99a35]' },
+                        { city: 'Köln Süd', status: 'Dringend', color: 'bg-[#d65f5f]' },
+                      ].map(({ city, status, color }) => (
+                        <div key={city} className="flex items-center justify-between rounded-lg bg-white/8 px-3 py-1.5">
+                          <span className="text-[12px] text-white/80">{city}</span>
+                          <span className={`flex items-center gap-1 text-[11px] font-bold text-white`}>
+                            <span className={`h-1.5 w-1.5 rounded-full ${color}`} />
+                            {status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Scan panel */}
+                  <div
+                    aria-hidden="true"
+                    className="absolute bottom-6 left-5 right-5 z-10 rounded-2xl border border-white/15 bg-white/10 p-5 shadow-[0_20px_50px_rgba(8,24,39,0.20)] backdrop-blur-md"
+                  >
+                    <div className="mb-3 flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-[14px] font-bold text-white">
+                        <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-[#35b47a]" />
+                        Audit abgeschlossen
                       </div>
-                      <div className="h-2 bg-white/20 rounded-full mb-3 overflow-hidden">
-                        <div className="h-full bg-[#B8643E] w-[100%]" />
-                      </div>
-                      <p className="text-white/80 text-[14px]">Alle Printmaterialien und Werbeanlagen geprüft</p>
+                      <span className="text-[22px] font-black text-white">86%</span>
+                    </div>
+                    <div className="mb-4 h-2 overflow-hidden rounded-full bg-white/20">
+                      <div className="h-full w-[86%] rounded-full bg-[#B8643E]" />
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 text-center text-[12px] text-white/70">
+                      <div><span className="block text-[17px] font-black text-white">18</span>Anlagen geprüft</div>
+                      <div><span className="block text-[17px] font-black text-white">5</span>Print-Updates</div>
+                      <div><span className="block text-[17px] font-black text-white">2</span>Risiken markiert</div>
                     </div>
                   </div>
                 </div>
@@ -459,58 +573,139 @@ export default async function BusinessPage({
         )}
 
         {content.platformEnabled !== false && (
-          <section className="py-24 bg-white relative">
-            <div className="max-w-7xl mx-auto px-6">
-              <div className="grid lg:grid-cols-2 gap-16 items-center">
-                
-                <div className="order-2 lg:order-1 relative h-[600px] w-full rounded-3xl overflow-hidden bg-[#F8FAFC] border border-[#E2E8F0] shadow-inner flex items-center justify-center">
-                   {/* Abstract representation of a dashboard */}
-                   <div className="w-[80%] h-[70%] bg-white rounded-xl shadow-lg border border-[#E2E8F0] p-6 flex flex-col gap-4">
-                      <div className="flex justify-between items-center border-b pb-4">
-                        <div className="w-32 h-6 bg-gray-200 rounded-md" />
-                        <div className="w-10 h-10 bg-[#B8643E]/10 rounded-full" />
+          <section className="relative overflow-hidden bg-white py-24 lg:py-32">
+            <div className="mx-auto max-w-7xl px-6">
+              <div className={`grid items-center gap-12 lg:grid-cols-2 lg:gap-20 ${isRtl ? 'lg:flex lg:flex-row-reverse' : ''}`}>
+
+                {/* Portal window mockup */}
+                <div className="relative min-h-[540px] lg:min-h-[600px]">
+                  {/* Main window */}
+                  <div className="absolute inset-0 overflow-hidden rounded-[28px] border border-[#dce7f1] bg-white shadow-[0_26px_70px_rgba(8,24,39,0.13)]">
+                    {/* Window top bar */}
+                    <div className="flex items-center justify-between border-b border-[#eef3fb] bg-[#f8fbff] px-5 py-4">
+                      <div className="flex items-center gap-2">
+                        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#081827] text-[10px] font-black text-white">PR</span>
+                        <span className="text-[13px] font-bold text-[#081827]">PixelRing Portal</span>
                       </div>
-                      <div className="grid grid-cols-3 gap-4">
-                         <div className="h-24 bg-[#EEF3FB] rounded-lg" />
-                         <div className="h-24 bg-[#EEF3FB] rounded-lg" />
-                         <div className="h-24 bg-[#EEF3FB] rounded-lg" />
+                      <span className="text-[12px] font-semibold text-[#526174]">Live Übersicht</span>
+                    </div>
+
+                    {/* Portal content */}
+                    <div className="p-5">
+                      {/* KPI row */}
+                      <div className="mb-4 grid grid-cols-3 gap-3">
+                        {[
+                          { label: 'Brand Health', value: '86%', sub: '+12% seit Audit', color: 'text-[#35b47a]' },
+                          { label: 'Offene Tasks', value: '7', sub: '3 priorisiert', color: 'text-[#d99a35]' },
+                          { label: 'Standorte', value: '24', sub: 'alle dokumentiert', color: 'text-[#526174]' },
+                        ].map(({ label, value, sub, color }) => (
+                          <div key={label} className="flex flex-col rounded-xl border border-[#eef3fb] bg-[#f8fbff] px-3 py-3">
+                            <span className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-[#526174]">{label}</span>
+                            <span className={`text-[22px] font-black leading-none ${color}`}>{value}</span>
+                            <span className="mt-1 text-[10px] text-[#526174]">{sub}</span>
+                          </div>
+                        ))}
                       </div>
-                      <div className="flex-1 bg-gray-50 rounded-lg border border-gray-100 p-4 mt-4">
-                         <div className="w-1/3 h-4 bg-gray-200 rounded mb-4" />
-                         <div className="space-y-3">
-                           <div className="h-10 bg-white rounded shadow-sm border border-gray-100" />
-                           <div className="h-10 bg-white rounded shadow-sm border border-gray-100" />
-                           <div className="h-10 bg-white rounded shadow-sm border border-gray-100" />
-                         </div>
+
+                      {/* Location rows */}
+                      <div className="space-y-2">
+                        {[
+                          { pin: 'B', city: 'Berlin Mitte', desc: 'Leuchtreklame und Fensterfolien geprüft', status: 'OK', statusColor: 'bg-[#35b47a]/15 text-[#35b47a]' },
+                          { pin: 'H', city: 'Hamburg Store', desc: 'Posterwechsel und LED-Service geplant', status: 'Planen', statusColor: 'bg-[#d99a35]/15 text-[#d99a35]' },
+                          { pin: 'K', city: 'Köln Süd', desc: 'Befestigung prüfen, Fotoreport liegt vor', status: 'Dringend', statusColor: 'bg-[#d65f5f]/15 text-[#d65f5f]' },
+                        ].map(({ pin, city, desc, status, statusColor }) => (
+                          <div key={city} className="flex items-center justify-between rounded-xl border border-[#eef3fb] bg-white px-4 py-3 shadow-[0_2px_8px_rgba(8,24,39,0.04)]">
+                            <div className="flex items-center gap-3">
+                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#081827] text-[11px] font-black text-white">{pin}</div>
+                              <div>
+                                <p className="text-[13px] font-bold text-[#081827]">{city}</p>
+                                <p className="text-[11px] text-[#526174]">{desc}</p>
+                              </div>
+                            </div>
+                            <span className={`rounded-full px-2.5 py-1 text-[11px] font-black ${statusColor}`}>{status}</span>
+                          </div>
+                        ))}
                       </div>
-                   </div>
+                    </div>
+                  </div>
+
+                  {/* Floating report card */}
+                  <div
+                    aria-hidden="true"
+                    className="absolute -bottom-4 -right-2 z-10 w-[200px] rounded-2xl border border-[#dce7f1] bg-white p-4 shadow-[0_20px_50px_rgba(8,24,39,0.14)] lg:-right-6"
+                  >
+                    <p className="mb-1 text-[13px] font-black text-[#081827]">Audit-Report bereit</p>
+                    <p className="text-[11px] leading-snug text-[#526174]">Fotos, Zustände, Prioritäten pro Standort.</p>
+                    <div className="mt-3 flex items-center justify-between">
+                      <span className="rounded-full bg-[#081827] px-3 py-1 text-[10px] font-black text-white">Report ansehen</span>
+                      <div className="flex -space-x-1.5">
+                        {['bg-[#B8643E]', 'bg-[#526174]', 'bg-[#35b47a]'].map((c, i) => (
+                          <span key={i} className={`h-5 w-5 rounded-full border-2 border-white ${c}`} />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="order-1 lg:order-2">
-                  <h2 className="text-[36px] font-extrabold text-[#0D1B2A] leading-tight mb-6">
+                {/* Copy */}
+                <div>
+                  <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-[#B8643E]/10 px-4 py-2 text-[13px] font-extrabold tracking-wide text-[#8c4a2a] shadow-[inset_0_0_0_1px_rgba(184,100,62,0.10)]">
+                    <span className="inline-block h-2 w-2 rounded-full bg-[#B8643E] shadow-[0_0_0_4px_rgba(184,100,62,0.15)]" />
+                    Kundenportal & Reports
+                  </div>
+
+                  <h2 className="mt-4 text-[32px] font-black leading-[1.08] tracking-tight text-[#081827] sm:text-[38px] lg:text-[44px]">
                     {content.platformTitle}
                   </h2>
-                  <p className="text-[18px] text-[#4A5568] leading-relaxed mb-10">
+
+                  <p className="mt-6 max-w-[540px] text-[clamp(16px,1.3vw,20px)] leading-[1.6] tracking-[-0.01em] text-[#526174]">
                     {content.platformIntro}
                   </p>
 
-                  <div className="space-y-8">
+                  {/* Feature list */}
+                  <div className="mt-8 space-y-5">
                     {content.platformBenefits.map((benefit) => (
                       <div key={benefit.id} className="flex gap-4">
-                        <div className="shrink-0 mt-1">
-                          <svg className="w-6 h-6 text-[#B8643E]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#B8643E]/12 text-[#B8643E] text-[15px] font-black">
+                          ✓
                         </div>
                         <div>
-                          <h4 className="text-[18px] font-bold text-[#0D1B2A] mb-2">{benefit.title}</h4>
-                          <p className="text-[#4A5568] text-[15px] leading-relaxed">{benefit.description}</p>
+                          <h3 className="text-[16px] font-black leading-snug tracking-tight text-[#081827] sm:text-[18px]">
+                            {benefit.title}
+                          </h3>
+                          <p className="mt-1 text-[14px] leading-[1.5] text-[#526174]">{benefit.description}</p>
                         </div>
                       </div>
                     ))}
                   </div>
+
+                  {/* Note */}
+                  <div className="mt-6 flex items-start gap-3 rounded-2xl border border-[#dce7f1] bg-[#f8fbff] px-4 py-3">
+                    <span className="mt-0.5 h-2.5 w-2.5 shrink-0 animate-pulse rounded-full bg-[#35b47a]" />
+                    <p className="text-[13px] text-[#526174]">
+                      <strong className="text-[#081827]">Ideal für Filialnetze:</strong>{' '}
+                      eine Übersicht statt verstreuter E-Mails, Fotos und Einzelaufträge.
+                    </p>
+                  </div>
+
+                  {/* CTAs */}
+                  <div className="mt-8 flex flex-wrap gap-3">
+                    <a
+                      href={`/${locale}/portal`}
+                      className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#081827] px-6 text-[15px] font-black text-white shadow-[0_18px_36px_rgba(8,24,39,0.20)] transition-transform duration-200 hover:-translate-y-0.5"
+                    >
+                      {content.portalCta}
+                    </a>
+                    <a
+                      href={BUSINESS_PRESENTATION_HREF}
+                      download
+                      className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-[#dce7f1] bg-white px-6 text-[15px] font-black text-[#081827] shadow-[0_10px_24px_rgba(8,24,39,0.08)] transition-transform duration-200 hover:-translate-y-0.5"
+                    >
+                      {content.portalDemoCta}
+                    </a>
+                  </div>
                 </div>
-                
+
               </div>
             </div>
           </section>

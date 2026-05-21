@@ -9,8 +9,8 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 Latest checkpoint:
 
 - Date: 2026-05-21
-- Current stage: Service Page layout and ServiceCalculator component refactored to match high-fidelity styled prototypes with full 6-locale i18n/RTL support; Next.js production build verified. Added secret query preview bypass via `?cmsPreview=2026`.
-- Next action: Owner reviews the updated Service Page at `/de/service?cmsPreview=2026` and verifies layout/responsiveness.
+- Current stage: Replaced two blocks on `/business` page (Subscription Model / Audit and Volle Kontrolle / Portal) with the designer's new high-fidelity layouts. Audit block now has glassmorphism benefit cards and a floating Standortübersicht widget + scan panel. Portal block replaced gray skeleton placeholders with a real dashboard mockup (KPI tiles, location rows with status tags, floating Audit-Report card). Added auditCta/portalCta/portalDemoCta fields for all 6 locales. Production build verified.
+- Next action: Owner reviews the updated `/de/business` page visually (Audit block and Portal block).
 
 
 Active tracks:
@@ -45,6 +45,11 @@ Read deep when:
 - **Engineering/Ops**: Open maintenance note recorded for future Postgres SSL connection-string cleanup before the next `pg`/Prisma/migration-tooling dependency upgrade.
 
 ## Last Updated
+
+- Date: 2026-05-21
+- Updated by: Antigravity
+- **Current Stage**: Redesigned the B2B Service & Maintenance section on `/leistungen` to match the high-fidelity compact dark glassmorphic design prototype. Verified next-intl localized translations (DE, EN, RU, TR, PL, AR), RTL rendering adjustments, and Next.js production build compilation.
+- **Next Action**: Owner reviews the updated `/de/leistungen` B2B block visually.
 
 - Date: 2026-05-21
 - Updated by: Antigravity
