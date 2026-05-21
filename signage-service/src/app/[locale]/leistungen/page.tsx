@@ -35,6 +35,12 @@ type SimpleCard = {
   text: string;
 };
 
+type MaintenanceTrack = {
+  id: string;
+  title: string;
+  text: string;
+};
+
 type ServiceShowcaseCard = {
   id: string;
   intent: ServiceIntent;
@@ -62,8 +68,10 @@ type LeistungenContent = {
   brandingCards: SimpleCard[];
   maintenanceTitle: string;
   maintenanceSubline: string;
+  maintenanceTracks: MaintenanceTrack[];
   maintenanceBenefits: string[];
   maintenanceDiscount: string;
+  maintenanceBoundary: string;
   serviceContractCta: string;
   auditCta: string;
   frameTitle: string;
@@ -282,9 +290,26 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         text: 'Koordinierte Materialversorgung für Unternehmen mit einem oder mehreren Standorten.',
       },
     ],
-    maintenanceTitle: 'Wartung & Serviceverträge: Werbeanlagen betreuen lassen statt selbst kontrollieren',
+    maintenanceTitle: 'Wartung & Serviceverträge für sichtbare Standortqualität',
     maintenanceSubline:
-      'Mit einem Servicevertrag uebernimmt PixelRing die regelmäßige Prüfung, Wartung und Betreuung Ihrer Werbeanlagen und Werbematerialien - besonders sinnvoll für Unternehmen mit einem oder mehreren Standorten.',
+      'PixelRing prüft, dokumentiert und betreut Werbeanlagen, Leuchtreklamen und Werbematerialien regelmäßig - damit Defekte, veraltete Materialien oder Sicherheitsrisiken nicht erst durch Kunden auffallen.',
+    maintenanceTracks: [
+      {
+        id: 'check',
+        title: 'Standort-Check',
+        text: 'Fotos, Zustand der Werbeanlagen, Licht, Folien, Poster, Menüs und sichtbare Schäden werden strukturiert geprüft.',
+      },
+      {
+        id: 'care',
+        title: 'Laufende Betreuung',
+        text: 'Planbare Prüfungen, Aufgabenliste, Empfehlungen für Reparatur, Pflege und Aktualisierung von Werbematerialien.',
+      },
+      {
+        id: 'network',
+        title: 'Für mehrere Standorte',
+        text: 'Einheitlicher Überblick über Filialen, Markenbild und Prioritäten: dringend, geplant oder beobachten.',
+      },
+    ],
     maintenanceBenefits: [
       'Weniger Aufwand im Tagesgeschäft',
       'Geplante Wartung statt nur reaktiver Notfallreparatur',
@@ -292,9 +317,11 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       'Zentrale Koordination für Anlagen und Werbematerialien',
     ],
     maintenanceDiscount:
-      'Bis zu 20% Vorteil auf ausgewaehlte Werbematerialien bei bestehendem Wartungs- oder Servicevertrag.',
-    serviceContractCta: 'Service anfragen',
-    auditCta: 'Service anfragen',
+      'Bis zu 20% Vorteil auf ausgewählte Werbematerialien bei bestehendem Wartungs- oder Servicevertrag.',
+    maintenanceBoundary:
+      'Der Servicevertrag ersetzt keinen unbegrenzten Reparaturvertrag. Größere Reparaturen, Ersatzteile, Höhenarbeiten und Sonderfälle werden separat geprüft und abgestimmt.',
+    serviceContractCta: 'Servicevertrag besprechen',
+    auditCta: 'Standort-Audit anfragen',
     frameTitle: 'Klarer Rahmen für Ihre Anfrage',
     trustPoints: [
       'Keine Vermittlungsplattform: Ihre Anfrage geht direkt an PixelRing.',
@@ -440,11 +467,30 @@ const CONTENT: Record<Locale, LeistungenContent> = {
     ],
     maintenanceTitle: 'Maintenance & service contracts: let signage be cared for instead of checking it yourself',
     maintenanceSubline:
-      'With a service contract, PixelRing takes over regular inspection, maintenance and care of your signage and advertising materials - especially useful for companies with one or more locations.',
+      'PixelRing regularly checks, documents and supports signage, illuminated advertising and advertising materials so defects, outdated materials or safety risks are noticed before customers point them out.',
+    maintenanceTracks: [
+      {
+        id: 'check',
+        title: 'Location check',
+        text: 'Photos, signage condition, lighting, films, posters, menus and visible damage are reviewed in a structured way.',
+      },
+      {
+        id: 'care',
+        title: 'Ongoing care',
+        text: 'Planned checks, task lists and recommendations for repair, care and material updates.',
+      },
+      {
+        id: 'network',
+        title: 'For multiple locations',
+        text: 'One overview across branches, brand appearance and priorities: urgent, planned or observe.',
+      },
+    ],
     maintenanceBenefits: ['Less day-to-day effort', 'Planned maintenance instead of only reactive emergency repair', 'Suitable for branches and multiple locations', 'Central coordination for signage and materials'],
     maintenanceDiscount: 'Up to 20% benefit on selected advertising materials with an active maintenance or service contract.',
-    serviceContractCta: 'Request service',
-    auditCta: 'Request service',
+    maintenanceBoundary:
+      'A service contract does not replace an unlimited repair contract. Larger repairs, spare parts, height work and special cases are checked and agreed separately.',
+    serviceContractCta: 'Discuss service contract',
+    auditCta: 'Request location audit',
     frameTitle: 'A clear frame for your request',
     trustPoints: [
       'No marketplace: your request goes directly to PixelRing.',
@@ -589,11 +635,30 @@ const CONTENT: Record<Locale, LeistungenContent> = {
     ],
     maintenanceTitle: 'Обслуживание и сервисные договоры: контроль рекламных конструкций без лишней нагрузки',
     maintenanceSubline:
-      'По сервисному договору PixelRing берет на себя регулярную проверку, обслуживание и сопровождение рекламных конструкций и материалов.',
+      'PixelRing регулярно проверяет, документирует и сопровождает рекламные конструкции, световую рекламу и рекламные материалы, чтобы дефекты, устаревшие материалы или риски безопасности не замечали первыми ваши клиенты.',
+    maintenanceTracks: [
+      {
+        id: 'check',
+        title: 'Проверка объекта',
+        text: 'Фото, состояние вывесок, свет, пленки, постеры, меню и видимые повреждения проверяются по структуре.',
+      },
+      {
+        id: 'care',
+        title: 'Постоянное сопровождение',
+        text: 'Плановые проверки, список задач и рекомендации по ремонту, уходу и обновлению рекламных материалов.',
+      },
+      {
+        id: 'network',
+        title: 'Для нескольких объектов',
+        text: 'Единый обзор по филиалам, внешнему виду бренда и приоритетам: срочно, планово или наблюдать.',
+      },
+    ],
     maintenanceBenefits: ['Меньше ежедневной нагрузки', 'Плановое обслуживание вместо только срочного ремонта', 'Подходит для филиалов и нескольких локаций', 'Центральная координация конструкций и материалов'],
     maintenanceDiscount: 'До 20% выгоды на выбранные рекламные материалы при действующем договоре обслуживания или сервиса.',
-    serviceContractCta: 'Запросить сервис',
-    auditCta: 'Запросить сервис',
+    maintenanceBoundary:
+      'Сервисный договор не заменяет безлимитный договор на ремонт. Крупные ремонты, запчасти, высотные работы и особые случаи проверяются и согласуются отдельно.',
+    serviceContractCta: 'Обсудить сервисный договор',
+    auditCta: 'Запросить аудит объекта',
     frameTitle: 'Понятные рамки заявки',
     trustPoints: [
       'Не маркетплейс: заявка идет напрямую в PixelRing.',
@@ -738,11 +803,30 @@ const CONTENT: Record<Locale, LeistungenContent> = {
     ],
     maintenanceTitle: 'Bakim ve servis sozlesmeleri: reklam sistemlerinizi kendiniz kontrol etmek yerine takip ettirin',
     maintenanceSubline:
-      'Servis sozlesmesiyle PixelRing reklam sistemleri ve materyallerinin duzenli kontrol, bakim ve destegini ustlenir.',
+      'PixelRing reklam sistemlerini, ışıklı reklamları ve reklam materyallerini düzenli olarak kontrol eder, belgeler ve destekler; böylece arızalar, eski materyaller veya güvenlik riskleri önce müşteriler tarafından fark edilmez.',
+    maintenanceTracks: [
+      {
+        id: 'check',
+        title: 'Lokasyon kontrolü',
+        text: 'Fotoğraflar, tabela durumu, ışık, folyolar, posterler, menüler ve görünür hasarlar yapılandırılmış şekilde incelenir.',
+      },
+      {
+        id: 'care',
+        title: 'Sürekli destek',
+        text: 'Planlı kontroller, görev listeleri ve onarım, bakım ve materyal güncelleme önerileri.',
+      },
+      {
+        id: 'network',
+        title: 'Birden fazla lokasyon için',
+        text: 'Şubeler, marka görünümü ve öncelikler için tek genel bakış: acil, planlı veya izlenecek.',
+      },
+    ],
     maintenanceBenefits: ['Gunluk operasyonda daha az efor', 'Sadece acil onarim yerine planli bakim', 'Subeler ve birden fazla lokasyon icin uygun', 'Sistemler ve materyaller icin merkezi koordinasyon'],
     maintenanceDiscount: 'Mevcut bakim veya servis sozlesmesiyle secili reklam materyallerinde %20ye kadar avantaj.',
-    serviceContractCta: 'Servis talep et',
-    auditCta: 'Servis talep et',
+    maintenanceBoundary:
+      'Servis sözleşmesi sınırsız onarım sözleşmesinin yerine geçmez. Büyük onarımlar, yedek parçalar, yüksekte çalışma ve özel durumlar ayrıca kontrol edilir ve kararlaştırılır.',
+    serviceContractCta: 'Servis sözleşmesini görüş',
+    auditCta: 'Lokasyon denetimi talep et',
     frameTitle: 'Talebiniz icin net cerceve',
     trustPoints: [
       'Pazar yeri degil: talebiniz dogrudan PixelRinge gider.',
@@ -887,11 +971,30 @@ const CONTENT: Record<Locale, LeistungenContent> = {
     ],
     maintenanceTitle: 'Konserwacja i umowy serwisowe: opieka nad reklama zamiast samodzielnej kontroli',
     maintenanceSubline:
-      'W ramach umowy serwisowej PixelRing przejmuje regularne kontrole, konserwacje i opieke nad reklamami oraz materialami reklamowymi.',
+      'PixelRing regularnie sprawdza, dokumentuje i obsługuje reklamy, reklamy świetlne oraz materiały reklamowe, aby usterki, stare materiały lub ryzyka bezpieczeństwa nie zostały zauważone najpierw przez klientów.',
+    maintenanceTracks: [
+      {
+        id: 'check',
+        title: 'Kontrola lokalizacji',
+        text: 'Zdjęcia, stan reklam, światło, folie, plakaty, menu i widoczne uszkodzenia są sprawdzane w uporządkowany sposób.',
+      },
+      {
+        id: 'care',
+        title: 'Stała opieka',
+        text: 'Planowane kontrole, lista zadań oraz rekomendacje dotyczące naprawy, pielęgnacji i aktualizacji materiałów.',
+      },
+      {
+        id: 'network',
+        title: 'Dla wielu lokalizacji',
+        text: 'Jeden przegląd oddziałów, wyglądu marki i priorytetów: pilne, planowane albo do obserwacji.',
+      },
+    ],
     maintenanceBenefits: ['Mniej pracy w codziennym dzialaniu', 'Planowana konserwacja zamiast tylko pilnych napraw', 'Dobre dla oddzialow i wielu lokalizacji', 'Centralna koordynacja instalacji i materialow'],
     maintenanceDiscount: 'Do 20% korzysci na wybrane materialy reklamowe przy aktywnej umowie konserwacyjnej lub serwisowej.',
-    serviceContractCta: 'Zapytaj o serwis',
-    auditCta: 'Zapytaj o serwis',
+    maintenanceBoundary:
+      'Umowa serwisowa nie zastępuje nielimitowanej umowy naprawczej. Większe naprawy, części zamienne, prace wysokościowe i przypadki specjalne są sprawdzane i uzgadniane osobno.',
+    serviceContractCta: 'Omów umowę serwisową',
+    auditCta: 'Zapytaj o audyt lokalizacji',
     frameTitle: 'Jasne ramy zgloszenia',
     trustPoints: [
       'To nie marketplace: zgloszenie trafia bezposrednio do PixelRing.',
@@ -1036,11 +1139,30 @@ const CONTENT: Record<Locale, LeistungenContent> = {
     ],
     maintenanceTitle: 'الصيانة وعقود الخدمة: متابعة اللوحات بدلاً من فحصها بنفسك',
     maintenanceSubline:
-      'مع عقد خدمة، تتولى PixelRing الفحص المنتظم والصيانة والرعاية للوحاتك وموادك الإعلانية، وهو مفيد خصوصاً للشركات ذات موقع واحد أو عدة مواقع.',
+      'تقوم PixelRing بفحص وتوثيق ومتابعة اللوحات والإعلانات المضيئة والمواد الإعلانية بانتظام، حتى لا تكون الأعطال أو المواد القديمة أو مخاطر السلامة أول ما يلاحظه العملاء.',
+    maintenanceTracks: [
+      {
+        id: 'check',
+        title: 'فحص الموقع',
+        text: 'تتم مراجعة الصور وحالة اللوحات والإضاءة والأفلام والملصقات والقوائم والأضرار الظاهرة بشكل منظم.',
+      },
+      {
+        id: 'care',
+        title: 'متابعة مستمرة',
+        text: 'فحوصات مخططة، قائمة مهام وتوصيات للإصلاح والعناية وتحديث المواد الإعلانية.',
+      },
+      {
+        id: 'network',
+        title: 'لعدة مواقع',
+        text: 'نظرة موحدة على الفروع وصورة العلامة والأولويات: عاجل أو مخطط أو للمراقبة.',
+      },
+    ],
     maintenanceBenefits: ['جهد يومي أقل', 'صيانة مخططة بدلاً من الإصلاح الطارئ فقط', 'مناسب للفروع وعدة مواقع', 'تنسيق مركزي للوحات والمواد'],
     maintenanceDiscount: 'فائدة تصل إلى 20% على مواد إعلانية مختارة عند وجود عقد صيانة أو خدمة قائم.',
-    serviceContractCta: 'اطلب الخدمة',
-    auditCta: 'اطلب الخدمة',
+    maintenanceBoundary:
+      'عقد الخدمة لا يحل محل عقد إصلاح غير محدود. يتم فحص الإصلاحات الكبيرة وقطع الغيار والعمل على ارتفاعات والحالات الخاصة والاتفاق عليها بشكل منفصل.',
+    serviceContractCta: 'ناقش عقد الخدمة',
+    auditCta: 'اطلب فحص الموقع',
     frameTitle: 'إطار واضح لطلبك',
     trustPoints: [
       'ليست منصة وساطة: يذهب طلبك مباشرة إلى PixelRing.',
@@ -1124,12 +1246,14 @@ function mergeCmsContent(
           };
         })
       : fallback.brandingCards,
-    maintenanceTitle: cmsContent.maintenance?.title ?? fallback.maintenanceTitle,
-    maintenanceSubline: cmsContent.maintenance?.description ?? fallback.maintenanceSubline,
-    maintenanceBenefits: cmsContent.maintenance?.items ?? fallback.maintenanceBenefits,
-    maintenanceDiscount: cmsContent.maintenance?.discount ?? fallback.maintenanceDiscount,
-    serviceContractCta: cmsContent.maintenance?.cta ?? fallback.serviceContractCta,
-    auditCta: cmsContent.maintenance?.auditCta ?? fallback.auditCta,
+    maintenanceTitle: fallback.maintenanceTitle,
+    maintenanceSubline: fallback.maintenanceSubline,
+    maintenanceTracks: fallback.maintenanceTracks,
+    maintenanceBenefits: fallback.maintenanceBenefits,
+    maintenanceDiscount: fallback.maintenanceDiscount,
+    maintenanceBoundary: fallback.maintenanceBoundary,
+    serviceContractCta: fallback.serviceContractCta,
+    auditCta: fallback.auditCta,
     frameTitle: cmsContent.trust?.title ?? fallback.frameTitle,
     trustPoints: cmsContent.trust?.items ?? fallback.trustPoints,
     finalHeadline: cmsContent.trust?.finalHeadline ?? fallback.finalHeadline,
@@ -1244,30 +1368,65 @@ export default async function LeistungenPage({
         )}
 
         {content.maintenanceEnabled !== false && (
-          <section id="wartung-servicevertraege" className="bg-[#0E1A2B] py-14 text-white sm:py-20">
-            <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:items-center">
-              <div>
-                <h2 className="text-3xl font-extrabold leading-[1.1] sm:text-5xl">{content.maintenanceTitle}</h2>
-                <p className="mt-5 text-lg leading-8 text-white/75">{content.maintenanceSubline}</p>
-                <div className="mt-8 flex flex-wrap gap-3">
-                  <LeistungenRequestButton label={content.serviceContractCta} serviceIntent="wartung-servicevertrag" />
-                  <LeistungenRequestButton label={content.auditCta} serviceIntent="wartung-servicevertrag" variant="secondary" />
+          <section id="wartung-servicevertraege" className="scroll-mt-28 bg-[#0E1A2B] py-14 text-white sm:py-20">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6">
+              <div className="grid gap-10 lg:grid-cols-[0.86fr_1.14fr] lg:items-start">
+                <div>
+                  <h2 className="max-w-3xl text-3xl font-extrabold leading-[1.08] sm:text-5xl">
+                    {content.maintenanceTitle}
+                  </h2>
+                  <p className="mt-5 max-w-2xl text-lg leading-8 text-white/75">{content.maintenanceSubline}</p>
+                  <div className="mt-8 flex flex-wrap gap-3">
+                    <LeistungenRequestButton
+                      label={content.auditCta}
+                      serviceIntent="wartung-servicevertrag"
+                      className="min-w-[180px] whitespace-normal px-7 text-center"
+                    />
+                    <LeistungenRequestButton
+                      label={content.serviceContractCta}
+                      serviceIntent="wartung-servicevertrag"
+                      variant="secondary"
+                      className="min-w-[180px] whitespace-normal px-7 text-center"
+                    />
+                  </div>
+
+                  <p className="mt-8 rounded-[20px] border border-[#DAB08A]/35 bg-[#B8643E]/15 px-5 py-4 text-[15px] font-semibold leading-7 text-[#FFE6D6]">
+                    {content.maintenanceBoundary}
+                  </p>
                 </div>
-              </div>
-              <div className="rounded-[24px] border border-white/[0.12] bg-white/[0.08] p-6">
-                <ul className="space-y-4">
-                  {content.maintenanceBenefits.map((benefit) => (
-                    <li key={benefit} className="flex gap-3 text-[16px] leading-7 text-white/[0.88]">
-                      <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#7BA190] text-sm font-extrabold text-[#0E1A2B]">
-                        ✓
-                      </span>
-                      <span>{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-6 rounded-[18px] border border-[#DAB08A]/45 bg-[#B8643E]/20 px-4 py-4 text-[15px] font-bold leading-7 text-[#FFE6D6]">
-                  {content.maintenanceDiscount}
-                </p>
+
+                <div className="space-y-5">
+                  <div className="grid gap-4 md:grid-cols-3">
+                    {content.maintenanceTracks.map((track, index) => (
+                      <article
+                        key={track.id}
+                        className="min-w-0 rounded-[22px] border border-white/[0.13] bg-white/[0.075] p-5 shadow-[0_18px_60px_rgba(0,0,0,0.18)]"
+                      >
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#7BA190] text-[13px] font-black text-[#0E1A2B]">
+                          {String(index + 1).padStart(2, '0')}
+                        </div>
+                        <h3 className="mt-5 break-words text-xl font-black leading-[1.1] text-white">{track.title}</h3>
+                        <p className="mt-3 text-[15px] leading-7 text-white/[0.76]">{track.text}</p>
+                      </article>
+                    ))}
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-[1fr_0.95fr]">
+                    <div className="rounded-[22px] border border-white/[0.12] bg-white/[0.06] p-5">
+                      <ul className="grid gap-3">
+                        {content.maintenanceBenefits.map((benefit) => (
+                          <li key={benefit} className="flex min-w-0 gap-3 text-[15px] font-semibold leading-6 text-white/[0.84]">
+                            <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#7BA190]" />
+                            <span className="min-w-0 break-words">{benefit}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <p className="rounded-[22px] border border-[#DAB08A]/45 bg-[#B8643E]/20 px-5 py-5 text-[15px] font-bold leading-7 text-[#FFE6D6]">
+                      {content.maintenanceDiscount}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
