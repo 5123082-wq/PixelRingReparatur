@@ -14,6 +14,7 @@ export const CMS_PAGE_KEYS = [
   'probleme-loesungen',
   'about',
   'referenzen',
+  'service',
 ] as const;
 export const CMS_PAGE_STATUSES = ['DRAFT', 'PUBLISHED'] as const;
 export const SUPPORTED_CMS_LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'] as const;
@@ -274,6 +275,77 @@ export type LeistungenPageCmsContent = {
   maintenance?: { title?: string; description?: string; items?: string[]; discount?: string; cta?: string; auditCta?: string; enabled?: boolean };
   process?: { title?: string; items?: CmsListItemContent[]; enabled?: boolean };
   trust?: { title?: string; items?: string[]; finalHeadline?: string; finalText?: string; enabled?: boolean };
+};
+
+export type ServiceHeroCmsContent = {
+  enabled?: boolean;
+  badge?: string;
+  title?: string;
+  titleAccent?: string;
+  description?: string;
+  ctaPrimary?: string;
+  ctaSecondary?: string;
+  image?: string;
+  imageAlt?: string;
+  fallbackSrc?: string;
+};
+
+export type ServiceMetricCmsContent = {
+  value?: string;
+  label?: string;
+};
+
+export type ServicePackageCmsContent = {
+  id?: string;
+  title?: string;
+  description?: string;
+  price?: string;
+  priceNote?: string;
+  recommended?: boolean;
+  badge?: string;
+  items?: string[];
+  cta?: string;
+};
+
+export type ServiceCalculatorOptionCmsContent = {
+  label?: string;
+  price?: number;
+  default?: boolean;
+};
+
+export type ServicePageCmsContent = {
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  hero?: ServiceHeroCmsContent;
+  metrics?: ServiceMetricCmsContent[];
+  problems?: { enabled?: boolean; title?: string; description?: string; items?: CmsListItemContent[] };
+  model?: { enabled?: boolean; title?: string; description?: string; items?: CmsListItemContent[]; cta?: string };
+  packages?: { enabled?: boolean; title?: string; description?: string; items?: ServicePackageCmsContent[] };
+  process?: { enabled?: boolean; title?: string; items?: CmsListItemContent[] };
+  calculator?: {
+    enabled?: boolean;
+    title?: string;
+    description?: string;
+    note?: string;
+    defaultLocations?: number;
+    options?: ServiceCalculatorOptionCmsContent[];
+    footnote?: string;
+  };
+  portalPreview?: { enabled?: boolean; title?: string; description?: string; items?: CmsListItemContent[] };
+  industries?: { enabled?: boolean; title?: string; items?: string[] };
+  faq?: { enabled?: boolean; title?: string; items?: { question?: string; answer?: string }[] };
+  finalCta?: {
+    enabled?: boolean;
+    badge?: string;
+    title?: string;
+    description?: string;
+    primaryLabel?: string;
+    primaryHref?: string;
+    secondaryLabel?: string;
+    secondaryHref?: string;
+    tertiaryLabel?: string;
+    tertiaryHref?: string;
+  };
 };
 
 type CmsPageRecord = {
@@ -657,9 +729,10 @@ function isCmsDatabaseUnavailableError(error: unknown): boolean {
   );
 }
 
-export async function getPublishedCmsPage(
+async function getCmsPageByStatus(
   pageKey: CmsPageKey,
-  locale: string
+  locale: string,
+  status: CmsPageStatus
 ): Promise<CmsPagePublicContent | null> {
   const normalizedLocale = normalizeCmsPageLocale(locale);
 
@@ -672,7 +745,7 @@ export async function getPublishedCmsPage(
       where: {
         pageKey,
         locale: normalizedLocale,
-        status: 'PUBLISHED',
+        status,
         deletedAt: null,
       },
       select: {
@@ -712,6 +785,23 @@ export async function getPublishedCmsPage(
     console.error(`CMS page fallback for ${pageKey}/${locale}:`, error);
     return null;
   }
+}
+
+export async function getPublishedCmsPage(
+  pageKey: CmsPageKey,
+  locale: string
+): Promise<CmsPagePublicContent | null> {
+  return getCmsPageByStatus(pageKey, locale, 'PUBLISHED');
+}
+
+export async function getDraftCapableCmsPage(
+  pageKey: CmsPageKey,
+  locale: string
+): Promise<CmsPagePublicContent | null> {
+  return (
+    (await getCmsPageByStatus(pageKey, locale, 'DRAFT')) ??
+    (await getCmsPageByStatus(pageKey, locale, 'PUBLISHED'))
+  );
 }
 
 export function getBlockText(block: CmsPageBlock, field: string): string | undefined {
@@ -1292,6 +1382,213 @@ export async function getLeistungenPageCmsContent(
   }
 
   return content;
+}
+
+function getServicePackageItems(value: unknown): string[] | undefined {
+  if (!Array.isArray(value)) {
+    return undefined;
+  }
+
+  const items = value
+    .map((item) => (typeof item === 'string' ? sanitizePublicText(item.trim()) : ''))
+    .filter(Boolean);
+
+  return items.length > 0 ? items : undefined;
+}
+
+function getServicePackages(block: CmsPageBlock): ServicePackageCmsContent[] | undefined {
+  const items = getBlockObjectList(block, 'items');
+
+  if (!items) {
+    return undefined;
+  }
+
+  const packages = items
+    .map<ServicePackageCmsContent | null>((item) => {
+      const packageItem = {
+        id: typeof item.id === 'string' ? item.id : undefined,
+        title: typeof item.title === 'string' ? item.title : undefined,
+        description: typeof item.description === 'string' ? item.description : undefined,
+        price: typeof item.price === 'string' ? item.price : undefined,
+        priceNote: typeof item.priceNote === 'string' ? item.priceNote : undefined,
+        recommended: typeof item.recommended === 'boolean' ? item.recommended : undefined,
+        badge: typeof item.badge === 'string' ? item.badge : undefined,
+        items: getServicePackageItems(item.items),
+        cta: typeof item.cta === 'string' ? item.cta : undefined,
+      };
+
+      return Object.values(packageItem).some(Boolean) ? packageItem : null;
+    })
+    .filter((item): item is ServicePackageCmsContent => Boolean(item));
+
+  return packages.length > 0 ? packages : undefined;
+}
+
+function getServiceCalculatorOptions(
+  block: CmsPageBlock
+): ServiceCalculatorOptionCmsContent[] | undefined {
+  const items = getBlockObjectList(block, 'items');
+
+  if (!items) {
+    return undefined;
+  }
+
+  const options = items
+    .map<ServiceCalculatorOptionCmsContent | null>((item) => {
+      const price =
+        typeof item.price === 'number'
+          ? item.price
+          : typeof item.price === 'string'
+            ? Number(item.price)
+            : undefined;
+
+      const option = {
+        label: typeof item.label === 'string' ? item.label : undefined,
+        price: Number.isFinite(price) ? price : undefined,
+        default: typeof item.default === 'boolean' ? item.default : undefined,
+      };
+
+      return option.label && option.price ? option : null;
+    })
+    .filter((item): item is ServiceCalculatorOptionCmsContent => Boolean(item));
+
+  return options.length > 0 ? options : undefined;
+}
+
+function getServiceTextItems(block: CmsPageBlock): string[] | undefined {
+  const items = getBlockObjectList(block, 'items');
+
+  if (!items) {
+    return undefined;
+  }
+
+  const textItems = items
+    .map((item) => {
+      if (typeof item.label === 'string') return item.label;
+      if (typeof item.title === 'string') return item.title;
+      return null;
+    })
+    .filter((item): item is string => Boolean(item));
+
+  return textItems.length > 0 ? textItems : undefined;
+}
+
+export async function getServicePageCmsContent(
+  locale: string,
+  options: { includeDraft?: boolean } = {}
+): Promise<ServicePageCmsContent | null> {
+  const page = options.includeDraft
+    ? await getDraftCapableCmsPage('service', locale)
+    : await getPublishedCmsPage('service', locale);
+
+  if (!page) return null;
+
+  const hero = getBlock(page, 'hero', ['serviceHero', 'hero']);
+  const metrics = getBlock(page, 'cardList', ['serviceMetrics', 'metrics']);
+  const problems = getBlock(page, 'cardList', ['problemCards', 'problems']);
+  const model = getBlock(page, 'textSection', ['serviceModel', 'model']);
+  const packages = getBlock(page, 'cardList', ['packages']);
+  const process = getBlock(page, 'cardList', ['process']);
+  const calculator = getBlock(page, 'cardList', ['calculator']);
+  const portalPreview = getBlock(page, 'cardList', ['portalPreview']);
+  const industries = getBlock(page, 'cardList', ['industries']);
+  const faq = getBlock(page, 'faqList', ['faq']);
+  const finalCta = getBlock(page, 'cta', ['finalCta', 'final']);
+
+  const content: ServicePageCmsContent = {
+    metaTitle: page.seoTitle,
+    metaDescription: page.seoDescription,
+    hero: hero ? {
+      enabled: hero.enabled !== false,
+      badge: getBlockText(hero, 'badge') ?? getBlockText(hero, 'pretitle'),
+      title: getBlockText(hero, 'title'),
+      titleAccent: getBlockText(hero, 'titleAccent'),
+      description: getBlockText(hero, 'description') ?? getBlockText(hero, 'intro'),
+      ctaPrimary: getBlockText(hero, 'ctaPrimary'),
+      ctaSecondary: getBlockText(hero, 'ctaSecondary'),
+      image: getBlockText(hero, 'image') ?? getBlockText(hero, 'assetUrl'),
+      imageAlt: getBlockText(hero, 'imageAlt'),
+    } : undefined,
+    metrics: metrics
+      ? getBlockObjectList(metrics, 'items')?.map((item) => ({
+          value: typeof item.value === 'string' ? item.value : undefined,
+          label: typeof item.label === 'string' ? item.label : undefined,
+        }))
+      : undefined,
+    problems: problems ? {
+      enabled: problems.enabled !== false,
+      title: getBlockText(problems, 'title'),
+      description: getBlockText(problems, 'description'),
+      items: getBlockObjectList(problems, 'items'),
+    } : undefined,
+    model: model ? {
+      enabled: model.enabled !== false,
+      title: getBlockText(model, 'title'),
+      description: getBlockText(model, 'description'),
+      items: getBlockObjectList(model, 'items'),
+      cta: getBlockText(model, 'cta'),
+    } : undefined,
+    packages: packages ? {
+      enabled: packages.enabled !== false,
+      title: getBlockText(packages, 'title'),
+      description: getBlockText(packages, 'description'),
+      items: getServicePackages(packages),
+    } : undefined,
+    process: process ? {
+      enabled: process.enabled !== false,
+      title: getBlockText(process, 'title'),
+      items: getBlockObjectList(process, 'items'),
+    } : undefined,
+    calculator: calculator ? {
+      enabled: calculator.enabled !== false,
+      title: getBlockText(calculator, 'title'),
+      description: getBlockText(calculator, 'description'),
+      note: getBlockText(calculator, 'note'),
+      defaultLocations:
+        typeof calculator.defaultLocations === 'number' ? calculator.defaultLocations : undefined,
+      options: getServiceCalculatorOptions(calculator),
+      footnote: getBlockText(calculator, 'footnote'),
+    } : undefined,
+    portalPreview: portalPreview ? {
+      enabled: portalPreview.enabled !== false,
+      title: getBlockText(portalPreview, 'title'),
+      description: getBlockText(portalPreview, 'description'),
+      items: getBlockObjectList(portalPreview, 'items'),
+    } : undefined,
+    industries: industries ? {
+      enabled: industries.enabled !== false,
+      title: getBlockText(industries, 'title'),
+      items: getServiceTextItems(industries),
+    } : undefined,
+    faq: faq ? {
+      enabled: faq.enabled !== false,
+      title: getBlockText(faq, 'title'),
+      items: getBlockObjectList(faq, 'items')?.map((item) => ({
+        question: typeof item.question === 'string' ? item.question : undefined,
+        answer: typeof item.answer === 'string' ? item.answer : undefined,
+      })),
+    } : undefined,
+    finalCta: finalCta ? {
+      enabled: finalCta.enabled !== false,
+      badge: getBlockText(finalCta, 'badge'),
+      title: getBlockText(finalCta, 'title'),
+      description: getBlockText(finalCta, 'description'),
+      primaryLabel: getBlockText(finalCta, 'primaryLabel'),
+      primaryHref: getBlockText(finalCta, 'primaryHref'),
+      secondaryLabel: getBlockText(finalCta, 'secondaryLabel'),
+      secondaryHref: getBlockText(finalCta, 'secondaryHref'),
+      tertiaryLabel: getBlockText(finalCta, 'tertiaryLabel'),
+      tertiaryHref: getBlockText(finalCta, 'tertiaryHref'),
+    } : undefined,
+  };
+
+  if (content.hero?.image) {
+    content.hero.fallbackSrc = (await getCmsMediaFallbacks([content.hero.image])).get(
+      content.hero.image
+    );
+  }
+
+  return Object.values(content).some(Boolean) ? content : null;
 }
 export type BusinessHeroCmsContent = {
   title?: string;

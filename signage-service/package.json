@@ -25,6 +25,7 @@
     "db:seed:cms-support": "node scripts/seed-cms-support-articles.mjs",
     "db:seed:cms-pages": "node scripts/seed-cms-pages-baseline.mjs",
     "db:seed:cms-about": "node --experimental-strip-types --experimental-specifier-resolution=node scripts/seed-cms-about-page.ts",
+    "db:seed:cms-service": "node --experimental-strip-types --experimental-specifier-resolution=node scripts/seed-cms-service-page.ts",
     "db:seed:cms-symptom-ru": "node scripts/seed-cms-symptom-articles-ru.mjs",
     "db:seed:cms-symptom-en": "node scripts/seed-cms-symptom-articles-en.mjs",
     "postinstall": "prisma generate"
