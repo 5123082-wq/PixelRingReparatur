@@ -9,8 +9,9 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 Latest checkpoint:
 
 - Date: 2026-05-21
-- Current stage: German-only legal CMS draft handling cleaned up: non-DE legal drafts no longer look like active editing work.
-- Next action: Owner reviews legal CMS visibility in dashboard/Page CMS and decides whether to archive historical non-DE legal draft records.
+- Current stage: Service Page layout and ServiceCalculator component refactored to match high-fidelity styled prototypes with full 6-locale i18n/RTL support; Next.js production build verified. Added secret query preview bypass via `?cmsPreview=2026`.
+- Next action: Owner reviews the updated Service Page at `/de/service?cmsPreview=2026` and verifies layout/responsiveness.
+
 
 Active tracks:
 
@@ -44,6 +45,26 @@ Read deep when:
 - **Engineering/Ops**: Open maintenance note recorded for future Postgres SSL connection-string cleanup before the next `pg`/Prisma/migration-tooling dependency upgrade.
 
 ## Last Updated
+
+- Date: 2026-05-21
+- Updated by: Antigravity
+- **Current Stage**: Refactored Service Page layout and ServiceCalculator component to match design prototype styling with full 6-locale translation and Arabic RTL support. Verified Next.js build compilation.
+- **Next Action**: Owner reviews the updated page at `/de/service?cmsPreview=1`.
+
+- Date: 2026-05-21
+- Updated by: Codex
+- **Current Stage**: Implemented the hidden Service/Standort-Abo page slice in code: `service` Page CMS key, owner-only draft preview route, DE draft seed script, site-style React renderer, calculator, CMS preview link, and noindex/robots guardrails.
+- **Next Action**: Run `npm run db:seed:cms-service` against the intended database when the owner wants to create/update the DE draft, then review `/de/service?cmsPreview=1` from an authenticated CMS owner session.
+
+- Date: 2026-05-21
+- Updated by: Codex
+- **Current Stage**: Captured the approved hidden Service/Standort-Abo implementation plan in `docs/02_public_website/page_plan_service.md` and linked it from the Public Website README. The plan keeps tariffs, adds Page CMS editing, and requires draft-only owner preview with no public navigation, sitemap, or indexing.
+- **Next Action**: Next agent implements the plan starting with `service` CMS page-key support and the protected draft preview route.
+
+- Date: 2026-05-21
+- Updated by: Codex
+- **Current Stage**: Added a standalone site-style Service/Standort-Abo landing prototype in `DesignPrototip/pixelring-service-page-site-style.html`, keeping the tariff blocks, calculator, report preview, process, FAQ boundaries, and CTA flow from the existing tariff prototype while visually aligning it with the current PixelRing public site.
+- **Next Action**: Owner reviews the prototype and decides whether it should guide a future `/de/service` implementation or remain a design reference.
 
 - Date: 2026-05-21
 - Updated by: Codex

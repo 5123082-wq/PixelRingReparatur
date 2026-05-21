@@ -19,7 +19,8 @@ type CmsPageKey =
   | 'business'
   | 'probleme-loesungen'
   | 'about'
-  | 'referenzen';
+  | 'referenzen'
+  | 'service';
 type CmsPageStatus = 'DRAFT' | 'PUBLISHED';
 type CmsPageBlock = Record<string, unknown> & {
   type?: string;
@@ -126,6 +127,7 @@ const PAGE_KEYS: CmsPageKey[] = [
   'probleme-loesungen',
   'about',
   'referenzen',
+  'service',
 ];
 
 const PAGE_LABELS: Record<CmsPageKey, { default: string; ru?: string }> = {
@@ -139,6 +141,7 @@ const PAGE_LABELS: Record<CmsPageKey, { default: string; ru?: string }> = {
   'probleme-loesungen': { default: 'Probleme Lösungen', ru: 'Проблемы и решения' },
   about: { default: 'About', ru: 'О нас' },
   referenzen: { default: 'Referenzen', ru: 'Референции' },
+  service: { default: 'Service', ru: 'Сервис' },
 };
 
 /** Fields that are locale-specific text for each known block type.
@@ -1916,6 +1919,16 @@ export default function PagesPage() {
                  )}
 
                  <div className="flex items-center gap-3">
+                   {activePageKey === 'service' && (
+                     <a
+                      href={`/${activeLocale}/service?cmsPreview=1`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="h-11 px-5 inline-flex items-center rounded-xl border border-amber-400/20 bg-amber-400/10 text-[11px] font-black uppercase tracking-widest text-amber-200 transition hover:border-amber-300/40 hover:bg-amber-400/15"
+                     >
+                       Open hidden preview
+                     </a>
+                   )}
                    <button
                     onClick={() => saveAll()}
                     disabled={formSaving}
