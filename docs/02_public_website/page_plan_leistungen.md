@@ -349,6 +349,15 @@ Implementation sequence:
 
 ## Progress Log
 
+### 2026-05-21 — Wartung & Serviceverträge B2B Bridge
+
+- Current sprint/block: Public Website, Leistungen maintenance/service-contract section refinement
+- Done: Reworked the `Wartung & Serviceverträge` section from a generic benefit list into a B2B service-contract bridge with `Standort-Check`, `Laufende Betreuung`, and `Für mehrere Standorte` cards; updated CTA wording to `Standort-Audit anfragen` and `Servicevertrag besprechen`; preserved the selected-material benefit wording; added an explicit boundary that the service contract is not unlimited repair and that larger repairs, spare parts, height work, and special cases are checked separately. The section now uses the static localized fallback copy for this structured layout; the old CMS maintenance text can still control section enabled state but does not override the new copy until a structured CMS preset is designed.
+- In progress: Owner visual review of `/de/leistungen` for density, CTA order, and whether the section should become the entry point to the future `Standort-Abo` landing page.
+- Next action: If approved, decide whether to draft canonical German copy for a dedicated `Standort-Abo` page or keep this as the compact public introduction.
+- Blockers/risks: The full `Standort-Abo` offer remains an internal product concept; pricing, SLA, portal/reporting claims, safety-check wording, and included/excluded repair scope are not approved for public tariff communication. A future CMS preset is needed if editors should manage the three-card maintenance layout without reintroducing stale generic copy.
+- Updated documents: `PROGRESS.md`, `docs/02_public_website/page_plan_leistungen.md`, `docs/01_strategy/standort_abo_product_concept.md`, `signage-service/src/app/[locale]/leistungen/page.tsx`.
+
 ### 2026-05-20 — Leistungen Process Block Removed
 
 - Current sprint/block: Public Website, Leistungen page content reduction

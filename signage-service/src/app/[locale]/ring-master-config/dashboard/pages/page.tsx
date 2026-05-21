@@ -18,6 +18,7 @@ type CmsPageKey =
   | 'leistungen'
   | 'business'
   | 'probleme-loesungen'
+  | 'about'
   | 'referenzen';
 type CmsPageStatus = 'DRAFT' | 'PUBLISHED';
 type CmsPageBlock = Record<string, unknown> & {
@@ -123,18 +124,32 @@ const PAGE_KEYS: CmsPageKey[] = [
   'leistungen',
   'business',
   'probleme-loesungen',
+  'about',
   'referenzen',
 ];
+
+const PAGE_LABELS: Record<CmsPageKey, { default: string; ru?: string }> = {
+  home: { default: 'Home', ru: 'Главная' },
+  status: { default: 'Status', ru: 'Статус' },
+  global: { default: 'Global', ru: 'Глобальные блоки' },
+  impressum: { default: 'Impressum', ru: 'Impressum' },
+  privacy: { default: 'Privacy', ru: 'Privacy' },
+  leistungen: { default: 'Leistungen', ru: 'Услуги' },
+  business: { default: 'Business', ru: 'Бизнес' },
+  'probleme-loesungen': { default: 'Probleme Lösungen', ru: 'Проблемы и решения' },
+  about: { default: 'About', ru: 'О нас' },
+  referenzen: { default: 'Referenzen', ru: 'Референции' },
+};
 
 /** Fields that are locale-specific text for each known block type.
  *  These MUST match the field names that getHomePageCmsContent / frontend components actually read. */
 const BLOCK_TEXT_FIELDS: Record<string, string[]> = {
-  hero: ['title', 'description', 'cta', 'titlePrefix', 'titleAccent', 'titleSuffix', 'pretitle', 'intro', 'ctaPrimary', 'ctaSecondary', 'trustBadge', 'responseBadge', 'imageAlt', 'badge', 'tags', 'subtitle', 'heroImage1', 'heroImage2', 'heroImage3', 'heroImage4', 'heroImage5'],
-  faqList: ['title', 'items'],
-  textSection: ['title', 'description', 'pretitle'],
+  hero: ['title', 'description', 'cta', 'titlePrefix', 'titleAccent', 'titleSuffix', 'pretitle', 'intro', 'benefits', 'ctaPrimary', 'ctaSecondary', 'trustBadge', 'responseBadge', 'imageAlt', 'badge', 'tags', 'subtitle', 'heroImage1', 'heroImage2', 'heroImage3', 'heroImage4', 'heroImage5'],
+  faqList: ['title', 'cta', 'items'],
+  textSection: ['title', 'description', 'pretitle', 'features', 'mediaLabel', 'playLabel', 'cta'],
   reviewList: ['title', 'subtitle', 'items'],
-  cardList: ['title', 'titleStart', 'titleAccent', 'titleEnd', 'subtitle', 'description', 'copyright', 'items', 'steps', 'stats', 'features'],
-  cta: ['servicePill', 'bookLabel', 'accountStatusLabel', 'accountStatusHref', 'requestLabel', 'requestHref', 'badge', 'title', 'intro', 'description', 'primaryLabel', 'secondaryLabel', 'links'],
+  cardList: ['title', 'titleStart', 'titleAccent', 'titleEnd', 'subtitle', 'description', 'copyright', 'serviceCardCta', 'items', 'steps', 'stats', 'features'],
+  cta: ['servicePill', 'bookLabel', 'accountStatusLabel', 'accountStatusHref', 'requestLabel', 'requestHref', 'badge', 'title', 'intro', 'description', 'button', 'primaryLabel', 'secondaryLabel', 'links'],
   footerCta: ['title', 'subtitle', 'connectLabel', 'formTitle', 'formSubtitle'],
   excellence: ['title', 'subtitle', 'items'],
   labels: ['modalProblemLabel', 'modalWorkLabel', 'modalResultLabel', 'modalBeforeLabel', 'modalCta', 'viewerAllLabel', 'viewerCloseLabel'],
@@ -150,6 +165,11 @@ const STRUCTURAL_KEYS = new Set(['type', 'key', 'enabled', 'sortOrder']);
 function getLocale(value: string | string[] | undefined | null, fallback = 'de'): string {
   if (Array.isArray(value)) return value[0] || fallback;
   return value || fallback;
+}
+
+function getPageLabel(pageKey: CmsPageKey, locale: string): string {
+  const labels = PAGE_LABELS[pageKey];
+  return locale === 'ru' && labels.ru ? labels.ru : labels.default;
 }
 
 function toNullable(value: string): string | null {
@@ -524,7 +544,6 @@ export default function PagesPage() {
 
   // ── Data state ──
   const [pages, setPages] = useState<CmsPage[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [refreshVersion, setRefreshVersion] = useState(0);
   const [mediaItems, setMediaItems] = useState<CmsMedia[]>([]);
@@ -546,12 +565,6 @@ export default function PagesPage() {
   const [workspaceTab, setWorkspaceTab] = useState<ContentWorkspaceTab>('EDITOR');
 
   // ── Derived data ──
-  const summary = useMemo(() => {
-    const published = pages.filter((p) => p.status === 'PUBLISHED').length;
-    const drafts = pages.filter((p) => p.status === 'DRAFT').length;
-    return { total: pages.length, published, drafts };
-  }, [pages]);
-
   const pageContentRows = useMemo(() => buildPageContentRows(pages), [pages]);
 
   const blockFilterOptions = useMemo(() => {
@@ -604,13 +617,16 @@ export default function PagesPage() {
         const blockMatch = blocks.some((block) =>
           [block.key, block.type].some((value) => value.toLowerCase().includes(normalizedSearch))
         );
-        const pageMatch = pageKey.toLowerCase().includes(normalizedSearch);
+        const pageLabel = getPageLabel(pageKey, routeLocale).toLowerCase();
+        const pageMatch =
+          pageKey.toLowerCase().includes(normalizedSearch) ||
+          pageLabel.includes(normalizedSearch);
         if (!pageMatch && !blockMatch && !rowMatch) return false;
       }
 
       return true;
     },
-    [blockFilter, localeFilter, normalizedSearch, pageContentRows, pageFilter, pages, statusFilter]
+    [blockFilter, localeFilter, normalizedSearch, pageContentRows, pageFilter, pages, routeLocale, statusFilter]
   );
 
   const filteredPageKeys = useMemo(
@@ -710,7 +726,6 @@ export default function PagesPage() {
 
   // ── Data loading ──
   const loadPages = useCallback(async () => {
-    setLoading(true);
     setError('');
     try {
       const response = await adminFetch('/api/cms/pages', { method: 'GET', cache: 'no-store' });
@@ -720,8 +735,6 @@ export default function PagesPage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load pages.');
       setPages([]);
-    } finally {
-      setLoading(false);
     }
   }, []);
 
@@ -1647,22 +1660,12 @@ export default function PagesPage() {
     <div className="flex h-full w-full overflow-hidden bg-[#050505]">
       {/* COLUMN 2: MODULE SIDEBAR */}
       <aside className="w-[280px] bg-[#08080a] border-r border-white/[0.06] flex flex-col shrink-0 overflow-hidden">
-        <div className="p-10 border-b border-white/[0.04]">
-          <span className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.3em]">Studio</span>
-          <h2 className="text-xl font-black text-white mt-1">Page CMS</h2>
-          <p className="mt-3 text-[10px] font-bold leading-relaxed text-zinc-600">
-            {loading
-              ? 'Loading page records...'
-              : `${summary.total} records / ${summary.published} published / ${summary.drafts} draft`}
-          </p>
+        <div className="border-b border-white/[0.04] px-4 py-5 space-y-3">
           {error ? (
-            <p className="mt-2 rounded-lg border border-red-500/10 bg-red-500/5 px-2 py-1.5 text-[10px] font-bold text-red-400">
+            <p className="rounded-lg border border-red-500/10 bg-red-500/5 px-2 py-1.5 text-[10px] font-bold text-red-400">
               {error}
             </p>
           ) : null}
-        </div>
-
-        <div className="border-b border-white/[0.04] px-4 py-5 space-y-3">
           <input
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
@@ -1678,7 +1681,7 @@ export default function PagesPage() {
                 { value: 'ALL', label: 'All pages' },
                 ...PAGE_KEYS.map((pageKey) => ({
                   value: pageKey,
-                  label: pageKey.replace('-', ' '),
+                  label: getPageLabel(pageKey, routeLocale),
                 })),
               ]}
             />
@@ -1744,7 +1747,7 @@ export default function PagesPage() {
                         : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.02]'
                     }`}
                   >
-                    <span className="capitalize">{pk.replace('-', ' ')}</span>
+                    <span>{getPageLabel(pk, routeLocale)}</span>
                     {activePageKey === pk && (
                       <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,1)]" />
                     )}

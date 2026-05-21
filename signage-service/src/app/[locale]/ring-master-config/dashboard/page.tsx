@@ -53,6 +53,36 @@ type CmsDashboardItem = {
   filled?: boolean;
 };
 
+type RecentEditedResource = {
+  id: string;
+  resourceKind: string;
+  title: string;
+  context: string;
+  locales: string[];
+  status: string | null;
+  editedAt: string;
+  editedBy: {
+    name: string;
+    email: string | null;
+    role: string | null;
+  };
+  action: string;
+  changedFields: string[];
+  eventCount: number;
+  href: string;
+  events: Array<{
+    id: string;
+    action: string;
+    changedFields: string[];
+    editedAt: string;
+    editedBy: {
+      name: string;
+      email: string | null;
+      role: string | null;
+    };
+  }>;
+};
+
 type LocaleGap = {
   id: string;
   kind: 'Article' | 'Page' | 'Page item';
@@ -64,6 +94,7 @@ type LocaleGap = {
 };
 
 const SUPPORTED_LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'] as const;
+const GERMAN_ONLY_LEGAL_PAGE_KEYS = new Set(['impressum', 'privacy']);
 const EDITING_STATUSES = new Set<CmsArticleStatus | 'DRAFT' | 'PUBLISHED'>([
   'DRAFT',
   'IN_REVIEW',
@@ -101,9 +132,37 @@ function formatDateTime(value: string): string {
   }).format(date);
 }
 
+function formatDateParts(value: string): { date: string; time: string } {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return { date: 'Unknown date', time: 'Unknown time' };
+  }
+
+  return {
+    date: new Intl.DateTimeFormat('de-DE', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(date),
+    time: new Intl.DateTimeFormat('de-DE', {
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date),
+  };
+}
+
 function sortByUpdatedAt<T extends { updatedAt: string }>(items: T[]): T[] {
   return [...items].sort(
     (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+  );
+}
+
+function isIntentionalGermanLegalDraft(item: CmsDashboardItem): boolean {
+  return (
+    item.kind === 'Page' &&
+    item.status === 'DRAFT' &&
+    item.locale !== 'de' &&
+    GERMAN_ONLY_LEGAL_PAGE_KEYS.has(item.context)
   );
 }
 
@@ -235,6 +294,7 @@ export default function CmsDashboardPage() {
   const locale = getLocaleSegment(params?.locale);
   const [articles, setArticles] = useState<CmsArticle[]>([]);
   const [pages, setPages] = useState<CmsPage[]>([]);
+  const [recentEditedResources, setRecentEditedResources] = useState<RecentEditedResource[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -266,20 +326,31 @@ export default function CmsDashboardPage() {
         method: 'GET',
         cache: 'no-store',
       });
+      const recentResponse = await adminFetch('/api/cms/dashboard/recent', {
+        method: 'GET',
+        cache: 'no-store',
+      });
       const pagesData = (await pagesResponse.json().catch(() => ({}))) as {
         pages?: CmsPage[];
         error?: string;
       };
+      const recentData = (await recentResponse.json().catch(() => ({}))) as {
+        resources?: RecentEditedResource[];
+        error?: string;
+      };
 
       if (!pagesResponse.ok) throw new Error(readApiError(pagesData));
+      if (!recentResponse.ok) throw new Error(readApiError(recentData));
 
       const articleGroups = await Promise.all(articleRequests);
       setArticles(articleGroups.flat());
       setPages(pagesData.pages ?? []);
+      setRecentEditedResources(recentData.resources ?? []);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : 'Failed to load CMS dashboard data.');
       setArticles([]);
       setPages([]);
+      setRecentEditedResources([]);
     } finally {
       setLoading(false);
     }
@@ -324,17 +395,13 @@ export default function CmsDashboardPage() {
     [pages]
   );
 
-  const recentChanges = useMemo(
-    () => sortByUpdatedAt([...pageContentUnits, ...articleItems, ...pageItems]).slice(0, 80),
-    [articleItems, pageContentUnits, pageItems]
-  );
-
   const editingItems = useMemo(
     () =>
-      sortByUpdatedAt([...articleItems, ...pageItems].filter((item) => EDITING_STATUSES.has(item.status))).slice(
-        0,
-        8
-      ),
+      sortByUpdatedAt(
+        [...articleItems, ...pageItems].filter(
+          (item) => EDITING_STATUSES.has(item.status) && !isIntentionalGermanLegalDraft(item)
+        )
+      ).slice(0, 8),
     [articleItems, pageItems]
   );
 
@@ -351,7 +418,9 @@ export default function CmsDashboardPage() {
     return {
       total: allContent.length,
       published: allContent.filter((item) => item.status === 'PUBLISHED').length,
-      editing: allContent.filter((item) => EDITING_STATUSES.has(item.status)).length,
+      editing: allContent.filter(
+        (item) => EDITING_STATUSES.has(item.status) && !isIntentionalGermanLegalDraft(item)
+      ).length,
       localeGaps: localeGaps.length,
     };
   }, [articleItems, localeGaps.length, pageItems]);
@@ -364,12 +433,12 @@ export default function CmsDashboardPage() {
   );
 
   return (
-    <div className="flex h-full w-full flex-col gap-6 overflow-y-auto p-8 font-sans">
-      <div className="flex flex-col gap-3">
-        <h1 className="bg-gradient-to-r from-zinc-100 to-zinc-500 bg-clip-text text-4xl font-extrabold tracking-tight text-transparent">
+    <div className="flex h-full w-full flex-col gap-4 overflow-y-auto p-5 font-sans">
+      <div className="flex flex-col gap-1">
+        <h1 className="bg-gradient-to-r from-zinc-100 to-zinc-500 bg-clip-text text-3xl font-extrabold tracking-tight text-transparent">
           CMS Dashboard
         </h1>
-        <p className="max-w-3xl text-sm font-medium text-zinc-400">
+        <p className="max-w-3xl text-xs font-medium text-zinc-500">
           Live editorial overview for website pages, content articles, locale coverage, and CMS work in progress.
         </p>
       </div>
@@ -387,17 +456,13 @@ export default function CmsDashboardPage() {
         <MetricCard label="Locale gaps" value={loading ? '...' : String(summary.localeGaps)} tone="blue" />
       </section>
 
-      <section className="grid grid-cols-1 gap-5 md:grid-cols-2">
-        <DashboardPanel
-          title="Latest changes"
-          description="Newest article and page updates across all CMS locales."
-          emptyText={loading ? 'Loading changes...' : 'No CMS changes found.'}
-        >
-          {recentChanges.map((item) => (
-            <ContentRow key={`${item.kind}:${item.id}`} item={item} onOpen={() => goTo(item.href)} />
-          ))}
-        </DashboardPanel>
+      <RecentEditedResourcesTable
+        items={recentEditedResources}
+        loading={loading}
+        onOpen={(href) => goTo(href)}
+      />
 
+      <section className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <DashboardPanel
           title="In editing"
           description="Drafts and review states that are not published yet."
@@ -407,34 +472,34 @@ export default function CmsDashboardPage() {
             <ContentRow key={`${item.kind}:${item.id}`} item={item} onOpen={() => goTo(item.href)} />
           ))}
         </DashboardPanel>
-      </section>
 
-      <DashboardPanel
-        title="Published with missing languages"
-        description="Published content that does not yet have published coverage for all MVP locales."
-        emptyText={loading ? 'Checking locale coverage...' : 'All published CMS content covers every MVP locale.'}
-      >
-        {localeGaps.map((gap) => (
-          <button
-            key={gap.id}
-            type="button"
-            onClick={() => goTo(gap.href)}
-            className="grid w-full grid-cols-1 gap-3 rounded-xl border border-white/[0.06] bg-white/[0.025] p-4 text-left transition hover:border-cyan-400/30 hover:bg-cyan-400/[0.04] md:grid-cols-[1fr_auto]"
-          >
-            <div className="min-w-0">
-              <div className="mb-1 flex flex-wrap items-center gap-2">
-                <StatusPill>{gap.kind}</StatusPill>
-                <span className="truncate text-sm font-bold text-zinc-100">{gap.title}</span>
+        <DashboardPanel
+          title="Published with missing languages"
+          description="Published content without coverage for all MVP locales."
+          emptyText={loading ? 'Checking locale coverage...' : 'All published CMS content covers every MVP locale.'}
+        >
+          {localeGaps.slice(0, 8).map((gap) => (
+            <button
+              key={gap.id}
+              type="button"
+              onClick={() => goTo(gap.href)}
+              className="grid w-full grid-cols-1 gap-3 rounded-xl border border-white/[0.06] bg-white/[0.025] p-4 text-left transition hover:border-cyan-400/30 hover:bg-cyan-400/[0.04]"
+            >
+              <div className="min-w-0">
+                <div className="mb-1 flex flex-wrap items-center gap-2">
+                  <StatusPill>{gap.kind}</StatusPill>
+                  <span className="truncate text-sm font-bold text-zinc-100">{gap.title}</span>
+                </div>
+                <p className="truncate text-xs font-medium text-zinc-500">{gap.context}</p>
               </div>
-              <p className="truncate text-xs font-medium text-zinc-500">{gap.context}</p>
-            </div>
-            <div className="flex flex-wrap items-center gap-2 md:justify-end">
-              <LocaleList label="Live" locales={gap.presentLocales} tone="green" />
-              <LocaleList label="Missing" locales={gap.missingLocales} tone="amber" />
-            </div>
-          </button>
-        ))}
-      </DashboardPanel>
+              <div className="flex flex-wrap items-center gap-2">
+                <LocaleList label="Live" locales={gap.presentLocales} tone="green" />
+                <LocaleList label="Missing" locales={gap.missingLocales} tone="amber" />
+              </div>
+            </button>
+          ))}
+        </DashboardPanel>
+      </section>
 
       <section className="grid grid-cols-1 gap-4 lg:grid-cols-4">
         <QuickLinkCard
@@ -483,10 +548,156 @@ function MetricCard({
   }[tone];
 
   return (
-    <div className="rounded-xl border border-white/[0.07] bg-zinc-950/50 p-4">
-      <div className={`text-2xl font-extrabold tracking-tight ${toneClass}`}>{value}</div>
-      <div className="mt-1 text-xs font-semibold uppercase tracking-wide text-zinc-500">{label}</div>
+    <div className="rounded-lg border border-white/[0.07] bg-zinc-950/50 p-3">
+      <div className={`text-xl font-extrabold tracking-tight ${toneClass}`}>{value}</div>
+      <div className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-zinc-500">{label}</div>
     </div>
+  );
+}
+
+function RecentEditedResourcesTable({
+  items,
+  loading,
+  onOpen,
+}: {
+  items: RecentEditedResource[];
+  loading: boolean;
+  onOpen: (href: string) => void;
+}) {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  return (
+    <section className="rounded-xl border border-white/[0.07] bg-zinc-950/35 p-3">
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <div>
+          <h2 className="text-sm font-bold text-zinc-100">Recently edited resources</h2>
+        </div>
+        <div className="shrink-0 text-[11px] font-semibold text-zinc-500">
+          {loading ? 'Loading history...' : `${items.length} recent resources`}
+        </div>
+      </div>
+
+      {items.length > 0 ? (
+        <div className="overflow-x-auto rounded-lg border border-white/[0.07]">
+          <div className="grid min-w-[900px] grid-cols-[minmax(260px,1.5fr)_104px_160px_150px_110px_54px] gap-0 border-b border-white/[0.07] bg-white/[0.035] px-2 py-1.5 text-[10px] font-bold uppercase tracking-wide text-zinc-500">
+            <div>Resource</div>
+            <div>Date</div>
+            <div>User</div>
+            <div>Locales</div>
+            <div>Status</div>
+            <div className="text-right">Open</div>
+          </div>
+
+          <div className="max-h-[280px] divide-y divide-white/[0.06] overflow-y-auto">
+            {items.map((item) => {
+              const editedAt = formatDateParts(item.editedAt);
+              const isExpanded = expandedId === item.id;
+
+              return (
+                <div key={item.id} className="bg-white/[0.018]">
+                  <div className="grid min-w-[900px] grid-cols-[minmax(260px,1.5fr)_104px_160px_150px_110px_54px] items-center gap-0 px-2 py-1 transition hover:bg-white/[0.025]">
+                    <button
+                      type="button"
+                      onClick={() => setExpandedId(isExpanded ? null : item.id)}
+                      className="min-w-0 text-left"
+                    >
+                      <div className="flex min-w-0 items-center gap-2">
+                        <StatusPill>{item.resourceKind}</StatusPill>
+                        <span className="truncate text-xs font-bold text-zinc-100">{item.title}</span>
+                      </div>
+                      <p className="mt-0.5 truncate text-[11px] font-medium text-zinc-500">
+                        {item.context} / {item.action}
+                        {item.changedFields.length > 0 ? ` / ${item.changedFields.slice(0, 2).join(', ')}` : ''}
+                      </p>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setExpandedId(isExpanded ? null : item.id)}
+                      className="min-w-0 text-left"
+                    >
+                      <div className="text-xs font-bold text-zinc-100">{editedAt.date}</div>
+                      <div className="text-[11px] font-medium text-zinc-500">{editedAt.time}</div>
+                    </button>
+
+                    <div className="flex min-w-0 items-center gap-2">
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-white/[0.08] bg-white/[0.04] text-[10px] font-extrabold text-zinc-200">
+                        {getActorInitials(item.editedBy.name)}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="truncate text-xs font-bold text-zinc-100">{item.editedBy.name}</div>
+                        <div className="truncate text-[11px] font-medium text-zinc-500">
+                          {item.editedBy.role ?? 'Admin'}
+                        </div>
+                      </div>
+                    </div>
+
+                    <LocaleChips locales={item.locales} />
+
+                    <div className="flex min-w-0 items-center gap-1.5">
+                      {item.status ? (
+                        <StatusPill tone={item.status === 'PUBLISHED' ? 'green' : 'amber'}>
+                          {item.status}
+                        </StatusPill>
+                      ) : (
+                        <span className="text-xs font-semibold text-zinc-600">-</span>
+                      )}
+                      {item.eventCount > 1 ? (
+                        <span className="truncate text-[10px] font-bold text-zinc-500">
+                          {item.eventCount}e
+                        </span>
+                      ) : null}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => onOpen(item.href)}
+                      className="h-7 rounded-md border border-cyan-300/15 bg-cyan-300/10 px-2 text-[11px] font-bold text-cyan-200 transition hover:border-cyan-300/35 hover:bg-cyan-300/15"
+                    >
+                      Open
+                    </button>
+                  </div>
+
+                  {isExpanded ? (
+                    <div className="border-t border-white/[0.06] bg-black/10 px-2 py-2">
+                      <div className="grid gap-1.5">
+                        {item.events.map((event) => {
+                          const eventDate = formatDateParts(event.editedAt);
+
+                          return (
+                            <div
+                              key={event.id}
+                            className="grid min-w-[860px] grid-cols-[120px_1fr_160px] gap-2 rounded-md bg-white/[0.025] px-2 py-1.5 text-[11px]"
+                            >
+                              <div className="font-semibold text-zinc-400">
+                                {eventDate.date} {eventDate.time}
+                              </div>
+                              <div className="min-w-0">
+                                <span className="font-bold text-zinc-200">{event.action}</span>
+                                {event.changedFields.length > 0 ? (
+                                  <span className="text-zinc-500"> / {event.changedFields.join(', ')}</span>
+                                ) : null}
+                              </div>
+                              <div className="truncate font-semibold text-zinc-400">
+                                {event.editedBy.name}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+        <div className="rounded-xl bg-white/[0.025] p-4 text-sm text-zinc-500">
+          {loading ? 'Loading recent resource history...' : 'No recent CMS edit history found.'}
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -513,6 +724,45 @@ function DashboardPanel({
         {hasChildren ? children : <div className="rounded-xl bg-white/[0.025] p-4 text-sm text-zinc-500">{emptyText}</div>}
       </div>
     </section>
+  );
+}
+
+function getActorInitials(name: string): string {
+  const parts = name
+    .split(/\s+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (parts.length === 0) return 'A';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+
+  return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+}
+
+function LocaleChips({ locales }: { locales: string[] }) {
+  if (locales.length === 0) {
+    return <span className="text-xs font-semibold text-zinc-600">Global</span>;
+  }
+
+  const visibleLocales = locales.slice(0, 4);
+  const hiddenCount = locales.length - visibleLocales.length;
+
+  return (
+    <div className="flex flex-nowrap items-center gap-1 overflow-hidden">
+      {visibleLocales.map((locale) => (
+        <span
+          key={locale}
+          className="shrink-0 rounded border border-white/[0.08] bg-white/[0.035] px-1.5 py-0.5 text-[10px] font-extrabold uppercase text-zinc-300"
+        >
+          {locale}
+        </span>
+      ))}
+      {hiddenCount > 0 ? (
+        <span className="shrink-0 rounded border border-cyan-300/15 bg-cyan-300/10 px-1.5 py-0.5 text-[10px] font-extrabold text-cyan-200">
+          +{hiddenCount}
+        </span>
+      ) : null}
+    </div>
   );
 }
 

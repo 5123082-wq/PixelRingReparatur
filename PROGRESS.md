@@ -9,11 +9,12 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 Latest checkpoint:
 
 - Date: 2026-05-21
-- Current stage: Applied the calmer photo-first hero pattern to `/leistungen`, `/probleme-loesungen`, `/business`, and `/referenzen`.
-- Next action: Owner reviews `/de/probleme-loesungen`, `/de/business`, and `/de/referenzen` for hero crop, first-screen rhythm, and the preserved PixelRing Check block.
+- Current stage: German-only legal CMS draft handling cleaned up: non-DE legal drafts no longer look like active editing work.
+- Next action: Owner reviews legal CMS visibility in dashboard/Page CMS and decides whether to archive historical non-DE legal draft records.
 
 Active tracks:
 
+- B2B Standort-Abo: internal product concept captured in `docs/01_strategy/standort_abo_product_concept.md`; not yet a public offer, tariff model, SLA, or implemented platform feature.
 - Public Website: implemented multilingual public site; current SEO/indexing and content QA work continues in `docs/02_public_website/` and `docs/07_content_ai_seo/`.
 - Request & Status Flow: implemented intake, session tracking, status lookup, and PR numbers; keep customer privacy boundaries from `docs/00_project_overview/project_state_and_roadmap.md`.
 - Manager CRM: starter implemented; operational planning belongs in `docs/06_crm/`.
@@ -33,7 +34,7 @@ Read deep when:
 
 ## Current Modules
 
-- **Public Website**: Implemented (Homepage, Support, Problems & Solutions, B2B, References, About, Legal). CMS integration partial. About RU language pass complete. DE QA cleanup completed; legal pages now preserve CMS as source of truth with page-specific stale validation.
+- **Public Website**: Implemented (Homepage, Support, Problems & Solutions, B2B, References, About, Legal). CMS integration partial; `/ueber-uns` now has CMS-backed `about` records with code fallback. About RU language pass complete. DE QA cleanup completed; legal pages now preserve CMS as source of truth with page-specific stale validation.
 - **Request & Status Flow**: Implemented (Intake, session tracking, customer status lookup, PR-numbers). Photon address autocomplete with optional coordinate persistence added for request creation.
 - **Manager CRM**: CRM starter implemented (Case detail, assignment, internal notes, operator takeover). Object-level auth hardened. Future internal operational object map concept documented.
 - **Website CMS & Admin Platform**: CMS starter implemented (Pages, Articles, Media Library, SEO, AI config). 3-column MODX-style redesign implemented.
@@ -43,6 +44,36 @@ Read deep when:
 - **Engineering/Ops**: Open maintenance note recorded for future Postgres SSL connection-string cleanup before the next `pg`/Prisma/migration-tooling dependency upgrade.
 
 ## Last Updated
+
+- Date: 2026-05-21
+- Updated by: Codex
+- **Current Stage**: Cleaned legal CMS draft data by clearing stale `publishedAt` from non-DE `privacy`/`impressum` draft rows and excluded intentional German-only legal drafts from the dashboard `In editing` list and `Editing now` count.
+- **Next Action**: Owner decides whether historical non-DE legal draft rows should remain as records or be archived/hidden more explicitly in Page CMS.
+
+- Date: 2026-05-21
+- Updated by: Codex
+- **Current Stage**: Reworked the CMS dashboard recent edits area into an audit-backed compact table grouped by resource, showing latest action, editor, role, timestamp, locales, status, edit count, and open action. Added `/api/cms/dashboard/recent` for grouped audit history.
+- **Next Action**: Owner reviews whether the compact table needs filters by resource type, locale, editor, or period.
+
+- Date: 2026-05-21
+- Updated by: Codex
+- **Current Stage**: Refined the shared CMS dashboard sidebar: compact expanded width, collapsed icon-only state, inline SVG icons, calmer dark palette, preserved active routing/logout behavior, and verified the Media Library dashboard in browser.
+- **Next Action**: Owner reviews expanded/collapsed sidebar rhythm and icon choices across CMS sections.
+
+- Date: 2026-05-21
+- Updated by: Codex
+- **Current Stage**: Loaded current `/ueber-uns` page copy into CMS as `about` for DE/EN/RU/TR/PL/AR, connected the route to `getAboutPageCmsContent`, kept shared code fallback in `src/lib/content/about-page.ts`, and re-ran audit/build/runtime/browser checks. Audit result remains `WARN` only because TR/PL/AR problem articles are intentionally accepted for now and inactive `support` CMS pages still exist.
+- **Next Action**: Owner decides whether inactive historical `support` CMS pages should be archived, remapped, or left as historical records.
+
+- Date: 2026-05-21
+- Updated by: Codex
+- **Current Stage**: Reworked the `/leistungen` `Wartung & Serviceverträge` section into a clearer B2B service-contract bridge: three service directions, safer CTA wording, selected-material benefit wording, and an explicit boundary against unlimited repair promises. Production build verified.
+- **Next Action**: Owner reviews the updated `/de/leistungen` block visually and decides whether it should become the entry point for a dedicated future `Standort-Abo` landing page.
+
+- Date: 2026-05-21
+- Updated by: Codex
+- **Current Stage**: Captured the owner-provided B2B service-contract/subscription analysis as an internal `PixelRing Standort-Abo` product concept, with guardrails, MVP package candidates, operating process, website direction, dependencies, and a progress log.
+- **Next Action**: Owner reviews product naming, first sales MVP, package boundaries, pricing/SLA assumptions, and whether to proceed toward canonical German landing-page copy.
 
 - Date: 2026-05-21
 - Updated by: Codex
