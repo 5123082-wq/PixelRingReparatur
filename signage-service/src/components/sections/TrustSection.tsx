@@ -47,7 +47,7 @@ const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
           
           {/* HEADER */}
           <div className="flex flex-col gap-6 max-w-4xl">
-            <SectionEyebrow>ADVANTAGE</SectionEyebrow>
+            <SectionEyebrow>{content?.pretitle || safeT('pretitle', 'ADVANTAGE')}</SectionEyebrow>
             <h2 className="text-[34px] md:text-[42px] font-black text-white leading-[1.1] tracking-[0]">
               <span>{content?.titleStart || safeT('titleStart', 'Genug')}</span>
               {' '}
@@ -116,11 +116,11 @@ const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
               onClick={() => setModalOpen(true)}
               className="w-full sm:w-auto px-10 py-5 bg-[#B8643E] text-white rounded-full font-bold text-[18px] text-center hover:bg-[#9E5332] transition-all hover:scale-105 shadow-xl shadow-[#B8643E]/20 active:scale-95 cursor-pointer"
             >
-              {safeT('cta_label', 'Beratung anfragen')}
+              {content?.cta_label || safeT('cta_label', 'Beratung anfragen')}
             </button>
             <div className="flex items-center gap-4 text-white/40 text-[14px] font-medium">
               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <span>{safeT('cta_subtext', 'Antwort in 15 Min.')}</span>
+              <span>{content?.cta_subtext || safeT('cta_subtext', 'Antwort in 15 Min.')}</span>
             </div>
           </div>
 
