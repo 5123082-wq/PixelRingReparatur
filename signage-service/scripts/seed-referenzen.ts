@@ -157,9 +157,9 @@ const CONTENT = {
     heroNoteText:
       'Jede Referenz ist als kurzer Reparaturbericht gedacht: Ausgangszustand, Arbeitsschritt, Ergebnis. Der Fokus bleibt auf Ausfuehrung und Vertrauen.',
     recentEyebrow: 'Ausgewaehlte Arbeiten',
-    recentTitle: 'Vorher sichtbar. Danach wieder betriebsbereit.',
+    recentTitle: 'Visuelles Ergebnis und Arbeitsumfang',
     recentIntro:
-      'Die Karten bewegen sich horizontal. Im Fokus oder Hover sehen Sie den problemorientierten Vorher-Zustand; ein Klick oeffnet den kompakten Reparaturbericht.',
+      'Jede Karte zeigt den Standort vor und nach der Arbeit. Im Bericht stehen Problem, ausgefuehrte Arbeiten und Ergebnis.',
     reportTitle: 'Ein Schild darf nicht müde aussehen',
     reportIntro:
       'Dunkle Buchstaben, Flackern, ein verschmutzter Leuchtkasten oder lose Folie sind nicht nur ein Defekt. Für Menschen auf der Straße wirkt der Standort schnell geschlossen, vernachlässigt oder unsicher.',
@@ -214,9 +214,9 @@ const CONTENT = {
     heroNoteText:
       'Every reference is shaped like a short repair report: initial state, work performed, outcome. The focus stays on execution and trust.',
     recentEyebrow: 'Selected work',
-    recentTitle: 'Before it was visible. After it was operational again.',
+    recentTitle: 'Visual result and work summary',
     recentIntro:
-      'The cards move horizontally. Hover or focus shows the problem-oriented before state; click opens a compact repair report.',
+      'Each card shows the site before and after. The report lists the issue, completed work, and result.',
     reportTitle: 'A sign should not look tired',
     reportIntro:
       'Dark letters, flickering light, a dirty lightbox, or peeling window film are not just defects. To someone passing by, they can make a location feel closed, neglected, or unreliable.',
@@ -271,9 +271,9 @@ const CONTENT = {
     heroNoteText:
       'Каждый пример оформлен как короткий ремонтный отчет: исходное состояние, выполненная работа, результат. Фокус на исполнении и доверии.',
     recentEyebrow: 'Выбранные работы',
-    recentTitle: 'До было заметно. После снова работает.',
+    recentTitle: 'Визуальный результат и список работ',
     recentIntro:
-      'Карточки двигаются горизонтально. При наведении показывается исходное состояние, по клику открывается краткий ремонтный отчет.',
+      'Каждая карточка показывает объект до и после. Внутри указан краткий отчет: проблема, выполненные работы и результат.',
     reportTitle: 'Вывеска не должна выглядеть уставшей',
     reportIntro:
       'Потухшие буквы, мерцание, грязный световой короб или отклеенная пленка — это не просто дефект. Для человека с улицы это быстрый сигнал: место выглядит закрытым, заброшенным или неаккуратным.',
@@ -328,9 +328,9 @@ const CONTENT = {
     heroNoteText:
       'Her referans kısa bir onarım raporu gibi kurulur: başlangıç durumu, yapılan iş, sonuç. Odak uygulama ve güven üzerindedir.',
     recentEyebrow: 'Seçili işler',
-    recentTitle: 'Önce sorun görünüyordu. Sonra tekrar çalışır hale geldi.',
+    recentTitle: 'Görsel sonuç ve iş özeti',
     recentIntro:
-      'Kartlar yatay hareket eder. Hover veya focus problem odaklı önceki durumu gösterir; tıklama kısa raporu açar.',
+      'Her kart lokasyonu önce ve sonra gösterir. Raporda sorun, yapılan işler ve sonuç yer alır.',
     reportTitle: 'Tabela yorgun görünmemeli',
     reportIntro:
       'Sönmüş harfler, titreyen ışık, kirli bir ışıklı kutu veya kalkmış film sadece teknik arıza değildir. Sokaktan bakan biri için işletme kapalı, bakımsız veya güvensiz görünebilir.',
@@ -385,9 +385,9 @@ const CONTENT = {
     heroNoteText:
       'Każda realizacja ma formę krótkiego raportu: stan wyjściowy, wykonana praca, efekt. Liczy się wykonanie i zaufanie.',
     recentEyebrow: 'Wybrane prace',
-    recentTitle: 'Przedtem problem był widoczny. Potem obiekt znów działał.',
+    recentTitle: 'Efekt wizualny i zakres prac',
     recentIntro:
-      'Karty przesuwają się poziomo. Hover lub focus pokazuje stan przed naprawą; kliknięcie otwiera krótki raport.',
+      'Każda karta pokazuje obiekt przed i po pracy. W raporcie są problem, wykonane prace i efekt.',
     reportTitle: 'Szyld nie powinien wyglądać na zmęczony',
     reportIntro:
       'Zgaszone litery, migające światło, brudny kaseton albo odklejająca się folia to nie tylko usterka. Dla osoby z ulicy lokal może wyglądać na zamknięty, zaniedbany albo mało wiarygodny.',
@@ -442,9 +442,9 @@ const CONTENT = {
     heroNoteText:
       'كل مرجع مكتوب كتقرير إصلاح قصير: الحالة الأولية، العمل المنفذ، والنتيجة. التركيز على التنفيذ والثقة.',
     recentEyebrow: 'أعمال مختارة',
-    recentTitle: 'كان الخلل واضحاً. ثم عاد العنصر للعمل.',
+    recentTitle: 'النتيجة المرئية وملخص العمل',
     recentIntro:
-      'تتحرك البطاقات أفقياً. عند التركيز أو التحويم تظهر حالة ما قبل الإصلاح؛ النقر يفتح تقريراً مختصراً.',
+      'تعرض كل بطاقة الموقع قبل العمل وبعده. يوضح التقرير المشكلة والعمل المنفذ والنتيجة.',
     reportTitle: 'يجب ألا تبدو اللافتة متعبة',
     reportIntro:
       'الحروف المطفأة، الوميض، الصندوق المضيء المتسخ أو الفيلم المتقشر ليست مجرد أعطال. بالنسبة لمن يمر في الشارع قد يبدو المكان مغلقاً أو مهملاً أو غير موثوق.',

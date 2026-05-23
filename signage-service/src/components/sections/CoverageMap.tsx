@@ -136,7 +136,6 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
             <h2 className="text-[30px] md:text-[42px] font-bold text-[#0E1A2B] leading-[1.05] tracking-tight">
               {content?.title || ''}
             </h2>
-            <div className="w-12 h-1 bg-[#C86E4A] rounded-full" />
           </div>
         </div>
       </motion.div>

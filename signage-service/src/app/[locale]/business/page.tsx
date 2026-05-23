@@ -6,10 +6,22 @@ import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestBu
 import { getGlobalPageCmsContent, getBusinessPageCmsContent } from '@/lib/cms/pages';
 import Image from 'next/image';
 import CmsImage from '@/components/common/CmsImage';
+import SectionEyebrow from '@/components/common/SectionEyebrow';
 import BusinessShowcase from '@/components/sections/BusinessShowcase';
+import BusinessReportDemoButton from '@/components/business/BusinessReportDemoButton';
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
 const BUSINESS_PRESENTATION_HREF = '/downloads/pixelring-business-presentation.pdf';
+const BUSINESS_SECTION_TITLE_CLASS =
+  'text-[36px] font-extrabold leading-[42px] tracking-[0] text-[#081827] sm:text-[40px] sm:leading-[46px] lg:text-[44px] lg:leading-[50px]';
+const BUSINESS_SECTION_INTRO_CLASS =
+  'mt-6 max-w-[580px] text-[18px] font-normal leading-[1.6] tracking-[0] text-[#526174]';
+const BUSINESS_SECTION_INTRO_ACCENT_CLASS =
+  `${BUSINESS_SECTION_INTRO_CLASS} border-l-2 border-[#B8643E] pl-4 rtl:border-l-0 rtl:border-r-2 rtl:pl-0 rtl:pr-4`;
+const BUSINESS_CARD_TITLE_CLASS =
+  'text-[18px] font-black leading-[23px] tracking-[0] text-[#081827] sm:text-[20px] sm:leading-[25px]';
+const BUSINESS_CARD_BODY_CLASS =
+  'mt-2 text-[15px] font-normal leading-[1.55] tracking-[0] text-[#526174]';
 
 type TargetGroup = {
   id: string;
@@ -42,6 +54,8 @@ type BusinessContent = {
   platformTitle: string;
   platformIntro: string;
   platformBenefits: Benefit[];
+  platformNoteLead: string;
+  platformNoteText: string;
   portalCta: string;
   portalDemoCta: string;
   trustTitle: string;
@@ -55,6 +69,25 @@ type BusinessContent = {
   platformEnabled?: boolean;
   trustEnabled?: boolean;
   finalEnabled?: boolean;
+};
+
+type BusinessMockupContent = {
+  targetEyebrow: string;
+  auditEyebrow: string;
+  platformEyebrow: string;
+  finalEyebrow: string;
+  auditImageAlt: string;
+  auditOverviewLabel: string;
+  auditChecksLabel: string;
+  auditStatuses: { ok: string; planned: string; urgent: string };
+  auditCompleteLabel: string;
+  auditStats: { assets: string; print: string; risks: string };
+  portalLiveLabel: string;
+  portalKpis: { label: string; value: string; sub: string; color: string }[];
+  portalRows: { pin: string; city: string; desc: string; status: string; statusColor: string }[];
+  reportReadyTitle: string;
+  reportReadyText: string;
+  reportButton: string;
 };
 
 const CONTENT: Record<Locale, BusinessContent> = {
@@ -73,8 +106,8 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'dealers', title: 'Autohäuser', description: 'Wartung von großen Pylonen, Fassadenschildern und Signaletik auf dem Gelände.' },
       { id: 'retail', title: 'Filialisten & Retail', description: 'Standardisierte Prozesse und SLAs für ein konsistentes Markenbild an allen Standorten.' }
     ],
-    auditTitle: 'Servicevertrag & Regelmäßiges Audit',
-    auditIntro: 'Volle Betreuung und Erhalt der Funktionsfähigkeit aller Werbeanlagen. Im Rahmen des Audits überprüfen wir die Vollständigkeit und Qualität der Werbematerialien (Print, Poster, Speisekarten) und ersetzen Beschädigtes direkt.',
+    auditTitle: 'Audit & Betreuung',
+    auditIntro: 'Im Rahmen des Servicevertrags erhalten Sie vollständige Betreuung und Kontrolle über Ihre Verkaufsstandorte.',
     auditBenefits: [
       { id: 'a1', title: 'Regelmäßige Inspektion', description: 'Wir prüfen proaktiv den Zustand der Lichtwerbung und Printmaterialien vor Ort.' },
       { id: 'a2', title: 'Markenkonsistenz', description: 'Zerrissene Poster, veraltete Speisekarten oder schmutzige Aufkleber werden erkannt und erneuert.' },
@@ -88,6 +121,8 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'p2', title: 'Umfassender Audit-Report', description: 'Detaillierte Berichte über den Zustand jedes Standortes inkl. Foto-Dokumentation.' },
       { id: 'p3', title: 'Ein zentraler Ansprechpartner', description: 'Koordination aus einer Quelle. Keine Suche nach verschiedenen Dienstleistern.' }
     ],
+    platformNoteLead: 'Ideal für Filialnetze:',
+    platformNoteText: 'eine Übersicht statt verstreuter E-Mails, Fotos und Einzelaufträge.',
     portalCta: 'Kundenportal ansehen',
     portalDemoCta: 'Präsentation herunterladen',
     trustTitle: 'Verantwortung & Koordination',
@@ -111,8 +146,8 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'dealers', title: 'Car Dealerships', description: 'Maintenance of large pylons, facade signs, and site signage.' },
       { id: 'retail', title: 'Chains & Retail', description: 'Standardized processes and SLAs for a consistent brand image across all locations.' }
     ],
-    auditTitle: 'Service Contract & Regular Audit',
-    auditIntro: 'Full support and maintenance of the functionality of all signage. During the audit, we check the completeness and quality of promotional materials (print, posters, menus) and replace damaged items directly.',
+    auditTitle: 'Audit & Maintenance',
+    auditIntro: 'Under the service contract, you receive full support and oversight for your retail locations.',
     auditBenefits: [
       { id: 'a1', title: 'Regular Inspection', description: 'We proactively check the condition of illuminated advertising and print materials on site.' },
       { id: 'a2', title: 'Brand Consistency', description: 'Torn posters, outdated menus, or dirty stickers are identified and renewed.' },
@@ -126,6 +161,8 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'p2', title: 'Comprehensive Audit Report', description: 'Detailed reports on the condition of each location including photo documentation.' },
       { id: 'p3', title: 'One Central Contact', description: 'Coordination from a single source. No need to search for different service providers.' }
     ],
+    platformNoteLead: 'Ideal for branch networks:',
+    platformNoteText: 'one overview instead of scattered emails, photos, and individual requests.',
     portalCta: 'View Customer Portal',
     portalDemoCta: 'Download presentation',
     trustTitle: 'Responsibility & Coordination',
@@ -149,8 +186,8 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'dealers', title: 'Автосалоны', description: 'Обслуживание крупных стел, фасадных вывесок и указателей на территории.' },
       { id: 'retail', title: 'Сетевой ритейл', description: 'Единые стандарты SLA для поддержания бренда во всех точках сети.' }
     ],
-    auditTitle: 'Договор обслуживания и Регулярный аудит',
-    auditIntro: 'Мы берем на себя регулярное обслуживание ваших точек: проверяем вывески, световые конструкции и рекламные материалы, фиксируем проблемы и обновляем поврежденные элементы.',
+    auditTitle: 'Аудит и обслуживание',
+    auditIntro: 'В рамках договора обслуживания Вы получаете полное сопровождение и контроль своих торговых точек.',
     auditBenefits: [
       { id: 'a1', title: 'Регулярная инспекция', description: 'Проактивный аудит состояния вывесок и рекламных материалов на объекте.' },
       { id: 'a2', title: 'Контроль бренда', description: 'Своевременная замена испорченных меню, порванных плакатов и выцветших пленок.' },
@@ -164,6 +201,8 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'p2', title: 'Полный аудит точек', description: 'Предоставляем заказчику отчет о том, что происходит на его точках продаж.' },
       { id: 'p3', title: 'Один общий источник', description: 'Ответственность, гарантии и координация всех подрядчиков на нашей стороне.' }
     ],
+    platformNoteLead: 'Особенно удобно для сетей:',
+    platformNoteText: 'единый обзор вместо разрозненных писем, фотографий и отдельных заявок.',
     portalCta: 'Личный кабинет',
     portalDemoCta: 'Скачать презентацию',
     trustTitle: 'Ответственность и Гарантии',
@@ -187,8 +226,8 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'dealers', title: 'Oto Galerileri', description: 'Büyük pilonların ve cephe tabelalarının bakımı.' },
       { id: 'retail', title: 'Zincir Mağazalar', description: 'Tüm lokasyonlarda tutarlı bir marka imajı için standart süreçler.' }
     ],
-    auditTitle: 'Servis Sözleşmesi & Düzenli Denetim',
-    auditIntro: 'Abonelik modeli ile tam bakım hizmeti. Düzenli denetimlerde sadece tabelaları değil, aynı zamanda şubedeki menü, poster gibi baskı ürünlerinin bütünlüğünü de kontrol edip eskimiş olanları yeniliyoruz.',
+    auditTitle: 'Denetim ve bakım',
+    auditIntro: 'Servis sözleşmesi kapsamında satış noktalarınız için tam destek ve kontrol elde edersiniz.',
     auditBenefits: [
       { id: 'a1', title: 'Düzenli İnceleme', description: 'Tabela ve basılı materyallerin durumunu proaktif olarak denetliyoruz.' },
       { id: 'a2', title: 'Marka Tutarlılığı', description: 'Yırtık posterler ve eski menüler anında yenilenir.' },
@@ -202,6 +241,8 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'p2', title: 'Kapsamlı Denetim Raporu', description: 'Her lokasyonun güncel durumu hakkında fotoğraflı detaylı raporlar.' },
       { id: 'p3', title: 'Tek Sorumlu', description: 'Tüm süreçlerin koordinasyonu ve garantisi bizim sorumluluğumuzda.' }
     ],
+    platformNoteLead: 'Şube ağları için ideal:',
+    platformNoteText: 'dağınık e-postalar, fotoğraflar ve tekil talepler yerine tek bir genel bakış.',
     portalCta: 'Müşteri Portalı',
     portalDemoCta: 'Sunumu indir',
     trustTitle: 'Sorumluluk ve Koordinasyon',
@@ -225,8 +266,8 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'dealers', title: 'Salony Samochodowe', description: 'Obsługa dużych pylonów i szyldów elewacyjnych.' },
       { id: 'retail', title: 'Sieci Handlowe', description: 'Standardowe procesy i SLA dla spójnego wizerunku we wszystkich lokalizacjach.' }
     ],
-    auditTitle: 'Umowa Serwisowa i Regularne Audyty',
-    auditIntro: 'Pełna konserwacja w modelu subskrypcyjnym. Regularnie sprawdzamy nie tylko stan szyldów, ale również obecność i jakość materiałów drukowanych wewnątrz lokalu (np. brudne, zniszczone menu) i je wymieniamy.',
+    auditTitle: 'Audyt i obsługa',
+    auditIntro: 'W ramach umowy serwisowej otrzymujesz pełne wsparcie i kontrolę nad swoimi punktami sprzedaży.',
     auditBenefits: [
       { id: 'a1', title: 'Regularne Inspekcje', description: 'Proaktywnie audytujemy stan reklam i materiałów POS.' },
       { id: 'a2', title: 'Spójność Marki', description: 'Szybka wymiana zniszczonych plakatów i wyblakłych naklejek.' },
@@ -240,6 +281,8 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'p2', title: 'Raporty z Audytów', description: 'Dostarczamy szczegółowy przegląd tego, co dzieje się w każdym punkcie.' },
       { id: 'p3', title: 'Jedno Źródło Kontaktu', description: 'Gwarancja i koordynacja wszystkich prac leży po naszej stronie.' }
     ],
+    platformNoteLead: 'Idealne dla sieci placówek:',
+    platformNoteText: 'jeden widok zamiast rozproszonych e-maili, zdjęć i pojedynczych zgłoszeń.',
     portalCta: 'Portal klienta',
     portalDemoCta: 'Pobierz prezentację',
     trustTitle: 'Odpowiedzialność i Gwarancje',
@@ -263,8 +306,8 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'dealers', title: 'معارض السيارات', description: 'صيانة اللوحات الإعلانية الكبيرة ولوحات الواجهات.' },
       { id: 'retail', title: 'شبكات التجزئة', description: 'عمليات موحدة لضمان صورة متسقة للعلامة التجارية في جميع المواقع.' }
     ],
-    auditTitle: 'عقد الصيانة والتدقيق الدوري',
-    auditIntro: 'صيانة كاملة بناءً على نموذج اشتراك. نقوم بانتظام بفحص حالة اللوحات، ووجود وجودة المواد المطبوعة داخل المحل، ونقوم بتغيير القوائم أو الملصقات القديمة أو الممزقة.',
+    auditTitle: 'التدقيق والصيانة',
+    auditIntro: 'ضمن عقد الخدمة، تحصل على متابعة كاملة ورقابة على نقاط البيع الخاصة بك.',
     auditBenefits: [
       { id: 'a1', title: 'فحص دوري', description: 'نقوم بالتدقيق الاستباقي لحالة الإعلانات والمواد المطبوعة.' },
       { id: 'a2', title: 'تناسق العلامة التجارية', description: 'الاستبدال الفوري للملصقات الممزقة والقوائم القديمة.' },
@@ -278,6 +321,8 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'p2', title: 'تقارير تدقيق مفصلة', description: 'نقدم تفاصيل كاملة عما يحدث في كل موقع مع الصور.' },
       { id: 'p3', title: 'مصدر واحد للتواصل', description: 'جميع الضمانات والتنسيق بين المقاولين تقع على عاتقنا.' }
     ],
+    platformNoteLead: 'مثالي لشبكات الفروع:',
+    platformNoteText: 'نظرة عامة واحدة بدلاً من رسائل وصور وطلبات منفصلة ومتفرقة.',
     portalCta: 'عرض بوابة العميل',
     portalDemoCta: 'تنزيل العرض التقديمي',
     trustTitle: 'المسؤولية والضمانات',
@@ -286,6 +331,165 @@ const CONTENT: Record<Locale, BusinessContent> = {
     finalText: 'اتصل بنا لإجراء تدقيق لمواقعك.',
     finalCta: 'اطلب الخدمة'
   }
+};
+
+const MOCKUP_CONTENT: Record<Locale, BusinessMockupContent> = {
+  de: {
+    targetEyebrow: 'SECTORS',
+    auditEyebrow: 'Service-Abo',
+    platformEyebrow: 'Kundenportal & Reports',
+    finalEyebrow: 'NEXT STEP',
+    auditImageAlt: 'Audit & Standort-Wartung',
+    auditOverviewLabel: 'Standortübersicht',
+    auditChecksLabel: 'Checks',
+    auditStatuses: { ok: 'OK', planned: 'Planen', urgent: 'Dringend' },
+    auditCompleteLabel: 'Audit abgeschlossen',
+    auditStats: { assets: 'Anlagen geprüft', print: 'Print-Updates', risks: 'Risiken markiert' },
+    portalLiveLabel: 'Live Übersicht',
+    portalKpis: [
+      { label: 'Brand Health', value: '86%', sub: '+12% seit Audit', color: 'text-[#35b47a]' },
+      { label: 'Offene Tasks', value: '7', sub: '3 priorisiert', color: 'text-[#d99a35]' },
+      { label: 'Standorte', value: '24', sub: 'alle dokumentiert', color: 'text-[#526174]' },
+    ],
+    portalRows: [
+      { pin: 'B', city: 'Berlin Mitte', desc: 'Leuchtreklame und Fensterfolien geprüft', status: 'OK', statusColor: 'bg-[#35b47a]/15 text-[#35b47a]' },
+      { pin: 'H', city: 'Hamburg Store', desc: 'Posterwechsel und LED-Service geplant', status: 'Planen', statusColor: 'bg-[#d99a35]/15 text-[#d99a35]' },
+      { pin: 'K', city: 'Köln Süd', desc: 'Befestigung prüfen, Fotoreport liegt vor', status: 'Dringend', statusColor: 'bg-[#d65f5f]/15 text-[#d65f5f]' },
+    ],
+    reportReadyTitle: 'Audit-Report bereit',
+    reportReadyText: 'Fotos, Zustände, Prioritäten pro Standort.',
+    reportButton: 'Report ansehen',
+  },
+  en: {
+    targetEyebrow: 'SECTORS',
+    auditEyebrow: 'Service plan',
+    platformEyebrow: 'Customer portal & reports',
+    finalEyebrow: 'NEXT STEP',
+    auditImageAlt: 'Audit and location maintenance',
+    auditOverviewLabel: 'Location overview',
+    auditChecksLabel: 'Checks',
+    auditStatuses: { ok: 'OK', planned: 'Planned', urgent: 'Urgent' },
+    auditCompleteLabel: 'Audit completed',
+    auditStats: { assets: 'assets checked', print: 'print updates', risks: 'risks marked' },
+    portalLiveLabel: 'Live overview',
+    portalKpis: [
+      { label: 'Brand health', value: '86%', sub: '+12% since audit', color: 'text-[#35b47a]' },
+      { label: 'Open tasks', value: '7', sub: '3 prioritized', color: 'text-[#d99a35]' },
+      { label: 'Locations', value: '24', sub: 'all documented', color: 'text-[#526174]' },
+    ],
+    portalRows: [
+      { pin: 'B', city: 'Berlin Mitte', desc: 'Light sign and window films checked', status: 'OK', statusColor: 'bg-[#35b47a]/15 text-[#35b47a]' },
+      { pin: 'H', city: 'Hamburg Store', desc: 'Poster change and LED service planned', status: 'Planned', statusColor: 'bg-[#d99a35]/15 text-[#d99a35]' },
+      { pin: 'K', city: 'Köln Süd', desc: 'Mounting check, photo report available', status: 'Urgent', statusColor: 'bg-[#d65f5f]/15 text-[#d65f5f]' },
+    ],
+    reportReadyTitle: 'Audit report ready',
+    reportReadyText: 'Photos, condition, priorities per location.',
+    reportButton: 'View report',
+  },
+  ru: {
+    targetEyebrow: 'СЕГМЕНТЫ',
+    auditEyebrow: 'Сервисное сопровождение',
+    platformEyebrow: 'Кабинет и отчеты',
+    finalEyebrow: 'СЛЕДУЮЩИЙ ШАГ',
+    auditImageAlt: 'Аудит и обслуживание объектов',
+    auditOverviewLabel: 'Обзор объектов',
+    auditChecksLabel: 'проверок',
+    auditStatuses: { ok: 'OK', planned: 'План', urgent: 'Срочно' },
+    auditCompleteLabel: 'Аудит завершен',
+    auditStats: { assets: 'объектов проверено', print: 'обновлений печати', risks: 'риска отмечено' },
+    portalLiveLabel: 'Живой обзор',
+    portalKpis: [
+      { label: 'Состояние бренда', value: '86%', sub: '+12% после аудита', color: 'text-[#35b47a]' },
+      { label: 'Открытые задачи', value: '7', sub: '3 в приоритете', color: 'text-[#d99a35]' },
+      { label: 'Объекты', value: '24', sub: 'все задокументированы', color: 'text-[#526174]' },
+    ],
+    portalRows: [
+      { pin: 'B', city: 'Berlin Mitte', desc: 'Проверены световая реклама и оконные пленки', status: 'OK', statusColor: 'bg-[#35b47a]/15 text-[#35b47a]' },
+      { pin: 'H', city: 'Hamburg Store', desc: 'Запланированы замена постеров и LED-сервис', status: 'План', statusColor: 'bg-[#d99a35]/15 text-[#d99a35]' },
+      { pin: 'K', city: 'Köln Süd', desc: 'Проверить крепление, фотоотчет готов', status: 'Срочно', statusColor: 'bg-[#d65f5f]/15 text-[#d65f5f]' },
+    ],
+    reportReadyTitle: 'Аудит-отчет готов',
+    reportReadyText: 'Фото, состояния и приоритеты по каждому объекту.',
+    reportButton: 'Открыть отчет',
+  },
+  tr: {
+    targetEyebrow: 'SEKTÖRLER',
+    auditEyebrow: 'Servis paketi',
+    platformEyebrow: 'Müşteri portalı ve raporlar',
+    finalEyebrow: 'SONRAKI ADIM',
+    auditImageAlt: 'Denetim ve lokasyon bakımı',
+    auditOverviewLabel: 'Lokasyon özeti',
+    auditChecksLabel: 'kontrol',
+    auditStatuses: { ok: 'OK', planned: 'Planlı', urgent: 'Acil' },
+    auditCompleteLabel: 'Denetim tamamlandı',
+    auditStats: { assets: 'alan kontrol edildi', print: 'baskı güncellemesi', risks: 'risk işaretlendi' },
+    portalLiveLabel: 'Canlı özet',
+    portalKpis: [
+      { label: 'Marka sağlığı', value: '86%', sub: '+12% denetimden beri', color: 'text-[#35b47a]' },
+      { label: 'Açık görevler', value: '7', sub: '3 öncelikli', color: 'text-[#d99a35]' },
+      { label: 'Lokasyonlar', value: '24', sub: 'tümü belgeli', color: 'text-[#526174]' },
+    ],
+    portalRows: [
+      { pin: 'B', city: 'Berlin Mitte', desc: 'Işıklı tabela ve cam folyoları kontrol edildi', status: 'OK', statusColor: 'bg-[#35b47a]/15 text-[#35b47a]' },
+      { pin: 'H', city: 'Hamburg Store', desc: 'Poster değişimi ve LED servisi planlandı', status: 'Planlı', statusColor: 'bg-[#d99a35]/15 text-[#d99a35]' },
+      { pin: 'K', city: 'Köln Süd', desc: 'Bağlantı kontrolü, foto raporu hazır', status: 'Acil', statusColor: 'bg-[#d65f5f]/15 text-[#d65f5f]' },
+    ],
+    reportReadyTitle: 'Denetim raporu hazır',
+    reportReadyText: 'Her lokasyon için fotoğraflar, durumlar ve öncelikler.',
+    reportButton: 'Raporu aç',
+  },
+  pl: {
+    targetEyebrow: 'SEKTORY',
+    auditEyebrow: 'Pakiet serwisowy',
+    platformEyebrow: 'Portal klienta i raporty',
+    finalEyebrow: 'NASTEPNY KROK',
+    auditImageAlt: 'Audyt i obsługa lokalizacji',
+    auditOverviewLabel: 'Przegląd lokalizacji',
+    auditChecksLabel: 'kontroli',
+    auditStatuses: { ok: 'OK', planned: 'Plan', urgent: 'Pilne' },
+    auditCompleteLabel: 'Audyt zakończony',
+    auditStats: { assets: 'lokali sprawdzono', print: 'aktualizacji druku', risks: 'ryzyka oznaczono' },
+    portalLiveLabel: 'Podgląd live',
+    portalKpis: [
+      { label: 'Kondycja marki', value: '86%', sub: '+12% po audycie', color: 'text-[#35b47a]' },
+      { label: 'Otwarte zadania', value: '7', sub: '3 priorytetowe', color: 'text-[#d99a35]' },
+      { label: 'Lokalizacje', value: '24', sub: 'wszystkie opisane', color: 'text-[#526174]' },
+    ],
+    portalRows: [
+      { pin: 'B', city: 'Berlin Mitte', desc: 'Sprawdzono reklamę świetlną i folie okienne', status: 'OK', statusColor: 'bg-[#35b47a]/15 text-[#35b47a]' },
+      { pin: 'H', city: 'Hamburg Store', desc: 'Zaplanowano wymianę plakatów i serwis LED', status: 'Plan', statusColor: 'bg-[#d99a35]/15 text-[#d99a35]' },
+      { pin: 'K', city: 'Köln Süd', desc: 'Sprawdzić mocowanie, raport foto gotowy', status: 'Pilne', statusColor: 'bg-[#d65f5f]/15 text-[#d65f5f]' },
+    ],
+    reportReadyTitle: 'Raport audytu gotowy',
+    reportReadyText: 'Zdjęcia, stany i priorytety dla każdej lokalizacji.',
+    reportButton: 'Zobacz raport',
+  },
+  ar: {
+    targetEyebrow: 'القطاعات',
+    auditEyebrow: 'باقة الخدمة',
+    platformEyebrow: 'بوابة العميل والتقارير',
+    finalEyebrow: 'الخطوة التالية',
+    auditImageAlt: 'تدقيق وصيانة المواقع',
+    auditOverviewLabel: 'نظرة عامة على المواقع',
+    auditChecksLabel: 'فحص',
+    auditStatuses: { ok: 'OK', planned: 'مخطط', urgent: 'عاجل' },
+    auditCompleteLabel: 'اكتمل التدقيق',
+    auditStats: { assets: 'موقعاً تم فحصه', print: 'تحديثات طباعة', risks: 'مخاطر محددة' },
+    portalLiveLabel: 'نظرة مباشرة',
+    portalKpis: [
+      { label: 'صحة العلامة', value: '86%', sub: '+12% بعد التدقيق', color: 'text-[#35b47a]' },
+      { label: 'مهام مفتوحة', value: '7', sub: '3 ذات أولوية', color: 'text-[#d99a35]' },
+      { label: 'المواقع', value: '24', sub: 'موثقة بالكامل', color: 'text-[#526174]' },
+    ],
+    portalRows: [
+      { pin: 'B', city: 'Berlin Mitte', desc: 'تم فحص اللوحة المضيئة وملصقات النوافذ', status: 'OK', statusColor: 'bg-[#35b47a]/15 text-[#35b47a]' },
+      { pin: 'H', city: 'Hamburg Store', desc: 'تم تخطيط تغيير الملصقات وخدمة LED', status: 'مخطط', statusColor: 'bg-[#d99a35]/15 text-[#d99a35]' },
+      { pin: 'K', city: 'Köln Süd', desc: 'فحص التثبيت، تقرير الصور جاهز', status: 'عاجل', statusColor: 'bg-[#d65f5f]/15 text-[#d65f5f]' },
+    ],
+    reportReadyTitle: 'تقرير التدقيق جاهز',
+    reportReadyText: 'صور وحالات وأولويات لكل موقع.',
+    reportButton: 'عرض التقرير',
+  },
 };
 
 export async function generateMetadata({
@@ -316,6 +520,7 @@ export default async function BusinessPage({
   const resolvedParams = await params;
   const locale = (resolvedParams?.locale || 'de') as Locale;
   const tContent = CONTENT[locale] || CONTENT.de;
+  const mockup = MOCKUP_CONTENT[locale] || MOCKUP_CONTENT.de;
   const isRtl = locale === 'ar';
 
   const globalCms = await getGlobalPageCmsContent(locale);
@@ -409,13 +614,17 @@ export default async function BusinessPage({
 
         {/* TARGET GROUPS */}
         {content.targetEnabled !== false && (
-          <section className="py-24 bg-white relative">
+          <section className="relative bg-white pb-[100px] pt-[44px]">
             <div className="max-w-7xl mx-auto px-6">
+              <SectionEyebrow className="mb-[43px]">
+                {mockup.targetEyebrow}
+              </SectionEyebrow>
+
               <div className="max-w-2xl mb-16">
-                <h2 className="text-[36px] font-extrabold text-[#0D1B2A] leading-tight mb-4">
+                <h2 className={BUSINESS_SECTION_TITLE_CLASS}>
                   {content.targetTitle}
                 </h2>
-                <p className="text-[18px] text-[#4A5568] leading-relaxed">
+                <p className={BUSINESS_SECTION_INTRO_ACCENT_CLASS}>
                   {content.targetIntro}
                 </p>
               </div>
@@ -428,57 +637,40 @@ export default async function BusinessPage({
         {/* AUDIT & SUBSCRIPTION */}
         {content.auditEnabled !== false && (
           <section
-            className="relative overflow-hidden py-24 lg:py-32"
+            className="relative overflow-hidden pb-[100px] pt-[44px]"
             style={{
               background:
                 'radial-gradient(circle at 14% 16%, rgba(184,100,62,0.10) 0%, transparent 28%), linear-gradient(180deg, #eef5fc 0%, #f7fbff 100%)',
             }}
           >
             <div className="mx-auto max-w-7xl px-6">
+              <SectionEyebrow className="mb-[43px]">
+                {mockup.auditEyebrow}
+              </SectionEyebrow>
+
               <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
                 {/* Copy */}
                 <div className="relative z-10">
-                  <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-[#B8643E]/10 px-4 py-2 text-[13px] font-extrabold tracking-wide text-[#8c4a2a] shadow-[inset_0_0_0_1px_rgba(184,100,62,0.10)]">
-                    <span className="inline-block h-2 w-2 rounded-full bg-[#B8643E] shadow-[0_0_0_4px_rgba(184,100,62,0.15)]" />
-                    Service-Abo
-                  </div>
-
-                  <h2 className="mt-4 text-[32px] font-black leading-[1.08] tracking-tight text-[#081827] sm:text-[38px] lg:text-[44px]">
+                  <h2 className={BUSINESS_SECTION_TITLE_CLASS}>
                     {content.auditTitle}
                   </h2>
 
-                  <p className="mt-6 max-w-[580px] text-[clamp(16px,1.3vw,20px)] leading-[1.6] tracking-[-0.01em] text-[#526174]">
+                  <p className={BUSINESS_SECTION_INTRO_ACCENT_CLASS}>
                     {content.auditIntro}
                   </p>
 
-                  {/* Pill tags */}
-                  <div className="mt-6 flex flex-wrap gap-2">
-                    {['Audit', 'Wartung', 'Brand Consistency', 'Planbare Service-Raten'].map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center gap-2 rounded-full border border-[#dce7f1] bg-white/75 px-3 py-2 text-[13px] font-semibold text-[#324252]"
-                      >
-                        <span className="inline-block h-2 w-2 rounded-full bg-[#35b47a]" />
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
                   {/* Benefit cards */}
                   <div className="mt-8 grid gap-3">
-                    {content.auditBenefits.map((benefit, i) => (
+                    {content.auditBenefits.map((benefit) => (
                       <div
                         key={benefit.id}
-                        className="grid grid-cols-[48px_1fr] items-start gap-4 rounded-[22px] border border-[#dce7f1]/80 bg-white/62 p-5 shadow-[0_10px_30px_rgba(8,24,39,0.05)] backdrop-blur-md"
+                        className="rounded-[22px] border border-[#dce7f1]/80 bg-white/62 p-5 shadow-[0_10px_30px_rgba(8,24,39,0.05)] backdrop-blur-md"
                       >
-                        <div className="grid h-12 w-12 place-items-center rounded-full bg-white text-[#B8643E] font-black shadow-[0_8px_20px_rgba(8,24,39,0.10),inset_0_0_0_1px_rgba(8,24,39,0.08)]">
-                          {i + 1}
-                        </div>
                         <div>
-                          <h3 className="text-[16px] font-black leading-snug tracking-tight text-[#081827] sm:text-[18px]">
+                          <h3 className={BUSINESS_CARD_TITLE_CLASS}>
                             {benefit.title}
                           </h3>
-                          <p className="mt-1.5 text-[14px] leading-[1.5] text-[#526174]">{benefit.description}</p>
+                          <p className={BUSINESS_CARD_BODY_CLASS}>{benefit.description}</p>
                         </div>
                       </div>
                     ))}
@@ -503,12 +695,12 @@ export default async function BusinessPage({
                 </div>
 
                 {/* Visual */}
-                <div className="relative z-10 min-h-[520px] lg:min-h-[590px]">
+                <div className="relative z-10 min-h-[560px] lg:min-h-[600px]">
                   {/* Background photo */}
                   <div className="absolute inset-0 overflow-hidden rounded-[34px]">
                     <Image
                       src="/images/leistungen/hero-branding.png"
-                      alt="Audit & Standort-Wartung"
+                      alt={mockup.auditImageAlt}
                       fill
                       className="object-cover"
                     />
@@ -526,13 +718,13 @@ export default async function BusinessPage({
                     aria-hidden="true"
                     className="absolute left-5 top-6 z-10 w-[210px] rounded-2xl border border-white/20 bg-white/12 p-4 shadow-[0_20px_50px_rgba(8,24,39,0.22)] backdrop-blur-md"
                   >
-                    <p className="mb-1 text-[11px] font-semibold uppercase tracking-widest text-white/60">Standortübersicht</p>
-                    <p className="mb-3 text-[28px] font-black leading-none text-white">24 Checks</p>
+                    <p className="mb-1 text-[11px] font-semibold uppercase tracking-widest text-white/60">{mockup.auditOverviewLabel}</p>
+                    <p className="mb-3 text-[28px] font-black leading-none text-white">24 {mockup.auditChecksLabel}</p>
                     <div className="space-y-1.5">
                       {[
-                        { city: 'Berlin Mitte', status: 'OK', color: 'bg-[#35b47a]' },
-                        { city: 'Hamburg Store', status: 'Planen', color: 'bg-[#d99a35]' },
-                        { city: 'Köln Süd', status: 'Dringend', color: 'bg-[#d65f5f]' },
+                        { city: 'Berlin Mitte', status: mockup.auditStatuses.ok, color: 'bg-[#35b47a]' },
+                        { city: 'Hamburg Store', status: mockup.auditStatuses.planned, color: 'bg-[#d99a35]' },
+                        { city: 'Köln Süd', status: mockup.auditStatuses.urgent, color: 'bg-[#d65f5f]' },
                       ].map(({ city, status, color }) => (
                         <div key={city} className="flex items-center justify-between rounded-lg bg-white/8 px-3 py-1.5">
                           <span className="text-[12px] text-white/80">{city}</span>
@@ -553,7 +745,7 @@ export default async function BusinessPage({
                     <div className="mb-3 flex items-center justify-between">
                       <div className="flex items-center gap-2 text-[14px] font-bold text-white">
                         <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-[#35b47a]" />
-                        Audit abgeschlossen
+                        {mockup.auditCompleteLabel}
                       </div>
                       <span className="text-[22px] font-black text-white">86%</span>
                     </div>
@@ -561,9 +753,9 @@ export default async function BusinessPage({
                       <div className="h-full w-[86%] rounded-full bg-[#B8643E]" />
                     </div>
                     <div className="grid grid-cols-3 gap-2 text-center text-[12px] text-white/70">
-                      <div><span className="block text-[17px] font-black text-white">18</span>Anlagen geprüft</div>
-                      <div><span className="block text-[17px] font-black text-white">5</span>Print-Updates</div>
-                      <div><span className="block text-[17px] font-black text-white">2</span>Risiken markiert</div>
+                      <div><span className="block text-[17px] font-black text-white">18</span>{mockup.auditStats.assets}</div>
+                      <div><span className="block text-[17px] font-black text-white">5</span>{mockup.auditStats.print}</div>
+                      <div><span className="block text-[17px] font-black text-white">2</span>{mockup.auditStats.risks}</div>
                     </div>
                   </div>
                 </div>
@@ -573,12 +765,16 @@ export default async function BusinessPage({
         )}
 
         {content.platformEnabled !== false && (
-          <section className="relative overflow-hidden bg-white py-24 lg:py-32">
+          <section className="relative overflow-hidden bg-white pb-[100px] pt-[44px]">
             <div className="mx-auto max-w-7xl px-6">
+              <SectionEyebrow className="mb-[43px]">
+                {mockup.platformEyebrow}
+              </SectionEyebrow>
+
               <div className={`grid items-center gap-12 lg:grid-cols-2 lg:gap-20 ${isRtl ? 'lg:flex lg:flex-row-reverse' : ''}`}>
 
                 {/* Portal window mockup */}
-                <div className="relative min-h-[540px] lg:min-h-[600px]">
+                <div className="relative min-h-[560px] lg:min-h-[600px]">
                   {/* Main window */}
                   <div className="absolute inset-0 overflow-hidden rounded-[28px] border border-[#dce7f1] bg-white shadow-[0_26px_70px_rgba(8,24,39,0.13)]">
                     {/* Window top bar */}
@@ -587,18 +783,14 @@ export default async function BusinessPage({
                         <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#081827] text-[10px] font-black text-white">PR</span>
                         <span className="text-[13px] font-bold text-[#081827]">PixelRing Portal</span>
                       </div>
-                      <span className="text-[12px] font-semibold text-[#526174]">Live Übersicht</span>
+                      <span className="text-[12px] font-semibold text-[#526174]">{mockup.portalLiveLabel}</span>
                     </div>
 
                     {/* Portal content */}
                     <div className="p-5">
                       {/* KPI row */}
                       <div className="mb-4 grid grid-cols-3 gap-3">
-                        {[
-                          { label: 'Brand Health', value: '86%', sub: '+12% seit Audit', color: 'text-[#35b47a]' },
-                          { label: 'Offene Tasks', value: '7', sub: '3 priorisiert', color: 'text-[#d99a35]' },
-                          { label: 'Standorte', value: '24', sub: 'alle dokumentiert', color: 'text-[#526174]' },
-                        ].map(({ label, value, sub, color }) => (
+                        {mockup.portalKpis.map(({ label, value, sub, color }) => (
                           <div key={label} className="flex flex-col rounded-xl border border-[#eef3fb] bg-[#f8fbff] px-3 py-3">
                             <span className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-[#526174]">{label}</span>
                             <span className={`text-[22px] font-black leading-none ${color}`}>{value}</span>
@@ -609,11 +801,7 @@ export default async function BusinessPage({
 
                       {/* Location rows */}
                       <div className="space-y-2">
-                        {[
-                          { pin: 'B', city: 'Berlin Mitte', desc: 'Leuchtreklame und Fensterfolien geprüft', status: 'OK', statusColor: 'bg-[#35b47a]/15 text-[#35b47a]' },
-                          { pin: 'H', city: 'Hamburg Store', desc: 'Posterwechsel und LED-Service geplant', status: 'Planen', statusColor: 'bg-[#d99a35]/15 text-[#d99a35]' },
-                          { pin: 'K', city: 'Köln Süd', desc: 'Befestigung prüfen, Fotoreport liegt vor', status: 'Dringend', statusColor: 'bg-[#d65f5f]/15 text-[#d65f5f]' },
-                        ].map(({ pin, city, desc, status, statusColor }) => (
+                        {mockup.portalRows.map(({ pin, city, desc, status, statusColor }) => (
                           <div key={city} className="flex items-center justify-between rounded-xl border border-[#eef3fb] bg-white px-4 py-3 shadow-[0_2px_8px_rgba(8,24,39,0.04)]">
                             <div className="flex items-center gap-3">
                               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#081827] text-[11px] font-black text-white">{pin}</div>
@@ -631,13 +819,16 @@ export default async function BusinessPage({
 
                   {/* Floating report card */}
                   <div
-                    aria-hidden="true"
                     className="absolute -bottom-4 -right-2 z-10 w-[200px] rounded-2xl border border-[#dce7f1] bg-white p-4 shadow-[0_20px_50px_rgba(8,24,39,0.14)] lg:-right-6"
                   >
-                    <p className="mb-1 text-[13px] font-black text-[#081827]">Audit-Report bereit</p>
-                    <p className="text-[11px] leading-snug text-[#526174]">Fotos, Zustände, Prioritäten pro Standort.</p>
+                    <p className="mb-1 text-[13px] font-black text-[#081827]">{mockup.reportReadyTitle}</p>
+                    <p className="text-[11px] leading-snug text-[#526174]">{mockup.reportReadyText}</p>
                     <div className="mt-3 flex items-center justify-between">
-                      <span className="rounded-full bg-[#081827] px-3 py-1 text-[10px] font-black text-white">Report ansehen</span>
+                      <BusinessReportDemoButton
+                        locale={locale}
+                        label={mockup.reportButton}
+                        presentationHref={BUSINESS_PRESENTATION_HREF}
+                      />
                       <div className="flex -space-x-1.5">
                         {['bg-[#B8643E]', 'bg-[#526174]', 'bg-[#35b47a]'].map((c, i) => (
                           <span key={i} className={`h-5 w-5 rounded-full border-2 border-white ${c}`} />
@@ -649,16 +840,11 @@ export default async function BusinessPage({
 
                 {/* Copy */}
                 <div>
-                  <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-[#B8643E]/10 px-4 py-2 text-[13px] font-extrabold tracking-wide text-[#8c4a2a] shadow-[inset_0_0_0_1px_rgba(184,100,62,0.10)]">
-                    <span className="inline-block h-2 w-2 rounded-full bg-[#B8643E] shadow-[0_0_0_4px_rgba(184,100,62,0.15)]" />
-                    Kundenportal & Reports
-                  </div>
-
-                  <h2 className="mt-4 text-[32px] font-black leading-[1.08] tracking-tight text-[#081827] sm:text-[38px] lg:text-[44px]">
+                  <h2 className={BUSINESS_SECTION_TITLE_CLASS}>
                     {content.platformTitle}
                   </h2>
 
-                  <p className="mt-6 max-w-[540px] text-[clamp(16px,1.3vw,20px)] leading-[1.6] tracking-[-0.01em] text-[#526174]">
+                  <p className={BUSINESS_SECTION_INTRO_ACCENT_CLASS}>
                     {content.platformIntro}
                   </p>
 
@@ -670,21 +856,21 @@ export default async function BusinessPage({
                           ✓
                         </div>
                         <div>
-                          <h3 className="text-[16px] font-black leading-snug tracking-tight text-[#081827] sm:text-[18px]">
+                          <h3 className={BUSINESS_CARD_TITLE_CLASS}>
                             {benefit.title}
                           </h3>
-                          <p className="mt-1 text-[14px] leading-[1.5] text-[#526174]">{benefit.description}</p>
+                          <p className={BUSINESS_CARD_BODY_CLASS}>{benefit.description}</p>
                         </div>
                       </div>
                     ))}
                   </div>
 
                   {/* Note */}
-                  <div className="mt-6 flex items-start gap-3 rounded-2xl border border-[#dce7f1] bg-[#f8fbff] px-4 py-3">
-                    <span className="mt-0.5 h-2.5 w-2.5 shrink-0 animate-pulse rounded-full bg-[#35b47a]" />
-                    <p className="text-[13px] text-[#526174]">
-                      <strong className="text-[#081827]">Ideal für Filialnetze:</strong>{' '}
-                      eine Übersicht statt verstreuter E-Mails, Fotos und Einzelaufträge.
+                  <div className="mt-6 flex items-start gap-3 border-l-2 border-[#35b47a]/35 py-1 pl-4 rtl:border-l-0 rtl:border-r-2 rtl:pl-0 rtl:pr-4">
+                    <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#35b47a]" />
+                    <p className="text-[13px] leading-[1.55] text-[#526174]">
+                      <strong className="text-[#081827]">{content.platformNoteLead}</strong>{' '}
+                      {content.platformNoteText}
                     </p>
                   </div>
 
@@ -712,28 +898,39 @@ export default async function BusinessPage({
         )}
 
         {content.trustEnabled !== false && (
-          <section className="relative w-full py-24 sm:py-32 overflow-hidden bg-[#0E1A2B] rounded-t-[40px] sm:rounded-t-[80px] text-center">
-             <div className="max-w-4xl mx-auto px-6">
-               <h2 className="text-[36px] md:text-[48px] font-extrabold text-white leading-tight mb-6">
-                 {content.trustTitle}
-               </h2>
-               <p className="text-[18px] md:text-[22px] text-white/70 leading-relaxed mb-12">
-                 {content.trustIntro}
-               </p>
-               {content.finalEnabled !== false && (
-                 <div className="flex justify-center">
-                    <div className="bg-gradient-to-r from-[#B8643E] to-[#9E5332] p-10 rounded-[32px] max-w-2xl border border-white/10 shadow-2xl">
-                       <h3 className="text-white text-[24px] font-bold mb-4">{content.finalHeadline}</h3>
-                       <p className="text-white/80 mb-8">{content.finalText}</p>
-                       <LeistungenRequestButton
-                          label={content.finalCta}
-                          serviceIntent="wartung-servicevertrag"
-                          className="!bg-white !text-[#0D1B2A] hover:!bg-gray-100 !min-h-[56px] !px-8 !text-[16px] mx-auto"
-                       />
-                    </div>
-                 </div>
-               )}
-             </div>
+          <section className="bg-white px-6 py-14 sm:py-18">
+            <div className="mx-auto max-w-7xl">
+              <div
+                className="grid gap-8 overflow-hidden rounded-[28px] border border-[#d3b2a2]/50 px-6 py-7 shadow-[0_18px_50px_rgba(8,24,39,0.08)] sm:px-8 sm:py-9 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-12"
+                style={{
+                  background:
+                    'radial-gradient(circle at 88% 18%, rgba(184,100,62,0.16) 0%, transparent 30%), linear-gradient(135deg, #F3E7DE 0%, #EEF3F8 100%)',
+                }}
+              >
+                <div className="min-w-0">
+                  <SectionEyebrow className="mb-5">{mockup.finalEyebrow}</SectionEyebrow>
+                  <h2 className="max-w-3xl text-[28px] font-extrabold leading-[1.12] tracking-[0] text-[#081827] sm:text-[34px] lg:text-[38px]">
+                    {content.finalHeadline}
+                  </h2>
+                  <p className="mt-4 max-w-2xl text-[16px] leading-[1.65] text-[#526174] sm:text-[17px]">
+                    {content.finalText}
+                  </p>
+                  <p className="mt-4 max-w-2xl border-l-2 border-[#B8643E] pl-4 text-[14px] font-semibold leading-6 text-[#526174] rtl:border-l-0 rtl:border-r-2 rtl:pl-0 rtl:pr-4">
+                    {content.trustIntro}
+                  </p>
+                </div>
+
+                {content.finalEnabled !== false && (
+                  <div className="flex flex-wrap items-center gap-3 lg:justify-end">
+                    <LeistungenRequestButton
+                      label={content.finalCta}
+                      serviceIntent="wartung-servicevertrag"
+                      className="min-h-[52px] px-7 text-[15px] font-black shadow-[0_16px_34px_rgba(184,100,62,0.22)]"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
           </section>
         )}
 

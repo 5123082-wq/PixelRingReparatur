@@ -4,6 +4,7 @@ import React, { useRef, useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { useLocale } from 'next-intl';
 import { ExcellenceCmsContent } from '@/lib/cms/pages';
+import SectionEyebrow from '../common/SectionEyebrow';
 
 interface ExcellenceCarouselProps {
   content?: ExcellenceCmsContent;
@@ -121,6 +122,7 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="flex flex-col gap-4">
+            <SectionEyebrow>WORK</SectionEyebrow>
             <h2 className="text-[32px] md:text-[42px] font-bold text-[#0E1A2B] leading-[1.1] tracking-[0]">
               {content?.title || ''}
             </h2>

@@ -45,7 +45,7 @@ const LABELS: Record<ProblemKnowledgeLocale, ProblemKnowledgeLabels> = {
     warnings: 'When it is urgent',
   },
   ru: {
-    answer: 'Короткий ответ ассистента',
+    answer: 'Основные симптомы',
     causes: 'Возможные причины',
     questions: 'Безопасные уточняющие вопросы',
     checks: 'Что проверяет PixelRing',

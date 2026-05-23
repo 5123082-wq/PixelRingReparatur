@@ -2,8 +2,11 @@
 
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestButton';
+import CmsImage from '@/components/common/CmsImage';
+import SectionEyebrow from '@/components/common/SectionEyebrow';
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
 
@@ -100,8 +103,11 @@ type ReferencesExperienceProps = {
 
 type GalleryCardVariant = 'large' | 'vertical' | 'small' | 'wide';
 
-const SECTION_HEADING_CLASS = 'max-w-4xl text-3xl font-black leading-[1.05] text-[#0E1A2B] sm:text-4xl lg:text-[40px]';
-const SECTION_INTRO_CLASS = 'mt-4 max-w-3xl text-[16px] font-semibold leading-7 text-[#5D6662] sm:text-[17px]';
+const SECTION_HEADING_CLASS =
+  'max-w-4xl text-[36px] font-extrabold leading-[42px] tracking-[0] text-[#081827] sm:text-[40px] sm:leading-[46px] lg:text-[44px] lg:leading-[50px]';
+const SECTION_INTRO_CLASS = 'mt-6 max-w-[580px] text-[18px] font-normal leading-[1.6] tracking-[0] text-[#526174]';
+const SECTION_INTRO_ACCENT_CLASS =
+  `${SECTION_INTRO_CLASS} border-l-2 border-[#B8643E] pl-4 rtl:border-l-0 rtl:border-r-2 rtl:pl-0 rtl:pr-4`;
 
 const GALLERY_SECTION_TITLES: Record<Locale, string> = {
   de: 'Galerie der Arbeiten',
@@ -110,6 +116,24 @@ const GALLERY_SECTION_TITLES: Record<Locale, string> = {
   tr: 'İş galerisi',
   pl: 'Galeria prac',
   ar: 'معرض الأعمال',
+};
+
+const FINAL_CTA_EYEBROWS: Record<Locale, string> = {
+  de: 'NEXT STEP',
+  en: 'NEXT STEP',
+  ru: 'СЛЕДУЮЩИЙ ШАГ',
+  tr: 'SONRAKI ADIM',
+  pl: 'NASTEPNY KROK',
+  ar: 'الخطوة التالية',
+};
+
+const CATEGORY_SECTION_EYEBROWS: Record<Locale, string> = {
+  de: 'Servicebereiche',
+  en: 'Service areas',
+  ru: 'НАПРАВЛЕНИЯ',
+  tr: 'HIZMET ALANLARI',
+  pl: 'OBSZARY USLUG',
+  ar: 'مجالات الخدمة',
 };
 
 const REPORT_HOOKS: Record<Locale, ReportHook[]> = {
@@ -248,7 +272,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
 
     const intervalId = window.setInterval(() => {
       setActiveHeroSlide((current) => (current + 1) % heroSlides.length);
-    }, 5200);
+    }, 8000);
 
     return () => window.clearInterval(intervalId);
   }, [heroSlides.length]);
@@ -566,40 +590,60 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
 
   return (
     <main className="flex-grow bg-white text-[#101418]">
-      <section className="relative isolate flex h-[440px] overflow-hidden bg-[#08111C] sm:h-[500px] lg:h-[560px]">
-        {heroSlides.map((src, index) => (
-          <Image
-            key={src}
-            src={src}
-            alt=""
-            fill
-            priority={index === 0}
-            sizes="100vw"
-            className={`object-cover transition-[opacity,transform] duration-[1400ms] ease-out ${
-              index === activeHeroSlide ? 'scale-100 opacity-100' : 'scale-105 opacity-0'
-            }`}
-          />
-        ))}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#08111C]/82 via-[#08111C]/28 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#08111C]/48 via-[#08111C]/12 to-transparent rtl:bg-gradient-to-l" />
-        <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col justify-end px-5 pb-12 sm:px-8 sm:pb-14 lg:px-10 lg:pb-16">
-          <div className="max-w-[860px]">
-            <h1 className="max-w-[860px] text-[36px] font-black leading-[1.05] text-white sm:text-[52px] lg:text-[60px]">
-              {content.heroTitle}
-            </h1>
-            <p className="mt-5 max-w-[720px] text-[16px] font-semibold leading-relaxed text-white/88 sm:text-[18px]">
-              {content.heroIntro}
-            </p>
-          </div>
-        </div>
+      <section className="relative h-[440px] w-full overflow-hidden bg-[#0E1A2B] sm:h-[500px] lg:h-[560px]">
+        <AnimatePresence initial={false}>
+          <motion.div
+            key={activeHeroSlide}
+            initial={{ opacity: 0 }}
+            animate={{ zIndex: 1, opacity: 1 }}
+            exit={{ zIndex: 0, opacity: 0 }}
+            transition={{
+              opacity: { duration: 0.7 },
+            }}
+            className="absolute inset-0"
+          >
+            <div className="relative h-full w-full">
+              <CmsImage
+                src={heroSlides[activeHeroSlide]}
+                alt=""
+                fill
+                loading="eager"
+                fetchPriority="high"
+                className="object-cover opacity-85"
+                sizes="100vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0E1A2B]/80 via-[#0E1A2B]/25 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0E1A2B]/45 via-[#0E1A2B]/10 to-transparent rtl:bg-gradient-to-l" />
+
+              <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-4 pb-12 sm:px-6 sm:pb-14 lg:pb-16">
+                <motion.div
+                  initial={{ y: 14, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.15, duration: 0.65 }}
+                  className="max-w-[760px]"
+                >
+                  <h1 className="text-[36px] font-extrabold leading-[1.05] text-white sm:text-[52px] lg:text-[60px]">
+                    {content.heroTitle}
+                  </h1>
+                  <p className="mt-5 max-w-[680px] text-[16px] font-semibold leading-relaxed text-white/88 sm:text-[18px]">
+                    {content.heroIntro}
+                  </p>
+                </motion.div>
+              </div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </section>
 
-      <section id="recent-work" className="scroll-mt-32 overflow-hidden bg-white py-10 sm:py-14">
+      <section id="recent-work" className="scroll-mt-32 overflow-hidden bg-white pb-[100px] pt-[44px]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <SectionEyebrow className="mb-[43px]">
+            {content.recentEyebrow}
+          </SectionEyebrow>
           <h2 className={SECTION_HEADING_CLASS}>
             {content.recentTitle}
           </h2>
-          <p className={SECTION_INTRO_CLASS}>{content.recentIntro}</p>
+          <p className={SECTION_INTRO_ACCENT_CLASS}>{content.recentIntro}</p>
         </div>
         <div
           ref={carouselRef}
@@ -624,7 +668,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
           onPointerCancel={() => {
             carouselPausedRef.current = false;
           }}
-          className="no-scrollbar mt-10 overflow-x-auto px-[max(1rem,calc((100vw-80rem)/2+1.5rem))] pb-4"
+          className="no-scrollbar mt-12 overflow-x-auto px-[max(1rem,calc((100vw-80rem)/2+1.5rem))] pb-4"
           dir="ltr"
         >
           <div className="flex w-max gap-4">
@@ -652,14 +696,17 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
         </div>
       </section>
 
-      <section id="gallery" className="scroll-mt-32 overflow-hidden bg-white py-10 sm:py-12">
+      <section id="gallery" className="scroll-mt-32 overflow-hidden bg-white pb-[100px] pt-[44px]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <SectionEyebrow className="mb-[43px]">
+            {content.galleryEyebrow}
+          </SectionEyebrow>
           <h2 className={SECTION_HEADING_CLASS}>
             {GALLERY_SECTION_TITLES[content.locale]}
           </h2>
-          <p className={SECTION_INTRO_CLASS}>{content.galleryIntro}</p>
+          <p className={SECTION_INTRO_ACCENT_CLASS}>{content.galleryIntro}</p>
         </div>
-        <div className="relative mt-7">
+        <div className="relative mt-12">
           <div
             ref={galleryCarouselRef}
             className="no-scrollbar overflow-x-auto scroll-smooth px-[max(1rem,calc((100vw-80rem)/2+1.5rem))] pb-4"
@@ -675,11 +722,14 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
         </div>
       </section>
 
-      <section className="bg-[#EEF3FB] py-14 sm:py-20">
+      <section className="bg-white pb-[100px] pt-[44px]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <SectionEyebrow className="mb-[43px]">
+            {CATEGORY_SECTION_EYEBROWS[content.locale]}
+          </SectionEyebrow>
           <h2 className={SECTION_HEADING_CLASS}>{content.categoriesTitle}</h2>
-          <p className={SECTION_INTRO_CLASS}>{content.categoriesIntro}</p>
-          <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <p className={SECTION_INTRO_ACCENT_CLASS}>{content.categoriesIntro}</p>
+          <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {content.productCategories.map((item) => (
               <button
                 key={item.id}
@@ -712,18 +762,31 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
         </div>
       </section>
 
-      <section className="bg-white px-4 py-14 sm:px-6 sm:py-20">
-        <div className="mx-auto max-w-7xl overflow-hidden rounded-[28px] bg-[#24594D] p-8 text-white sm:p-12 lg:grid lg:grid-cols-[1fr_auto] lg:items-center lg:gap-10">
-          <div>
-            <h2 className="max-w-3xl text-3xl font-black leading-[1.08] sm:text-5xl">{content.finalTitle}</h2>
-            <p className="mt-5 max-w-2xl text-[17px] leading-8 text-white/78">{content.finalText}</p>
-          </div>
-          <div className="mt-8 lg:mt-0">
-            <LeistungenRequestButton
-              label={content.finalCta}
-              serviceIntent="diagnose"
-              className="!bg-white !text-[#0E1A2B] hover:!bg-[#F7F1E8]"
-            />
+      <section className="bg-white px-6 py-14 sm:py-18">
+        <div className="mx-auto max-w-7xl">
+          <div
+            className="grid gap-8 overflow-hidden rounded-[28px] border border-[#d3b2a2]/50 px-6 py-7 shadow-[0_18px_50px_rgba(8,24,39,0.08)] sm:px-8 sm:py-9 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-12"
+            style={{
+              background:
+                'radial-gradient(circle at 88% 18%, rgba(184,100,62,0.16) 0%, transparent 30%), linear-gradient(135deg, #F3E7DE 0%, #EEF3F8 100%)',
+            }}
+          >
+            <div className="min-w-0">
+              <SectionEyebrow className="mb-5">{FINAL_CTA_EYEBROWS[content.locale]}</SectionEyebrow>
+              <h2 className="max-w-3xl text-[28px] font-extrabold leading-[1.12] tracking-[0] text-[#081827] sm:text-[34px] lg:text-[38px]">
+                {content.finalTitle}
+              </h2>
+              <p className="mt-4 max-w-2xl text-[16px] leading-[1.65] text-[#526174] sm:text-[17px]">
+                {content.finalText}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3 lg:justify-end">
+              <LeistungenRequestButton
+                label={content.finalCta}
+                serviceIntent="diagnose"
+                className="min-h-[52px] px-7 text-[15px] font-black shadow-[0_16px_34px_rgba(184,100,62,0.22)]"
+              />
+            </div>
           </div>
         </div>
       </section>

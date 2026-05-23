@@ -46,6 +46,41 @@ Read deep when:
 
 ## Last Updated
 
+- Date: 2026-05-23
+- Updated by: Codex
+- **Current Stage**: Recorded accepted public-site design standards for inner-page final CTAs and large-section intro accent lines. Secondary public pages should use a compact final CTA with one primary service button only; large content-block intros may use the `#B8643E` reading-start accent line with RTL-aware placement. The `/business` page is the current reference.
+- **Next Action**: Apply these patterns gradually to other secondary public pages after owner review.
+
+- Date: 2026-05-22
+- Updated by: Codex
+- **Current Stage**: Added the design-system standard and shared component for `Section Eyebrow` / section overline labels, accepted the `/business` large-section content-air standard, and recorded the public content typography standard for B2B/feature blocks: `44px / 50px / 800` section headings, `18px / 1.6` intros, `20px / 25px / 900` card headings, and `15px / 1.55` card body text.
+- **Next Action**: When public-site sections are next edited, gradually replace remaining inline or pill-style section labels and align large feature sections to the accepted content-air and typography rules where appropriate.
+
+- Date: 2026-05-22
+- Updated by: Codex
+- **Current Stage**: Reorganized problem-article markdown drafts into numbered folders under `docs/07_content_ai_seo/problem_articles/`: `вывеска не светится – 01`, `вывеска мерцает – 02`, plus empty intake/next-article folders. Updated the no-light seed to read from the new folder path.
+- **Next Action**: Put new source articles into the next numbered folder or `входящие новые статьи`, then edit there before CMS/database loading.
+
+- Date: 2026-05-22
+- Updated by: Codex
+- **Current Stage**: Published the full `no-light` problem article into CMS/database for all six locales (DE, EN, RU, TR, PL, AR) from the markdown drafts. Added a repeatable seed script `db:seed:article-no-light`; local HTTP render verified on all six article URLs.
+- **Next Action**: Owner reviews `/ru/probleme-loesungen/werbeanlage-leuchtet-nicht` and other localized article pages in the browser for final copy/layout tone.
+
+- Date: 2026-05-21
+- Updated by: Codex
+- **Current Stage**: Updated the `Вывеска не светится` problem-article markdown draft and added localized DE, EN, TR, PL, and AR review drafts. CMS/database loading is intentionally deferred until owner review.
+- **Next Action**: Owner reviews the six markdown drafts in `docs/07_content_ai_seo/` before any CMS or seed-script synchronization.
+
+- Date: 2026-05-21
+- Updated by: Codex
+- **Current Stage**: Added the approved RU `Вывеска мерцает` article as a markdown review draft and created active problem-article rules for the three-layer structure: small card, modal, full article, owner review before CMS/database loading, safe self-repair boundaries, and anti-AI-writing style requirements.
+- **Next Action**: Use `docs/07_content_ai_seo/problem_article_rules.md` for all new problem articles and create markdown drafts for owner review before loading content into CMS.
+
+- Date: 2026-05-21
+- Updated by: Codex
+- **Current Stage**: Updated RU `/probleme-loesungen/werbeanlage-flackert` content from a human technician draft: small card now supports `Симптомы`/`Причины`, the modal includes a highlighted self-repair advice block, and the full article was reseeded in CMS. Production build verified; lint still has pre-existing unrelated errors.
+- **Next Action**: Owner reviews `/ru/probleme-loesungen` card/modal and `/ru/probleme-loesungen/werbeanlage-flackert` full article for tone, safety wording, and layout.
+
 - Date: 2026-05-21
 - Updated by: Antigravity
 - **Current Stage**: Redesigned the B2B Service & Maintenance section on `/leistungen` to match the high-fidelity compact dark glassmorphic design prototype. Verified next-intl localized translations (DE, EN, RU, TR, PL, AR), RTL rendering adjustments, and Next.js production build compilation.

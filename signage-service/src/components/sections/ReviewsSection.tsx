@@ -4,6 +4,7 @@ import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { useLocale } from 'next-intl';
 import { useInView } from 'framer-motion';
 import { ReviewCmsContent } from '@/lib/cms/pages';
+import SectionEyebrow from '../common/SectionEyebrow';
 
 interface ReviewsSectionProps {
   content?: ReviewCmsContent;
@@ -131,6 +132,7 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-4">
+              <SectionEyebrow>CASES</SectionEyebrow>
               <h2 className="text-[34px] md:text-[44px] font-bold text-[#0E1A2B] leading-[1.1] tracking-[0]">
                 {content?.title || ''}
               </h2>

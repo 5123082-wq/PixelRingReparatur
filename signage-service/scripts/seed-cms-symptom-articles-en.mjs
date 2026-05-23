@@ -517,6 +517,7 @@ async function main() {
     }
 
     await client.query('commit');
+    await import('./seed-article-no-light-all-locales.mjs');
 
     console.log(
       JSON.stringify({
