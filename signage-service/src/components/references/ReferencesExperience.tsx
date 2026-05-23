@@ -108,6 +108,7 @@ const SECTION_HEADING_CLASS =
 const SECTION_INTRO_CLASS = 'mt-6 max-w-[580px] text-[18px] font-normal leading-[1.6] tracking-[0] text-[#526174]';
 const SECTION_INTRO_ACCENT_CLASS =
   `${SECTION_INTRO_CLASS} border-l-2 border-[#B8643E] pl-4 rtl:border-l-0 rtl:border-r-2 rtl:pl-0 rtl:pr-4`;
+const HERO_FALLBACK_IMAGE = '/images/hero-neon.jpg';
 
 const GALLERY_SECTION_TITLES: Record<Locale, string> = {
   de: 'Galerie der Arbeiten',
@@ -206,6 +207,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
             .filter(Boolean),
     [content.heroSlides, content.cases]
   );
+  const activeHeroImage = heroSlides[activeHeroSlide] ?? heroSlides[0] ?? HERO_FALLBACK_IMAGE;
 
   const activeCase = useMemo(
     () => content.cases.find((item) => item.id === activeCaseId) ?? null,
@@ -604,7 +606,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
           >
             <div className="relative h-full w-full">
               <CmsImage
-                src={heroSlides[activeHeroSlide]}
+                src={activeHeroImage}
                 alt=""
                 fill
                 loading="eager"
