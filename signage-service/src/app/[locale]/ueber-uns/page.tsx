@@ -4,6 +4,7 @@ import Header from '@/components/layout/Header';
 import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestButton';
 import { getAboutPageCmsContent, getGlobalPageCmsContent } from '@/lib/cms/pages';
 import CmsImage from '@/components/common/CmsImage';
+import SectionEyebrow from '@/components/common/SectionEyebrow';
 import ServiceSimulator from '@/components/sections/ServiceSimulator';
 import AboutVideoPlayer from '@/components/sections/AboutVideoPlayer';
 
@@ -144,9 +145,9 @@ export default async function AboutPage({
               {/* Left Column: Content & Benefits */}
               <div className="lg:col-span-7 flex flex-col gap-6">
                 <div>
-                  <div className="mb-4 md:mb-5 inline-flex text-[11px] md:text-[12px] font-black uppercase tracking-[0.24em] text-[#B8643E]">
+                  <SectionEyebrow className="mb-4 md:mb-5">
                     {tContent.hero.badge}
-                  </div>
+                  </SectionEyebrow>
                   <h1 className="text-[34px] sm:text-[40px] md:text-[50px] lg:text-[54px] font-black leading-[1.08] tracking-tight text-[#0E1A2B]">
                     {tContent.hero.titlePrefix}
                   </h1>
@@ -187,54 +188,17 @@ export default async function AboutPage({
         <section className="px-6 py-24 bg-white">
            <div className="mx-auto max-w-7xl">
               <div className="mb-16">
+                 <SectionEyebrow className="mb-5">FOR WHOM</SectionEyebrow>
                  <h2 className="text-[42px] font-black text-[#0E1A2B] mb-4">{pageLabels.quickServicesTitle}</h2>
-                 <div className="h-1 w-24 bg-[#B8643E]" />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                 {tContent.services.map((service) => {
-                   // Helper to render modern icons for each target group
-                   const renderGroupIcon = (id: string) => {
-                     const iconClass = "w-6 h-6 text-[#B8643E]";
-                     switch (id) {
-                       case 'restaurants':
-                         return (
-                           <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                           </svg>
-                         );
-                       case 'retail':
-                         return (
-                           <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                           </svg>
-                         );
-                       case 'clinics':
-                         return (
-                           <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                           </svg>
-                         );
-                       case 'offices':
-                       default:
-                         return (
-                           <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 2 2z" />
-                           </svg>
-                         );
-                     }
-                   };
-
-                   return (
+                 {tContent.services.map((service) => (
                      <div key={service.id} className="flex flex-col h-full p-8 rounded-[32px] border border-[#E2E8F0] bg-[#F8FAFC] text-[#0E1A2B] transition-all duration-300 hover:shadow-xl hover:border-[#B8643E]/30">
-                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-8 bg-[#0E1A2B]/5">
-                           {renderGroupIcon(service.id)}
-                        </div>
                         <h3 className="text-[20px] font-bold mb-4">{service.title}</h3>
                         <p className="text-[15px] leading-relaxed mb-6 text-[#4A5568]">{service.description}</p>
                         <a href={`${localePath}/business?sector=${service.id}`} className="mt-auto text-[14px] font-bold uppercase tracking-wider underline decoration-2 underline-offset-8 transition-colors hover:text-[#B8643E] inline-block">{pageLabels.serviceCardCta}</a>
                      </div>
-                   );
-                 })}
+                 ))}
               </div>
            </div>
         </section>

@@ -18,11 +18,13 @@ type CardKnowledge = {
   title: string;
   articleSlug: string;
   shortAnswer: string | null;
+  cardCauseText?: string;
   causes: string[];
   safeChecks: string[];
   urgentWarnings: string[];
   serviceProcess: string[];
   workScopeFactors: string[];
+  selfRepairTips?: string[];
 };
 
 type ProblemKnowledgeGridProps = {
@@ -40,6 +42,9 @@ type ArticleUiLabels = {
   readArticle: string;
   openPage: string;
   close: string;
+  symptoms: string;
+  causes: string;
+  selfRepair: string;
 };
 
 function getArticleUiLabels(locale: string): ArticleUiLabels {
@@ -49,6 +54,21 @@ function getArticleUiLabels(locale: string): ArticleUiLabels {
       readArticle: 'Details öffnen',
       openPage: 'Artikel als eigene Seite öffnen',
       close: 'Schließen',
+      symptoms: 'Symptome',
+      causes: 'Ursachen',
+      selfRepair: 'Was Sie selbst versuchen können',
+    };
+  }
+
+  if (locale === 'ru') {
+    return {
+      preview: 'Детали',
+      readArticle: 'Открыть детали',
+      openPage: 'Открыть полную статью',
+      close: 'Закрыть',
+      symptoms: 'Симптомы',
+      causes: 'Причины',
+      selfRepair: 'Советы по самостоятельному ремонту',
     };
   }
 
@@ -57,6 +77,9 @@ function getArticleUiLabels(locale: string): ArticleUiLabels {
     readArticle: 'Open details',
     openPage: 'Open article page',
     close: 'Close',
+    symptoms: 'Symptoms',
+    causes: 'Causes',
+    selfRepair: 'What you can try yourself',
   };
 }
 
@@ -126,12 +149,17 @@ export default function ProblemKnowledgeGrid({
                 <h3 className="mt-3 text-xl font-extrabold leading-[1.12] text-[#0E1A2B]">
                   {problem.title}
                 </h3>
-                <span className="mt-4 text-[15px] font-bold leading-7 text-[#6B625C]">
-                  {problem.symptom}
+                <span className="mt-4 text-[15px] leading-7 text-[#6B625C]">
+                  <span className="block text-[12px] font-extrabold uppercase tracking-[0.12em] text-[#B8643E]">
+                    {articleLabels.symptoms}
+                  </span>
+                  <span className="mt-1 block font-bold">{problem.symptom}</span>
                 </span>
-                <span className="mt-3 text-[15px] leading-7 text-[#4E5A5A]">
-                  {problem.solution}
-                </span>
+                {!knowledge && (
+                  <span className="mt-3 text-[15px] leading-7 text-[#4E5A5A]">
+                    {problem.solution}
+                  </span>
+                )}
               </button>
 
               {knowledge ? (
@@ -145,11 +173,11 @@ export default function ProblemKnowledgeGrid({
                   }}
                 >
                   <h4 className="text-[13px] font-extrabold uppercase tracking-[0.12em] text-[#B8643E]">
-                    {articleLabels.preview}
+                    {articleLabels.causes}
                   </h4>
                   <div className="mt-2 overflow-hidden rounded-[18px] bg-[#FFF7F1] px-4 py-3 ring-1 ring-[#F0D2C2] transition-colors hover:bg-[#FFF0E6] hover:text-[#0E1A2B]">
                     <p className="line-clamp-4 text-[#31413F]">
-                      {knowledge.shortAnswer ?? problem.solution}
+                      {knowledge.cardCauseText ?? knowledge.shortAnswer ?? problem.solution}
                     </p>
                   </div>
                 </a>
@@ -262,6 +290,22 @@ export default function ProblemKnowledgeGrid({
                     {modalKnowledge.urgentWarnings.map((item) => (
                       <li key={item} className="flex gap-2">
                         <span className="font-extrabold text-[#B8643E]">!</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
+              {modalKnowledge.selfRepairTips && modalKnowledge.selfRepairTips.length > 0 && (
+                <section className="mt-6 rounded-[16px] border border-[#CFE7DA] bg-[#F0FAF4] p-4">
+                  <h4 className="text-[13px] font-extrabold uppercase tracking-[0.12em] text-[#2E7A55]">
+                    {articleLabels.selfRepair}
+                  </h4>
+                  <ul className="mt-2 grid gap-2 md:grid-cols-2">
+                    {modalKnowledge.selfRepairTips.map((item) => (
+                      <li key={item} className="flex gap-2">
+                        <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-[#2E7A55]" />
                         <span>{item}</span>
                       </li>
                     ))}

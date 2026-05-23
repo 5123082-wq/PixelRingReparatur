@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { FaqCmsContent } from '@/lib/cms/pages';
+import SectionEyebrow from '../common/SectionEyebrow';
 
 interface FAQSectionProps {
   content?: FaqCmsContent;
@@ -18,11 +19,11 @@ const FAQSection = ({ content }: FAQSectionProps) => {
   return (
     <section className="w-full bg-[#F9F6F2] py-24 px-6">
       <div className="max-w-3xl mx-auto flex flex-col gap-12">
-        <div className="flex flex-col gap-4 text-center">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <SectionEyebrow>FAQ</SectionEyebrow>
           <h2 className="text-[36px] md:text-[44px] font-bold text-[#0E1A2B] leading-tight">
             {content?.title || ''}
           </h2>
-          <div className="w-20 h-1 bg-[#B8643E] rounded-full mx-auto" />
         </div>
 
         <div className="flex flex-col gap-4">

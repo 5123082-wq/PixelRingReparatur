@@ -28,6 +28,7 @@
     "db:seed:cms-service": "node --experimental-strip-types --experimental-specifier-resolution=node scripts/seed-cms-service-page.ts",
     "db:seed:cms-symptom-ru": "node scripts/seed-cms-symptom-articles-ru.mjs",
     "db:seed:cms-symptom-en": "node scripts/seed-cms-symptom-articles-en.mjs",
+    "db:seed:article-no-light": "node scripts/seed-article-no-light-all-locales.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {

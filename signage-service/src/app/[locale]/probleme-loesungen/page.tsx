@@ -36,6 +36,21 @@ const SLUG_TO_PROBLEM_ID: Record<string, string> = {
   'urgent-repair': 'urgent',
 };
 
+const SELF_REPAIR_TIPS_BY_LOCALE_AND_SLUG: Record<string, string[]> = {
+  'ru:flicking': [
+    'PixelRing не рекомендует вскрывать вывеску, трогать провода, менять блок питания или работать с электрическими элементами без профильной квалификации.',
+    'Безопасно можно проверить только то, что доступно без вскрытия корпуса: выключатель, автомат и таймер, если он находится снаружи.',
+    'Посмотрите, мерцают ли другие приборы на этой же линии.',
+    'Снимите фото и видео проблемы.',
+    'Если блок питания доступен безопасно, без разборки корпуса и без контакта с проводами, сфотографируйте его наклейку с параметрами.',
+  ],
+};
+
+const CARD_CAUSE_TEXT_BY_LOCALE_AND_SLUG: Record<string, string> = {
+  'ru:flicking':
+    'Чаще всего проблема связана с нестабильным питанием: блоком питания, перегрузкой, слабым контактом, окислением, влагой или падением напряжения на линии. Если вывеска новая, блок питания мог быть подобран без запаса. Если вывеска старая, блок питания или соединения могли потерять стабильность со временем.',
+};
+
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
 
 type ProblemCard = {
@@ -316,7 +331,7 @@ const CONTENT: Record<Locale, SolutionsContent> = {
     problemCta: 'Передать задачу',
     problems: [
       { id: 'no-light', intent: 'sign-not-lighting', title: 'Вывеска не светится', symptom: 'Конструкция остается темной или включается нестабильно.', solution: 'PixelRing проверяет типовые причины: питание, блок, подключение, влагу и управление.' },
-      { id: 'flicker', intent: 'flickering-light', title: 'Вывеска мерцает', symptom: 'Свет работает нестабильно, мигает, пульсирует или кратковременно пропадает.', solution: 'PixelRing уточняет, связана ли причина с питанием, контактами, влагой, контроллером или LED-модулями.' },
+      { id: 'flicker', intent: 'flickering-light', title: 'Вывеска мерцает', symptom: 'Свет работает нестабильно: мигает, пульсирует, кратковременно пропадает или меняет яркость. Иногда мерцает вся вывеска, иногда только одна буква, край или отдельный участок подсветки.', solution: 'PixelRing уточняет, связана ли причина с питанием, контактами, влагой, контроллером или LED-модулями.' },
       { id: 'uneven-led', intent: 'uneven-led-light', title: 'LED светит неравномерно', symptom: 'Отдельные зоны темнее, пятнами или заметно отличаются по яркости.', solution: 'Проверяются модули, подводка, старение и целесообразность ремонта или замены.' },
       { id: 'letter-out', intent: 'letter-not-lighting', title: 'Не светится отдельная буква', symptom: 'Выпала часть надписи или один элемент.', solution: 'PixelRing локализует возможную причину: модуль, соединение, проводка или состояние элемента.' },
       { id: 'rain-fail', intent: 'rain-failure', title: 'Вывеска отключается после дождя', symptom: 'После дождя появляются отключения, мерцание или сбои.', solution: 'Это может указывать на влагу, герметичность, коррозию или защитное отключение.' },
@@ -628,11 +643,13 @@ export default async function ProblemeLoesungenPage({
             title: article.title,
             articleSlug: getProblemArticlePublicSlug(article.slug) ?? article.slug,
             shortAnswer: article.shortAnswer,
+            cardCauseText: CARD_CAUSE_TEXT_BY_LOCALE_AND_SLUG[`${locale}:${article.slug}`],
             causes: article.causes,
             safeChecks: article.safeChecks,
             urgentWarnings: article.urgentWarnings,
             serviceProcess: article.serviceProcess,
             workScopeFactors: article.workScopeFactors,
+            selfRepairTips: SELF_REPAIR_TIPS_BY_LOCALE_AND_SLUG[`${locale}:${article.slug}`],
           },
         ] as const;
       })

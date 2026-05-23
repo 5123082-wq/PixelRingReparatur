@@ -5,6 +5,7 @@ import { TrustCmsContent } from '@/lib/cms/pages';
 import React, { useState } from 'react';
 import ContactModal from '../common/ContactModal';
 import ChatModal from '../common/ChatModal';
+import SectionEyebrow from '../common/SectionEyebrow';
 
 const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
   const t = useTranslations('Trust');
@@ -46,19 +47,13 @@ const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
           
           {/* HEADER */}
           <div className="flex flex-col gap-6 max-w-4xl">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-[2px] bg-[#B8643E]" />
-              <span className="text-[#B8643E] font-bold tracking-[0.16em] uppercase text-[12px]">
-                {content?.pretitle || safeT('pretitle', 'ADVANTAGE')}
-              </span>
-            </div>
+            <SectionEyebrow>{content?.pretitle || safeT('pretitle', 'ADVANTAGE')}</SectionEyebrow>
             <h2 className="text-[34px] md:text-[42px] font-black text-white leading-[1.1] tracking-[0]">
               <span>{content?.titleStart || safeT('titleStart', 'Genug')}</span>
               {' '}
               <br />
               <span className="text-[#B8643E] relative inline-block">
                 {content?.titleAccent || safeT('titleAccent', 'komplizierte Portale')}
-                <span className="absolute -bottom-2 left-0 w-full h-1 bg-[#B8643E]/30 rounded-full" />
               </span>
               {(content?.titleEnd || safeT('titleEnd', '')) ? (
                 <>

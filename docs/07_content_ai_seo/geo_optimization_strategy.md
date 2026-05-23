@@ -390,6 +390,117 @@ Hub усиливает:
 
 ## 13. Progress Log
 
+### 2026-05-22 | Problem Article Folder Workspace
+
+**Done:**
+- Reorganized problem article markdown drafts (черновики статей о проблемах) into numbered folders (номерные папки) under `docs/07_content_ai_seo/problem_articles/`.
+- Current folders (текущие папки): `вывеска не светится – 01`, `вывеска мерцает – 02`, `новая статья – 03`, `новая статья – 04`, and `входящие новые статьи`.
+- Moved the multilingual no-light drafts (многоязычные черновики `Вывеска не светится`) into `вывеска не светится – 01`.
+- Moved the RU flicker draft (русский черновик `Вывеска мерцает`) into `вывеска мерцает – 02`.
+- Updated the no-light seed script (скрипт загрузки `no-light`) to read markdown from the new folder path.
+
+**In Progress:**
+- Owner uses the numbered folder workflow (номерной процесс папок) for new source articles.
+
+**Next Action:**
+- Add new article source files (исходники новых статей) to the next numbered folder or `входящие новые статьи`, then edit and review before CMS/database loading (загрузка в CMS/базу данных).
+
+**Blockers/Risks:**
+- Keep seed scripts (скрипты загрузки) aligned with moved markdown paths (пути к Markdown), otherwise future CMS sync (синхронизация CMS) can read stale or missing files.
+
+**Updated Documents / Code:**
+- `PROGRESS.md`
+- `docs/07_content_ai_seo/problem_article_rules.md`
+- `docs/07_content_ai_seo/problem_articles/README.md`
+- `docs/07_content_ai_seo/geo_optimization_strategy.md`
+- `signage-service/scripts/seed-article-no-light-all-locales.mjs`
+
+### 2026-05-22 | No-Light Article CMS Publication
+
+**Done:**
+- Published (опубликована) full `no-light` article (полная статья о проблеме "вывеска не светится") into CMS/database (CMS/база данных) for all MVP locales (языки MVP): DE, EN, RU, TR, PL, AR.
+- Added repeatable seed script (повторяемый скрипт загрузки) `npm run db:seed:article-no-light`, which reads markdown drafts (черновики Markdown), extracts only public full article content (только публичную полную статью), and upserts `cms_articles` (обновляет/создаёт CMS-статьи).
+- Removed practical fallback gap (практический пробел fallback) for TR/PL/AR `no-light` article pages by creating published localized CMS records (опубликованные локализованные записи CMS).
+- Verified database state (состояние базы данных): all six `no-light` records are `PUBLISHED` and have full article-sized content.
+- Verified local HTTP render (локальный HTTP-рендер) for all six public URLs; each returns `200` and contains the expected full-article marker.
+
+**In Progress:**
+- Owner visual review (визуальная проверка владельцем) of `/ru/probleme-loesungen/werbeanlage-leuchtet-nicht` and localized article pages.
+
+**Next Action:**
+- If copy/layout is approved, use the same seed-script pattern (паттерн скрипта загрузки) for the next full problem articles (полные статьи о проблемах).
+
+**Blockers/Risks:**
+- Older bulk symptom seed scripts (старые пакетные скрипты загрузки symptom-статей) still exist; avoid running them as the final content source for `no-light` unless they are aligned with the dedicated full article seed (специальный seed для полной статьи).
+
+**Updated Documents / Code:**
+- `PROGRESS.md`
+- `docs/07_content_ai_seo/geo_optimization_strategy.md`
+- `signage-service/package.json`
+- `signage-service/scripts/seed-article-no-light-all-locales.mjs`
+- `signage-service/scripts/seed-cms-support-articles.mjs`
+- `signage-service/scripts/seed-cms-symptom-articles-en.mjs`
+- `signage-service/scripts/seed-cms-symptom-articles-ru.mjs`
+- CMS/database records (записи CMS/базы данных) for `cms_articles.slug = no-light` in `de`, `en`, `ru`, `tr`, `pl`, `ar`
+
+### 2026-05-21 | Multilingual No-Light Problem Article Drafts
+
+**Done:**
+- Обновлена RU-статья `Вывеска не светится` (наружная вывеска не включается) как markdown draft (черновик в Markdown) для owner review (проверка владельцем).
+- Созданы локализованные markdown drafts (черновики в Markdown) для DE (немецкий), EN (английский), TR (турецкий), PL (польский) и AR (арабский).
+- Все версии сохраняют три уровня content structure (структура контента): small card (маленькая карточка), modal (модальное окно), full article (полная статья), плюс internal AI note (внутренняя заметка для базы знаний ассистента).
+- Тексты адаптированы под локальный язык и сервисный тон, без дословного dictionary translation (словарного перевода).
+- Сохранены safety boundaries (границы безопасности): не советовать вскрывать корпус, трогать проводку 220/230 В, менять блок питания без квалификации или работать на высоте без подходящего доступа.
+
+**In Progress:**
+- Owner review (проверка владельцем) шести markdown drafts (черновиков в Markdown).
+
+**Next Action:**
+- После owner approval (утверждение владельцем) синхронизировать approved content (утверждённый контент) с CMS/database (CMS/база данных) или seed scripts (скрипты загрузки), не раньше.
+
+**Blockers/Risks:**
+- TR/PL/AR (турецкий, польский, арабский) public article records (публичные записи статей) пока отсутствуют в CMS/database (CMS/база данных); эти markdown drafts (черновики в Markdown) не меняют runtime behavior (поведение сайта во время работы) до отдельной загрузки.
+- AR (арабский) требует RTL-aware UI/content handling (учёт направления письма справа налево) при будущей загрузке в приложение.
+
+**Updated Documents:**
+- `PROGRESS.md`
+- `docs/07_content_ai_seo/geo_optimization_strategy.md`
+- `docs/07_content_ai_seo/problem_articles/вывеска не светится – 01/problem_article_vyveska_ne_svetitsya_ru.md`
+- `docs/07_content_ai_seo/problem_articles/вывеска не светится – 01/problem_article_vyveska_ne_svetitsya_de.md`
+- `docs/07_content_ai_seo/problem_articles/вывеска не светится – 01/problem_article_vyveska_ne_svetitsya_en.md`
+- `docs/07_content_ai_seo/problem_articles/вывеска не светится – 01/problem_article_vyveska_ne_svetitsya_tr.md`
+- `docs/07_content_ai_seo/problem_articles/вывеска не светится – 01/problem_article_vyveska_ne_svetitsya_pl.md`
+- `docs/07_content_ai_seo/problem_articles/вывеска не светится – 01/problem_article_vyveska_ne_svetitsya_ar.md`
+
+### 2026-05-21 | RU Flicker Article Knowledge Unit
+
+**Done:**
+- Обновлена RU-статья `Вывеска мерцает` для `/ru/probleme-loesungen/werbeanlage-flackert` (публичная страница проблемы) на основе текста техника и текущей SEO/GEO (поисковая и AI-видимость) структуры.
+- Маленькая карточка на `/ru/probleme-loesungen` (страница `Проблемы и решения`) получила отдельные поля `Симптомы` (как клиент видит проблему) и `Причины` (вероятные причины), без повторяющегося текста о том, что делает PixelRing.
+- Средняя карточка в modal (модальное окно) получила выделенный блок `Советы по самостоятельному ремонту` (безопасные самостоятельные действия) с предупреждением против работ без квалификации.
+- CMS seed (скрипт загрузки CMS-данных) для `flicking/ru` обновляет полную статью, shortAnswer (короткий ответ), causes (причины), safeChecks (уточняющие данные), urgentWarnings (срочные признаки), serviceProcess (процесс диагностики) и workScopeFactors (факторы объёма работ).
+- Сохранён markdown draft (черновик в Markdown) текущей статьи для чтения перед будущими загрузками в CMS/database (база данных).
+- Создан active rules file (активный файл правил) для problem articles (статьи о проблемах): три слоя контента, owner review (проверка владельцем) до загрузки, safe self-repair (безопасные самостоятельные действия) и запрет AI-looking writing patterns (паттерны текста, похожего на искусственный интеллект).
+
+**In Progress:**
+- Owner review (проверка владельцем) трёх представлений: маленькая карточка, modal (модальное окно), full article (полная статья).
+
+**Next Action:**
+- Для следующих problem knowledge units (единицы знаний о проблемах) сначала писать markdown draft (черновик в Markdown) по `problem_article_rules.md` (правила структуры статьи), затем давать owner review (проверка владельцем), и только после подтверждения переносить в CMS/database (CMS/база данных).
+
+**Blockers/Risks:**
+- Self-repair advice (советы по самостоятельному ремонту) должен оставаться безопасным: нельзя рекомендовать вскрытие корпуса, работу с проводкой, замену блока питания или работу на высоте без квалификации.
+
+**Updated Documents:**
+- `PROGRESS.md`
+- `docs/07_content_ai_seo/geo_optimization_strategy.md`
+- `docs/07_content_ai_seo/README.md`
+- `docs/07_content_ai_seo/problem_article_rules.md`
+- `docs/07_content_ai_seo/problem_articles/вывеска мерцает – 02/problem_article_vyveska_mercaet_ru.md`
+- `signage-service/src/app/[locale]/probleme-loesungen/page.tsx`
+- `signage-service/src/components/probleme-loesungen/ProblemKnowledgeGrid.tsx`
+- `signage-service/scripts/seed-article-flicker-ru.mjs`
+
 ### 2026-05-16 | Google Indexing Crawlability Cleanup
 
 **Done:**
