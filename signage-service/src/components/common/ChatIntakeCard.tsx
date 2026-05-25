@@ -1,19 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useLocale } from 'next-intl';
 import LocationPicker, { type SelectedLocation } from './LocationPicker';
 
 type ContactMode = 'phone' | 'email';
-
-const ISSUE_TYPES = [
-  'Reparatur',
-  'Montage',
-  'Neue Beschilderung',
-  'Branding',
-  'Lichterwerbung',
-  'Wartung',
-  'Sonstiges',
-] as const;
 
 export type IntakePrefill = {
   issueType?: string;
@@ -32,7 +23,63 @@ type Props = {
   onSuccess?: (requestNumber: string) => void;
 };
 
+function getChatIntakeCopy(locale: string) {
+  if (locale === 'en') {
+    return {
+      issueTypes: ['Repair', 'Installation', 'New signage', 'Branding', 'Illuminated advertising', 'Maintenance', 'Other'],
+      successTitle: 'Request registered successfully',
+      requestNumberLabel: 'Your request number',
+      successText: 'Save this number. A specialist will contact you shortly.',
+      trackStatus: 'Track status',
+      portalSetup: 'Set up customer portal access',
+      missingContact: 'Please enter a contact method.',
+      chatRequestTypeFallback: 'Not specified',
+      chatRequestPrefix: 'Chat request. Type:',
+      sendError: 'Error while sending.',
+      formTitle: 'Start service',
+      attachmentsHint: 'Files already sent in chat will be attached to this request.',
+      photoHint: 'A photo or short video is optional, but it helps with diagnostics.',
+      issueTypeLabel: 'Request type',
+      issueTypePlaceholder: 'Please choose…',
+      contactLabel: 'Contact *',
+      phoneLabel: 'Phone',
+      emailLabel: 'Email',
+      namePlaceholder: 'Your name (optional)',
+      locationPlaceholder: 'Address / location (optional)',
+      attachMedia: 'Attach photo/video',
+      submit: 'Send request →',
+    };
+  }
+
+  return {
+    issueTypes: ['Reparatur', 'Montage', 'Neue Beschilderung', 'Branding', 'Lichterwerbung', 'Wartung', 'Sonstiges'],
+    successTitle: 'Anfrage erfolgreich registriert',
+    requestNumberLabel: 'Ihre Anfragenummer',
+    successText: 'Speichern Sie diese Nummer. Ein Spezialist wird sich in Kürze bei Ihnen melden.',
+    trackStatus: 'Status verfolgen',
+    portalSetup: 'Kundenportal vorbereiten',
+    missingContact: 'Bitte geben Sie eine Kontaktinformation an.',
+    chatRequestTypeFallback: 'Nicht angegeben',
+    chatRequestPrefix: 'Chat-Anfrage. Typ:',
+    sendError: 'Fehler beim Senden.',
+    formTitle: 'Service starten',
+    attachmentsHint: 'Bereits im Chat gesendete Dateien werden mit dieser Anfrage verbunden.',
+    photoHint: 'Ein Foto oder kurzes Video ist optional, hilft aber bei der Diagnose.',
+    issueTypeLabel: 'Art der Anfrage',
+    issueTypePlaceholder: 'Bitte wählen …',
+    contactLabel: 'Kontakt *',
+    phoneLabel: 'Telefon',
+    emailLabel: 'E-Mail',
+    namePlaceholder: 'Ihr Name (optional)',
+    locationPlaceholder: 'Adresse / Standort (optional)',
+    attachMedia: 'Foto/Video anhängen',
+    submit: 'Anfrage senden →',
+  };
+}
+
 export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
+  const locale = useLocale();
+  const copy = getChatIntakeCopy(locale);
   const [contactMode, setContactMode] = useState<ContactMode>(prefill?.contactMode ?? 'phone');
   const [contact, setContact] = useState(prefill?.contact ?? '');
   const [name, setName] = useState(prefill?.name ?? '');
@@ -56,27 +103,27 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <p className="text-[13px] font-bold text-[#0E1A2B]">Anfrage erfolgreich registriert</p>
+          <p className="text-[13px] font-bold text-[#0E1A2B]">{copy.successTitle}</p>
         </div>
         <div className="rounded-[12px] bg-white border border-[#E7DDD3] px-4 py-3 mb-3 text-center">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#72665D] mb-1">Ihre Anfragenummer</p>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#72665D] mb-1">{copy.requestNumberLabel}</p>
           <p className="text-xl font-black tracking-widest text-[#0E1A2B]">{requestNumber}</p>
         </div>
         <p className="text-[12px] text-[#72665D] leading-relaxed">
-          Speichern Sie diese Nummer. Ein Spezialist wird sich in Kürze bei Ihnen melden.
+          {copy.successText}
         </p>
         <a
-          href={`/de/status?request=${encodeURIComponent(requestNumber)}`}
+          href={`/${locale}/status?request=${encodeURIComponent(requestNumber)}`}
           className="mt-3 inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#B8643E] hover:underline"
         >
-          Status verfolgen →
+          {copy.trackStatus} →
         </a>
         {portalClaimUrl && (
           <a
             href={portalClaimUrl}
             className="mt-3 inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#0E1A2B] hover:underline"
           >
-            Kundenportal vorbereiten →
+            {copy.portalSetup} →
           </a>
         )}
       </div>
@@ -85,7 +132,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!contact.trim()) { setError('Bitte geben Sie eine Kontaktinformation an.'); return; }
+    if (!contact.trim()) { setError(copy.missingContact); return; }
     setSubmitting(true);
     setError('');
 
@@ -102,8 +149,8 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
       fd.append(
         'message',
         prefill?.summary
-          ? `Chat-Anfrage. Typ: ${issueType || 'Nicht angegeben'}\n\n${prefill.summary}`
-          : `Chat-Anfrage. Typ: ${issueType || 'Nicht angegeben'}`
+          ? `${copy.chatRequestPrefix} ${issueType || copy.chatRequestTypeFallback}\n\n${prefill.summary}`
+          : `${copy.chatRequestPrefix} ${issueType || copy.chatRequestTypeFallback}`
       );
       fd.append('issueType', issueType);
       fd.append('isFromChat', 'true');
@@ -113,7 +160,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
       const data = await res.json() as { publicRequestNumber?: string; portalClaimUrl?: string; error?: string };
 
       if (!res.ok || !data.publicRequestNumber) {
-        throw new Error(data.error ?? 'Fehler beim Senden.');
+        throw new Error(data.error ?? copy.sendError);
       }
 
       setRequestNumber(data.publicRequestNumber);
@@ -121,7 +168,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
       setDone(true);
       onSuccess?.(data.publicRequestNumber);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Fehler beim Senden.');
+      setError(err instanceof Error ? err.message : copy.sendError);
     } finally {
       setSubmitting(false);
     }
@@ -139,37 +186,37 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
         </div>
-        <p className="text-[13px] font-bold text-[#0E1A2B]">Service starten</p>
+        <p className="text-[13px] font-bold text-[#0E1A2B]">{copy.formTitle}</p>
       </div>
 
       {prefill?.hasSessionAttachments && (
         <p className="rounded-[10px] bg-white/70 px-3 py-2 text-[12px] text-[#72665D]">
-          Bereits im Chat gesendete Dateien werden mit dieser Anfrage verbunden.
+          {copy.attachmentsHint}
         </p>
       )}
 
       {prefill?.needsPhoto && (
         <p className="rounded-[10px] bg-white/70 px-3 py-2 text-[12px] text-[#72665D]">
-          Ein Foto oder kurzes Video ist optional, hilft aber bei der Diagnose.
+          {copy.photoHint}
         </p>
       )}
 
       {/* Issue type */}
       <div>
-        <label className="text-[11px] font-semibold uppercase tracking-wide text-[#72665D] mb-1 block">Art der Anfrage</label>
+        <label className="text-[11px] font-semibold uppercase tracking-wide text-[#72665D] mb-1 block">{copy.issueTypeLabel}</label>
         <select
           value={issueType}
           onChange={e => setIssueType(e.target.value)}
           className="w-full px-3 py-2 text-[13px] rounded-[12px] border border-[#E7DDD3] bg-white text-[#0E1A2B] focus:outline-none focus:border-[#B8643E] appearance-none"
         >
-          <option value="">Bitte wählen …</option>
-          {ISSUE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+          <option value="">{copy.issueTypePlaceholder}</option>
+          {copy.issueTypes.map((t) => <option key={t} value={t}>{t}</option>)}
         </select>
       </div>
 
       {/* Contact toggle */}
       <div>
-        <label className="text-[11px] font-semibold uppercase tracking-wide text-[#72665D] mb-1 block">Kontakt *</label>
+        <label className="text-[11px] font-semibold uppercase tracking-wide text-[#72665D] mb-1 block">{copy.contactLabel}</label>
         <div className="flex gap-2 mb-2">
           {(['phone', 'email'] as const).map(m => (
             <button
@@ -182,7 +229,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
                   : 'bg-white text-[#72665D] border-[#E7DDD3] hover:border-[#B8643E]'
               }`}
             >
-              {m === 'phone' ? '📱 Telefon' : '✉️ E-Mail'}
+              {m === 'phone' ? `📱 ${copy.phoneLabel}` : `✉️ ${copy.emailLabel}`}
             </button>
           ))}
         </div>
@@ -200,7 +247,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
         type="text"
         value={name}
         onChange={e => setName(e.target.value)}
-        placeholder="Ihr Name (optional)"
+        placeholder={copy.namePlaceholder}
         className="w-full px-3 py-2 text-[13px] rounded-[12px] border border-[#E7DDD3] bg-white text-[#0E1A2B] focus:outline-none focus:border-[#B8643E] placeholder-[#72665D]/40"
       />
 
@@ -209,7 +256,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
         value={location}
         onChange={setLocation}
         onLocationSelect={setSelectedLocation}
-        placeholder="Adresse / Standort (optional)"
+        placeholder={copy.locationPlaceholder}
         className="w-full px-3 py-2 text-[13px] rounded-[12px] border border-[#E7DDD3] bg-white text-[#0E1A2B] focus:outline-none focus:border-[#B8643E] placeholder-[#72665D]/40"
       />
 
@@ -223,7 +270,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
           </svg>
-          Foto/Video anhängen
+          {copy.attachMedia}
         </button>
         <input ref={fileRef} type="file" accept="image/*,video/*" multiple className="hidden"
           onChange={e => setFiles(prev => [...prev, ...Array.from(e.target.files ?? [])])} />
@@ -248,7 +295,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
       >
         {submitting
           ? <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-          : 'Anfrage senden →'}
+          : copy.submit}
       </button>
     </form>
   );

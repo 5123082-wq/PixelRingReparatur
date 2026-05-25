@@ -48,6 +48,11 @@ Read deep when:
 
 - Date: 2026-05-25
 - Updated by: Codex
+- **Current Stage**: Cleaned the main English localization leak on public pages. Localized shared chat/request UI away from German hardcoded text for EN, refreshed baseline CMS pages across locales, and corrected mixed EN/DE CMS fields on `/en/leistungen` so English home/service routes no longer emit the audited German strings in local render checks.
+- **Next Action**: Owner verifies production `/en` and `/en/leistungen` visually, especially chat/contact entrypoints and final CTA copy.
+
+- Date: 2026-05-25
+- Updated by: Codex
 - **Current Stage**: Disabled automatic locale detection in the public-site i18n routing so the root entry no longer prefers browser-language redirects over the German default locale. This aligns the canonical-first SEO entrypoint with the project rule that German is primary.
 - **Next Action**: Owner or agent verifies that `/` now resolves to the German entry flow after deployment and that direct locale URLs like `/en` still work as expected.
 

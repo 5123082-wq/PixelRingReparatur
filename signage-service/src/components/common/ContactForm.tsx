@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useId, useRef, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import LocationPicker, { type SelectedLocation } from './LocationPicker';
 
@@ -12,6 +12,7 @@ interface ContactFormProps {
 
 const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
   const t = useTranslations('ContactModal');
+  const locale = useLocale();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [publicRequestNumber, setPublicRequestNumber] = useState('');
@@ -34,6 +35,12 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
   const locationInputId = `${formId}-contact-location`;
   const messageInputId = `${formId}-contact-message`;
   const fileInputId = `${formId}-contact-attachments`;
+  const openPortalLabel =
+    locale === 'en'
+      ? 'Set up customer portal access'
+      : locale === 'ru'
+        ? 'Подготовить доступ в кабинет'
+        : 'Kundenportal vorbereiten';
 
   const adjustHeight = () => {
     const textarea = textareaRef.current;
@@ -174,7 +181,7 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
             href={portalClaimUrl}
             className="mt-3 inline-flex items-center justify-center rounded-full border border-[#B8643E]/30 bg-white px-5 py-3 text-[14px] font-semibold text-[#B8643E] transition-colors hover:bg-[#F7F1E8]"
           >
-            Kundenportal vorbereiten
+            {openPortalLabel}
           </a>
         )}
       </div>
