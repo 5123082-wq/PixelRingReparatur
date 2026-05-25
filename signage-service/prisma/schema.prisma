@@ -580,6 +580,7 @@ model CmsArticle {
   relatedSlugs     String[]             @default([])
   causes           String[]             @default([])
   safeChecks       String[]             @default([])
+  selfRepairTips   Json?
   urgentWarnings   String[]             @default([])
   serviceProcess   String[]             @default([])
   workScopeFactors String[]             @default([])

@@ -20,6 +20,24 @@
 
 ## Progress Log
 
+### 2026-05-25
+
+- Current sprint/block: `rain-fail` / `werbeanlage-schaltet-nach-regen-ab` CMS/database synchronization.
+- Done: created `вывеска отключается после дождя – 05/`; corrected the RU draft path metadata; expanded the RU modal and full-article `Советы по самостоятельному ремонту` sections into practical, safety-bounded `selfRepairTips`-ready guidance; clarified `FI-Schalter` / `УЗО`; added living review drafts for DE, EN, TR, PL, and AR with localized wording, the same diagnostic boundaries, and no unsafe DIY electrical repair instructions; replaced the initial DE/EN drafts with owner-provided `improved` versions and promoted them to the canonical `de.md` and `en.md` filenames; added repeatable `db:seed:article-rain-fail`; populated `selfRepairTips` JSON for DE, EN, RU, TR, PL, and AR; published `rain-fail` in CMS/database for all MVP locales; CMS audit reports `rain-fail` as published and SEO-ready in all locales; production build and HTTP route checks passed.
+- In progress: owner visual review of the six live article pages and modal self-repair block.
+- Next action: after review, continue with the next remaining problem article (`peeling-film`, `faded-film`, `shaky-sign`, or `urgent-repair`) using the same markdown-to-CMS flow.
+- Blockers/risks: overall CMS audit still has unrelated WARN items for other missing/problem content; `rain-fail` itself is complete and SEO-ready.
+- Updated documents/files: `вывеска отключается после дождя – 05/problem_article_werbeanlage-schaltet-nach-regen-ab_ru.md`, `problem_article_werbeanlage-schaltet-nach-regen-ab_de.md`, `problem_article_werbeanlage-schaltet-nach-regen-ab_en.md`, `problem_article_werbeanlage-schaltet-nach-regen-ab_tr.md`, `problem_article_werbeanlage-schaltet-nach-regen-ab_pl.md`, `problem_article_werbeanlage-schaltet-nach-regen-ab_ar.md`, `signage-service/scripts/article-self-repair-tips-data.mjs`, `signage-service/scripts/seed-article-rain-fail-all-locales.mjs`, `signage-service/package.json`, CMS public audit outputs, root `PROGRESS.md`.
+
+### 2026-05-25
+
+- Current sprint/block: problem article content model for CMS and AI/GEO.
+- Done: added `problem_article_content_model.md` to define the target structured blocks for problem articles, including the source map for small cards, modal windows, full articles, JSON-LD, AI/GEO context, request intake, and CRM handoff; added `вывеска не светится – 01/reference_content_model_vyveska_ne_svetitsya_ru.md` as the first reference article mapped to the new model; promoted `no-light` self-repair tips from temporary code mapping into the CMS/database model via `selfRepairTips` JSON, migration `20260525170000_article_self_repair_tips`, API/editor support, and the repeatable `db:seed:article-no-light` script; populated `selfRepairTips` for DE, EN, RU, TR, PL, and AR and localized the public modal section labels per locale; updated `problem_article_rules.md` to v2.1 so `selfRepairTips` JSON is mandatory for future problem-article CMS/database work; added repeatable `db:seed:article-self-repair-tips` for `flicking`, `letter-out`, and `uneven-light`; populated `flicking` self-repair tips for published DE/EN/RU rows; populated `letter-out`, `no-light`, and `uneven-light` self-repair tips for DE/EN/RU/TR/PL/AR; updated `letter-out` and `uneven-light` all-locales seeds to keep `selfRepairTips`; removed stale hardcoded self-repair fallbacks from public rendering.
+- In progress: owner visual review of production-mode modals sourced from CMS `selfRepairTips`.
+- Next action: future content agent writes/updates `rain-fail`, `peeling-film`, `faded-film`, `shaky-sign`, `urgent-repair`, and missing `flicking` TR/PL/AR content using `problem_article_rules.md` v2.1.
+- Blockers/risks: remaining non-migrated slugs have only short/basic DE/EN/RU CMS rows and no approved full multilingual article set; do not create TR/PL/AR or full rows until approved content exists.
+- Updated documents: `problem_article_rules.md`, `problem_article_content_model.md`, `вывеска не светится – 01/reference_content_model_vyveska_ne_svetitsya_ru.md`, `../README.md`, root `PROGRESS.md`, `signage-service/scripts/article-self-repair-tips-data.mjs`, `signage-service/scripts/seed-article-self-repair-tips.mjs`, `signage-service/scripts/seed-article-letter-out-all-locales.mjs`, `signage-service/scripts/seed-article-uneven-light-all-locales.mjs`.
+
 ### 2026-05-24
 
 - Current sprint/block: problem article modal self-repair block standard.

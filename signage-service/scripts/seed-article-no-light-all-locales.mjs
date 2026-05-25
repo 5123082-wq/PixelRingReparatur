@@ -58,6 +58,27 @@ const LOCALE_CONFIG = {
       'Fotos der ganzen Anlage und des dunklen Bereichs machen.',
       'Die Beschriftung des Netzteils nur fotografieren, wenn sie ohne Öffnen und ohne Leitungsberührung sichtbar ist.',
     ],
+    selfRepairTips: {
+      intro:
+        'Wenn die Werbeanlage komplett dunkel bleibt, sollte zuerst eine einfache Versorgungsfrage von einem Fehler in der Anlage getrennt werden.',
+      withoutOpening: [
+        'Prüfen Sie den normalen Schalter, die Sicherung oder den FI/RCD, eine außenliegende Zeitschaltuhr, einen Dämmerungssensor oder eine Fernbedienung nur, wenn diese ohne Öffnen des Gehäuses erreichbar sind.',
+        'Beobachten Sie, ob andere Geräte auf derselben Leitung oder in der Nähe Strom haben.',
+        'Notieren Sie, ob der Ausfall nach Regen, Gewitter, Fassadenreinigung, Spannungsspitze oder Arbeiten in der Nähe aufgetreten ist.',
+        'Grenzen Sie ein, ob die ganze Anlage, nur ein Buchstabe, eine Sektion, ein Rand oder ein Leuchtkasten dunkel bleibt; machen Sie Gesamtfotos und Nahaufnahmen.',
+      ],
+      technicalSpecialist: [
+        'Bei passender Qualifikation kann Ihre technische Fachperson Leitung, Sicherung, 220/230-V-Eingang, Netzteil, Ausgangsspannung und zugängliche Steuerungselemente prüfen.',
+        'Wenn Sicherung, Netzteil oder Anschluss ersetzt beziehungsweise wiederhergestellt werden müssen, müssen Spannung, Leistung, Strom, Schutzart und Anschlussart exakt passen.',
+      ],
+      doNotDo: [
+        'Das Gehäuse nicht ohne Qualifikation öffnen, nicht an spannungsführenden Leitungen arbeiten und Versorgungsleitungen nicht schneiden, verlängern oder provisorisch verbinden.',
+        'Keine verdrillten Leitungen oder temporären Klemmen verwenden und keine feuchten Bauteile, Klemmen, Controller oder Netzteile berühren.',
+        'Die Anlage nicht erneut einschalten, wenn Brandgeruch, Knacken, Funken, Erwärmung, Wasser im Gehäuse oder wiederholtes Auslösen der Sicherung vorliegt.',
+      ],
+      qualificationNote:
+        'Diese Hinweise sind keine Aufforderung zur Eigenreparatur. Arbeiten an Elektrik, Netzteilen, Sicherungen, Leitungen, Gehäuse und in der Höhe dürfen nur Personen mit passender Qualifikation und sicherem Zugang ausführen.',
+    },
     urgentWarnings: [
       'Sicherung oder FI/RCD lösen wiederholt aus.',
       'Brandgeruch, Funken, Knacken oder starke Erwärmung.',
@@ -105,6 +126,27 @@ const LOCALE_CONFIG = {
       'Take photos of the full sign and the dark area.',
       'Photograph the power supply label only if it is safely visible without touching wiring.',
     ],
+    selfRepairTips: {
+      intro:
+        'If the whole sign is dark, first separate a simple power-supply issue from a fault inside the sign structure.',
+      withoutOpening: [
+        'Check the normal switch, breaker or RCD, external timer, photocell or remote control only if they are accessible without opening the sign.',
+        'See whether other equipment on the same circuit or nearby still has power.',
+        'Note whether the issue appeared after rain, lightning, facade cleaning, a voltage surge or nearby work.',
+        'Identify whether the whole sign is dark or only one letter, section, edge or lightbox; take a full-view photo and a close-up of the dark area.',
+      ],
+      technicalSpecialist: [
+        'With the right qualification, your technical specialist can check the line supply, breaker, 220/230 V input, power supply, output voltage and accessible control devices.',
+        'If a breaker, power supply or connection needs replacement or restoration, voltage, power, current, protection rating and wiring scheme must match the sign exactly.',
+      ],
+      doNotDo: [
+        'Do not open the sign housing without qualification, work on live wiring, cut or extend supply lines, or make temporary wiring connections.',
+        'Do not use twisted-wire connections or temporary terminals, and do not touch wet components, terminals, controllers or power supplies.',
+        'Do not switch the sign on again if there is a burning smell, crackling, sparks, heat, water inside or a breaker that trips again.',
+      ],
+      qualificationNote:
+        'These tips are not an invitation to repair the sign yourself. Electrical work, power supplies, breakers, wiring, sign housings and work at height should only be handled by people with suitable qualification and safe access.',
+    },
     urgentWarnings: [
       'Breaker or RCD trips repeatedly.',
       'Burning smell, sparks, crackling or strong heat.',
@@ -152,6 +194,27 @@ const LOCALE_CONFIG = {
       'Сделать фото вывески целиком и крупно тёмного участка.',
       'Сфотографировать наклейку блока питания только если она видна безопасно и без контакта с проводами.',
     ],
+    selfRepairTips: {
+      intro:
+        'Если вывеска полностью не светится, сначала стоит отделить простую проблему с питанием от неисправности внутри конструкции.',
+      withoutOpening: [
+        'Проверьте обычный выключатель, автомат в щите, внешний таймер, датчик света или пульт управления, если они доступны без открытия корпуса.',
+        'Посмотрите, есть ли питание у других приборов на этой же линии или рядом.',
+        'Отметьте, не появилась ли проблема после дождя, грозы, мойки фасада, перепада напряжения или ремонта рядом.',
+        'Определите, не светится вся вывеска или только одна буква, секция, край или лайтбокс; сделайте фото общего вида и крупно тёмного участка.',
+      ],
+      technicalSpecialist: [
+        'При подходящей квалификации ваш технический специалист может проверить питание линии, автомат, вход 220/230 В, блок питания, выходное напряжение и доступные элементы управления.',
+        'Если требуется замена автомата, блока питания или восстановление подключения, параметры должны точно подходить по напряжению, мощности, току, степени защиты и схеме подключения.',
+      ],
+      doNotDo: [
+        'Не вскрывать корпус без квалификации, не работать с проводами под напряжением, не резать и не наращивать линии питания.',
+        'Не соединять провода скрутками или временными клеммами, не трогать влажные элементы, клеммы, контроллеры и блоки питания.',
+        'Не включать вывеску повторно при запахе гари, треске, искрах, нагреве, воде внутри или повторном срабатывании автомата.',
+      ],
+      qualificationNote:
+        'Это не призыв к самостоятельному ремонту. Работы с электрикой, блоками питания, автоматами, проводкой, корпусом вывески и высотой выполняют только люди с подходящей квалификацией и безопасным доступом.',
+    },
     urgentWarnings: [
       'Автомат выбивает повторно.',
       'Есть запах гари, искры, треск или сильный нагрев.',
@@ -199,6 +262,27 @@ const LOCALE_CONFIG = {
       'Tabelanın genel fotoğrafını ve karanlık bölgenin yakın fotoğrafını çekin.',
       'Güç kaynağı etiketi güvenli şekilde görünüyorsa sadece fotoğrafını çekin.',
     ],
+    selfRepairTips: {
+      intro:
+        'Tabela tamamen karanlıksa önce basit bir besleme sorununu tabela içindeki arızadan ayırmak gerekir.',
+      withoutOpening: [
+        'Normal anahtarı, sigortayı veya kaçak akım rölesini, dış zamanlayıcıyı, fotoseli ya da uzaktan kumandayı yalnızca kasa açmadan erişilebiliyorsa kontrol edin.',
+        'Aynı hatta veya yakındaki başka cihazlarda elektrik olup olmadığını kontrol edin.',
+        'Sorunun yağmur, fırtına, cephe temizliği, voltaj dalgalanması veya yakındaki bir işten sonra ortaya çıkıp çıkmadığını not edin.',
+        'Tüm tabela mı yoksa tek harf, bölüm, kenar ya da ışıklı kutu mu karanlık, bunu netleştirin; genel fotoğraf ve karanlık alanın yakın fotoğrafını çekin.',
+      ],
+      technicalSpecialist: [
+        'Uygun yeterlilik varsa teknik sorumlunuz hat beslemesini, sigortayı, 220/230 V girişini, güç kaynağını, çıkış voltajını ve erişilebilir kontrol elemanlarını kontrol edebilir.',
+        'Sigorta, güç kaynağı veya bağlantı değiştirilecek ya da eski haline getirilecekse voltaj, güç, akım, koruma sınıfı ve bağlantı şeması tabela ile tam uyumlu olmalıdır.',
+      ],
+      doNotDo: [
+        'Yeterlilik olmadan kasayı açmayın, gerilim altındaki kablolarla çalışmayın, besleme hatlarını kesmeyin, uzatmayın veya geçici bağlantı yapmayın.',
+        'Kabloları bükerek bağlamayın, geçici klemens kullanmayın; ıslak elemanlara, klemenslere, kontrol ünitesine veya güç kaynaklarına dokunmayın.',
+        'Yanık kokusu, çıtırtı, kıvılcım, ısınma, içeride su veya sigortanın tekrar atması varsa tabelayı tekrar açmayın.',
+      ],
+      qualificationNote:
+        'Bu öneriler kendi kendine onarım çağrısı değildir. Elektrik, güç kaynakları, sigortalar, kablolama, tabela kasası ve yüksekte çalışma yalnızca uygun yeterliliğe ve güvenli erişime sahip kişiler tarafından yapılmalıdır.',
+    },
     urgentWarnings: [
       'Sigorta veya kaçak akım rölesi tekrar atıyor.',
       'Yanık kokusu, kıvılcım, çıtırtı veya belirgin ısınma var.',
@@ -246,6 +330,27 @@ const LOCALE_CONFIG = {
       'Zrobić zdjęcie całej reklamy i zbliżenie ciemnego miejsca.',
       'Sfotografować etykietę zasilacza tylko wtedy, gdy jest widoczna bez dotykania przewodów.',
     ],
+    selfRepairTips: {
+      intro:
+        'Jeśli cała reklama jest ciemna, najpierw warto odróżnić prosty problem z zasilaniem od usterki wewnątrz konstrukcji.',
+      withoutOpening: [
+        'Sprawdź zwykły włącznik, zabezpieczenie lub różnicówkę, zewnętrzny zegar, czujnik zmierzchu albo pilot tylko wtedy, gdy są dostępne bez otwierania obudowy.',
+        'Sprawdź, czy inne urządzenia na tej samej linii lub w pobliżu mają zasilanie.',
+        'Zanotuj, czy problem pojawił się po deszczu, burzy, myciu elewacji, skoku napięcia albo pracach w pobliżu.',
+        'Ustal, czy ciemna jest cała reklama, jedna litera, sekcja, krawędź czy kaseton; zrób zdjęcie całości i zbliżenie ciemnego miejsca.',
+      ],
+      technicalSpecialist: [
+        'Przy odpowiednich kwalifikacjach osoba techniczna może sprawdzić zasilanie linii, zabezpieczenie, wejście 220/230 V, zasilacz, napięcie wyjściowe i dostępne elementy sterowania.',
+        'Jeśli trzeba wymienić zabezpieczenie, zasilacz albo odtworzyć połączenie, napięcie, moc, prąd, stopień ochrony i schemat podłączenia muszą dokładnie pasować do reklamy.',
+      ],
+      doNotDo: [
+        'Nie otwieraj obudowy bez kwalifikacji, nie pracuj przy przewodach pod napięciem, nie tnij, nie przedłużaj i nie łącz tymczasowo linii zasilania.',
+        'Nie łącz przewodów skrętką ani tymczasowymi złączkami; nie dotykaj mokrych elementów, zacisków, sterowników ani zasilaczy.',
+        'Nie włączaj reklamy ponownie, jeśli jest zapach spalenizny, trzaski, iskry, nagrzewanie, woda w środku albo zabezpieczenie zadziałało ponownie.',
+      ],
+      qualificationNote:
+        'Te wskazówki nie są zachętą do samodzielnej naprawy. Prace przy elektryce, zasilaczach, zabezpieczeniach, przewodach, obudowie reklamy i na wysokości powinny wykonywać tylko osoby z odpowiednimi kwalifikacjami i bezpiecznym dostępem.',
+    },
     urgentWarnings: [
       'Zabezpieczenie lub różnicówka wyłącza się ponownie.',
       'Jest zapach spalenizny, iskry, trzaski albo wyraźne nagrzewanie.',
@@ -293,6 +398,27 @@ const LOCALE_CONFIG = {
       'تصوير اللوحة كاملة والمنطقة المظلمة عن قرب.',
       'تصوير بطاقة مزود الطاقة فقط إذا كانت ظاهرة بأمان ومن دون لمس الأسلاك.',
     ],
+    selfRepairTips: {
+      intro:
+        'إذا بقيت اللوحة كلها مظلمة، فالخطوة الأولى هي التفريق بين مشكلة بسيطة في التغذية وعطل داخل تركيب اللوحة.',
+      withoutOpening: [
+        'افحص المفتاح العادي، القاطع أو قاطع التسرب، المؤقت الخارجي، حساس الضوء أو جهاز التحكم فقط إذا كانت هذه العناصر متاحة من دون فتح الصندوق.',
+        'تأكد مما إذا كانت الأجهزة الأخرى على نفس الخط أو بالقرب من اللوحة تعمل.',
+        'سجّل ما إذا ظهرت المشكلة بعد مطر، عاصفة، تنظيف الواجهة، تغير مفاجئ في الجهد أو أعمال قريبة.',
+        'حدّد هل اللوحة كلها مظلمة أم حرف واحد أو قسم أو طرف أو صندوق إضاءة فقط؛ التقط صورة عامة وصورة قريبة للمنطقة المظلمة.',
+      ],
+      technicalSpecialist: [
+        'إذا توفرت الكفاءة المناسبة، يمكن للمختص التقني لديكم فحص تغذية الخط، القاطع، مدخل 220/230 فولت، مزود الطاقة، جهد الخرج وعناصر التحكم المتاحة.',
+        'إذا كان يلزم استبدال القاطع أو مزود الطاقة أو إعادة التوصيل، فيجب أن تتطابق قيم الجهد والقدرة والتيار ودرجة الحماية ومخطط التوصيل مع اللوحة بدقة.',
+      ],
+      doNotDo: [
+        'لا تفتح الصندوق من دون كفاءة مناسبة، ولا تعمل على أسلاك تحت الجهد، ولا تقطع أو تمدد أو توصل خطوط التغذية بشكل مؤقت.',
+        'لا توصل الأسلاك باللف أو بموصلات مؤقتة، ولا تلمس العناصر الرطبة أو الأطراف أو وحدات التحكم أو مزودات الطاقة.',
+        'لا تشغّل اللوحة مرة أخرى إذا ظهرت رائحة احتراق أو طقطقة أو شرر أو سخونة أو ماء في الداخل أو إذا فصل القاطع مرة أخرى.',
+      ],
+      qualificationNote:
+        'هذه النصائح ليست دعوة إلى الإصلاح الذاتي. أعمال الكهرباء ومزودات الطاقة والقواطع والأسلاك وصندوق اللوحة والعمل على ارتفاع يجب أن ينفذها فقط أشخاص لديهم الكفاءة المناسبة والوصول الآمن.',
+    },
     urgentWarnings: [
       'القاطع أو قاطع التسرب يفصل مرة أخرى.',
       'رائحة احتراق، شرر، طقطقة، أو سخونة واضحة.',
@@ -347,13 +473,13 @@ const upsertSql = `
   INSERT INTO "cms_articles" (
     "id","locale","type","status","slug","title","symptomLabel","shortAnswer",
     "content","seoTitle","seoDescription","canonicalUrl","relatedSlugs",
-    "causes","safeChecks","urgentWarnings","serviceProcess","workScopeFactors",
+    "causes","safeChecks","selfRepairTips","urgentWarnings","serviceProcess","workScopeFactors",
     "ctaLabel","ctaHref","sortOrder","publishedAt","lastReviewedAt",
     "deletedAt","createdAt","updatedAt"
   ) VALUES (
     $1,$2,$3::"CmsArticleType",$4::"CmsArticleStatus",$5,$6,$7,$8,
-    $9,$10,$11,$12,$13::text[],$14::text[],$15::text[],$16::text[],
-    $17::text[],$18::text[],$19,$20,$21,$22,$23,$24,$25,$26
+    $9,$10,$11,$12,$13::text[],$14::text[],$15::text[],$16::jsonb,$17::text[],
+    $18::text[],$19::text[],$20,$21,$22,$23,$24,$25,$26,$27
   )
   ON CONFLICT ("locale", "slug")
   DO UPDATE SET
@@ -369,6 +495,7 @@ const upsertSql = `
     "relatedSlugs" = EXCLUDED."relatedSlugs",
     "causes" = EXCLUDED."causes",
     "safeChecks" = EXCLUDED."safeChecks",
+    "selfRepairTips" = EXCLUDED."selfRepairTips",
     "urgentWarnings" = EXCLUDED."urgentWarnings",
     "serviceProcess" = EXCLUDED."serviceProcess",
     "workScopeFactors" = EXCLUDED."workScopeFactors",
@@ -399,6 +526,7 @@ async function upsertArticle(client, locale, config) {
     relatedSlugs: ['flicking', 'letter-out', 'rain-fail'],
     causes: config.causes,
     safeChecks: config.safeChecks,
+    selfRepairTips: config.selfRepairTips ?? null,
     urgentWarnings: config.urgentWarnings,
     serviceProcess: config.serviceProcess,
     workScopeFactors: config.workScopeFactors,
@@ -428,6 +556,7 @@ async function upsertArticle(client, locale, config) {
     article.relatedSlugs,
     article.causes,
     article.safeChecks,
+    article.selfRepairTips ? JSON.stringify(article.selfRepairTips) : null,
     article.urgentWarnings,
     article.serviceProcess,
     article.workScopeFactors,

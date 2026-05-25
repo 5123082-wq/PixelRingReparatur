@@ -8,9 +8,9 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 
 Latest checkpoint:
 
-- Date: 2026-05-21
-- Current stage: Replaced two blocks on `/business` page (Subscription Model / Audit and Volle Kontrolle / Portal) with the designer's new high-fidelity layouts. Audit block now has glassmorphism benefit cards and a floating Standortübersicht widget + scan panel. Portal block replaced gray skeleton placeholders with a real dashboard mockup (KPI tiles, location rows with status tags, floating Audit-Report card). Added auditCta/portalCta/portalDemoCta fields for all 6 locales. Production build verified.
-- Next action: Owner reviews the updated `/de/business` page visually (Audit block and Portal block).
+- Date: 2026-05-25
+- Current stage: `rain-fail` / `werbeanlage-schaltet-nach-regen-ab` is published in CMS/database for DE, EN, RU, TR, PL, and AR from the approved Markdown set. The repeatable seed `db:seed:article-rain-fail` and all-locale `selfRepairTips` JSON are in place; production build and HTTP route checks passed.
+- Next action: Owner visually reviews the six live routes, especially the modal `selfRepairTips` block and DE/EN improved copy.
 
 
 Active tracks:
@@ -45,6 +45,26 @@ Read deep when:
 - **Engineering/Ops**: Open maintenance note recorded for future Postgres SSL connection-string cleanup before the next `pg`/Prisma/migration-tooling dependency upgrade.
 
 ## Last Updated
+
+- Date: 2026-05-25
+- Updated by: Codex
+- **Current Stage**: Published `rain-fail` / `werbeanlage-schaltet-nach-regen-ab` into CMS/database for all six MVP locales from Markdown drafts. Added the repeatable `db:seed:article-rain-fail` script, populated structured `selfRepairTips` for DE/EN/RU/TR/PL/AR, verified CMS audit rows are published and SEO-ready, verified production build, and smoke-checked all six article routes over HTTP.
+- **Next Action**: Owner visually reviews `/de`, `/en`, `/ru`, `/tr`, `/pl`, and `/ar` article pages for final copy/layout before moving to the next problem article.
+
+- Date: 2026-05-25
+- Updated by: Codex
+- **Current Stage**: Added the `rain-fail` / `werbeanlage-schaltet-nach-regen-ab` problem-article Markdown set for RU, DE, EN, TR, PL, and AR. The RU source was corrected and expanded with safer practical self-check/self-repair guidance; localized drafts keep the same safety boundaries and article structure. No CMS/database or application code changes were made for this article.
+- **Next Action**: Owner reviews the Markdown drafts before any CMS/database synchronization or seed-script work.
+
+- Date: 2026-05-25
+- Updated by: Codex
+- **Current Stage**: Closed the technical `selfRepairTips` rollout for existing full problem articles: added shared self-repair seed data, repeatable patch seed, updated `letter-out` and `uneven-light` all-locales seeds to preserve JSON, migrated `letter-out` off hardcoded public fallback, removed old hardcoded self-repair mappings, and verified DB/ESLint/build.
+- **Next Action**: Future content work should add full articles and `selfRepairTips` JSON for the remaining short/basic problem slugs; no further CMS plumbing is required unless the modal UI is redesigned into visual subgroups.
+
+- Date: 2026-05-25
+- Updated by: Antigravity
+- **Current Stage**: Replaced the 404 fallback on the `/service` page with a beautiful, localized preview/teaser card explaining that the Standort-Abo tariffs are currently in development. Enabled for all six supported locales (DE, EN, RU, TR, PL, AR). Preserved the full CMS preview page for owners with `cmsPreview=1` parameter.
+- **Next Action**: Owner reviews the `/service` preview page across locales and verifies the draft preview still renders the full landing page properly.
 
 - Date: 2026-05-25
 - Updated by: Codex

@@ -1,6 +1,6 @@
 # CMS Public Content Audit
 
-Generated: 2026-05-24T21:51:12.013Z
+Generated: 2026-05-25T14:01:03.381Z
 Database: postgresql://ep-soft-smoke-agt9wkjm-pooler.c-2.eu-central-1.aws.neon.tech/neondb
 Result: WARN
 
@@ -8,19 +8,46 @@ Result: WARN
 
 | Severity | Count |
 | --- | --- |
-| INFO | 14 |
-| WARN | 18 |
+| INFO | 15 |
+| WARN | 45 |
 
 ## Blocking And Warning Findings
 
 | Severity | Code | Context | Message |
 | --- | --- | --- | --- |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/de is missing expected block cardList:problems. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/de is missing expected block cardList:impact. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/de is missing expected block textSection:urgent. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/de is missing expected block faqList:faq. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/de is missing expected block cta:final. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/en is missing expected block cardList:problems. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/en is missing expected block cardList:impact. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/en is missing expected block textSection:urgent. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/en is missing expected block faqList:faq. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/en is missing expected block cta:final. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/ru is missing expected block cardList:problems. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/ru is missing expected block cardList:impact. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/ru is missing expected block textSection:urgent. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/ru is missing expected block faqList:faq. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/ru is missing expected block cta:final. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/tr is missing expected block cardList:problems. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/tr is missing expected block cardList:impact. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/tr is missing expected block textSection:urgent. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/tr is missing expected block faqList:faq. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/tr is missing expected block cta:final. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/pl is missing expected block cardList:problems. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/pl is missing expected block cardList:impact. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/pl is missing expected block textSection:urgent. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/pl is missing expected block faqList:faq. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/pl is missing expected block cta:final. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/ar is missing expected block cardList:problems. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/ar is missing expected block cardList:impact. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/ar is missing expected block textSection:urgent. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/ar is missing expected block faqList:faq. |
+| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/ar is missing expected block cta:final. |
 | WARN | MISSING_PROBLEM_ARTICLE | flicking | flicking/tr is missing; article route may fall back to EN or 404. |
 | WARN | MISSING_PROBLEM_ARTICLE | flicking | flicking/pl is missing; article route may fall back to EN or 404. |
 | WARN | MISSING_PROBLEM_ARTICLE | flicking | flicking/ar is missing; article route may fall back to EN or 404. |
-| WARN | MISSING_PROBLEM_ARTICLE | rain-fail | rain-fail/tr is missing; article route may fall back to EN or 404. |
-| WARN | MISSING_PROBLEM_ARTICLE | rain-fail | rain-fail/pl is missing; article route may fall back to EN or 404. |
-| WARN | MISSING_PROBLEM_ARTICLE | rain-fail | rain-fail/ar is missing; article route may fall back to EN or 404. |
 | WARN | MISSING_PROBLEM_ARTICLE | peeling-film | peeling-film/tr is missing; article route may fall back to EN or 404. |
 | WARN | MISSING_PROBLEM_ARTICLE | peeling-film | peeling-film/pl is missing; article route may fall back to EN or 404. |
 | WARN | MISSING_PROBLEM_ARTICLE | peeling-film | peeling-film/ar is missing; article route may fall back to EN or 404. |
@@ -70,12 +97,12 @@ Result: WARN
 | business | tr | /tr/business | CMS + fallback | PUBLISHED |  |  |
 | business | pl | /pl/business | CMS + fallback | PUBLISHED |  |  |
 | business | ar | /ar/business | CMS + fallback | PUBLISHED |  |  |
-| probleme-loesungen | de | /de/probleme-loesungen | CMS + fallback | PUBLISHED |  |  |
-| probleme-loesungen | en | /en/probleme-loesungen | CMS + fallback | PUBLISHED |  |  |
-| probleme-loesungen | ru | /ru/probleme-loesungen | CMS + fallback | PUBLISHED |  |  |
-| probleme-loesungen | tr | /tr/probleme-loesungen | CMS + fallback | PUBLISHED |  |  |
-| probleme-loesungen | pl | /pl/probleme-loesungen | CMS + fallback | PUBLISHED |  |  |
-| probleme-loesungen | ar | /ar/probleme-loesungen | CMS + fallback | PUBLISHED |  |  |
+| probleme-loesungen | de | /de/probleme-loesungen | CMS + fallback | PUBLISHED | cardList:problems, cardList:impact, textSection:urgent, faqList:faq, cta:final |  |
+| probleme-loesungen | en | /en/probleme-loesungen | CMS + fallback | PUBLISHED | cardList:problems, cardList:impact, textSection:urgent, faqList:faq, cta:final |  |
+| probleme-loesungen | ru | /ru/probleme-loesungen | CMS + fallback | PUBLISHED | cardList:problems, cardList:impact, textSection:urgent, faqList:faq, cta:final |  |
+| probleme-loesungen | tr | /tr/probleme-loesungen | CMS + fallback | PUBLISHED | cardList:problems, cardList:impact, textSection:urgent, faqList:faq, cta:final |  |
+| probleme-loesungen | pl | /pl/probleme-loesungen | CMS + fallback | PUBLISHED | cardList:problems, cardList:impact, textSection:urgent, faqList:faq, cta:final |  |
+| probleme-loesungen | ar | /ar/probleme-loesungen | CMS + fallback | PUBLISHED | cardList:problems, cardList:impact, textSection:urgent, faqList:faq, cta:final |  |
 | about | de | /de/ueber-uns | CMS + fallback | PUBLISHED |  |  |
 | about | en | /en/ueber-uns | CMS + fallback | PUBLISHED |  |  |
 | about | ru | /ru/ueber-uns | CMS + fallback | PUBLISHED |  |  |
@@ -120,9 +147,9 @@ Result: WARN
 | rain-fail | de | werbeanlage-schaltet-nach-regen-ab | PUBLISHED | yes | yes | yes |
 | rain-fail | en | werbeanlage-schaltet-nach-regen-ab | PUBLISHED | yes | yes | yes |
 | rain-fail | ru | werbeanlage-schaltet-nach-regen-ab | PUBLISHED | yes | yes | yes |
-| rain-fail | tr | werbeanlage-schaltet-nach-regen-ab | MISSING | no | no | partial |
-| rain-fail | pl | werbeanlage-schaltet-nach-regen-ab | MISSING | no | no | partial |
-| rain-fail | ar | werbeanlage-schaltet-nach-regen-ab | MISSING | no | no | partial |
+| rain-fail | tr | werbeanlage-schaltet-nach-regen-ab | PUBLISHED | yes | yes | yes |
+| rain-fail | pl | werbeanlage-schaltet-nach-regen-ab | PUBLISHED | yes | yes | yes |
+| rain-fail | ar | werbeanlage-schaltet-nach-regen-ab | PUBLISHED | yes | yes | yes |
 | peeling-film | de | folie-loest-sich | PUBLISHED | yes | yes | yes |
 | peeling-film | en | folie-loest-sich | PUBLISHED | yes | yes | yes |
 | peeling-film | ru | folie-loest-sich | PUBLISHED | yes | yes | yes |

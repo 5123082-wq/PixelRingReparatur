@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-24T21:51:12.013Z",
+  "generatedAt": "2026-05-25T14:01:03.381Z",
   "databaseTarget": "postgresql://ep-soft-smoke-agt9wkjm-pooler.c-2.eu-central-1.aws.neon.tech/neondb",
   "baseUrl": null,
   "locales": [
@@ -178,7 +178,7 @@
       "title": "PixelRing Reparatur",
       "blocks": [
         "hero:hero",
-        "textSection:intakeSection (disabled)",
+        "textSection:intakeSection",
         "cardList:bentoSection",
         "cardList:trustSection",
         "cardList:coverageSection",
@@ -199,7 +199,7 @@
       "title": "PixelRing Reparatur",
       "blocks": [
         "hero:hero",
-        "textSection:intakeSection (disabled)",
+        "textSection:intakeSection",
         "cardList:bentoSection",
         "cardList:trustSection",
         "cardList:coverageSection",
@@ -220,7 +220,7 @@
       "title": "Ремонт PixelRing",
       "blocks": [
         "hero:hero",
-        "textSection:intakeSection (disabled)",
+        "textSection:intakeSection",
         "cardList:bentoSection",
         "cardList:trustSection",
         "cardList:coverageSection",
@@ -241,7 +241,7 @@
       "title": "PixelRing Onarım",
       "blocks": [
         "hero:hero",
-        "textSection:intakeSection (disabled)",
+        "textSection:intakeSection",
         "cardList:bentoSection",
         "cardList:trustSection",
         "cardList:coverageSection",
@@ -262,7 +262,7 @@
       "title": "Naprawa PixelRing",
       "blocks": [
         "hero:hero",
-        "textSection:intakeSection (disabled)",
+        "textSection:intakeSection",
         "cardList:bentoSection",
         "cardList:trustSection",
         "cardList:coverageSection",
@@ -283,7 +283,7 @@
       "title": "PixelRing للإصلاح",
       "blocks": [
         "hero:hero",
-        "textSection:intakeSection (disabled)",
+        "textSection:intakeSection",
         "cardList:bentoSection",
         "cardList:trustSection",
         "cardList:coverageSection",
@@ -641,16 +641,17 @@
       "route": "/de/probleme-loesungen",
       "routeUsesCms": true,
       "status": "PUBLISHED",
-      "title": "Probleme & Loesungen",
+      "title": "Probleme & Lösungen",
       "blocks": [
-        "hero:hero",
+        "hero:problemeLoesungenHero"
+      ],
+      "missingBlocks": [
         "cardList:problems",
         "cardList:impact",
         "textSection:urgent",
         "faqList:faq",
         "cta:final"
       ],
-      "missingBlocks": [],
       "missingFields": [],
       "fallback": "large static CONTENT object in page.tsx"
     },
@@ -660,16 +661,17 @@
       "route": "/en/probleme-loesungen",
       "routeUsesCms": true,
       "status": "PUBLISHED",
-      "title": "Probleme & Loesungen",
+      "title": "Problems & Solutions",
       "blocks": [
-        "hero:hero",
+        "hero:problemeLoesungenHero"
+      ],
+      "missingBlocks": [
         "cardList:problems",
         "cardList:impact",
         "textSection:urgent",
         "faqList:faq",
         "cta:final"
       ],
-      "missingBlocks": [],
       "missingFields": [],
       "fallback": "large static CONTENT object in page.tsx"
     },
@@ -679,16 +681,17 @@
       "route": "/ru/probleme-loesungen",
       "routeUsesCms": true,
       "status": "PUBLISHED",
-      "title": "Probleme & Loesungen",
+      "title": "Проблемы и решения",
       "blocks": [
-        "hero:hero",
+        "hero:problemeLoesungenHero"
+      ],
+      "missingBlocks": [
         "cardList:problems",
         "cardList:impact",
         "textSection:urgent",
         "faqList:faq",
         "cta:final"
       ],
-      "missingBlocks": [],
       "missingFields": [],
       "fallback": "large static CONTENT object in page.tsx"
     },
@@ -698,16 +701,17 @@
       "route": "/tr/probleme-loesungen",
       "routeUsesCms": true,
       "status": "PUBLISHED",
-      "title": "Probleme & Loesungen",
+      "title": "Sorunlar ve Cozumler",
       "blocks": [
-        "hero:hero",
+        "hero:problemeLoesungenHero"
+      ],
+      "missingBlocks": [
         "cardList:problems",
         "cardList:impact",
         "textSection:urgent",
         "faqList:faq",
         "cta:final"
       ],
-      "missingBlocks": [],
       "missingFields": [],
       "fallback": "large static CONTENT object in page.tsx"
     },
@@ -717,16 +721,17 @@
       "route": "/pl/probleme-loesungen",
       "routeUsesCms": true,
       "status": "PUBLISHED",
-      "title": "Probleme & Loesungen",
+      "title": "Problemy i rozwiazania",
       "blocks": [
-        "hero:hero",
+        "hero:problemeLoesungenHero"
+      ],
+      "missingBlocks": [
         "cardList:problems",
         "cardList:impact",
         "textSection:urgent",
         "faqList:faq",
         "cta:final"
       ],
-      "missingBlocks": [],
       "missingFields": [],
       "fallback": "large static CONTENT object in page.tsx"
     },
@@ -736,16 +741,17 @@
       "route": "/ar/probleme-loesungen",
       "routeUsesCms": true,
       "status": "PUBLISHED",
-      "title": "Probleme & Loesungen",
+      "title": "المشكلات والحلول",
       "blocks": [
-        "hero:hero",
+        "hero:problemeLoesungenHero"
+      ],
+      "missingBlocks": [
         "cardList:problems",
         "cardList:impact",
         "textSection:urgent",
         "faqList:faq",
         "cta:final"
       ],
-      "missingBlocks": [],
       "missingFields": [],
       "fallback": "large static CONTENT object in page.tsx"
     },
@@ -1495,11 +1501,11 @@
       "seoTitle": true,
       "seoDescription": true,
       "structuredLists": {
-        "causes": 3,
-        "safeChecks": 3,
-        "urgentWarnings": 2,
-        "serviceProcess": 4,
-        "workScopeFactors": 3
+        "causes": 5,
+        "safeChecks": 4,
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 5
       }
     },
     {
@@ -1508,7 +1514,7 @@
       "locale": "en",
       "route": "/en/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab",
       "status": "PUBLISHED",
-      "title": "Sign fails after rain — tracing moisture paths in outdoor installations",
+      "title": "Sign switches off after rain",
       "content": true,
       "shortAnswer": true,
       "seoTitle": true,
@@ -1516,9 +1522,9 @@
       "structuredLists": {
         "causes": 5,
         "safeChecks": 4,
-        "urgentWarnings": 3,
-        "serviceProcess": 4,
-        "workScopeFactors": 3
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 5
       }
     },
     {
@@ -1527,17 +1533,17 @@
       "locale": "ru",
       "route": "/ru/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab",
       "status": "PUBLISHED",
-      "title": "Вывеска отключается после дождя",
+      "title": "Вывеска перестала светиться после дождя",
       "content": true,
       "shortAnswer": true,
       "seoTitle": true,
       "seoDescription": true,
       "structuredLists": {
-        "causes": 3,
-        "safeChecks": 3,
-        "urgentWarnings": 2,
-        "serviceProcess": 4,
-        "workScopeFactors": 3
+        "causes": 5,
+        "safeChecks": 4,
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 5
       }
     },
     {
@@ -1545,18 +1551,18 @@
       "publicSlug": "werbeanlage-schaltet-nach-regen-ab",
       "locale": "tr",
       "route": "/tr/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab",
-      "status": "MISSING",
-      "title": "",
-      "content": false,
-      "shortAnswer": false,
-      "seoTitle": false,
-      "seoDescription": false,
+      "status": "PUBLISHED",
+      "title": "Tabela yağmurdan sonra kapanıyor",
+      "content": true,
+      "shortAnswer": true,
+      "seoTitle": true,
+      "seoDescription": true,
       "structuredLists": {
-        "causes": 0,
-        "safeChecks": 0,
-        "urgentWarnings": 0,
-        "serviceProcess": 0,
-        "workScopeFactors": 0
+        "causes": 5,
+        "safeChecks": 4,
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 5
       }
     },
     {
@@ -1564,18 +1570,18 @@
       "publicSlug": "werbeanlage-schaltet-nach-regen-ab",
       "locale": "pl",
       "route": "/pl/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab",
-      "status": "MISSING",
-      "title": "",
-      "content": false,
-      "shortAnswer": false,
-      "seoTitle": false,
-      "seoDescription": false,
+      "status": "PUBLISHED",
+      "title": "Reklama świetlna wyłącza się po deszczu",
+      "content": true,
+      "shortAnswer": true,
+      "seoTitle": true,
+      "seoDescription": true,
       "structuredLists": {
-        "causes": 0,
-        "safeChecks": 0,
-        "urgentWarnings": 0,
-        "serviceProcess": 0,
-        "workScopeFactors": 0
+        "causes": 5,
+        "safeChecks": 4,
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 5
       }
     },
     {
@@ -1583,18 +1589,18 @@
       "publicSlug": "werbeanlage-schaltet-nach-regen-ab",
       "locale": "ar",
       "route": "/ar/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab",
-      "status": "MISSING",
-      "title": "",
-      "content": false,
-      "shortAnswer": false,
-      "seoTitle": false,
-      "seoDescription": false,
+      "status": "PUBLISHED",
+      "title": "اللافتة المضيئة تنطفئ بعد المطر",
+      "content": true,
+      "shortAnswer": true,
+      "seoTitle": true,
+      "seoDescription": true,
       "structuredLists": {
-        "causes": 0,
-        "safeChecks": 0,
-        "urgentWarnings": 0,
-        "serviceProcess": 0,
-        "workScopeFactors": 0
+        "causes": 5,
+        "safeChecks": 4,
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 5
       }
     },
     {
@@ -2060,528 +2066,66 @@
       "pageKey": "home",
       "locale": "de",
       "fieldPath": "0.assetUrl",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/hero-neon.jpg",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/hero-neon.jpg",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "de",
-      "fieldPath": "5.items.0.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-mounting.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-mounting.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "de",
-      "fieldPath": "5.items.1.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-repair.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-repair.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "de",
-      "fieldPath": "5.items.2.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-maintenance.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-maintenance.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "de",
-      "fieldPath": "5.items.3.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-design.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-design.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "de",
-      "fieldPath": "5.items.4.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1778839219793-5644292eec43-Leuchtkasten-Montage.png",
-      "cmsMedia": true,
+      "value": "/images/hero-neon.jpg",
+      "cmsMedia": false,
       "fallbackUrl": null,
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "de",
-      "fieldPath": "5.items.5.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1778839804486-ca641bb5c502-Sicherer_Rckbau_002.png",
-      "cmsMedia": true,
-      "fallbackUrl": null,
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "de",
-      "fieldPath": "5.items.6.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1777195936934-1e9e021a2691-WhatsApp-Image-2026-04-16-at-182658.jpg",
-      "cmsMedia": true,
-      "fallbackUrl": "/uploads/cms-media/1777195936934-1e9e021a2691-WhatsApp-Image-2026-04-16-at-182658.jpg",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "home",
       "locale": "en",
       "fieldPath": "0.assetUrl",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/hero-neon.jpg",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/hero-neon.jpg",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "en",
-      "fieldPath": "5.items.0.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-mounting.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-mounting.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "en",
-      "fieldPath": "5.items.1.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-repair.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-repair.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "en",
-      "fieldPath": "5.items.2.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-maintenance.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-maintenance.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "en",
-      "fieldPath": "5.items.3.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-design.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-design.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "en",
-      "fieldPath": "5.items.4.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1778839219793-5644292eec43-Leuchtkasten-Montage.png",
-      "cmsMedia": true,
+      "value": "/images/hero-neon.jpg",
+      "cmsMedia": false,
       "fallbackUrl": null,
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "en",
-      "fieldPath": "5.items.5.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1778839804486-ca641bb5c502-Sicherer_Rckbau_002.png",
-      "cmsMedia": true,
-      "fallbackUrl": null,
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "en",
-      "fieldPath": "5.items.6.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1777195936934-1e9e021a2691-WhatsApp-Image-2026-04-16-at-182658.jpg",
-      "cmsMedia": true,
-      "fallbackUrl": "/uploads/cms-media/1777195936934-1e9e021a2691-WhatsApp-Image-2026-04-16-at-182658.jpg",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "home",
       "locale": "ru",
       "fieldPath": "0.assetUrl",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/hero-neon.jpg",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/hero-neon.jpg",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "ru",
-      "fieldPath": "5.items.0.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-mounting.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-mounting.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "ru",
-      "fieldPath": "5.items.1.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-repair.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-repair.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "ru",
-      "fieldPath": "5.items.2.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-maintenance.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-maintenance.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "ru",
-      "fieldPath": "5.items.3.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-design.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-design.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "ru",
-      "fieldPath": "5.items.4.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1778839219793-5644292eec43-Leuchtkasten-Montage.png",
-      "cmsMedia": true,
+      "value": "/images/hero-neon.jpg",
+      "cmsMedia": false,
       "fallbackUrl": null,
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "ru",
-      "fieldPath": "5.items.5.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1778839804486-ca641bb5c502-Sicherer_Rckbau_002.png",
-      "cmsMedia": true,
-      "fallbackUrl": null,
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "ru",
-      "fieldPath": "5.items.6.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1777195936934-1e9e021a2691-WhatsApp-Image-2026-04-16-at-182658.jpg",
-      "cmsMedia": true,
-      "fallbackUrl": "/uploads/cms-media/1777195936934-1e9e021a2691-WhatsApp-Image-2026-04-16-at-182658.jpg",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "home",
       "locale": "tr",
       "fieldPath": "0.assetUrl",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/hero-neon.jpg",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/hero-neon.jpg",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "tr",
-      "fieldPath": "5.items.0.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-mounting.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-mounting.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "tr",
-      "fieldPath": "5.items.1.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-repair.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-repair.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "tr",
-      "fieldPath": "5.items.2.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-maintenance.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-maintenance.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "tr",
-      "fieldPath": "5.items.3.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-design.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-design.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "tr",
-      "fieldPath": "5.items.4.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1778839219793-5644292eec43-Leuchtkasten-Montage.png",
-      "cmsMedia": true,
+      "value": "/images/hero-neon.jpg",
+      "cmsMedia": false,
       "fallbackUrl": null,
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "tr",
-      "fieldPath": "5.items.5.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1778839804486-ca641bb5c502-Sicherer_Rckbau_002.png",
-      "cmsMedia": true,
-      "fallbackUrl": null,
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "tr",
-      "fieldPath": "5.items.6.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1777195936934-1e9e021a2691-WhatsApp-Image-2026-04-16-at-182658.jpg",
-      "cmsMedia": true,
-      "fallbackUrl": "/uploads/cms-media/1777195936934-1e9e021a2691-WhatsApp-Image-2026-04-16-at-182658.jpg",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "home",
       "locale": "pl",
       "fieldPath": "0.assetUrl",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/hero-neon.jpg",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/hero-neon.jpg",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "pl",
-      "fieldPath": "5.items.0.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-mounting.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-mounting.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "pl",
-      "fieldPath": "5.items.1.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-repair.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-repair.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "pl",
-      "fieldPath": "5.items.2.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-maintenance.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-maintenance.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "pl",
-      "fieldPath": "5.items.3.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-design.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-design.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "pl",
-      "fieldPath": "5.items.4.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1778839219793-5644292eec43-Leuchtkasten-Montage.png",
-      "cmsMedia": true,
+      "value": "/images/hero-neon.jpg",
+      "cmsMedia": false,
       "fallbackUrl": null,
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "pl",
-      "fieldPath": "5.items.5.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1778839804486-ca641bb5c502-Sicherer_Rckbau_002.png",
-      "cmsMedia": true,
-      "fallbackUrl": null,
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "pl",
-      "fieldPath": "5.items.6.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1777195936934-1e9e021a2691-WhatsApp-Image-2026-04-16-at-182658.jpg",
-      "cmsMedia": true,
-      "fallbackUrl": "/uploads/cms-media/1777195936934-1e9e021a2691-WhatsApp-Image-2026-04-16-at-182658.jpg",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "home",
       "locale": "ar",
       "fieldPath": "0.assetUrl",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/hero-neon.jpg",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/hero-neon.jpg",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "ar",
-      "fieldPath": "5.items.0.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-mounting.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-mounting.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "ar",
-      "fieldPath": "5.items.1.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-repair.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-repair.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "ar",
-      "fieldPath": "5.items.2.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-maintenance.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-maintenance.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "ar",
-      "fieldPath": "5.items.3.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/ex-design.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/ex-design.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "ar",
-      "fieldPath": "5.items.4.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1778839219793-5644292eec43-Leuchtkasten-Montage.png",
-      "cmsMedia": true,
+      "value": "/images/hero-neon.jpg",
+      "cmsMedia": false,
       "fallbackUrl": null,
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "ar",
-      "fieldPath": "5.items.5.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1778839804486-ca641bb5c502-Sicherer_Rckbau_002.png",
-      "cmsMedia": true,
-      "fallbackUrl": null,
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
-    },
-    {
-      "sourceType": "CmsPage",
-      "pageKey": "home",
-      "locale": "ar",
-      "fieldPath": "5.items.6.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1777195936934-1e9e021a2691-WhatsApp-Image-2026-04-16-at-182658.jpg",
-      "cmsMedia": true,
-      "fallbackUrl": "/uploads/cms-media/1777195936934-1e9e021a2691-WhatsApp-Image-2026-04-16-at-182658.jpg",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
@@ -5283,11 +4827,350 @@
     {
       "severity": "INFO",
       "code": "CMS_PAGE_SEO_INCOMPLETE",
+      "message": "impressum/de has incomplete SEO fields.",
+      "pageKey": "impressum",
+      "locale": "de",
+      "seoTitle": true,
+      "seoDescription": false
+    },
+    {
+      "severity": "INFO",
+      "code": "CMS_PAGE_SEO_INCOMPLETE",
       "message": "privacy/de has incomplete SEO fields.",
       "pageKey": "privacy",
       "locale": "de",
       "seoTitle": true,
       "seoDescription": false
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/de is missing expected block cardList:problems.",
+      "pageKey": "probleme-loesungen",
+      "locale": "de",
+      "expectedType": "cardList",
+      "expectedKeys": [
+        "problems"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/de is missing expected block cardList:impact.",
+      "pageKey": "probleme-loesungen",
+      "locale": "de",
+      "expectedType": "cardList",
+      "expectedKeys": [
+        "impact"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/de is missing expected block textSection:urgent.",
+      "pageKey": "probleme-loesungen",
+      "locale": "de",
+      "expectedType": "textSection",
+      "expectedKeys": [
+        "urgent"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/de is missing expected block faqList:faq.",
+      "pageKey": "probleme-loesungen",
+      "locale": "de",
+      "expectedType": "faqList",
+      "expectedKeys": [
+        "faq"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/de is missing expected block cta:final.",
+      "pageKey": "probleme-loesungen",
+      "locale": "de",
+      "expectedType": "cta",
+      "expectedKeys": [
+        "final"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/en is missing expected block cardList:problems.",
+      "pageKey": "probleme-loesungen",
+      "locale": "en",
+      "expectedType": "cardList",
+      "expectedKeys": [
+        "problems"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/en is missing expected block cardList:impact.",
+      "pageKey": "probleme-loesungen",
+      "locale": "en",
+      "expectedType": "cardList",
+      "expectedKeys": [
+        "impact"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/en is missing expected block textSection:urgent.",
+      "pageKey": "probleme-loesungen",
+      "locale": "en",
+      "expectedType": "textSection",
+      "expectedKeys": [
+        "urgent"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/en is missing expected block faqList:faq.",
+      "pageKey": "probleme-loesungen",
+      "locale": "en",
+      "expectedType": "faqList",
+      "expectedKeys": [
+        "faq"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/en is missing expected block cta:final.",
+      "pageKey": "probleme-loesungen",
+      "locale": "en",
+      "expectedType": "cta",
+      "expectedKeys": [
+        "final"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/ru is missing expected block cardList:problems.",
+      "pageKey": "probleme-loesungen",
+      "locale": "ru",
+      "expectedType": "cardList",
+      "expectedKeys": [
+        "problems"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/ru is missing expected block cardList:impact.",
+      "pageKey": "probleme-loesungen",
+      "locale": "ru",
+      "expectedType": "cardList",
+      "expectedKeys": [
+        "impact"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/ru is missing expected block textSection:urgent.",
+      "pageKey": "probleme-loesungen",
+      "locale": "ru",
+      "expectedType": "textSection",
+      "expectedKeys": [
+        "urgent"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/ru is missing expected block faqList:faq.",
+      "pageKey": "probleme-loesungen",
+      "locale": "ru",
+      "expectedType": "faqList",
+      "expectedKeys": [
+        "faq"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/ru is missing expected block cta:final.",
+      "pageKey": "probleme-loesungen",
+      "locale": "ru",
+      "expectedType": "cta",
+      "expectedKeys": [
+        "final"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/tr is missing expected block cardList:problems.",
+      "pageKey": "probleme-loesungen",
+      "locale": "tr",
+      "expectedType": "cardList",
+      "expectedKeys": [
+        "problems"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/tr is missing expected block cardList:impact.",
+      "pageKey": "probleme-loesungen",
+      "locale": "tr",
+      "expectedType": "cardList",
+      "expectedKeys": [
+        "impact"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/tr is missing expected block textSection:urgent.",
+      "pageKey": "probleme-loesungen",
+      "locale": "tr",
+      "expectedType": "textSection",
+      "expectedKeys": [
+        "urgent"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/tr is missing expected block faqList:faq.",
+      "pageKey": "probleme-loesungen",
+      "locale": "tr",
+      "expectedType": "faqList",
+      "expectedKeys": [
+        "faq"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/tr is missing expected block cta:final.",
+      "pageKey": "probleme-loesungen",
+      "locale": "tr",
+      "expectedType": "cta",
+      "expectedKeys": [
+        "final"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/pl is missing expected block cardList:problems.",
+      "pageKey": "probleme-loesungen",
+      "locale": "pl",
+      "expectedType": "cardList",
+      "expectedKeys": [
+        "problems"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/pl is missing expected block cardList:impact.",
+      "pageKey": "probleme-loesungen",
+      "locale": "pl",
+      "expectedType": "cardList",
+      "expectedKeys": [
+        "impact"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/pl is missing expected block textSection:urgent.",
+      "pageKey": "probleme-loesungen",
+      "locale": "pl",
+      "expectedType": "textSection",
+      "expectedKeys": [
+        "urgent"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/pl is missing expected block faqList:faq.",
+      "pageKey": "probleme-loesungen",
+      "locale": "pl",
+      "expectedType": "faqList",
+      "expectedKeys": [
+        "faq"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/pl is missing expected block cta:final.",
+      "pageKey": "probleme-loesungen",
+      "locale": "pl",
+      "expectedType": "cta",
+      "expectedKeys": [
+        "final"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/ar is missing expected block cardList:problems.",
+      "pageKey": "probleme-loesungen",
+      "locale": "ar",
+      "expectedType": "cardList",
+      "expectedKeys": [
+        "problems"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/ar is missing expected block cardList:impact.",
+      "pageKey": "probleme-loesungen",
+      "locale": "ar",
+      "expectedType": "cardList",
+      "expectedKeys": [
+        "impact"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/ar is missing expected block textSection:urgent.",
+      "pageKey": "probleme-loesungen",
+      "locale": "ar",
+      "expectedType": "textSection",
+      "expectedKeys": [
+        "urgent"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/ar is missing expected block faqList:faq.",
+      "pageKey": "probleme-loesungen",
+      "locale": "ar",
+      "expectedType": "faqList",
+      "expectedKeys": [
+        "faq"
+      ]
+    },
+    {
+      "severity": "WARN",
+      "code": "MISSING_EXPECTED_BLOCK",
+      "message": "probleme-loesungen/ar is missing expected block cta:final.",
+      "pageKey": "probleme-loesungen",
+      "locale": "ar",
+      "expectedType": "cta",
+      "expectedKeys": [
+        "final"
+      ]
     },
     {
       "severity": "INFO",
@@ -5364,33 +5247,6 @@
       "publicSlug": "werbeanlage-flackert",
       "locale": "ar",
       "route": "/ar/probleme-loesungen/werbeanlage-flackert"
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_PROBLEM_ARTICLE",
-      "message": "rain-fail/tr is missing; article route may fall back to EN or 404.",
-      "cmsSlug": "rain-fail",
-      "publicSlug": "werbeanlage-schaltet-nach-regen-ab",
-      "locale": "tr",
-      "route": "/tr/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab"
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_PROBLEM_ARTICLE",
-      "message": "rain-fail/pl is missing; article route may fall back to EN or 404.",
-      "cmsSlug": "rain-fail",
-      "publicSlug": "werbeanlage-schaltet-nach-regen-ab",
-      "locale": "pl",
-      "route": "/pl/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab"
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_PROBLEM_ARTICLE",
-      "message": "rain-fail/ar is missing; article route may fall back to EN or 404.",
-      "cmsSlug": "rain-fail",
-      "publicSlug": "werbeanlage-schaltet-nach-regen-ab",
-      "locale": "ar",
-      "route": "/ar/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab"
     },
     {
       "severity": "WARN",
@@ -5504,13 +5360,14 @@
   "summary": {
     "result": "WARN",
     "countBySeverity": {
-      "INFO": 14,
-      "WARN": 18
+      "INFO": 15,
+      "WARN": 45
     },
     "countByCode": {
-      "CMS_PAGE_SEO_INCOMPLETE": 7,
+      "CMS_PAGE_SEO_INCOMPLETE": 8,
+      "MISSING_EXPECTED_BLOCK": 30,
       "UNKNOWN_CMS_PAGE_KEY": 7,
-      "MISSING_PROBLEM_ARTICLE": 18
+      "MISSING_PROBLEM_ARTICLE": 15
     }
   }
 }

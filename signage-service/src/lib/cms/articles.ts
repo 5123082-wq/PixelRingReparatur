@@ -3,6 +3,10 @@ import 'server-only';
 import { CmsArticleType } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
+import {
+  normalizeArticleSelfRepairTips,
+  type ArticleSelfRepairTips,
+} from '@/lib/cms/article-self-repair';
 
 export type AiCmsArticle = {
   id: string;
@@ -34,6 +38,8 @@ export type PublicSymptomArticle = {
   causes: string[];
   /** Bullet list: safe self-checks the customer can do */
   safeChecks: string[];
+  /** Structured safe self-repair guidance for modal/full-article surfaces */
+  selfRepairTips: ArticleSelfRepairTips | null;
   /** Bullet list: signals that require urgent professional action */
   urgentWarnings: string[];
   /** Bullet list: PixelRing service process steps */
@@ -150,6 +156,7 @@ export async function getPublishedSymptomArticles(
       content: true,
       causes: true,
       safeChecks: true,
+      selfRepairTips: true,
       urgentWarnings: true,
       serviceProcess: true,
       workScopeFactors: true,
@@ -162,7 +169,10 @@ export async function getPublishedSymptomArticles(
     orderBy: [{ sortOrder: 'asc' }, { updatedAt: 'desc' }],
   });
 
-  return rows;
+  return rows.map((row) => ({
+    ...row,
+    selfRepairTips: normalizeArticleSelfRepairTips(row.selfRepairTips),
+  }));
 }
 
 export async function getPublishedSymptomArticleByPublicSlug(
@@ -191,6 +201,7 @@ export async function getPublishedSymptomArticleByPublicSlug(
       content: true,
       causes: true,
       safeChecks: true,
+      selfRepairTips: true,
       urgentWarnings: true,
       serviceProcess: true,
       workScopeFactors: true,
@@ -208,6 +219,7 @@ export async function getPublishedSymptomArticleByPublicSlug(
 
   return {
     ...article,
+    selfRepairTips: normalizeArticleSelfRepairTips(article.selfRepairTips),
     publicSlug,
   };
 }

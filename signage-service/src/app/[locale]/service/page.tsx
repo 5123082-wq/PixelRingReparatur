@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
 import ServiceLandingPage from '@/components/service/ServiceLandingPage';
+import ServiceTeaser from '@/components/service/ServiceTeaser';
 import { CMS_SESSION_COOKIE_NAME, requireAdminSession } from '@/lib/admin-auth';
 import { getGlobalPageCmsContent, getServicePageCmsContent } from '@/lib/cms/pages';
 import { prisma } from '@/lib/prisma';
@@ -68,7 +69,15 @@ export default async function ServicePage({ params, searchParams }: ServicePageP
     (hasSecretAccess || (await hasOwnerCmsSession()));
 
   if (!publicEnabled && !previewAllowed) {
-    notFound();
+    const globalCms = await getGlobalPageCmsContent(locale);
+
+    return (
+      <div className="min-h-screen bg-[#F7F1E8] text-[#0D1B2A] flex flex-col">
+        <Header content={globalCms?.header} />
+        <ServiceTeaser locale={locale} />
+        <Footer content={globalCms?.footer} />
+      </div>
+    );
   }
 
   const content = await getServicePageCmsContent(locale, { includeDraft: previewAllowed });
