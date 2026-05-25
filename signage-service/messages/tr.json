@@ -96,8 +96,24 @@
     ]
   },
   "Intake": {
+    "eyebrow": "Talep",
     "title": "Yolunuzu Seçin",
     "description": "Talebinizi sizin için en uygun şekilde başlatın. Yapay zekamız hızlı kayda yardımcı olur.",
+    "chat_title": "Sitede Çevrimiçi Sohbet",
+    "chat_desc": "İnteraktif Yapay Zeka Asistanı: fotoğraf ve sesli mesaj gönderimi, anında başlangıç.",
+    "chat_badge": "ÖNERİLEN",
+    "chat_discount": "%5 indirim",
+    "chat_discount_context": "sohbetle",
+    "chat_discount_desc": "sohbet üzerinden siparişte işçilik indirimi",
+    "chat_discount_info": "Web sitesindeki çevrimiçi sohbet üzerinden talep başlattığınızda %5 indirim alırsınız.",
+    "chat_cta": "Sohbeti Başlat",
+    "form_title": "Standart Form",
+    "form_desc": "Sitede basit bir form doldurun",
+    "messenger_title": "Doğrudan Yazın",
+    "messenger_desc": "WhatsApp / Telegram üzerinden iletişim",
+    "email_title": "E-posta ile gönderin",
+    "email_desc": "Kısa açıklama veya fotoğrafla bize yazın.",
+    "email_cta": "E-postayı aç",
     "methods": [
       {
         "id": "text",
