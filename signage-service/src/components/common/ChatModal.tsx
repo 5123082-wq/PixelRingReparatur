@@ -53,7 +53,104 @@ interface ChatModalProps {
   onClose: () => void;
 }
 
-const DEFAULT_CHAT_ERROR = 'Chat ist derzeit nicht verfügbar.';
+function getChatUiCopy(locale: string) {
+  if (locale === 'en') {
+    return {
+      unavailable: 'Chat is currently unavailable.',
+      customer: 'Customer',
+      operator: 'Specialist',
+      assistant: 'Assistant',
+      system: 'System',
+      ai: 'AI',
+      requestRegistered: 'Request registered',
+      requestNumber: 'Request number',
+      checkStatus: 'Check status',
+      activatePortal: 'Activate customer portal',
+      requestPrivacy:
+        'The PR number only shows the status. Private data is unlocked only after email-code and password verification.',
+      portalMissing:
+        'The portal link is no longer active. PixelRing can send a new one if needed.',
+      validUntil: 'Link valid until',
+      attachmentReceived: 'File received',
+      supportTitle: 'Technical support',
+      online: 'Online',
+      operatorTakeover: 'A team member has taken over the conversation.',
+      loadingConversation: 'Loading conversation…',
+      emptyState: 'Describe your request or send a photo.',
+      typing: 'AI is typing…',
+      loading: 'Loading…',
+      attachMedia: 'Attach photo/video',
+      voiceSoon: 'Voice message (coming soon)',
+      messagePlaceholder: 'Your message…',
+      createRequestNow: 'Create request now →',
+      optimisticPhoto: 'Photo',
+    };
+  }
+
+  if (locale === 'ru') {
+    return {
+      unavailable: 'Чат сейчас недоступен.',
+      customer: 'Клиент',
+      operator: 'Специалист',
+      assistant: 'Ассистент',
+      system: 'Система',
+      ai: 'ИИ',
+      requestRegistered: 'Заявка зарегистрирована',
+      requestNumber: 'Номер заявки',
+      checkStatus: 'Проверить статус',
+      activatePortal: 'Активировать кабинет',
+      requestPrivacy:
+        'PR-номер показывает только статус. Приватные данные откроются после подтверждения e-mail и пароля.',
+      portalMissing:
+        'Ссылка в кабинет больше не активна. При необходимости PixelRing отправит новую ссылку.',
+      validUntil: 'Ссылка активна до',
+      attachmentReceived: 'Файл получен',
+      supportTitle: 'Техническая поддержка',
+      online: 'Онлайн',
+      operatorTakeover: 'Сотрудник подключился к диалогу.',
+      loadingConversation: 'Диалог загружается…',
+      emptyState: 'Опишите задачу или отправьте фото.',
+      typing: 'ИИ печатает…',
+      loading: 'Загрузка…',
+      attachMedia: 'Прикрепить фото/видео',
+      voiceSoon: 'Голосовое сообщение (скоро)',
+      messagePlaceholder: 'Ваше сообщение…',
+      createRequestNow: 'Создать заявку сейчас →',
+      optimisticPhoto: 'Фото',
+    };
+  }
+
+  return {
+    unavailable: 'Chat ist derzeit nicht verfügbar.',
+    customer: 'Kunde',
+    operator: 'Spezialist',
+    assistant: 'Assistent',
+    system: 'System',
+    ai: 'AI',
+    requestRegistered: 'Anfrage registriert',
+    requestNumber: 'Anfragenummer',
+    checkStatus: 'Status pruefen',
+    activatePortal: 'Kundenportal aktivieren',
+    requestPrivacy:
+      'Die PR-Nummer zeigt nur den Status. Private Daten werden erst nach E-Mail-Code und Passwort geoeffnet.',
+    portalMissing:
+      'Der Portal-Link ist nicht mehr aktiv. PixelRing kann bei Bedarf einen neuen Link senden.',
+    validUntil: 'Link gueltig bis',
+    attachmentReceived: 'Datei empfangen',
+    supportTitle: 'Technischer Support',
+    online: 'Online',
+    operatorTakeover: 'Ein Mitarbeiter hat das Gespräch übernommen.',
+    loadingConversation: 'Gespräch wird geladen …',
+    emptyState: 'Beschreiben Sie Ihr Anliegen oder senden Sie ein Foto.',
+    typing: 'AI tippt …',
+    loading: 'Laden …',
+    attachMedia: 'Foto/Video anhängen',
+    voiceSoon: 'Sprachnachricht (demnächst)',
+    messagePlaceholder: 'Ihre Nachricht …',
+    createRequestNow: 'Anfrage jetzt erstellen →',
+    optimisticPhoto: 'Foto',
+  };
+}
 
 function isChatAuthorRole(value: unknown): value is ChatAuthorRole {
   return value === 'CUSTOMER' || value === 'SYSTEM' || value === 'OPERATOR';
@@ -93,10 +190,11 @@ function formatTimestamp(value: string): string {
   return new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit' }).format(new Date(value));
 }
 
-function getRoleLabel(role: ChatAuthorRole): string {
-  if (role === 'CUSTOMER') return 'User';
-  if (role === 'OPERATOR') return 'Agent';
-  return 'Assistant';
+function getRoleLabel(role: ChatAuthorRole, locale: string): string {
+  const copy = getChatUiCopy(locale);
+  if (role === 'CUSTOMER') return copy.customer;
+  if (role === 'OPERATOR') return copy.operator;
+  return copy.assistant;
 }
 
 function getRolePalette(role: ChatAuthorRole) {
@@ -121,6 +219,20 @@ function getRolePalette(role: ChatAuthorRole) {
 }
 
 function getRequestCardCopy(locale: string) {
+  if (locale === 'en') {
+    return {
+      label: 'Request registered',
+      number: 'Request number',
+      status: 'Check status',
+      portal: 'Activate customer portal',
+      privacy:
+        'The PR number only shows the status. Private data is unlocked only after email-code and password verification.',
+      portalMissing:
+        'The portal link is no longer active. PixelRing can send a new link if needed.',
+      validUntil: 'Link valid until',
+    };
+  }
+
   if (locale === 'ru') {
     return {
       label: 'Заявка зарегистрирована',
@@ -207,7 +319,7 @@ function ChatRequestSuccessCard({
 
       {expiresAt && (
         <p className="mt-3 text-[11px] font-semibold text-[#72665D]">
-          {copy.validUntil}: {expiresAt.toLocaleString(locale === 'ru' ? 'ru-RU' : 'de-DE')}
+          {copy.validUntil}: {expiresAt.toLocaleString(locale === 'ru' ? 'ru-RU' : locale === 'en' ? 'en-US' : 'de-DE')}
         </p>
       )}
     </div>
@@ -220,9 +332,12 @@ function isLocalPreviewImageSrc(value: string | null | undefined): value is stri
 
 function ChatAttachmentList({
   attachments,
+  locale,
 }: {
   attachments: NonNullable<ChatMessage['attachments']>;
+  locale: string;
 }) {
+  const copy = getChatUiCopy(locale);
   return (
     <div className="mt-3 flex flex-wrap gap-2">
       {attachments.map((att) => (
@@ -245,7 +360,7 @@ function ChatAttachmentList({
             <div className="min-w-0">
               <p className="truncate text-[12px] font-black">{att.originalFilename || 'Attachment'}</p>
               <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#72665D]">
-                Datei empfangen
+                {copy.attachmentReceived}
               </p>
             </div>
           </div>
@@ -257,6 +372,7 @@ function ChatAttachmentList({
 
 const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
   const locale = useLocale();
+  const copy = getChatUiCopy(locale);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
@@ -318,7 +434,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
     setErrorMessage('');
     try {
       const res = await fetch(`/api/chat/messages?locale=${encodeURIComponent(locale)}`, { method: 'GET', cache: 'no-store' });
-      if (!res.ok) throw new Error(DEFAULT_CHAT_ERROR);
+      if (!res.ok) throw new Error(copy.unavailable);
       const data = (await res.json().catch(() => null)) as ChatApiResponse | null;
       const rawMessages = Array.isArray(data?.messages) ? data.messages.map(normalizeMessage) : [];
       
@@ -331,7 +447,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
       }
       hasLoadedRef.current = true;
     } catch {
-      setErrorMessage(DEFAULT_CHAT_ERROR);
+      setErrorMessage(copy.unavailable);
       hasLoadedRef.current = false;
     } finally {
       setIsLoadingHistory(false);
@@ -444,7 +560,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
     if ((!messageToSubmit && pendingFiles.length === 0) || isLoadingHistory || isSending) return;
 
     const currentFiles = [...pendingFiles];
-    const messageText = messageToSubmit || 'Foto';
+    const messageText = messageToSubmit || copy.optimisticPhoto;
 
     const optimistic: ChatMessage = {
       id: `temp-${Date.now()}`,
@@ -479,7 +595,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
         method: 'POST',
         body: fd,
       });
-      if (!res.ok) throw new Error(DEFAULT_CHAT_ERROR);
+      if (!res.ok) throw new Error(copy.unavailable);
 
       const data = (await res.json().catch(() => null)) as ChatApiResponse | null;
       
@@ -497,11 +613,11 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
     } catch {
       setMessages(c => c.filter(m => m.id !== optimistic.id));
       setInputText(messageToSubmit);
-      setErrorMessage(DEFAULT_CHAT_ERROR);
+      setErrorMessage(copy.unavailable);
     } finally {
       setIsSending(false);
     }
-  }, [inputText, pendingFiles, isLoadingHistory, isSending, locale, showIntakeCard]);
+  }, [inputText, pendingFiles, isLoadingHistory, isSending, locale, showIntakeCard, copy.unavailable, copy.optimisticPhoto]);
 
   const handleLanguageSelect = (languageName: string) => {
     setHasChosenLanguage(true);
@@ -528,10 +644,10 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
             <Logo className="origin-left scale-75 shrink-0" />
             <div className="hidden h-6 w-px shrink-0 bg-black/10 sm:block" />
             <div className="min-w-0">
-              <h3 className="truncate text-[15px] font-black text-[#0E1A2B]">Technischer Support</h3>
+              <h3 className="truncate text-[15px] font-black text-[#0E1A2B]">{copy.supportTitle}</h3>
               <div className="flex items-center gap-1.5">
                 <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-green-500" />
-                <span className="text-[9px] font-bold uppercase tracking-wider text-[#72665D]">Online</span>
+                <span className="text-[9px] font-bold uppercase tracking-wider text-[#72665D]">{copy.online}</span>
               </div>
             </div>
           </div>
@@ -546,19 +662,19 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
         <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto overscroll-contain p-4 sm:p-5">
           {operatorTakeover && (
             <div className="rounded-[20px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-[13px] text-emerald-900">
-              Ein Mitarbeiter hat das Gespräch übernommen.
+              {copy.operatorTakeover}
             </div>
           )}
 
           {showInitialLoading && (
             <div className="rounded-[20px] border border-black/5 bg-white/60 px-4 py-3 text-[13px] text-[#72665D]">
-              Gespräch wird geladen …
+              {copy.loadingConversation}
             </div>
           )}
 
           {!showInitialLoading && messages.length === 0 && (
             <div className="rounded-[20px] border border-dashed border-black/10 bg-white/45 px-4 py-4 text-[13px] text-[#72665D]">
-              Beschreiben Sie Ihr Anliegen oder senden Sie ein Foto.
+              {copy.emptyState}
             </div>
           )}
           
@@ -573,7 +689,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
                   <div key={message.id}>
                     <div className={`flex flex-col ${p.container} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
                       <span className={`mb-1 text-[10px] font-bold uppercase tracking-[0.18em] ${p.label}`}>
-                        {getRoleLabel(message.authorRole)}
+                        {getRoleLabel(message.authorRole, locale)}
                       </span>
                       <ChatRequestSuccessCard locale={locale} registration={message.requestRegistration} />
                       <span className={`mx-2 mt-1.5 text-[9px] font-bold uppercase tracking-widest ${p.meta}`}>
@@ -587,9 +703,9 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
               return (
                 <div key={message.id}>
                   <div className={`flex flex-col ${p.container} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
-                    <span className={`mb-1 text-[10px] font-bold uppercase tracking-[0.18em] ${p.label}`}>
-                      {idx === 1 ? 'System' : getRoleLabel(message.authorRole)}
-                    </span>
+                      <span className={`mb-1 text-[10px] font-bold uppercase tracking-[0.18em] ${p.label}`}>
+                        {idx === 1 ? copy.system : getRoleLabel(message.authorRole, locale)}
+                      </span>
                     <div className={`max-w-[80%] rounded-[24px] px-5 py-3 text-[14px] shadow-sm whitespace-pre-wrap ${p.bubble}`}>
                       {renderMessageBody(message.body)}
                       
@@ -601,7 +717,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
                       )}
 
                       {message.attachments && message.attachments.length > 0 && (
-                        <ChatAttachmentList attachments={message.attachments} />
+                        <ChatAttachmentList attachments={message.attachments} locale={locale} />
                       )}
                     </div>
                     <span className={`mx-2 mt-1.5 text-[9px] font-bold uppercase tracking-widest ${p.meta}`}>
@@ -618,7 +734,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
           {/* Inline intake card */}
           {showIntakeCard && !intakeDone && (
             <div className="flex flex-col items-start animate-in fade-in slide-in-from-bottom-2 duration-400">
-              <span className="mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-[#72665D]">AI</span>
+              <span className="mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-[#72665D]">{copy.ai}</span>
               <div className="w-full max-w-[90%]">
                 {intakeMode === 'confirm_existing_contact' ? (
                   <ChatRequestConfirmCard
@@ -650,7 +766,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
           {(isLoadingHistory || isSending) && (
             <div className="flex flex-col items-start animate-in fade-in duration-300">
               <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-[#72665D]">
-                {isSending ? 'AI tippt …' : 'Laden …'}
+                {isSending ? copy.typing : copy.loading}
               </div>
               <div className="flex gap-1 rounded-[20px] rounded-tl-[4px] border border-black/5 bg-white/40 px-4 py-3">
                 <div className="h-1 w-1 animate-bounce rounded-full bg-[#B8643E] [animation-delay:-0.3s]" />
@@ -698,7 +814,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
               type="button"
               onClick={() => fileInputRef.current?.click()}
               className="shrink-0 w-9 h-9 flex items-center justify-center rounded-[16px] text-[#72665D] hover:bg-black/5 transition-colors"
-              title="Foto/Video anhängen"
+              title={copy.attachMedia}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
@@ -716,7 +832,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
             {/* Voice placeholder */}
             <button
               type="button"
-              title="Sprachnachricht (demnächst)"
+              title={copy.voiceSoon}
               className="hidden shrink-0 w-9 h-9 items-center justify-center rounded-[16px] text-[#72665D]/40 cursor-not-allowed sm:flex"
               disabled
             >
@@ -731,7 +847,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
               onChange={e => setInputText(e.target.value)}
               onFocus={scheduleScrollToBottom}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void handleSend(); } }}
-              placeholder="Ihre Nachricht …"
+              placeholder={copy.messagePlaceholder}
               className="min-w-0 max-h-24 flex-1 resize-none border-none bg-transparent py-2 text-[16px] text-[#0E1A2B] placeholder-[#72665D]/40 focus:ring-0"
             />
 
@@ -763,7 +879,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
               }}
               className="mt-2 w-full text-center text-[11px] text-[#B8643E] hover:underline font-semibold"
             >
-              Anfrage jetzt erstellen →
+              {copy.createRequestNow}
             </button>
           )}
         </div>
