@@ -56,7 +56,7 @@ function getArticleUiLabels(locale: string): ArticleUiLabels {
       close: 'Schließen',
       symptoms: 'Symptome',
       causes: 'Ursachen',
-      selfRepair: 'Was Sie selbst versuchen können',
+      selfRepair: 'Tipps zur Selbstreparatur',
     };
   }
 
@@ -72,14 +72,50 @@ function getArticleUiLabels(locale: string): ArticleUiLabels {
     };
   }
 
+  if (locale === 'tr') {
+    return {
+      preview: 'Detaylar',
+      readArticle: 'Detayları aç',
+      openPage: 'Tam makaleyi aç',
+      close: 'Kapat',
+      symptoms: 'Belirtiler',
+      causes: 'Nedenler',
+      selfRepair: 'Kendi kendine onarım ipuçları',
+    };
+  }
+
+  if (locale === 'pl') {
+    return {
+      preview: 'Szczegóły',
+      readArticle: 'Otwórz szczegóły',
+      openPage: 'Otwórz pełny artykuł',
+      close: 'Zamknij',
+      symptoms: 'Objawy',
+      causes: 'Przyczyny',
+      selfRepair: 'Wskazówki do samodzielnej naprawy',
+    };
+  }
+
+  if (locale === 'ar') {
+    return {
+      preview: 'التفاصيل',
+      readArticle: 'افتح التفاصيل',
+      openPage: 'افتح المقالة الكاملة',
+      close: 'إغلاق',
+      symptoms: 'الأعراض',
+      causes: 'الأسباب',
+      selfRepair: 'نصائح للإصلاح الذاتي',
+    };
+  }
+
   return {
     preview: 'Preview',
-    readArticle: 'Open details',
-    openPage: 'Open article page',
-    close: 'Close',
-    symptoms: 'Symptoms',
-    causes: 'Causes',
-    selfRepair: 'What you can try yourself',
+      readArticle: 'Open details',
+      openPage: 'Open article page',
+      close: 'Close',
+      symptoms: 'Symptoms',
+      causes: 'Causes',
+      selfRepair: 'Self-repair tips',
   };
 }
 

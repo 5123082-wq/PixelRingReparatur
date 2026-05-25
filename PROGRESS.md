@@ -46,6 +46,41 @@ Read deep when:
 
 ## Last Updated
 
+- Date: 2026-05-25
+- Updated by: Codex
+- **Current Stage**: Disabled automatic locale detection in the public-site i18n routing so the root entry no longer prefers browser-language redirects over the German default locale. This aligns the canonical-first SEO entrypoint with the project rule that German is primary.
+- **Next Action**: Owner or agent verifies that `/` now resolves to the German entry flow after deployment and that direct locale URLs like `/en` still work as expected.
+
+- Date: 2026-05-24
+- Updated by: Codex
+- **Current Stage**: Made the modal `Советы по самостоятельному ремонту` block mandatory for problem articles. Updated problem-article rules and public problem modal mapping so `letter-out` shows a separate green self-repair block; future CMS-backed articles fall back to safe-check content if no explicit self-repair block is mapped.
+- **Next Action**: Owner refreshes `/ru/probleme-loesungen` and visually confirms the `letter-out` modal block.
+
+- Date: 2026-05-24
+- Updated by: Codex
+- **Current Stage**: Published `Не светится отдельная буква или часть вывески` / `letter-out` into CMS/database for all six MVP locales (DE, EN, RU, TR, PL, AR) from Markdown drafts. Added repeatable seed script `db:seed:article-letter-out`; audit confirms `letter-out` is published and SEO-ready in all six locales. Remaining audit WARN items are unrelated missing TR/PL/AR articles for other problem slugs.
+- **Next Action**: Owner visually reviews localized public article pages before broader rollout or more article localizations.
+
+- Date: 2026-05-24
+- Updated by: Codex
+- **Current Stage**: Synchronized `LED светит неравномерно или пятнами` / `uneven-light` into CMS/database for all six locales (DE, EN, RU, TR, PL, AR) from the Markdown drafts. Added repeatable seed script `db:seed:article-uneven-light`; SEO/GEO fields, canonical URLs, related slugs, and structured article arrays are populated. CMS public audit confirms `uneven-light` is published and SEO-ready in all six locales; remaining audit WARN items are unrelated missing TR/PL/AR articles for other problem slugs.
+- **Next Action**: Owner visually reviews localized public article pages before broader rollout or more article localizations.
+
+- Date: 2026-05-24
+- Updated by: Codex
+- **Current Stage**: Added Markdown review drafts for `LED светит неравномерно или пятнами` / `uneven-light` in DE, EN, TR, PL, and AR under `docs/07_content_ai_seo/problem_articles/led светит неравномерно – 03/`, using the RU canonical draft as the basis. CMS/database and seed files were not changed.
+- **Next Action**: Owner reviews the localized Markdown drafts before any CMS/database synchronization.
+
+- Date: 2026-05-24
+- Updated by: Codex
+- **Current Stage**: Published the owner-approved RU `LED светит неравномерно или пятнами` article into CMS/database for `ru / uneven-light` from the final markdown in `docs/07_content_ai_seo/problem_articles/led светит неравномерно – 03/`. Local browser render verified on `/ru/probleme-loesungen/led-leuchtet-ungleichmaessig`.
+- **Next Action**: Owner visually reviews the rendered RU page; if approved, this becomes the RU canonical version for future localization.
+
+- Date: 2026-05-24
+- Updated by: Codex
+- **Current Stage**: Upgraded problem-article writing rules to v2: `problem_article_rules.md` is now the short mandatory operational standard, and `problem_article_rules_master_ru.md` is the expanded master reference with safety, sources, SEO/GEO (search and AI visibility), internal AI note, and markdown-to-CMS field mapping. The risky self-repair wording is replaced by safer "Что можно безопасно проверить самостоятельно" guidance.
+- **Next Action**: Use the v2 rules for the next `LED светит неравномерно` rewrite before any CMS/database update.
+
 - Date: 2026-05-23
 - Updated by: Codex
 - **Current Stage**: Recorded accepted public-site design standards for inner-page final CTAs and large-section intro accent lines. Secondary public pages should use a compact final CTA with one primary service button only; large content-block intros may use the `#B8643E` reading-start accent line with RTL-aware placement. The `/business` page is the current reference.
