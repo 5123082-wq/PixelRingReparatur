@@ -96,8 +96,24 @@
     ]
   },
   "Intake": {
+    "eyebrow": "Zgłoszenie",
     "title": "Wybierz swoją drogę",
     "description": "Rozpocznij zapytanie w sposób, który jest dla Ciebie najwygodniejszy. Nasze AI pomoże w szybkim zapisie.",
+    "chat_title": "Czat online na stronie",
+    "chat_desc": "Interaktywny Asystent AI: wysyłanie zdjęć, wiadomości głosowych, natychmiastowy start.",
+    "chat_badge": "POLECANE",
+    "chat_discount": "5% rabatu",
+    "chat_discount_context": "przez czat",
+    "chat_discount_desc": "na prace przy zgłoszeniu na czacie",
+    "chat_discount_info": "Gdy rozpoczniesz zgłoszenie przez czat online na stronie, otrzymasz 5% rabatu.",
+    "chat_cta": "Uruchom czat",
+    "form_title": "Standardowy formularz",
+    "form_desc": "Wypełnij prosty formularz na stronie",
+    "messenger_title": "Napisz bezpośrednio",
+    "messenger_desc": "Kontakt przez WhatsApp / Telegram",
+    "email_title": "Wyślij e-mailem",
+    "email_desc": "Napisz do nas z krótkim opisem lub zdjęciem.",
+    "email_cta": "Otwórz e-mail",
     "methods": [
       {
         "id": "text",

@@ -96,8 +96,24 @@
     ]
   },
   "Intake": {
+    "eyebrow": "Request",
     "title": "Choose your way",
     "description": "Start your request in the way that is most convenient for you. Our AI helps with fast capture.",
+    "chat_title": "Online Chat on Website",
+    "chat_desc": "Interactive AI Assistant: send photos, voice messages, instant start.",
+    "chat_badge": "RECOMMENDED",
+    "chat_discount": "5% discount",
+    "chat_discount_context": "via chat",
+    "chat_discount_desc": "on services when ordering in chat",
+    "chat_discount_info": "When you start your request through the online chat on the website, you receive a 5% discount.",
+    "chat_cta": "Start Chat",
+    "form_title": "Standard Form",
+    "form_desc": "Fill out a simple form on the site",
+    "messenger_title": "Write Directly",
+    "messenger_desc": "Contact via WhatsApp / Telegram",
+    "email_title": "Send by Email",
+    "email_desc": "Write to us with a short description or photo.",
+    "email_cta": "Open email",
     "methods": [
       {
         "id": "text",

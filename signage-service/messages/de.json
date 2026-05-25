@@ -96,8 +96,24 @@
     ]
   },
   "Intake": {
+    "eyebrow": "Anfrage",
     "title": "Wählen Sie Ihren Weg",
     "description": "Starten Sie Ihre Anfrage so, wie es für Sie am bequemsten ist. Unsere KI hilft bei der schnellen Erfassung.",
+    "chat_title": "Live-Chat auf der Website",
+    "chat_desc": "Interaktiver KI-Assistent: Fotos & Sprachnachrichten senden, sofortiger Start.",
+    "chat_badge": "EMPFOHLEN",
+    "chat_discount": "5% Rabatt",
+    "chat_discount_context": "bei Chat",
+    "chat_discount_desc": "auf Arbeiten bei Chat-Anfrage",
+    "chat_discount_info": "Wenn Sie die Anfrage über den Online-Chat auf der Website starten, erhalten Sie 5% Rabatt.",
+    "chat_cta": "Chat starten",
+    "form_title": "Standard-Formular",
+    "form_desc": "Füllen Sie ein einfaches Formular aus",
+    "messenger_title": "Direkt schreiben",
+    "messenger_desc": "Kontakt über WhatsApp / Telegram",
+    "email_title": "Per E-Mail senden",
+    "email_desc": "Schreiben Sie uns mit kurzer Beschreibung oder Foto.",
+    "email_cta": "E-Mail öffnen",
     "methods": [
       {
         "id": "text",
