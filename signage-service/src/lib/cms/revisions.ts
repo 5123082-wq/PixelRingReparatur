@@ -1,11 +1,11 @@
 import 'server-only';
 
+import { Prisma } from '@prisma/client';
 import type {
   AdminRole,
   CmsArticleStatus,
   CmsArticleType,
   CmsRevisionSourceAction,
-  Prisma,
   PrismaClient,
 } from '@prisma/client';
 
@@ -45,6 +45,7 @@ export type CmsArticleSnapshotInput = {
   relatedSlugs: string[];
   causes: string[];
   safeChecks: string[];
+  selfRepairTips: Prisma.JsonValue | null;
   urgentWarnings: string[];
   serviceProcess: string[];
   workScopeFactors: string[];
@@ -250,6 +251,7 @@ export function buildArticleRevisionSnapshotPayload(
     relatedSlugs: article.relatedSlugs,
     causes: article.causes,
     safeChecks: article.safeChecks,
+    selfRepairTips: article.selfRepairTips,
     urgentWarnings: article.urgentWarnings,
     serviceProcess: article.serviceProcess,
     workScopeFactors: article.workScopeFactors,
@@ -389,6 +391,8 @@ export function buildArticleRestoreDataFromSnapshot(
   const relatedSlugs = asStringArray(snapshot.relatedSlugs);
   const causes = asStringArray(snapshot.causes);
   const safeChecks = asStringArray(snapshot.safeChecks);
+  const selfRepairTips =
+    snapshot.selfRepairTips === undefined ? null : toInputJsonValue(snapshot.selfRepairTips);
   const urgentWarnings = asStringArray(snapshot.urgentWarnings);
   const serviceProcess = asStringArray(snapshot.serviceProcess);
   const workScopeFactors = asStringArray(snapshot.workScopeFactors);
@@ -403,6 +407,7 @@ export function buildArticleRestoreDataFromSnapshot(
     !relatedSlugs ||
     !causes ||
     !safeChecks ||
+    selfRepairTips === null && snapshot.selfRepairTips !== undefined ||
     !urgentWarnings ||
     !serviceProcess ||
     !workScopeFactors
@@ -425,6 +430,7 @@ export function buildArticleRestoreDataFromSnapshot(
     relatedSlugs,
     causes,
     safeChecks,
+    selfRepairTips: selfRepairTips ?? Prisma.DbNull,
     urgentWarnings,
     serviceProcess,
     workScopeFactors,

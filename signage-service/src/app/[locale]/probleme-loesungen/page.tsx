@@ -16,6 +16,7 @@ import {
   getProblemArticlePublicSlug,
   getPublishedSymptomArticles,
 } from '@/lib/cms/articles';
+import { flattenArticleSelfRepairTips } from '@/lib/cms/article-self-repair';
 
 /**
  * Maps CmsArticle.slug (set in the DB / Admin) to the card `id` used in this page.
@@ -35,63 +36,6 @@ const SLUG_TO_PROBLEM_ID: Record<string, string> = {
   'faded-film': 'faded-film',
   'shaky-sign': 'loose-sign',
   'urgent-repair': 'urgent',
-};
-
-const SELF_REPAIR_TIPS_BY_LOCALE_AND_SLUG: Record<string, string[]> = {
-  'ru:flicking': [
-    'PixelRing не рекомендует вскрывать вывеску, трогать провода, менять блок питания или работать с электрическими элементами без профильной квалификации.',
-    'Безопасно можно проверить только то, что доступно без вскрытия корпуса: выключатель, автомат и таймер, если он находится снаружи.',
-    'Посмотрите, мерцают ли другие приборы на этой же линии.',
-    'Снимите фото и видео проблемы.',
-    'Если блок питания доступен безопасно, без разборки корпуса и без контакта с проводами, сфотографируйте его наклейку с параметрами.',
-  ],
-  'ru:letter-out': [
-    'В этом случае PixelRing не рекомендует самостоятельно менять диоды, вскрывать букву, искать неисправность в проводке, трогать клеммы или перепаивать LED-ленту.',
-    'Если вы уверены, что вывеска питается через несколько блоков питания, можно проверить, относится ли неработающая буква или зона к отдельному блоку. Это помогает понять направление ремонта.',
-    'Замену неисправного блока питания можно рассматривать только при профильной квалификации и полном безопасном отключении питания. Нужно точно совпадение по напряжению, мощности, току, запасу нагрузки, степени защиты и схеме подключения.',
-    'Если вы не специалист, не меняйте блок питания самостоятельно: сфотографируйте его наклейку с параметрами, тёмную букву или участок и передайте это для диагностики.',
-    'Если после включения выбивает автомат, есть запах гари, треск, нагрев, вода или следы повреждения кабеля, не включайте вывеску повторно для проверки.',
-  ],
-  'de:letter-out': [
-    'Grenzen Sie den Umfang ein: ein Buchstabe, mehrere benachbarte Buchstaben, eine Reihe im Leuchtkasten oder eine ganze Zone. Das zeigt, ob der Fehler lokal oder eher in der Versorgung liegt.',
-    'Machen Sie zwei Fotos: die ganze Anlage aus Abstand und eine Nahaufnahme des dunklen Bereichs. Wenn der Fehler beim Einschalten sichtbar wird, hilft ein kurzes Startvideo.',
-    'Schauen Sie vom Boden aus nach sichtbaren Rissen, Wasser im Inneren, verzogenem Gehäuse, offener Kante, beschädigtem Kabel oder dunklen Spuren.',
-    'Prüfen Sie nur außen zugängliche Punkte: Schalter, Sicherung und externe Zeitschaltuhr. Wenn die Sicherung erneut auslöst, nicht weiter testen.',
-    'Notieren Sie, was vorher passiert ist: Regen, Wind, Frost, Gewitter, Fassadenarbeiten, Reinigung oder eine frühere Reparatur.',
-    'Fotografieren Sie das Typenschild des Netzteils nur, wenn es ohne Öffnen, Höhe und Leitungsberührung sichtbar ist. Nichts abschrauben und keine Klemmen berühren.',
-  ],
-  'en:letter-out': [
-    'Narrow down the scale: one letter, several neighboring letters, one lightbox row or a whole zone. That helps separate a local fault from a supply-line issue.',
-    'Take two photos: the whole sign from a distance and a close-up of the dark area. If the fault appears during switch-on, record a short start-up video.',
-    'From the ground, look for visible cracks, water inside, a distorted cabinet, an open edge, damaged cable or dark marks around the area.',
-    'Check only external items: normal switch, breaker and external timer. If the breaker trips again, stop testing.',
-    'Write down what happened before the fault: rain, wind, frost, storm, facade work, cleaning or a previous repair.',
-    'Photograph the power-supply label only if it is visible without opening, height work or touching wires. Do not unscrew anything or touch terminals.',
-  ],
-  'tr:letter-out': [
-    'Ölçeği netleştirin: tek harf mi, birkaç komşu harf mi, ışıklı kutuda bir sıra mı, yoksa tüm bir bölge mi yanmıyor. Bu, yerel arıza ile besleme hattı sorununu ayırmaya yardım eder.',
-    'İki fotoğraf çekin: tabelanın tamamı uzaktan ve karanlık alanın yakın çekimi. Sorun açılışta görünüyorsa kısa bir başlangıç videosu çekin.',
-    'Yerden bakarak çatlak, içeride su, eğilmiş kasa, açık kenar, hasarlı kablo veya kararan izler olup olmadığını kontrol edin.',
-    'Sadece dışarıdan erişilenleri kontrol edin: normal anahtar, sigorta ve dış zamanlayıcı. Sigorta tekrar atarsa test etmeyi bırakın.',
-    'Sorundan önce ne olduğunu yazın: yağmur, rüzgar, don, fırtına, cephe işi, temizlik veya önceki onarım.',
-    'Güç kaynağı etiketi kasa açmadan, yükseğe çıkmadan ve kablolara dokunmadan görünüyorsa fotoğrafını çekin. Hiçbir şeyi sökmeyin, klemenslere dokunmayın.',
-  ],
-  'pl:letter-out': [
-    'Ustal skalę: jedna litera, kilka sąsiednich liter, jeden rząd w kasetonie czy cała strefa. To pomaga odróżnić lokalną usterkę od problemu linii zasilania.',
-    'Zrób dwa zdjęcia: całą reklamę z daleka i zbliżenie ciemnego miejsca. Jeśli problem widać przy włączaniu, nagraj krótki film startu.',
-    'Z poziomu ziemi sprawdź, czy widać pęknięcia, wodę w środku, przekoszoną obudowę, otwartą krawędź, uszkodzony kabel albo ciemne ślady.',
-    'Sprawdź tylko elementy dostępne z zewnątrz: zwykły włącznik, zabezpieczenie i zewnętrzny zegar. Jeśli zabezpieczenie znowu zadziała, nie testuj dalej.',
-    'Zanotuj, co było przed awarią: deszcz, wiatr, mróz, burza, prace elewacyjne, czyszczenie albo wcześniejsza naprawa.',
-    'Sfotografuj etykietę zasilacza tylko, jeśli jest widoczna bez otwierania, pracy na wysokości i dotykania przewodów. Niczego nie odkręcaj i nie dotykaj zacisków.',
-  ],
-  'ar:letter-out': [
-    'حدّد حجم المشكلة: حرف واحد، عدة حروف متجاورة، صف داخل صندوق الإضاءة أو منطقة كاملة. هذا يساعد على التمييز بين عطل محلي ومشكلة في خط التغذية.',
-    'التقط صورتين: اللوحة كاملة من بعيد وصورة قريبة للمنطقة المظلمة. إذا ظهرت المشكلة عند التشغيل، سجّل فيديو قصيرًا لبدء التشغيل.',
-    'من الأرض، انظر هل توجد شقوق ظاهرة، ماء في الداخل، انحراف في الغلاف، حافة مفتوحة، كابل تالف أو آثار اسوداد حول المنطقة.',
-    'افحص فقط ما يمكن الوصول إليه من الخارج: المفتاح العادي، القاطع والمؤقت الخارجي. إذا فصل القاطع مرة أخرى، أوقف الاختبار.',
-    'سجّل ما حدث قبل العطل: مطر، رياح، صقيع، عاصفة، أعمال واجهة، تنظيف أو إصلاح سابق.',
-    'صوّر ملصق مزود الطاقة فقط إذا كان مرئيًا بدون فتح، بدون صعود وبدون لمس الأسلاك. لا تفك أي شيء ولا تلمس الأطراف.',
-  ],
 };
 
 const CARD_CAUSE_TEXT_BY_LOCALE_AND_SLUG: Record<string, string> = {
@@ -691,6 +635,7 @@ export default async function ProblemeLoesungenPage({
       .map((article) => {
         const cardId = SLUG_TO_PROBLEM_ID[article.slug];
         if (!cardId) return null;
+        const cmsSelfRepairTips = flattenArticleSelfRepairTips(article.selfRepairTips, locale);
         return [
           cardId,
           {
@@ -704,8 +649,9 @@ export default async function ProblemeLoesungenPage({
             serviceProcess: article.serviceProcess,
             workScopeFactors: article.workScopeFactors,
             selfRepairTips:
-              SELF_REPAIR_TIPS_BY_LOCALE_AND_SLUG[`${locale}:${article.slug}`] ??
-              article.safeChecks,
+              cmsSelfRepairTips.length > 0
+                ? cmsSelfRepairTips
+                : article.safeChecks,
           },
         ] as const;
       })

@@ -1,10 +1,15 @@
 import { CMS_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
 import { createAdminAuditLog, requireAdminPermissionActor, type AdminRequestActor } from '@/lib/admin-audit';
+import { Prisma } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
 import { hasAdminPermissions } from '@/lib/admin-permissions';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
+import {
+  normalizeArticleSelfRepairTips,
+  type ArticleSelfRepairTips,
+} from '@/lib/cms/article-self-repair';
 import {
   canTransitionArticleStatus,
   CMS_ARTICLE_WORKFLOW_STATUSES,
@@ -44,6 +49,7 @@ type ArticleResponse = {
   relatedSlugs: string[];
   causes: string[];
   safeChecks: string[];
+  selfRepairTips: ArticleSelfRepairTips | null;
   urgentWarnings: string[];
   serviceProcess: string[];
   workScopeFactors: string[];
@@ -73,6 +79,7 @@ const ARTICLE_SELECT = {
   relatedSlugs: true,
   causes: true,
   safeChecks: true,
+  selfRepairTips: true,
   urgentWarnings: true,
   serviceProcess: true,
   workScopeFactors: true,
@@ -295,6 +302,7 @@ const ARTICLE_AUDIT_FIELDS = [
   'relatedSlugs',
   'causes',
   'safeChecks',
+  'selfRepairTips',
   'urgentWarnings',
   'serviceProcess',
   'workScopeFactors',
@@ -359,6 +367,7 @@ function serializeArticle(article: ArticleQueryRecord): ArticleResponse {
     relatedSlugs: getStringArray(article.relatedSlugs),
     causes: getStringArray(article.causes),
     safeChecks: getStringArray(article.safeChecks),
+    selfRepairTips: normalizeArticleSelfRepairTips(article.selfRepairTips),
     urgentWarnings: getStringArray(article.urgentWarnings),
     serviceProcess: getStringArray(article.serviceProcess),
     workScopeFactors: getStringArray(article.workScopeFactors),
@@ -412,6 +421,8 @@ function parsePayload(body: Record<string, unknown>) {
     body.relatedSlugs === undefined ? undefined : normalizeTextArray(body.relatedSlugs);
   const causes = body.causes === undefined ? undefined : normalizeTextArray(body.causes);
   const safeChecks = body.safeChecks === undefined ? undefined : normalizeTextArray(body.safeChecks);
+  const selfRepairTips =
+    body.selfRepairTips === undefined ? undefined : normalizeArticleSelfRepairTips(body.selfRepairTips);
   const urgentWarnings =
     body.urgentWarnings === undefined ? undefined : normalizeTextArray(body.urgentWarnings);
   const serviceProcess =
@@ -439,6 +450,7 @@ function parsePayload(body: Record<string, unknown>) {
     relatedSlugs,
     causes,
     safeChecks,
+    selfRepairTips,
     urgentWarnings,
     serviceProcess,
     workScopeFactors,
@@ -562,6 +574,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         key === 'relatedSlugs' ||
         key === 'causes' ||
         key === 'safeChecks' ||
+        key === 'selfRepairTips' ||
         key === 'urgentWarnings' ||
         key === 'serviceProcess' ||
         key === 'workScopeFactors' ||
@@ -573,8 +586,12 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
           return NextResponse.json({ error: 'Invalid article payload' }, { status: 400 });
         }
 
-        if (value === null && arrayFields.has(key)) {
+        if (key === 'selfRepairTips' && value === null) {
+          updates[key] = Prisma.DbNull;
+        } else if (value === null && arrayFields.has(key)) {
           updates[key] = [];
+        } else if (key === 'selfRepairTips') {
+          updates[key] = value as Prisma.InputJsonObject;
         } else {
           updates[key] = value;
         }

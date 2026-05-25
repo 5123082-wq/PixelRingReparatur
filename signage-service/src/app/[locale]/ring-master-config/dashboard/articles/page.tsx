@@ -15,6 +15,14 @@ type CmsArticleStatus =
   | 'PUBLISHED'
   | 'ARCHIVED';
 
+type ArticleSelfRepairTips = {
+  intro?: string;
+  withoutOpening?: string[];
+  technicalSpecialist?: string[];
+  doNotDo?: string[];
+  qualificationNote?: string;
+};
+
 type CmsArticle = {
   id: string;
   locale: string;
@@ -31,6 +39,7 @@ type CmsArticle = {
   relatedSlugs: string[];
   causes: string[];
   safeChecks: string[];
+  selfRepairTips: ArticleSelfRepairTips | null;
   urgentWarnings: string[];
   serviceProcess: string[];
   workScopeFactors: string[];
@@ -83,6 +92,7 @@ type ArticleFormState = {
   relatedSlugs: string;
   causes: string;
   safeChecks: string;
+  selfRepairTips: string;
   urgentWarnings: string;
   serviceProcess: string;
   workScopeFactors: string;
@@ -143,6 +153,27 @@ function splitLines(value: string): string[] {
 
 function joinLines(values: string[] | null | undefined): string {
   return (values || []).join('\n');
+}
+
+function formatSelfRepairTips(value: ArticleSelfRepairTips | null | undefined): string {
+  return value ? JSON.stringify(value, null, 2) : '';
+}
+
+function parseSelfRepairTips(value: string): ArticleSelfRepairTips | null | undefined {
+  const text = value.trim();
+  if (!text) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(text) as unknown;
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return undefined;
+    }
+    return parsed as ArticleSelfRepairTips;
+  } catch {
+    return undefined;
+  }
 }
 
 function toNullable(value: string): string | null {
@@ -282,6 +313,7 @@ function createEmptyForm(locale: string): ArticleFormState {
     relatedSlugs: '',
     causes: '',
     safeChecks: '',
+    selfRepairTips: '',
     urgentWarnings: '',
     serviceProcess: '',
     workScopeFactors: '',
@@ -308,6 +340,7 @@ function articleToForm(article: CmsArticle, fallbackLocale: string): ArticleForm
     relatedSlugs: joinLines(article.relatedSlugs),
     causes: joinLines(article.causes),
     safeChecks: joinLines(article.safeChecks),
+    selfRepairTips: formatSelfRepairTips(article.selfRepairTips),
     urgentWarnings: joinLines(article.urgentWarnings),
     serviceProcess: joinLines(article.serviceProcess),
     workScopeFactors: joinLines(article.workScopeFactors),
@@ -340,6 +373,10 @@ function validateForm(form: ArticleFormState): string | null {
     return 'Content is required.';
   }
 
+  if (parseSelfRepairTips(form.selfRepairTips) === undefined) {
+    return 'Self Repair Tips must be a valid JSON object or empty.';
+  }
+
   const parsedSortOrder = Number(form.sortOrder);
   if (!Number.isInteger(parsedSortOrder)) {
     return 'Sort order must be an integer.';
@@ -368,6 +405,7 @@ function normalizeArticlePayload(
     relatedSlugs: splitLines(form.relatedSlugs),
     causes: splitLines(form.causes),
     safeChecks: splitLines(form.safeChecks),
+    selfRepairTips: parseSelfRepairTips(form.selfRepairTips),
     urgentWarnings: splitLines(form.urgentWarnings),
     serviceProcess: splitLines(form.serviceProcess),
     workScopeFactors: splitLines(form.workScopeFactors),
@@ -603,6 +641,7 @@ export default function ArticlesPage() {
     // Manual mapping for fields that are arrays in DB but strings in Form
     if (fieldName === 'causes') value = joinLines(activeRef.causes);
     else if (fieldName === 'safeChecks') value = joinLines(activeRef.safeChecks);
+    else if (fieldName === 'selfRepairTips') value = formatSelfRepairTips(activeRef.selfRepairTips);
     else if (fieldName === 'urgentWarnings') value = joinLines(activeRef.urgentWarnings);
     else if (fieldName === 'serviceProcess') value = joinLines(activeRef.serviceProcess);
     else if (fieldName === 'workScopeFactors') value = joinLines(activeRef.workScopeFactors);
@@ -1136,6 +1175,7 @@ export default function ArticlesPage() {
                 {[
                   { label: 'Causes', key: 'causes' as const },
                   { label: 'Safe Checks', key: 'safeChecks' as const },
+                  { label: 'Self Repair Tips JSON', key: 'selfRepairTips' as const },
                   { label: 'Urgent Warnings', key: 'urgentWarnings' as const },
                   { label: 'Service Process', key: 'serviceProcess' as const },
                   { label: 'Work Scope', key: 'workScopeFactors' as const },
@@ -1468,5 +1508,3 @@ export default function ArticlesPage() {
     </div>
   );
 }
-
-

@@ -15,6 +15,8 @@ import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
 import { Client } from 'pg';
 
+import { ARTICLE_SELF_REPAIR_TIPS } from './article-self-repair-tips-data.mjs';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const appDir = path.resolve(__dirname, '..');
@@ -317,6 +319,7 @@ function readArticle(locale, config) {
     relatedSlugs: SHARED.relatedSlugs,
     causes: config.causes,
     safeChecks: config.safeChecks,
+    selfRepairTips: ARTICLE_SELF_REPAIR_TIPS['letter-out'][locale] ?? null,
     urgentWarnings: config.urgentWarnings,
     serviceProcess: config.serviceProcess,
     workScopeFactors: config.workScopeFactors,
@@ -335,13 +338,13 @@ const upsertSql = `
   INSERT INTO "cms_articles" (
     "id","locale","type","status","slug","title","symptomLabel","shortAnswer",
     "content","seoTitle","seoDescription","canonicalUrl","relatedSlugs",
-    "causes","safeChecks","urgentWarnings","serviceProcess","workScopeFactors",
+    "causes","safeChecks","selfRepairTips","urgentWarnings","serviceProcess","workScopeFactors",
     "ctaLabel","ctaHref","sortOrder","publishedAt","lastReviewedAt",
     "deletedAt","createdAt","updatedAt"
   ) VALUES (
     $1,$2,$3::"CmsArticleType",$4::"CmsArticleStatus",$5,$6,$7,$8,
-    $9,$10,$11,$12,$13::text[],$14::text[],$15::text[],$16::text[],
-    $17::text[],$18::text[],$19,$20,$21,$22,$23,$24,$25,$26
+    $9,$10,$11,$12,$13::text[],$14::text[],$15::text[],$16::jsonb,$17::text[],
+    $18::text[],$19::text[],$20,$21,$22,$23,$24,$25,$26,$27
   )
   ON CONFLICT ("locale", "slug")
   DO UPDATE SET
@@ -357,6 +360,7 @@ const upsertSql = `
     "relatedSlugs" = EXCLUDED."relatedSlugs",
     "causes" = EXCLUDED."causes",
     "safeChecks" = EXCLUDED."safeChecks",
+    "selfRepairTips" = EXCLUDED."selfRepairTips",
     "urgentWarnings" = EXCLUDED."urgentWarnings",
     "serviceProcess" = EXCLUDED."serviceProcess",
     "workScopeFactors" = EXCLUDED."workScopeFactors",
@@ -387,6 +391,7 @@ async function upsertArticle(client, article) {
     article.relatedSlugs,
     article.causes,
     article.safeChecks,
+    article.selfRepairTips ? JSON.stringify(article.selfRepairTips) : null,
     article.urgentWarnings,
     article.serviceProcess,
     article.workScopeFactors,

@@ -4,6 +4,10 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { validateAdminCsrf } from '@/lib/admin-csrf';
 import {
+  normalizeArticleSelfRepairTips,
+  type ArticleSelfRepairTips,
+} from '@/lib/cms/article-self-repair';
+import {
   buildArticleRestoreDataFromSnapshot,
   createArticleRevisionSnapshot,
 } from '@/lib/cms/revisions';
@@ -32,6 +36,7 @@ const ARTICLE_SELECT = {
   relatedSlugs: true,
   causes: true,
   safeChecks: true,
+  selfRepairTips: true,
   urgentWarnings: true,
   serviceProcess: true,
   workScopeFactors: true,
@@ -91,6 +96,7 @@ function serializeArticle(article: ArticleQueryRecord) {
     relatedSlugs: getStringArray(article.relatedSlugs),
     causes: getStringArray(article.causes),
     safeChecks: getStringArray(article.safeChecks),
+    selfRepairTips: normalizeArticleSelfRepairTips(article.selfRepairTips) as ArticleSelfRepairTips | null,
     urgentWarnings: getStringArray(article.urgentWarnings),
     serviceProcess: getStringArray(article.serviceProcess),
     workScopeFactors: getStringArray(article.workScopeFactors),

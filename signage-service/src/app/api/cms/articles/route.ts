@@ -1,9 +1,14 @@
 import { CMS_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
 import { createAdminAuditLog, requireAdminPermissionActor, type AdminRequestActor } from '@/lib/admin-audit';
+import { Prisma } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
+import {
+  normalizeArticleSelfRepairTips,
+  type ArticleSelfRepairTips,
+} from '@/lib/cms/article-self-repair';
 import { CMS_ARTICLE_WORKFLOW_STATUSES } from '@/lib/cms/article-workflow';
 import { createArticleRevisionSnapshot } from '@/lib/cms/revisions';
 
@@ -37,6 +42,7 @@ type ArticleResponse = {
   relatedSlugs: string[];
   causes: string[];
   safeChecks: string[];
+  selfRepairTips: ArticleSelfRepairTips | null;
   urgentWarnings: string[];
   serviceProcess: string[];
   workScopeFactors: string[];
@@ -66,6 +72,7 @@ const ARTICLE_SELECT = {
   relatedSlugs: true,
   causes: true,
   safeChecks: true,
+  selfRepairTips: true,
   urgentWarnings: true,
   serviceProcess: true,
   workScopeFactors: true,
@@ -312,6 +319,7 @@ function serializeArticle(article: ArticleQueryRecord): ArticleResponse {
     relatedSlugs: getStringArray(article.relatedSlugs),
     causes: getStringArray(article.causes),
     safeChecks: getStringArray(article.safeChecks),
+    selfRepairTips: normalizeArticleSelfRepairTips(article.selfRepairTips),
     urgentWarnings: getStringArray(article.urgentWarnings),
     serviceProcess: getStringArray(article.serviceProcess),
     workScopeFactors: getStringArray(article.workScopeFactors),
@@ -465,6 +473,7 @@ export async function POST(request: NextRequest) {
     const relatedSlugs = normalizeTextArray(body.relatedSlugs);
     const causes = normalizeTextArray(body.causes);
     const safeChecks = normalizeTextArray(body.safeChecks);
+    const selfRepairTips = normalizeArticleSelfRepairTips(body.selfRepairTips);
     const urgentWarnings = normalizeTextArray(body.urgentWarnings);
     const serviceProcess = normalizeTextArray(body.serviceProcess);
     const workScopeFactors = normalizeTextArray(body.workScopeFactors);
@@ -476,6 +485,7 @@ export async function POST(request: NextRequest) {
       relatedSlugs,
       causes,
       safeChecks,
+      selfRepairTips,
       urgentWarnings,
       serviceProcess,
       workScopeFactors,
@@ -529,6 +539,7 @@ export async function POST(request: NextRequest) {
           relatedSlugs: relatedSlugs ?? undefined,
           causes: causes ?? undefined,
           safeChecks: safeChecks ?? undefined,
+          selfRepairTips: selfRepairTips ? (selfRepairTips as Prisma.InputJsonObject) : undefined,
           urgentWarnings: urgentWarnings ?? undefined,
           serviceProcess: serviceProcess ?? undefined,
           workScopeFactors: workScopeFactors ?? undefined,
