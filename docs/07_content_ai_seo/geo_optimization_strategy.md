@@ -390,6 +390,106 @@ Hub усиливает:
 
 ## 13. Progress Log
 
+### 2026-05-24 | Letter-Out Multilingual CMS Sync
+
+**Done:**
+- Published `Не светится отдельная буква или часть вывески` (статья о проблеме, когда не светится буква или часть вывески) / `letter-out` (CMS slug, идентификатор статьи в CMS) into CMS/database (CMS/база данных) for all MVP locales (языки MVP): DE (немецкий), EN (английский), RU (русский), TR (турецкий), PL (польский), and AR (арабский).
+- Added repeatable seed script (повторяемый скрипт загрузки) `npm run db:seed:article-letter-out`, which reads Markdown drafts (черновики Markdown) from `docs/07_content_ai_seo/problem_articles/буква или часть вывески не светится – 04/`.
+- Populated SEO/GEO fields (поля поисковой и AI-оптимизации): `seoTitle`, `seoDescription`, `canonicalUrl`, `relatedSlugs`, `causes`, `safeChecks`, `urgentWarnings`, `serviceProcess`, and `workScopeFactors`.
+- Confirmed via CMS public audit (аудит публичного CMS-контента) that `letter-out` (CMS slug, идентификатор статьи в CMS) is `PUBLISHED` (опубликована) and SEO-ready (готова к поисковой индексации) in all six locales.
+
+**In Progress:**
+- Owner visual review (визуальная проверка владельцем) of localized public article pages.
+
+**Next Action:**
+- After owner review (проверка владельцем), continue localizing remaining missing TR/PL/AR problem articles (статьи о проблемах), starting from the audit warnings.
+
+**Blockers/Risks:**
+- Audit WARN (предупреждения аудита) remains for other problem slugs (идентификаторы других статей о проблемах) with missing TR/PL/AR localized articles; these are unrelated to `letter-out` (CMS slug, идентификатор статьи в CMS).
+
+**Updated Documents:**
+- `PROGRESS.md`
+- `docs/07_content_ai_seo/geo_optimization_strategy.md`
+- `docs/07_content_ai_seo/problem_articles/README.md`
+- `signage-service/scripts/seed-article-letter-out-all-locales.mjs`
+- `signage-service/package.json`
+- `signage-service/tmp/cms-public-content-audit.json`
+- `signage-service/tmp/cms-public-content-audit.md`
+
+### 2026-05-24 | Uneven LED Multilingual CMS Sync
+
+**Done:**
+- Published `LED светит неравномерно или пятнами` (LED светит неравномерно или пятнами) / `uneven-light` into CMS/database (CMS/база данных) for all MVP locales (языки MVP): DE (немецкий), EN (английский), RU (русский), TR (турецкий), PL (польский), and AR (арабский).
+- Added repeatable seed script (повторяемый скрипт загрузки) `npm run db:seed:article-uneven-light`, which reads Markdown drafts (черновики Markdown) from `docs/07_content_ai_seo/problem_articles/led светит неравномерно – 03/`.
+- Populated SEO/GEO fields (поля поисковой и AI-оптимизации): `seoTitle`, `seoDescription`, `canonicalUrl`, `relatedSlugs`, `causes`, `safeChecks`, `urgentWarnings`, `serviceProcess`, and `workScopeFactors`.
+- Confirmed via CMS public audit (аудит публичного CMS-контента) that `uneven-light` is `PUBLISHED` (опубликована) and SEO-ready (готова к поисковой индексации) in all six locales.
+
+**In Progress:**
+- Owner visual review (визуальная проверка владельцем) of localized public article pages.
+
+**Next Action:**
+- After owner review (проверка владельцем), continue localizing remaining missing TR/PL/AR problem articles (статьи о проблемах), starting from the audit warnings.
+
+**Blockers/Risks:**
+- Audit WARN (предупреждения аудита) remains for other problem slugs with missing TR/PL/AR localized articles; these are unrelated to `uneven-light`.
+
+**Updated Documents:**
+- `PROGRESS.md`
+- `docs/07_content_ai_seo/geo_optimization_strategy.md`
+- `docs/07_content_ai_seo/problem_articles/README.md`
+- `signage-service/scripts/seed-article-uneven-light-all-locales.mjs`
+- `signage-service/package.json`
+- `signage-service/tmp/cms-public-content-audit.json`
+- `signage-service/tmp/cms-public-content-audit.md`
+
+### 2026-05-24 | Uneven LED Article Publication
+
+**Done:**
+- Created a new RU markdown draft (русский черновик в Markdown) for `LED светит неравномерно или пятнами` in `docs/07_content_ai_seo/problem_articles/led светит неравномерно – 03/`.
+- Preserved the owner-provided human technician logic (человеческая техническая логика): old signs often show LED degradation, new signs with spots suggest wrong LED selection/layout, and internal dirt can imitate failed diodes.
+- Structured the draft according to `problem_article_rules.md` v2 (правила статей о проблемах): small card (маленькая карточка), modal (модальное окно), full article (полная статья), CMS fields (поля CMS) and internal AI note (служебная заметка для ассистента).
+- Added official source notes (официальные источники) from Current / GE Tetra, SloanLED, MEAN WELL, Signify/Philips, DOE, IEA 4E, ams OSRAM, Lumileds, CIE, Springer and UL for technical grounding.
+- Published the owner-approved final markdown (утверждённый финальный Markdown) to CMS/database (CMS/база данных) for `cms_articles.locale = ru` and `cms_articles.slug = uneven-light`.
+- Verified local browser render (локальная проверка в браузере) at `/ru/probleme-loesungen/led-leuchtet-ungleichmaessig`: page title, short answer, and new content about visible LED points (видимые LED-точки) and `шахматка` render correctly.
+
+**In Progress:**
+- Owner can visually review (визуально проверить) the published local page.
+
+**Next Action:**
+- If owner approves the rendered page, keep this as the RU canonical version (русская каноническая версия) for future localization.
+
+**Blockers/Risks:**
+- Seed files (скрипты загрузки данных) were not updated; this publication was applied directly to CMS/database (CMS/база данных) from the markdown draft (черновик в Markdown).
+
+**Updated Documents:**
+- `PROGRESS.md`
+- `docs/07_content_ai_seo/geo_optimization_strategy.md`
+- `docs/07_content_ai_seo/problem_articles/led светит неравномерно – 03/problem_article_led_svetit_neravnomerno_ru.md`
+
+### 2026-05-24 | Problem Article Rules v2
+
+**Done:**
+- Reworked `problem_article_rules.md` (правила статей о проблемах) into a short mandatory operational standard for future problem articles (статьи о проблемах).
+- Added `problem_article_rules_master_ru.md` (расширенный главный справочник) with deeper editorial, safety, source, SEO/GEO (поисковая и AI-оптимизация), AI note (служебная заметка для ассистента), and CMS mapping (карта переноса в CMS) guidance.
+- Replaced the risky section title `Советы по самостоятельному ремонту` (опасная формулировка про самостоятельный ремонт) with the safer operational title `Что можно безопасно проверить самостоятельно` (безопасные проверки без ремонта).
+- Added explicit markdown draft (черновик в Markdown) to CMS (система управления контентом) field mapping for `title`, `symptomLabel`, `shortAnswer`, `content`, `causes`, `safeChecks`, `urgentWarnings`, `serviceProcess`, `workScopeFactors`, `relatedSlugs`, `seoTitle`, and `seoDescription`.
+
+**In Progress:**
+- Future problem article drafts (черновики статей о проблемах) should now follow the v2 short standard first and use the master standard (главный справочник) when deeper guidance is needed.
+
+**Next Action:**
+- Use the updated rules for the next rewrite of `LED светит неравномерно` before any CMS/database (CMS/база данных) update.
+
+**Blockers/Risks:**
+- Keep public article content separate from internal AI note (служебная заметка для ассистента); the internal AI note (служебная заметка для ассистента) must not be loaded into public `content`.
+
+**Updated Documents:**
+- `PROGRESS.md`
+- `docs/07_content_ai_seo/README.md`
+- `docs/07_content_ai_seo/geo_optimization_strategy.md`
+- `docs/07_content_ai_seo/problem_article_rules.md`
+- `docs/07_content_ai_seo/problem_article_rules_master_ru.md`
+
 ### 2026-05-22 | Problem Article Folder Workspace
 
 **Done:**

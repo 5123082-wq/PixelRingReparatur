@@ -4,6 +4,7 @@ import type { CSSProperties } from 'react';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
 import CmsImage from '@/components/common/CmsImage';
+import SectionEyebrow from '@/components/common/SectionEyebrow';
 import ProblemKnowledgeGrid from '@/components/probleme-loesungen/ProblemKnowledgeGrid';
 import ProblemRequestButton from '@/components/probleme-loesungen/ProblemRequestButton';
 import { type ProblemIntent } from '@/lib/content/problem-knowledge';
@@ -43,6 +44,53 @@ const SELF_REPAIR_TIPS_BY_LOCALE_AND_SLUG: Record<string, string[]> = {
     'Посмотрите, мерцают ли другие приборы на этой же линии.',
     'Снимите фото и видео проблемы.',
     'Если блок питания доступен безопасно, без разборки корпуса и без контакта с проводами, сфотографируйте его наклейку с параметрами.',
+  ],
+  'ru:letter-out': [
+    'В этом случае PixelRing не рекомендует самостоятельно менять диоды, вскрывать букву, искать неисправность в проводке, трогать клеммы или перепаивать LED-ленту.',
+    'Если вы уверены, что вывеска питается через несколько блоков питания, можно проверить, относится ли неработающая буква или зона к отдельному блоку. Это помогает понять направление ремонта.',
+    'Замену неисправного блока питания можно рассматривать только при профильной квалификации и полном безопасном отключении питания. Нужно точно совпадение по напряжению, мощности, току, запасу нагрузки, степени защиты и схеме подключения.',
+    'Если вы не специалист, не меняйте блок питания самостоятельно: сфотографируйте его наклейку с параметрами, тёмную букву или участок и передайте это для диагностики.',
+    'Если после включения выбивает автомат, есть запах гари, треск, нагрев, вода или следы повреждения кабеля, не включайте вывеску повторно для проверки.',
+  ],
+  'de:letter-out': [
+    'Grenzen Sie den Umfang ein: ein Buchstabe, mehrere benachbarte Buchstaben, eine Reihe im Leuchtkasten oder eine ganze Zone. Das zeigt, ob der Fehler lokal oder eher in der Versorgung liegt.',
+    'Machen Sie zwei Fotos: die ganze Anlage aus Abstand und eine Nahaufnahme des dunklen Bereichs. Wenn der Fehler beim Einschalten sichtbar wird, hilft ein kurzes Startvideo.',
+    'Schauen Sie vom Boden aus nach sichtbaren Rissen, Wasser im Inneren, verzogenem Gehäuse, offener Kante, beschädigtem Kabel oder dunklen Spuren.',
+    'Prüfen Sie nur außen zugängliche Punkte: Schalter, Sicherung und externe Zeitschaltuhr. Wenn die Sicherung erneut auslöst, nicht weiter testen.',
+    'Notieren Sie, was vorher passiert ist: Regen, Wind, Frost, Gewitter, Fassadenarbeiten, Reinigung oder eine frühere Reparatur.',
+    'Fotografieren Sie das Typenschild des Netzteils nur, wenn es ohne Öffnen, Höhe und Leitungsberührung sichtbar ist. Nichts abschrauben und keine Klemmen berühren.',
+  ],
+  'en:letter-out': [
+    'Narrow down the scale: one letter, several neighboring letters, one lightbox row or a whole zone. That helps separate a local fault from a supply-line issue.',
+    'Take two photos: the whole sign from a distance and a close-up of the dark area. If the fault appears during switch-on, record a short start-up video.',
+    'From the ground, look for visible cracks, water inside, a distorted cabinet, an open edge, damaged cable or dark marks around the area.',
+    'Check only external items: normal switch, breaker and external timer. If the breaker trips again, stop testing.',
+    'Write down what happened before the fault: rain, wind, frost, storm, facade work, cleaning or a previous repair.',
+    'Photograph the power-supply label only if it is visible without opening, height work or touching wires. Do not unscrew anything or touch terminals.',
+  ],
+  'tr:letter-out': [
+    'Ölçeği netleştirin: tek harf mi, birkaç komşu harf mi, ışıklı kutuda bir sıra mı, yoksa tüm bir bölge mi yanmıyor. Bu, yerel arıza ile besleme hattı sorununu ayırmaya yardım eder.',
+    'İki fotoğraf çekin: tabelanın tamamı uzaktan ve karanlık alanın yakın çekimi. Sorun açılışta görünüyorsa kısa bir başlangıç videosu çekin.',
+    'Yerden bakarak çatlak, içeride su, eğilmiş kasa, açık kenar, hasarlı kablo veya kararan izler olup olmadığını kontrol edin.',
+    'Sadece dışarıdan erişilenleri kontrol edin: normal anahtar, sigorta ve dış zamanlayıcı. Sigorta tekrar atarsa test etmeyi bırakın.',
+    'Sorundan önce ne olduğunu yazın: yağmur, rüzgar, don, fırtına, cephe işi, temizlik veya önceki onarım.',
+    'Güç kaynağı etiketi kasa açmadan, yükseğe çıkmadan ve kablolara dokunmadan görünüyorsa fotoğrafını çekin. Hiçbir şeyi sökmeyin, klemenslere dokunmayın.',
+  ],
+  'pl:letter-out': [
+    'Ustal skalę: jedna litera, kilka sąsiednich liter, jeden rząd w kasetonie czy cała strefa. To pomaga odróżnić lokalną usterkę od problemu linii zasilania.',
+    'Zrób dwa zdjęcia: całą reklamę z daleka i zbliżenie ciemnego miejsca. Jeśli problem widać przy włączaniu, nagraj krótki film startu.',
+    'Z poziomu ziemi sprawdź, czy widać pęknięcia, wodę w środku, przekoszoną obudowę, otwartą krawędź, uszkodzony kabel albo ciemne ślady.',
+    'Sprawdź tylko elementy dostępne z zewnątrz: zwykły włącznik, zabezpieczenie i zewnętrzny zegar. Jeśli zabezpieczenie znowu zadziała, nie testuj dalej.',
+    'Zanotuj, co było przed awarią: deszcz, wiatr, mróz, burza, prace elewacyjne, czyszczenie albo wcześniejsza naprawa.',
+    'Sfotografuj etykietę zasilacza tylko, jeśli jest widoczna bez otwierania, pracy na wysokości i dotykania przewodów. Niczego nie odkręcaj i nie dotykaj zacisków.',
+  ],
+  'ar:letter-out': [
+    'حدّد حجم المشكلة: حرف واحد، عدة حروف متجاورة، صف داخل صندوق الإضاءة أو منطقة كاملة. هذا يساعد على التمييز بين عطل محلي ومشكلة في خط التغذية.',
+    'التقط صورتين: اللوحة كاملة من بعيد وصورة قريبة للمنطقة المظلمة. إذا ظهرت المشكلة عند التشغيل، سجّل فيديو قصيرًا لبدء التشغيل.',
+    'من الأرض، انظر هل توجد شقوق ظاهرة، ماء في الداخل، انحراف في الغلاف، حافة مفتوحة، كابل تالف أو آثار اسوداد حول المنطقة.',
+    'افحص فقط ما يمكن الوصول إليه من الخارج: المفتاح العادي، القاطع والمؤقت الخارجي. إذا فصل القاطع مرة أخرى، أوقف الاختبار.',
+    'سجّل ما حدث قبل العطل: مطر، رياح، صقيع، عاصفة، أعمال واجهة، تنظيف أو إصلاح سابق.',
+    'صوّر ملصق مزود الطاقة فقط إذا كان مرئيًا بدون فتح، بدون صعود وبدون لمس الأسلاك. لا تفك أي شيء ولا تلمس الأطراف.',
   ],
 };
 
@@ -104,6 +152,7 @@ type SolutionsContent = {
   faqTitle: string;
   supportBridge: string;
   faqs: Faq[];
+  finalEyebrow: string;
   finalTitle: string;
   finalText: string;
   heroEnabled?: boolean;
@@ -235,8 +284,7 @@ const CONTENT: Record<Locale, SolutionsContent> = {
       'PixelRing ist für Berlin und Brandenburg als Kerngebiet ausgerichtet. Weitere Regionen in Deutschland können je nach Aufgabe angefragt werden.',
     ],
     faqTitle: 'Häufige Fragen zu Schäden und Reparatur',
-    supportBridge:
-      'Weitere Details bleiben im Support Center. Wenn Sie nicht sicher sind, starten Sie direkt mit Foto oder kurzer Beschreibung.',
+    supportBridge: 'Weitere Details bleiben im Support Center.',
     faqs: [
       {
         question: 'Muss ich wissen, welche Technik verbaut ist?',
@@ -251,6 +299,7 @@ const CONTENT: Record<Locale, SolutionsContent> = {
         answer: 'Nein. Schalten Sie nur ab, wenn es gefahrlos möglich ist, und melden Sie den Fall direkt.',
       },
     ],
+    finalEyebrow: 'NEXT STEP',
     finalTitle: 'Nicht sicher, welches Problem vorliegt?',
     finalText:
       'Senden Sie uns ein Foto oder beschreiben Sie kurz, was sichtbar ist. PixelRing prüft den Fall und klärt die nächsten sinnvollen Schritte.',
@@ -306,12 +355,13 @@ const CONTENT: Record<Locale, SolutionsContent> = {
       'PixelRing focuses on Berlin and Brandenburg as its core area. Other German regions can be requested depending on the task.',
     ],
     faqTitle: 'Frequently asked questions about damage and repair',
-    supportBridge: 'More details stay in the Support Center. If unsure, start with a photo or short description.',
+    supportBridge: 'More details stay in the Support Center.',
     faqs: [
       { question: 'Do I need to know the installed technology?', answer: 'No. A visible issue, photos and the location are often enough for the first assessment.' },
       { question: 'Can PixelRing say immediately whether to repair or replace?', answer: 'A recommendation follows assessment. The first focus is sensible repair and restoration.' },
       { question: 'Should I inspect electrical issues myself?', answer: 'No. Switch off only if safe and report the case directly.' },
     ],
+    finalEyebrow: 'NEXT STEP',
     finalTitle: 'Not sure what the problem is?',
     finalText: 'Send a photo or briefly describe what is visible. PixelRing checks the case and clarifies the next sensible steps.',
   },
@@ -366,12 +416,13 @@ const CONTENT: Record<Locale, SolutionsContent> = {
       'Основной регион PixelRing - Берлин и Бранденбург. Другие регионы Германии можно согласовать по запросу.',
     ],
     faqTitle: 'Частые вопросы о повреждениях и ремонте',
-    supportBridge: 'Подробные материалы остаются в Support Center. Если сомневаетесь, начните с фото или короткого описания.',
+    supportBridge: 'Подробные материалы остаются в Support Center.',
     faqs: [
       { question: 'Нужно ли знать технические детали?', answer: 'Нет. Видимая проблема, фото и адрес часто достаточны для первичной оценки.' },
       { question: 'Можно сразу понять, ремонт или замена?', answer: 'Рекомендация дается после проверки. Первый фокус - разумный ремонт и восстановление.' },
       { question: 'Можно ли самому проверить электрику?', answer: 'Нет. Отключайте только если безопасно, и сразу сообщайте о проблеме.' },
     ],
+    finalEyebrow: 'СЛЕДУЮЩИЙ ШАГ',
     finalTitle: 'Не уверены, какая именно проблема?',
     finalText: 'Отправьте фото или коротко опишите, что видно. PixelRing проверит случай и уточнит следующие шаги.',
   },
@@ -426,12 +477,13 @@ const CONTENT: Record<Locale, SolutionsContent> = {
       'PixelRing icin ana bolge Berlin ve Brandenburgdur. Almanya icindeki diger bolgeler goreve gore talep edilebilir.',
     ],
     faqTitle: 'Hasar ve onarim hakkinda sik sorular',
-    supportBridge: 'Daha fazla detay Support Center icinde kalir. Emin degilseniz fotograf veya kisa aciklamayla baslayin.',
+    supportBridge: 'Daha fazla detay Support Center icinde kalir.',
     faqs: [
       { question: 'Kurulu teknolojiyi bilmem gerekiyor mu?', answer: 'Hayir. Gorunen sorun, fotograf ve konum ilk degerlendirme icin genellikle yeterlidir.' },
       { question: 'Onarim mi degisim mi hemen belli olur mu?', answer: 'Oneri incelemeden sonra verilir. Ilk odak mantikli onarim ve yenilemedir.' },
       { question: 'Elektrik sorununu kendim kontrol etmeli miyim?', answer: 'Hayir. Sadece guvenliyse kapatin ve durumu dogrudan bildirin.' },
     ],
+    finalEyebrow: 'SONRAKI ADIM',
     finalTitle: 'Sorunun ne oldugundan emin degil misiniz?',
     finalText: 'Fotograf gonderin veya gorunen durumu kisaca anlatin. PixelRing sonraki mantikli adimlari netlestirir.',
   },
@@ -486,12 +538,13 @@ const CONTENT: Record<Locale, SolutionsContent> = {
       'Główny obszar PixelRing to Berlin i Brandenburgia. Inne regiony Niemiec są możliwe po zapytaniu, zależnie od zadania.',
     ],
     faqTitle: 'Częste pytania o uszkodzenia i naprawę',
-    supportBridge: 'Szczegóły pozostają w Support Center. Jeśli nie masz pewności, zacznij od zdjęcia lub krótkiego opisu.',
+    supportBridge: 'Szczegóły pozostają w Support Center.',
     faqs: [
       { question: 'Czy muszę znać technologię instalacji?', answer: 'Nie. Widoczny problem, zdjęcia i lokalizacja zwykle wystarczają do pierwszej oceny.' },
       { question: 'Czy od razu wiadomo, czy naprawiać czy wymieniać?', answer: 'Rekomendacja jest po sprawdzeniu. Najpierw patrzymy na sensowną naprawę i odtworzenie.' },
       { question: 'Czy samodzielnie sprawdzać elektrykę?', answer: 'Nie. Wyłącz tylko jeśli to bezpieczne i zgłoś przypadek bezpośrednio.' },
     ],
+    finalEyebrow: 'NASTEPNY KROK',
     finalTitle: 'Nie wiesz, jaki to problem?',
     finalText: 'Wyślij zdjęcie albo krótko opisz, co widać. PixelRing sprawdzi przypadek i wyjaśni kolejne sensowne kroki.',
   },
@@ -546,12 +599,13 @@ const CONTENT: Record<Locale, SolutionsContent> = {
       'المنطقة الأساسية لـ PixelRing هي برلين وبراندنبورغ. يمكن طلب مناطق أخرى في ألمانيا حسب المهمة.',
     ],
     faqTitle: 'أسئلة شائعة حول الأضرار والإصلاح',
-    supportBridge: 'التفاصيل الإضافية تبقى في Support Center. إذا لم تكن متأكدا، ابدأ بصورة أو وصف قصير.',
+    supportBridge: 'التفاصيل الإضافية تبقى في Support Center.',
     faqs: [
       { question: 'هل يجب أن أعرف التقنية المستخدمة؟', answer: 'لا. المشكلة الظاهرة والصور والموقع غالبا تكفي للتقييم الأول.' },
       { question: 'هل يمكن معرفة الإصلاح أو الاستبدال فورا؟', answer: 'التوصية تأتي بعد الفحص. التركيز الأول هو الإصلاح والاستعادة عندما يكون ذلك منطقيا.' },
       { question: 'هل أفحص المشكلة الكهربائية بنفسي؟', answer: 'لا. عند وجود خطر، افصل التيار وابتعد عن الموقع وبلّغ عن الحالة مباشرة.' },
     ],
+    finalEyebrow: 'الخطوة التالية',
     finalTitle: 'لست متأكدا ما هي المشكلة؟',
     finalText: 'أرسل صورة أو صف بإيجاز ما هو ظاهر. PixelRing يراجع الحالة ويوضح الخطوات التالية.',
   },
@@ -649,7 +703,9 @@ export default async function ProblemeLoesungenPage({
             urgentWarnings: article.urgentWarnings,
             serviceProcess: article.serviceProcess,
             workScopeFactors: article.workScopeFactors,
-            selfRepairTips: SELF_REPAIR_TIPS_BY_LOCALE_AND_SLUG[`${locale}:${article.slug}`],
+            selfRepairTips:
+              SELF_REPAIR_TIPS_BY_LOCALE_AND_SLUG[`${locale}:${article.slug}`] ??
+              article.safeChecks,
           },
         ] as const;
       })
@@ -712,40 +768,6 @@ export default async function ProblemeLoesungenPage({
               </div>
             </section>
 
-            <section className="bg-white px-4 py-8 sm:px-6 sm:py-10">
-              <div className="mx-auto max-w-7xl">
-                <div className="rounded-[28px] border border-[#D8E2EE] bg-[#F7F1E8] p-5 text-[#0E1A2B] shadow-[0_16px_45px_rgba(14,26,43,0.07)] sm:p-6">
-                  <div className="grid gap-6 lg:grid-cols-[0.7fr_1.3fr] lg:items-center">
-                    <div>
-                      <p className="text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#B8643E]">
-                        PixelRing Check
-                      </p>
-                      <p className="mt-1 text-lg font-black">{content.impactBefore} / {content.impactAfter}</p>
-                      <p className="mt-3 max-w-md text-[14px] font-semibold leading-6 text-[#4A5568]">
-                        {content.heroTrust}
-                      </p>
-                    </div>
-
-                    <div className="grid gap-4 md:grid-cols-3">
-                      {content.metrics.slice(0, 3).map((metric) => (
-                        <div key={metric.label}>
-                          <div className="mb-2 flex items-center justify-between text-[13px] font-bold">
-                            <span>{metric.label}</span>
-                            <span className="text-[#24594D]">{metric.after}%</span>
-                          </div>
-                          <div className="h-3 overflow-hidden rounded-full bg-[#E7DDD3]">
-                            <div
-                              className="metric-fill h-full rounded-full bg-[#7BA190]"
-                              style={{ '--metric-target': `${metric.after}%` } as CSSProperties}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
           </>
         )}
 
@@ -785,9 +807,6 @@ export default async function ProblemeLoesungenPage({
                     <div key={metric.label} className="rounded-[20px] border border-[#E7DDD3] bg-[#FFFDF9] p-5">
                       <div className="flex items-center justify-between gap-3">
                         <h3 className="text-lg font-extrabold text-[#0E1A2B]">{metric.label}</h3>
-                        <span className="text-[12px] font-black text-[#B8643E]">
-                          {content.impactAfter}
-                        </span>
                       </div>
                       <div className="mt-5 space-y-3">
                         <div>
@@ -907,19 +926,36 @@ export default async function ProblemeLoesungenPage({
                       </p>
                     </details>
                   ))}
-                  {content.finalEnabled !== false && (
-                    <div className="rounded-[24px] bg-[#24594D] p-6 text-white">
-                      <h2 className="text-2xl font-extrabold leading-[1.1]">{content.finalTitle}</h2>
-                      <p className="mt-3 text-[16px] leading-7 text-white/[0.82]">{content.finalText}</p>
-                      <div className="mt-6">
-                        <ProblemRequestButton
-                          label={content.primaryCta}
-                          problemIntent="sign-not-lighting"
-                          className="min-w-[180px] px-7"
-                        />
-                      </div>
-                    </div>
-                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+        {content.finalEnabled !== false && (
+          <section className="bg-white px-6 py-14 sm:py-18">
+            <div className="mx-auto max-w-7xl">
+              <div
+                className="grid gap-8 overflow-hidden rounded-[28px] border border-[#d3b2a2]/50 px-6 py-7 shadow-[0_18px_50px_rgba(8,24,39,0.08)] sm:px-8 sm:py-9 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-12"
+                style={{
+                  background:
+                    'radial-gradient(circle at 88% 18%, rgba(184,100,62,0.16) 0%, transparent 30%), linear-gradient(135deg, #F3E7DE 0%, #EEF3F8 100%)',
+                }}
+              >
+                <div className="min-w-0">
+                  <SectionEyebrow className="mb-5">{content.finalEyebrow}</SectionEyebrow>
+                  <h2 className="max-w-3xl text-[28px] font-extrabold leading-[1.12] tracking-[0] text-[#081827] sm:text-[34px] lg:text-[38px]">
+                    {content.finalTitle}
+                  </h2>
+                  <p className="mt-4 max-w-2xl text-[16px] leading-[1.65] text-[#526174] sm:text-[17px]">
+                    {content.finalText}
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-3 lg:justify-end">
+                  <ProblemRequestButton
+                    label={content.primaryCta}
+                    problemIntent="sign-not-lighting"
+                    className="min-h-[52px] px-7 text-[15px] font-black shadow-[0_16px_34px_rgba(184,100,62,0.22)]"
+                  />
                 </div>
               </div>
             </div>

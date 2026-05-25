@@ -7,7 +7,8 @@ This folder covers how the site should be understood by search engines and AI an
 Planned base documents:
 - `copy_system.md`
 - `cta_labels_master.md`
-- `problem_article_rules.md`
+- `problem_article_rules.md` - обязательный короткий стандарт для problem articles (статей о проблемах)
+- `problem_article_rules_master_ru.md` - расширенный master-стандарт (главный справочник) для глубокого редактирования problem articles (статей о проблемах)
 - `knowledge_base_strategy.md`
 - `troubleshooting_content.md`
 - `seo_strategy.md`

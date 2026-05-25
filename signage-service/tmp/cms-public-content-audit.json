@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-21T07:54:00.737Z",
+  "generatedAt": "2026-05-24T21:51:12.013Z",
   "databaseTarget": "postgresql://ep-soft-smoke-agt9wkjm-pooler.c-2.eu-central-1.aws.neon.tech/neondb",
   "baseUrl": null,
   "locales": [
@@ -1039,11 +1039,11 @@
       "seoTitle": true,
       "seoDescription": true,
       "structuredLists": {
-        "causes": 3,
-        "safeChecks": 3,
-        "urgentWarnings": 2,
+        "causes": 5,
+        "safeChecks": 6,
+        "urgentWarnings": 5,
         "serviceProcess": 4,
-        "workScopeFactors": 3
+        "workScopeFactors": 5
       }
     },
     {
@@ -1052,17 +1052,17 @@
       "locale": "en",
       "route": "/en/probleme-loesungen/werbeanlage-leuchtet-nicht",
       "status": "PUBLISHED",
-      "title": "Sign is completely dark — what to check before calling a technician",
+      "title": "Sign does not light up",
       "content": true,
       "shortAnswer": true,
       "seoTitle": true,
       "seoDescription": true,
       "structuredLists": {
         "causes": 5,
-        "safeChecks": 4,
-        "urgentWarnings": 3,
+        "safeChecks": 6,
+        "urgentWarnings": 5,
         "serviceProcess": 4,
-        "workScopeFactors": 3
+        "workScopeFactors": 5
       }
     },
     {
@@ -1077,11 +1077,11 @@
       "seoTitle": true,
       "seoDescription": true,
       "structuredLists": {
-        "causes": 4,
-        "safeChecks": 4,
-        "urgentWarnings": 2,
+        "causes": 5,
+        "safeChecks": 6,
+        "urgentWarnings": 5,
         "serviceProcess": 4,
-        "workScopeFactors": 3
+        "workScopeFactors": 5
       }
     },
     {
@@ -1089,18 +1089,18 @@
       "publicSlug": "werbeanlage-leuchtet-nicht",
       "locale": "tr",
       "route": "/tr/probleme-loesungen/werbeanlage-leuchtet-nicht",
-      "status": "MISSING",
-      "title": "",
-      "content": false,
-      "shortAnswer": false,
-      "seoTitle": false,
-      "seoDescription": false,
+      "status": "PUBLISHED",
+      "title": "Tabela yanmıyor",
+      "content": true,
+      "shortAnswer": true,
+      "seoTitle": true,
+      "seoDescription": true,
       "structuredLists": {
-        "causes": 0,
-        "safeChecks": 0,
-        "urgentWarnings": 0,
-        "serviceProcess": 0,
-        "workScopeFactors": 0
+        "causes": 5,
+        "safeChecks": 6,
+        "urgentWarnings": 5,
+        "serviceProcess": 4,
+        "workScopeFactors": 5
       }
     },
     {
@@ -1108,18 +1108,18 @@
       "publicSlug": "werbeanlage-leuchtet-nicht",
       "locale": "pl",
       "route": "/pl/probleme-loesungen/werbeanlage-leuchtet-nicht",
-      "status": "MISSING",
-      "title": "",
-      "content": false,
-      "shortAnswer": false,
-      "seoTitle": false,
-      "seoDescription": false,
+      "status": "PUBLISHED",
+      "title": "Reklama nie świeci",
+      "content": true,
+      "shortAnswer": true,
+      "seoTitle": true,
+      "seoDescription": true,
       "structuredLists": {
-        "causes": 0,
-        "safeChecks": 0,
-        "urgentWarnings": 0,
-        "serviceProcess": 0,
-        "workScopeFactors": 0
+        "causes": 5,
+        "safeChecks": 6,
+        "urgentWarnings": 5,
+        "serviceProcess": 4,
+        "workScopeFactors": 5
       }
     },
     {
@@ -1127,18 +1127,18 @@
       "publicSlug": "werbeanlage-leuchtet-nicht",
       "locale": "ar",
       "route": "/ar/probleme-loesungen/werbeanlage-leuchtet-nicht",
-      "status": "MISSING",
-      "title": "",
-      "content": false,
-      "shortAnswer": false,
-      "seoTitle": false,
-      "seoDescription": false,
+      "status": "PUBLISHED",
+      "title": "اللوحة لا تضيء",
+      "content": true,
+      "shortAnswer": true,
+      "seoTitle": true,
+      "seoDescription": true,
       "structuredLists": {
-        "causes": 0,
-        "safeChecks": 0,
-        "urgentWarnings": 0,
-        "serviceProcess": 0,
-        "workScopeFactors": 0
+        "causes": 5,
+        "safeChecks": 6,
+        "urgentWarnings": 5,
+        "serviceProcess": 4,
+        "workScopeFactors": 5
       }
     },
     {
@@ -1191,11 +1191,11 @@
       "seoTitle": true,
       "seoDescription": true,
       "structuredLists": {
-        "causes": 10,
-        "safeChecks": 8,
-        "urgentWarnings": 4,
-        "serviceProcess": 8,
-        "workScopeFactors": 8
+        "causes": 4,
+        "safeChecks": 9,
+        "urgentWarnings": 5,
+        "serviceProcess": 5,
+        "workScopeFactors": 7
       }
     },
     {
@@ -1261,17 +1261,17 @@
       "locale": "de",
       "route": "/de/probleme-loesungen/led-leuchtet-ungleichmaessig",
       "status": "PUBLISHED",
-      "title": "Ungleichmäßiges Leuchten der LEDs",
+      "title": "LED leuchtet ungleichmäßig oder fleckig",
       "content": true,
       "shortAnswer": true,
       "seoTitle": true,
       "seoDescription": true,
       "structuredLists": {
-        "causes": 3,
-        "safeChecks": 3,
-        "urgentWarnings": 2,
-        "serviceProcess": 4,
-        "workScopeFactors": 3
+        "causes": 8,
+        "safeChecks": 5,
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 7
       }
     },
     {
@@ -1280,17 +1280,17 @@
       "locale": "en",
       "route": "/en/probleme-loesungen/led-leuchtet-ungleichmaessig",
       "status": "PUBLISHED",
-      "title": "Patchy or uneven LED brightness — why some sections fade first",
+      "title": "LED lighting is uneven or patchy",
       "content": true,
       "shortAnswer": true,
       "seoTitle": true,
       "seoDescription": true,
       "structuredLists": {
-        "causes": 5,
-        "safeChecks": 4,
-        "urgentWarnings": 2,
-        "serviceProcess": 4,
-        "workScopeFactors": 3
+        "causes": 8,
+        "safeChecks": 5,
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 7
       }
     },
     {
@@ -1299,17 +1299,17 @@
       "locale": "ru",
       "route": "/ru/probleme-loesungen/led-leuchtet-ungleichmaessig",
       "status": "PUBLISHED",
-      "title": "LED светит неравномерно",
+      "title": "LED светит неравномерно или пятнами",
       "content": true,
       "shortAnswer": true,
       "seoTitle": true,
       "seoDescription": true,
       "structuredLists": {
-        "causes": 4,
-        "safeChecks": 3,
-        "urgentWarnings": 2,
-        "serviceProcess": 4,
-        "workScopeFactors": 3
+        "causes": 7,
+        "safeChecks": 8,
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 13
       }
     },
     {
@@ -1317,18 +1317,18 @@
       "publicSlug": "led-leuchtet-ungleichmaessig",
       "locale": "tr",
       "route": "/tr/probleme-loesungen/led-leuchtet-ungleichmaessig",
-      "status": "MISSING",
-      "title": "",
-      "content": false,
-      "shortAnswer": false,
-      "seoTitle": false,
-      "seoDescription": false,
+      "status": "PUBLISHED",
+      "title": "LED ışık eşit yanmıyor veya lekeli görünüyor",
+      "content": true,
+      "shortAnswer": true,
+      "seoTitle": true,
+      "seoDescription": true,
       "structuredLists": {
-        "causes": 0,
-        "safeChecks": 0,
-        "urgentWarnings": 0,
-        "serviceProcess": 0,
-        "workScopeFactors": 0
+        "causes": 8,
+        "safeChecks": 5,
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 7
       }
     },
     {
@@ -1336,18 +1336,18 @@
       "publicSlug": "led-leuchtet-ungleichmaessig",
       "locale": "pl",
       "route": "/pl/probleme-loesungen/led-leuchtet-ungleichmaessig",
-      "status": "MISSING",
-      "title": "",
-      "content": false,
-      "shortAnswer": false,
-      "seoTitle": false,
-      "seoDescription": false,
+      "status": "PUBLISHED",
+      "title": "LED świeci nierównomiernie albo plamami",
+      "content": true,
+      "shortAnswer": true,
+      "seoTitle": true,
+      "seoDescription": true,
       "structuredLists": {
-        "causes": 0,
-        "safeChecks": 0,
-        "urgentWarnings": 0,
-        "serviceProcess": 0,
-        "workScopeFactors": 0
+        "causes": 8,
+        "safeChecks": 5,
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 7
       }
     },
     {
@@ -1355,18 +1355,18 @@
       "publicSlug": "led-leuchtet-ungleichmaessig",
       "locale": "ar",
       "route": "/ar/probleme-loesungen/led-leuchtet-ungleichmaessig",
-      "status": "MISSING",
-      "title": "",
-      "content": false,
-      "shortAnswer": false,
-      "seoTitle": false,
-      "seoDescription": false,
+      "status": "PUBLISHED",
+      "title": "إضاءة LED غير متساوية أو تظهر كبقع",
+      "content": true,
+      "shortAnswer": true,
+      "seoTitle": true,
+      "seoDescription": true,
       "structuredLists": {
-        "causes": 0,
-        "safeChecks": 0,
-        "urgentWarnings": 0,
-        "serviceProcess": 0,
-        "workScopeFactors": 0
+        "causes": 8,
+        "safeChecks": 5,
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 7
       }
     },
     {
@@ -1375,17 +1375,17 @@
       "locale": "de",
       "route": "/de/probleme-loesungen/buchstabe-leuchtet-nicht",
       "status": "PUBLISHED",
-      "title": "Ein einzelner Buchstabe leuchtet nicht",
+      "title": "Ein Buchstabe oder ein Teil der Werbeanlage leuchtet nicht",
       "content": true,
       "shortAnswer": true,
       "seoTitle": true,
       "seoDescription": true,
       "structuredLists": {
-        "causes": 3,
-        "safeChecks": 3,
-        "urgentWarnings": 2,
-        "serviceProcess": 4,
-        "workScopeFactors": 3
+        "causes": 5,
+        "safeChecks": 4,
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 5
       }
     },
     {
@@ -1394,17 +1394,17 @@
       "locale": "en",
       "route": "/en/probleme-loesungen/buchstabe-leuchtet-nicht",
       "status": "PUBLISHED",
-      "title": "One letter is dark — isolating single-channel failures in channel lettering",
+      "title": "One letter or part of the sign does not light up",
       "content": true,
       "shortAnswer": true,
       "seoTitle": true,
       "seoDescription": true,
       "structuredLists": {
-        "causes": 4,
+        "causes": 5,
         "safeChecks": 4,
-        "urgentWarnings": 2,
-        "serviceProcess": 4,
-        "workScopeFactors": 3
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 5
       }
     },
     {
@@ -1413,17 +1413,17 @@
       "locale": "ru",
       "route": "/ru/probleme-loesungen/buchstabe-leuchtet-nicht",
       "status": "PUBLISHED",
-      "title": "Не светится одна буква",
+      "title": "Не светится отдельная буква или часть вывески",
       "content": true,
       "shortAnswer": true,
       "seoTitle": true,
       "seoDescription": true,
       "structuredLists": {
-        "causes": 3,
-        "safeChecks": 3,
-        "urgentWarnings": 2,
-        "serviceProcess": 4,
-        "workScopeFactors": 3
+        "causes": 5,
+        "safeChecks": 4,
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 5
       }
     },
     {
@@ -1431,18 +1431,18 @@
       "publicSlug": "buchstabe-leuchtet-nicht",
       "locale": "tr",
       "route": "/tr/probleme-loesungen/buchstabe-leuchtet-nicht",
-      "status": "MISSING",
-      "title": "",
-      "content": false,
-      "shortAnswer": false,
-      "seoTitle": false,
-      "seoDescription": false,
+      "status": "PUBLISHED",
+      "title": "Bir harf veya tabelanın bir bölümü yanmıyor",
+      "content": true,
+      "shortAnswer": true,
+      "seoTitle": true,
+      "seoDescription": true,
       "structuredLists": {
-        "causes": 0,
-        "safeChecks": 0,
-        "urgentWarnings": 0,
-        "serviceProcess": 0,
-        "workScopeFactors": 0
+        "causes": 5,
+        "safeChecks": 4,
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 5
       }
     },
     {
@@ -1450,18 +1450,18 @@
       "publicSlug": "buchstabe-leuchtet-nicht",
       "locale": "pl",
       "route": "/pl/probleme-loesungen/buchstabe-leuchtet-nicht",
-      "status": "MISSING",
-      "title": "",
-      "content": false,
-      "shortAnswer": false,
-      "seoTitle": false,
-      "seoDescription": false,
+      "status": "PUBLISHED",
+      "title": "Nie świeci jedna litera albo część reklamy",
+      "content": true,
+      "shortAnswer": true,
+      "seoTitle": true,
+      "seoDescription": true,
       "structuredLists": {
-        "causes": 0,
-        "safeChecks": 0,
-        "urgentWarnings": 0,
-        "serviceProcess": 0,
-        "workScopeFactors": 0
+        "causes": 5,
+        "safeChecks": 4,
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 5
       }
     },
     {
@@ -1469,18 +1469,18 @@
       "publicSlug": "buchstabe-leuchtet-nicht",
       "locale": "ar",
       "route": "/ar/probleme-loesungen/buchstabe-leuchtet-nicht",
-      "status": "MISSING",
-      "title": "",
-      "content": false,
-      "shortAnswer": false,
-      "seoTitle": false,
-      "seoDescription": false,
+      "status": "PUBLISHED",
+      "title": "حرف واحد أو جزء من اللوحة لا يضيء",
+      "content": true,
+      "shortAnswer": true,
+      "seoTitle": true,
+      "seoDescription": true,
       "structuredLists": {
-        "causes": 0,
-        "safeChecks": 0,
-        "urgentWarnings": 0,
-        "serviceProcess": 0,
-        "workScopeFactors": 0
+        "causes": 5,
+        "safeChecks": 4,
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 5
       }
     },
     {
@@ -2929,9 +2929,9 @@
       "pageKey": "referenzen",
       "locale": "de",
       "fieldPath": "0.heroImage2",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1778015688614-d61829e9ef59-led-letters-after-result.png",
+      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1779528341678-172e8d2302b2-Referenzen_HEROIMAGE2.png",
       "cmsMedia": true,
-      "fallbackUrl": "/uploads/cms-media/1778015688614-d61829e9ef59-led-letters-after-result.png",
+      "fallbackUrl": null,
       "storageProvider": "VERCEL_BLOB",
       "status": "CMS_MEDIA_URL_REGISTERED"
     },
@@ -3314,9 +3314,9 @@
       "pageKey": "referenzen",
       "locale": "en",
       "fieldPath": "0.heroImage2",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1778015688614-d61829e9ef59-led-letters-after-result.png",
+      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1779528341678-172e8d2302b2-Referenzen_HEROIMAGE2.png",
       "cmsMedia": true,
-      "fallbackUrl": "/uploads/cms-media/1778015688614-d61829e9ef59-led-letters-after-result.png",
+      "fallbackUrl": null,
       "storageProvider": "VERCEL_BLOB",
       "status": "CMS_MEDIA_URL_REGISTERED"
     },
@@ -3699,9 +3699,9 @@
       "pageKey": "referenzen",
       "locale": "ru",
       "fieldPath": "0.heroImage2",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1778015688614-d61829e9ef59-led-letters-after-result.png",
+      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1779528341678-172e8d2302b2-Referenzen_HEROIMAGE2.png",
       "cmsMedia": true,
-      "fallbackUrl": "/uploads/cms-media/1778015688614-d61829e9ef59-led-letters-after-result.png",
+      "fallbackUrl": null,
       "storageProvider": "VERCEL_BLOB",
       "status": "CMS_MEDIA_URL_REGISTERED"
     },
@@ -4084,9 +4084,9 @@
       "pageKey": "referenzen",
       "locale": "tr",
       "fieldPath": "0.heroImage2",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1778015688614-d61829e9ef59-led-letters-after-result.png",
+      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1779528341678-172e8d2302b2-Referenzen_HEROIMAGE2.png",
       "cmsMedia": true,
-      "fallbackUrl": "/uploads/cms-media/1778015688614-d61829e9ef59-led-letters-after-result.png",
+      "fallbackUrl": null,
       "storageProvider": "VERCEL_BLOB",
       "status": "CMS_MEDIA_URL_REGISTERED"
     },
@@ -4469,9 +4469,9 @@
       "pageKey": "referenzen",
       "locale": "pl",
       "fieldPath": "0.heroImage2",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1778015688614-d61829e9ef59-led-letters-after-result.png",
+      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1779528341678-172e8d2302b2-Referenzen_HEROIMAGE2.png",
       "cmsMedia": true,
-      "fallbackUrl": "/uploads/cms-media/1778015688614-d61829e9ef59-led-letters-after-result.png",
+      "fallbackUrl": null,
       "storageProvider": "VERCEL_BLOB",
       "status": "CMS_MEDIA_URL_REGISTERED"
     },
@@ -4854,9 +4854,9 @@
       "pageKey": "referenzen",
       "locale": "ar",
       "fieldPath": "0.heroImage2",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1778015688614-d61829e9ef59-led-letters-after-result.png",
+      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1779528341678-172e8d2302b2-Referenzen_HEROIMAGE2.png",
       "cmsMedia": true,
-      "fallbackUrl": "/uploads/cms-media/1778015688614-d61829e9ef59-led-letters-after-result.png",
+      "fallbackUrl": null,
       "storageProvider": "VERCEL_BLOB",
       "status": "CMS_MEDIA_URL_REGISTERED"
     },
@@ -5292,6 +5292,13 @@
     {
       "severity": "INFO",
       "code": "UNKNOWN_CMS_PAGE_KEY",
+      "message": "CmsPage service/de is not mapped to the public audit matrix.",
+      "pageKey": "service",
+      "locale": "de"
+    },
+    {
+      "severity": "INFO",
+      "code": "UNKNOWN_CMS_PAGE_KEY",
       "message": "CmsPage support/ar is not mapped to the public audit matrix.",
       "pageKey": "support",
       "locale": "ar"
@@ -5334,33 +5341,6 @@
     {
       "severity": "WARN",
       "code": "MISSING_PROBLEM_ARTICLE",
-      "message": "no-light/tr is missing; article route may fall back to EN or 404.",
-      "cmsSlug": "no-light",
-      "publicSlug": "werbeanlage-leuchtet-nicht",
-      "locale": "tr",
-      "route": "/tr/probleme-loesungen/werbeanlage-leuchtet-nicht"
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_PROBLEM_ARTICLE",
-      "message": "no-light/pl is missing; article route may fall back to EN or 404.",
-      "cmsSlug": "no-light",
-      "publicSlug": "werbeanlage-leuchtet-nicht",
-      "locale": "pl",
-      "route": "/pl/probleme-loesungen/werbeanlage-leuchtet-nicht"
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_PROBLEM_ARTICLE",
-      "message": "no-light/ar is missing; article route may fall back to EN or 404.",
-      "cmsSlug": "no-light",
-      "publicSlug": "werbeanlage-leuchtet-nicht",
-      "locale": "ar",
-      "route": "/ar/probleme-loesungen/werbeanlage-leuchtet-nicht"
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_PROBLEM_ARTICLE",
       "message": "flicking/tr is missing; article route may fall back to EN or 404.",
       "cmsSlug": "flicking",
       "publicSlug": "werbeanlage-flackert",
@@ -5384,60 +5364,6 @@
       "publicSlug": "werbeanlage-flackert",
       "locale": "ar",
       "route": "/ar/probleme-loesungen/werbeanlage-flackert"
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_PROBLEM_ARTICLE",
-      "message": "uneven-light/tr is missing; article route may fall back to EN or 404.",
-      "cmsSlug": "uneven-light",
-      "publicSlug": "led-leuchtet-ungleichmaessig",
-      "locale": "tr",
-      "route": "/tr/probleme-loesungen/led-leuchtet-ungleichmaessig"
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_PROBLEM_ARTICLE",
-      "message": "uneven-light/pl is missing; article route may fall back to EN or 404.",
-      "cmsSlug": "uneven-light",
-      "publicSlug": "led-leuchtet-ungleichmaessig",
-      "locale": "pl",
-      "route": "/pl/probleme-loesungen/led-leuchtet-ungleichmaessig"
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_PROBLEM_ARTICLE",
-      "message": "uneven-light/ar is missing; article route may fall back to EN or 404.",
-      "cmsSlug": "uneven-light",
-      "publicSlug": "led-leuchtet-ungleichmaessig",
-      "locale": "ar",
-      "route": "/ar/probleme-loesungen/led-leuchtet-ungleichmaessig"
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_PROBLEM_ARTICLE",
-      "message": "letter-out/tr is missing; article route may fall back to EN or 404.",
-      "cmsSlug": "letter-out",
-      "publicSlug": "buchstabe-leuchtet-nicht",
-      "locale": "tr",
-      "route": "/tr/probleme-loesungen/buchstabe-leuchtet-nicht"
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_PROBLEM_ARTICLE",
-      "message": "letter-out/pl is missing; article route may fall back to EN or 404.",
-      "cmsSlug": "letter-out",
-      "publicSlug": "buchstabe-leuchtet-nicht",
-      "locale": "pl",
-      "route": "/pl/probleme-loesungen/buchstabe-leuchtet-nicht"
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_PROBLEM_ARTICLE",
-      "message": "letter-out/ar is missing; article route may fall back to EN or 404.",
-      "cmsSlug": "letter-out",
-      "publicSlug": "buchstabe-leuchtet-nicht",
-      "locale": "ar",
-      "route": "/ar/probleme-loesungen/buchstabe-leuchtet-nicht"
     },
     {
       "severity": "WARN",
@@ -5578,13 +5504,13 @@
   "summary": {
     "result": "WARN",
     "countBySeverity": {
-      "INFO": 13,
-      "WARN": 27
+      "INFO": 14,
+      "WARN": 18
     },
     "countByCode": {
       "CMS_PAGE_SEO_INCOMPLETE": 7,
-      "UNKNOWN_CMS_PAGE_KEY": 6,
-      "MISSING_PROBLEM_ARTICLE": 27
+      "UNKNOWN_CMS_PAGE_KEY": 7,
+      "MISSING_PROBLEM_ARTICLE": 18
     }
   }
 }

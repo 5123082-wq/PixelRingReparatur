@@ -1,6 +1,6 @@
 # CMS Public Content Audit
 
-Generated: 2026-05-21T07:54:00.737Z
+Generated: 2026-05-24T21:51:12.013Z
 Database: postgresql://ep-soft-smoke-agt9wkjm-pooler.c-2.eu-central-1.aws.neon.tech/neondb
 Result: WARN
 
@@ -8,25 +8,16 @@ Result: WARN
 
 | Severity | Count |
 | --- | --- |
-| INFO | 13 |
-| WARN | 27 |
+| INFO | 14 |
+| WARN | 18 |
 
 ## Blocking And Warning Findings
 
 | Severity | Code | Context | Message |
 | --- | --- | --- | --- |
-| WARN | MISSING_PROBLEM_ARTICLE | no-light | no-light/tr is missing; article route may fall back to EN or 404. |
-| WARN | MISSING_PROBLEM_ARTICLE | no-light | no-light/pl is missing; article route may fall back to EN or 404. |
-| WARN | MISSING_PROBLEM_ARTICLE | no-light | no-light/ar is missing; article route may fall back to EN or 404. |
 | WARN | MISSING_PROBLEM_ARTICLE | flicking | flicking/tr is missing; article route may fall back to EN or 404. |
 | WARN | MISSING_PROBLEM_ARTICLE | flicking | flicking/pl is missing; article route may fall back to EN or 404. |
 | WARN | MISSING_PROBLEM_ARTICLE | flicking | flicking/ar is missing; article route may fall back to EN or 404. |
-| WARN | MISSING_PROBLEM_ARTICLE | uneven-light | uneven-light/tr is missing; article route may fall back to EN or 404. |
-| WARN | MISSING_PROBLEM_ARTICLE | uneven-light | uneven-light/pl is missing; article route may fall back to EN or 404. |
-| WARN | MISSING_PROBLEM_ARTICLE | uneven-light | uneven-light/ar is missing; article route may fall back to EN or 404. |
-| WARN | MISSING_PROBLEM_ARTICLE | letter-out | letter-out/tr is missing; article route may fall back to EN or 404. |
-| WARN | MISSING_PROBLEM_ARTICLE | letter-out | letter-out/pl is missing; article route may fall back to EN or 404. |
-| WARN | MISSING_PROBLEM_ARTICLE | letter-out | letter-out/ar is missing; article route may fall back to EN or 404. |
 | WARN | MISSING_PROBLEM_ARTICLE | rain-fail | rain-fail/tr is missing; article route may fall back to EN or 404. |
 | WARN | MISSING_PROBLEM_ARTICLE | rain-fail | rain-fail/pl is missing; article route may fall back to EN or 404. |
 | WARN | MISSING_PROBLEM_ARTICLE | rain-fail | rain-fail/ar is missing; article route may fall back to EN or 404. |
@@ -105,9 +96,9 @@ Result: WARN
 | no-light | de | werbeanlage-leuchtet-nicht | PUBLISHED | yes | yes | yes |
 | no-light | en | werbeanlage-leuchtet-nicht | PUBLISHED | yes | yes | yes |
 | no-light | ru | werbeanlage-leuchtet-nicht | PUBLISHED | yes | yes | yes |
-| no-light | tr | werbeanlage-leuchtet-nicht | MISSING | no | no | partial |
-| no-light | pl | werbeanlage-leuchtet-nicht | MISSING | no | no | partial |
-| no-light | ar | werbeanlage-leuchtet-nicht | MISSING | no | no | partial |
+| no-light | tr | werbeanlage-leuchtet-nicht | PUBLISHED | yes | yes | yes |
+| no-light | pl | werbeanlage-leuchtet-nicht | PUBLISHED | yes | yes | yes |
+| no-light | ar | werbeanlage-leuchtet-nicht | PUBLISHED | yes | yes | yes |
 | flicking | de | werbeanlage-flackert | PUBLISHED | yes | yes | yes |
 | flicking | en | werbeanlage-flackert | PUBLISHED | yes | yes | yes |
 | flicking | ru | werbeanlage-flackert | PUBLISHED | yes | yes | yes |
@@ -117,15 +108,15 @@ Result: WARN
 | uneven-light | de | led-leuchtet-ungleichmaessig | PUBLISHED | yes | yes | yes |
 | uneven-light | en | led-leuchtet-ungleichmaessig | PUBLISHED | yes | yes | yes |
 | uneven-light | ru | led-leuchtet-ungleichmaessig | PUBLISHED | yes | yes | yes |
-| uneven-light | tr | led-leuchtet-ungleichmaessig | MISSING | no | no | partial |
-| uneven-light | pl | led-leuchtet-ungleichmaessig | MISSING | no | no | partial |
-| uneven-light | ar | led-leuchtet-ungleichmaessig | MISSING | no | no | partial |
+| uneven-light | tr | led-leuchtet-ungleichmaessig | PUBLISHED | yes | yes | yes |
+| uneven-light | pl | led-leuchtet-ungleichmaessig | PUBLISHED | yes | yes | yes |
+| uneven-light | ar | led-leuchtet-ungleichmaessig | PUBLISHED | yes | yes | yes |
 | letter-out | de | buchstabe-leuchtet-nicht | PUBLISHED | yes | yes | yes |
 | letter-out | en | buchstabe-leuchtet-nicht | PUBLISHED | yes | yes | yes |
 | letter-out | ru | buchstabe-leuchtet-nicht | PUBLISHED | yes | yes | yes |
-| letter-out | tr | buchstabe-leuchtet-nicht | MISSING | no | no | partial |
-| letter-out | pl | buchstabe-leuchtet-nicht | MISSING | no | no | partial |
-| letter-out | ar | buchstabe-leuchtet-nicht | MISSING | no | no | partial |
+| letter-out | tr | buchstabe-leuchtet-nicht | PUBLISHED | yes | yes | yes |
+| letter-out | pl | buchstabe-leuchtet-nicht | PUBLISHED | yes | yes | yes |
+| letter-out | ar | buchstabe-leuchtet-nicht | PUBLISHED | yes | yes | yes |
 | rain-fail | de | werbeanlage-schaltet-nach-regen-ab | PUBLISHED | yes | yes | yes |
 | rain-fail | en | werbeanlage-schaltet-nach-regen-ab | PUBLISHED | yes | yes | yes |
 | rain-fail | ru | werbeanlage-schaltet-nach-regen-ab | PUBLISHED | yes | yes | yes |
