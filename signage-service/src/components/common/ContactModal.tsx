@@ -54,10 +54,10 @@ const ContactModal = ({ isOpen, onClose, onOpenChat }: ContactModalProps) => {
 
       {/* Modal Container: Two-Column Layout */}
       <div 
-        className={`relative w-full max-w-4xl h-auto max-h-[96vh] sm:h-[580px] bg-white/10 backdrop-blur-3xl border border-white/20 rounded-[32px] sm:rounded-[40px] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.25)] overflow-y-auto sm:overflow-hidden transition-all duration-500 ease-out transform flex flex-col sm:flex-row ${isOpen ? 'translate-y-0 scale-100' : 'translate-y-8 scale-95'}`}
+        className={`relative w-full max-w-4xl h-auto max-h-[96vh] sm:h-[638px] bg-white/10 backdrop-blur-3xl border border-white/20 rounded-[32px] sm:rounded-[40px] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.25)] overflow-y-auto sm:overflow-hidden transition-all duration-500 ease-out transform flex flex-col sm:flex-row ${isOpen ? 'translate-y-0 scale-100' : 'translate-y-8 scale-95'}`}
       >
         {/* Left Column: Sidebar */}
-        <div className="w-full sm:w-[320px] bg-[#F7F1E8]/30 backdrop-blur-xl border-b sm:border-b-0 sm:border-r border-black/5 p-4 sm:p-6 flex flex-col gap-4 sm:gap-6">
+        <div className="w-full sm:w-[320px] bg-[#F7F1E8]/30 backdrop-blur-xl border-b sm:border-b-0 sm:border-r border-black/5 p-4 sm:p-6 flex flex-col gap-4 sm:gap-6 rounded-t-[32px] rounded-b-none sm:rounded-l-[40px] sm:rounded-r-none">
           {/* Logo & Brand + Service Pill (Hidden on mobile) */}
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-3">
@@ -144,14 +144,14 @@ const ContactModal = ({ isOpen, onClose, onOpenChat }: ContactModalProps) => {
         </div>
 
         {/* Right Column: Form Area */}
-        <div className="flex-1 p-4 sm:p-8 bg-white/95 flex flex-col gap-3 sm:gap-4">
+        <div className="flex-1 p-4 sm:p-8 bg-white/95 flex flex-col gap-3 sm:gap-4 rounded-b-[32px] rounded-t-none sm:rounded-r-[40px] sm:rounded-l-none">
           <div className="flex flex-col gap-1">
             <h2 className="text-[22px] sm:text-[26px] font-bold text-[#0E1A2B] tracking-tight leading-none">
               {t('form_title')}
             </h2>
           </div>
 
-          <ContactForm />
+          <ContactForm dropdownPosition="bottom" />
         </div>
 
         {/* Close button */}

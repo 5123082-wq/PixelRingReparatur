@@ -8,9 +8,16 @@ import LocationPicker, { type SelectedLocation } from './LocationPicker';
 interface ContactFormProps {
   onSuccess?: (publicRequestNumber: string) => void;
   variant?: 'light' | 'dark';
+  layout?: 'single' | 'two-column';
+  dropdownPosition?: 'top' | 'bottom';
 }
 
-const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
+const ContactForm = ({
+  onSuccess,
+  variant = 'light',
+  layout = 'single',
+  dropdownPosition = 'bottom',
+}: ContactFormProps) => {
   const t = useTranslations('ContactModal');
   const locale = useLocale();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -191,94 +198,192 @@ const ContactForm = ({ onSuccess, variant = 'light' }: ContactFormProps) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col flex-1 gap-3 sm:gap-4 overflow-hidden"
+      className="flex flex-col flex-1 gap-3 sm:gap-4 overflow-visible"
     >
-      <div className="flex flex-col gap-3 sm:gap-4 overflow-y-auto pr-1 -mr-1 pb-4">
-        <div className="flex flex-col gap-1">
-          <label htmlFor={nameInputId} className="sr-only">
-            {t('field_name_company')}
-          </label>
-          <input
-            id={nameInputId}
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            autoComplete="name"
-            placeholder={t('field_name_company')}
-            className={`w-full px-5 sm:px-6 py-3 sm:py-3.5 border rounded-2xl outline-none focus:ring-1 transition-all duration-300 text-[14px] sm:text-[15px] ${
-              variant === 'dark'
-                ? 'bg-white/10 border-white/10 focus:border-[#B8643E] text-white placeholder-white/50 focus:ring-[#B8643E]/50 focus:bg-white/15'
-                : 'bg-[#F7F1E8]/60 border-[#E7DDD3] focus:border-[#B8643E] text-[#0E1A2B] placeholder-[#72665D]/40 focus:ring-[#B8643E]/30 focus:bg-white'
-            }`}
-          />
-        </div>
+      <div className="flex flex-col gap-3 sm:gap-4 pr-1 -mr-1 pb-4 overflow-visible">
+        {layout === 'two-column' ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1">
+                <label htmlFor={nameInputId} className="sr-only">
+                  {t('field_name_company')}
+                </label>
+                <input
+                  id={nameInputId}
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  autoComplete="name"
+                  placeholder={t('field_name_company')}
+                  className={`w-full px-5 sm:px-6 py-3 sm:py-3.5 border rounded-2xl outline-none focus:ring-1 transition-all duration-300 text-[14px] sm:text-[15px] ${
+                    variant === 'dark'
+                      ? 'bg-white/10 border-white/10 focus:border-[#B8643E] text-white placeholder-white/50 focus:ring-[#B8643E]/50 focus:bg-white/15'
+                      : 'bg-[#F7F1E8]/60 border-[#E7DDD3] focus:border-[#B8643E] text-[#0E1A2B] placeholder-[#72665D]/40 focus:ring-[#B8643E]/30 focus:bg-white'
+                  }`}
+                />
+              </div>
 
-        <div className="flex flex-col gap-1">
-          <label htmlFor={contactInputId} className="sr-only">
-            {t('field_contact')}
-          </label>
-          <input
-            id={contactInputId}
-            type="text"
-            required
-            value={contact}
-            onChange={(e) => setContact(e.target.value)}
-            autoComplete="off"
-            placeholder={t('field_contact')}
-            className={`w-full px-5 sm:px-6 py-3 sm:py-3.5 border rounded-2xl outline-none focus:ring-1 transition-all duration-300 text-[14px] sm:text-[15px] ${
-              variant === 'dark'
-                ? 'bg-white/10 border-white/10 focus:border-[#B8643E] text-white placeholder-white/50 focus:ring-[#B8643E]/50 focus:bg-white/15'
-                : 'bg-[#F7F1E8]/60 border-[#E7DDD3] focus:border-[#B8643E] text-[#0E1A2B] placeholder-[#72665D]/40 focus:ring-[#B8643E]/30 focus:bg-white'
-            }`}
-          />
-        </div>
+              <div className="flex flex-col gap-1">
+                <label htmlFor={contactInputId} className="sr-only">
+                  {t('field_contact')}
+                </label>
+                <input
+                  id={contactInputId}
+                  type="text"
+                  required
+                  value={contact}
+                  onChange={(e) => setContact(e.target.value)}
+                  autoComplete="off"
+                  placeholder={t('field_contact')}
+                  className={`w-full px-5 sm:px-6 py-3 sm:py-3.5 border rounded-2xl outline-none focus:ring-1 transition-all duration-300 text-[14px] sm:text-[15px] ${
+                    variant === 'dark'
+                      ? 'bg-white/10 border-white/10 focus:border-[#B8643E] text-white placeholder-white/50 focus:ring-[#B8643E]/50 focus:bg-white/15'
+                      : 'bg-[#F7F1E8]/60 border-[#E7DDD3] focus:border-[#B8643E] text-[#0E1A2B] placeholder-[#72665D]/40 focus:ring-[#B8643E]/30 focus:bg-white'
+                  }`}
+                />
+              </div>
+            </div>
 
-        <div className="flex flex-col gap-1">
-          <label htmlFor={issueTypeInputId} className="sr-only">
-            {t('field_issue_type') || 'Typ der Anfrage (optional)'}
-          </label>
-          <select
-            id={issueTypeInputId}
-            value={issueType}
-            onChange={(e) => setIssueType(e.target.value)}
-            className={`w-full px-5 sm:px-6 py-3 sm:py-3.5 border rounded-2xl outline-none focus:ring-1 transition-all duration-300 text-[14px] sm:text-[15px] appearance-none cursor-pointer ${
-              variant === 'dark'
-                ? 'bg-white/10 border-white/10 focus:border-[#B8643E] text-white focus:ring-[#B8643E]/50 focus:bg-white/15'
-                : 'bg-[#F7F1E8]/60 border-[#E7DDD3] focus:border-[#B8643E] text-[#0E1A2B] focus:ring-[#B8643E]/30 focus:bg-white'
-            }`}
-            style={{ 
-              backgroundImage: `url('data:image/svg+xml;utf8,<svg fill="none" class="${variant === 'dark' ? 'stroke-white' : 'stroke-black'}" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>')`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 1rem center',
-              backgroundSize: '1rem'
-            }}
-          >
-            <option value="" disabled className={variant === 'dark' ? 'text-black' : ''}>{t('field_issue_type') || 'Typ der Anfrage (optional)'}</option>
-            <option value="Repair" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_repair') || 'Reparatur'}</option>
-            <option value="Installation" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_installation') || 'Montage'}</option>
-            <option value="Maintenance" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_maintenance') || 'Wartung'}</option>
-          </select>
-        </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1">
+                <label htmlFor={issueTypeInputId} className="sr-only">
+                  {t('field_issue_type') || 'Typ der Anfrage (optional)'}
+                </label>
+                <select
+                  id={issueTypeInputId}
+                  value={issueType}
+                  onChange={(e) => setIssueType(e.target.value)}
+                  className={`w-full px-5 sm:px-6 py-3 sm:py-3.5 border rounded-2xl outline-none focus:ring-1 transition-all duration-300 text-[14px] sm:text-[15px] appearance-none cursor-pointer ${
+                    variant === 'dark'
+                      ? 'bg-white/10 border-white/10 focus:border-[#B8643E] text-white focus:ring-[#B8643E]/50 focus:bg-white/15'
+                      : 'bg-[#F7F1E8]/60 border-[#E7DDD3] focus:border-[#B8643E] text-[#0E1A2B] focus:ring-[#B8643E]/30 focus:bg-white'
+                  }`}
+                  style={{ 
+                    backgroundImage: `url('data:image/svg+xml;utf8,<svg fill="none" class="${variant === 'dark' ? 'stroke-white' : 'stroke-black'}" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>')`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'right 1rem center',
+                    backgroundSize: '1rem'
+                  }}
+                >
+                  <option value="" disabled className={variant === 'dark' ? 'text-black' : ''}>{t('field_issue_type') || 'Typ der Anfrage (optional)'}</option>
+                  <option value="Repair" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_repair') || 'Reparatur'}</option>
+                  <option value="Installation" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_installation') || 'Montage'}</option>
+                  <option value="Maintenance" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_maintenance') || 'Wartung'}</option>
+                </select>
+              </div>
 
-        <div className="flex flex-col gap-1 z-40 relative">
-          <label htmlFor={locationInputId} className="sr-only">
-            {t('field_location') || 'Adresse oder Ort (optional)'}
-          </label>
-          <LocationPicker
-            inputId={locationInputId}
-            ariaLabel={t('field_location') || 'Adresse oder Ort (optional)'}
-            value={location}
-            onChange={setLocation}
-            onLocationSelect={setSelectedLocation}
-            variant={variant}
-            placeholder={t('field_location') || 'Adresse oder Ort (optional)'}
-            className={`w-full px-5 sm:px-6 py-3 sm:py-3.5 border rounded-2xl outline-none focus:ring-1 transition-all duration-300 text-[14px] sm:text-[15px] ${
-              variant === 'dark'
-                ? 'bg-white/10 border-white/10 focus:border-[#B8643E] text-white placeholder-white/50 focus:ring-[#B8643E]/50 focus:bg-white/15'
-                : 'bg-[#F7F1E8]/60 border-[#E7DDD3] focus:border-[#B8643E] text-[#0E1A2B] placeholder-[#72665D]/40 focus:ring-[#B8643E]/30 focus:bg-white'
-            }`}
-          />
-        </div>
+              <div className="flex flex-col gap-1 z-40 relative">
+                <label htmlFor={locationInputId} className="sr-only">
+                  {t('field_location') || 'Adresse oder Ort (optional)'}
+                </label>
+                <LocationPicker
+                  inputId={locationInputId}
+                  ariaLabel={t('field_location') || 'Adresse oder Ort (optional)'}
+                  value={location}
+                  onChange={setLocation}
+                  onLocationSelect={setSelectedLocation}
+                  variant={variant}
+                  dropdownPosition={dropdownPosition}
+                  placeholder={t('field_location') || 'Adresse oder Ort (optional)'}
+                  className={`w-full px-5 sm:px-6 py-3 sm:py-3.5 border rounded-2xl outline-none focus:ring-1 transition-all duration-300 text-[14px] sm:text-[15px] ${
+                    variant === 'dark'
+                      ? 'bg-white/10 border-white/10 focus:border-[#B8643E] text-white placeholder-white/50 focus:ring-[#B8643E]/50 focus:bg-white/15'
+                      : 'bg-[#F7F1E8]/60 border-[#E7DDD3] focus:border-[#B8643E] text-[#0E1A2B] placeholder-[#72665D]/40 focus:ring-[#B8643E]/30 focus:bg-white'
+                  }`}
+                />
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex flex-col gap-1">
+              <label htmlFor={nameInputId} className="sr-only">
+                {t('field_name_company')}
+              </label>
+              <input
+                id={nameInputId}
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoComplete="name"
+                placeholder={t('field_name_company')}
+                className={`w-full px-5 sm:px-6 py-3 sm:py-3.5 border rounded-2xl outline-none focus:ring-1 transition-all duration-300 text-[14px] sm:text-[15px] ${
+                  variant === 'dark'
+                    ? 'bg-white/10 border-white/10 focus:border-[#B8643E] text-white placeholder-white/50 focus:ring-[#B8643E]/50 focus:bg-white/15'
+                    : 'bg-[#F7F1E8]/60 border-[#E7DDD3] focus:border-[#B8643E] text-[#0E1A2B] placeholder-[#72665D]/40 focus:ring-[#B8643E]/30 focus:bg-white'
+                }`}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label htmlFor={contactInputId} className="sr-only">
+                {t('field_contact')}
+              </label>
+              <input
+                id={contactInputId}
+                type="text"
+                required
+                value={contact}
+                onChange={(e) => setContact(e.target.value)}
+                autoComplete="off"
+                placeholder={t('field_contact')}
+                className={`w-full px-5 sm:px-6 py-3 sm:py-3.5 border rounded-2xl outline-none focus:ring-1 transition-all duration-300 text-[14px] sm:text-[15px] ${
+                  variant === 'dark'
+                    ? 'bg-white/10 border-white/10 focus:border-[#B8643E] text-white placeholder-white/50 focus:ring-[#B8643E]/50 focus:bg-white/15'
+                    : 'bg-[#F7F1E8]/60 border-[#E7DDD3] focus:border-[#B8643E] text-[#0E1A2B] placeholder-[#72665D]/40 focus:ring-[#B8643E]/30 focus:bg-white'
+                }`}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label htmlFor={issueTypeInputId} className="sr-only">
+                {t('field_issue_type') || 'Typ der Anfrage (optional)'}
+              </label>
+              <select
+                id={issueTypeInputId}
+                value={issueType}
+                onChange={(e) => setIssueType(e.target.value)}
+                className={`w-full px-5 sm:px-6 py-3 sm:py-3.5 border rounded-2xl outline-none focus:ring-1 transition-all duration-300 text-[14px] sm:text-[15px] appearance-none cursor-pointer ${
+                  variant === 'dark'
+                    ? 'bg-white/10 border-white/10 focus:border-[#B8643E] text-white focus:ring-[#B8643E]/50 focus:bg-white/15'
+                    : 'bg-[#F7F1E8]/60 border-[#E7DDD3] focus:border-[#B8643E] text-[#0E1A2B] focus:ring-[#B8643E]/30 focus:bg-white'
+                }`}
+                style={{ 
+                  backgroundImage: `url('data:image/svg+xml;utf8,<svg fill="none" class="${variant === 'dark' ? 'stroke-white' : 'stroke-black'}" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>')`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'right 1rem center',
+                  backgroundSize: '1rem'
+                }}
+              >
+                <option value="" disabled className={variant === 'dark' ? 'text-black' : ''}>{t('field_issue_type') || 'Typ der Anfrage (optional)'}</option>
+                <option value="Repair" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_repair') || 'Reparatur'}</option>
+                <option value="Installation" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_installation') || 'Montage'}</option>
+                <option value="Maintenance" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_maintenance') || 'Wartung'}</option>
+              </select>
+            </div>
+
+            <div className="flex flex-col gap-1 z-40 relative">
+              <label htmlFor={locationInputId} className="sr-only">
+                {t('field_location') || 'Adresse oder Ort (optional)'}
+              </label>
+              <LocationPicker
+                inputId={locationInputId}
+                ariaLabel={t('field_location') || 'Adresse oder Ort (optional)'}
+                value={location}
+                onChange={setLocation}
+                onLocationSelect={setSelectedLocation}
+                variant={variant}
+                dropdownPosition={dropdownPosition}
+                placeholder={t('field_location') || 'Adresse oder Ort (optional)'}
+                className={`w-full px-5 sm:px-6 py-3 sm:py-3.5 border rounded-2xl outline-none focus:ring-1 transition-all duration-300 text-[14px] sm:text-[15px] ${
+                  variant === 'dark'
+                    ? 'bg-white/10 border-white/10 focus:border-[#B8643E] text-white placeholder-white/50 focus:ring-[#B8643E]/50 focus:bg-white/15'
+                    : 'bg-[#F7F1E8]/60 border-[#E7DDD3] focus:border-[#B8643E] text-[#0E1A2B] placeholder-[#72665D]/40 focus:ring-[#B8643E]/30 focus:bg-white'
+                }`}
+              />
+            </div>
+          </>
+        )}
 
         <div className="flex flex-col gap-1">
           <label htmlFor={messageInputId} className="sr-only">

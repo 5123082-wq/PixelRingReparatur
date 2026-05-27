@@ -45,6 +45,17 @@ The page targets B2B clients: single-location businesses, chains, agencies, and 
 - [x] Generated Hero Image and saved to `public/images/business/hero.png`.
 - [x] Implemented `src/app/[locale]/business/page.tsx` with all content for 6 locales and responsive layout.
 
+- **2026-05-26 (Current Sprint)**:
+  - **Done**:
+    - Audited the hybrid static/CMS localization flow for `/[locale]/business`.
+    - Fixed `BUSINESS_CONTENT` in `signage-service/scripts/migrate-cms-content.mjs` so the CMS migration now carries all 6 locales (`de`, `en`, `ru`, `tr`, `pl`, `ar`) instead of falling back to German for Turkish, Polish, and Arabic rows.
+    - Synchronized migration copy with the current static fallback content from `src/app/[locale]/business/page.tsx`, including CTA and diacritic-safe TR/PL text.
+    - Completed the missing visible-language pass for the Business page mockup and showcase labels: corrected German English leakage (`SECTORS`, `NEXT STEP`, `Brand Health`), fixed Turkish/Polish uppercase diacritics (`SONRAKİ ADIM`, `NASTĘPNY KROK`), and removed a German word leak (`Instandhaltung`) from the English `BusinessShowcase` copy.
+  - **In Progress**: None.
+  - **Next Action**: Owner visually verifies `/business` locales in the browser/CMS, especially `tr`, `pl`, and `ar`.
+  - **Blockers/Risks**: The migration updated the currently configured database; other environments still need the same migration command if they use separate CMS databases.
+  - **Updated Documents**: `docs/02_public_website/page_plan_business.md`, `PROGRESS.md`, `signage-service/scripts/migrate-cms-content.mjs`.
+
 - **2026-05-20 (Current Sprint)**: 
   - **Done**: 
     - Redesigned target groups section with a custom interactive `BusinessShowcase` client component. Supported 7 sectors, 6 locales (DE, EN, RU, TR, PL, AR).

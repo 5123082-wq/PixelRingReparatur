@@ -111,9 +111,9 @@
     "form_desc": "Заполните простую форму на сайте",
     "messenger_title": "Написать напрямую",
     "messenger_desc": "Связь через WhatsApp / Telegram",
-    "email_title": "Написать на e-mail",
+    "email_title": "Написать на e‑mail",
     "email_desc": "Отправьте короткое описание или фото на почту.",
-    "email_cta": "Открыть e-mail",
+    "email_cta": "Открыть e‑mail",
     "methods": [
       {
         "id": "text",

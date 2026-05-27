@@ -338,7 +338,7 @@ const SECTORS_LOCALES: Record<Locale, Record<SectorKey, SectorData>> = {
       id: 'dealers',
       title: 'Car Dealerships & Auto Centers',
       tag: 'Showrooms / Workshops',
-      description: 'Instandhaltung of tall freestanding pylons, flagpole banners, and directional signage across large outdoor forecourts.',
+      description: 'Maintenance of tall freestanding pylons, flagpole banners, and directional signage across large outdoor forecourts.',
       assetsTitle: 'Advertising Assets',
       assets: ['Freestanding pylons (up to 8m)', 'Flagpole banner systems', 'Wayfinding signage', 'Facade brand logos'],
       problemsTitle: 'Typical Issues',

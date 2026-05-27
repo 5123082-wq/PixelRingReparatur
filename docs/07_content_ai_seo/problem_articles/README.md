@@ -20,6 +20,15 @@
 
 ## Progress Log
 
+### 2026-05-27
+
+- Current sprint/block: `folie-loest-sich` / film lifting article markdown intake.
+- Done: created `пленка на витрине отклеивается – 06/`, saved the owner-provided RU draft as `problem_article_folie-loest-sich_ru.md`, aligned the draft metadata with the actual folder path, completed a light RU editorial pass focused on the modal self-repair block, safe-check guidance, and public article readability, added DE, EN, TR, PL, and AR review drafts with localized SEO/CMS blocks, small card, modal, full article, and internal AI notes, replaced the DE and EN drafts with fuller owner-provided versions adapted to the local `folie-loest-sich` draft format, added repeatable seed `db:seed:article-peeling-film`, and published `peeling-film` into CMS/database for DE, EN, RU, TR, PL, and AR with canonical route `/[locale]/probleme-loesungen/folie-loest-sich` and structured `selfRepairTips`.
+- In progress: owner visual review of the six live article pages and modal self-repair block.
+- Next action: owner reviews the live article pages; future work can continue with the remaining missing TR/PL/AR problem articles reported by the CMS audit.
+- Blockers/risks: CMS audit WARN items remain for unrelated missing TR/PL/AR articles (`flicking`, `faded-film`, `shaky-sign`, `urgent-repair`); `peeling-film` itself is published and SEO-ready in all six locales.
+- Updated documents/files: `пленка на витрине отклеивается – 06/problem_article_folie-loest-sich_ru.md`, `problem_article_folie-loest-sich_de.md`, `problem_article_folie-loest-sich_en.md`, `problem_article_folie-loest-sich_tr.md`, `problem_article_folie-loest-sich_pl.md`, `problem_article_folie-loest-sich_ar.md`, `signage-service/scripts/seed-article-peeling-film-all-locales.mjs`, `signage-service/package.json`, CMS public audit outputs, `README.md`, root `PROGRESS.md`; source drafts used for DE/EN adaptation: `/Users/macbookaleks/Downloads/pixelring_folie_article_translations_de_en/problem_article_folie_loest_sich_de.md`, `/Users/macbookaleks/Downloads/pixelring_folie_article_translations_de_en/problem_article_window_film_peeling_en.md`.
+
 ### 2026-05-25
 
 - Current sprint/block: `rain-fail` / `werbeanlage-schaltet-nach-regen-ab` CMS/database synchronization.

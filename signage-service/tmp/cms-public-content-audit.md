@@ -1,6 +1,6 @@
 # CMS Public Content Audit
 
-Generated: 2026-05-25T14:01:03.381Z
+Generated: 2026-05-27T06:47:11.641Z
 Database: postgresql://ep-soft-smoke-agt9wkjm-pooler.c-2.eu-central-1.aws.neon.tech/neondb
 Result: WARN
 
@@ -8,49 +8,16 @@ Result: WARN
 
 | Severity | Count |
 | --- | --- |
-| INFO | 15 |
-| WARN | 45 |
+| INFO | 21 |
+| WARN | 12 |
 
 ## Blocking And Warning Findings
 
 | Severity | Code | Context | Message |
 | --- | --- | --- | --- |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/de is missing expected block cardList:problems. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/de is missing expected block cardList:impact. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/de is missing expected block textSection:urgent. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/de is missing expected block faqList:faq. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/de is missing expected block cta:final. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/en is missing expected block cardList:problems. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/en is missing expected block cardList:impact. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/en is missing expected block textSection:urgent. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/en is missing expected block faqList:faq. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/en is missing expected block cta:final. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/ru is missing expected block cardList:problems. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/ru is missing expected block cardList:impact. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/ru is missing expected block textSection:urgent. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/ru is missing expected block faqList:faq. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/ru is missing expected block cta:final. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/tr is missing expected block cardList:problems. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/tr is missing expected block cardList:impact. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/tr is missing expected block textSection:urgent. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/tr is missing expected block faqList:faq. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/tr is missing expected block cta:final. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/pl is missing expected block cardList:problems. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/pl is missing expected block cardList:impact. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/pl is missing expected block textSection:urgent. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/pl is missing expected block faqList:faq. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/pl is missing expected block cta:final. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/ar is missing expected block cardList:problems. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/ar is missing expected block cardList:impact. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/ar is missing expected block textSection:urgent. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/ar is missing expected block faqList:faq. |
-| WARN | MISSING_EXPECTED_BLOCK | probleme-loesungen | probleme-loesungen/ar is missing expected block cta:final. |
 | WARN | MISSING_PROBLEM_ARTICLE | flicking | flicking/tr is missing; article route may fall back to EN or 404. |
 | WARN | MISSING_PROBLEM_ARTICLE | flicking | flicking/pl is missing; article route may fall back to EN or 404. |
 | WARN | MISSING_PROBLEM_ARTICLE | flicking | flicking/ar is missing; article route may fall back to EN or 404. |
-| WARN | MISSING_PROBLEM_ARTICLE | peeling-film | peeling-film/tr is missing; article route may fall back to EN or 404. |
-| WARN | MISSING_PROBLEM_ARTICLE | peeling-film | peeling-film/pl is missing; article route may fall back to EN or 404. |
-| WARN | MISSING_PROBLEM_ARTICLE | peeling-film | peeling-film/ar is missing; article route may fall back to EN or 404. |
 | WARN | MISSING_PROBLEM_ARTICLE | faded-film | faded-film/tr is missing; article route may fall back to EN or 404. |
 | WARN | MISSING_PROBLEM_ARTICLE | faded-film | faded-film/pl is missing; article route may fall back to EN or 404. |
 | WARN | MISSING_PROBLEM_ARTICLE | faded-film | faded-film/ar is missing; article route may fall back to EN or 404. |
@@ -85,24 +52,24 @@ Result: WARN
 | status | ar | /ar/status | CMS + fallback | PUBLISHED |  |  |
 | impressum | de | /de/impressum | CMS + fallback | PUBLISHED |  |  |
 | privacy | de | /de/privacy | CMS + fallback | PUBLISHED |  |  |
-| leistungen | de | /de/leistungen | CMS + fallback | PUBLISHED |  |  |
-| leistungen | en | /en/leistungen | CMS + fallback | PUBLISHED |  |  |
-| leistungen | ru | /ru/leistungen | CMS + fallback | PUBLISHED |  |  |
-| leistungen | tr | /tr/leistungen | CMS + fallback | PUBLISHED |  |  |
-| leistungen | pl | /pl/leistungen | CMS + fallback | PUBLISHED |  |  |
-| leistungen | ar | /ar/leistungen | CMS + fallback | PUBLISHED |  |  |
+| leistungen | de | /de/leistungen | CMS + fallback | PUBLISHED |  | process.items |
+| leistungen | en | /en/leistungen | CMS + fallback | PUBLISHED |  | process.items |
+| leistungen | ru | /ru/leistungen | CMS + fallback | PUBLISHED |  | process.items |
+| leistungen | tr | /tr/leistungen | CMS + fallback | PUBLISHED |  | process.items |
+| leistungen | pl | /pl/leistungen | CMS + fallback | PUBLISHED |  | process.items |
+| leistungen | ar | /ar/leistungen | CMS + fallback | PUBLISHED |  | process.items |
 | business | de | /de/business | CMS + fallback | PUBLISHED |  |  |
 | business | en | /en/business | CMS + fallback | PUBLISHED |  |  |
 | business | ru | /ru/business | CMS + fallback | PUBLISHED |  |  |
 | business | tr | /tr/business | CMS + fallback | PUBLISHED |  |  |
 | business | pl | /pl/business | CMS + fallback | PUBLISHED |  |  |
 | business | ar | /ar/business | CMS + fallback | PUBLISHED |  |  |
-| probleme-loesungen | de | /de/probleme-loesungen | CMS + fallback | PUBLISHED | cardList:problems, cardList:impact, textSection:urgent, faqList:faq, cta:final |  |
-| probleme-loesungen | en | /en/probleme-loesungen | CMS + fallback | PUBLISHED | cardList:problems, cardList:impact, textSection:urgent, faqList:faq, cta:final |  |
-| probleme-loesungen | ru | /ru/probleme-loesungen | CMS + fallback | PUBLISHED | cardList:problems, cardList:impact, textSection:urgent, faqList:faq, cta:final |  |
-| probleme-loesungen | tr | /tr/probleme-loesungen | CMS + fallback | PUBLISHED | cardList:problems, cardList:impact, textSection:urgent, faqList:faq, cta:final |  |
-| probleme-loesungen | pl | /pl/probleme-loesungen | CMS + fallback | PUBLISHED | cardList:problems, cardList:impact, textSection:urgent, faqList:faq, cta:final |  |
-| probleme-loesungen | ar | /ar/probleme-loesungen | CMS + fallback | PUBLISHED | cardList:problems, cardList:impact, textSection:urgent, faqList:faq, cta:final |  |
+| probleme-loesungen | de | /de/probleme-loesungen | CMS + fallback | PUBLISHED |  |  |
+| probleme-loesungen | en | /en/probleme-loesungen | CMS + fallback | PUBLISHED |  |  |
+| probleme-loesungen | ru | /ru/probleme-loesungen | CMS + fallback | PUBLISHED |  |  |
+| probleme-loesungen | tr | /tr/probleme-loesungen | CMS + fallback | PUBLISHED |  |  |
+| probleme-loesungen | pl | /pl/probleme-loesungen | CMS + fallback | PUBLISHED |  |  |
+| probleme-loesungen | ar | /ar/probleme-loesungen | CMS + fallback | PUBLISHED |  |  |
 | about | de | /de/ueber-uns | CMS + fallback | PUBLISHED |  |  |
 | about | en | /en/ueber-uns | CMS + fallback | PUBLISHED |  |  |
 | about | ru | /ru/ueber-uns | CMS + fallback | PUBLISHED |  |  |
@@ -153,9 +120,9 @@ Result: WARN
 | peeling-film | de | folie-loest-sich | PUBLISHED | yes | yes | yes |
 | peeling-film | en | folie-loest-sich | PUBLISHED | yes | yes | yes |
 | peeling-film | ru | folie-loest-sich | PUBLISHED | yes | yes | yes |
-| peeling-film | tr | folie-loest-sich | MISSING | no | no | partial |
-| peeling-film | pl | folie-loest-sich | MISSING | no | no | partial |
-| peeling-film | ar | folie-loest-sich | MISSING | no | no | partial |
+| peeling-film | tr | folie-loest-sich | PUBLISHED | yes | yes | yes |
+| peeling-film | pl | folie-loest-sich | PUBLISHED | yes | yes | yes |
+| peeling-film | ar | folie-loest-sich | PUBLISHED | yes | yes | yes |
 | faded-film | de | folie-ist-ausgeblichen | PUBLISHED | yes | yes | yes |
 | faded-film | en | folie-ist-ausgeblichen | PUBLISHED | yes | yes | yes |
 | faded-film | ru | folie-ist-ausgeblichen | PUBLISHED | yes | yes | yes |

@@ -151,23 +151,23 @@ const PROBLEME_LOESUNGEN_CONTENT = {
     heroCta: 'Описать проблему',
   },
   tr: {
-    title: 'Sorunlar ve Cozumler',
-    seoTitle: 'Tabela Sorunlari? Tipik Hasarlar ve Cozumler | PixelRing',
+    title: 'Sorunlar ve Çözümler',
+    seoTitle: 'Tabela Sorunları? Tipik Hasarlar ve Çözümler | PixelRing',
     seoDescription:
-      'Tabela, LED, isikli kutu, folyo ve vitrin markalama sorunlarini anlayin ve PixelRing talebi baslatin.',
-    heroTitle: 'Tabela sorunlarini tanimlayin ve dogru sonraki adimi secin',
+      'Tabela, LED, ışıklı kutu, folyo ve vitrin markalama sorunlarını anlayın ve PixelRing talebi başlatın.',
+    heroTitle: 'Tabela sorunlarını tanımlayın ve doğru sonraki adımı seçin',
     heroDescription:
-      'Sorun elektrik, LED, folyo, montaj veya hava kosulu hasari mi emin degil misiniz? Gorunen sorunu anlatin veya fotograf gonderin.',
+      'Sorun elektrik, LED, folyo, montaj veya hava koşulu hasarı mı emin değil misiniz? Görünen sorunu anlatın veya fotoğraf gönderin.',
     heroCta: 'Sorunu anlat',
   },
   pl: {
-    title: 'Problemy i rozwiazania',
+    title: 'Problemy i rozwiązania',
     seoTitle: 'Problemy z reklama? Typowe uszkodzenia i rozwiazania | PixelRing',
     seoDescription:
-      'Typowe problemy szyldow, LED, kasetonow, folii i brandingu witryn oraz szybka sciezka zgloszenia do PixelRing.',
-    heroTitle: 'Rozpoznaj typowe problemy z reklama i wybierz wlasciwy kolejny krok',
+      'Typowe problemy szyldów, LED, kasetonów, folii i brandingu witryn oraz szybka ścieżka zgłoszenia do PixelRing.',
+    heroTitle: 'Rozpoznaj typowe problemy z reklamą i wybierz właściwy kolejny krok',
     heroDescription:
-      'Nie wiesz, czy chodzi o elektryke, LED, folie, mocowanie czy skutki pogody? Opisz widoczny problem albo wyslij zdjecie.',
+      'Nie wiesz, czy chodzi o elektrykę, LED, folię, mocowanie czy skutki pogody? Opisz widoczny problem albo wyślij zdjęcie.',
     heroCta: 'Opisz problem',
   },
   ar: {

@@ -14,6 +14,7 @@ interface LocationPickerProps {
   maxLength?: number;
   className?: string;
   variant?: 'light' | 'dark';
+  dropdownPosition?: 'top' | 'bottom';
 }
 
 interface PhotonFeature {
@@ -68,6 +69,7 @@ const LocationPicker = ({
   maxLength,
   className,
   variant = 'light',
+  dropdownPosition = 'bottom',
 }: LocationPickerProps) => {
   const [query, setQuery] = useState(value);
   const [suggestions, setSuggestions] = useState<PhotonFeature[]>([]);
@@ -143,7 +145,7 @@ const LocationPicker = ({
     if (variant === 'dark') {
       return 'bg-[#1A2E47] border border-white/10 text-white shadow-xl';
     }
-    return 'bg-white border text-[#0E1A2B] shadow-lg';
+    return 'bg-white border border-[#E7DDD3] text-[#0E1A2B] shadow-lg';
   };
   
   const getItemClass = () => {
@@ -180,7 +182,9 @@ const LocationPicker = ({
       />
       
       {isOpen && suggestions.length > 0 && (
-        <div className={`absolute top-full left-0 right-0 mt-1 z-50 rounded-xl overflow-hidden max-h-[250px] overflow-y-auto ${getDropdownClass()}`}>
+        <div className={`absolute left-0 right-[20%] z-50 rounded-xl overflow-hidden max-h-[250px] overflow-y-auto no-scrollbar ${getDropdownClass()} ${
+          dropdownPosition === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'
+        }`}>
           {suggestions.map((feature, i) => {
              const p = feature.properties;
              const primary = p.name || p.street;
