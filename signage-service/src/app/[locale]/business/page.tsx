@@ -335,10 +335,10 @@ const CONTENT: Record<Locale, BusinessContent> = {
 
 const MOCKUP_CONTENT: Record<Locale, BusinessMockupContent> = {
   de: {
-    targetEyebrow: 'SECTORS',
+    targetEyebrow: 'BRANCHEN',
     auditEyebrow: 'Service-Abo',
     platformEyebrow: 'Kundenportal & Reports',
-    finalEyebrow: 'NEXT STEP',
+    finalEyebrow: 'NÄCHSTER SCHRITT',
     auditImageAlt: 'Audit & Standort-Wartung',
     auditOverviewLabel: 'Standortübersicht',
     auditChecksLabel: 'Checks',
@@ -347,7 +347,7 @@ const MOCKUP_CONTENT: Record<Locale, BusinessMockupContent> = {
     auditStats: { assets: 'Anlagen geprüft', print: 'Print-Updates', risks: 'Risiken markiert' },
     portalLiveLabel: 'Live Übersicht',
     portalKpis: [
-      { label: 'Brand Health', value: '86%', sub: '+12% seit Audit', color: 'text-[#35b47a]' },
+      { label: 'Markenstatus', value: '86%', sub: '+12% seit Audit', color: 'text-[#35b47a]' },
       { label: 'Offene Tasks', value: '7', sub: '3 priorisiert', color: 'text-[#d99a35]' },
       { label: 'Standorte', value: '24', sub: 'alle dokumentiert', color: 'text-[#526174]' },
     ],
@@ -416,7 +416,7 @@ const MOCKUP_CONTENT: Record<Locale, BusinessMockupContent> = {
     targetEyebrow: 'SEKTÖRLER',
     auditEyebrow: 'Servis paketi',
     platformEyebrow: 'Müşteri portalı ve raporlar',
-    finalEyebrow: 'SONRAKI ADIM',
+    finalEyebrow: 'SONRAKİ ADIM',
     auditImageAlt: 'Denetim ve lokasyon bakımı',
     auditOverviewLabel: 'Lokasyon özeti',
     auditChecksLabel: 'kontrol',
@@ -442,7 +442,7 @@ const MOCKUP_CONTENT: Record<Locale, BusinessMockupContent> = {
     targetEyebrow: 'SEKTORY',
     auditEyebrow: 'Pakiet serwisowy',
     platformEyebrow: 'Portal klienta i raporty',
-    finalEyebrow: 'NASTEPNY KROK',
+    finalEyebrow: 'NASTĘPNY KROK',
     auditImageAlt: 'Audyt i obsługa lokalizacji',
     auditOverviewLabel: 'Przegląd lokalizacji',
     auditChecksLabel: 'kontroli',

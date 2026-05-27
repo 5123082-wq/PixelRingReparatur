@@ -8,9 +8,21 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 
 Latest checkpoint:
 
-- Date: 2026-05-25
-- Current stage: `rain-fail` / `werbeanlage-schaltet-nach-regen-ab` is published in CMS/database for DE, EN, RU, TR, PL, and AR from the approved Markdown set. The repeatable seed `db:seed:article-rain-fail` and all-locale `selfRepairTips` JSON are in place; production build and HTTP route checks passed.
-- Next action: Owner visually reviews the six live routes, especially the modal `selfRepairTips` block and DE/EN improved copy.
+- Date: 2026-05-27
+- Current stage: Published `peeling-film` / `folie-loest-sich` into CMS/database for all six MVP locales from the Markdown draft set. Added repeatable seed `db:seed:article-peeling-film`, preserved internal slug `peeling-film` with public route `folie-loest-sich`, populated structured `selfRepairTips`, verified CMS audit for this article, production build, and HTTP route checks for DE/EN/RU/TR/PL/AR.
+- Next action: Owner visually reviews the six live article pages and modal self-repair block at `/[locale]/probleme-loesungen/folie-loest-sich`.
+
+- Date: 2026-05-26
+- Current stage: `/business` CMS migration i18n fallback fixed, visible language QA completed, and `node scripts/migrate-cms-content.mjs` applied successfully for all six locales (`de`, `en`, `ru`, `tr`, `pl`, `ar`). Visible mockup labels were corrected for German, Turkish, and Polish diacritics/language consistency, and an English `BusinessShowcase` German-word leak was removed.
+- Next action: Owner visually verifies `/business` locales in the browser/CMS, especially `tr`, `pl`, and `ar`.
+
+- Date: 2026-05-26
+- Current stage: Reverted the `/leistungen` page bottom contact block (`LeistungenFooterCTA`) to match the clean B2B gradient CTA banner from the `/business` page. Rendered text with the terracotta vertical indicator line on the left and a single button (`Anfrage starten`) that triggers the contact modal on the right. Verified clean compilation and build.
+- Next action: Owner reviews the reverted B2B contact block on the `leistungen` page at http://localhost:3000/de/leistungen.
+
+- Date: 2026-05-26
+- Current stage: Footer CTA and contact form redesigned: 12-column grid, Live-Chat as full-width button, WhatsApp/Telegram as horizontal icon-only buttons, and two-column form inputs. Fixed double scrollbars and LocationPicker dropdown clipping globally by making the form container overflow-visible by default. Refined ContactModal height to be 10% taller (638px), allowing address suggestions to open downwards naturally (best usability) while remaining completely inside the modal boundaries. Fixed border-radius corner clipping/bleeding on sidebar and form panels. Hid LocationPicker suggestions scrollbar for perfect geometry and clean border lines. Production build compiles successfully.
+- Next action: Owner visually reviews the updated modal layout and autocomplete dropdown behavior in the browser at http://localhost:3000/de.
 
 
 Active tracks:
@@ -45,6 +57,11 @@ Read deep when:
 - **Engineering/Ops**: Open maintenance note recorded for future Postgres SSL connection-string cleanup before the next `pg`/Prisma/migration-tooling dependency upgrade.
 
 ## Last Updated
+
+- Date: 2026-05-26
+- Updated by: Antigravity
+- **Current Stage**: Redesigned the footer CTA and contact form on the public homepage: changed to a 12-column responsive layout, set Live-Chat as a full-width button, converted WhatsApp/Telegram to horizontal icon-only buttons (preventing text truncation in narrow layouts), and implemented a responsive two-column field layout for the contact form. Fixed double scrollbars and LocationPicker dropdown clipping globally by setting the form container to overflow-visible by default, removing nested scrollbars and allowing suggestions to float downwards cleanly. Verified build.
+- **Next Action**: Owner visually reviews the updated footer CTA, modal layout, and autocomplete dropdown behavior in the browser at http://localhost:3000/de.
 
 - Date: 2026-05-25
 - Updated by: Codex

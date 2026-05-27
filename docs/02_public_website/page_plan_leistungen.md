@@ -349,6 +349,15 @@ Implementation sequence:
 
 ## Progress Log
 
+### 2026-05-26 — Leistungen Footer CTA Redesign
+
+- Current sprint/block: Public Website, Leistungen page final CTA refinement
+- Done: Reverted the `/leistungen` page bottom contact block (`LeistungenFooterCTA`) to match the clean B2B gradient CTA banner from the `/business` page. Rendered text with the terracotta vertical indicator line on the left and a single button (`Anfrage starten`) that triggers the contact modal on the right. Verified clean compilation and build.
+- In progress: Owner visual review of the matched contact block.
+- Next action: None, task completed.
+- Blockers/risks: None.
+- Updated documents: `PROGRESS.md`, `docs/02_public_website/page_plan_leistungen.md`, `signage-service/src/components/sections/LeistungenFooterCTA.tsx`.
+
 ### 2026-05-21 — Wartung & Serviceverträge B2B Bridge
 
 - Current sprint/block: Public Website, Leistungen maintenance/service-contract section refinement

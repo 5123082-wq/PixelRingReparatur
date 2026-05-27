@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-25T14:01:03.381Z",
+  "generatedAt": "2026-05-27T06:47:11.641Z",
   "databaseTarget": "postgresql://ep-soft-smoke-agt9wkjm-pooler.c-2.eu-central-1.aws.neon.tech/neondb",
   "baseUrl": null,
   "locales": [
@@ -423,7 +423,9 @@
         "cardList:process"
       ],
       "missingBlocks": [],
-      "missingFields": [],
+      "missingFields": [
+        "process.items"
+      ],
       "fallback": "large static CONTENT object in page.tsx"
     },
     {
@@ -442,7 +444,9 @@
         "cardList:process"
       ],
       "missingBlocks": [],
-      "missingFields": [],
+      "missingFields": [
+        "process.items"
+      ],
       "fallback": "large static CONTENT object in page.tsx"
     },
     {
@@ -461,7 +465,9 @@
         "cardList:process"
       ],
       "missingBlocks": [],
-      "missingFields": [],
+      "missingFields": [
+        "process.items"
+      ],
       "fallback": "large static CONTENT object in page.tsx"
     },
     {
@@ -480,7 +486,9 @@
         "cardList:process"
       ],
       "missingBlocks": [],
-      "missingFields": [],
+      "missingFields": [
+        "process.items"
+      ],
       "fallback": "large static CONTENT object in page.tsx"
     },
     {
@@ -499,7 +507,9 @@
         "cardList:process"
       ],
       "missingBlocks": [],
-      "missingFields": [],
+      "missingFields": [
+        "process.items"
+      ],
       "fallback": "large static CONTENT object in page.tsx"
     },
     {
@@ -518,7 +528,9 @@
         "cardList:process"
       ],
       "missingBlocks": [],
-      "missingFields": [],
+      "missingFields": [
+        "process.items"
+      ],
       "fallback": "large static CONTENT object in page.tsx"
     },
     {
@@ -643,15 +655,14 @@
       "status": "PUBLISHED",
       "title": "Probleme & Lösungen",
       "blocks": [
-        "hero:problemeLoesungenHero"
-      ],
-      "missingBlocks": [
+        "hero:hero",
         "cardList:problems",
         "cardList:impact",
         "textSection:urgent",
         "faqList:faq",
         "cta:final"
       ],
+      "missingBlocks": [],
       "missingFields": [],
       "fallback": "large static CONTENT object in page.tsx"
     },
@@ -661,17 +672,16 @@
       "route": "/en/probleme-loesungen",
       "routeUsesCms": true,
       "status": "PUBLISHED",
-      "title": "Problems & Solutions",
+      "title": "Probleme & Lösungen",
       "blocks": [
-        "hero:problemeLoesungenHero"
-      ],
-      "missingBlocks": [
+        "hero:hero",
         "cardList:problems",
         "cardList:impact",
         "textSection:urgent",
         "faqList:faq",
         "cta:final"
       ],
+      "missingBlocks": [],
       "missingFields": [],
       "fallback": "large static CONTENT object in page.tsx"
     },
@@ -681,17 +691,16 @@
       "route": "/ru/probleme-loesungen",
       "routeUsesCms": true,
       "status": "PUBLISHED",
-      "title": "Проблемы и решения",
+      "title": "Probleme & Lösungen",
       "blocks": [
-        "hero:problemeLoesungenHero"
-      ],
-      "missingBlocks": [
+        "hero:hero",
         "cardList:problems",
         "cardList:impact",
         "textSection:urgent",
         "faqList:faq",
         "cta:final"
       ],
+      "missingBlocks": [],
       "missingFields": [],
       "fallback": "large static CONTENT object in page.tsx"
     },
@@ -701,17 +710,16 @@
       "route": "/tr/probleme-loesungen",
       "routeUsesCms": true,
       "status": "PUBLISHED",
-      "title": "Sorunlar ve Cozumler",
+      "title": "Probleme & Lösungen",
       "blocks": [
-        "hero:problemeLoesungenHero"
-      ],
-      "missingBlocks": [
+        "hero:hero",
         "cardList:problems",
         "cardList:impact",
         "textSection:urgent",
         "faqList:faq",
         "cta:final"
       ],
+      "missingBlocks": [],
       "missingFields": [],
       "fallback": "large static CONTENT object in page.tsx"
     },
@@ -721,17 +729,16 @@
       "route": "/pl/probleme-loesungen",
       "routeUsesCms": true,
       "status": "PUBLISHED",
-      "title": "Problemy i rozwiazania",
+      "title": "Probleme & Lösungen",
       "blocks": [
-        "hero:problemeLoesungenHero"
-      ],
-      "missingBlocks": [
+        "hero:hero",
         "cardList:problems",
         "cardList:impact",
         "textSection:urgent",
         "faqList:faq",
         "cta:final"
       ],
+      "missingBlocks": [],
       "missingFields": [],
       "fallback": "large static CONTENT object in page.tsx"
     },
@@ -741,17 +748,16 @@
       "route": "/ar/probleme-loesungen",
       "routeUsesCms": true,
       "status": "PUBLISHED",
-      "title": "المشكلات والحلول",
+      "title": "Probleme & Lösungen",
       "blocks": [
-        "hero:problemeLoesungenHero"
-      ],
-      "missingBlocks": [
+        "hero:hero",
         "cardList:problems",
         "cardList:impact",
         "textSection:urgent",
         "faqList:faq",
         "cta:final"
       ],
+      "missingBlocks": [],
       "missingFields": [],
       "fallback": "large static CONTENT object in page.tsx"
     },
@@ -1609,17 +1615,17 @@
       "locale": "de",
       "route": "/de/probleme-loesungen/folie-loest-sich",
       "status": "PUBLISHED",
-      "title": "Folie an der Schaufensterfläche hat sich gelöst",
+      "title": "Folie am Schaufenster löst sich",
       "content": true,
       "shortAnswer": true,
       "seoTitle": true,
       "seoDescription": true,
       "structuredLists": {
-        "causes": 3,
-        "safeChecks": 3,
-        "urgentWarnings": 2,
-        "serviceProcess": 4,
-        "workScopeFactors": 3
+        "causes": 5,
+        "safeChecks": 4,
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 5
       }
     },
     {
@@ -1628,7 +1634,7 @@
       "locale": "en",
       "route": "/en/probleme-loesungen/folie-loest-sich",
       "status": "PUBLISHED",
-      "title": "Applied film lifting at the edges — adhesion failures on glass and composite panels",
+      "title": "Film on a storefront window is peeling off",
       "content": true,
       "shortAnswer": true,
       "seoTitle": true,
@@ -1636,9 +1642,9 @@
       "structuredLists": {
         "causes": 5,
         "safeChecks": 4,
-        "urgentWarnings": 2,
-        "serviceProcess": 4,
-        "workScopeFactors": 3
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 5
       }
     },
     {
@@ -1647,17 +1653,17 @@
       "locale": "ru",
       "route": "/ru/probleme-loesungen/folie-loest-sich",
       "status": "PUBLISHED",
-      "title": "Плёнка на витрине отклеилась",
+      "title": "Плёнка на витрине отклеивается",
       "content": true,
       "shortAnswer": true,
       "seoTitle": true,
       "seoDescription": true,
       "structuredLists": {
-        "causes": 3,
-        "safeChecks": 3,
-        "urgentWarnings": 2,
-        "serviceProcess": 4,
-        "workScopeFactors": 3
+        "causes": 5,
+        "safeChecks": 4,
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 5
       }
     },
     {
@@ -1665,18 +1671,18 @@
       "publicSlug": "folie-loest-sich",
       "locale": "tr",
       "route": "/tr/probleme-loesungen/folie-loest-sich",
-      "status": "MISSING",
-      "title": "",
-      "content": false,
-      "shortAnswer": false,
-      "seoTitle": false,
-      "seoDescription": false,
+      "status": "PUBLISHED",
+      "title": "Vitrin folyosu kalkıyor",
+      "content": true,
+      "shortAnswer": true,
+      "seoTitle": true,
+      "seoDescription": true,
       "structuredLists": {
-        "causes": 0,
-        "safeChecks": 0,
-        "urgentWarnings": 0,
-        "serviceProcess": 0,
-        "workScopeFactors": 0
+        "causes": 5,
+        "safeChecks": 4,
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 5
       }
     },
     {
@@ -1684,18 +1690,18 @@
       "publicSlug": "folie-loest-sich",
       "locale": "pl",
       "route": "/pl/probleme-loesungen/folie-loest-sich",
-      "status": "MISSING",
-      "title": "",
-      "content": false,
-      "shortAnswer": false,
-      "seoTitle": false,
-      "seoDescription": false,
+      "status": "PUBLISHED",
+      "title": "Folia na witrynie odkleja się",
+      "content": true,
+      "shortAnswer": true,
+      "seoTitle": true,
+      "seoDescription": true,
       "structuredLists": {
-        "causes": 0,
-        "safeChecks": 0,
-        "urgentWarnings": 0,
-        "serviceProcess": 0,
-        "workScopeFactors": 0
+        "causes": 5,
+        "safeChecks": 4,
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 5
       }
     },
     {
@@ -1703,18 +1709,18 @@
       "publicSlug": "folie-loest-sich",
       "locale": "ar",
       "route": "/ar/probleme-loesungen/folie-loest-sich",
-      "status": "MISSING",
-      "title": "",
-      "content": false,
-      "shortAnswer": false,
-      "seoTitle": false,
-      "seoDescription": false,
+      "status": "PUBLISHED",
+      "title": "فيلم الإعلان على الواجهة الزجاجية ينفصل",
+      "content": true,
+      "shortAnswer": true,
+      "seoTitle": true,
+      "seoDescription": true,
       "structuredLists": {
-        "causes": 0,
-        "safeChecks": 0,
-        "urgentWarnings": 0,
-        "serviceProcess": 0,
-        "workScopeFactors": 0
+        "causes": 5,
+        "safeChecks": 4,
+        "urgentWarnings": 1,
+        "serviceProcess": 1,
+        "workScopeFactors": 5
       }
     },
     {
@@ -2132,330 +2138,330 @@
       "pageKey": "leistungen",
       "locale": "de",
       "fieldPath": "0.items.0.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/leistungen/hero-repair.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/leistungen/hero-repair.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/leistungen/hero-repair.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "de",
       "fieldPath": "0.items.1.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/leistungen/hero-led-natural.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/leistungen/hero-led-natural.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/leistungen/hero-led-natural.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "de",
       "fieldPath": "0.items.2.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/leistungen/hero-maintenance.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/leistungen/hero-maintenance.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/leistungen/hero-maintenance.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "de",
       "fieldPath": "0.items.3.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1777292935566-541388cf2c5c-image_1x.png",
-      "cmsMedia": true,
+      "value": "/images/leistungen/hero-branding.png",
+      "cmsMedia": false,
       "fallbackUrl": null,
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "en",
       "fieldPath": "0.items.0.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/leistungen/hero-repair.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/leistungen/hero-repair.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/leistungen/hero-repair.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "en",
       "fieldPath": "0.items.1.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/leistungen/hero-led-natural.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/leistungen/hero-led-natural.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/leistungen/hero-led-natural.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "en",
       "fieldPath": "0.items.2.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/leistungen/hero-maintenance.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/leistungen/hero-maintenance.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/leistungen/hero-maintenance.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "en",
       "fieldPath": "0.items.3.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1777292935566-541388cf2c5c-image_1x.png",
-      "cmsMedia": true,
+      "value": "/images/leistungen/hero-branding.png",
+      "cmsMedia": false,
       "fallbackUrl": null,
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "ru",
       "fieldPath": "0.items.0.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/leistungen/hero-repair.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/leistungen/hero-repair.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/leistungen/hero-repair.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "ru",
       "fieldPath": "0.items.1.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/leistungen/hero-led-natural.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/leistungen/hero-led-natural.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/leistungen/hero-led-natural.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "ru",
       "fieldPath": "0.items.2.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/leistungen/hero-maintenance.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/leistungen/hero-maintenance.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/leistungen/hero-maintenance.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "ru",
       "fieldPath": "0.items.3.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1777292935566-541388cf2c5c-image_1x.png",
-      "cmsMedia": true,
+      "value": "/images/leistungen/hero-branding.png",
+      "cmsMedia": false,
       "fallbackUrl": null,
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "tr",
       "fieldPath": "0.items.0.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/leistungen/hero-repair.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/leistungen/hero-repair.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/leistungen/hero-repair.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "tr",
       "fieldPath": "0.items.1.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/leistungen/hero-led-natural.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/leistungen/hero-led-natural.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/leistungen/hero-led-natural.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "tr",
       "fieldPath": "0.items.2.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/leistungen/hero-maintenance.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/leistungen/hero-maintenance.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/leistungen/hero-maintenance.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "tr",
       "fieldPath": "0.items.3.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1777292935566-541388cf2c5c-image_1x.png",
-      "cmsMedia": true,
+      "value": "/images/leistungen/hero-branding.png",
+      "cmsMedia": false,
       "fallbackUrl": null,
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "pl",
       "fieldPath": "0.items.0.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/leistungen/hero-repair.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/leistungen/hero-repair.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/leistungen/hero-repair.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "pl",
       "fieldPath": "0.items.1.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/leistungen/hero-led-natural.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/leistungen/hero-led-natural.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/leistungen/hero-led-natural.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "pl",
       "fieldPath": "0.items.2.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/leistungen/hero-maintenance.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/leistungen/hero-maintenance.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/leistungen/hero-maintenance.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "pl",
       "fieldPath": "0.items.3.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1777292935566-541388cf2c5c-image_1x.png",
-      "cmsMedia": true,
+      "value": "/images/leistungen/hero-branding.png",
+      "cmsMedia": false,
       "fallbackUrl": null,
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "ar",
       "fieldPath": "0.items.0.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/leistungen/hero-repair.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/leistungen/hero-repair.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/leistungen/hero-repair.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "ar",
       "fieldPath": "0.items.1.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/leistungen/hero-led-natural.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/leistungen/hero-led-natural.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/leistungen/hero-led-natural.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "ar",
       "fieldPath": "0.items.2.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/leistungen/hero-maintenance.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/leistungen/hero-maintenance.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/leistungen/hero-maintenance.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "leistungen",
       "locale": "ar",
       "fieldPath": "0.items.3.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/1777292935566-541388cf2c5c-image_1x.png",
-      "cmsMedia": true,
+      "value": "/images/leistungen/hero-branding.png",
+      "cmsMedia": false,
       "fallbackUrl": null,
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "business",
       "locale": "de",
       "fieldPath": "0.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/business/hero.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/business/hero.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/business/hero.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "business",
       "locale": "en",
       "fieldPath": "0.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/business/hero.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/business/hero.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/business/hero.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "business",
       "locale": "ru",
       "fieldPath": "0.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/business/hero.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/business/hero.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/business/hero.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "business",
       "locale": "tr",
       "fieldPath": "0.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/business/hero.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/business/hero.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/business/hero.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "business",
       "locale": "pl",
       "fieldPath": "0.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/business/hero.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/business/hero.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/business/hero.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
       "pageKey": "business",
       "locale": "ar",
       "fieldPath": "0.image",
-      "value": "https://egoz7zhol7af74ci.public.blob.vercel-storage.com/cms-media/backfill/images/business/hero.png",
-      "cmsMedia": true,
-      "fallbackUrl": "/images/business/hero.png",
-      "storageProvider": "VERCEL_BLOB",
-      "status": "CMS_MEDIA_URL_REGISTERED"
+      "value": "/images/business/hero.png",
+      "cmsMedia": false,
+      "fallbackUrl": null,
+      "storageProvider": null,
+      "status": "LOCAL_FILE_OK"
     },
     {
       "sourceType": "CmsPage",
@@ -4843,334 +4849,58 @@
       "seoDescription": false
     },
     {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/de is missing expected block cardList:problems.",
-      "pageKey": "probleme-loesungen",
+      "severity": "INFO",
+      "code": "MISSING_EXPECTED_FIELD",
+      "message": "leistungen/de block process is missing field items.",
+      "pageKey": "leistungen",
       "locale": "de",
-      "expectedType": "cardList",
-      "expectedKeys": [
-        "problems"
-      ]
+      "blockKey": "process",
+      "field": "items"
     },
     {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/de is missing expected block cardList:impact.",
-      "pageKey": "probleme-loesungen",
-      "locale": "de",
-      "expectedType": "cardList",
-      "expectedKeys": [
-        "impact"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/de is missing expected block textSection:urgent.",
-      "pageKey": "probleme-loesungen",
-      "locale": "de",
-      "expectedType": "textSection",
-      "expectedKeys": [
-        "urgent"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/de is missing expected block faqList:faq.",
-      "pageKey": "probleme-loesungen",
-      "locale": "de",
-      "expectedType": "faqList",
-      "expectedKeys": [
-        "faq"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/de is missing expected block cta:final.",
-      "pageKey": "probleme-loesungen",
-      "locale": "de",
-      "expectedType": "cta",
-      "expectedKeys": [
-        "final"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/en is missing expected block cardList:problems.",
-      "pageKey": "probleme-loesungen",
+      "severity": "INFO",
+      "code": "MISSING_EXPECTED_FIELD",
+      "message": "leistungen/en block process is missing field items.",
+      "pageKey": "leistungen",
       "locale": "en",
-      "expectedType": "cardList",
-      "expectedKeys": [
-        "problems"
-      ]
+      "blockKey": "process",
+      "field": "items"
     },
     {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/en is missing expected block cardList:impact.",
-      "pageKey": "probleme-loesungen",
-      "locale": "en",
-      "expectedType": "cardList",
-      "expectedKeys": [
-        "impact"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/en is missing expected block textSection:urgent.",
-      "pageKey": "probleme-loesungen",
-      "locale": "en",
-      "expectedType": "textSection",
-      "expectedKeys": [
-        "urgent"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/en is missing expected block faqList:faq.",
-      "pageKey": "probleme-loesungen",
-      "locale": "en",
-      "expectedType": "faqList",
-      "expectedKeys": [
-        "faq"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/en is missing expected block cta:final.",
-      "pageKey": "probleme-loesungen",
-      "locale": "en",
-      "expectedType": "cta",
-      "expectedKeys": [
-        "final"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/ru is missing expected block cardList:problems.",
-      "pageKey": "probleme-loesungen",
+      "severity": "INFO",
+      "code": "MISSING_EXPECTED_FIELD",
+      "message": "leistungen/ru block process is missing field items.",
+      "pageKey": "leistungen",
       "locale": "ru",
-      "expectedType": "cardList",
-      "expectedKeys": [
-        "problems"
-      ]
+      "blockKey": "process",
+      "field": "items"
     },
     {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/ru is missing expected block cardList:impact.",
-      "pageKey": "probleme-loesungen",
-      "locale": "ru",
-      "expectedType": "cardList",
-      "expectedKeys": [
-        "impact"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/ru is missing expected block textSection:urgent.",
-      "pageKey": "probleme-loesungen",
-      "locale": "ru",
-      "expectedType": "textSection",
-      "expectedKeys": [
-        "urgent"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/ru is missing expected block faqList:faq.",
-      "pageKey": "probleme-loesungen",
-      "locale": "ru",
-      "expectedType": "faqList",
-      "expectedKeys": [
-        "faq"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/ru is missing expected block cta:final.",
-      "pageKey": "probleme-loesungen",
-      "locale": "ru",
-      "expectedType": "cta",
-      "expectedKeys": [
-        "final"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/tr is missing expected block cardList:problems.",
-      "pageKey": "probleme-loesungen",
+      "severity": "INFO",
+      "code": "MISSING_EXPECTED_FIELD",
+      "message": "leistungen/tr block process is missing field items.",
+      "pageKey": "leistungen",
       "locale": "tr",
-      "expectedType": "cardList",
-      "expectedKeys": [
-        "problems"
-      ]
+      "blockKey": "process",
+      "field": "items"
     },
     {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/tr is missing expected block cardList:impact.",
-      "pageKey": "probleme-loesungen",
-      "locale": "tr",
-      "expectedType": "cardList",
-      "expectedKeys": [
-        "impact"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/tr is missing expected block textSection:urgent.",
-      "pageKey": "probleme-loesungen",
-      "locale": "tr",
-      "expectedType": "textSection",
-      "expectedKeys": [
-        "urgent"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/tr is missing expected block faqList:faq.",
-      "pageKey": "probleme-loesungen",
-      "locale": "tr",
-      "expectedType": "faqList",
-      "expectedKeys": [
-        "faq"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/tr is missing expected block cta:final.",
-      "pageKey": "probleme-loesungen",
-      "locale": "tr",
-      "expectedType": "cta",
-      "expectedKeys": [
-        "final"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/pl is missing expected block cardList:problems.",
-      "pageKey": "probleme-loesungen",
+      "severity": "INFO",
+      "code": "MISSING_EXPECTED_FIELD",
+      "message": "leistungen/pl block process is missing field items.",
+      "pageKey": "leistungen",
       "locale": "pl",
-      "expectedType": "cardList",
-      "expectedKeys": [
-        "problems"
-      ]
+      "blockKey": "process",
+      "field": "items"
     },
     {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/pl is missing expected block cardList:impact.",
-      "pageKey": "probleme-loesungen",
-      "locale": "pl",
-      "expectedType": "cardList",
-      "expectedKeys": [
-        "impact"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/pl is missing expected block textSection:urgent.",
-      "pageKey": "probleme-loesungen",
-      "locale": "pl",
-      "expectedType": "textSection",
-      "expectedKeys": [
-        "urgent"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/pl is missing expected block faqList:faq.",
-      "pageKey": "probleme-loesungen",
-      "locale": "pl",
-      "expectedType": "faqList",
-      "expectedKeys": [
-        "faq"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/pl is missing expected block cta:final.",
-      "pageKey": "probleme-loesungen",
-      "locale": "pl",
-      "expectedType": "cta",
-      "expectedKeys": [
-        "final"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/ar is missing expected block cardList:problems.",
-      "pageKey": "probleme-loesungen",
+      "severity": "INFO",
+      "code": "MISSING_EXPECTED_FIELD",
+      "message": "leistungen/ar block process is missing field items.",
+      "pageKey": "leistungen",
       "locale": "ar",
-      "expectedType": "cardList",
-      "expectedKeys": [
-        "problems"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/ar is missing expected block cardList:impact.",
-      "pageKey": "probleme-loesungen",
-      "locale": "ar",
-      "expectedType": "cardList",
-      "expectedKeys": [
-        "impact"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/ar is missing expected block textSection:urgent.",
-      "pageKey": "probleme-loesungen",
-      "locale": "ar",
-      "expectedType": "textSection",
-      "expectedKeys": [
-        "urgent"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/ar is missing expected block faqList:faq.",
-      "pageKey": "probleme-loesungen",
-      "locale": "ar",
-      "expectedType": "faqList",
-      "expectedKeys": [
-        "faq"
-      ]
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_EXPECTED_BLOCK",
-      "message": "probleme-loesungen/ar is missing expected block cta:final.",
-      "pageKey": "probleme-loesungen",
-      "locale": "ar",
-      "expectedType": "cta",
-      "expectedKeys": [
-        "final"
-      ]
+      "blockKey": "process",
+      "field": "items"
     },
     {
       "severity": "INFO",
@@ -5247,33 +4977,6 @@
       "publicSlug": "werbeanlage-flackert",
       "locale": "ar",
       "route": "/ar/probleme-loesungen/werbeanlage-flackert"
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_PROBLEM_ARTICLE",
-      "message": "peeling-film/tr is missing; article route may fall back to EN or 404.",
-      "cmsSlug": "peeling-film",
-      "publicSlug": "folie-loest-sich",
-      "locale": "tr",
-      "route": "/tr/probleme-loesungen/folie-loest-sich"
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_PROBLEM_ARTICLE",
-      "message": "peeling-film/pl is missing; article route may fall back to EN or 404.",
-      "cmsSlug": "peeling-film",
-      "publicSlug": "folie-loest-sich",
-      "locale": "pl",
-      "route": "/pl/probleme-loesungen/folie-loest-sich"
-    },
-    {
-      "severity": "WARN",
-      "code": "MISSING_PROBLEM_ARTICLE",
-      "message": "peeling-film/ar is missing; article route may fall back to EN or 404.",
-      "cmsSlug": "peeling-film",
-      "publicSlug": "folie-loest-sich",
-      "locale": "ar",
-      "route": "/ar/probleme-loesungen/folie-loest-sich"
     },
     {
       "severity": "WARN",
@@ -5360,14 +5063,14 @@
   "summary": {
     "result": "WARN",
     "countBySeverity": {
-      "INFO": 15,
-      "WARN": 45
+      "INFO": 21,
+      "WARN": 12
     },
     "countByCode": {
       "CMS_PAGE_SEO_INCOMPLETE": 8,
-      "MISSING_EXPECTED_BLOCK": 30,
+      "MISSING_EXPECTED_FIELD": 6,
       "UNKNOWN_CMS_PAGE_KEY": 7,
-      "MISSING_PROBLEM_ARTICLE": 15
+      "MISSING_PROBLEM_ARTICLE": 12
     }
   }
 }

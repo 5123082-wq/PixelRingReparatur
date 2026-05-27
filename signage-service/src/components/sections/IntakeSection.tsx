@@ -24,6 +24,19 @@ const IntakeSection = ({ content }: { content?: IntakeSectionContent | null }) =
   const [modalOpen, setModalOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [discountInfoOpen, setDiscountInfoOpen] = useState(false);
+  const cardClassName =
+    'group grid min-h-[244px] grid-rows-[48px_minmax(64px,auto)_minmax(72px,1fr)_auto] rounded-[22px] border border-[#E7DDD3] bg-[#FAF7F2] p-5 text-start shadow-sm shadow-[#0E1A2B]/5 transition-all duration-300 hover:border-[#B8643E]/45 hover:bg-white hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]';
+  const cardIconClassName =
+    'flex h-10 w-10 items-center justify-center rounded-2xl bg-[#EED8C8] text-[#B8643E] transition-colors group-hover:bg-[#B8643E] group-hover:text-white';
+  const staticCardClassName =
+    'grid min-h-[244px] grid-rows-[48px_minmax(64px,auto)_minmax(72px,1fr)_auto] rounded-[22px] border border-[#E7DDD3] bg-[#FAF7F2] p-5 text-start shadow-sm shadow-[#0E1A2B]/5 transition-all duration-300';
+  const staticCardIconClassName =
+    'flex h-10 w-10 items-center justify-center rounded-2xl bg-[#EED8C8] text-[#B8643E]';
+  const staticCardTitleClassName =
+    'self-start text-[20px] font-black leading-[1.18] tracking-tight text-[#0E1A2B]';
+  const cardTitleClassName =
+    'self-start text-[20px] font-black leading-[1.18] tracking-tight text-[#0E1A2B] transition-colors group-hover:text-[#B8643E]';
+  const cardBodyClassName = 'mt-3 text-[14px] leading-relaxed text-[#72665D]';
 
   const closeDiscountInfoIfFocusLeaves = (event: React.FocusEvent<HTMLDivElement>) => {
     const nextTarget = event.relatedTarget;
@@ -38,7 +51,7 @@ const IntakeSection = ({ content }: { content?: IntakeSectionContent | null }) =
         {`
           @keyframes intake-discount-badge-pulse {
             0%, 100% { scale: 1; opacity: 1; }
-            50% { scale: 1.087; opacity: 0.96; }
+            50% { scale: 1.035; opacity: 0.96; }
           }
         `}
       </style>
@@ -59,7 +72,7 @@ const IntakeSection = ({ content }: { content?: IntakeSectionContent | null }) =
               <button
                 type="button"
                 onClick={() => setChatOpen(true)}
-                className="group flex min-h-[184px] w-full flex-col justify-between rounded-[22px] border border-[#163052]/15 bg-[#0E1A2B] p-5 text-start text-white shadow-lg shadow-[#0E1A2B]/10 transition-all duration-300 hover:border-[#B8643E]/50 hover:shadow-xl hover:shadow-[#0E1A2B]/14 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]"
+                className="group grid min-h-[244px] w-full grid-rows-[48px_minmax(64px,auto)_minmax(72px,1fr)_auto] rounded-[22px] border border-[#163052]/15 bg-[#0E1A2B] p-5 text-start text-white shadow-lg shadow-[#0E1A2B]/10 transition-all duration-300 hover:border-[#B8643E]/50 hover:shadow-xl hover:shadow-[#0E1A2B]/14 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]"
                 style={{
                   backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.06), transparent 42%)',
                 }}
@@ -71,17 +84,15 @@ const IntakeSection = ({ content }: { content?: IntakeSectionContent | null }) =
                   </span>
                 </div>
 
-                <div className="mt-4">
-                  <h3 className="flex items-center gap-2 text-[24px] font-black leading-tight tracking-tight text-white md:text-[26px] lg:text-[24px]">
+                <h3 className="flex items-start gap-2 self-start text-[20px] font-black leading-[1.18] tracking-tight text-white">
                     <svg className="h-5 w-5 shrink-0 text-[#F0A47F] md:h-6 md:w-6 lg:h-5 lg:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
                     {t('chat_title')}
-                  </h3>
-                  <p className="mt-2 max-w-md text-[14px] leading-relaxed text-white/68 lg:text-[13px]">
-                    {t('chat_desc')}
-                  </p>
-                </div>
+                </h3>
+                <p className="mt-3 max-w-md text-[14px] leading-relaxed text-white/68 lg:text-[13px]">
+                  {t('chat_desc')}
+                </p>
 
                 <div className="mt-3 flex items-center justify-end gap-3">
                   <span className="inline-flex h-10 min-w-16 shrink-0 items-center justify-center rounded-full bg-[#B8643E] px-5 text-white transition-transform group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5">
@@ -134,21 +145,19 @@ const IntakeSection = ({ content }: { content?: IntakeSectionContent | null }) =
             <button
               type="button"
               onClick={() => setModalOpen(true)}
-              className="group flex min-h-[184px] flex-col justify-between rounded-[22px] border border-[#E7DDD3] bg-[#FAF7F2] p-5 text-start shadow-sm shadow-[#0E1A2B]/5 transition-all duration-300 hover:border-[#B8643E]/45 hover:bg-white hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]"
+              className={cardClassName}
             >
-              <div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#EED8C8] text-[#B8643E] transition-colors group-hover:bg-[#B8643E] group-hover:text-white">
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                </div>
-                <h3 className="mt-4 text-[20px] font-black leading-tight tracking-tight text-[#0E1A2B] transition-colors group-hover:text-[#B8643E]">
-                  {t('form_title')}
-                </h3>
-                <p className="mt-1.5 text-[14px] leading-relaxed text-[#72665D]">
-                  {t('form_desc')}
-                </p>
+              <div className={cardIconClassName}>
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
               </div>
+              <h3 className={cardTitleClassName}>
+                {t('form_title')}
+              </h3>
+              <p className={cardBodyClassName}>
+                {t('form_desc')}
+              </p>
 
               <span className="mt-4 inline-flex items-center gap-1 text-[13px] font-bold text-[#B8643E]">
                 {t('form_title')}
@@ -158,20 +167,18 @@ const IntakeSection = ({ content }: { content?: IntakeSectionContent | null }) =
               </span>
             </button>
 
-            <div className="flex min-h-[184px] flex-col justify-between rounded-[22px] border border-[#E7DDD3] bg-[#FAF7F2] p-5 text-start shadow-sm shadow-[#0E1A2B]/5">
-              <div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#EED8C8] text-[#B8643E]">
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                  </svg>
-                </div>
-                <h3 className="mt-4 text-[20px] font-black leading-tight tracking-tight text-[#0E1A2B]">
-                  {t('messenger_title')}
-                </h3>
-                <p className="mt-1.5 text-[14px] leading-relaxed text-[#72665D]">
-                  {t('messenger_desc')}
-                </p>
+            <div className={staticCardClassName}>
+              <div className={staticCardIconClassName}>
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
               </div>
+              <h3 className={staticCardTitleClassName}>
+                {t('messenger_title')}
+              </h3>
+              <p className={cardBodyClassName}>
+                {t('messenger_desc')}
+              </p>
 
               <div className="mt-4 grid grid-cols-2 gap-2">
                 <a
@@ -201,21 +208,19 @@ const IntakeSection = ({ content }: { content?: IntakeSectionContent | null }) =
 
             <a
               href={`mailto:${SITE_CONFIG.company.email}`}
-              className="group flex min-h-[184px] flex-col justify-between rounded-[22px] border border-[#E7DDD3] bg-[#FAF7F2] p-5 text-start shadow-sm shadow-[#0E1A2B]/5 transition-all duration-300 hover:border-[#B8643E]/45 hover:bg-white hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]"
+              className={cardClassName}
             >
-              <div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#EED8C8] text-[#B8643E] transition-colors group-hover:bg-[#B8643E] group-hover:text-white">
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-18 8.5A2.5 2.5 0 005.5 19h13a2.5 2.5 0 002.5-2.5v-9A2.5 2.5 0 0018.5 5h-13A2.5 2.5 0 003 7.5v9z" />
-                  </svg>
-                </div>
-                <h3 className="mt-4 text-[20px] font-black leading-tight tracking-tight text-[#0E1A2B] transition-colors group-hover:text-[#B8643E]">
-                  {t('email_title')}
-                </h3>
-                <p className="mt-1.5 text-[14px] leading-relaxed text-[#72665D]">
-                  {t('email_desc')}
-                </p>
+              <div className={cardIconClassName}>
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-18 8.5A2.5 2.5 0 005.5 19h13a2.5 2.5 0 002.5-2.5v-9A2.5 2.5 0 0018.5 5h-13A2.5 2.5 0 003 7.5v9z" />
+                </svg>
               </div>
+              <h3 className={cardTitleClassName}>
+                {t('email_title')}
+              </h3>
+              <p className={cardBodyClassName}>
+                {t('email_desc')}
+              </p>
 
               <span className="mt-4 inline-flex items-center gap-1 text-[13px] font-bold text-[#B8643E]">
                 {t('email_cta')}

@@ -111,9 +111,9 @@
     "form_desc": "Füllen Sie ein einfaches Formular aus",
     "messenger_title": "Direkt schreiben",
     "messenger_desc": "Kontakt über WhatsApp / Telegram",
-    "email_title": "Per E-Mail senden",
+    "email_title": "Per E‑Mail senden",
     "email_desc": "Schreiben Sie uns mit kurzer Beschreibung oder Foto.",
-    "email_cta": "E-Mail öffnen",
+    "email_cta": "E‑Mail öffnen",
     "methods": [
       {
         "id": "text",
