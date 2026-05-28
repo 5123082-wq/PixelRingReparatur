@@ -4,6 +4,7 @@ import { Link } from '@/i18n/routing';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
 import CmsImage from '@/components/common/CmsImage';
+import SectionEyebrow from '@/components/common/SectionEyebrow';
 import LeistungenHero from '@/components/leistungen/LeistungenHero';
 import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestButton';
 import LeistungenFooterCTA from '@/components/sections/LeistungenFooterCTA';
@@ -54,7 +55,9 @@ type ServiceShowcaseCard = {
   title: string;
   description: string;
   image: string;
+  eyebrow?: string;
   cta: string;
+  href?: string;
   details: { label: string; value: string }[];
 };
 
@@ -157,7 +160,9 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Professionelle Instandsetzung von Werbeanlagen, Leuchtwerbung und Außenwerbung. Wir erhalten bestehende Systeme durch gezielte Reparatur, Pflege und visuelle Wiederherstellung.',
         image: '/images/about/service_deep_1.png',
-        cta: 'Reparatur anfragen',
+        eyebrow: 'Werbeanlagen-Reparatur',
+        cta: 'Mehr zur Reparatur',
+        href: '/leistungen/werbeanlagen-reparatur',
         details: [
           { label: 'Konstruktion', value: 'Rahmen, Unterkonstruktionen und Befestigungspunkte' },
           { label: 'Pflege', value: 'Reinigung, Wartung und optische Instandsetzung' },
@@ -394,7 +399,9 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Professional repair of signage, illuminated advertising and outdoor advertising systems. We preserve existing installations through targeted repair, care and visual restoration.',
         image: '/images/about/service_deep_1.png',
-        cta: 'Request repair',
+        eyebrow: 'Sign repair',
+        cta: 'Repair details',
+        href: '/leistungen/werbeanlagen-reparatur',
         details: [
           { label: 'Structure', value: 'Frames, substructures and fixing points' },
           { label: 'Care', value: 'Cleaning, maintenance and visual restoration' },
@@ -565,13 +572,15 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         intent: 'konstruktion-befestigung',
         title: 'Ремонт и обслуживание наружной рекламы',
         description:
-          'Профессиональное восстановление вывесок, световой рекламы и наружных рекламных конструкций. Мы сохраняем существующие системы через точечный ремонт, уход и визуальное восстановление.',
+          'Профессиональное восстановление вывесок, световой рекламы и наружных рекламных конструкций',
         image: '/images/about/service_deep_1.png',
-        cta: 'Запросить ремонт',
+        eyebrow: 'Ремонт вывесок',
+        cta: 'Подробнее о ремонте',
+        href: '/leistungen/werbeanlagen-reparatur',
         details: [
-          { label: 'Конструкция', value: 'Рамы, подконструкции и точки крепления' },
-          { label: 'Уход', value: 'Очистка, обслуживание и визуальное восстановление' },
-          { label: 'Цель', value: 'Разумно сохранить существующие установки' },
+          { label: 'Что ремонтируем', value: 'Вывески, световые короба, объемные буквы и наружные рекламные конструкции' },
+          { label: 'Что проверяем', value: 'Крепления, корпус, подсветку, проводку, пленки и видимые повреждения' },
+          { label: 'Цель', value: 'Восстановить работу и внешний вид без лишней замены всей конструкции' },
         ],
       },
       {
@@ -581,11 +590,12 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Модернизация и сервис световых вывесок, LED-модулей, блоков питания, контроллеров и неона. Старые системы проверяются и технически разумно обновляются.',
         image: '/images/about/service_deep_2.png',
+        eyebrow: 'LED-сервис',
         cta: 'Запросить LED-сервис',
         details: [
-          { label: 'Техника', value: 'LED-модули, блоки питания, контроллеры и неон' },
-          { label: 'Проверка', value: 'Питание, проводка и типовые причины отказа' },
-          { label: 'Результат', value: 'Более стабильная подсветка и проще обслуживание' },
+          { label: 'Что модернизируем', value: 'LED-модули, блоки питания, контроллеры, неон и световые короба' },
+          { label: 'Что проверяем', value: 'Питание, проводку, яркость, влагу и причины неравномерной подсветки' },
+          { label: 'Цель', value: 'Сделать подсветку стабильнее, ярче и проще в обслуживании' },
         ],
       },
       {
@@ -595,11 +605,12 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Фиксируем состояние, причину, объем задачи и видимые риски. По итогам даем понятную рекомендацию по ремонту, обслуживанию или следующему разумному шагу.',
         image: '/images/about/service_deep_3.png',
+        eyebrow: 'Диагностика',
         cta: 'Начать диагностику',
         details: [
-          { label: 'Формат', value: 'Выездная проверка или структурированная оценка по материалам' },
-          { label: 'Проверка', value: 'Повреждения, крепления, электрика и условия локации' },
-          { label: 'Рекомендация', value: 'Понятное предложение по следующей мере' },
+          { label: 'Что оцениваем', value: 'Состояние вывески, повреждения, крепления, электрику и условия локации' },
+          { label: 'Что фиксируем', value: 'Причину проблемы, видимые риски, объем работ и срочность выполнения' },
+          { label: 'Цель', value: 'Дать понятную рекомендацию по ремонту, обслуживанию или следующему шагу' },
         ],
       },
       {
@@ -609,11 +620,12 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Координация работ для новых, существующих или переносимых рекламных конструкций. PixelRing планирует следующие шаги и согласует нужных специалистов.',
         image: '/images/leistungen/hero-maintenance.png',
+        eyebrow: 'Монтаж',
         cta: 'Запросить монтаж',
         details: [
-          { label: 'Монтаж', value: 'Установка и крепление новых или существующих конструкций' },
-          { label: 'Демонтаж', value: 'Снятие, удаление и подготовка поверхности' },
-          { label: 'Перенос', value: 'Смена локации с координацией выполнения' },
+          { label: 'Что выполняем', value: 'Монтаж, демонтаж, перенос и крепление рекламных конструкций' },
+          { label: 'Что согласуем', value: 'Локацию, доступ, крепления, поверхность и нужных специалистов' },
+          { label: 'Цель', value: 'Провести работы аккуратно, безопасно и с понятной координацией' },
         ],
       },
       {
@@ -623,11 +635,12 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Текущая поддержка рекламных материалов: от макетов и печатных данных до пленок, баннеров, постеров, надписей и брендинга локаций.',
         image: '/images/leistungen/hero-branding.png',
+        eyebrow: 'Брендинг',
         cta: 'Запросить брендинг',
         details: [
-          { label: 'Печатные данные', value: 'Подготовка, адаптация и согласование' },
-          { label: 'Материалы', value: 'Постеры, баннеры, наклейки и информационные таблички' },
-          { label: 'Локации', value: 'Пленки, надписи и снабжение филиалов' },
+          { label: 'Что готовим', value: 'Макеты, печатные данные, пленки, баннеры, постеры и надписи' },
+          { label: 'Что поддерживаем', value: 'Витрины, поверхности, рекламные материалы и оформление локаций' },
+          { label: 'Цель', value: 'Сохранить аккуратный и единый вид бренда на месте' },
         ],
       },
     ],
@@ -740,7 +753,9 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Tabela, ışıklı reklam ve dış reklam sistemlerinin profesyonel onarımı. Mevcut sistemleri hedefli onarım, bakım ve görsel yenileme ile koruruz.',
         image: '/images/about/service_deep_1.png',
-        cta: 'Onarım talep et',
+        eyebrow: 'Tabela onarımı',
+        cta: 'Onarım detayları',
+        href: '/leistungen/werbeanlagen-reparatur',
         details: [
           { label: 'Konstrüksiyon', value: 'Çerçeveler, alt yapılar ve sabitleme noktaları' },
           { label: 'Bakım', value: 'Temizlik, servis ve görsel yenileme' },
@@ -913,7 +928,9 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Profesjonalna naprawa szyldów, reklamy świetlnej i zewnętrznych konstrukcji reklamowych. Utrzymujemy istniejące systemy przez celowaną naprawę, pielęgnację i odnowę wizualną.',
         image: '/images/about/service_deep_1.png',
-        cta: 'Zapytaj o naprawę',
+        eyebrow: 'Naprawa szyldów',
+        cta: 'Więcej o naprawie',
+        href: '/leistungen/werbeanlagen-reparatur',
         details: [
           { label: 'Konstrukcja', value: 'Ramy, podkonstrukcje i punkty mocowania' },
           { label: 'Pielęgnacja', value: 'Czyszczenie, serwis i odnowa wizualna' },
@@ -1086,7 +1103,9 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'إصلاح احترافي للافتات والإعلانات المضيئة والهياكل الإعلانية الخارجية. نحافظ على الأنظمة القائمة عبر إصلاح موجه وعناية وترميم بصري.',
         image: '/images/about/service_deep_1.png',
-        cta: 'اطلب الإصلاح',
+        eyebrow: 'إصلاح اللافتات',
+        cta: 'تفاصيل الإصلاح',
+        href: '/leistungen/werbeanlagen-reparatur',
         details: [
           { label: 'الهيكل', value: 'الإطارات والهياكل الفرعية ونقاط التثبيت' },
           { label: 'العناية', value: 'التنظيف والصيانة والترميم البصري' },
@@ -1354,7 +1373,23 @@ export default async function LeistungenPage({
   const cmsContent = await getLeistungenPageCmsContent(locale);
   const content = mergeCmsContent(getContent(locale), cmsContent);
   const globalCms = await getGlobalPageCmsContent(locale);
-  const requestCtaLabel = content.heroSlides[0]?.cta ?? content.serviceContractCta;
+  const showDraftServiceAbo =
+    process.env.NODE_ENV === 'development' || process.env.SHOW_DRAFT_SERVICE_ABO === '1';
+  const renderServiceShowcaseCta = (card: ServiceShowcaseCard) =>
+    card.href ? (
+      <Link
+        href={card.href}
+        className="inline-flex min-h-12 min-w-[160px] items-center justify-center rounded-full border border-[#C8D6E3] bg-[#F8FAFC] px-7 py-3 text-center text-[15px] font-bold text-[#0E1A2B] shadow-sm shadow-[#0E1A2B0D] transition-colors hover:border-[#7BA190] hover:bg-[#EEF6F2] hover:text-[#24594D] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7BA190]"
+      >
+        {card.cta}
+      </Link>
+    ) : (
+      <LeistungenRequestButton
+        label={card.cta}
+        serviceIntent={card.intent}
+        className="min-w-[160px] whitespace-normal px-7 text-center"
+      />
+    );
 
   return (
     <div className="min-h-screen bg-[#F7F1E8] text-[#15202A]">
@@ -1378,16 +1413,43 @@ export default async function LeistungenPage({
                     key={card.id}
                     className="overflow-hidden rounded-[28px] border border-[#E2E8F0] bg-white p-5 shadow-sm sm:p-7 lg:p-8"
                   >
+                    {card.eyebrow && (
+                      <div className="mb-8 text-center">
+                        <SectionEyebrow className="mb-7 justify-center">
+                          {card.eyebrow}
+                        </SectionEyebrow>
+                        <h3 className="mx-auto max-w-4xl break-words text-2xl font-black leading-[1.1] text-[#0E1A2B] sm:text-3xl">
+                          {card.title}
+                        </h3>
+                      </div>
+                    )}
+
                     <div
-                      className={`grid min-w-0 gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center ${
+                      className={`grid min-w-0 gap-6 lg:items-center ${
+                        card.eyebrow
+                          ? 'lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-10'
+                          : 'lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]'
+                      } ${
                         index % 2 !== 0 ? 'lg:[&>div:first-child]:order-2' : ''
                       }`}
                     >
                       <div className="min-w-0">
-                        <h3 className="break-words text-2xl font-black leading-[1.1] text-[#0E1A2B] sm:text-3xl">
-                          {card.title}
-                        </h3>
-                        <p className="mt-4 text-[16px] leading-7 text-[#4A5568]">{card.description}</p>
+                        {!card.eyebrow && (
+                          <h3 className="break-words text-2xl font-black leading-[1.1] text-[#0E1A2B] sm:text-3xl">
+                            {card.title}
+                          </h3>
+                        )}
+                        <p
+                          className={`${card.eyebrow ? 'mt-0' : 'mt-5'} text-[16px] leading-7 text-[#4A5568] ${
+                            card.eyebrow
+                              ? locale === 'ar'
+                                ? 'border-r-2 border-[#B8643E] pr-4'
+                                : 'border-l-2 border-[#B8643E] pl-4'
+                              : ''
+                          }`}
+                        >
+                          {card.description}
+                        </p>
 
                         <div className="mt-7 space-y-3">
                           {card.details.map((detail) => (
@@ -1400,12 +1462,8 @@ export default async function LeistungenPage({
                           ))}
                         </div>
 
-                        <div className="mt-7">
-                          <LeistungenRequestButton
-                            label={card.cta}
-                            serviceIntent={card.intent}
-                            className="min-w-[160px] whitespace-normal px-7 text-center"
-                          />
+                        <div className={`mt-7 ${card.eyebrow ? 'flex justify-center' : ''}`}>
+                          {renderServiceShowcaseCta(card)}
                         </div>
                       </div>
 
@@ -1430,7 +1488,7 @@ export default async function LeistungenPage({
           </section>
         )}
 
-        {content.maintenanceEnabled !== false && (
+        {content.maintenanceEnabled !== false && showDraftServiceAbo && (
           <section id="wartung-servicevertraege" className="scroll-mt-28 bg-[#F8FAFC] py-14 sm:py-20">
             <div className="mx-auto max-w-7xl px-4 sm:px-6">
               <style dangerouslySetInnerHTML={{ __html: `
