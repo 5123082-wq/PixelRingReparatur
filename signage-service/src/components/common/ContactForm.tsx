@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useId, useRef, useState } from 'react';
+import React, { useId, useRef, useState, useEffect } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import LocationPicker, { type SelectedLocation } from './LocationPicker';
@@ -10,6 +10,8 @@ interface ContactFormProps {
   variant?: 'light' | 'dark';
   layout?: 'single' | 'two-column';
   dropdownPosition?: 'top' | 'bottom';
+  initialIssueType?: string;
+  initialMessage?: string;
 }
 
 const ContactForm = ({
@@ -17,6 +19,8 @@ const ContactForm = ({
   variant = 'light',
   layout = 'single',
   dropdownPosition = 'bottom',
+  initialIssueType = '',
+  initialMessage = '',
 }: ContactFormProps) => {
   const t = useTranslations('ContactModal');
   const locale = useLocale();
@@ -27,8 +31,17 @@ const ContactForm = ({
   const [errorMessage, setErrorMessage] = useState('');
   const [name, setName] = useState('');
   const [contact, setContact] = useState('');
-  const [message, setMessage] = useState('');
-  const [issueType, setIssueType] = useState('');
+  const [message, setMessage] = useState(initialMessage);
+  const [issueType, setIssueType] = useState(initialIssueType);
+
+  useEffect(() => {
+    if (initialMessage) {
+      setMessage(initialMessage);
+    }
+    if (initialIssueType) {
+      setIssueType(initialIssueType);
+    }
+  }, [initialMessage, initialIssueType]);
   const [location, setLocation] = useState('');
   const [selectedLocation, setSelectedLocation] = useState<SelectedLocation | null>(null);
   const [files, setFiles] = useState<File[]>([]);

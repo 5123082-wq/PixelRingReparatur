@@ -9,6 +9,10 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 Latest checkpoint:
 
 - Date: 2026-05-27
+- Current stage: Created dedicated outdoor advertising repair landing page under `/[locale]/leistungen/werbeanlagen-reparatur` in Next.js. Added site-style interactive modules into the real page: a smooth 4-image optimized hero carousel, digital first-diagnosis simulator after the symptom grid, and cost estimator/request block before the final CTA. RU has dedicated copy; other locales use German fallback copy until translations are added.
+- Next action: Owner reviews the updated real repair page, especially the hero carousel, digital diagnosis, and cost estimator/request blocks.
+
+- Date: 2026-05-27
 - Current stage: Published `peeling-film` / `folie-loest-sich` into CMS/database for all six MVP locales from the Markdown draft set. Added repeatable seed `db:seed:article-peeling-film`, preserved internal slug `peeling-film` with public route `folie-loest-sich`, populated structured `selfRepairTips`, verified CMS audit for this article, production build, and HTTP route checks for DE/EN/RU/TR/PL/AR.
 - Next action: Owner visually reviews the six live article pages and modal self-repair block at `/[locale]/probleme-loesungen/folie-loest-sich`.
 
@@ -57,6 +61,11 @@ Read deep when:
 - **Engineering/Ops**: Open maintenance note recorded for future Postgres SSL connection-string cleanup before the next `pg`/Prisma/migration-tooling dependency upgrade.
 
 ## Last Updated
+
+- Date: 2026-05-27
+- Updated by: Antigravity
+- **Current Stage**: Implemented a dedicated landing page for outdoor advertising repair at `/[locale]/leistungen/werbeanlagen-reparatur` in Next.js. Added site-style interactive modules into the real page: a smooth 4-image optimized hero carousel, digital first-diagnosis simulator after the symptom grid, and cost estimator/request block before the final CTA. RU has dedicated copy; other locales use German fallback copy until translations are added.
+- **Next Action**: Owner reviews the updated real repair page, especially the hero carousel, digital diagnosis, and cost estimator/request blocks.
 
 - Date: 2026-05-26
 - Updated by: Antigravity
