@@ -349,6 +349,15 @@ Implementation sequence:
 
 ## Progress Log
 
+### 2026-05-29 — Repair Diagnostic Card Phase 1 Prototype
+
+- Current sprint/block: Public Website, dedicated Werbeanlagen-Reparatur diagnostic card prototyping
+- Done: Added a standalone HTML prototype at `DesignPrototip/pixelring-diagnostic-card-phase1.html` for the compact Phase 1 calculator direction, then implemented the selected interaction model in code as a separate comparison block on `/[locale]/leistungen/werbeanlagen-reparatur`. The existing diagnosis card remains unchanged and still renders before the new block. The new block uses compact dropdown selectors for construction type and typical reason/symptom. The service selector is a hybrid combobox: users can immediately type a city/PLZ, while the right-side dropdown offers primary cities/zones (`Berlin - Stadtgebiet`, `Berliner Umland`, Potsdam, Brandenburg an der Havel, Cottbus, Frankfurt (Oder), Oranienburg, Bernau bei Berlin, Falkensee, Königs Wusterhausen, Ludwigsfelde, `Land Brandenburg allgemein`, and outside core area on request). The right card covers access/height, size, affected scope, planned/urgent visit selection, repair orientation, confidence message, photo checklist, CTA, and drawer prefill. Safety flags were removed from the new UX.
+- In progress: Owner compares the existing diagnosis card and the new alternative block in the real page.
+- Next action: Decide which interaction model should remain, then remove or consolidate the other block.
+- Blockers/risks: The new block is frontend-only and intentionally does not add CRM/database/API changes, analytics, messaging integrations, or exact material calculations.
+- Updated documents: `PROGRESS.md`, `docs/02_public_website/page_plan_leistungen.md`, `DesignPrototip/pixelring-diagnostic-card-phase1.html`, `signage-service/src/components/leistungen/LeistungenDiagnosticPrototype.tsx`, `signage-service/src/app/[locale]/leistungen/werbeanlagen-reparatur/page.tsx`.
+
 ### 2026-05-26 — Leistungen Footer CTA Redesign
 
 - Current sprint/block: Public Website, Leistungen page final CTA refinement

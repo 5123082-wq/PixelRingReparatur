@@ -17,7 +17,7 @@ const HOME_METADATA: Record<string, { title: string; description: string }> = {
   de: {
     title: 'PixelRing Reparatur | Schilder, Lichtwerbung und Branding-Service',
     description:
-      'PixelRing koordiniert Reparatur, Montage und Service fuer Schilder, Lichtwerbung, Folien und Branding-Anlagen in Deutschland.',
+      'PixelRing koordiniert Reparatur, Montage und Service für Schilder, Lichtwerbung, Folien und Branding-Anlagen in Deutschland.',
   },
   en: {
     title: 'PixelRing Repair | Signage, Light Advertising and Branding Service',
@@ -30,14 +30,14 @@ const HOME_METADATA: Record<string, { title: string; description: string }> = {
       'PixelRing принимает заявки на ремонт, монтаж и обслуживание вывесок, световой рекламы, пленок и брендированных объектов в Германии.',
   },
   tr: {
-    title: 'PixelRing Reparatur | Tabela, Isikli Reklam ve Marka Servisi',
+    title: 'PixelRing Reparatur | Tabela, Işıklı Reklam ve Marka Servisi',
     description:
-      'PixelRing Almanya genelinde tabela, isikli reklam, folyo ve marka uygulamalari icin onarim, montaj ve servis taleplerini koordine eder.',
+      'PixelRing Almanya genelinde tabela, ışıklı reklam, folyo ve marka uygulamaları için onarım, montaj ve servis taleplerini koordine eder.',
   },
   pl: {
-    title: 'PixelRing Reparatur | Serwis szyldow, reklam swietlnych i brandingu',
+    title: 'PixelRing Reparatur | Serwis szyldów, reklam świetlnych i brandingu',
     description:
-      'PixelRing koordynuje naprawy, montaz i serwis szyldow, reklam swietlnych, folii oraz elementow brandingu w Niemczech.',
+      'PixelRing koordynuje naprawy, montaż i serwis szyldów, reklam świetlnych, folii oraz elementów brandingu w Niemczech.',
   },
   ar: {
     title: 'PixelRing Reparatur | خدمة اللوحات والاعلانات المضيئة',

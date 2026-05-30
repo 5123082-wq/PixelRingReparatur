@@ -8,6 +8,18 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 
 Latest checkpoint:
 
+- Date: 2026-05-30
+- Current stage: Closed urgent SEO/GEO follow-up from the read-only audit: added `/[locale]/leistungen/werbeanlagen-reparatur` to the public sitemap path set, cleaned homepage fallback metadata for DE/TR/PL, fixed `Referenzen` fallback metadata so it no longer emits an empty description, and documented the remaining SEO/GEO backlog in `docs/07_content_ai_seo/seo_geo_readonly_audit_2026-05-30.md`.
+- Next action: Publish the missing TR/PL/AR problem articles, then extend problem-article structured data with BreadcrumbList and publish/update dates after owner review of the content backlog.
+
+- Date: 2026-05-29
+- Current stage: Added the alternative diagnostic calculator from the HTML prototype into the real `/[locale]/leistungen/werbeanlagen-reparatur` page as a separate comparison block after the existing diagnosis card. The original diagnosis card remains rendered. The new block uses compact selectors for construction type, typical reason/symptom, service area with manual city/PLZ input, planned/urgent visit choice, size/access/scope, budget orientation, photo checklist, and request drawer prefill.
+- Next action: Owner compares the existing diagnosis card and the new alternative block on the live repair page, then decides which interaction model should remain.
+
+- Date: 2026-05-28
+- Current stage: Updated `/[locale]/leistungen/werbeanlagen-reparatur` diagnosis module from a simulator into a repair diagnostic card: left-side symptom selection, right-side access/size/scope inputs, area-based budget range, time estimate, safety-oriented urgent case handling, and request drawer prefill. Removed the separate cost estimator render from this repair page to keep one pricing-orientation flow.
+- Next action: Owner visually reviews the new diagnostic card on RU and DE/fallback locales, especially mobile layout, budget wording, and request drawer prefill.
+
 - Date: 2026-05-27
 - Current stage: Created dedicated outdoor advertising repair landing page under `/[locale]/leistungen/werbeanlagen-reparatur` in Next.js. Added site-style interactive modules into the real page: a smooth 4-image optimized hero carousel, digital first-diagnosis simulator after the symptom grid, and cost estimator/request block before the final CTA. RU has dedicated copy; other locales use German fallback copy until translations are added.
 - Next action: Owner reviews the updated real repair page, especially the hero carousel, digital diagnosis, and cost estimator/request blocks.

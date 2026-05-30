@@ -93,7 +93,7 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
   de: {
     metaTitle: 'Referenzen für Schilder-Reparatur & Werbetechnik | PixelRing',
     metaDescription:
-      'Ausgewaehlte Referenzen von PixelRing: Leuchtkästen, LED-Buchstaben, Neon, Folien, Fassadenmontage und Filialservice ohne private Kundendaten.',
+      'Ausgewählte Referenzen von PixelRing: Leuchtkästen, LED-Buchstaben, Neon, Folien, Fassadenmontage und Filialservice ohne private Kundendaten.',
     badge: 'Referenzen',
     heroTitle: 'Sichtbare Ergebnisse nach Reparatur und Service',
     heroIntro:
@@ -560,10 +560,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const page = await getPublishedCmsPage('referenzen', locale);
+  const staticContent = getContent(locale);
 
   return {
-    title: page?.seoTitle || 'Referenzen | PixelRing',
-    description: page?.seoDescription || '',
+    title: page?.seoTitle || staticContent.metaTitle,
+    description: page?.seoDescription || staticContent.metaDescription,
     alternates: {
       canonical: `/${locale}/referenzen`,
     },

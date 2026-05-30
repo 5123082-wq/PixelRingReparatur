@@ -1,16 +1,31 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import SectionEyebrow from '@/components/common/SectionEyebrow';
 import LeistungenProblemDrawer from './LeistungenProblemDrawer';
 
 type DiagnosisLocale = 'de' | 'ru';
 
+type Modifier = {
+  min: number;
+  max: number;
+};
+
 type AccessOption = {
+  id: string;
   label: string;
-  value: number;
-  timeAddon: string;
+  modifier: Modifier;
+  timeModifier: Modifier;
+  impact: string;
+};
+
+type ScopeOption = {
+  id: string;
+  label: string;
+  modifier: Modifier;
+  timeModifier: Modifier;
+  impact: string;
 };
 
 type DiagnosisScenario = {
@@ -20,256 +35,434 @@ type DiagnosisScenario = {
   symptom: string;
   checks: string[];
   likelyResult: string;
-  complexity: string;
-  time: string;
-  min: number;
-  max: number;
+  scopeLabel: string;
+  scopeOptions: ScopeOption[];
+  baseRange: Modifier;
+  baseTime: Modifier;
+  factors: string[];
   initialMessage: string;
+  urgent?: boolean;
+  ctaLabel?: string;
+};
+
+type AreaAdjustment = {
+  label: string;
+  note: string;
+  modifier: Modifier;
+  timeModifier: Modifier;
 };
 
 type DiagnosisContent = {
   eyebrow: string;
   title: string;
   intro: string;
-  pointOneTitle: string;
-  pointOneText: string;
-  pointTwoTitle: string;
-  pointTwoText: string;
-  terminalTitle: string;
-  terminalBadge: string;
-  defectLabel: string;
+  problemListTitle: string;
+  problemListIntro: string;
+  cardTitle: string;
+  cardBadge: string;
   accessLabel: string;
+  sizeLabel: string;
+  widthLabel: string;
+  heightLabel: string;
+  areaLabel: string;
+  sizeHint: string;
   checksLabel: string;
   likelyLabel: string;
-  complexityLabel: string;
   timeLabel: string;
   budgetLabel: string;
+  factorsLabel: string;
+  noteLabel: string;
+  estimatePrefix: string;
+  warningNote: string;
   ctaLabel: string;
   drawerTitle: string;
   drawerCloseLabel: string;
   drawerFormTitle: string;
+  drawerInfoLabel: string;
+  drawerFormIntro: string;
+  unknownSizeNote: string;
+  largeAreaNote: string;
   accessOptions: AccessOption[];
   scenarios: DiagnosisScenario[];
 };
 
+const DEFAULT_WIDTH = 2;
+const DEFAULT_HEIGHT = 0.8;
+const MIN_AREA = 0.5;
+const MAX_AREA = 30;
+
 const CONTENT: Record<DiagnosisLocale, DiagnosisContent> = {
   de: {
-    eyebrow: 'Digitale Erstdiagnose',
-    title: 'Warum wir erst messen, bevor wir montieren',
+    eyebrow: 'Reparatur-Diagnose',
+    title: 'Defekt auswählen, Einschätzung und Budgetrahmen sehen',
     intro:
-      'Der Diagnose-Check ordnet sichtbare Symptome ein und zeigt, welche Messungen oder Sicherheitsprüfungen vor der Reparatur sinnvoll sind.',
-    pointOneTitle: 'Messung statt Teiletausch',
-    pointOneText:
-      'Wir prüfen Stromversorgung, Feuchtigkeit, Kabelwege und Befestigung, bevor unnötig Material gewechselt wird.',
-    pointTwoTitle: 'Besser vorbereiteter Einsatz',
-    pointTwoText:
-      'Aus Defektbild und Zugang entsteht ein realistischer Serviceplan für Werkzeug, Material und Terminfenster.',
-    terminalTitle: 'Digitaler Diagnose-Simulator',
-    terminalBadge: 'SIMULATOR',
-    defectLabel: 'Defektbild',
+      'Die Karte verbindet sichtbare Symptome mit Zugang, grober Größe und Umfang. So entsteht eine erste Orientierung, bevor Fotos, Standort und Material geprüft werden.',
+    problemListTitle: 'Was ist an der Werbeanlage sichtbar?',
+    problemListIntro:
+      'Wählen Sie das passendste Schadensbild. Die rechte Karte passt Orientierung, Zeit und Budgetrahmen automatisch an.',
+    cardTitle: 'Diagnosekarte',
+    cardBadge: 'Orientierung',
     accessLabel: 'Zugang / Montagehöhe',
-    checksLabel: 'Prüfprogramm',
+    sizeLabel: 'Ungefähre Größe der Anlage',
+    widthLabel: 'Breite, m',
+    heightLabel: 'Höhe, m',
+    areaLabel: 'Rechenfläche',
+    sizeHint: 'Wenn die Größe unklar ist, reichen grobe Werte. Die finale Bewertung erfolgt nach Fotos und Standort.',
+    checksLabel: 'Mögliche Prüfrichtung',
     likelyLabel: 'Wahrscheinlicher Servicepfad',
-    complexityLabel: 'Komplexität',
-    timeLabel: 'Zeit vor Ort',
-    budgetLabel: 'Orientierung',
-    ctaLabel: 'Diesen Defekt anfragen',
+    timeLabel: 'Diagnose vor Ort',
+    budgetLabel: 'Budgetrahmen',
+    factorsLabel: 'Was den Rahmen beeinflusst',
+    noteLabel: 'Hinweis',
+    estimatePrefix: 'ca.',
+    warningNote:
+      'Kein verbindliches Angebot. Die genaue Einschätzung entsteht erst nach Fotos, Adresse, Zugang und Materialprüfung.',
+    ctaLabel: 'Diagnose anfragen',
     drawerTitle: 'Diagnose anfragen',
     drawerCloseLabel: 'Schließen',
     drawerFormTitle: 'Diagnose & Reparatur anfragen',
+    drawerInfoLabel: 'Einschätzung & Lösung',
+    drawerFormIntro: 'Geben Sie Ihre Kontaktdaten an, um das Ticket für diesen Defekt direkt in unser System einzustellen.',
+    unknownSizeNote: 'Unbekannte oder leere Werte werden mit 2,0 x 0,8 m eingeordnet.',
+    largeAreaNote: 'Bei größeren Anlagen ist eine Prüfung vor Ort besonders wichtig.',
     accessOptions: [
-      { label: 'Niedrig: unter 3 m, Leiter erreichbar', value: 0, timeAddon: '' },
-      { label: 'Mittel: 3-6 m, Bühne wahrscheinlich', value: 90, timeAddon: '+ Bühne / Zugang' },
-      { label: 'Hoch: über 6 m oder schwer zugänglich', value: 180, timeAddon: '+ erweiterte Zugangsklärung' },
+      {
+        id: 'low',
+        label: 'Bis 3 m, Leiter erreichbar',
+        modifier: { min: 0, max: 0 },
+        timeModifier: { min: 0, max: 0 },
+        impact: 'normaler Zugang mit Leiter',
+      },
+      {
+        id: 'mid',
+        label: '3-6 m, Bühne wahrscheinlich',
+        modifier: { min: 90, max: 180 },
+        timeModifier: { min: 20, max: 45 },
+        impact: 'zusätzlicher Zugang oder Arbeitsbühne',
+      },
+      {
+        id: 'high',
+        label: 'Über 6 m oder schwer zugänglich',
+        modifier: { min: 180, max: 360 },
+        timeModifier: { min: 45, max: 90 },
+        impact: 'erweiterte Zugangsklärung und Sicherheitsplanung',
+      },
     ],
     scenarios: [
       {
-        id: 'led-partial',
-        label: 'LED-Module / Teilbereiche dunkel',
-        title: 'Teilbereiche leuchten nicht',
-        symptom: 'Einzelne LED-Zonen, Module oder Buchstaben bleiben dunkel.',
-        checks: ['LED-Ketten und Polarität prüfen', 'Netzteil-Leistung messen', 'Feuchtigkeit in Modulen ausschließen'],
-        likelyResult: 'Punktuelle Reparatur mit Modul- oder Netzteiltausch',
-        complexity: 'Mittel',
-        time: 'ca. 1-2 Stunden',
-        min: 220,
-        max: 520,
-        initialMessage: 'Digitale Erstdiagnose: LED-Module oder Teilbereiche leuchten nicht. Bitte prüfen: LED-Ketten, Netzteil, Feuchtigkeit.',
-      },
-      {
-        id: 'full-outage',
-        label: 'Komplette Anlage dunkel',
-        title: 'Die gesamte Werbeanlage bleibt aus',
-        symptom: 'Keine Beleuchtung, keine sichtbare Reaktion beim Einschalten.',
-        checks: ['Einspeisung und Sicherung prüfen', 'Trafo / Netzteil messen', 'Hauptleitung und Schaltzeiten kontrollieren'],
-        likelyResult: 'Elektrische Basisdiagnose vor Materialentscheidung',
-        complexity: 'Mittel bis hoch',
-        time: 'ca. 1-3 Stunden',
-        min: 260,
-        max: 680,
-        initialMessage: 'Digitale Erstdiagnose: Komplette Werbeanlage bleibt dunkel. Bitte prüfen: Einspeisung, Sicherung, Trafo/Netzteil, Hauptleitung.',
+        id: 'no-light',
+        label: 'Werbeanlage leuchtet nicht',
+        title: 'Die gesamte Anlage bleibt dunkel',
+        symptom: 'Keine Beleuchtung oder nur unzuverlässiger Start beim Einschalten.',
+        checks: ['Einspeisung und Sicherung', 'Netzteil / Trafo', 'Hauptleitung, Timer und Steuerung'],
+        likelyResult: 'Elektrische Basisdiagnose vor der Entscheidung über Netzteil, Leitung oder Steuerung',
+        scopeLabel: 'Umfang des Ausfalls',
+        scopeOptions: [
+          { id: 'single', label: 'ein Bereich', modifier: { min: 0, max: 80 }, timeModifier: { min: 0, max: 20 }, impact: 'ein klar abgrenzbarer Bereich' },
+          { id: 'multiple', label: 'mehrere Bereiche', modifier: { min: 80, max: 180 }, timeModifier: { min: 20, max: 45 }, impact: 'mehrere Stromkreise oder Gruppen' },
+          { id: 'full', label: 'gesamte Anlage', modifier: { min: 140, max: 260 }, timeModifier: { min: 30, max: 60 }, impact: 'komplette Anlage ohne Licht' },
+        ],
+        baseRange: { min: 240, max: 620 },
+        baseTime: { min: 60, max: 150 },
+        factors: ['Stromversorgung', 'Netzteil / Trafo', 'Steuerung', 'Feuchtigkeit'],
+        initialMessage: 'Diagnose: Werbeanlage leuchtet nicht.',
       },
       {
         id: 'flicker',
         label: 'Flackern / instabiles Licht',
-        title: 'Licht flackert oder läuft unruhig',
-        symptom: 'Die Anlage leuchtet ungleichmäßig, pulsiert oder fällt zeitweise aus.',
-        checks: ['Spannungsabfall messen', 'Dimmer / Steuerung prüfen', 'Kontaktstellen und Lastreserve kontrollieren'],
-        likelyResult: 'Stabilisierung der Stromversorgung und Kontaktprüfung',
-        complexity: 'Mittel',
-        time: 'ca. 1-2 Stunden',
-        min: 240,
-        max: 560,
-        initialMessage: 'Digitale Erstdiagnose: Flackern oder instabiles Licht. Bitte prüfen: Spannungsabfall, Dimmer/Steuerung, Kontaktstellen.',
+        title: 'Das Licht flackert oder fällt zeitweise aus',
+        symptom: 'Die Anlage pulsiert, ist ungleichmäßig hell oder schaltet kurzzeitig ab.',
+        checks: ['Spannungsabfall', 'Kontakte und Klemmen', 'Dimmer, Controller und Lastreserve'],
+        likelyResult: 'Stabilisierung der Stromversorgung und Prüfung von Kontakten, Controller oder LED-Treibern',
+        scopeLabel: 'Umfang des Flackerns',
+        scopeOptions: [
+          { id: 'single', label: 'eine Zone', modifier: { min: 0, max: 70 }, timeModifier: { min: 0, max: 15 }, impact: 'eine einzelne Zone betroffen' },
+          { id: 'multiple', label: 'mehrere Zonen', modifier: { min: 70, max: 160 }, timeModifier: { min: 15, max: 40 }, impact: 'mehrere Zonen oder wechselnder Ausfall' },
+          { id: 'full', label: 'fast überall', modifier: { min: 130, max: 240 }, timeModifier: { min: 30, max: 60 }, impact: 'breiter Ausfall im Beleuchtungssystem' },
+        ],
+        baseRange: { min: 240, max: 560 },
+        baseTime: { min: 60, max: 120 },
+        factors: ['Netzteilreserve', 'Kontaktstellen', 'Leitungslänge', 'Feuchtigkeit'],
+        initialMessage: 'Diagnose: Werbeanlage flackert oder leuchtet instabil.',
+      },
+      {
+        id: 'led-zone',
+        label: 'Buchstabe / LED-Zone dunkel',
+        title: 'Ein Buchstabe oder LED-Bereich leuchtet nicht',
+        symptom: 'Einzelne Buchstaben, LED-Zonen oder Module bleiben dunkel.',
+        checks: ['LED-Ketten und Polarität', 'Lokale Leitungen und Verbinder', 'Modul- oder Netzteilreserve'],
+        likelyResult: 'Punktuelle Reparatur mit Modul-, Leitungs- oder Netzteiltausch',
+        scopeLabel: 'Betroffene LED-Zonen',
+        scopeOptions: [
+          { id: 'single', label: 'eine Zone / ein Buchstabe', modifier: { min: 0, max: 70 }, timeModifier: { min: 0, max: 15 }, impact: 'ein lokaler LED-Bereich' },
+          { id: 'multiple', label: 'mehrere Zonen', modifier: { min: 80, max: 180 }, timeModifier: { min: 20, max: 45 }, impact: 'mehrere LED-Zonen oder Buchstaben' },
+          { id: 'large', label: 'großer Teil', modifier: { min: 150, max: 320 }, timeModifier: { min: 40, max: 75 }, impact: 'größerer LED- oder Modulumfang' },
+        ],
+        baseRange: { min: 220, max: 540 },
+        baseTime: { min: 60, max: 120 },
+        factors: ['Anzahl der Zonen', 'Modultyp', 'Farb- und Helligkeitsabgleich', 'Zugang zum Element'],
+        initialMessage: 'Diagnose: Buchstabe oder LED-Zone leuchtet nicht.',
       },
       {
         id: 'rain-fail',
-        label: 'Ausfall nach Regen / Sicherung fällt',
+        label: 'Nach Regen / Sicherung fällt',
         title: 'Störung bei Regen oder Feuchtigkeit',
         symptom: 'Die Sicherung fällt, die Anlage schaltet ab oder startet erst nach Trocknung wieder.',
-        checks: ['VDE-Isolationsprüfung', 'Kabeldurchführungen prüfen', 'Gehäuse und Dichtungen kontrollieren'],
-        likelyResult: 'Feuchtigkeitsdiagnose mit Sicherheitsprüfung',
-        complexity: 'Hoch',
-        time: 'ca. 2-4 Stunden',
-        min: 320,
-        max: 880,
-        initialMessage: 'Digitale Erstdiagnose: Ausfall nach Regen oder Feuchtigkeit. Bitte prüfen: Isolation, Kabeldurchführungen, Dichtungen, Sicherung.',
-      },
-      {
-        id: 'mounting',
-        label: 'Lockerung / mechanischer Schaden',
-        title: 'Befestigung oder Gehäuse beschädigt',
-        symptom: 'Die Anlage wackelt, Halterungen sind lose oder Teile sind nach Sturm beschädigt.',
-        checks: ['Befestigungspunkte prüfen', 'Fassade und Untergrund bewerten', 'Sicherung loser Teile planen'],
-        likelyResult: 'Sicherung und mechanische Instandsetzung',
-        complexity: 'Hoch',
-        time: 'halber Tag möglich',
-        min: 360,
-        max: 980,
-        initialMessage: 'Digitale Erstdiagnose: Lockerung oder mechanischer Schaden. Bitte prüfen: Befestigungspunkte, Untergrund, Sicherung loser Teile.',
+        checks: ['Isolation und Schutzabschaltung', 'Kabeldurchführungen und Dichtungen', 'Korrosion und Feuchtigkeit im Gehäuse'],
+        likelyResult: 'Feuchtigkeitsdiagnose mit Sicherheitsprüfung vor jeder Materialentscheidung',
+        scopeLabel: 'Verhalten bei Feuchtigkeit',
+        scopeOptions: [
+          { id: 'sometimes', label: 'nur gelegentlich', modifier: { min: 0, max: 100 }, timeModifier: { min: 0, max: 25 }, impact: 'sporadische Feuchtigkeitsstörung' },
+          { id: 'breaker', label: 'Sicherung fällt', modifier: { min: 120, max: 260 }, timeModifier: { min: 30, max: 70 }, impact: 'Schutzabschaltung oder möglicher Fehlerstrom' },
+          { id: 'visible-water', label: 'Wasser sichtbar', modifier: { min: 180, max: 360 }, timeModifier: { min: 45, max: 90 }, impact: 'sichtbare Feuchtigkeit oder Korrosion' },
+        ],
+        baseRange: { min: 320, max: 880 },
+        baseTime: { min: 90, max: 210 },
+        factors: ['Dichtungen', 'Kabeldurchführungen', 'Korrosion', 'Sicherheitsprüfung'],
+        initialMessage: 'Diagnose: Ausfall nach Regen oder Feuchtigkeit.',
       },
       {
         id: 'film',
-        label: 'Folie löst sich / Oberfläche beschädigt',
+        label: 'Folie / Oberfläche',
         title: 'Folie oder Oberfläche ist beschädigt',
         symptom: 'Folie löst sich, ist verblasst, wirft Blasen oder Klebereste sind sichtbar.',
-        checks: ['Untergrund prüfen', 'UV- und Klebereste bewerten', 'Reinigung und Neuverklebung planen'],
-        likelyResult: 'Oberflächenvorbereitung und Teil- oder Neuverklebung',
-        complexity: 'Niedrig bis mittel',
-        time: 'ca. 1-3 Stunden',
-        min: 180,
-        max: 620,
-        initialMessage: 'Digitale Erstdiagnose: Folie löst sich oder Oberfläche beschädigt. Bitte prüfen: Untergrund, UV-Schäden, Klebereste, Neuverklebung.',
+        checks: ['Untergrund und Klebereste', 'UV-Schäden und Materialzustand', 'Reinigung, Teilersatz oder Neuverklebung'],
+        likelyResult: 'Oberflächenvorbereitung mit Teilreparatur oder Neuverklebung nach Materialprüfung',
+        scopeLabel: 'Betroffene Fläche',
+        scopeOptions: [
+          { id: 'edge', label: 'Kante / Ecke', modifier: { min: 0, max: 60 }, timeModifier: { min: 0, max: 15 }, impact: 'lokaler Randbereich' },
+          { id: 'section', label: 'ein Abschnitt', modifier: { min: 70, max: 170 }, timeModifier: { min: 20, max: 45 }, impact: 'sichtbarer Teilbereich' },
+          { id: 'large', label: 'große Fläche', modifier: { min: 160, max: 360 }, timeModifier: { min: 45, max: 90 }, impact: 'größere Fläche oder Neuverklebung' },
+        ],
+        baseRange: { min: 180, max: 620 },
+        baseTime: { min: 60, max: 150 },
+        factors: ['Fläche', 'Untergrund', 'Klebereste', 'Material und UV-Belastung'],
+        initialMessage: 'Diagnose: Folie oder Oberfläche beschädigt.',
+      },
+      {
+        id: 'mounting',
+        label: 'Befestigung / Sturm',
+        title: 'Befestigung oder Gehäuse ist beschädigt',
+        symptom: 'Die Anlage wackelt, Halterungen sind lose oder es gibt Schäden nach Wind, Sturm oder Anstoß.',
+        checks: ['Befestigungspunkte', 'Fassade, Untergrund und Korrosion', 'Sicherung loser Teile'],
+        likelyResult: 'Sicherung, mechanische Instandsetzung oder kontrollierter Rückbau vor dem eigentlichen Reparaturplan',
+        scopeLabel: 'Mechanischer Zustand',
+        scopeOptions: [
+          { id: 'loose', label: 'leichter Spielraum', modifier: { min: 0, max: 90 }, timeModifier: { min: 0, max: 20 }, impact: 'leichte Lockerung' },
+          { id: 'damaged', label: 'beschädigt', modifier: { min: 120, max: 260 }, timeModifier: { min: 30, max: 70 }, impact: 'sichtbare Beschädigung an Halterung oder Gehäuse' },
+          { id: 'fall-risk', label: 'Absturzrisiko', modifier: { min: 220, max: 460 }, timeModifier: { min: 45, max: 120 }, impact: 'Sicherungs- oder Absperrbedarf' },
+        ],
+        baseRange: { min: 360, max: 980 },
+        baseTime: { min: 90, max: 240 },
+        factors: ['Befestigung', 'Untergrund', 'Korrosion', 'Sicherungsbedarf'],
+        initialMessage: 'Diagnose: Befestigung oder mechanischer Schaden.',
+      },
+      {
+        id: 'urgent',
+        label: 'Sofort: Sicherheitsrisiko',
+        title: 'Sicherheitsrisiko zuerst klären',
+        symptom: 'Brandgeruch, Funken, offene Kabel, lose Teile oder Gefahr für Passanten.',
+        checks: ['Gefahrenhinweis aus Abstand', 'Sichere Abschaltung', 'Sicherung, Absperrung oder Terminoptionen'],
+        likelyResult: 'Priorität ist sicheres Abschalten, Fixieren oder Absperren; Reparaturumfang folgt erst nach der Gefahrenprüfung',
+        scopeLabel: 'Akute Situation',
+        scopeOptions: [
+          { id: 'electrical', label: 'Geruch / Funken', modifier: { min: 180, max: 360 }, timeModifier: { min: 30, max: 90 }, impact: 'akuter elektrischer Hinweis' },
+          { id: 'loose-parts', label: 'lose Teile', modifier: { min: 220, max: 420 }, timeModifier: { min: 45, max: 120 }, impact: 'mechanisches Risiko für Passanten' },
+          { id: 'blocked-area', label: 'Eingang betroffen', modifier: { min: 260, max: 520 }, timeModifier: { min: 60, max: 150 }, impact: 'Nutzung oder Eingang betroffen' },
+        ],
+        baseRange: { min: 420, max: 1100 },
+        baseTime: { min: 60, max: 180 },
+        factors: ['Gefahrenlage', 'Zugang', 'Absperrung', 'Sofortsicherung'],
+        initialMessage: 'Dringende Diagnose: mögliches Sicherheitsrisiko an der Werbeanlage.',
+        urgent: true,
+        ctaLabel: 'Dringenden Fall melden',
       },
     ],
   },
   ru: {
-    eyebrow: 'Цифровая первичная диагностика',
-    title: 'Почему мы сначала проверяем, а потом ремонтируем',
+    eyebrow: 'Предварительная диагностика',
+    title: 'Выберите проблему — мы покажем ориентир работ и бюджета',
     intro:
-      'Диагностический модуль помогает понять, какие проверки нужны перед ремонтом: электрика, влага, крепления, доступ и подготовка материалов.',
-    pointOneTitle: 'Проверка вместо слепой замены',
-    pointOneText:
-      'Мы оцениваем питание, влагу, кабельные линии и крепления до того, как менять детали без причины.',
-    pointTwoTitle: 'Лучше подготовленный выезд',
-    pointTwoText:
-      'По типу дефекта и доступу к вывеске формируется понятный план: инструменты, материалы и окно работ.',
-    terminalTitle: 'Цифровой диагностический симулятор',
-    terminalBadge: 'СИМУЛЯТОР',
-    defectLabel: 'Тип дефекта',
+      'Диагностическая карта связывает видимую неисправность с доступом, примерным размером и объёмом дефекта. Это помогает понять порядок работ до точной оценки по фото, адресу и материалам.',
+    problemListTitle: 'Что видно снаружи?',
+    problemListIntro:
+      'Выберите ближайший сценарий. Справа изменятся ориентиры, время диагностики и предварительный бюджет.',
+    cardTitle: 'Диагностическая карта',
+    cardBadge: 'Ориентир',
     accessLabel: 'Доступ / высота монтажа',
-    checksLabel: 'Программа проверки',
+    sizeLabel: 'Примерный размер вывески',
+    widthLabel: 'Ширина, м',
+    heightLabel: 'Высота, м',
+    areaLabel: 'Расчётная площадь',
+    sizeHint: 'Если размер неизвестен, укажите примерно. Финальная оценка всё равно делается после фото и адреса.',
+    checksLabel: 'Ориентиры оценки',
     likelyLabel: 'Вероятный сценарий работ',
-    complexityLabel: 'Сложность',
-    timeLabel: 'Время на месте',
-    budgetLabel: 'Ориентир',
+    timeLabel: 'Диагностика на месте',
+    budgetLabel: 'Ориентир бюджета',
+    factorsLabel: 'Что влияет на цену',
+    noteLabel: 'Важно',
+    estimatePrefix: 'примерно',
+    warningNote:
+      'Это не финальное предложение. Точная оценка после фото, адреса, доступа и проверки материалов.',
     ctaLabel: 'Запросить диагностику',
     drawerTitle: 'Запросить диагностику',
     drawerCloseLabel: 'Закрыть',
     drawerFormTitle: 'Запросить диагностику и ремонт',
+    drawerInfoLabel: 'Оценка и следующий шаг',
+    drawerFormIntro: 'Укажите контакты, чтобы передать заявку специалистам PixelRing с выбранными параметрами.',
+    unknownSizeNote: 'Пустой или некорректный размер считаем как 2,0 x 0,8 м.',
+    largeAreaNote: 'Для больших вывесок особенно важна проверка на месте.',
     accessOptions: [
-      { label: 'Низко: до 3 м, доступно с лестницы', value: 0, timeAddon: '' },
-      { label: 'Средне: 3-6 м, вероятна рабочая платформа', value: 90, timeAddon: '+ доступ / платформа' },
-      { label: 'Высоко: выше 6 м или сложный доступ', value: 180, timeAddon: '+ отдельная проверка доступа' },
+      {
+        id: 'low',
+        label: 'До 3 м, доступно с лестницы',
+        modifier: { min: 0, max: 0 },
+        timeModifier: { min: 0, max: 0 },
+        impact: 'обычный доступ с лестницы',
+      },
+      {
+        id: 'mid',
+        label: '3-6 м, вероятна рабочая платформа',
+        modifier: { min: 90, max: 180 },
+        timeModifier: { min: 20, max: 45 },
+        impact: 'дополнительный доступ или рабочая платформа',
+      },
+      {
+        id: 'high',
+        label: 'Выше 6 м или сложный доступ',
+        modifier: { min: 180, max: 360 },
+        timeModifier: { min: 45, max: 90 },
+        impact: 'отдельная проверка доступа и безопасности',
+      },
     ],
     scenarios: [
       {
-        id: 'led-partial',
-        label: 'LED-модули / часть вывески не горит',
-        title: 'Часть вывески не светится',
-        symptom: 'Отдельные LED-зоны, модули или буквы остаются тёмными.',
-        checks: ['Проверить LED-цепи и полярность', 'Измерить блок питания', 'Исключить влагу в модулях'],
-        likelyResult: 'Точечный ремонт с заменой модуля или блока питания',
-        complexity: 'Средняя',
-        time: 'примерно 1-2 часа',
-        min: 220,
-        max: 520,
-        initialMessage: 'Цифровая первичная диагностика: часть LED-модулей или зон не светится. Проверить LED-цепи, блок питания и влагу.',
-      },
-      {
-        id: 'full-outage',
-        label: 'Вся вывеска не включается',
+        id: 'no-light',
+        label: 'Вывеска не светится',
         title: 'Вся вывеска остаётся тёмной',
-        symptom: 'Нет подсветки и реакции при включении.',
-        checks: ['Проверить питание и автомат', 'Измерить трансформатор / блок питания', 'Проверить главную линию и таймеры'],
-        likelyResult: 'Электрическая диагностика до решения о замене деталей',
-        complexity: 'Средняя или высокая',
-        time: 'примерно 1-3 часа',
-        min: 260,
-        max: 680,
-        initialMessage: 'Цифровая первичная диагностика: вся вывеска не включается. Проверить питание, автомат, трансформатор/блок питания и главную линию.',
+        symptom: 'Нет подсветки или вывеска включается нестабильно.',
+        checks: ['Питание и автомат', 'Блок питания / трансформатор', 'Главная линия, таймер и управление'],
+        likelyResult: 'Электрическая диагностика до решения о замене блока питания, линии или управления',
+        scopeLabel: 'Объём отказа',
+        scopeOptions: [
+          { id: 'single', label: 'один участок', modifier: { min: 0, max: 80 }, timeModifier: { min: 0, max: 20 }, impact: 'один понятный участок' },
+          { id: 'multiple', label: 'несколько участков', modifier: { min: 80, max: 180 }, timeModifier: { min: 20, max: 45 }, impact: 'несколько групп или линий' },
+          { id: 'full', label: 'вся вывеска', modifier: { min: 140, max: 260 }, timeModifier: { min: 30, max: 60 }, impact: 'полный отказ подсветки' },
+        ],
+        baseRange: { min: 240, max: 620 },
+        baseTime: { min: 60, max: 150 },
+        factors: ['питание', 'блок питания / трансформатор', 'управление', 'влага'],
+        initialMessage: 'Диагностика: вывеска не светится.',
       },
       {
         id: 'flicker',
-        label: 'Мерцание / нестабильный свет',
-        title: 'Свет мерцает или работает нестабильно',
-        symptom: 'Вывеска светится неравномерно, пульсирует или временами отключается.',
-        checks: ['Измерить падение напряжения', 'Проверить диммер / управление', 'Проверить контакты и запас мощности'],
-        likelyResult: 'Стабилизация питания и проверка контактов',
-        complexity: 'Средняя',
-        time: 'примерно 1-2 часа',
-        min: 240,
-        max: 560,
-        initialMessage: 'Цифровая первичная диагностика: мерцание или нестабильный свет. Проверить падение напряжения, управление и контакты.',
+        label: 'Мерцает / нестабильный свет',
+        title: 'Свет мерцает или периодически пропадает',
+        symptom: 'Вывеска пульсирует, светит неравномерно или временами отключается.',
+        checks: ['Падение напряжения', 'Контакты и клеммы', 'Диммер, контроллер и запас мощности'],
+        likelyResult: 'Стабилизация питания и проверка контактов, контроллера или LED-драйверов',
+        scopeLabel: 'Объём мерцания',
+        scopeOptions: [
+          { id: 'single', label: 'одна зона', modifier: { min: 0, max: 70 }, timeModifier: { min: 0, max: 15 }, impact: 'одна зона мерцания' },
+          { id: 'multiple', label: 'несколько зон', modifier: { min: 70, max: 160 }, timeModifier: { min: 15, max: 40 }, impact: 'несколько зон или переменный отказ' },
+          { id: 'full', label: 'почти вся вывеска', modifier: { min: 130, max: 240 }, timeModifier: { min: 30, max: 60 }, impact: 'широкая проблема в системе подсветки' },
+        ],
+        baseRange: { min: 240, max: 560 },
+        baseTime: { min: 60, max: 120 },
+        factors: ['запас блока питания', 'контакты', 'длина линии', 'влага'],
+        initialMessage: 'Диагностика: вывеска мерцает или работает нестабильно.',
+      },
+      {
+        id: 'led-zone',
+        label: 'Не горит буква / LED-зона',
+        title: 'Не светится буква или часть LED',
+        symptom: 'Отдельные буквы, LED-зоны или модули остаются тёмными.',
+        checks: ['LED-цепи и полярность', 'Локальные линии и соединители', 'Совместимость модулей или блока питания'],
+        likelyResult: 'Точечный ремонт с заменой LED-модулей, линии или блока питания',
+        scopeLabel: 'Затронутые LED-зоны',
+        scopeOptions: [
+          { id: 'single', label: 'одна зона / буква', modifier: { min: 0, max: 70 }, timeModifier: { min: 0, max: 15 }, impact: 'одна локальная LED-зона' },
+          { id: 'multiple', label: 'несколько зон', modifier: { min: 80, max: 180 }, timeModifier: { min: 20, max: 45 }, impact: 'несколько LED-зон или букв' },
+          { id: 'large', label: 'большая часть', modifier: { min: 150, max: 320 }, timeModifier: { min: 40, max: 75 }, impact: 'больший объём LED-модулей' },
+        ],
+        baseRange: { min: 220, max: 540 },
+        baseTime: { min: 60, max: 120 },
+        factors: ['количество зон', 'тип модулей', 'яркость и цвет', 'доступ к элементу'],
+        initialMessage: 'Диагностика: не горит буква или LED-зона.',
       },
       {
         id: 'rain-fail',
-        label: 'Сбой после дождя / выбивает автомат',
-        title: 'Проблема при дожде или влажности',
+        label: 'После дождя выбивает автомат',
+        title: 'Проблема появляется при дожде или влажности',
         symptom: 'Выбивает автомат, вывеска отключается или включается только после высыхания.',
-        checks: ['Проверить изоляцию', 'Проверить кабельные вводы', 'Проверить корпус и уплотнения'],
-        likelyResult: 'Диагностика влаги с проверкой безопасности',
-        complexity: 'Высокая',
-        time: 'примерно 2-4 часа',
-        min: 320,
-        max: 880,
-        initialMessage: 'Цифровая первичная диагностика: сбой после дождя или влажности. Проверить изоляцию, кабельные вводы, уплотнения и автомат.',
-      },
-      {
-        id: 'mounting',
-        label: 'Крепление / механическое повреждение',
-        title: 'Повреждён корпус или крепление',
-        symptom: 'Вывеска шатается, крепления ослабли или есть повреждения после ветра.',
-        checks: ['Проверить точки крепления', 'Оценить фасад и основание', 'Запланировать временное крепление опасных частей'],
-        likelyResult: 'Безопасное закрепление и механический ремонт',
-        complexity: 'Высокая',
-        time: 'возможна половина рабочего дня',
-        min: 360,
-        max: 980,
-        initialMessage: 'Цифровая первичная диагностика: крепление или механическое повреждение. Проверить точки крепления, основание и безопасность частей.',
+        checks: ['Изоляция и защитное отключение', 'Кабельные вводы и уплотнения', 'Коррозия и влага внутри корпуса'],
+        likelyResult: 'Диагностика влаги с проверкой безопасности до любого решения о ремонте',
+        scopeLabel: 'Поведение при влаге',
+        scopeOptions: [
+          { id: 'sometimes', label: 'иногда после дождя', modifier: { min: 0, max: 100 }, timeModifier: { min: 0, max: 25 }, impact: 'периодический сбой от влаги' },
+          { id: 'breaker', label: 'выбивает автомат', modifier: { min: 120, max: 260 }, timeModifier: { min: 30, max: 70 }, impact: 'срабатывает защита или возможна утечка' },
+          { id: 'visible-water', label: 'видна вода', modifier: { min: 180, max: 360 }, timeModifier: { min: 45, max: 90 }, impact: 'видимая влага или коррозия' },
+        ],
+        baseRange: { min: 320, max: 880 },
+        baseTime: { min: 90, max: 210 },
+        factors: ['уплотнения', 'кабельные вводы', 'коррозия', 'проверка безопасности'],
+        initialMessage: 'Диагностика: сбой после дождя или влажности.',
       },
       {
         id: 'film',
-        label: 'Плёнка отклеилась / поверхность повреждена',
+        label: 'Плёнка / поверхность',
         title: 'Повреждена плёнка или поверхность',
         symptom: 'Плёнка отклеивается, выцвела, появились пузыри или следы клея.',
-        checks: ['Проверить основание', 'Оценить UV-выгорание и клей', 'Запланировать очистку и новую оклейку'],
-        likelyResult: 'Подготовка поверхности и частичная или новая оклейка',
-        complexity: 'Низкая или средняя',
-        time: 'примерно 1-3 часа',
-        min: 180,
-        max: 620,
-        initialMessage: 'Цифровая первичная диагностика: плёнка отклеилась или поверхность повреждена. Проверить основание, UV-повреждения, клей и новую оклейку.',
+        checks: ['Основание и остатки клея', 'UV-выгорание и состояние материала', 'Чистка, частичная замена или новая оклейка'],
+        likelyResult: 'Подготовка поверхности с частичным ремонтом или новой оклейкой после проверки материала',
+        scopeLabel: 'Площадь дефекта',
+        scopeOptions: [
+          { id: 'edge', label: 'край / угол', modifier: { min: 0, max: 60 }, timeModifier: { min: 0, max: 15 }, impact: 'локальный край или угол' },
+          { id: 'section', label: 'отдельный участок', modifier: { min: 70, max: 170 }, timeModifier: { min: 20, max: 45 }, impact: 'заметный участок поверхности' },
+          { id: 'large', label: 'большая площадь', modifier: { min: 160, max: 360 }, timeModifier: { min: 45, max: 90 }, impact: 'большая площадь или новая оклейка' },
+        ],
+        baseRange: { min: 180, max: 620 },
+        baseTime: { min: 60, max: 150 },
+        factors: ['площадь', 'основание', 'остатки клея', 'материал и UV-нагрузка'],
+        initialMessage: 'Диагностика: повреждена плёнка или поверхность.',
+      },
+      {
+        id: 'mounting',
+        label: 'Крепление / шторм',
+        title: 'Повреждён корпус или крепление',
+        symptom: 'Вывеска шатается, крепления ослабли или есть повреждения после ветра, шторма или удара.',
+        checks: ['Точки крепления', 'Фасад, основание и коррозия', 'Фиксация опасных частей'],
+        likelyResult: 'Безопасное закрепление, механический ремонт или контролируемый демонтаж до основного ремонта',
+        scopeLabel: 'Механическое состояние',
+        scopeOptions: [
+          { id: 'loose', label: 'лёгкий люфт', modifier: { min: 0, max: 90 }, timeModifier: { min: 0, max: 20 }, impact: 'лёгкое ослабление крепления' },
+          { id: 'damaged', label: 'повреждение', modifier: { min: 120, max: 260 }, timeModifier: { min: 30, max: 70 }, impact: 'видимое повреждение крепления или корпуса' },
+          { id: 'fall-risk', label: 'риск падения', modifier: { min: 220, max: 460 }, timeModifier: { min: 45, max: 120 }, impact: 'нужна фиксация или ограничение зоны' },
+        ],
+        baseRange: { min: 360, max: 980 },
+        baseTime: { min: 90, max: 240 },
+        factors: ['крепления', 'основание', 'коррозия', 'потребность в фиксации'],
+        initialMessage: 'Диагностика: крепление или механическое повреждение.',
+      },
+      {
+        id: 'urgent',
+        label: 'Срочно: опасность',
+        title: 'Сначала нужно убрать риск безопасности',
+        symptom: 'Запах гари, искры, открытые провода, болтающиеся части или опасность для прохожих.',
+        checks: ['Признак риска с безопасного расстояния', 'Безопасное отключение питания', 'Фиксация, ограждение или срочный осмотр'],
+        likelyResult: 'Приоритет — безопасное отключение, фиксация или ограждение; объём ремонта определяется после проверки риска',
+        scopeLabel: 'Актуальная ситуация',
+        scopeOptions: [
+          { id: 'electrical', label: 'запах / искры', modifier: { min: 180, max: 360 }, timeModifier: { min: 30, max: 90 }, impact: 'признак электрической опасности' },
+          { id: 'loose-parts', label: 'болтаются части', modifier: { min: 220, max: 420 }, timeModifier: { min: 45, max: 120 }, impact: 'механический риск для людей' },
+          { id: 'blocked-area', label: 'затронут вход', modifier: { min: 260, max: 520 }, timeModifier: { min: 60, max: 150 }, impact: 'затронут вход или зона посетителей' },
+        ],
+        baseRange: { min: 420, max: 1100 },
+        baseTime: { min: 60, max: 180 },
+        factors: ['уровень опасности', 'доступ', 'ограждение', 'срочная фиксация'],
+        initialMessage: 'Срочная диагностика: возможный риск безопасности у вывески.',
+        urgent: true,
+        ctaLabel: 'Сообщить срочный случай',
       },
     ],
   },
@@ -279,163 +472,394 @@ type LeistungenDigitalDiagnosisProps = {
   locale: string;
 };
 
+function parseDimension(value: string, fallback: number): number {
+  const parsed = Number(value.replace(',', '.'));
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function isValidDimension(value: string): boolean {
+  const parsed = Number(value.replace(',', '.'));
+  return Number.isFinite(parsed) && parsed > 0;
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
+}
+
+function roundToTen(value: number): number {
+  return Math.round(value / 10) * 10;
+}
+
+function getAreaAdjustment(area: number, content: DiagnosisContent): AreaAdjustment {
+  if (area <= 2) {
+    return {
+      label: '0.5-2 m²',
+      note: content.sizeHint,
+      modifier: { min: 0, max: 0 },
+      timeModifier: { min: 0, max: 0 },
+    };
+  }
+
+  if (area <= 6) {
+    return {
+      label: '2-6 m²',
+      note: content.sizeHint,
+      modifier: { min: 60, max: 140 },
+      timeModifier: { min: 15, max: 35 },
+    };
+  }
+
+  if (area <= 12) {
+    return {
+      label: '6-12 m²',
+      note: content.largeAreaNote,
+      modifier: { min: 140, max: 280 },
+      timeModifier: { min: 35, max: 70 },
+    };
+  }
+
+  return {
+    label: '12-30 m²',
+    note: content.largeAreaNote,
+    modifier: { min: 260, max: 520 },
+    timeModifier: { min: 60, max: 120 },
+  };
+}
+
+function formatNumber(value: number, locale: DiagnosisLocale): string {
+  return value.toLocaleString(locale === 'ru' ? 'ru-RU' : 'de-DE', {
+    maximumFractionDigits: 1,
+  });
+}
+
+function formatMinutes(value: number, locale: DiagnosisLocale): string {
+  if (value < 60) {
+    return locale === 'ru' ? `${value} мин` : `${value} Min.`;
+  }
+
+  const hours = value / 60;
+  const formatted = hours.toLocaleString(locale === 'ru' ? 'ru-RU' : 'de-DE', {
+    maximumFractionDigits: 1,
+  });
+
+  return locale === 'ru' ? `${formatted} ч` : `${formatted} Std.`;
+}
+
+function formatTimeRange(range: Modifier, locale: DiagnosisLocale): string {
+  return locale === 'ru'
+    ? `примерно ${formatMinutes(range.min, locale)}-${formatMinutes(range.max, locale)}`
+    : `ca. ${formatMinutes(range.min, locale)}-${formatMinutes(range.max, locale)}`;
+}
+
 export default function LeistungenDigitalDiagnosis({ locale }: LeistungenDigitalDiagnosisProps) {
   const normalizedLocale: DiagnosisLocale = locale === 'ru' ? 'ru' : 'de';
   const content = CONTENT[normalizedLocale];
   const [scenarioId, setScenarioId] = useState(content.scenarios[0].id);
-  const [accessCost, setAccessCost] = useState(content.accessOptions[0].value);
+  const [accessId, setAccessId] = useState(content.accessOptions[0].id);
+  const [scopeId, setScopeId] = useState(content.scenarios[0].scopeOptions[0].id);
+  const [width, setWidth] = useState(DEFAULT_WIDTH.toFixed(1));
+  const [height, setHeight] = useState(DEFAULT_HEIGHT.toFixed(1));
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const scenario = content.scenarios.find((item) => item.id === scenarioId) ?? content.scenarios[0];
-  const access = content.accessOptions.find((item) => item.value === accessCost) ?? content.accessOptions[0];
+  const access = content.accessOptions.find((item) => item.id === accessId) ?? content.accessOptions[0];
+  const scope = scenario.scopeOptions.find((item) => item.id === scopeId) ?? scenario.scopeOptions[0];
 
-  const range = useMemo(() => {
-    return {
-      min: scenario.min + access.value,
-      max: scenario.max + access.value,
-    };
-  }, [access.value, scenario]);
+  const widthValue = parseDimension(width, DEFAULT_WIDTH);
+  const heightValue = parseDimension(height, DEFAULT_HEIGHT);
+  const hasFallbackDimension = !isValidDimension(width) || !isValidDimension(height);
+  const rawArea = widthValue * heightValue;
+  const area = clamp(rawArea, MIN_AREA, MAX_AREA);
+  const areaAdjustment = getAreaAdjustment(area, content);
 
-  const numberLocale = normalizedLocale === 'ru' ? 'ru-RU' : 'de-DE';
+  const estimate = {
+    min: roundToTen(scenario.baseRange.min + access.modifier.min + scope.modifier.min + areaAdjustment.modifier.min),
+    max: roundToTen(scenario.baseRange.max + access.modifier.max + scope.modifier.max + areaAdjustment.modifier.max),
+  };
+
+  const timeRange = {
+    min: scenario.baseTime.min + access.timeModifier.min + scope.timeModifier.min + areaAdjustment.timeModifier.min,
+    max: scenario.baseTime.max + access.timeModifier.max + scope.timeModifier.max + areaAdjustment.timeModifier.max,
+  };
+
+  const areaLabel = `${formatNumber(area, normalizedLocale)} m²`;
+  const estimateLabel = `${content.estimatePrefix} ${estimate.min.toLocaleString(normalizedLocale === 'ru' ? 'ru-RU' : 'de-DE')}-${estimate.max.toLocaleString(normalizedLocale === 'ru' ? 'ru-RU' : 'de-DE')} EUR`;
+  const timeLabel = formatTimeRange(timeRange, normalizedLocale);
+  const factors = [access.impact, scope.impact, areaAdjustment.label, ...scenario.factors];
+  const hasClampedArea = rawArea > MAX_AREA || rawArea < MIN_AREA;
+  const sizeNote = hasClampedArea
+    ? content.largeAreaNote
+    : hasFallbackDimension
+      ? content.unknownSizeNote
+      : content.sizeHint;
+
+  const handleScenarioChange = (nextScenarioId: string) => {
+    const nextScenario = content.scenarios.find((item) => item.id === nextScenarioId) ?? content.scenarios[0];
+    setScenarioId(nextScenario.id);
+    setScopeId(nextScenario.scopeOptions[0].id);
+  };
+
+  const drawerMessage = [
+    scenario.initialMessage,
+    `${content.accessLabel}: ${access.label}.`,
+    `${content.sizeLabel}: ${formatNumber(widthValue, normalizedLocale)} x ${formatNumber(heightValue, normalizedLocale)} m (${areaLabel}).`,
+    `${scenario.scopeLabel}: ${scope.label}.`,
+    `${content.timeLabel}: ${timeLabel}.`,
+    `${content.budgetLabel}: ${estimateLabel}.`,
+    sizeNote,
+    content.warningNote,
+  ].join(' ');
 
   return (
     <>
       <section id="diagnose" className="border-t border-[#E7DDD3] bg-[#EEF3FB] px-4 py-16 sm:px-6 sm:py-24">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-          <div className="text-start">
-            <SectionEyebrow className="mb-5">{content.eyebrow}</SectionEyebrow>
-            <h2 className="max-w-3xl text-[34px] font-extrabold leading-[1.06] tracking-[0] text-[#0E1A2B] sm:text-[48px]">
-              {content.title}
-            </h2>
-            <p className="mt-5 max-w-2xl text-[17px] font-medium leading-[1.7] text-[#334155]">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,0.78fr)_minmax(320px,0.62fr)] lg:items-end">
+            <div className="text-start">
+              <SectionEyebrow className="mb-3">{content.eyebrow}</SectionEyebrow>
+              <h2 className="max-w-4xl text-[34px] font-extrabold leading-[1.06] tracking-[0] text-[#0E1A2B] sm:text-[48px] lg:text-[56px]">
+                {content.title}
+              </h2>
+            </div>
+            <p className="max-w-2xl text-[16px] font-medium leading-[1.7] text-[#334155] lg:text-[18px]">
               {content.intro}
             </p>
-
-            <div className="mt-8 grid gap-4">
-              <div className="flex gap-4 rounded-[22px] border border-[#D9C7BA] bg-[#FFFDF9]/74 p-5 shadow-sm">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#B8643E]/10 text-[13px] font-black text-[#B8643E]">
-                  1
-                </span>
-                <div>
-                  <h3 className="text-[17px] font-extrabold text-[#0E1A2B]">{content.pointOneTitle}</h3>
-                  <p className="mt-1 text-[14px] font-medium leading-6 text-[#526174]">{content.pointOneText}</p>
-                </div>
-              </div>
-              <div className="flex gap-4 rounded-[22px] border border-[#D9C7BA] bg-[#FFFDF9]/74 p-5 shadow-sm">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#B8643E]/10 text-[13px] font-black text-[#B8643E]">
-                  2
-                </span>
-                <div>
-                  <h3 className="text-[17px] font-extrabold text-[#0E1A2B]">{content.pointTwoTitle}</h3>
-                  <p className="mt-1 text-[14px] font-medium leading-6 text-[#526174]">{content.pointTwoText}</p>
-                </div>
-              </div>
-            </div>
           </div>
 
-          <div className="rounded-[30px] border border-white/10 bg-[#0D1B2A] p-5 text-white shadow-[0_24px_70px_rgba(13,27,42,0.24)] sm:p-7">
-            <div className="flex flex-wrap items-start justify-between gap-4 border-b border-white/10 pb-5">
-              <div>
-                <h3 className="text-[24px] font-black leading-tight text-white sm:text-[28px]">{content.terminalTitle}</h3>
-                <p className="mt-2 text-[14px] font-medium leading-6 text-white/60">{scenario.symptom}</p>
+          <div className="mt-10 grid gap-5 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+            <div className="rounded-[18px] border border-[#D9C7BA] bg-[#FFFDF9]/82 p-5 shadow-sm sm:p-6">
+              <h3 className="text-[22px] font-extrabold leading-tight text-[#0E1A2B]">
+                {content.problemListTitle}
+              </h3>
+              <p className="mt-2 text-[14px] font-medium leading-6 text-[#526174]">
+                {content.problemListIntro}
+              </p>
+
+              <div className="mt-5 grid gap-2">
+                {content.scenarios.map((item) => {
+                  const isActive = item.id === scenario.id;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      aria-pressed={isActive}
+                      onClick={() => handleScenarioChange(item.id)}
+                      className={`group flex min-h-[64px] items-start gap-3 rounded-[14px] border px-4 py-3 text-start transition ${
+                        isActive
+                          ? 'border-[#B8643E] bg-[#B8643E] text-white shadow-[0_14px_30px_rgba(184,100,62,0.18)]'
+                          : 'border-[#E7DDD3] bg-white text-[#0D1B2A] hover:border-[#B8643E]/45 hover:bg-[#FFFAF4]'
+                      }`}
+                    >
+                      <span
+                        className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-black ${
+                          isActive ? 'bg-white/18 text-white' : 'bg-[#B8643E]/10 text-[#B8643E]'
+                        }`}
+                      >
+                        {content.scenarios.indexOf(item) + 1}
+                      </span>
+                      <span>
+                        <span className="block text-[15px] font-black leading-snug">{item.label}</span>
+                        <span className={`mt-1 block text-[13px] font-semibold leading-5 ${isActive ? 'text-white/76' : 'text-[#526174]'}`}>
+                          {item.title}
+                        </span>
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
-              <span className="rounded-full border border-[#B8643E]/30 bg-[#B8643E]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-[#D47E55]">
-                {content.terminalBadge}
-              </span>
             </div>
 
-            <div className="mt-5 grid gap-5">
-              <label className="block">
-                <span className="mb-2 block text-[12px] font-black uppercase tracking-[0.14em] text-[#D47E55]">
-                  {content.defectLabel}
-                </span>
-                <select
-                  value={scenarioId}
-                  onChange={(event) => setScenarioId(event.target.value)}
-                  className="min-h-[52px] w-full rounded-[16px] border border-white/12 bg-white/8 px-4 text-[15px] font-bold text-white outline-none transition focus:border-[#B8643E]/70 focus:ring-4 focus:ring-[#B8643E]/15"
-                >
-                  {content.scenarios.map((item) => (
-                    <option key={item.id} value={item.id} className="bg-[#0D1B2A] text-white">
-                      {item.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
+            <div className="rounded-[18px] border border-[#D9C7BA] bg-[#FFFDF9] p-5 shadow-[0_20px_55px_rgba(13,27,42,0.12)] sm:p-6">
+              <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[#E7DDD3] pb-5">
+                <div>
+                  <span className={`inline-flex rounded-full border px-3 py-1 text-[11px] font-black uppercase tracking-[0.14em] ${
+                    scenario.urgent
+                      ? 'border-[#B8643E]/35 bg-[#B8643E]/10 text-[#B8643E]'
+                      : 'border-[#D9C7BA] bg-[#F7F1E8] text-[#B8643E]'
+                  }`}>
+                    {content.cardBadge}
+                  </span>
+                  <h3 className="mt-3 text-[28px] font-black leading-tight text-[#0E1A2B] sm:text-[34px]">
+                    {content.cardTitle}
+                  </h3>
+                  <p className="mt-2 max-w-2xl text-[14px] font-medium leading-6 text-[#526174]">
+                    {scenario.symptom}
+                  </p>
+                </div>
+              </div>
 
-              <label className="block">
-                <span className="mb-2 block text-[12px] font-black uppercase tracking-[0.14em] text-[#D47E55]">
-                  {content.accessLabel}
-                </span>
-                <select
-                  value={accessCost}
-                  onChange={(event) => setAccessCost(Number(event.target.value))}
-                  className="min-h-[52px] w-full rounded-[16px] border border-white/12 bg-white/8 px-4 text-[15px] font-bold text-white outline-none transition focus:border-[#B8643E]/70 focus:ring-4 focus:ring-[#B8643E]/15"
-                >
-                  {content.accessOptions.map((item) => (
-                    <option key={item.label} value={item.value} className="bg-[#0D1B2A] text-white">
-                      {item.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <div className="mt-5 grid gap-5">
+                <div>
+                  <span className="mb-2 block text-[12px] font-black uppercase tracking-[0.14em] text-[#B8643E]">
+                    {content.accessLabel}
+                  </span>
+                  <div className="grid gap-2 sm:grid-cols-3">
+                    {content.accessOptions.map((option) => {
+                      const isActive = option.id === access.id;
+                      return (
+                        <button
+                          key={option.id}
+                          type="button"
+                          aria-pressed={isActive}
+                          onClick={() => setAccessId(option.id)}
+                          className={`min-h-[54px] rounded-[12px] border px-3 py-2 text-start text-[13px] font-extrabold leading-5 transition ${
+                            isActive
+                              ? 'border-[#0D1B2A] bg-[#0D1B2A] text-white'
+                              : 'border-[#E7DDD3] bg-[#FFFAF4] text-[#0D1B2A] hover:border-[#B8643E]/50'
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
 
-              <div className="rounded-[22px] border border-white/10 bg-white/6 p-5">
-                <span className="block text-[12px] font-black uppercase tracking-[0.14em] text-[#D47E55]">
-                  {content.checksLabel}
-                </span>
-                <div className="mt-4 grid gap-3">
-                  {scenario.checks.map((check, index) => (
-                    <div key={check} className="flex gap-3 text-[14px] font-semibold leading-6 text-white/82">
-                      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#B8643E] text-[12px] font-black text-white">
-                        {index + 1}
+                <div>
+                  <span className="mb-2 block text-[12px] font-black uppercase tracking-[0.14em] text-[#B8643E]">
+                    {content.sizeLabel}
+                  </span>
+                  <div className="grid gap-3 sm:grid-cols-[1fr_1fr_minmax(150px,0.75fr)]">
+                    <label className="block">
+                      <span className="mb-1 block text-[12px] font-bold text-[#526174]">{content.widthLabel}</span>
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        min="0"
+                        step="0.1"
+                        value={width}
+                        onChange={(event) => setWidth(event.target.value)}
+                        className="min-h-[50px] w-full rounded-[12px] border border-[#E7DDD3] bg-[#FFFAF4] px-4 text-[15px] font-bold text-[#0D1B2A] outline-none transition focus:border-[#B8643E]/70 focus:ring-4 focus:ring-[#B8643E]/10"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="mb-1 block text-[12px] font-bold text-[#526174]">{content.heightLabel}</span>
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        min="0"
+                        step="0.1"
+                        value={height}
+                        onChange={(event) => setHeight(event.target.value)}
+                        className="min-h-[50px] w-full rounded-[12px] border border-[#E7DDD3] bg-[#FFFAF4] px-4 text-[15px] font-bold text-[#0D1B2A] outline-none transition focus:border-[#B8643E]/70 focus:ring-4 focus:ring-[#B8643E]/10"
+                      />
+                    </label>
+                    <div className="rounded-[12px] border border-[#E7DDD3] bg-[#F7F1E8] px-4 py-3">
+                      <span className="block text-[11px] font-black uppercase tracking-[0.12em] text-[#6F7A8A]">
+                        {content.areaLabel}
                       </span>
-                      <span>{check}</span>
+                      <strong className="mt-1 block text-[18px] font-black text-[#0E1A2B]">{areaLabel}</strong>
                     </div>
-                  ))}
+                  </div>
+                  <p className="mt-2 text-[12px] font-semibold leading-5 text-[#6F7A8A]">
+                    {sizeNote}
+                  </p>
                 </div>
-              </div>
 
-              <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-[18px] border border-white/10 bg-white/6 p-4">
-                  <span className="block text-[11px] font-black uppercase tracking-[0.14em] text-white/50">
-                    {content.complexityLabel}
+                <div>
+                  <span className="mb-2 block text-[12px] font-black uppercase tracking-[0.14em] text-[#B8643E]">
+                    {scenario.scopeLabel}
                   </span>
-                  <strong className="mt-2 block text-[17px] font-black text-white">{scenario.complexity}</strong>
+                  <div className="grid gap-2 sm:grid-cols-3">
+                    {scenario.scopeOptions.map((option) => {
+                      const isActive = option.id === scope.id;
+                      return (
+                        <button
+                          key={option.id}
+                          type="button"
+                          aria-pressed={isActive}
+                          onClick={() => setScopeId(option.id)}
+                          className={`min-h-[50px] rounded-[12px] border px-3 py-2 text-start text-[13px] font-extrabold leading-5 transition ${
+                            isActive
+                              ? 'border-[#B8643E] bg-[#B8643E] text-white'
+                              : 'border-[#E7DDD3] bg-[#FFFAF4] text-[#0D1B2A] hover:border-[#B8643E]/50'
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="rounded-[18px] border border-white/10 bg-white/6 p-4">
-                  <span className="block text-[11px] font-black uppercase tracking-[0.14em] text-white/50">
-                    {content.timeLabel}
-                  </span>
-                  <strong className="mt-2 block text-[17px] font-black text-white">
-                    {scenario.time} {access.timeAddon}
-                  </strong>
-                </div>
-                <div className="rounded-[18px] border border-[#B8643E]/30 bg-[#B8643E]/10 p-4">
-                  <span className="block text-[11px] font-black uppercase tracking-[0.14em] text-[#D47E55]">
-                    {content.budgetLabel}
-                  </span>
-                  <strong className="mt-2 block text-[17px] font-black text-white">
-                    {range.min.toLocaleString(numberLocale)}-{range.max.toLocaleString(numberLocale)} EUR
-                  </strong>
-                </div>
-              </div>
 
-              <div className="rounded-[18px] border border-white/10 bg-white/6 p-4">
-                <span className="block text-[11px] font-black uppercase tracking-[0.14em] text-white/50">
-                  {content.likelyLabel}
-                </span>
-                <strong className="mt-2 block text-[17px] font-black leading-snug text-white">
-                  {scenario.likelyResult}
-                </strong>
-              </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-[14px] border border-[#E7DDD3] bg-[#0D1B2A] p-5 text-white">
+                    <span className="block text-[11px] font-black uppercase tracking-[0.14em] text-white/60">
+                      {content.budgetLabel}
+                    </span>
+                    <strong className="mt-2 block text-[28px] font-black leading-none sm:text-[34px]">
+                      {estimateLabel}
+                    </strong>
+                  </div>
+                  <div className="rounded-[14px] border border-[#E7DDD3] bg-[#F7F1E8] p-5">
+                    <span className="block text-[11px] font-black uppercase tracking-[0.14em] text-[#6F7A8A]">
+                      {content.timeLabel}
+                    </span>
+                    <strong className="mt-2 block text-[22px] font-black leading-tight text-[#0E1A2B]">
+                      {timeLabel}
+                    </strong>
+                  </div>
+                </div>
 
-              <button
-                type="button"
-                onClick={() => setIsDrawerOpen(true)}
-                className="inline-flex min-h-[54px] w-full items-center justify-center rounded-full bg-[#B8643E] px-7 py-3 text-[15px] font-black text-white shadow-[0_16px_34px_rgba(184,100,62,0.28)] transition-all duration-300 hover:bg-[#A65835] active:scale-[0.98]"
-              >
-                {content.ctaLabel}
-              </button>
+                <div className="grid gap-3 lg:grid-cols-[0.9fr_1.1fr]">
+                  <div className="rounded-[14px] border border-[#E7DDD3] bg-[#FFFAF4] p-5">
+                    <span className="block text-[12px] font-black uppercase tracking-[0.14em] text-[#B8643E]">
+                      {content.checksLabel}
+                    </span>
+                    <div className="mt-4 grid gap-3">
+                      {scenario.checks.map((check, index) => (
+                        <div key={check} className="flex gap-3 text-[14px] font-semibold leading-6 text-[#334155]">
+                          <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#B8643E] text-[12px] font-black text-white">
+                            {index + 1}
+                          </span>
+                          <span>{check}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-[14px] border border-[#E7DDD3] bg-white p-5">
+                    <span className="block text-[12px] font-black uppercase tracking-[0.14em] text-[#B8643E]">
+                      {content.likelyLabel}
+                    </span>
+                    <strong className="mt-3 block text-[17px] font-black leading-snug text-[#0E1A2B]">
+                      {scenario.likelyResult}
+                    </strong>
+                    <span className="mt-5 block text-[12px] font-black uppercase tracking-[0.14em] text-[#6F7A8A]">
+                      {content.factorsLabel}
+                    </span>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {factors.slice(0, 7).map((factor) => (
+                        <span
+                          key={factor}
+                          className="rounded-full border border-[#E7DDD3] bg-[#F7F1E8] px-3 py-1 text-[12px] font-bold text-[#526174]"
+                        >
+                          {factor}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-[14px] border border-[#D9C7BA] bg-[#F7F1E8] p-4">
+                  <span className="block text-[11px] font-black uppercase tracking-[0.14em] text-[#B8643E]">
+                    {content.noteLabel}
+                  </span>
+                  <p className="mt-2 text-[13px] font-semibold leading-6 text-[#526174]">
+                    {scenario.urgent ? scenario.likelyResult : content.warningNote}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsDrawerOpen(true)}
+                  className={`inline-flex min-h-[54px] w-full items-center justify-center rounded-full px-7 py-3 text-[15px] font-black text-white shadow-[0_16px_34px_rgba(184,100,62,0.24)] transition-all duration-300 active:scale-[0.98] ${
+                    scenario.urgent ? 'bg-[#0D1B2A] hover:bg-[#17283B]' : 'bg-[#B8643E] hover:bg-[#A65835]'
+                  }`}
+                >
+                  {scenario.ctaLabel ?? content.ctaLabel}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -445,11 +869,13 @@ export default function LeistungenDigitalDiagnosis({ locale }: LeistungenDigital
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
         title={content.drawerTitle}
-        reassuringText={`${scenario.likelyResult}. ${content.complexityLabel}: ${scenario.complexity}. ${content.timeLabel}: ${scenario.time}.`}
-        initialMessage={`${scenario.initialMessage} ${content.accessLabel}: ${access.label}. ${content.budgetLabel}: ${range.min.toLocaleString(numberLocale)}-${range.max.toLocaleString(numberLocale)} EUR.`}
+        reassuringText={`${scenario.likelyResult}. ${content.timeLabel}: ${timeLabel}. ${content.budgetLabel}: ${estimateLabel}.`}
+        initialMessage={drawerMessage}
         initialIssueType="Repair"
         closeLabel={content.drawerCloseLabel}
         formTitle={content.drawerFormTitle}
+        reassuringLabel={content.drawerInfoLabel}
+        formIntro={content.drawerFormIntro}
       />
     </>
   );
