@@ -11,6 +11,7 @@ export const DEFAULT_SITE_LOCALE: SiteLocale = 'de';
 export const PUBLIC_SITEMAP_PATHS = [
   '',
   '/leistungen',
+  '/leistungen/werbeanlagen-reparatur',
   '/probleme-loesungen',
   '/business',
   '/referenzen',

@@ -13,6 +13,8 @@ interface LeistungenProblemDrawerProps {
   initialIssueType: string;
   closeLabel?: string;
   formTitle?: string;
+  reassuringLabel?: string;
+  formIntro?: string;
 }
 
 export default function LeistungenProblemDrawer({
@@ -24,6 +26,8 @@ export default function LeistungenProblemDrawer({
   initialIssueType,
   closeLabel = 'Schließen',
   formTitle = 'Instandsetzung anfragen',
+  reassuringLabel = 'Einschätzung & Lösung',
+  formIntro = 'Geben Sie Ihre Kontaktdaten an, um das Ticket für diesen Defekt direkt in unser System einzustellen.',
 }: LeistungenProblemDrawerProps) {
   // Prevent body scroll when drawer is open
   useEffect(() => {
@@ -113,7 +117,7 @@ export default function LeistungenProblemDrawer({
               {/* Reassuring Text / Advice */}
               <div className="rounded-2xl border border-[#B8643E]/20 bg-[#B8643E]/5 p-4 text-white/90">
                 <h4 className="text-[11px] font-black uppercase tracking-[0.15em] text-[#B8643E] mb-2">
-                  Einschätzung & Lösung
+                  {reassuringLabel}
                 </h4>
                 <p className="text-[14px] leading-relaxed font-medium">
                   {reassuringText}
@@ -127,7 +131,7 @@ export default function LeistungenProblemDrawer({
                     {formTitle}
                   </h4>
                   <p className="text-[13px] text-white/60">
-                    Geben Sie Ihre Kontaktdaten an, um das Ticket für diesen Defekt direkt in unser System einzustellen.
+                    {formIntro}
                   </p>
                 </div>
 

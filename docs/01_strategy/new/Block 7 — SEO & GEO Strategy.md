@@ -203,17 +203,17 @@ Business/B2B pages отвечают на strategic buyer intent.
 
 Рекомендации:
 
-1. **Добавить Article + BreadcrumbList JSON-LD на article pages.**
-   Сейчас FAQPage schema есть на overview, но отдельные статьи должны быть машинно понятнее как самостоятельные expert pages.
+1. **Закрыто частично: Article JSON-LD (структурированные данные Article) уже добавлен на article pages (страницы статей).**
+   Следующий шаг: добавить `BreadcrumbList` (структурированные хлебные крошки), `datePublished` (дата публикации) и `dateModified` (дата обновления), чтобы статьи были машинно понятнее как самостоятельные expert pages (экспертные страницы).
 
-2. **Добавить блок "Похожие проблемы / связанные услуги" внизу статьи.**
-   Это усилит internal linking и topical cluster: related problem articles, related service pages, relevant references.
+2. **Закрыто частично: блок "Похожие проблемы" уже есть внизу article pages (страниц статей).**
+   Следующий шаг: расширить его до "Похожие проблемы / связанные услуги" (связанные проблемы / связанные услуги), добавив relevant service pages (релевантные страницы услуг) и, где уместно, relevant references (релевантные примеры работ).
 
-3. **Добавить мини-навигацию по статье.**
-   Например: `Kurze Antwort`, `Ursachen`, `Sichere Prüfung`, `Dringend`, `Vorgehen`, `Umfang`. Для этого значимые секции должны иметь стабильные anchors.
+3. **Закрыто частично: sidebar navigation (боковая навигация) по всем problem articles (статьям о проблемах) уже есть.**
+   Следующий шаг: добавить mini navigation (мини-навигацию) по секциям текущей статьи: `Kurze Antwort` (короткий ответ), `Ursachen` (причины), `Sichere Prüfung` (безопасная проверка), `Dringend` (срочно), `Vorgehen` (процесс), `Umfang` (объём). Для этого значимые секции должны иметь stable anchors (стабильные якоря).
 
-4. **Улучшить markdown rendering.**
-   Если CMS-контент содержит `##` или `###`, они должны рендериться как настоящие `h2/h3`, а не превращаться в обычные абзацы. Это важно для semantic HTML и long-form article quality.
+4. **Закрыто: markdown rendering (рендеринг Markdown) уже выводит `##` и `###` как настоящие `h2/h3`.**
+   Следующий шаг: добавить stable anchors (стабильные якоря) к этим заголовкам, если будет внедряться mini navigation (мини-навигация) по секциям статьи.
 
 5. **Добавить review/update signal.**
    Если CMS содержит дату публикации или review, статья может показывать `Zuletzt geprüft` / `Aktualisiert`. Это усиливает доверие и поддерживает GEO/AI visibility.
