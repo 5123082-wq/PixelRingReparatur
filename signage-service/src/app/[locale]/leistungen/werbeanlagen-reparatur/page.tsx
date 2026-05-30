@@ -6,10 +6,12 @@ import { getGlobalPageCmsContent } from '@/lib/cms/pages';
 import LeistungenRepairHeroSlider from '@/components/leistungen/LeistungenRepairHeroSlider';
 import LeistungenReparaturWorkflow from '@/components/leistungen/LeistungenReparaturWorkflow';
 import LeistungenDigitalDiagnosis from '@/components/leistungen/LeistungenDigitalDiagnosis';
-import LeistungenRepairCostEstimator from '@/components/leistungen/LeistungenRepairCostEstimator';
+import LeistungenDiagnosticPrototype from '@/components/leistungen/LeistungenDiagnosticPrototype';
 import LeistungenFooterCTA from '@/components/sections/LeistungenFooterCTA';
+import { SITE_BASE_URL, buildLanguageAlternates, buildLocaleUrl } from '@/lib/seo';
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
+type JsonLdObject = Record<string, unknown>;
 
 type Symptom = {
   id: string;
@@ -17,6 +19,21 @@ type Symptom = {
   cardText: string;
   reassuringText: string;
   prefillMessage: string;
+};
+
+type RepairInfoStep = {
+  title: string;
+  text: string;
+};
+
+type RepairFaqItem = {
+  question: string;
+  answer: string;
+};
+
+type RepairRelatedLink = {
+  label: string;
+  href: string;
 };
 
 type LandingPageContent = {
@@ -35,12 +52,30 @@ type LandingPageContent = {
   symptoms: Symptom[];
 };
 
+type RepairProcessContent = {
+  eyebrow: string;
+  title: string;
+  steps: RepairInfoStep[];
+};
+
+type RepairFaqContent = {
+  eyebrow: string;
+  title: string;
+  items: RepairFaqItem[];
+};
+
+type RepairRelatedContent = {
+  eyebrow: string;
+  title: string;
+  links: RepairRelatedLink[];
+};
+
 const CONTENT: Record<Locale, LandingPageContent> = {
   de: {
     metaTitle: 'Werbeanlagen-Reparatur & Instandsetzung in Berlin & Brandenburg | PixelRing',
-    metaDescription: 'Professioneller Service für Lichtwerbung, LED-Systeme und Außenwerbung. Herstellerunabhängig, schnelle Hilfe vor Ort & bis zu 24 Monate Garantie.',
-    heroTitle: 'Werbeanlagen-Reparatur & Instandsetzung',
-    heroSubline: 'Professioneller Service für Lichtwerbung, LED-Systeme und Außenwerbung in Berlin & Brandenburg. Schnell, herstellerunabhängig und mit Garantie.',
+    metaDescription: 'Reparatur von Werbeanlagen, Lichtwerbung, LED-Systemen und Leuchtkästen in Berlin & Brandenburg. Einschätzung nach Foto oder Beschreibung, direkter PixelRing Service.',
+    heroTitle: 'Werbeanlagen-Reparatur und Lichtwerbung-Service in Berlin & Brandenburg',
+    heroSubline: 'Direkter PixelRing Service für Leuchtkästen, LED-Beleuchtung, Profilbuchstaben, Folien und Befestigungen. Senden Sie ein Foto oder eine Beschreibung — wir prüfen die Situation und schlagen den nächsten Schritt vor.',
     heroImage: '/images/leistungen/hero-repair.png',
     symptomsTitle: 'Typische Defekte & Symptome',
     closeLabel: 'Schließen',
@@ -48,12 +83,14 @@ const CONTENT: Record<Locale, LandingPageContent> = {
     trustTitle: 'Zuverlässiger Rahmen für Ihren Auftrag',
     trustPoints: [
       'Direktkontakt: Keine Vermittlungsplattform — Ihre Anfrage geht direkt an PixelRing.',
-      'Kerngebiet: Berlin & Brandenburg für schnelle Reaktionszeiten vor Ort.',
-      'Gewährleistung: Bis zu 24 Monate Garantie auf alle ausgeführten Arbeiten und Ersatzteile.',
-      'Fachteam: Umsetzung durch zertifizierte Techniker unter zentraler Koordination.',
+      'Region: Berlin & Brandenburg sind das Kerngebiet für Diagnose und Reparatur vor Ort.',
+      'Erste Einschätzung: Fotos, kurze Videos oder eine Beschreibung helfen, Konstruktion, Zugang und Defekt einzuordnen.',
+      'Sicherheit: Bei Feuchtigkeit, Funken, offenen Leitungen oder lockerer Befestigung klären wir zuerst den sicheren nächsten Schritt.',
+      'Gewährleistung: Bis zu 24 Monate, abhängig von ausgeführter Arbeit, Material und Einsatzbedingungen.',
+      'Umsetzung: Formular und AI helfen bei der Vorbereitung, die Arbeiten werden durch PixelRing Spezialisten ausgeführt.',
     ],
     finalHeadline: 'Unsicher, ob Ihre Störung behoben werden kann?',
-    finalText: 'Senden Sie uns einfach ein Foto oder eine kurze Beschreibung. PixelRing prüft den Defekt und meldet sich innerhalb von 15 Minuten bei Ihnen.',
+    finalText: 'Senden Sie uns einfach ein Foto oder eine kurze Beschreibung. PixelRing prüft die Informationen und schlägt den nächsten sinnvollen Schritt vor.',
     symptoms: [
       {
         id: 'flackern',
@@ -122,9 +159,9 @@ const CONTENT: Record<Locale, LandingPageContent> = {
   },
   ru: {
     metaTitle: 'Ремонт и обслуживание наружной рекламы в Берлине и Бранденбурге | PixelRing',
-    metaDescription: 'Профессиональный ремонт световой рекламы, вывесок, LED-систем и коробов. Быстрый выезд, гарантия до 24 месяцев, работаем напрямую.',
-    heroTitle: 'Ремонт и обслуживание наружной рекламы',
-    heroSubline: 'Профессиональный сервис для световой рекламы, светодиодных (LED) систем и наружных конструкций в Берлине и Бранденбурге. Быстро, надежно и с гарантией.',
+    metaDescription: 'Ремонт световой рекламы, вывесок, LED-систем и коробов в Берлине и Бранденбурге. Оценка после фото или описания, прямой сервис PixelRing.',
+    heroTitle: 'Ремонт вывесок и световой рекламы в Берлине и Бранденбурге',
+    heroSubline: 'Прямой сервис PixelRing для световых коробов, LED-подсветки, букв, пленок и креплений. Пришлите фото или описание — специалисты оценят ситуацию и предложат следующий шаг.',
     heroImage: '/images/leistungen/hero-repair.png',
     symptomsTitle: 'Выберите вашу неисправность',
     closeLabel: 'Закрыть',
@@ -132,12 +169,14 @@ const CONTENT: Record<Locale, LandingPageContent> = {
     trustTitle: 'Надежные условия выполнения заказа',
     trustPoints: [
       'Прямой контакт: Никаких бирж и посредников — вы работаете напрямую с PixelRing.',
-      'Регион обслуживания: Быстрый выезд по Берлину и всей земле Бранденбург.',
-      'Гарантия: До 24 месяцев гарантии на выполненные ремонтные работы и запчасти.',
-      'Специалисты: Работы выполняются сертифицированными электриками и монтажниками.',
+      'Регион: Берлин и Бранденбург — основной район обслуживания для диагностики и ремонта на месте.',
+      'Первичная оценка: Фото, короткое видео или описание помогают заранее понять тип вывески, доступ и возможный дефект.',
+      'Безопасность: При влаге, искрении, открытых проводах или слабом креплении сначала уточняем риск и безопасный следующий шаг.',
+      'Гарантия: До 24 месяцев в зависимости от выполненной работы, материала и условий эксплуатации.',
+      'Исполнение: Форма и AI помогают подготовить заявку, а работы выполняют специалисты PixelRing.',
     ],
     finalHeadline: 'Не уверены, подлежит ли вывеска ремонту?',
-    finalText: 'Просто пришлите фото или описание проблемы. Специалисты PixelRing изучат задачу и свяжутся с вами в течение 15 минут.',
+    finalText: 'Просто пришлите фото или описание проблемы. Специалисты PixelRing проверят фото или описание и предложат следующий шаг.',
     symptoms: [
       {
         id: 'flackern',
@@ -206,9 +245,9 @@ const CONTENT: Record<Locale, LandingPageContent> = {
   },
   en: {
     metaTitle: 'Signage Repair & Maintenance in Berlin & Brandenburg | PixelRing',
-    metaDescription: 'Professional repair service for illuminated signage, LED systems, and outdoor advertising. Manufacturer independent, rapid on-site assistance & up to 24-month warranty.',
-    heroTitle: 'Signage Repair & Maintenance',
-    heroSubline: 'Professional service for illuminated signs, LED systems, and outdoor advertising in Berlin & Brandenburg. Fast, manufacturer-independent, and with warranty.',
+    metaDescription: 'Repair for signs, illuminated advertising, LED systems and lightboxes in Berlin & Brandenburg. Photo-based first assessment and direct PixelRing service.',
+    heroTitle: 'Signage and illuminated advertising repair in Berlin & Brandenburg',
+    heroSubline: 'Direct PixelRing service for lightboxes, LED lighting, channel letters, films and fixings. Send a photo or short description — specialists review the situation and suggest the next step.',
     heroImage: '/images/leistungen/hero-repair.png',
     symptomsTitle: 'Select your issue for a quick assessment',
     closeLabel: 'Close',
@@ -216,12 +255,14 @@ const CONTENT: Record<Locale, LandingPageContent> = {
     trustTitle: 'A reliable framework for your order',
     trustPoints: [
       'Direct contact: No middleman or listing platform — your request goes directly to PixelRing.',
-      'Service region: Berlin & Brandenburg for rapid on-site response times.',
-      'Warranty: Up to 24 months warranty on all executed works and spare parts.',
-      'Specialist team: Implemented by certified technicians under central coordination.',
+      'Region: Berlin & Brandenburg are the core service area for on-site diagnosis and repair.',
+      'First assessment: Photos, short videos or a description help clarify the sign type, access and likely defect.',
+      'Safety first: If there is moisture, sparking, exposed wiring or loose mounting, we clarify the safe next step first.',
+      'Warranty: Up to 24 months depending on the completed work, material and operating conditions.',
+      'Execution: The form and AI help prepare the request; PixelRing specialists coordinate and perform the work.',
     ],
     finalHeadline: 'Unsure if your defect can be repaired?',
-    finalText: 'Simply send us a photo or a short description. PixelRing checks the issue and gets back to you within 15 minutes.',
+    finalText: 'Simply send a photo or short description. PixelRing reviews the information and suggests the next practical step.',
     symptoms: [
       {
         id: 'flackern',
@@ -290,9 +331,9 @@ const CONTENT: Record<Locale, LandingPageContent> = {
   },
   tr: {
     metaTitle: 'Tabela Onarım & Bakım Hizmetleri Berlin & Brandenburg | PixelRing',
-    metaDescription: 'Işıklı tabela, LED sistemleri ve dış mekan reklamları için profesyonel onarım hizmeti. Üreticiden bağımsız, hızlı yerinde destek ve 24 aya varan garanti.',
-    heroTitle: 'Tabela Onarım & Bakım Hizmetleri',
-    heroSubline: "Berlin & Brandenburg'da ışıklı tabelalar, LED sistemleri ve dış mekan reklamları için profesyonel servis. Hızlı, üreticiden bağımsız ve garantili.",
+    metaDescription: 'Berlin & Brandenburg’da tabela, ışıklı reklam, LED sistemleri ve ışıklı kutu onarımı. Fotoğraf veya açıklamaya göre ön değerlendirme, doğrudan PixelRing servisi.',
+    heroTitle: 'Berlin & Brandenburg’da tabela ve ışıklı reklam onarımı',
+    heroSubline: 'Işıklı kutular, LED aydınlatma, harf tabelalar, folyolar ve bağlantı elemanları için doğrudan PixelRing servisi. Fotoğraf veya kısa açıklama gönderin — uzmanlar durumu inceler ve sonraki adımı önerir.',
     heroImage: '/images/leistungen/hero-repair.png',
     symptomsTitle: 'Hızlı bir değerlendirme için sorununuzu seçin',
     closeLabel: 'Kapat',
@@ -300,12 +341,14 @@ const CONTENT: Record<Locale, LandingPageContent> = {
     trustTitle: 'Siparişiniz için güvenilir bir çerçeve',
     trustPoints: [
       "Doğrudan iletişim: Aracı veya ilan platformu yok — talebiniz doğrudan PixelRing'e iletilir.",
-      'Hizmet bölgesi: Hızlı yerinde müdahale süreleri için Berlin & Brandenburg.',
-      'Garanti: Yapılan tüm işler ve yedek parçalar için 24 aya kadar garanti.',
-      'Uzman ekip: Merkezi koordinasyon altında sertifikalı teknisyenler tarafından uygulama.',
+      'Bölge: Berlin & Brandenburg yerinde teşhis ve onarım için ana hizmet bölgemizdir.',
+      'Ön değerlendirme: Fotoğraf, kısa video veya açıklama; tabela türünü, erişimi ve olası arızayı anlamaya yardımcı olur.',
+      'Güvenlik: Nem, kıvılcım, açık kablo veya gevşek bağlantı varsa önce güvenli sonraki adımı netleştiririz.',
+      'Garanti: Yapılan işe, malzemeye ve kullanım koşullarına bağlı olarak 24 aya kadar.',
+      'Uygulama: Form ve AI talebi hazırlamaya yardımcı olur; işi PixelRing uzmanları koordine eder ve yürütür.',
     ],
     finalHeadline: 'Arızanızın giderilip giderilemeyeceğinden emin değil misiniz?',
-    finalText: 'Bize bir fotoğraf veya kısa bir açıklama gönderin. PixelRing arızayı kontrol eder ve 15 dakika içinde size geri döner.',
+    finalText: 'Bize bir fotoğraf veya kısa açıklama gönderin. PixelRing bilgileri kontrol eder ve uygun sonraki adımı önerir.',
     symptoms: [
       {
         id: 'flackern',
@@ -374,9 +417,9 @@ const CONTENT: Record<Locale, LandingPageContent> = {
   },
   pl: {
     metaTitle: 'Naprawa & Konserwacja Reklam Berlin & Brandenburg | PixelRing',
-    metaDescription: 'Profesjonalny serwis naprawczy reklam świetlnych, systemów LED i reklam zewnętrznych. Niezależny od producenta, szybka pomoc na miejscu i do 24 miesięcy gwarancji.',
-    heroTitle: 'Naprawa & Konserwacja Reklam',
-    heroSubline: 'Profesjonalny serwis reklam świetlnych, systemów LED i reklamy zewnętrznej w Berlinie i Brandenburgii. Szybko, niezależnie od producenta i z gwarancją.',
+    metaDescription: 'Naprawa szyldów, reklam świetlnych, systemów LED i kasetonów w Berlinie i Brandenburgii. Wstępna ocena po zdjęciu lub opisie, bezpośredni serwis PixelRing.',
+    heroTitle: 'Naprawa szyldów i reklam świetlnych w Berlinie i Brandenburgii',
+    heroSubline: 'Bezpośredni serwis PixelRing dla kasetonów, LED, liter przestrzennych, folii i mocowań. Wyślij zdjęcie lub krótki opis — specjaliści ocenią sytuację i zaproponują następny krok.',
     heroImage: '/images/leistungen/hero-repair.png',
     symptomsTitle: 'Wybierz swój problem w celu szybkiej oceny',
     closeLabel: 'Zamknij',
@@ -384,12 +427,14 @@ const CONTENT: Record<Locale, LandingPageContent> = {
     trustTitle: 'Niezawodne ramy dla Twojego zlecenia',
     trustPoints: [
       'Bezpośredni kontakt: To nie portal ani giełda zleceń — Twoje zgłoszenie trafia bezpośrednio do PixelRing.',
-      'Obszar usług: Berlin i Brandenburgia w celu zapewnienia szybkiego dojazdu na miejsce.',
-      'Gwarancja: Do 24 miesięcy gwarancji na wszystkie wykonane prace i części zamienne.',
-      'Zespół specjalistów: Realizacja przez certyfikowanych techników pod centralną koordynacją.',
+      'Region: Berlin i Brandenburgia to główny obszar diagnostyki i napraw na miejscu.',
+      'Wstępna ocena: Zdjęcia, krótkie wideo lub opis pomagają określić typ reklamy, dostęp i możliwą usterkę.',
+      'Bezpieczeństwo: Przy wilgoci, iskrzeniu, odsłoniętych przewodach lub luźnym mocowaniu najpierw ustalamy bezpieczny kolejny krok.',
+      'Gwarancja: Do 24 miesięcy w zależności od wykonanej pracy, materiału i warunków użytkowania.',
+      'Realizacja: Formularz i AI pomagają przygotować zgłoszenie, a prace koordynują i wykonują specjaliści PixelRing.',
     ],
     finalHeadline: 'Nie masz pewności, czy usterka może zostać naprawiona?',
-    finalText: 'Po prostu wyślij nam zdjęcie lub krótki opis. PixelRing oceni usterkę i skontaktuje się z Tobą w ciągu 15 minut.',
+    finalText: 'Wyślij zdjęcie lub krótki opis. PixelRing sprawdzi informacje i zaproponuje kolejny rozsądny krok.',
     symptoms: [
       {
         id: 'flackern',
@@ -458,9 +503,9 @@ const CONTENT: Record<Locale, LandingPageContent> = {
   },
   ar: {
     metaTitle: 'إصلاح وصيانة اللوحات الإعلانية في برلين وبراندنبورغ | PixelRing',
-    metaDescription: 'خدمة احترافية لإصلاح الإعلانات المضيئة، وأنظمة LED، والإعلانات الخارجية. مستقل عن الشركة المصنعة، مساعدة سريعة في الموقع وضمان يصل إلى 24 شهرًا.',
-    heroTitle: 'إصلاح وصيانة اللوحات الإعلانية',
-    heroSubline: 'خدمة احترافية للافتات المضيئة وأنظمة LED والإعلانات الخارجية في برلين وبراندنبورغ. سريع، مستقل عن الشركة المصنعة، ومع ضمان.',
+    metaDescription: 'إصلاح اللوحات الإعلانية والإعلانات المضيئة وأنظمة LED والصناديق المضيئة في برلين وبراندنبورغ. تقييم أولي بعد صورة أو وصف وخدمة مباشرة من PixelRing.',
+    heroTitle: 'إصلاح اللوحات والإعلانات المضيئة في برلين وبراندنبورغ',
+    heroSubline: 'خدمة PixelRing مباشرة للصناديق المضيئة، وإضاءة LED، والحروف المضيئة، والأفلام اللاصقة، والتثبيت. أرسل صورة أو وصفًا قصيرًا — يراجع المختصون الحالة ويقترحون الخطوة التالية.',
     heroImage: '/images/leistungen/hero-repair.png',
     symptomsTitle: 'اختر مشكلتك للحصول على تقييم سريع',
     closeLabel: 'إغلاق',
@@ -468,12 +513,14 @@ const CONTENT: Record<Locale, LandingPageContent> = {
     trustTitle: 'إطار موثوق لطلبك',
     trustPoints: [
       'اتصال مباشر: لا توجد منصة وساطة — يذهب طلبك مباشرة إلى PixelRing.',
-      'نطاق الخدمة: برلين وبراندنبورغ لأوقات استجابة سريعة في الموقع.',
-      'الضمان: ضمان يصل إلى 24 شهرًا على جميع الأعمال المنفذة وقطع الغيار.',
-      'فريق متخصص: التنفيذ من قبل فنيين معتمدين تحت تنسيق مركزي.',
+      'المنطقة: برلين وبراندنبورغ هما نطاق الخدمة الأساسي للتشخيص والإصلاح في الموقع.',
+      'تقييم أولي: تساعد الصور أو الفيديو القصير أو الوصف في فهم نوع اللوحة والوصول والخلل المحتمل.',
+      'السلامة أولاً: عند وجود رطوبة أو شرر أو أسلاك مكشوفة أو تثبيت ضعيف نوضح أولاً الخطوة الآمنة التالية.',
+      'الضمان: حتى 24 شهرًا حسب العمل المنفذ والمواد وظروف التشغيل.',
+      'التنفيذ: يساعد النموذج والذكاء الاصطناعي في تجهيز الطلب، بينما ينسق مختصو PixelRing العمل وينفذونه.',
     ],
     finalHeadline: 'هل أنت غير متأكد مما إذا كان من الممكن إصلاح العطل؟',
-    finalText: 'بساطة أرسل لنا صورة أو وصفًا قصيرًا. تقوم PixelRing بفحص العطل والرد عليك في غضون 15 دقيقة.',
+    finalText: 'أرسل صورة أو وصفًا قصيرًا. تراجع PixelRing المعلومات وتقترح الخطوة العملية التالية.',
     symptoms: [
       {
         id: 'flackern',
@@ -542,27 +589,415 @@ const CONTENT: Record<Locale, LandingPageContent> = {
   },
 };
 
-const HERO_SLIDES = [
-  {
-    src: '/images/leistungen/repair-hero/hero-sign-repair-01.jpg',
-    alt: 'Techniker repariert einen geöffneten Lichtkasten an einer Ladenfassade',
+const HERO_SLIDE_SOURCES = [
+  '/images/leistungen/repair-hero/hero-sign-repair-01.jpg',
+  '/images/leistungen/repair-hero/hero-led-diagnostics-02.jpg',
+  '/images/leistungen/repair-hero/hero-channel-letter-03.jpg',
+  '/images/leistungen/repair-hero/hero-rain-damage-04.jpg',
+] as const;
+
+const HERO_SLIDE_ALTS_BY_LOCALE: Record<Locale, string[]> = {
+  de: [
+    'Techniker repariert einen geöffneten Lichtkasten an einer Ladenfassade',
+    'LED-Module und Verkabelung werden mit einem Messgerät geprüft',
+    'Techniker repariert beleuchtete Profilbuchstaben an einer Fassade',
+    'Techniker prüft Feuchtigkeitsschaden an einer Werbeanlage nach Regen',
+  ],
+  en: [
+    'Technician repairing an open illuminated lightbox on a storefront facade',
+    'LED modules and wiring checked with a measuring device',
+    'Technician repairing illuminated channel letters on a building facade',
+    'Technician checking moisture damage on an outdoor sign after rain',
+  ],
+  ru: [
+    'Специалист ремонтирует открытый световой короб на фасаде магазина',
+    'Проверка LED-модулей и проводки измерительным прибором',
+    'Ремонт световых объемных букв на фасаде здания',
+    'Проверка повреждения вывески после влаги и дождя',
+  ],
+  tr: [
+    'Bir teknisyen mağaza cephesindeki açık ışıklı kutuyu onarıyor',
+    'LED modülleri ve kablolar ölçüm cihazıyla kontrol ediliyor',
+    'Bir teknisyen cephedeki ışıklı harfleri onarıyor',
+    'Yağmurdan sonra dış mekan tabelasında nem hasarı kontrol ediliyor',
+  ],
+  pl: [
+    'Technik naprawia otwarty kaseton świetlny na fasadzie sklepu',
+    'Moduły LED i okablowanie sprawdzane miernikiem',
+    'Technik naprawia podświetlane litery przestrzenne na fasadzie',
+    'Technik sprawdza uszkodzenie reklamy zewnętrznej po wilgoci i deszczu',
+  ],
+  ar: [
+    'فني يصلح صندوقًا ضوئيًا مفتوحًا على واجهة متجر',
+    'فحص وحدات LED والأسلاك بجهاز قياس',
+    'فني يصلح حروفًا مضيئة على واجهة مبنى',
+    'فحص ضرر الرطوبة في لوحة خارجية بعد المطر',
+  ],
+};
+
+const REPAIR_PAGE_PATH = '/leistungen/werbeanlagen-reparatur';
+
+const REPAIR_PROCESS_BY_LOCALE: Record<Locale, RepairProcessContent> = {
+  de: {
+    eyebrow: 'Nach der Diagnose',
+    title: 'So läuft die Anfrage ab',
+    steps: [
+      { title: 'Foto oder Beschreibung', text: 'Sie senden Gesamtansicht, Detailbild und eine kurze Beschreibung des Symptoms.' },
+      { title: 'Erste Prüfung', text: 'PixelRing ordnet Konstruktion, sichtbaren Defekt und mögliche Risiken ein.' },
+      { title: 'Zugang und Adresse', text: 'Wir klären Höhe, Zugang, Stadt oder PLZ, um den Einsatzrahmen zu verstehen.' },
+      { title: 'Einsatz oder Abstimmung', text: 'Je nach Datenlage folgt ein Vor-Ort-Termin oder eine gezielte Rückfrage.' },
+      { title: 'Reparatur und Status', text: 'Nach der Prüfung werden abgestimmte Arbeiten ausgeführt und der nächste Status kommuniziert.' },
+    ],
   },
-  {
-    src: '/images/leistungen/repair-hero/hero-led-diagnostics-02.jpg',
-    alt: 'LED-Module und Verkabelung werden mit einem Messgerät geprüft',
+  en: {
+    eyebrow: 'After diagnosis',
+    title: 'How the request works',
+    steps: [
+      { title: 'Photo or description', text: 'Send an overview, a detail photo and a short description of the symptom.' },
+      { title: 'Initial review', text: 'PixelRing classifies the sign type, visible defect and possible risks.' },
+      { title: 'Access and address', text: 'We clarify height, access, city or postal code to understand the visit conditions.' },
+      { title: 'Visit or coordination', text: 'Depending on the information, the next step is an on-site diagnosis or a focused follow-up.' },
+      { title: 'Repair and status', text: 'After review, agreed work is carried out and the next status is communicated.' },
+    ],
   },
-  {
-    src: '/images/leistungen/repair-hero/hero-channel-letter-03.jpg',
-    alt: 'Techniker repariert beleuchtete Profilbuchstaben an einer Fassade',
+  ru: {
+    eyebrow: 'После диагностики',
+    title: 'Как проходит заявка',
+    steps: [
+      { title: 'Фото или описание', text: 'Вы отправляете общий вид вывески, проблемное место и короткое описание симптома.' },
+      { title: 'Первичная проверка', text: 'PixelRing уточняет тип конструкции, видимый дефект и возможные риски.' },
+      { title: 'Уточнение доступа и адреса', text: 'Проверяем высоту, доступ, город или PLZ, чтобы понять условия выезда.' },
+      { title: 'Выезд или согласование', text: 'Если данных достаточно, согласуется следующий шаг: диагностика на месте или подготовка ремонта.' },
+      { title: 'Ремонт и следующий статус', text: 'После проверки специалисты выполняют согласованные работы и сообщают дальнейший статус.' },
+    ],
   },
-  {
-    src: '/images/leistungen/repair-hero/hero-rain-damage-04.jpg',
-    alt: 'Techniker prüft Feuchtigkeitsschaden an einer Werbeanlage nach Regen',
+  tr: {
+    eyebrow: 'Teşhisten sonra',
+    title: 'Talep süreci nasıl ilerler',
+    steps: [
+      { title: 'Fotoğraf veya açıklama', text: 'Tabelanın genel görünümünü, sorunlu noktayı ve kısa belirti açıklamasını gönderirsiniz.' },
+      { title: 'İlk kontrol', text: 'PixelRing yapı tipini, görünen arızayı ve olası riskleri sınıflandırır.' },
+      { title: 'Erişim ve adres', text: 'Yükseklik, erişim, şehir veya posta kodu netleştirilir.' },
+      { title: 'Ziyaret veya netleştirme', text: 'Bilgi durumuna göre yerinde teşhis veya hedefli bir geri soru planlanır.' },
+      { title: 'Onarım ve durum', text: 'Kontrolden sonra onaylanan işler yapılır ve sonraki durum paylaşılır.' },
+    ],
   },
-];
+  pl: {
+    eyebrow: 'Po diagnostyce',
+    title: 'Jak przebiega zgłoszenie',
+    steps: [
+      { title: 'Zdjęcie lub opis', text: 'Wysyłasz widok ogólny reklamy, problematyczne miejsce i krótki opis objawu.' },
+      { title: 'Wstępna ocena', text: 'PixelRing określa typ konstrukcji, widoczny defekt i możliwe ryzyka.' },
+      { title: 'Dostęp i adres', text: 'Ustalamy wysokość, dostęp, miasto lub kod pocztowy, aby ocenić warunki dojazdu.' },
+      { title: 'Wizyta lub ustalenia', text: 'W zależności od danych następuje diagnostyka na miejscu albo doprecyzowanie informacji.' },
+      { title: 'Naprawa i status', text: 'Po sprawdzeniu wykonywane są uzgodnione prace i przekazywany jest kolejny status.' },
+    ],
+  },
+  ar: {
+    eyebrow: 'بعد التشخيص',
+    title: 'كيف يسير الطلب',
+    steps: [
+      { title: 'صورة أو وصف', text: 'ترسل منظرًا عامًا للوحة، ومكان المشكلة، ووصفًا قصيرًا للعرض.' },
+      { title: 'مراجعة أولية', text: 'تحدد PixelRing نوع اللوحة والخلل الظاهر والمخاطر المحتملة.' },
+      { title: 'الوصول والعنوان', text: 'نوضح الارتفاع وطريقة الوصول والمدينة أو الرمز البريدي لفهم شروط الزيارة.' },
+      { title: 'زيارة أو تنسيق', text: 'حسب المعلومات المتاحة، تكون الخطوة التالية تشخيصًا في الموقع أو توضيحًا إضافيًا.' },
+      { title: 'إصلاح وحالة الطلب', text: 'بعد الفحص تنفذ الأعمال المتفق عليها ويتم توضيح الحالة التالية.' },
+    ],
+  },
+};
+
+const REPAIR_FAQ_BY_LOCALE: Record<Locale, RepairFaqContent> = {
+  de: {
+    eyebrow: 'Häufige Fragen',
+    title: 'Was vor der Anfrage wichtig ist',
+    items: [
+      { question: 'Welche Werbeanlagen repariert PixelRing?', answer: 'PixelRing nimmt Anfragen zu Leuchtkästen, LED-Beleuchtung, Profilbuchstaben, Folien, Fassadenschildern, Paneelen und Befestigungen an. Zuerst klären wir Konstruktion, sichtbaren Defekt, Zugang und Standort, danach schlagen wir den nächsten Schritt vor.' },
+      { question: 'Kann eine Reparatur anhand von Fotos eingeschätzt werden?', answer: 'Ja, Fotos oder ein kurzes Video helfen oft, Symptome wie dunkle Buchstaben, flackernde LED, gelöste Folie, Feuchtigkeit oder lockere Befestigung einzuordnen. Es bleibt eine erste Einschätzung; die finale Entscheidung hängt von Zugang, Material und Prüfung vor Ort ab.' },
+      { question: 'Was tun bei Funken, Brandgeruch, Feuchtigkeit oder lockeren Teilen?', answer: 'Wenn es gefahrlos möglich ist, schalten Sie die Anlage spannungsfrei. Halten Sie Abstand zu offenen Leitungen, feuchten Gehäusen und losen Teilen. Senden Sie Fotos und Beschreibung, damit PixelRing zuerst den sicheren nächsten Schritt einordnet.' },
+      { question: 'Führt PixelRing selbst aus oder vermittelt PixelRing nur?', answer: 'PixelRing arbeitet als eine verantwortliche Servicefirma. Die Anfrage geht direkt an PixelRing, nicht an eine Börse oder ein Verzeichnis von Handwerkern. Formular und AI helfen beim Sammeln der Daten, die Arbeit wird durch PixelRing Spezialisten koordiniert und ausgeführt.' },
+      { question: 'Gibt es Garantie auf die Reparatur?', answer: 'Ja, die Gewährleistung kann bis zu 24 Monate betragen, abhängig von ausgeführter Arbeit, Material und Einsatzbedingungen. Der konkrete Umfang wird nach Bewertung des Defekts und Abstimmung der Arbeiten geklärt.' },
+      { question: 'Muss ich die Werbeanlage vorab öffnen?', answer: 'Nein. Öffnen Sie kein Gehäuse, berühren Sie keine elektrischen Teile und steigen Sie nicht in die Höhe. Für die erste Einschätzung reichen sichere Fotos aus Abstand, Symptombeschreibung, Standort und ungefähre Montagehöhe.' },
+    ],
+  },
+  en: {
+    eyebrow: 'FAQ',
+    title: 'What to know before sending a request',
+    items: [
+      { question: 'Which signs and illuminated advertising can PixelRing repair?', answer: 'PixelRing handles requests for lightboxes, LED lighting, channel letters, films, facade signs, panels and fixings. We first clarify the sign type, visible defect, access and location, then suggest the next step.' },
+      { question: 'Can the repair be assessed from photos?', answer: 'Yes, photos or a short video often help identify symptoms such as a dark letter, flickering LED, peeling film, moisture or loose mounting. This is a first assessment; the final decision depends on access, materials and on-site checks.' },
+      { question: 'What should I do if the sign sparks, smells burnt, is wet or loose?', answer: 'If it can be done safely, switch off the power. Keep away from exposed wiring, wet housings and loose parts. Send photos and a description so PixelRing can first define the safe next step.' },
+      { question: 'Does PixelRing perform the repair or pass it to contractors?', answer: 'PixelRing works as one accountable service company. Your request goes directly to PixelRing, not to a marketplace or contractor directory. The form and AI help collect details, while PixelRing specialists coordinate and perform the work.' },
+      { question: 'Is there a warranty for the repair?', answer: 'Yes, warranty can be up to 24 months depending on the completed work, material and operating conditions. The exact scope is clarified after the defect is assessed and the work is agreed.' },
+      { question: 'Do I need to open the sign before sending a request?', answer: 'No. Do not open the housing, touch electrical parts or climb to reach the sign. Safe photos from a distance, symptom description, location and approximate mounting height are enough for the first assessment.' },
+    ],
+  },
+  ru: {
+    eyebrow: 'Частые вопросы',
+    title: 'Что важно знать перед заявкой',
+    items: [
+      { question: 'Какие вывески и световую рекламу ремонтирует PixelRing?', answer: 'PixelRing принимает заявки по световым коробам, LED-подсветке, объемным буквам, пленкам, фасадным вывескам, панелям и креплениям. Сначала мы уточняем тип конструкции, видимый дефект, доступ и адрес, затем предлагаем следующий шаг.' },
+      { question: 'Можно ли оценить ремонт по фото?', answer: 'Да, фото или короткое видео часто помогают понять симптом: не горит буква, мерцает LED, отошла пленка, попала влага или ослабло крепление. Это предварительная оценка, финальное решение зависит от доступа, материалов и проверки на месте.' },
+      { question: 'Что делать, если вывеска искрит, пахнет гарью или повреждена после дождя?', answer: 'Если это можно сделать безопасно, отключите питание. Не подходите к открытым проводам, влажным корпусам и болтающимся частям. Передайте фото и описание специалистам PixelRing, чтобы сначала определить безопасный следующий шаг.' },
+      { question: 'PixelRing сам выполняет ремонт или передает заявку мастерам?', answer: 'PixelRing работает как одна ответственная сервисная компания: заявка идет напрямую в PixelRing, а не в биржу или каталог мастеров. Форма и AI помогают собрать данные, но работу координируют и выполняют специалисты PixelRing.' },
+      { question: 'Есть ли гарантия на ремонт вывески?', answer: 'Да, гарантия может составлять до 24 месяцев в зависимости от выполненной работы, материала и условий эксплуатации. Конкретный объем гарантии уточняется после оценки дефекта и согласования работ.' },
+      { question: 'Нужно ли самому разбирать вывеску перед заявкой?', answer: 'Нет. Не вскрывайте корпус, не прикасайтесь к электрическим элементам и не поднимайтесь на высоту. Для первой оценки достаточно безопасных фото с расстояния, описания симптома, адреса или района и примерной высоты установки.' },
+    ],
+  },
+  tr: {
+    eyebrow: 'Sık sorulan sorular',
+    title: 'Talep göndermeden önce bilinmesi gerekenler',
+    items: [
+      { question: 'PixelRing hangi tabela ve ışıklı reklamları onarır?', answer: 'PixelRing ışıklı kutular, LED aydınlatma, harf tabelalar, folyolar, cephe tabelaları, paneller ve bağlantı elemanları için talepleri kabul eder. Önce yapı tipi, görünen arıza, erişim ve adres netleştirilir, ardından sonraki adım önerilir.' },
+      { question: 'Onarım fotoğrafa göre değerlendirilebilir mi?', answer: 'Evet, fotoğraf veya kısa video; yanmayan harf, titreyen LED, sökülen folyo, nem veya gevşek bağlantı gibi belirtileri anlamaya yardımcı olur. Bu ön değerlendirmedir; son karar erişime, malzemeye ve yerinde kontrole bağlıdır.' },
+      { question: 'Tabela kıvılcım çıkarıyor, yanık kokuyor, ıslandı veya gevşediyse ne yapmalıyım?', answer: 'Güvenli şekilde yapılabiliyorsa elektriği kapatın. Açık kablolara, ıslak kasalara ve sallanan parçalara yaklaşmayın. Fotoğraf ve açıklama gönderin; PixelRing önce güvenli sonraki adımı belirler.' },
+      { question: 'PixelRing işi kendi mi yapar yoksa ustalara mı aktarır?', answer: 'PixelRing tek sorumlu servis şirketi olarak çalışır. Talep doğrudan PixelRing’e gider; bir aracı platform veya usta kataloğu değildir. Form ve AI bilgileri toplamaya yardımcı olur, işi PixelRing uzmanları koordine eder ve yürütür.' },
+      { question: 'Tabela onarımında garanti var mı?', answer: 'Evet, garanti yapılan işe, malzemeye ve kullanım koşullarına bağlı olarak 24 aya kadar olabilir. Kesin kapsam arızanın değerlendirilmesi ve işlerin onaylanmasından sonra netleşir.' },
+      { question: 'Talep göndermeden önce tabelayı sökmem gerekir mi?', answer: 'Hayır. Kasayı açmayın, elektrikli parçalara dokunmayın ve yüksekliğe çıkmayın. İlk değerlendirme için güvenli mesafeden fotoğraf, belirti açıklaması, adres veya bölge ve yaklaşık montaj yüksekliği yeterlidir.' },
+    ],
+  },
+  pl: {
+    eyebrow: 'Częste pytania',
+    title: 'Co warto wiedzieć przed zgłoszeniem',
+    items: [
+      { question: 'Jakie szyldy i reklamy świetlne naprawia PixelRing?', answer: 'PixelRing przyjmuje zgłoszenia dotyczące kasetonów świetlnych, LED, liter przestrzennych, folii, szyldów fasadowych, paneli i mocowań. Najpierw ustalamy typ konstrukcji, widoczny defekt, dostęp i adres, a następnie proponujemy kolejny krok.' },
+      { question: 'Czy można ocenić naprawę na podstawie zdjęć?', answer: 'Tak, zdjęcia lub krótkie wideo często pomagają rozpoznać objaw: nie świeci litera, LED miga, folia się odkleja, pojawiła się wilgoć albo poluzowało się mocowanie. To ocena wstępna; decyzja końcowa zależy od dostępu, materiałów i kontroli na miejscu.' },
+      { question: 'Co zrobić, jeśli reklama iskrzy, pachnie spalenizną, zamokła albo się rusza?', answer: 'Jeśli można to zrobić bezpiecznie, odłącz zasilanie. Nie podchodź do odsłoniętych przewodów, mokrych obudów ani luźnych elementów. Przekaż zdjęcia i opis specjalistom PixelRing, aby najpierw ustalić bezpieczny kolejny krok.' },
+      { question: 'Czy PixelRing wykonuje naprawę samodzielnie czy przekazuje zlecenie dalej?', answer: 'PixelRing działa jako jedna odpowiedzialna firma serwisowa. Zgłoszenie trafia bezpośrednio do PixelRing, a nie na giełdę ani do katalogu wykonawców. Formularz i AI pomagają zebrać dane, a prace koordynują i wykonują specjaliści PixelRing.' },
+      { question: 'Czy naprawa szyldu ma gwarancję?', answer: 'Tak, gwarancja może wynosić do 24 miesięcy w zależności od wykonanej pracy, materiału i warunków użytkowania. Konkretny zakres jest ustalany po ocenie usterki i uzgodnieniu prac.' },
+      { question: 'Czy przed zgłoszeniem trzeba rozebrać reklamę?', answer: 'Nie. Nie otwieraj obudowy, nie dotykaj elementów elektrycznych i nie wchodź na wysokość. Do pierwszej oceny wystarczą bezpieczne zdjęcia z dystansu, opis objawu, adres lub dzielnica i przybliżona wysokość montażu.' },
+    ],
+  },
+  ar: {
+    eyebrow: 'أسئلة شائعة',
+    title: 'ما المهم قبل إرسال الطلب',
+    items: [
+      { question: 'ما أنواع اللوحات والإعلانات المضيئة التي تصلحها PixelRing؟', answer: 'تستقبل PixelRing طلبات الصناديق المضيئة، وإضاءة LED، والحروف المضيئة، والأفلام اللاصقة، ولوحات الواجهات، والألواح، والتثبيت. نوضح أولًا نوع اللوحة والخلل الظاهر وطريقة الوصول والعنوان، ثم نقترح الخطوة التالية.' },
+      { question: 'هل يمكن تقييم الإصلاح من خلال الصور؟', answer: 'نعم، تساعد الصور أو الفيديو القصير غالبًا في فهم العرض مثل حرف لا يضيء، أو LED يومض، أو فيلم لاصق يتقشر، أو رطوبة، أو تثبيت ضعيف. هذا تقييم أولي، أما القرار النهائي فيعتمد على الوصول والمواد والفحص في الموقع.' },
+      { question: 'ماذا أفعل إذا كانت اللوحة تصدر شررًا أو رائحة احتراق أو تضررت بعد المطر؟', answer: 'إذا كان ذلك ممكنًا بأمان، افصل الكهرباء. لا تقترب من الأسلاك المكشوفة أو الهياكل الرطبة أو الأجزاء المتحركة. أرسل الصور والوصف إلى مختصي PixelRing لتحديد الخطوة الآمنة التالية أولًا.' },
+      { question: 'هل تنفذ PixelRing الإصلاح بنفسها أم تحول الطلب إلى فنيين آخرين؟', answer: 'تعمل PixelRing كشركة خدمة واحدة مسؤولة. يذهب الطلب مباشرة إلى PixelRing، وليس إلى سوق أو دليل فنيين. يساعد النموذج والذكاء الاصطناعي في جمع البيانات، بينما ينسق مختصو PixelRing العمل وينفذونه.' },
+      { question: 'هل توجد ضمانات على إصلاح اللوحة؟', answer: 'نعم، يمكن أن يصل الضمان إلى 24 شهرًا حسب العمل المنفذ والمواد وظروف التشغيل. يتم توضيح النطاق المحدد بعد تقييم العطل والاتفاق على الأعمال.' },
+      { question: 'هل يجب أن أفك اللوحة قبل إرسال الطلب؟', answer: 'لا. لا تفتح الهيكل، ولا تلمس الأجزاء الكهربائية، ولا تصعد إلى ارتفاع. تكفي للمرحلة الأولى صور آمنة من مسافة، ووصف العرض، والعنوان أو المنطقة، والارتفاع التقريبي للتركيب.' },
+    ],
+  },
+};
+
+const REPAIR_RELATED_BY_LOCALE: Record<Locale, RepairRelatedContent> = {
+  de: {
+    eyebrow: 'Symptome',
+    title: 'Mehr zu typischen Störungen',
+    links: [
+      { label: 'Werbeanlage leuchtet nicht', href: '/de/probleme-loesungen/werbeanlage-leuchtet-nicht' },
+      { label: 'Werbeanlage flackert', href: '/de/probleme-loesungen/werbeanlage-flackert' },
+      { label: 'Buchstabe leuchtet nicht', href: '/de/probleme-loesungen/buchstabe-leuchtet-nicht' },
+      { label: 'nach Regen fällt die Sicherung', href: '/de/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab' },
+      { label: 'Folie löst sich', href: '/de/probleme-loesungen/folie-loest-sich' },
+      { label: 'LED leuchtet ungleichmäßig', href: '/de/probleme-loesungen/led-leuchtet-ungleichmaessig' },
+    ],
+  },
+  en: {
+    eyebrow: 'Symptoms',
+    title: 'More on common sign defects',
+    links: [
+      { label: 'sign does not light up', href: '/en/probleme-loesungen/werbeanlage-leuchtet-nicht' },
+      { label: 'sign flickers', href: '/en/probleme-loesungen/werbeanlage-flackert' },
+      { label: 'letter does not light up', href: '/en/probleme-loesungen/buchstabe-leuchtet-nicht' },
+      { label: 'breaker trips after rain', href: '/en/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab' },
+      { label: 'film is peeling', href: '/en/probleme-loesungen/folie-loest-sich' },
+      { label: 'LED lights unevenly', href: '/en/probleme-loesungen/led-leuchtet-ungleichmaessig' },
+    ],
+  },
+  ru: {
+    eyebrow: 'Симптомы',
+    title: 'Подробнее по типичным неисправностям',
+    links: [
+      { label: 'вывеска не светится', href: '/ru/probleme-loesungen/werbeanlage-leuchtet-nicht' },
+      { label: 'вывеска мерцает', href: '/ru/probleme-loesungen/werbeanlage-flackert' },
+      { label: 'не горит буква', href: '/ru/probleme-loesungen/buchstabe-leuchtet-nicht' },
+      { label: 'выбивает автомат после дождя', href: '/ru/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab' },
+      { label: 'пленка отклеивается', href: '/ru/probleme-loesungen/folie-loest-sich' },
+      { label: 'LED светит неравномерно', href: '/ru/probleme-loesungen/led-leuchtet-ungleichmaessig' },
+    ],
+  },
+  tr: {
+    eyebrow: 'Belirtiler',
+    title: 'Tipik arızalar hakkında daha fazla bilgi',
+    links: [
+      { label: 'tabela yanmıyor', href: '/tr/probleme-loesungen/werbeanlage-leuchtet-nicht' },
+      { label: 'harf yanmıyor', href: '/tr/probleme-loesungen/buchstabe-leuchtet-nicht' },
+      { label: 'yağmurdan sonra sigorta atıyor', href: '/tr/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab' },
+      { label: 'folyo sökülüyor', href: '/tr/probleme-loesungen/folie-loest-sich' },
+      { label: 'LED düzensiz yanıyor', href: '/tr/probleme-loesungen/led-leuchtet-ungleichmaessig' },
+    ],
+  },
+  pl: {
+    eyebrow: 'Objawy',
+    title: 'Więcej o typowych usterkach',
+    links: [
+      { label: 'reklama nie świeci', href: '/pl/probleme-loesungen/werbeanlage-leuchtet-nicht' },
+      { label: 'nie świeci litera', href: '/pl/probleme-loesungen/buchstabe-leuchtet-nicht' },
+      { label: 'po deszczu wybija bezpiecznik', href: '/pl/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab' },
+      { label: 'folia się odkleja', href: '/pl/probleme-loesungen/folie-loest-sich' },
+      { label: 'LED świeci nierównomiernie', href: '/pl/probleme-loesungen/led-leuchtet-ungleichmaessig' },
+    ],
+  },
+  ar: {
+    eyebrow: 'الأعراض',
+    title: 'المزيد عن الأعطال الشائعة',
+    links: [
+      { label: 'اللوحة لا تضيء', href: '/ar/probleme-loesungen/werbeanlage-leuchtet-nicht' },
+      { label: 'حرف لا يضيء', href: '/ar/probleme-loesungen/buchstabe-leuchtet-nicht' },
+      { label: 'ينقطع القاطع بعد المطر', href: '/ar/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab' },
+      { label: 'الفيلم اللاصق يتقشر', href: '/ar/probleme-loesungen/folie-loest-sich' },
+      { label: 'إضاءة LED غير متساوية', href: '/ar/probleme-loesungen/led-leuchtet-ungleichmaessig' },
+    ],
+  },
+};
+
+const SERVICE_NAME_BY_LOCALE: Record<Locale, string> = {
+  de: 'Werbeanlagen-Reparatur',
+  en: 'Signage repair',
+  ru: 'Ремонт вывесок и наружной рекламы',
+  tr: 'Tabela onarımı',
+  pl: 'Naprawa reklam i szyldów',
+  ar: 'إصلاح اللوحات الإعلانية',
+};
+
+const BREADCRUMB_LABELS_BY_LOCALE: Record<
+  Locale,
+  { home: string; services: string; repair: string }
+> = {
+  de: {
+    home: 'Home',
+    services: 'Leistungen',
+    repair: 'Werbeanlagen-Reparatur',
+  },
+  en: {
+    home: 'Home',
+    services: 'Services',
+    repair: 'Signage repair',
+  },
+  ru: {
+    home: 'Главная',
+    services: 'Услуги',
+    repair: 'Ремонт вывесок',
+  },
+  tr: {
+    home: 'Ana sayfa',
+    services: 'Hizmetler',
+    repair: 'Tabela onarımı',
+  },
+  pl: {
+    home: 'Strona główna',
+    services: 'Usługi',
+    repair: 'Naprawa reklam',
+  },
+  ar: {
+    home: 'الرئيسية',
+    services: 'الخدمات',
+    repair: 'إصلاح اللوحات الإعلانية',
+  },
+};
+
+const TRUST_EYEBROW_BY_LOCALE: Record<Locale, string> = {
+  de: 'Unsere Standards',
+  en: 'PixelRing standards',
+  ru: 'Стандарты PixelRing',
+  tr: 'PixelRing standartları',
+  pl: 'Standardy PixelRing',
+  ar: 'معايير PixelRing',
+};
 
 function getContent(locale: string): LandingPageContent {
   return CONTENT[locale as Locale] ?? CONTENT.de;
+}
+
+function getLocale(locale: string): Locale {
+  return (locale in CONTENT ? locale : 'de') as Locale;
+}
+
+function getHeroSlides(locale: string) {
+  const safeLocale = getLocale(locale);
+  const alts = HERO_SLIDE_ALTS_BY_LOCALE[safeLocale];
+
+  return HERO_SLIDE_SOURCES.map((src, index) => ({
+    src,
+    alt: alts[index] ?? alts[0] ?? '',
+  }));
+}
+
+function buildRepairPageJsonLd(locale: string, content: LandingPageContent) {
+  const safeLocale = getLocale(locale);
+  const canonicalUrl = buildLocaleUrl(safeLocale, REPAIR_PAGE_PATH);
+  const breadcrumbLabels = BREADCRUMB_LABELS_BY_LOCALE[safeLocale];
+  const provider = {
+    '@type': 'Organization',
+    name: 'PixelRing',
+    url: SITE_BASE_URL,
+  };
+  const jsonLd: JsonLdObject[] = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: SERVICE_NAME_BY_LOCALE[safeLocale],
+      serviceType: SERVICE_NAME_BY_LOCALE[safeLocale],
+      description: content.metaDescription,
+      provider,
+      areaServed: [
+        {
+          '@type': 'AdministrativeArea',
+          name: 'Berlin',
+        },
+        {
+          '@type': 'AdministrativeArea',
+          name: 'Brandenburg',
+        },
+      ],
+      url: canonicalUrl,
+    },
+    {
+      '@context': 'https://schema.org',
+      ...provider,
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: breadcrumbLabels.home,
+          item: buildLocaleUrl(safeLocale),
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: breadcrumbLabels.services,
+          item: buildLocaleUrl(safeLocale, '/leistungen'),
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: breadcrumbLabels.repair,
+          item: canonicalUrl,
+        },
+      ],
+    },
+  ];
+
+  jsonLd.push({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: REPAIR_FAQ_BY_LOCALE[safeLocale].items.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  });
+
+  return jsonLd;
 }
 
 export async function generateMetadata({
@@ -578,6 +1013,7 @@ export async function generateMetadata({
     description: content.metaDescription,
     alternates: {
       canonical: `/${locale}/leistungen/werbeanlagen-reparatur`,
+      languages: buildLanguageAlternates(REPAIR_PAGE_PATH),
     },
   };
 }
@@ -590,15 +1026,25 @@ export default async function WerbeanlagenReparaturPage({
   const { locale } = await params;
   const content = getContent(locale);
   const globalCms = await getGlobalPageCmsContent(locale);
+  const safeLocale = getLocale(locale);
+  const processContent = REPAIR_PROCESS_BY_LOCALE[safeLocale];
+  const faqContent = REPAIR_FAQ_BY_LOCALE[safeLocale];
+  const relatedContent = REPAIR_RELATED_BY_LOCALE[safeLocale];
+  const hasLocalizedDiagnosis = safeLocale === 'de' || safeLocale === 'ru';
+  const repairPageJsonLd = buildRepairPageJsonLd(locale, content);
 
   return (
     <div className="min-h-screen bg-[#F7F1E8] text-[#15202A]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(repairPageJsonLd) }}
+      />
       <Header content={globalCms?.header} />
       <main>
         <LeistungenRepairHeroSlider
           title={content.heroTitle}
           subline={content.heroSubline}
-          slides={HERO_SLIDES}
+          slides={getHeroSlides(locale)}
         />
 
         {/* Symptoms Grid & Interactive workflow (Client Component) */}
@@ -610,14 +1056,99 @@ export default async function WerbeanlagenReparaturPage({
           formTitle={content.formTitle}
         />
 
-        <LeistungenDigitalDiagnosis locale={locale} />
+        {hasLocalizedDiagnosis && <LeistungenDigitalDiagnosis locale={safeLocale} />}
+
+        {hasLocalizedDiagnosis && <LeistungenDiagnosticPrototype locale={safeLocale} />}
+
+        <section className="border-t border-[#E7DDD3] bg-[#FFFDF9] px-4 py-14 sm:px-6 sm:py-20">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+              <div className="text-start">
+                <SectionEyebrow className="mb-3">{processContent.eyebrow}</SectionEyebrow>
+                <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">
+                  {processContent.title}
+                </h2>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                {processContent.steps.map((step, index) => (
+                  <article
+                    key={step.title}
+                    className="rounded-[18px] border border-[#E7DDD3] bg-[#FFFDF9] p-4 shadow-sm"
+                  >
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#B8643E] text-[13px] font-black text-white">
+                      {index + 1}
+                    </span>
+                    <h3 className="mt-4 text-[16px] font-black leading-snug text-[#0E1A2B]">
+                      {step.title}
+                    </h3>
+                    <p className="mt-2 text-[13px] font-semibold leading-6 text-[#526174]">
+                      {step.text}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-t border-[#E7DDD3] bg-[#F7F1E8] px-4 py-14 sm:px-6 sm:py-20">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+              <div className="text-start">
+                <SectionEyebrow className="mb-3">{faqContent.eyebrow}</SectionEyebrow>
+                <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">
+                  {faqContent.title}
+                </h2>
+              </div>
+              <div className="grid gap-3">
+                {faqContent.items.map((item) => (
+                  <article
+                    key={item.question}
+                    className="rounded-[18px] border border-[#E7DDD3] bg-[#FFFDF9] p-5 shadow-sm"
+                  >
+                    <h3 className="text-[17px] font-black leading-snug text-[#0E1A2B]">
+                      {item.question}
+                    </h3>
+                    <p className="mt-3 text-[14px] font-semibold leading-7 text-[#526174]">
+                      {item.answer}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-t border-[#E7DDD3] bg-[#FFFDF9] px-4 py-10 sm:px-6 sm:py-14">
+          <div className="mx-auto max-w-7xl">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+              <div className="text-start">
+                <SectionEyebrow className="mb-3">{relatedContent.eyebrow}</SectionEyebrow>
+                <h2 className="text-2xl font-extrabold leading-[1.12] text-[#0E1A2B] sm:text-3xl">
+                  {relatedContent.title}
+                </h2>
+              </div>
+              <div className="flex flex-wrap gap-2 lg:max-w-3xl lg:justify-end">
+                {relatedContent.links.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    className="rounded-full border border-[#D9C7BA] bg-white px-4 py-2 text-[13px] font-black text-[#0E1A2B] transition hover:border-[#B8643E] hover:text-[#B8643E]"
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Trust Points Section */}
         <section id="vertrauen" className="bg-[#FFFDF9] border-t border-[#E7DDD3] border-b py-16 sm:py-24">
           <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr]">
             <div className="ltr:text-left rtl:text-right">
               <SectionEyebrow className="mb-3">
-                {locale === 'ru' ? 'Стандарты PixelRing' : locale === 'de' ? 'Unsere Standards' : 'Our Standards'}
+                {TRUST_EYEBROW_BY_LOCALE[safeLocale]}
               </SectionEyebrow>
               <h2 className="mt-2 text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">
                 {content.trustTitle}
@@ -635,8 +1166,6 @@ export default async function WerbeanlagenReparaturPage({
             </div>
           </div>
         </section>
-
-        <LeistungenRepairCostEstimator locale={locale} />
 
         {/* Footer CTA form */}
         <LeistungenFooterCTA
