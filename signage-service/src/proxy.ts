@@ -29,6 +29,25 @@ function isProblemArticlePath(path: string) {
   return /^\/probleme-loesungen\/[^/]+\/?$/.test(path);
 }
 
+function normalizeXDefaultLinkHeader(response: NextResponse, request: NextRequest, locale: string | null, stripped: string) {
+  if (!locale) {
+    return;
+  }
+
+  const linkHeader = response.headers.get('Link');
+  if (!linkHeader || !linkHeader.includes('hreflang="x-default"')) {
+    return;
+  }
+
+  const xDefaultUrl = new URL(buildLocalePath(routing.defaultLocale, stripped), request.url).toString();
+  const normalizedHeader = linkHeader.replace(
+    /<[^>]+>(;\s*rel="alternate";\s*hreflang="x-default")/,
+    `<${xDefaultUrl}>$1`
+  );
+
+  response.headers.set('Link', normalizedHeader);
+}
+
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const { locale, stripped } = stripLocale(pathname);
@@ -83,6 +102,8 @@ export default async function proxy(request: NextRequest) {
   if (isProblemArticlePath(stripped)) {
     response.headers.delete('Link');
   }
+
+  normalizeXDefaultLinkHeader(response, request, locale, stripped);
 
   return response;
 }

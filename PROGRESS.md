@@ -8,6 +8,42 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 
 Latest checkpoint:
 
+- Date: 2026-05-31
+- Current stage: Removed the upper `/[locale]/leistungen/werbeanlagen-reparatur#diagnose` diagnostic block from the repair landing page render path, leaving only the lower `/[locale]/leistungen/werbeanlagen-reparatur#diagnose-variante` calculator/card module.
+- Next action: Owner visually verifies the shorter diagnostic flow on DE first, then spot-checks other MVP locales.
+
+- Date: 2026-05-31
+- Current stage: Reframed and re-synchronized the lower alternative `/[locale]/leistungen/werbeanlagen-reparatur#diagnose-variante` diagnostic module across DE/EN/RU/TR/PL/AR from diagnosis setup to a preliminary repair-cost calculator, with German as the canonical copy and localized non-binding budget language.
+- Next action: Owner visually reviews the calculator intro, parameter pill, and diagnostic-card pill across DE/RU first, then the remaining MVP locales.
+
+- Date: 2026-05-31
+- Current stage: Strengthened the lower alternative `/[locale]/leistungen/werbeanlagen-reparatur#diagnose-variante` diagnostic-card disclaimer across DE/EN/RU/TR/PL/AR, using German as the canonical legal wording: non-binding information only, no contract, no binding offer, no binding cost commitment, and exact price only after review plus explicit Pixel Ring confirmation.
+- Next action: Owner visually reviews the updated disclaimer text on DE/RU repair pages, especially line length in the lower diagnostic card on desktop and mobile.
+
+- Date: 2026-05-31
+- Current stage: Cleaned up the alternative `/[locale]/leistungen/werbeanlagen-reparatur#diagnose-variante` diagnostic calculator: separated construction types from fault symptoms, renamed the non-lit panel object so it no longer duplicates the film/surface symptom, localized the calculator across DE/EN/RU/TR/PL/AR, enabled it on all MVP locales, compacted the diagnostic card, and fixed RTL numeric rendering for AR.
+- Next action: Owner visually reviews the updated calculator options and diagnostic-card behavior across RU/DE/EN/TR/PL/AR.
+
+- Date: 2026-05-31
+- Current stage: Added compact service-scope blocks and localized hero breadcrumb navigation to `/[locale]/leistungen/werbeanlagen-reparatur` across DE/EN/RU/TR/PL/AR; removed the now-duplicative visible primary photo-assessment section while keeping photo/request guidance in checklist and FAQ.
+- Next action: Owner visually reviews the shorter repair page flow and hero breadcrumbs on RU/DE/AR; build and targeted page lint already pass, full lint still has unrelated existing backlog.
+
+- Date: 2026-05-31
+- Current stage: Localized the redesigned `/[locale]/leistungen/werbeanlagen-reparatur` photo-assessment diagnostic block across DE/EN/RU/TR/PL/AR with human symptom cards, likely-cause copy, safe next steps, and localized photo-assessment CTAs.
+- Next action: Owner visually reviews the redesigned diagnostic block across the six repair landing page locales.
+
+- Date: 2026-05-31
+- Current stage: Redesigned the `/[locale]/leistungen/werbeanlagen-reparatur` short-answer diagnostic block from a table into a clearer marketing/SEO card section with symptom, likely cause, safe next step, and photo-assessment CTA; RU copy was rewritten for clarity.
+- Next action: Owner visually reviews the RU repair landing page diagnostic block and decides whether to localize the improved wording depth across DE/EN/TR/PL/AR.
+
+- Date: 2026-05-31
+- Current stage: Applied owner-requested visual/legal cleanup and compact redesign to the `/[locale]/leistungen/werbeanlagen-reparatur` diagnostic module: unified the scenario list and diagnostic card into one equal-height block, removed the secondary assessment/scenario cards, switched the section to a warmer neutral palette, tightened spacing, and strengthened the non-binding estimate disclaimer.
+- Next action: Owner visually reviews the RU repair landing page diagnostic module on desktop and mobile, then decides whether to apply further copy or layout refinements.
+
+- Date: 2026-05-30
+- Current stage: Implemented the confirmed SEO/GEO improvement pass for `/[locale]/leistungen/werbeanlagen-reparatur`: shortened page metadata, added Open Graph/Twitter metadata, expanded Service/LocalBusiness JSON-LD, added a localized short-answer symptom table for DE/EN/RU/TR/PL/AR, fixed repair workflow labels, improved hero image priority, contrast, footer heading order, TR/PL navigation text, and normalized HTTP `x-default` to the German canonical URL.
+- Next action: Owner reviews the six repair landing pages visually, then decide whether to address the remaining global lint backlog before the next SEO release.
+
 - Date: 2026-05-30
 - Current stage: Closed urgent SEO/GEO follow-up from the read-only audit: added `/[locale]/leistungen/werbeanlagen-reparatur` to the public sitemap path set, cleaned homepage fallback metadata for DE/TR/PL, fixed `Referenzen` fallback metadata so it no longer emits an empty description, and documented the remaining SEO/GEO backlog in `docs/07_content_ai_seo/seo_geo_readonly_audit_2026-05-30.md`.
 - Next action: Publish the missing TR/PL/AR problem articles, then extend problem-article structured data with BreadcrumbList and publish/update dates after owner review of the content backlog.
@@ -73,6 +109,26 @@ Read deep when:
 - **Engineering/Ops**: Open maintenance note recorded for future Postgres SSL connection-string cleanup before the next `pg`/Prisma/migration-tooling dependency upgrade.
 
 ## Last Updated
+
+- Date: 2026-05-31
+- Updated by: Codex
+- **Current Stage**: Removed the upper `/[locale]/leistungen/werbeanlagen-reparatur#diagnose` diagnostic block from the repair landing page render path, leaving only the lower `/[locale]/leistungen/werbeanlagen-reparatur#diagnose-variante` calculator/card module.
+- **Next Action**: Owner visually verifies the shorter diagnostic flow on DE first, then spot-checks other MVP locales.
+
+- Date: 2026-05-31
+- Updated by: Codex
+- **Current Stage**: Added compact service-scope blocks and localized hero breadcrumb navigation to `/[locale]/leistungen/werbeanlagen-reparatur` across DE/EN/RU/TR/PL/AR; removed the now-duplicative visible primary photo-assessment section while keeping photo/request guidance in checklist and FAQ.
+- **Next Action**: Owner visually reviews the shorter repair page flow and hero breadcrumbs on RU/DE/AR; build and targeted page lint already pass, full lint still has unrelated existing backlog.
+
+- Date: 2026-05-31
+- Updated by: Codex
+- **Current Stage**: Unified and compacted the repair diagnostic module visual container, removed the lower assessment/scenario cards, changed the dominant blue background to a warmer neutral palette, and made the budget/time disclaimer explicitly non-binding and non-contractual.
+- **Next Action**: Owner reviews the RU diagnostic section visually in the browser on desktop and mobile.
+
+- Date: 2026-05-30
+- Updated by: Codex
+- **Current Stage**: Implemented the confirmed SEO/GEO improvement pass for `/[locale]/leistungen/werbeanlagen-reparatur`: metadata, social previews, JSON-LD, localized GEO answer/table content, workflow labels, first image priority, contrast, footer heading order, repair-page navigation label cleanup, and HTTP `x-default` normalization.
+- **Next Action**: Owner visually reviews DE/EN/RU/TR/PL/AR repair landing pages and decides whether to clean the existing global lint backlog before the next release.
 
 - Date: 2026-05-27
 - Updated by: Antigravity

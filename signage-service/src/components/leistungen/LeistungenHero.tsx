@@ -74,7 +74,7 @@ export default function LeistungenHero({ slides }: Omit<LeistungenHeroProps, 'lo
             <div className="absolute inset-0 bg-gradient-to-t from-[#0E1A2B]/80 via-[#0E1A2B]/25 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-r from-[#0E1A2B]/45 via-[#0E1A2B]/10 to-transparent rtl:bg-gradient-to-l" />
             
-            <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-4 pb-12 sm:px-6 sm:pb-14 lg:pb-16">
+            <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-4 pb-12 sm:px-6 sm:pb-14 min-[1328px]:px-0 lg:pb-16">
               <motion.div
                 initial={{ y: 14, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}

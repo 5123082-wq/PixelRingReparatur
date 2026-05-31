@@ -349,6 +349,15 @@ Implementation sequence:
 
 ## Progress Log
 
+### 2026-05-31 — Repair Landing Page Service-Scope Blocks
+
+- Current sprint/block: Public Website, dedicated Werbeanlagen-Reparatur competitive content gap follow-up
+- Done: Added compact static service-scope content to `/[locale]/leistungen/werbeanlagen-reparatur` for DE/EN/RU/TR/PL/AR. The page now has a `Was wir reparieren` style construction-type block after the symptom workflow, a dark `Digitale Werbeanlagen / Outdoor-Displays` service card group, a `Was im Reparaturservice enthalten sein kann` block with a request checklist for useful photos/details, an FAQ item for digital outdoor displays, expanded JSON-LD `knowsAbout` terms, and localized hero breadcrumb navigation (`Home/Leistungen/current page`) with relative locale links. Removed the separate visible `Ersteinschätzung` / primary photo-assessment section after owner review because its symptom/cause/safe-next-step cards became duplicative.
+- In progress: Owner visual review of the shorter page flow, breadcrumb treatment, density, copy tone, wrapping, and Arabic RTL behavior.
+- Next action: Decide whether to keep this compact static scope layer as-is or later make it CMS-editable.
+- Blockers/risks: The blocks are static localized page content, not CMS-editable. They intentionally describe service assessment and repair scope, not a product catalog or marketplace offer. Production build and targeted page lint pass; full project lint still has unrelated existing backlog in `scratch_format.js` and `BusinessShowcase.tsx`.
+- Updated documents: `PROGRESS.md`, `docs/02_public_website/page_plan_leistungen.md`, `signage-service/src/app/[locale]/leistungen/werbeanlagen-reparatur/page.tsx`.
+
 ### 2026-05-29 — Repair Diagnostic Card Phase 1 Prototype
 
 - Current sprint/block: Public Website, dedicated Werbeanlagen-Reparatur diagnostic card prototyping

@@ -116,7 +116,7 @@ const CONTENT: Record<DiagnosisLocale, DiagnosisContent> = {
     noteLabel: 'Hinweis',
     estimatePrefix: 'ca.',
     warningNote:
-      'Kein verbindliches Angebot. Die genaue Einschätzung entsteht erst nach Fotos, Adresse, Zugang und Materialprüfung.',
+      'Unverbindliche Erstorientierung: Diese Diagnosekarte, Zeit- und Budgetangaben sind reine Informationswerte. Sie sind kein Vertrag, kein verbindliches Angebot und keine bindende Kostenzusage. Ein verbindliches Angebot entsteht erst nach Prüfung von Fotos, Adresse, Zugang und Material sowie nach ausdrücklicher Bestätigung durch Pixel Ring.',
     ctaLabel: 'Diagnose anfragen',
     drawerTitle: 'Diagnose anfragen',
     drawerCloseLabel: 'Schließen',
@@ -303,13 +303,13 @@ const CONTENT: Record<DiagnosisLocale, DiagnosisContent> = {
     noteLabel: 'Важно',
     estimatePrefix: 'примерно',
     warningNote:
-      'Это не финальное предложение. Точная оценка после фото, адреса, доступа и проверки материалов.',
+      'Предварительный ориентир: эта диагностическая карта, сроки и бюджет носят информационный характер. Они не являются договором, офертой или обязательным коммерческим предложением. Обязательное предложение и точная цена возможны только после проверки фото, адреса, доступа и материалов и отдельного подтверждения Pixel Ring.',
     ctaLabel: 'Запросить диагностику',
     drawerTitle: 'Запросить диагностику',
     drawerCloseLabel: 'Закрыть',
     drawerFormTitle: 'Запросить диагностику и ремонт',
     drawerInfoLabel: 'Оценка и следующий шаг',
-    drawerFormIntro: 'Укажите контакты, чтобы передать заявку специалистам PixelRing с выбранными параметрами.',
+    drawerFormIntro: 'Укажите контакты, чтобы передать заявку специалистам Pixel Ring с выбранными параметрами.',
     unknownSizeNote: 'Пустой или некорректный размер считаем как 2,0 x 0,8 м.',
     largeAreaNote: 'Для больших вывесок особенно важна проверка на месте.',
     accessOptions: [
@@ -585,7 +585,6 @@ export default function LeistungenDigitalDiagnosis({ locale }: LeistungenDigital
   const areaLabel = `${formatNumber(area, normalizedLocale)} m²`;
   const estimateLabel = `${content.estimatePrefix} ${estimate.min.toLocaleString(normalizedLocale === 'ru' ? 'ru-RU' : 'de-DE')}-${estimate.max.toLocaleString(normalizedLocale === 'ru' ? 'ru-RU' : 'de-DE')} EUR`;
   const timeLabel = formatTimeRange(timeRange, normalizedLocale);
-  const factors = [access.impact, scope.impact, areaAdjustment.label, ...scenario.factors];
   const hasClampedArea = rawArea > MAX_AREA || rawArea < MIN_AREA;
   const sizeNote = hasClampedArea
     ? content.largeAreaNote
@@ -612,111 +611,112 @@ export default function LeistungenDigitalDiagnosis({ locale }: LeistungenDigital
 
   return (
     <>
-      <section id="diagnose" className="border-t border-[#E7DDD3] bg-[#EEF3FB] px-4 py-16 sm:px-6 sm:py-24">
+      <section id="diagnose" className="border-t border-[#E7DDD3] bg-[#F8F5EF] px-4 py-12 sm:px-6 sm:py-16">
         <div className="mx-auto max-w-7xl">
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,0.78fr)_minmax(320px,0.62fr)] lg:items-end">
+          <div className="grid gap-5 lg:grid-cols-[minmax(0,0.82fr)_minmax(320px,0.58fr)] lg:items-end">
             <div className="text-start">
-              <SectionEyebrow className="mb-3">{content.eyebrow}</SectionEyebrow>
-              <h2 className="max-w-4xl text-[34px] font-extrabold leading-[1.06] tracking-[0] text-[#0E1A2B] sm:text-[48px] lg:text-[56px]">
+              <SectionEyebrow className="mb-2">{content.eyebrow}</SectionEyebrow>
+              <h2 className="max-w-3xl text-[30px] font-extrabold leading-[1.08] tracking-[0] text-[#0E1A2B] sm:text-[42px] lg:text-[48px]">
                 {content.title}
               </h2>
             </div>
-            <p className="max-w-2xl text-[16px] font-medium leading-[1.7] text-[#334155] lg:text-[18px]">
+            <p className="max-w-xl text-[15px] font-medium leading-[1.6] text-[#334155] lg:text-[16px]">
               {content.intro}
             </p>
           </div>
 
-          <div className="mt-10 grid gap-5 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
-            <div className="rounded-[18px] border border-[#D9C7BA] bg-[#FFFDF9]/82 p-5 shadow-sm sm:p-6">
-              <h3 className="text-[22px] font-extrabold leading-tight text-[#0E1A2B]">
-                {content.problemListTitle}
-              </h3>
-              <p className="mt-2 text-[14px] font-medium leading-6 text-[#526174]">
-                {content.problemListIntro}
-              </p>
+          <div className="mt-7 overflow-hidden rounded-[16px] border border-[#DED0C4] bg-white shadow-[0_18px_45px_rgba(13,27,42,0.08)]">
+            <div className="grid lg:grid-cols-[0.74fr_1.26fr] lg:items-stretch">
+              <div className="border-b border-[#E5D8CC] bg-[#FBF8F3] p-4 sm:p-5 lg:border-b-0 lg:border-e">
+                <h3 className="text-[19px] font-extrabold leading-tight text-[#0E1A2B]">
+                  {content.problemListTitle}
+                </h3>
+                <p className="mt-1.5 text-[13px] font-medium leading-5 text-[#5B6878]">
+                  {content.problemListIntro}
+                </p>
 
-              <div className="mt-5 grid gap-2">
-                {content.scenarios.map((item) => {
-                  const isActive = item.id === scenario.id;
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      aria-pressed={isActive}
-                      onClick={() => handleScenarioChange(item.id)}
-                      className={`group flex min-h-[64px] items-start gap-3 rounded-[14px] border px-4 py-3 text-start transition ${
-                        isActive
-                          ? 'border-[#B8643E] bg-[#B8643E] text-white shadow-[0_14px_30px_rgba(184,100,62,0.18)]'
-                          : 'border-[#E7DDD3] bg-white text-[#0D1B2A] hover:border-[#B8643E]/45 hover:bg-[#FFFAF4]'
-                      }`}
-                    >
-                      <span
-                        className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-black ${
-                          isActive ? 'bg-white/18 text-white' : 'bg-[#B8643E]/10 text-[#B8643E]'
+                <div className="mt-4 grid gap-2">
+                  {content.scenarios.map((item) => {
+                    const isActive = item.id === scenario.id;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        aria-pressed={isActive}
+                        onClick={() => handleScenarioChange(item.id)}
+                        className={`group flex min-h-[52px] items-start gap-2.5 rounded-[12px] border px-3 py-2 text-start transition ${
+                          isActive
+                            ? 'border-[#A65F45] bg-[#A65F45] text-white shadow-[0_10px_22px_rgba(166,95,69,0.18)]'
+                            : 'border-[#E8DED3] bg-white text-[#0D1B2A] hover:border-[#B8643E]/45 hover:bg-[#FFF8F1]'
                         }`}
                       >
-                        {content.scenarios.indexOf(item) + 1}
-                      </span>
-                      <span>
-                        <span className="block text-[15px] font-black leading-snug">{item.label}</span>
-                        <span className={`mt-1 block text-[13px] font-semibold leading-5 ${isActive ? 'text-white/76' : 'text-[#526174]'}`}>
-                          {item.title}
+                        <span
+                          className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-black ${
+                            isActive ? 'bg-white/18 text-white' : 'bg-[#B8643E]/10 text-[#B8643E]'
+                          }`}
+                        >
+                          {content.scenarios.indexOf(item) + 1}
                         </span>
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="rounded-[18px] border border-[#D9C7BA] bg-[#FFFDF9] p-5 shadow-[0_20px_55px_rgba(13,27,42,0.12)] sm:p-6">
-              <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[#E7DDD3] pb-5">
-                <div>
-                  <span className={`inline-flex rounded-full border px-3 py-1 text-[11px] font-black uppercase tracking-[0.14em] ${
-                    scenario.urgent
-                      ? 'border-[#B8643E]/35 bg-[#B8643E]/10 text-[#B8643E]'
-                      : 'border-[#D9C7BA] bg-[#F7F1E8] text-[#B8643E]'
-                  }`}>
-                    {content.cardBadge}
-                  </span>
-                  <h3 className="mt-3 text-[28px] font-black leading-tight text-[#0E1A2B] sm:text-[34px]">
-                    {content.cardTitle}
-                  </h3>
-                  <p className="mt-2 max-w-2xl text-[14px] font-medium leading-6 text-[#526174]">
-                    {scenario.symptom}
-                  </p>
+                        <span>
+                          <span className="block text-[14px] font-black leading-snug">{item.label}</span>
+                          <span className={`mt-0.5 block text-[12px] font-semibold leading-4 ${isActive ? 'text-white/76' : 'text-[#5B6878]'}`}>
+                            {item.title}
+                          </span>
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
-              <div className="mt-5 grid gap-5">
-                <div>
-                  <span className="mb-2 block text-[12px] font-black uppercase tracking-[0.14em] text-[#B8643E]">
-                    {content.accessLabel}
-                  </span>
-                  <div className="grid gap-2 sm:grid-cols-3">
-                    {content.accessOptions.map((option) => {
-                      const isActive = option.id === access.id;
-                      return (
-                        <button
-                          key={option.id}
-                          type="button"
-                          aria-pressed={isActive}
-                          onClick={() => setAccessId(option.id)}
-                          className={`min-h-[54px] rounded-[12px] border px-3 py-2 text-start text-[13px] font-extrabold leading-5 transition ${
-                            isActive
-                              ? 'border-[#0D1B2A] bg-[#0D1B2A] text-white'
-                              : 'border-[#E7DDD3] bg-[#FFFAF4] text-[#0D1B2A] hover:border-[#B8643E]/50'
-                          }`}
-                        >
-                          {option.label}
-                        </button>
-                      );
-                    })}
+              <div className="bg-white p-4 sm:p-5">
+                <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[#E9DED4] pb-4">
+                  <div>
+                    <span className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.13em] ${
+                      scenario.urgent
+                        ? 'border-[#B8643E]/30 bg-[#B8643E]/10 text-[#B8643E]'
+                        : 'border-[#D9C7BA] bg-[#FBF8F3] text-[#B8643E]'
+                    }`}>
+                      {content.cardBadge}
+                    </span>
+                    <h3 className="mt-2 text-[25px] font-black leading-tight text-[#0E1A2B] sm:text-[29px]">
+                      {content.cardTitle}
+                    </h3>
+                    <p className="mt-1.5 max-w-2xl text-[13px] font-medium leading-5 text-[#5B6878]">
+                      {scenario.symptom}
+                    </p>
                   </div>
                 </div>
 
+                <div className="mt-4 grid gap-4">
+                  <div>
+                    <span className="mb-2 block text-[11px] font-black uppercase tracking-[0.13em] text-[#B8643E]">
+                      {content.accessLabel}
+                    </span>
+                    <div className="grid gap-2 sm:grid-cols-3">
+                      {content.accessOptions.map((option) => {
+                        const isActive = option.id === access.id;
+                        return (
+                          <button
+                            key={option.id}
+                            type="button"
+                            aria-pressed={isActive}
+                            onClick={() => setAccessId(option.id)}
+                            className={`min-h-[46px] rounded-[10px] border px-3 py-2 text-start text-[12px] font-extrabold leading-4 transition ${
+                              isActive
+                                ? 'border-[#0D1B2A] bg-[#0D1B2A] text-white'
+                                : 'border-[#E8DED3] bg-[#FFFDF9] text-[#0D1B2A] hover:border-[#B8643E]/50'
+                            }`}
+                          >
+                            {option.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
                 <div>
-                  <span className="mb-2 block text-[12px] font-black uppercase tracking-[0.14em] text-[#B8643E]">
+                  <span className="mb-2 block text-[11px] font-black uppercase tracking-[0.13em] text-[#B8643E]">
                     {content.sizeLabel}
                   </span>
                   <div className="grid gap-3 sm:grid-cols-[1fr_1fr_minmax(150px,0.75fr)]">
@@ -729,7 +729,7 @@ export default function LeistungenDigitalDiagnosis({ locale }: LeistungenDigital
                         step="0.1"
                         value={width}
                         onChange={(event) => setWidth(event.target.value)}
-                        className="min-h-[50px] w-full rounded-[12px] border border-[#E7DDD3] bg-[#FFFAF4] px-4 text-[15px] font-bold text-[#0D1B2A] outline-none transition focus:border-[#B8643E]/70 focus:ring-4 focus:ring-[#B8643E]/10"
+                        className="min-h-[44px] w-full rounded-[10px] border border-[#E8DED3] bg-[#FFFDF9] px-3 text-[15px] font-bold text-[#0D1B2A] outline-none transition focus:border-[#B8643E]/70 focus:ring-4 focus:ring-[#B8643E]/10"
                       />
                     </label>
                     <label className="block">
@@ -741,23 +741,23 @@ export default function LeistungenDigitalDiagnosis({ locale }: LeistungenDigital
                         step="0.1"
                         value={height}
                         onChange={(event) => setHeight(event.target.value)}
-                        className="min-h-[50px] w-full rounded-[12px] border border-[#E7DDD3] bg-[#FFFAF4] px-4 text-[15px] font-bold text-[#0D1B2A] outline-none transition focus:border-[#B8643E]/70 focus:ring-4 focus:ring-[#B8643E]/10"
+                        className="min-h-[44px] w-full rounded-[10px] border border-[#E8DED3] bg-[#FFFDF9] px-3 text-[15px] font-bold text-[#0D1B2A] outline-none transition focus:border-[#B8643E]/70 focus:ring-4 focus:ring-[#B8643E]/10"
                       />
                     </label>
-                    <div className="rounded-[12px] border border-[#E7DDD3] bg-[#F7F1E8] px-4 py-3">
-                      <span className="block text-[11px] font-black uppercase tracking-[0.12em] text-[#6F7A8A]">
+                    <div className="rounded-[10px] border border-[#E8DED3] bg-[#FBF8F3] px-3 py-2.5">
+                      <span className="block text-[10px] font-black uppercase tracking-[0.12em] text-[#6F7A8A]">
                         {content.areaLabel}
                       </span>
-                      <strong className="mt-1 block text-[18px] font-black text-[#0E1A2B]">{areaLabel}</strong>
+                      <strong className="mt-0.5 block text-[17px] font-black text-[#0E1A2B]">{areaLabel}</strong>
                     </div>
                   </div>
-                  <p className="mt-2 text-[12px] font-semibold leading-5 text-[#6F7A8A]">
+                  <p className="mt-1.5 text-[12px] font-semibold leading-5 text-[#6F7A8A]">
                     {sizeNote}
                   </p>
                 </div>
 
                 <div>
-                  <span className="mb-2 block text-[12px] font-black uppercase tracking-[0.14em] text-[#B8643E]">
+                  <span className="mb-2 block text-[11px] font-black uppercase tracking-[0.13em] text-[#B8643E]">
                     {scenario.scopeLabel}
                   </span>
                   <div className="grid gap-2 sm:grid-cols-3">
@@ -769,10 +769,10 @@ export default function LeistungenDigitalDiagnosis({ locale }: LeistungenDigital
                           type="button"
                           aria-pressed={isActive}
                           onClick={() => setScopeId(option.id)}
-                          className={`min-h-[50px] rounded-[12px] border px-3 py-2 text-start text-[13px] font-extrabold leading-5 transition ${
+                          className={`min-h-[46px] rounded-[10px] border px-3 py-2 text-start text-[12px] font-extrabold leading-4 transition ${
                             isActive
-                              ? 'border-[#B8643E] bg-[#B8643E] text-white'
-                              : 'border-[#E7DDD3] bg-[#FFFAF4] text-[#0D1B2A] hover:border-[#B8643E]/50'
+                              ? 'border-[#A65F45] bg-[#A65F45] text-white'
+                              : 'border-[#E8DED3] bg-[#FFFDF9] text-[#0D1B2A] hover:border-[#B8643E]/50'
                           }`}
                         >
                           {option.label}
@@ -783,82 +783,43 @@ export default function LeistungenDigitalDiagnosis({ locale }: LeistungenDigital
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-[14px] border border-[#E7DDD3] bg-[#0D1B2A] p-5 text-white">
-                    <span className="block text-[11px] font-black uppercase tracking-[0.14em] text-white/60">
+                  <div className="rounded-[12px] border border-[#0D1B2A] bg-[#0D1B2A] p-4 text-white">
+                    <span className="block text-[10px] font-black uppercase tracking-[0.13em] text-white/60">
                       {content.budgetLabel}
                     </span>
-                    <strong className="mt-2 block text-[28px] font-black leading-none sm:text-[34px]">
+                    <strong className="mt-2 block text-[25px] font-black leading-none sm:text-[30px]">
                       {estimateLabel}
                     </strong>
                   </div>
-                  <div className="rounded-[14px] border border-[#E7DDD3] bg-[#F7F1E8] p-5">
-                    <span className="block text-[11px] font-black uppercase tracking-[0.14em] text-[#6F7A8A]">
+                  <div className="rounded-[12px] border border-[#E8DED3] bg-[#FBF8F3] p-4">
+                    <span className="block text-[10px] font-black uppercase tracking-[0.13em] text-[#6F7A8A]">
                       {content.timeLabel}
                     </span>
-                    <strong className="mt-2 block text-[22px] font-black leading-tight text-[#0E1A2B]">
+                    <strong className="mt-2 block text-[20px] font-black leading-tight text-[#0E1A2B]">
                       {timeLabel}
                     </strong>
                   </div>
                 </div>
 
-                <div className="grid gap-3 lg:grid-cols-[0.9fr_1.1fr]">
-                  <div className="rounded-[14px] border border-[#E7DDD3] bg-[#FFFAF4] p-5">
-                    <span className="block text-[12px] font-black uppercase tracking-[0.14em] text-[#B8643E]">
-                      {content.checksLabel}
-                    </span>
-                    <div className="mt-4 grid gap-3">
-                      {scenario.checks.map((check, index) => (
-                        <div key={check} className="flex gap-3 text-[14px] font-semibold leading-6 text-[#334155]">
-                          <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#B8643E] text-[12px] font-black text-white">
-                            {index + 1}
-                          </span>
-                          <span>{check}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="rounded-[14px] border border-[#E7DDD3] bg-white p-5">
-                    <span className="block text-[12px] font-black uppercase tracking-[0.14em] text-[#B8643E]">
-                      {content.likelyLabel}
-                    </span>
-                    <strong className="mt-3 block text-[17px] font-black leading-snug text-[#0E1A2B]">
-                      {scenario.likelyResult}
-                    </strong>
-                    <span className="mt-5 block text-[12px] font-black uppercase tracking-[0.14em] text-[#6F7A8A]">
-                      {content.factorsLabel}
-                    </span>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {factors.slice(0, 7).map((factor) => (
-                        <span
-                          key={factor}
-                          className="rounded-full border border-[#E7DDD3] bg-[#F7F1E8] px-3 py-1 text-[12px] font-bold text-[#526174]"
-                        >
-                          {factor}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded-[14px] border border-[#D9C7BA] bg-[#F7F1E8] p-4">
-                  <span className="block text-[11px] font-black uppercase tracking-[0.14em] text-[#B8643E]">
+                <div className="rounded-[12px] border border-[#E0D1C4] bg-[#FBF8F3] p-3.5">
+                  <span className="block text-[10px] font-black uppercase tracking-[0.13em] text-[#B8643E]">
                     {content.noteLabel}
                   </span>
-                  <p className="mt-2 text-[13px] font-semibold leading-6 text-[#526174]">
-                    {scenario.urgent ? scenario.likelyResult : content.warningNote}
+                  <p className="mt-1.5 text-[12px] font-semibold leading-5 text-[#5B6878]">
+                    {content.warningNote}
                   </p>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => setIsDrawerOpen(true)}
-                  className={`inline-flex min-h-[54px] w-full items-center justify-center rounded-full px-7 py-3 text-[15px] font-black text-white shadow-[0_16px_34px_rgba(184,100,62,0.24)] transition-all duration-300 active:scale-[0.98] ${
+                  className={`inline-flex min-h-[48px] w-full items-center justify-center rounded-full px-6 py-3 text-[14px] font-black text-white shadow-[0_12px_26px_rgba(184,100,62,0.22)] transition-all duration-300 active:scale-[0.98] ${
                     scenario.urgent ? 'bg-[#0D1B2A] hover:bg-[#17283B]' : 'bg-[#B8643E] hover:bg-[#A65835]'
                   }`}
                 >
                   {scenario.ctaLabel ?? content.ctaLabel}
                 </button>
+              </div>
               </div>
             </div>
           </div>
