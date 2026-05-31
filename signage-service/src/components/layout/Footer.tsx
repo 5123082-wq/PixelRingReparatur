@@ -87,9 +87,9 @@ const IconChat = () => (
 // ─── Column heading component ─────────────────────────────────────────────────
 
 const ColHeading = ({ children }: { children: React.ReactNode }) => (
-  <h4 className="text-[12px] font-bold text-black uppercase tracking-[2px] mb-5">
+  <p className="text-[12px] font-bold text-black uppercase tracking-[2px] mb-5">
     {children}
-  </h4>
+  </p>
 );
 
 // ─── Link styles ──────────────────────────────────────────────────────────────
