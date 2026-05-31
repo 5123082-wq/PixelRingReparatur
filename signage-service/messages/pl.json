@@ -172,34 +172,34 @@
     "subtitle": "Nasze ukończone projekty mówią same za siebie. Precyzja w każdym szczególe.",
     "items": [
       {
-        "title": "Montaż LED",
+        "title": "Montaż reklam zewnętrznych",
         "tag": "Montaż",
-        "description": "Profesjonalna instalacja dużych konstrukcji reklamowych na fasadach."
+        "description": "Profesjonalny montaż dużych szyldów, oznakowania fasad i reklamy przy lokalizacji."
       },
       {
-        "title": "Naprawa neonów",
+        "title": "Naprawa reklamy świetlnej",
         "tag": "Naprawa",
-        "description": "Precyzyjna renowacja klasycznych rur neonowych."
+        "description": "Naprawa neonów, systemów LED, kasetonów i widocznych usterek szyldów."
       },
       {
-        "title": "Konserwacja wysokościowa",
+        "title": "Konserwacja i audyt",
         "tag": "Konserwacja",
-        "description": "Serwis na zawrotnych wysokościach przy użyciu nowoczesnego sprzętu."
+        "description": "Regularne kontrole, konserwacja i ocena stanu reklam w lokalach firmowych."
       },
       {
-        "title": "Projektowanie szyldów",
-        "tag": "Projekt",
-        "description": "Indywidualny projekt szyldów od koncepcji po pliki gotowe do produkcji."
+        "title": "Branding i druk",
+        "tag": "Branding",
+        "description": "Folie, pliki do druku, napisy i materiały reklamowe dla spójnego wyglądu lokalu."
       },
       {
-        "title": "Montaż kasetonu",
-        "tag": "Kaseton",
-        "description": "Energooszczędne panele podświetlane z równomiernym rozłożeniem światła."
+        "title": "Modernizacja LED",
+        "tag": "Serwis LED",
+        "description": "Modernizacja kasetonów, modułów LED i reklamy świetlnej dla równomiernej widoczności."
       },
       {
-        "title": "Bezpieчный demontaż",
+        "title": "Demontaż i usunięcie",
         "tag": "Demontaż",
-        "description": "Ostrożne usuwanie i recykling starych konstrukcji reklamowych."
+        "description": "Koordynowany demontaż, usunięcie i przygotowanie miejsca po starych szyldach."
       }
     ]
   },
@@ -238,8 +238,20 @@
         "answer": "Udzielamy od 6 do 12 miesięcy gwarancji na wszystkie prace i części zamienne."
       },
       {
-        "question": "Czy pracujecie również dla osób prywatnych?",
-        "answer": "Tak, obsługujemy zarówno klientów komercyjnych, jak i prywatnych z taką samą starannością."
+        "question": "Jakie zadania B2B może przejąć PixelRing?",
+        "answer": "PixelRing pracuje przy obiektach komercyjnych: szyldach, reklamie świetlnej, konstrukcjach reklamowych, witrynach, oznakowaniu fasad i brandingu. Możesz zgłosić jednorazową naprawę, montaż lub demontaż albo omówić regularną obsługę obiektu lub sieci punktów."
+      },
+      {
+        "question": "Czy mogę zgłosić kilka obiektów lub oddziałów?",
+        "answer": "Tak. PixelRing może prowadzić zgłoszenia dla pojedynczych adresów, sklepów, biur, restauracji, punktów sprzedaży lub sieci oddziałów. W zgłoszeniu ważne są miasto, adres, typ konstrukcji i zdjęcia."
+      },
+      {
+        "question": "Czy serwisujecie reklamy wykonane przez inną firmę?",
+        "answer": "Tak. Możemy sprawdzić, naprawić, zdemontować lub zmodernizować istniejącą reklamę, nawet jeśli wykonała ją inna firma. Rozwiązanie zależy od stanu konstrukcji, dostępu, elektryki i dostępności części."
+      },
+      {
+        "question": "Co jest potrzebne do wstępnej oceny?",
+        "answer": "Zwykle wystarczy adres obiektu, krótki opis zadania i kilka zdjęć: ogólny widok reklamy, miejsce uszkodzenia, dostęp do konstrukcji oraz, jeśli jest, zasilacz lub przyłącze elektryczne."
       },
       {
         "question": "Jakie regiony obsługujecie?",

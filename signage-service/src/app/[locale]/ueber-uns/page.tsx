@@ -4,6 +4,7 @@ import Header from '@/components/layout/Header';
 import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestButton';
 import { getAboutPageCmsContent, getGlobalPageCmsContent } from '@/lib/cms/pages';
 import CmsImage from '@/components/common/CmsImage';
+import HeroBreadcrumbs from '@/components/common/HeroBreadcrumbs';
 import SectionEyebrow from '@/components/common/SectionEyebrow';
 import ServiceSimulator from '@/components/sections/ServiceSimulator';
 import AboutVideoPlayer from '@/components/sections/AboutVideoPlayer';
@@ -12,6 +13,47 @@ import { ABOUT_CONTENT, ABOUT_PAGE_LABELS, type AboutContent, type Locale } from
 
 type AboutCmsContent = Awaited<ReturnType<typeof getAboutPageCmsContent>>;
 type AboutPageLabels = (typeof ABOUT_PAGE_LABELS)[Locale];
+
+const ABOUT_BREADCRUMB_LABELS: Record<Locale, { home: string; page: string }> = {
+  de: {
+    home: 'Home',
+    page: 'Über uns',
+  },
+  en: {
+    home: 'Home',
+    page: 'About us',
+  },
+  ru: {
+    home: 'Главная',
+    page: 'О нас',
+  },
+  tr: {
+    home: 'Ana sayfa',
+    page: 'Hakkımızda',
+  },
+  pl: {
+    home: 'Strona główna',
+    page: 'O nas',
+  },
+  ar: {
+    home: 'الرئيسية',
+    page: 'من نحن',
+  },
+};
+
+function getAboutBreadcrumbs(locale: Locale) {
+  const labels = ABOUT_BREADCRUMB_LABELS[locale] ?? ABOUT_BREADCRUMB_LABELS.de;
+
+  return [
+    {
+      label: labels.home,
+      href: '/',
+    },
+    {
+      label: labels.page,
+    },
+  ];
+}
 
 function mergeAboutContent(fallback: AboutContent, cms: AboutCmsContent): AboutContent {
   if (!cms) {
@@ -137,17 +179,17 @@ export default async function AboutPage({
 
       <main className="flex-grow pt-0">
         {/* HERO SECTION */}
-        <section className="px-6 py-12 md:py-16 overflow-hidden relative">
+        <section className="px-6 pb-10 pt-6 md:pb-12 md:pt-6 overflow-hidden relative">
           <div className="absolute top-0 right-0 w-[600px] h-[500px] bg-white/50 rounded-full blur-[120px] -translate-y-1/3 translate-x-1/4 pointer-events-none" />
 
           <div className="mx-auto max-w-7xl relative z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-              {/* Left Column: Content & Benefits */}
+            <HeroBreadcrumbs items={getAboutBreadcrumbs(locale)} position="static" surface="light" />
+
+            <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12 lg:gap-14">
+              {/* Left Column: Content */}
               <div className="lg:col-span-7 flex flex-col gap-6">
-                <div>
-                  <SectionEyebrow className="mb-4 md:mb-5">
-                    {tContent.hero.badge}
-                  </SectionEyebrow>
+                <div className="pt-3">
+                  <div className="mb-6 h-1 w-20 bg-[#B8643E]" />
                   <h1 className="text-[34px] sm:text-[40px] md:text-[50px] lg:text-[54px] font-black leading-[1.08] tracking-tight text-[#0E1A2B]">
                     {tContent.hero.titlePrefix}
                   </h1>
@@ -160,20 +202,6 @@ export default async function AboutPage({
                     </p>
                   ))}
                 </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-[#0E1A2B]/10">
-                  {tContent.hero.benefits.map((benefit, idx) => (
-                    <div key={idx} className="flex flex-col gap-1.5">
-                      <div className="flex items-center gap-2 text-[#0E1A2B] font-bold text-[14px] md:text-[15px]">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#B8643E] shrink-0" />
-                        {benefit.title}
-                      </div>
-                      <p className="text-[#6B7788] text-[13px] leading-snug">
-                        {benefit.description}
-                      </p>
-                    </div>
-                  ))}
-                </div>
               </div>
 
               {/* Right Column: Interactive Diagnostic Simulator */}
@@ -181,6 +209,27 @@ export default async function AboutPage({
                 <ServiceSimulator locale={locale} />
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* HERO BENEFITS */}
+        <section className="border-y border-[#E7DDD3] bg-[#FFFDF9] px-6 py-8 sm:py-10">
+          <div className="mx-auto grid max-w-7xl gap-7 sm:grid-cols-3 lg:gap-10">
+            {tContent.hero.benefits.map((benefit, idx) => (
+              <article key={idx} className="min-w-0">
+                <div className="flex items-start gap-3">
+                  <div className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#B8643E]" />
+                  <div className="min-w-0">
+                    <h2 className="text-[18px] font-black leading-snug text-[#0E1A2B] sm:text-[20px]">
+                      {benefit.title}
+                    </h2>
+                    <p className="mt-3 text-[15px] leading-7 text-[#6B7788]">
+                      {benefit.description}
+                    </p>
+                  </div>
+                </div>
+              </article>
+            ))}
           </div>
         </section>
 

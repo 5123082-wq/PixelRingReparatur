@@ -172,34 +172,34 @@
     "subtitle": "Unsere abgeschlossenen Projekte sprechen für sich. Präzision in jedem Detail.",
     "items": [
       {
-        "title": "LED-Montage",
+        "title": "Werbeanlagen-Montage",
         "tag": "Montage",
-        "description": "Fachgerechte Installation großer Werbeanlagen an Fassaden."
+        "description": "Fachgerechte Montage großer Werbeanlagen, Fassadenschilder und Standortwerbung."
       },
       {
-        "title": "Neon-Reparatur",
+        "title": "Lichtwerbung-Reparatur",
         "tag": "Reparatur",
-        "description": "Präzise Instandsetzung von klassischen Leuchtröhren."
+        "description": "Instandsetzung von Neon, LED-Technik, Leuchtkästen und sichtbaren Defekten."
       },
       {
-        "title": "Hochhaus-Wartung",
+        "title": "Wartung & Audit",
         "tag": "Wartung",
-        "description": "Service in schwindelerregender Höhe mit modernster Technik."
+        "description": "Regelmäßige Prüfung, Wartung und Zustandsaufnahme für Werbeanlagen an Geschäftsstandorten."
       },
       {
-        "title": "Schilder-Design",
-        "tag": "Design",
-        "description": "Individuelles Schilderdesign vom Konzept bis zur druckfertigen Datei."
+        "title": "Branding & Druck",
+        "tag": "Branding",
+        "description": "Folien, Druckdaten, Beschriftungen und Werbematerialien für einen klaren Standortauftritt."
       },
       {
-        "title": "Leuchtkasten-Montage",
-        "tag": "Leuchtkasten",
-        "description": "Energieeffiziente hinterleuchtete Paneele mit gleichmäßiger Lichtverteilung."
+        "title": "LED-Modernisierung",
+        "tag": "LED-Service",
+        "description": "Modernisierung von Leuchtkästen, LED-Modulen und Lichtwerbung für gleichmäßige Sichtbarkeit."
       },
       {
-        "title": "Sicherer Rückbau",
-        "tag": "Rückbau",
-        "description": "Fachgerechte Demontage und Entsorgung alter Werbeanlagen."
+        "title": "Demontage & Rückbau",
+        "tag": "Demontage",
+        "description": "Koordinierter Rückbau, Entfernung und Vorbereitung alter Werbeanlagen."
       }
     ]
   },
@@ -238,8 +238,20 @@
         "answer": "Wir gewähren eine Garantie von 6 bis 12 Monaten auf alle durchgeführten Arbeiten und Ersatzteile."
       },
       {
-        "question": "Arbeiten Sie auch für Privatpersonen?",
-        "answer": "Ja, wir betreuen sowohl gewerbliche Kunden als auch private Anfragen mit der gleichen Sorgfalt."
+        "question": "Welche B2B-Aufgaben kann PixelRing übernehmen?",
+        "answer": "PixelRing arbeitet für gewerbliche Objekte: Schilder, Lichtwerbung, Werbeanlagen, Schaufenster, Fassadenleitsysteme und Branding. Sie können eine einzelne Anfrage für Reparatur, Montage oder Demontage stellen oder eine regelmäßige Betreuung für einen Standort oder mehrere Filialen besprechen."
+      },
+      {
+        "question": "Kann ich eine Anfrage für mehrere Standorte oder Filialen stellen?",
+        "answer": "Ja. PixelRing kann Anfragen für einzelne Adressen, Shops, Büros, Restaurants, Verkaufsstellen oder Filialnetze strukturieren. Wichtig sind Stadt, Adresse, Art der Anlage und aussagekräftige Fotos."
+      },
+      {
+        "question": "Betreuen Sie auch Anlagen, die von einer anderen Firma gebaut wurden?",
+        "answer": "Ja. Wir können bestehende Werbeanlagen prüfen, reparieren, demontieren oder modernisieren, auch wenn sie von einer anderen Firma hergestellt wurden. Die Lösung hängt vom Zustand der Anlage, Zugang, Elektrik und verfügbaren Bauteilen ab."
+      },
+      {
+        "question": "Was brauchen Sie für eine erste Einschätzung?",
+        "answer": "In der Regel reichen Objektadresse, kurze Aufgabenbeschreibung und einige Fotos: Gesamtansicht der Anlage, Schadstelle, Zugangssituation und, falls vorhanden, Netzteil oder Elektroanschluss."
       },
       {
         "question": "Welche Regionen decken Sie ab?",

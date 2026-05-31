@@ -116,7 +116,7 @@ const CONTENT: Record<DiagnosisLocale, DiagnosisContent> = {
     noteLabel: 'Hinweis',
     estimatePrefix: 'ca.',
     warningNote:
-      'Unverbindliche Erstorientierung: Diese Diagnosekarte, Zeit- und Budgetangaben sind reine Informationswerte. Sie sind kein Vertrag, kein verbindliches Angebot und keine bindende Kostenzusage. Ein verbindliches Angebot entsteht erst nach Prüfung von Fotos, Adresse, Zugang und Material sowie nach ausdrücklicher Bestätigung durch Pixel Ring.',
+      'Unverbindliche Erstorientierung: Diese Diagnosekarte, Zeit- und Budgetangaben sind reine Informationswerte. Sie sind kein Vertrag, kein verbindliches Angebot und keine bindende Kostenzusage. Ein verbindliches Angebot entsteht erst nach Prüfung von Fotos, Adresse, Zugang und Material sowie nach ausdrücklicher Bestätigung durch PixelRing.',
     ctaLabel: 'Diagnose anfragen',
     drawerTitle: 'Diagnose anfragen',
     drawerCloseLabel: 'Schließen',
@@ -303,13 +303,13 @@ const CONTENT: Record<DiagnosisLocale, DiagnosisContent> = {
     noteLabel: 'Важно',
     estimatePrefix: 'примерно',
     warningNote:
-      'Предварительный ориентир: эта диагностическая карта, сроки и бюджет носят информационный характер. Они не являются договором, офертой или обязательным коммерческим предложением. Обязательное предложение и точная цена возможны только после проверки фото, адреса, доступа и материалов и отдельного подтверждения Pixel Ring.',
+      'Предварительный ориентир: эта диагностическая карта, сроки и бюджет носят информационный характер. Они не являются договором, офертой или обязательным коммерческим предложением. Обязательное предложение и точная цена возможны только после проверки фото, адреса, доступа и материалов и отдельного подтверждения PixelRing.',
     ctaLabel: 'Запросить диагностику',
     drawerTitle: 'Запросить диагностику',
     drawerCloseLabel: 'Закрыть',
     drawerFormTitle: 'Запросить диагностику и ремонт',
     drawerInfoLabel: 'Оценка и следующий шаг',
-    drawerFormIntro: 'Укажите контакты, чтобы передать заявку специалистам Pixel Ring с выбранными параметрами.',
+    drawerFormIntro: 'Укажите контакты, чтобы передать заявку специалистам PixelRing с выбранными параметрами.',
     unknownSizeNote: 'Пустой или некорректный размер считаем как 2,0 x 0,8 м.',
     largeAreaNote: 'Для больших вывесок особенно важна проверка на месте.',
     accessOptions: [

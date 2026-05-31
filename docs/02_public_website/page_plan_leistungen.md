@@ -349,6 +349,15 @@ Implementation sequence:
 
 ## Progress Log
 
+### 2026-05-31 — Dedicated Service Detail Pages
+
+- Current sprint/block: Public Website, Leistungen service-card detail page expansion
+- Done: Added a reusable localized `/[locale]/leistungen/[slug]` route for four missing service-card destinations: `/leistungen/lichtwerbung-led-modernisierung`, `/leistungen/werbeanlagen-audit-diagnose`, `/leistungen/montage-demontage-werbeanlagen`, and `/leistungen/druckprodukte-branding-werbematerialien`. Each page has localized DE/EN/RU/TR/PL/AR static content, service-specific metadata, localized H1, the existing Leistungen/repair photo-hero pattern, task/check/process/boundary/FAQ sections, JSON-LD `Service` and `FAQPage`, and related service links. Updated `/[locale]/leistungen` service-card CTAs to link to these detail pages, added the routes to the public sitemap, and updated legacy `/[locale]/services/[slug]` redirects to point to the closest current destination. Fixed locale-aware internal links so the pages do not generate duplicate locale paths such as `/de/de/...`.
+- In progress: Owner visual review of the new DE pages first, then RU/AR text direction, wrapping, and copy tone.
+- Next action: Decide whether the new service-detail content should remain static fallback content for now or receive a structured CMS editing model after visual/content approval.
+- Blockers/risks: The new pages are static localized page content, not CMS-editable. The pages intentionally keep PixelRing as one accountable service company and do not add CRM, intake persistence, pricing, SLA, or marketplace behavior.
+- Updated documents: `PROGRESS.md`, `docs/02_public_website/page_plan_leistungen.md`, `signage-service/src/app/[locale]/leistungen/[slug]/page.tsx`, `signage-service/src/app/[locale]/leistungen/page.tsx`, `signage-service/src/app/[locale]/services/[slug]/page.tsx`, `signage-service/src/lib/seo.ts`.
+
 ### 2026-05-31 — Repair Landing Page Service-Scope Blocks
 
 - Current sprint/block: Public Website, dedicated Werbeanlagen-Reparatur competitive content gap follow-up

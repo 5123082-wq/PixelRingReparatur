@@ -79,7 +79,7 @@ export default function LeistungenReparaturWorkflow({
           <SectionEyebrow className="mb-3">
             {labels.eyebrow}
           </SectionEyebrow>
-          <h2 className="mt-2 text-3xl font-extrabold leading-[1.08] text-[#0E1A2B] sm:text-5xl">
+          <h2 className="mt-2 max-w-full break-words text-3xl font-extrabold leading-[1.08] text-[#0E1A2B] [overflow-wrap:anywhere] sm:text-5xl">
             {title}
           </h2>
         </div>
@@ -100,10 +100,10 @@ export default function LeistungenReparaturWorkflow({
               >
                 <div className="flex flex-col gap-5">
                   <div className="ltr:text-left rtl:text-right">
-                    <h3 className="text-xl font-bold leading-snug text-[#0E1A2B] group-hover:text-[#B8643E] transition-colors">
+                    <h3 className="break-words text-xl font-bold leading-snug text-[#0E1A2B] transition-colors [overflow-wrap:anywhere] group-hover:text-[#B8643E]">
                       {symptom.title}
                     </h3>
-                    <p className="mt-3 text-[14.5px] leading-relaxed text-[#72665D]">
+                    <p className="mt-3 break-words text-[14.5px] leading-relaxed text-[#72665D] [overflow-wrap:anywhere]">
                       {symptom.cardText}
                     </p>
                   </div>

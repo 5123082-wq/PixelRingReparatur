@@ -76,16 +76,16 @@ type RepairScopeContent = {
 
 const CONTENT: Record<Locale, LandingPageContent> = {
   de: {
-    metaTitle: 'Werbeanlagen-Reparatur Berlin & Brandenburg | Pixel Ring',
-    metaDescription: 'Reparatur von Werbeanlagen, Lichtwerbung, LED-Systemen und Leuchtkästen in Berlin & Brandenburg. Einschätzung nach Foto, direkter Pixel Ring Service.',
-    heroTitle: 'Werbeanlagen-Reparatur und Lichtwerbung-Service in Berlin & Brandenburg',
-    heroSubline: 'Direkter Pixel Ring Service für Leuchtkästen, LED-Beleuchtung, Profilbuchstaben, Folien und Befestigungen. Senden Sie ein Foto oder eine Beschreibung — wir prüfen die Situation und schlagen den nächsten Schritt vor.',
+    metaTitle: 'Werbeanlagen-Reparatur Berlin & Brandenburg | PixelRing',
+    metaDescription: 'Defekte Werbeanlage in Berlin oder Brandenburg? PixelRing prüft Leuchtkästen, LED-Module, Profilbuchstaben, Folien, Befestigung und Digital Signage. Fotos senden und erste Einschätzung erhalten.',
+    heroTitle: 'Werbeanlagen-Reparatur in Berlin & Brandenburg',
+    heroSubline: 'Direkter PixelRing Service für Leuchtkästen, LED-Beleuchtung, Profilbuchstaben, Folien und Befestigungen. Senden Sie ein Foto oder eine Beschreibung — wir prüfen die Situation und schlagen den nächsten Schritt vor.',
     heroImage: '/images/leistungen/hero-repair.png',
     symptomsTitle: 'Typische Defekte & Symptome',
     closeLabel: 'Schließen',
     formTitle: 'Reparatur anfragen',
     finalHeadline: 'Unsicher, ob Ihre Störung behoben werden kann?',
-    finalText: 'Senden Sie uns einfach ein Foto oder eine kurze Beschreibung. Pixel Ring prüft die Informationen und schlägt den nächsten sinnvollen Schritt vor.',
+    finalText: 'Senden Sie uns einfach ein Foto oder eine kurze Beschreibung. PixelRing prüft die Informationen und schlägt den nächsten sinnvollen Schritt vor.',
     symptoms: [
       {
         id: 'flackern',
@@ -153,16 +153,16 @@ const CONTENT: Record<Locale, LandingPageContent> = {
     ],
   },
   ru: {
-    metaTitle: 'Ремонт вывесок в Берлине и Бранденбурге | Pixel Ring',
-    metaDescription: 'Ремонт световой рекламы, вывесок, LED-систем и коробов в Берлине и Бранденбурге. Оценка после фото или описания, прямой сервис Pixel Ring.',
-    heroTitle: 'Ремонт вывесок и световой рекламы в Берлине и Бранденбурге',
-    heroSubline: 'Прямой сервис Pixel Ring для световых коробов, LED-подсветки, букв, пленок и креплений. Пришлите фото или описание — специалисты оценят ситуацию и предложат следующий шаг.',
+    metaTitle: 'Ремонт вывесок в Берлине и Бранденбурге | PixelRing',
+    metaDescription: 'Неисправная вывеска в Берлине или Бранденбурге? PixelRing проверяет световые короба, LED-модули, объемные буквы, пленки, крепления и digital signage. Отправьте фото и получите первичную оценку.',
+    heroTitle: 'Ремонт вывесок в Берлине и Бранденбурге',
+    heroSubline: 'Прямой сервис PixelRing для световых коробов, LED-подсветки, букв, пленок и креплений. Пришлите фото или описание — специалисты оценят ситуацию и предложат следующий шаг.',
     heroImage: '/images/leistungen/hero-repair.png',
     symptomsTitle: 'Выберите вашу неисправность',
     closeLabel: 'Закрыть',
     formTitle: 'Запросить ремонт',
     finalHeadline: 'Не уверены, подлежит ли вывеска ремонту?',
-    finalText: 'Просто пришлите фото или описание проблемы. Специалисты Pixel Ring проверят фото или описание и предложат следующий шаг.',
+    finalText: 'Просто пришлите фото или описание проблемы. Специалисты PixelRing проверят фото или описание и предложат следующий шаг.',
     symptoms: [
       {
         id: 'flackern',
@@ -230,16 +230,16 @@ const CONTENT: Record<Locale, LandingPageContent> = {
     ],
   },
   en: {
-    metaTitle: 'Signage Repair & Maintenance in Berlin & Brandenburg | Pixel Ring',
-    metaDescription: 'Repair for signs, illuminated advertising, LED systems and lightboxes in Berlin & Brandenburg. Photo-based first assessment and direct Pixel Ring service.',
-    heroTitle: 'Signage and illuminated advertising repair in Berlin & Brandenburg',
-    heroSubline: 'Direct Pixel Ring service for lightboxes, LED lighting, channel letters, films and fixings. Send a photo or short description — specialists review the situation and suggest the next step.',
+    metaTitle: 'Signage Repair & Maintenance in Berlin & Brandenburg | PixelRing',
+    metaDescription: 'Defective sign in Berlin or Brandenburg? PixelRing checks lightboxes, LED modules, channel letters, films, fixings and digital signage. Send photos and receive a first assessment.',
+    heroTitle: 'Signage repair in Berlin & Brandenburg',
+    heroSubline: 'Direct PixelRing service for lightboxes, LED lighting, channel letters, films and fixings. Send a photo or short description — specialists review the situation and suggest the next step.',
     heroImage: '/images/leistungen/hero-repair.png',
     symptomsTitle: 'Select your issue for a quick assessment',
     closeLabel: 'Close',
     formTitle: 'Request repair',
     finalHeadline: 'Unsure if your defect can be repaired?',
-    finalText: 'Simply send a photo or short description. Pixel Ring reviews the information and suggests the next practical step.',
+    finalText: 'Simply send a photo or short description. PixelRing reviews the information and suggests the next practical step.',
     symptoms: [
       {
         id: 'flackern',
@@ -307,16 +307,16 @@ const CONTENT: Record<Locale, LandingPageContent> = {
     ],
   },
   tr: {
-    metaTitle: 'Tabela onarımı Berlin & Brandenburg | Pixel Ring',
-    metaDescription: 'Berlin & Brandenburg’da tabela, ışıklı reklam, LED sistemleri ve ışıklı kutu onarımı. Fotoğrafa göre ön değerlendirme, doğrudan Pixel Ring servisi.',
-    heroTitle: 'Berlin & Brandenburg’da tabela ve ışıklı reklam onarımı',
-    heroSubline: 'Işıklı kutular, LED aydınlatma, harf tabelalar, folyolar ve bağlantı elemanları için doğrudan Pixel Ring servisi. Fotoğraf veya kısa açıklama gönderin — uzmanlar durumu inceler ve sonraki adımı önerir.',
+    metaTitle: 'Tabela onarımı Berlin & Brandenburg | PixelRing',
+    metaDescription: 'Berlin veya Brandenburg’da arızalı tabela mı var? PixelRing ışıklı kutuları, LED modülleri, profil harfleri, folyoları, bağlantıları ve dijital tabelaları kontrol eder. Fotoğraf gönderin ve ilk değerlendirmeyi alın.',
+    heroTitle: 'Berlin & Brandenburg’da tabela onarımı',
+    heroSubline: 'Işıklı kutular, LED aydınlatma, harf tabelalar, folyolar ve bağlantı elemanları için doğrudan PixelRing servisi. Fotoğraf veya kısa açıklama gönderin — uzmanlar durumu inceler ve sonraki adımı önerir.',
     heroImage: '/images/leistungen/hero-repair.png',
     symptomsTitle: 'Hızlı bir değerlendirme için sorununuzu seçin',
     closeLabel: 'Kapat',
     formTitle: 'Onarım talep et',
     finalHeadline: 'Arızanızın giderilip giderilemeyeceğinden emin değil misiniz?',
-    finalText: 'Bize bir fotoğraf veya kısa açıklama gönderin. Pixel Ring bilgileri kontrol eder ve uygun sonraki adımı önerir.',
+    finalText: 'Bize bir fotoğraf veya kısa açıklama gönderin. PixelRing bilgileri kontrol eder ve uygun sonraki adımı önerir.',
     symptoms: [
       {
         id: 'flackern',
@@ -384,16 +384,16 @@ const CONTENT: Record<Locale, LandingPageContent> = {
     ],
   },
   pl: {
-    metaTitle: 'Naprawa reklam Berlin & Brandenburg | Pixel Ring',
-    metaDescription: 'Naprawa szyldów, reklam świetlnych, systemów LED i kasetonów w Berlinie i Brandenburgii. Wstępna ocena po zdjęciu lub opisie, bezpośredni serwis Pixel Ring.',
-    heroTitle: 'Naprawa szyldów i reklam świetlnych w Berlinie i Brandenburgii',
-    heroSubline: 'Bezpośredni serwis Pixel Ring dla kasetonów, LED, liter przestrzennych, folii i mocowań. Wyślij zdjęcie lub krótki opis — specjaliści ocenią sytuację i zaproponują następny krok.',
+    metaTitle: 'Naprawa reklam Berlin & Brandenburg | PixelRing',
+    metaDescription: 'Uszkodzona reklama w Berlinie lub Brandenburgii? PixelRing sprawdza kasetony świetlne, moduły LED, litery przestrzenne, folie, mocowania i digital signage. Wyślij zdjęcia i otrzymaj wstępną ocenę.',
+    heroTitle: 'Naprawa reklam w Berlinie i Brandenburgii',
+    heroSubline: 'Bezpośredni serwis PixelRing dla kasetonów, LED, liter przestrzennych, folii i mocowań. Wyślij zdjęcie lub krótki opis — specjaliści ocenią sytuację i zaproponują następny krok.',
     heroImage: '/images/leistungen/hero-repair.png',
     symptomsTitle: 'Wybierz swój problem w celu szybkiej oceny',
     closeLabel: 'Zamknij',
     formTitle: 'Zgłoś naprawę',
     finalHeadline: 'Nie masz pewności, czy usterka może zostać naprawiona?',
-    finalText: 'Wyślij zdjęcie lub krótki opis. Pixel Ring sprawdzi informacje i zaproponuje kolejny rozsądny krok.',
+    finalText: 'Wyślij zdjęcie lub krótki opis. PixelRing sprawdzi informacje i zaproponuje kolejny rozsądny krok.',
     symptoms: [
       {
         id: 'flackern',
@@ -461,16 +461,16 @@ const CONTENT: Record<Locale, LandingPageContent> = {
     ],
   },
   ar: {
-    metaTitle: 'إصلاح وصيانة اللوحات الإعلانية في برلين وبراندنبورغ | Pixel Ring',
-    metaDescription: 'إصلاح اللوحات الإعلانية والإعلانات المضيئة وأنظمة LED والصناديق المضيئة في برلين وبراندنبورغ. تقييم أولي بعد صورة أو وصف وخدمة مباشرة من Pixel Ring.',
-    heroTitle: 'إصلاح اللوحات والإعلانات المضيئة في برلين وبراندنبورغ',
-    heroSubline: 'خدمة Pixel Ring مباشرة للصناديق المضيئة، وإضاءة LED، والحروف المضيئة، والأفلام اللاصقة، والتثبيت. أرسل صورة أو وصفًا قصيرًا — يراجع المختصون الحالة ويقترحون الخطوة التالية.',
+    metaTitle: 'إصلاح وصيانة اللوحات الإعلانية في برلين وبراندنبورغ | PixelRing',
+    metaDescription: 'هل لديك لوحة إعلانية معطلة في برلين أو براندنبورغ؟ تفحص PixelRing الصناديق المضيئة ووحدات LED والحروف البارزة والأفلام والتثبيت واللافتات الرقمية. أرسل الصور واحصل على تقييم أولي.',
+    heroTitle: 'إصلاح اللوحات الإعلانية في برلين وبراندنبورغ',
+    heroSubline: 'خدمة PixelRing مباشرة للصناديق المضيئة، وإضاءة LED، والحروف المضيئة، والأفلام اللاصقة، والتثبيت. أرسل صورة أو وصفًا قصيرًا — يراجع المختصون الحالة ويقترحون الخطوة التالية.',
     heroImage: '/images/leistungen/hero-repair.png',
     symptomsTitle: 'اختر مشكلتك للحصول على تقييم سريع',
     closeLabel: 'إغلاق',
     formTitle: 'طلب إصلاح',
     finalHeadline: 'هل أنت غير متأكد مما إذا كان من الممكن إصلاح العطل؟',
-    finalText: 'أرسل صورة أو وصفًا قصيرًا. تراجع Pixel Ring المعلومات وتقترح الخطوة العملية التالية.',
+    finalText: 'أرسل صورة أو وصفًا قصيرًا. تراجع PixelRing المعلومات وتقترح الخطوة العملية التالية.',
     symptoms: [
       {
         id: 'flackern',
@@ -541,7 +541,7 @@ const CONTENT: Record<Locale, LandingPageContent> = {
 
 const HERO_SLIDE_SOURCES = [
   '/images/leistungen/repair-hero/hero-sign-repair-01.jpg',
-  '/images/leistungen/repair-hero/hero-led-diagnostics-02.jpg',
+  '/images/leistungen/werbeanlagen-reparatur-led-module-pruefung.png',
   '/images/leistungen/repair-hero/hero-channel-letter-03.jpg',
   '/images/leistungen/repair-hero/hero-rain-damage-04.jpg',
 ] as const;
@@ -549,37 +549,37 @@ const HERO_SLIDE_SOURCES = [
 const HERO_SLIDE_ALTS_BY_LOCALE: Record<Locale, string[]> = {
   de: [
     'Techniker repariert einen geöffneten Lichtkasten an einer Ladenfassade',
-    'LED-Module und Verkabelung werden mit einem Messgerät geprüft',
+    'LED-Module in einem geöffneten Leuchtkasten werden mit einem Multimeter geprüft',
     'Techniker repariert beleuchtete Profilbuchstaben an einer Fassade',
     'Techniker prüft Feuchtigkeitsschaden an einer Werbeanlage nach Regen',
   ],
   en: [
     'Technician repairing an open illuminated lightbox on a storefront facade',
-    'LED modules and wiring checked with a measuring device',
+    'LED modules in an open illuminated sign are checked with a multimeter',
     'Technician repairing illuminated channel letters on a building facade',
     'Technician checking moisture damage on an outdoor sign after rain',
   ],
   ru: [
     'Специалист ремонтирует открытый световой короб на фасаде магазина',
-    'Проверка LED-модулей и проводки измерительным прибором',
+    'Проверка LED-модулей в открытом световом коробе мультиметром',
     'Ремонт световых объемных букв на фасаде здания',
     'Проверка повреждения вывески после влаги и дождя',
   ],
   tr: [
     'Bir teknisyen mağaza cephesindeki açık ışıklı kutuyu onarıyor',
-    'LED modülleri ve kablolar ölçüm cihazıyla kontrol ediliyor',
+    'Açık bir ışıklı tabeladaki LED modülleri multimetre ile kontrol ediliyor',
     'Bir teknisyen cephedeki ışıklı harfleri onarıyor',
     'Yağmurdan sonra dış mekan tabelasında nem hasarı kontrol ediliyor',
   ],
   pl: [
     'Technik naprawia otwarty kaseton świetlny na fasadzie sklepu',
-    'Moduły LED i okablowanie sprawdzane miernikiem',
+    'Moduły LED w otwartym kasetonie świetlnym sprawdzane multimetrem',
     'Technik naprawia podświetlane litery przestrzenne na fasadzie',
     'Technik sprawdza uszkodzenie reklamy zewnętrznej po wilgoci i deszczu',
   ],
   ar: [
     'فني يصلح صندوقًا ضوئيًا مفتوحًا على واجهة متجر',
-    'فحص وحدات LED والأسلاك بجهاز قياس',
+    'فحص وحدات LED داخل صندوق إضاءة مفتوح باستخدام مقياس متعدد',
     'فني يصلح حروفًا مضيئة على واجهة مبنى',
     'فحص ضرر الرطوبة في لوحة خارجية بعد المطر',
   ],
@@ -592,11 +592,11 @@ const REPAIR_FAQ_BY_LOCALE: Record<Locale, RepairFaqContent> = {
     eyebrow: 'Häufige Fragen',
     title: 'Was vor der Anfrage wichtig ist',
     items: [
-      { question: 'Welche Werbeanlagen repariert Pixel Ring?', answer: 'Pixel Ring nimmt Anfragen zu Leuchtkästen, LED-Beleuchtung, Profilbuchstaben, Folien, Fassadenschildern, Paneelen und Befestigungen an. Zuerst klären wir Konstruktion, sichtbaren Defekt, Zugang und Standort, danach schlagen wir den nächsten Schritt vor.' },
+      { question: 'Welche Werbeanlagen repariert PixelRing?', answer: 'PixelRing nimmt Anfragen zu Leuchtkästen, LED-Beleuchtung, Profilbuchstaben, Folien, Fassadenschildern, Paneelen und Befestigungen an. Zuerst klären wir Konstruktion, sichtbaren Defekt, Zugang und Standort, danach schlagen wir den nächsten Schritt vor.' },
       { question: 'Kann eine Reparatur anhand von Fotos eingeschätzt werden?', answer: 'Ja, Fotos oder ein kurzes Video helfen oft, Symptome wie dunkle Buchstaben, flackernde LED, gelöste Folie, Feuchtigkeit oder lockere Befestigung einzuordnen. Es bleibt eine erste Einschätzung; die finale Entscheidung hängt von Zugang, Material und Prüfung vor Ort ab.' },
-      { question: 'Prüft Pixel Ring auch Outdoor-Displays und digitale Werbeanlagen?', answer: 'Ja, Pixel Ring nimmt auch Anfragen zu digitalen Außenflächen, LED-Displays und Media-Player-/Controller-Störungen an. Wichtig sind Fotos vom Bildschirm, Gehäuse, Zugang, Fehlermeldung und der Hinweis, ob die Störung dauerhaft oder nur zeitweise auftritt.' },
-      { question: 'Was tun bei Funken, Brandgeruch, Feuchtigkeit oder lockeren Teilen?', answer: 'Wenn es gefahrlos möglich ist, schalten Sie die Anlage spannungsfrei. Halten Sie Abstand zu offenen Leitungen, feuchten Gehäusen und losen Teilen. Senden Sie Fotos und Beschreibung, damit Pixel Ring zuerst den sicheren nächsten Schritt einordnet.' },
-      { question: 'Führt Pixel Ring selbst aus oder vermittelt Pixel Ring nur?', answer: 'Pixel Ring arbeitet als eine verantwortliche Servicefirma. Die Anfrage geht direkt an Pixel Ring, nicht an eine Börse oder ein Verzeichnis von Handwerkern. Formular und AI helfen beim Sammeln der Daten, die Arbeit wird durch Pixel Ring Spezialisten koordiniert und ausgeführt.' },
+      { question: 'Prüft PixelRing auch Outdoor-Displays und digitale Werbeanlagen?', answer: 'Ja, PixelRing nimmt auch Anfragen zu digitalen Außenflächen, LED-Displays und Media-Player-/Controller-Störungen an. Wichtig sind Fotos vom Bildschirm, Gehäuse, Zugang, Fehlermeldung und der Hinweis, ob die Störung dauerhaft oder nur zeitweise auftritt.' },
+      { question: 'Was tun bei Funken, Brandgeruch, Feuchtigkeit oder lockeren Teilen?', answer: 'Wenn es gefahrlos möglich ist, schalten Sie die Anlage spannungsfrei. Halten Sie Abstand zu offenen Leitungen, feuchten Gehäusen und losen Teilen. Senden Sie Fotos und Beschreibung, damit PixelRing zuerst den sicheren nächsten Schritt einordnet.' },
+      { question: 'Führt PixelRing selbst aus oder vermittelt PixelRing nur?', answer: 'PixelRing arbeitet als eine verantwortliche Servicefirma. Die Anfrage geht direkt an PixelRing, nicht an eine Börse oder ein Verzeichnis von Handwerkern. Formular und AI helfen beim Sammeln der Daten, die Arbeit wird durch PixelRing Spezialisten koordiniert und ausgeführt.' },
       { question: 'Gibt es Garantie auf die Reparatur?', answer: 'Ja, die Gewährleistung kann bis zu 24 Monate betragen, abhängig von ausgeführter Arbeit, Material und Einsatzbedingungen. Der konkrete Umfang wird nach Bewertung des Defekts und Abstimmung der Arbeiten geklärt.' },
       { question: 'Muss ich die Werbeanlage vorab öffnen?', answer: 'Nein. Öffnen Sie kein Gehäuse, berühren Sie keine elektrischen Teile und steigen Sie nicht in die Höhe. Für die erste Einschätzung reichen sichere Fotos aus Abstand, Symptombeschreibung, Standort und ungefähre Montagehöhe.' },
     ],
@@ -605,11 +605,11 @@ const REPAIR_FAQ_BY_LOCALE: Record<Locale, RepairFaqContent> = {
     eyebrow: 'FAQ',
     title: 'What to know before sending a request',
     items: [
-      { question: 'Which signs and illuminated advertising can Pixel Ring repair?', answer: 'Pixel Ring handles requests for lightboxes, LED lighting, channel letters, films, facade signs, panels and fixings. We first clarify the sign type, visible defect, access and location, then suggest the next step.' },
+      { question: 'Which signs and illuminated advertising can PixelRing repair?', answer: 'PixelRing handles requests for lightboxes, LED lighting, channel letters, films, facade signs, panels and fixings. We first clarify the sign type, visible defect, access and location, then suggest the next step.' },
       { question: 'Can the repair be assessed from photos?', answer: 'Yes, photos or a short video often help identify symptoms such as a dark letter, flickering LED, peeling film, moisture or loose mounting. This is a first assessment; the final decision depends on access, materials and on-site checks.' },
-      { question: 'Does Pixel Ring also check outdoor displays and digital signage?', answer: 'Yes, Pixel Ring also accepts requests for digital outdoor surfaces, LED displays and media-player or controller faults. Helpful details include photos of the screen, housing, access, error message and whether the issue is permanent or intermittent.' },
-      { question: 'What should I do if the sign sparks, smells burnt, is wet or loose?', answer: 'If it can be done safely, switch off the power. Keep away from exposed wiring, wet housings and loose parts. Send photos and a description so Pixel Ring can first define the safe next step.' },
-      { question: 'Does Pixel Ring perform the repair or pass it to contractors?', answer: 'Pixel Ring works as one accountable service company. Your request goes directly to Pixel Ring, not to a marketplace or contractor directory. The form and AI help collect details, while Pixel Ring specialists coordinate and perform the work.' },
+      { question: 'Does PixelRing also check outdoor displays and digital signage?', answer: 'Yes, PixelRing also accepts requests for digital outdoor surfaces, LED displays and media-player or controller faults. Helpful details include photos of the screen, housing, access, error message and whether the issue is permanent or intermittent.' },
+      { question: 'What should I do if the sign sparks, smells burnt, is wet or loose?', answer: 'If it can be done safely, switch off the power. Keep away from exposed wiring, wet housings and loose parts. Send photos and a description so PixelRing can first define the safe next step.' },
+      { question: 'Does PixelRing perform the repair or pass it to contractors?', answer: 'PixelRing works as one accountable service company. Your request goes directly to PixelRing, not to a marketplace or contractor directory. The form and AI help collect details, while PixelRing specialists coordinate and perform the work.' },
       { question: 'Is there a warranty for the repair?', answer: 'Yes, warranty can be up to 24 months depending on the completed work, material and operating conditions. The exact scope is clarified after the defect is assessed and the work is agreed.' },
       { question: 'Do I need to open the sign before sending a request?', answer: 'No. Do not open the housing, touch electrical parts or climb to reach the sign. Safe photos from a distance, symptom description, location and approximate mounting height are enough for the first assessment.' },
     ],
@@ -618,11 +618,11 @@ const REPAIR_FAQ_BY_LOCALE: Record<Locale, RepairFaqContent> = {
     eyebrow: 'Частые вопросы',
     title: 'Что важно знать перед заявкой',
     items: [
-      { question: 'Какие вывески и световую рекламу ремонтирует Pixel Ring?', answer: 'Pixel Ring принимает заявки по световым коробам, LED-подсветке, объемным буквам, пленкам, фасадным вывескам, панелям и креплениям. Сначала мы уточняем тип конструкции, видимый дефект, доступ и адрес, затем предлагаем следующий шаг.' },
+      { question: 'Какие вывески и световую рекламу ремонтирует PixelRing?', answer: 'PixelRing принимает заявки по световым коробам, LED-подсветке, объемным буквам, пленкам, фасадным вывескам, панелям и креплениям. Сначала мы уточняем тип конструкции, видимый дефект, доступ и адрес, затем предлагаем следующий шаг.' },
       { question: 'Можно ли оценить ремонт по фото?', answer: 'Да, фото или короткое видео часто помогают понять симптом: не горит буква, мерцает LED, отошла пленка, попала влага или ослабло крепление. Это предварительная оценка, финальное решение зависит от доступа, материалов и проверки на месте.' },
-      { question: 'Pixel Ring проверяет outdoor displays (наружные цифровые экраны) и digital signage (цифровую рекламу)?', answer: 'Да, Pixel Ring принимает заявки по цифровым наружным поверхностям, LED-экранам, media player (медиаплееру) и controller (блоку управления). Для оценки помогают фото экрана, корпуса, доступа, сообщения об ошибке и описание: проблема постоянная или появляется периодически.' },
-      { question: 'Что делать, если вывеска искрит, пахнет гарью или повреждена после дождя?', answer: 'Если это можно сделать безопасно, отключите питание. Не подходите к открытым проводам, влажным корпусам и болтающимся частям. Передайте фото и описание специалистам Pixel Ring, чтобы сначала определить безопасный следующий шаг.' },
-      { question: 'Pixel Ring сам выполняет ремонт или передает заявку мастерам?', answer: 'Pixel Ring работает как одна ответственная сервисная компания: заявка идет напрямую в Pixel Ring, а не в биржу или каталог мастеров. Форма и AI помогают собрать данные, но работу координируют и выполняют специалисты Pixel Ring.' },
+      { question: 'PixelRing проверяет outdoor displays (наружные цифровые экраны) и digital signage (цифровую рекламу)?', answer: 'Да, PixelRing принимает заявки по цифровым наружным поверхностям, LED-экранам, media player (медиаплееру) и controller (блоку управления). Для оценки помогают фото экрана, корпуса, доступа, сообщения об ошибке и описание: проблема постоянная или появляется периодически.' },
+      { question: 'Что делать, если вывеска искрит, пахнет гарью или повреждена после дождя?', answer: 'Если это можно сделать безопасно, отключите питание. Не подходите к открытым проводам, влажным корпусам и болтающимся частям. Передайте фото и описание специалистам PixelRing, чтобы сначала определить безопасный следующий шаг.' },
+      { question: 'PixelRing сам выполняет ремонт или передает заявку мастерам?', answer: 'PixelRing работает как одна ответственная сервисная компания: заявка идет напрямую в PixelRing, а не в биржу или каталог мастеров. Форма и AI помогают собрать данные, но работу координируют и выполняют специалисты PixelRing.' },
       { question: 'Есть ли гарантия на ремонт вывески?', answer: 'Да, гарантия может составлять до 24 месяцев в зависимости от выполненной работы, материала и условий эксплуатации. Конкретный объем гарантии уточняется после оценки дефекта и согласования работ.' },
       { question: 'Нужно ли самому разбирать вывеску перед заявкой?', answer: 'Нет. Не вскрывайте корпус, не прикасайтесь к электрическим элементам и не поднимайтесь на высоту. Для первой оценки достаточно безопасных фото с расстояния, описания симптома, адреса или района и примерной высоты установки.' },
     ],
@@ -631,11 +631,11 @@ const REPAIR_FAQ_BY_LOCALE: Record<Locale, RepairFaqContent> = {
     eyebrow: 'Sık sorulan sorular',
     title: 'Talep göndermeden önce bilinmesi gerekenler',
     items: [
-      { question: 'Pixel Ring hangi tabela ve ışıklı reklamları onarır?', answer: 'Pixel Ring ışıklı kutular, LED aydınlatma, harf tabelalar, folyolar, cephe tabelaları, paneller ve bağlantı elemanları için talepleri kabul eder. Önce yapı tipi, görünen arıza, erişim ve adres netleştirilir, ardından sonraki adım önerilir.' },
+      { question: 'PixelRing hangi tabela ve ışıklı reklamları onarır?', answer: 'PixelRing ışıklı kutular, LED aydınlatma, harf tabelalar, folyolar, cephe tabelaları, paneller ve bağlantı elemanları için talepleri kabul eder. Önce yapı tipi, görünen arıza, erişim ve adres netleştirilir, ardından sonraki adım önerilir.' },
       { question: 'Onarım fotoğrafa göre değerlendirilebilir mi?', answer: 'Evet, fotoğraf veya kısa video; yanmayan harf, titreyen LED, sökülen folyo, nem veya gevşek bağlantı gibi belirtileri anlamaya yardımcı olur. Bu ön değerlendirmedir; son karar erişime, malzemeye ve yerinde kontrole bağlıdır.' },
-      { question: 'Pixel Ring outdoor display ve dijital reklam sistemlerini de kontrol eder mi?', answer: 'Evet, Pixel Ring dijital dış mekan yüzeyleri, LED ekranlar, medya oynatıcı ve kontrolcü arızaları için de talepleri kabul eder. Ekran, kasa, erişim, hata mesajı fotoğrafları ve sorunun sürekli mi aralıklı mı olduğu bilgisi yardımcı olur.' },
-      { question: 'Tabela kıvılcım çıkarıyor, yanık kokuyor, ıslandı veya gevşediyse ne yapmalıyım?', answer: 'Güvenli şekilde yapılabiliyorsa elektriği kapatın. Açık kablolara, ıslak kasalara ve sallanan parçalara yaklaşmayın. Fotoğraf ve açıklama gönderin; Pixel Ring önce güvenli sonraki adımı belirler.' },
-      { question: 'Pixel Ring işi kendi mi yapar yoksa ustalara mı aktarır?', answer: 'Pixel Ring tek sorumlu servis şirketi olarak çalışır. Talep doğrudan Pixel Ring’e gider; bir aracı platform veya usta kataloğu değildir. Form ve AI bilgileri toplamaya yardımcı olur, işi Pixel Ring uzmanları koordine eder ve yürütür.' },
+      { question: 'PixelRing outdoor display ve dijital reklam sistemlerini de kontrol eder mi?', answer: 'Evet, PixelRing dijital dış mekan yüzeyleri, LED ekranlar, medya oynatıcı ve kontrolcü arızaları için de talepleri kabul eder. Ekran, kasa, erişim, hata mesajı fotoğrafları ve sorunun sürekli mi aralıklı mı olduğu bilgisi yardımcı olur.' },
+      { question: 'Tabela kıvılcım çıkarıyor, yanık kokuyor, ıslandı veya gevşediyse ne yapmalıyım?', answer: 'Güvenli şekilde yapılabiliyorsa elektriği kapatın. Açık kablolara, ıslak kasalara ve sallanan parçalara yaklaşmayın. Fotoğraf ve açıklama gönderin; PixelRing önce güvenli sonraki adımı belirler.' },
+      { question: 'PixelRing işi kendi mi yapar yoksa ustalara mı aktarır?', answer: 'PixelRing tek sorumlu servis şirketi olarak çalışır. Talep doğrudan PixelRing’e gider; bir aracı platform veya usta kataloğu değildir. Form ve AI bilgileri toplamaya yardımcı olur, işi PixelRing uzmanları koordine eder ve yürütür.' },
       { question: 'Tabela onarımında garanti var mı?', answer: 'Evet, garanti yapılan işe, malzemeye ve kullanım koşullarına bağlı olarak 24 aya kadar olabilir. Kesin kapsam arızanın değerlendirilmesi ve işlerin onaylanmasından sonra netleşir.' },
       { question: 'Talep göndermeden önce tabelayı sökmem gerekir mi?', answer: 'Hayır. Kasayı açmayın, elektrikli parçalara dokunmayın ve yüksekliğe çıkmayın. İlk değerlendirme için güvenli mesafeden fotoğraf, belirti açıklaması, adres veya bölge ve yaklaşık montaj yüksekliği yeterlidir.' },
     ],
@@ -644,11 +644,11 @@ const REPAIR_FAQ_BY_LOCALE: Record<Locale, RepairFaqContent> = {
     eyebrow: 'Częste pytania',
     title: 'Co warto wiedzieć przed zgłoszeniem',
     items: [
-      { question: 'Jakie szyldy i reklamy świetlne naprawia Pixel Ring?', answer: 'Pixel Ring przyjmuje zgłoszenia dotyczące kasetonów świetlnych, LED, liter przestrzennych, folii, szyldów fasadowych, paneli i mocowań. Najpierw ustalamy typ konstrukcji, widoczny defekt, dostęp i adres, a następnie proponujemy kolejny krok.' },
+      { question: 'Jakie szyldy i reklamy świetlne naprawia PixelRing?', answer: 'PixelRing przyjmuje zgłoszenia dotyczące kasetonów świetlnych, LED, liter przestrzennych, folii, szyldów fasadowych, paneli i mocowań. Najpierw ustalamy typ konstrukcji, widoczny defekt, dostęp i adres, a następnie proponujemy kolejny krok.' },
       { question: 'Czy można ocenić naprawę na podstawie zdjęć?', answer: 'Tak, zdjęcia lub krótkie wideo często pomagają rozpoznać objaw: nie świeci litera, LED miga, folia się odkleja, pojawiła się wilgoć albo poluzowało się mocowanie. To ocena wstępna; decyzja końcowa zależy od dostępu, materiałów i kontroli na miejscu.' },
-      { question: 'Czy Pixel Ring sprawdza też outdoor display i reklamę cyfrową?', answer: 'Tak, Pixel Ring przyjmuje również zgłoszenia dotyczące cyfrowych powierzchni zewnętrznych, ekranów LED oraz usterek media playera lub kontrolera. Pomagają zdjęcia ekranu, obudowy, dostępu, komunikatu błędu i informacja, czy problem jest stały czy okresowy.' },
-      { question: 'Co zrobić, jeśli reklama iskrzy, pachnie spalenizną, zamokła albo się rusza?', answer: 'Jeśli można to zrobić bezpiecznie, odłącz zasilanie. Nie podchodź do odsłoniętych przewodów, mokrych obudów ani luźnych elementów. Przekaż zdjęcia i opis specjalistom Pixel Ring, aby najpierw ustalić bezpieczny kolejny krok.' },
-      { question: 'Czy Pixel Ring wykonuje naprawę samodzielnie czy przekazuje zlecenie dalej?', answer: 'Pixel Ring działa jako jedna odpowiedzialna firma serwisowa. Zgłoszenie trafia bezpośrednio do Pixel Ring, a nie na giełdę ani do katalogu wykonawców. Formularz i AI pomagają zebrać dane, a prace koordynują i wykonują specjaliści Pixel Ring.' },
+      { question: 'Czy PixelRing sprawdza też outdoor display i reklamę cyfrową?', answer: 'Tak, PixelRing przyjmuje również zgłoszenia dotyczące cyfrowych powierzchni zewnętrznych, ekranów LED oraz usterek media playera lub kontrolera. Pomagają zdjęcia ekranu, obudowy, dostępu, komunikatu błędu i informacja, czy problem jest stały czy okresowy.' },
+      { question: 'Co zrobić, jeśli reklama iskrzy, pachnie spalenizną, zamokła albo się rusza?', answer: 'Jeśli można to zrobić bezpiecznie, odłącz zasilanie. Nie podchodź do odsłoniętych przewodów, mokrych obudów ani luźnych elementów. Przekaż zdjęcia i opis specjalistom PixelRing, aby najpierw ustalić bezpieczny kolejny krok.' },
+      { question: 'Czy PixelRing wykonuje naprawę samodzielnie czy przekazuje zlecenie dalej?', answer: 'PixelRing działa jako jedna odpowiedzialna firma serwisowa. Zgłoszenie trafia bezpośrednio do PixelRing, a nie na giełdę ani do katalogu wykonawców. Formularz i AI pomagają zebrać dane, a prace koordynują i wykonują specjaliści PixelRing.' },
       { question: 'Czy naprawa szyldu ma gwarancję?', answer: 'Tak, gwarancja może wynosić do 24 miesięcy w zależności od wykonanej pracy, materiału i warunków użytkowania. Konkretny zakres jest ustalany po ocenie usterki i uzgodnieniu prac.' },
       { question: 'Czy przed zgłoszeniem trzeba rozebrać reklamę?', answer: 'Nie. Nie otwieraj obudowy, nie dotykaj elementów elektrycznych i nie wchodź na wysokość. Do pierwszej oceny wystarczą bezpieczne zdjęcia z dystansu, opis objawu, adres lub dzielnica i przybliżona wysokość montażu.' },
     ],
@@ -657,11 +657,11 @@ const REPAIR_FAQ_BY_LOCALE: Record<Locale, RepairFaqContent> = {
     eyebrow: 'أسئلة شائعة',
     title: 'ما المهم قبل إرسال الطلب',
     items: [
-      { question: 'ما أنواع اللوحات والإعلانات المضيئة التي تصلحها Pixel Ring؟', answer: 'تستقبل Pixel Ring طلبات الصناديق المضيئة، وإضاءة LED، والحروف المضيئة، والأفلام اللاصقة، ولوحات الواجهات، والألواح، والتثبيت. نوضح أولًا نوع اللوحة والخلل الظاهر وطريقة الوصول والعنوان، ثم نقترح الخطوة التالية.' },
+      { question: 'ما أنواع اللوحات والإعلانات المضيئة التي تصلحها PixelRing؟', answer: 'تستقبل PixelRing طلبات الصناديق المضيئة، وإضاءة LED، والحروف المضيئة، والأفلام اللاصقة، ولوحات الواجهات، والألواح، والتثبيت. نوضح أولًا نوع اللوحة والخلل الظاهر وطريقة الوصول والعنوان، ثم نقترح الخطوة التالية.' },
       { question: 'هل يمكن تقييم الإصلاح من خلال الصور؟', answer: 'نعم، تساعد الصور أو الفيديو القصير غالبًا في فهم العرض مثل حرف لا يضيء، أو LED يومض، أو فيلم لاصق يتقشر، أو رطوبة، أو تثبيت ضعيف. هذا تقييم أولي، أما القرار النهائي فيعتمد على الوصول والمواد والفحص في الموقع.' },
-      { question: 'هل تفحص Pixel Ring الشاشات الخارجية والإعلانات الرقمية أيضًا؟', answer: 'نعم، تستقبل Pixel Ring طلبات الأسطح الرقمية الخارجية وشاشات LED وأعطال مشغل الوسائط أو وحدة التحكم. تساعد صور الشاشة والهيكل وطريقة الوصول ورسالة الخطأ، مع توضيح هل المشكلة دائمة أم متقطعة.' },
-      { question: 'ماذا أفعل إذا كانت اللوحة تصدر شررًا أو رائحة احتراق أو تضررت بعد المطر؟', answer: 'إذا كان ذلك ممكنًا بأمان، افصل الكهرباء. لا تقترب من الأسلاك المكشوفة أو الهياكل الرطبة أو الأجزاء المتحركة. أرسل الصور والوصف إلى مختصي Pixel Ring لتحديد الخطوة الآمنة التالية أولًا.' },
-      { question: 'هل تنفذ Pixel Ring الإصلاح بنفسها أم تحول الطلب إلى فنيين آخرين؟', answer: 'تعمل Pixel Ring كشركة خدمة واحدة مسؤولة. يذهب الطلب مباشرة إلى Pixel Ring، وليس إلى سوق أو دليل فنيين. يساعد النموذج والذكاء الاصطناعي في جمع البيانات، بينما ينسق مختصو Pixel Ring العمل وينفذونه.' },
+      { question: 'هل تفحص PixelRing الشاشات الخارجية والإعلانات الرقمية أيضًا؟', answer: 'نعم، تستقبل PixelRing طلبات الأسطح الرقمية الخارجية وشاشات LED وأعطال مشغل الوسائط أو وحدة التحكم. تساعد صور الشاشة والهيكل وطريقة الوصول ورسالة الخطأ، مع توضيح هل المشكلة دائمة أم متقطعة.' },
+      { question: 'ماذا أفعل إذا كانت اللوحة تصدر شررًا أو رائحة احتراق أو تضررت بعد المطر؟', answer: 'إذا كان ذلك ممكنًا بأمان، افصل الكهرباء. لا تقترب من الأسلاك المكشوفة أو الهياكل الرطبة أو الأجزاء المتحركة. أرسل الصور والوصف إلى مختصي PixelRing لتحديد الخطوة الآمنة التالية أولًا.' },
+      { question: 'هل تنفذ PixelRing الإصلاح بنفسها أم تحول الطلب إلى فنيين آخرين؟', answer: 'تعمل PixelRing كشركة خدمة واحدة مسؤولة. يذهب الطلب مباشرة إلى PixelRing، وليس إلى سوق أو دليل فنيين. يساعد النموذج والذكاء الاصطناعي في جمع البيانات، بينما ينسق مختصو PixelRing العمل وينفذونه.' },
       { question: 'هل توجد ضمانات على إصلاح اللوحة؟', answer: 'نعم، يمكن أن يصل الضمان إلى 24 شهرًا حسب العمل المنفذ والمواد وظروف التشغيل. يتم توضيح النطاق المحدد بعد تقييم العطل والاتفاق على الأعمال.' },
       { question: 'هل يجب أن أفك اللوحة قبل إرسال الطلب؟', answer: 'لا. لا تفتح الهيكل، ولا تلمس الأجزاء الكهربائية، ولا تصعد إلى ارتفاع. تكفي للمرحلة الأولى صور آمنة من مسافة، ووصف العرض، والعنوان أو المنطقة، والارتفاع التقريبي للتركيب.' },
     ],
@@ -673,7 +673,7 @@ const REPAIR_SCOPE_BY_LOCALE: Record<Locale, RepairScopeContent> = {
     coverageEyebrow: 'Serviceumfang',
     coverageTitle: 'Welche Werbeanlagen wir reparieren',
     coverageIntro:
-      'Nicht jede Störung sieht technisch gleich aus. Pixel Ring ordnet zuerst Konstruktion, Material, Zugang und sichtbaren Defekt ein, bevor ein Reparaturweg empfohlen wird.',
+      'Nicht jede Störung sieht technisch gleich aus. PixelRing ordnet zuerst Konstruktion, Material, Zugang und sichtbaren Defekt ein, bevor ein Reparaturweg empfohlen wird.',
     coverageCards: [
       { title: 'Leuchtkästen', text: 'Acrylfronten, LED-Flächen, Innenverkabelung, Netzteile, Dichtungen und gealterte Gehäuse.' },
       { title: 'Profilbuchstaben & LED-Module', text: 'Einzelbuchstaben, Logo-Elemente, LED-Ketten, Treiber, Farb- und Helligkeitsabweichungen.' },
@@ -718,7 +718,7 @@ const REPAIR_SCOPE_BY_LOCALE: Record<Locale, RepairScopeContent> = {
     coverageEyebrow: 'Service scope',
     coverageTitle: 'Which signs and structures we repair',
     coverageIntro:
-      'Not every failure has the same technical cause. Pixel Ring first clarifies the construction, material, access and visible damage before recommending a repair path.',
+      'Not every failure has the same technical cause. PixelRing first clarifies the construction, material, access and visible damage before recommending a repair path.',
     coverageCards: [
       { title: 'Lightboxes', text: 'Acrylic faces, LED surfaces, internal wiring, power supplies, seals and aged housings.' },
       { title: 'Channel letters & LED modules', text: 'Single letters, logo elements, LED strings, drivers, colour and brightness differences.' },
@@ -763,7 +763,7 @@ const REPAIR_SCOPE_BY_LOCALE: Record<Locale, RepairScopeContent> = {
     coverageEyebrow: 'Объем сервиса',
     coverageTitle: 'Какие вывески и конструкции мы ремонтируем',
     coverageIntro:
-      'Одинаковый внешний симптом не всегда означает одну и ту же поломку. Pixel Ring сначала уточняет тип конструкции, материал, доступ и видимый дефект, а затем предлагает ремонтный сценарий.',
+      'Одинаковый внешний симптом не всегда означает одну и ту же поломку. PixelRing сначала уточняет тип конструкции, материал, доступ и видимый дефект, а затем предлагает ремонтный сценарий.',
     coverageCards: [
       { title: 'Световые короба', text: 'Акриловые панели, LED-поле, внутренняя проводка, блоки питания, уплотнения и стареющие корпуса.' },
       { title: 'Объемные буквы и LED-модули', text: 'Отдельные буквы, элементы логотипа, LED-цепи, драйверы, различия цвета и яркости.' },
@@ -808,7 +808,7 @@ const REPAIR_SCOPE_BY_LOCALE: Record<Locale, RepairScopeContent> = {
     coverageEyebrow: 'Hizmet kapsamı',
     coverageTitle: 'Hangi tabela ve yapıları onarıyoruz?',
     coverageIntro:
-      'Her belirti aynı teknik arıza anlamına gelmez. Pixel Ring önce yapı tipini, malzemeyi, erişimi ve görünen arızayı netleştirir, sonra onarım yolunu önerir.',
+      'Her belirti aynı teknik arıza anlamına gelmez. PixelRing önce yapı tipini, malzemeyi, erişimi ve görünen arızayı netleştirir, sonra onarım yolunu önerir.',
     coverageCards: [
       { title: 'Işıklı kutular', text: 'Akrilik yüzeyler, LED alanlar, iç kablolama, güç kaynakları, contalar ve eskiyen kasalar.' },
       { title: 'Kutu harfler ve LED modüller', text: 'Tek harfler, logo parçaları, LED zincirleri, sürücüler, renk ve parlaklık farkları.' },
@@ -853,7 +853,7 @@ const REPAIR_SCOPE_BY_LOCALE: Record<Locale, RepairScopeContent> = {
     coverageEyebrow: 'Zakres usługi',
     coverageTitle: 'Jakie szyldy i konstrukcje naprawiamy',
     coverageIntro:
-      'Ten sam widoczny objaw nie zawsze oznacza tę samą usterkę. Pixel Ring najpierw ustala konstrukcję, materiał, dostęp i widoczne uszkodzenie, a dopiero potem proponuje ścieżkę naprawy.',
+      'Ten sam widoczny objaw nie zawsze oznacza tę samą usterkę. PixelRing najpierw ustala konstrukcję, materiał, dostęp i widoczne uszkodzenie, a dopiero potem proponuje ścieżkę naprawy.',
     coverageCards: [
       { title: 'Kasetony świetlne', text: 'Fronty akrylowe, powierzchnie LED, okablowanie wewnętrzne, zasilacze, uszczelki i starzejące się obudowy.' },
       { title: 'Litery przestrzenne i moduły LED', text: 'Pojedyncze litery, elementy logo, łańcuchy LED, sterowniki, różnice koloru i jasności.' },
@@ -898,7 +898,7 @@ const REPAIR_SCOPE_BY_LOCALE: Record<Locale, RepairScopeContent> = {
     coverageEyebrow: 'نطاق الخدمة',
     coverageTitle: 'ما اللوحات والهياكل التي نصلحها',
     coverageIntro:
-      'ليس كل عرض ظاهر يعني العطل نفسه. تحدد Pixel Ring أولًا نوع التركيب، والمادة، وطريقة الوصول، والضرر الظاهر، ثم تقترح مسار الإصلاح.',
+      'ليس كل عرض ظاهر يعني العطل نفسه. تحدد PixelRing أولًا نوع التركيب، والمادة، وطريقة الوصول، والضرر الظاهر، ثم تقترح مسار الإصلاح.',
     coverageCards: [
       { title: 'الصناديق المضيئة', text: 'واجهات الأكريليك، أسطح LED، الأسلاك الداخلية، مزودات الطاقة، الأختام والهياكل القديمة.' },
       { title: 'الحروف البارزة ووحدات LED', text: 'حروف منفردة، عناصر الشعار، سلاسل LED، المشغلات، واختلاف اللون أو السطوع.' },
@@ -1031,11 +1031,11 @@ function getRepairBreadcrumbs(locale: Locale) {
   return [
     {
       label: labels.home,
-      href: `/${locale}`,
+      href: '/',
     },
     {
       label: labels.services,
-      href: `/${locale}/leistungen`,
+      href: '/leistungen',
     },
     {
       label: labels.repair,
@@ -1057,7 +1057,7 @@ function buildRepairPageJsonLd(locale: string, content: LandingPageContent) {
   const provider = {
     '@type': 'Organization',
     '@id': ORGANIZATION_SCHEMA_ID,
-    name: 'Pixel Ring',
+    name: 'PixelRing',
   };
   const [postalCode = '', addressLocality = 'Berlin'] = SITE_CONFIG.company.address.city.split(' ');
   const jsonLd: JsonLdObject[] = [
@@ -1087,9 +1087,9 @@ function buildRepairPageJsonLd(locale: string, content: LandingPageContent) {
       '@context': 'https://schema.org',
       '@type': ['LocalBusiness', 'ProfessionalService'],
       '@id': ORGANIZATION_SCHEMA_ID,
-      name: 'Pixel Ring',
+      name: 'PixelRing',
       legalName: SITE_CONFIG.company.legalName,
-      alternateName: ['Pixel Ring Service'],
+      alternateName: ['PixelRing Service'],
       url: SITE_BASE_URL,
       logo: buildSiteUrl('/icon.png'),
       image: REPAIR_OG_IMAGE,
@@ -1201,7 +1201,7 @@ export async function generateMetadata({
       title: content.metaTitle,
       description: content.metaDescription,
       url: canonicalUrl,
-      siteName: 'Pixel Ring',
+      siteName: 'PixelRing',
       type: 'website',
       locale: OPEN_GRAPH_LOCALE_BY_LOCALE[safeLocale],
       alternateLocale: alternateLocales,
@@ -1360,7 +1360,7 @@ export default async function WerbeanlagenReparaturPage({
   const repairPageJsonLd = buildRepairPageJsonLd(locale, content);
 
   return (
-    <div className="min-h-screen bg-[#F7F1E8] text-[#15202A]">
+    <div className="min-h-screen overflow-x-hidden bg-[#F7F1E8] text-[#15202A]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(repairPageJsonLd) }}

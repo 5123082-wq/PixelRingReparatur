@@ -172,34 +172,34 @@
     "subtitle": "Our completed projects speak for themselves. Precision in every detail.",
     "items": [
       {
-        "title": "LED Mounting",
-        "tag": "Mounting",
-        "description": "Professional installation of large signage on facades."
+        "title": "Signage Installation",
+        "tag": "Installation",
+        "description": "Professional installation of large signage, facade signs, and site advertising."
       },
       {
-        "title": "Neon Repair",
+        "title": "Light Advertising Repair",
         "tag": "Repair",
-        "description": "Precise restoration of classic neon tubes."
+        "description": "Repair of neon, LED systems, lightboxes, and visible signage defects."
       },
       {
-        "title": "High-Rise Maintenance",
+        "title": "Maintenance & Audit",
         "tag": "Maintenance",
-        "description": "Service at dizzying heights with state-of-the-art equipment."
+        "description": "Regular checks, maintenance, and condition reviews for business signage."
       },
       {
-        "title": "Signage Design",
-        "tag": "Design",
-        "description": "Custom signage design from concept to production-ready files."
+        "title": "Branding & Print",
+        "tag": "Branding",
+        "description": "Films, print files, lettering, and advertising materials for a clear site presence."
       },
       {
-        "title": "Lightbox Installation",
-        "tag": "Lightbox",
-        "description": "Energy-efficient backlit panels with even light distribution."
+        "title": "LED Modernization",
+        "tag": "LED Service",
+        "description": "Modernization of lightboxes, LED modules, and light advertising for even visibility."
       },
       {
-        "title": "Safe Dismantling",
+        "title": "Dismantling & Removal",
         "tag": "Dismantling",
-        "description": "Careful removal and recycling of old signage structures."
+        "description": "Coordinated removal, dismantling, and preparation of old signage structures."
       }
     ]
   },
@@ -290,8 +290,20 @@
         "answer": "We provide a 6 to 12-month warranty on all labor and replacement parts."
       },
       {
-        "question": "Do you work with private clients?",
-        "answer": "Yes, we serve both commercial businesses and private individuals with the same level of care."
+        "question": "What B2B tasks can PixelRing handle?",
+        "answer": "PixelRing works with commercial sites: signs, illuminated advertising, advertising structures, storefronts, facade wayfinding and branding. You can submit a one-off request for repair, installation or dismantling, or discuss regular service support for one site or a network of locations."
+      },
+      {
+        "question": "Can I submit one request for multiple sites or branches?",
+        "answer": "Yes. PixelRing can handle requests for individual addresses, shops, offices, restaurants, retail points or branch networks. The request should include the city, address, type of structure and clear photos."
+      },
+      {
+        "question": "Do you service signs installed by another company?",
+        "answer": "Yes. We can inspect, repair, dismantle or modernize an existing sign even if it was produced by another company. The solution depends on the condition of the structure, access, electrical setup and availability of parts."
+      },
+      {
+        "question": "What do you need for an initial assessment?",
+        "answer": "Usually the site address, a short task description and a few photos are enough: an overall view of the sign, the damaged area, access to the structure and, if available, the power supply or electrical connection."
       },
       {
         "question": "What areas do you cover?",

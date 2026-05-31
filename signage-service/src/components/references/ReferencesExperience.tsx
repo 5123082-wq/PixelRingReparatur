@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestButton';
 import CmsImage from '@/components/common/CmsImage';
+import HeroBreadcrumbs from '@/components/common/HeroBreadcrumbs';
 import SectionEyebrow from '@/components/common/SectionEyebrow';
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
@@ -110,6 +111,15 @@ const SECTION_INTRO_ACCENT_CLASS =
   `${SECTION_INTRO_CLASS} border-l-2 border-[#B8643E] pl-4 rtl:border-l-0 rtl:border-r-2 rtl:pl-0 rtl:pr-4`;
 const HERO_FALLBACK_IMAGE = '/images/hero-neon.jpg';
 
+const HOME_BREADCRUMB_LABELS: Record<Locale, string> = {
+  de: 'Home',
+  en: 'Home',
+  ru: 'Главная',
+  tr: 'Ana sayfa',
+  pl: 'Strona główna',
+  ar: 'الرئيسية',
+};
+
 const GALLERY_SECTION_TITLES: Record<Locale, string> = {
   de: 'Galerie der Arbeiten',
   en: 'Work gallery',
@@ -177,6 +187,18 @@ function useLockBodyScroll(locked: boolean) {
       document.body.style.overflow = previousOverflow;
     };
   }, [locked]);
+}
+
+function getReferencesBreadcrumbs(locale: Locale, label: string) {
+  return [
+    {
+      label: HOME_BREADCRUMB_LABELS[locale],
+      href: '/',
+    },
+    {
+      label,
+    },
+  ];
 }
 
 export default function ReferencesExperience({ content }: ReferencesExperienceProps) {
@@ -592,7 +614,8 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
 
   return (
     <main className="flex-grow bg-white text-[#101418]">
-      <section className="relative h-[440px] w-full overflow-hidden bg-[#0E1A2B] sm:h-[500px] lg:h-[560px]">
+      <section className="relative h-[520px] w-full overflow-hidden bg-[#0E1A2B] sm:h-[500px] lg:h-[560px]">
+        <HeroBreadcrumbs items={getReferencesBreadcrumbs(content.locale, content.badge)} />
         <AnimatePresence initial={false}>
           <motion.div
             key={activeHeroSlide}
@@ -624,6 +647,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
                   transition={{ delay: 0.15, duration: 0.65 }}
                   className="max-w-[760px]"
                 >
+                  <div className="mb-4 h-1 w-20 bg-[#B8643E]" />
                   <h1 className="text-[36px] font-extrabold leading-[1.05] text-white sm:text-[52px] lg:text-[60px]">
                     {content.heroTitle}
                   </h1>

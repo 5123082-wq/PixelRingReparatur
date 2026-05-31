@@ -9,6 +9,62 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 Latest checkpoint:
 
 - Date: 2026-05-31
+- Current stage: Reframed the public home `Sichtbare Qualität` carousel as service-aligned internal linking: legacy work cards now normalize to real PixelRing service categories, hashtag pills link to relevant `Leistungen` targets, card titles link to `Referenzen`, and a new branding/print storefront image replaces the generic design-office visual.
+- Next action: Owner visually reviews the updated `/de` carousel and decides whether the same click model should be reused in other proof/gallery surfaces.
+
+- Date: 2026-05-31
+- Current stage: Reframed the public home FAQ as B2B-only across DE/EN/RU/TR/PL/AR: removed the private-individuals question and added four commercial-service questions covering B2B scope, multi-site requests, third-party-built signage, and initial assessment inputs; synced the published CMS home FAQ records.
+- Next action: Owner visually reviews the longer RU home FAQ on desktop/mobile and decides whether the accordion spacing should be tightened for seven questions.
+
+- Date: 2026-05-31
+- Current stage: Added four dedicated localized service-detail pages under `/[locale]/leistungen/[slug]` for LED/light modernization, signage audit/diagnostics, installation/dismantling/relocation, and print/branding materials; the pages now use the existing Leistungen/repair photo-hero pattern and locale-aware internal links.
+- Next action: Owner visually reviews the new DE service-detail pages and spot-checks RU/AR text direction and wrapping before copy refinement or CMS-editability decisions.
+
+- Date: 2026-05-31
+- Current stage: Made hero breadcrumbs surface-aware: `/[locale]/ueber-uns` now uses a warm light breadcrumb backdrop on the beige hero surface, while photo-based hero pages continue using the stable dark media treatment through the shared breadcrumb component.
+- Next action: Owner visually reviews `/de/ueber-uns` breadcrumbs on desktop/mobile and spot-checks photo hero pages for the unchanged dark media breadcrumb treatment.
+
+- Date: 2026-05-31
+- Current stage: Replaced the `/[locale]/ueber-uns` hero eyebrow text with the standard PixelRing terracotta accent line and lowered the H1/intro stack slightly while preserving the compact breadcrumb and ticker alignment.
+- Next action: Owner visually reviews the left hero copy rhythm on `/de/ueber-uns` before further size or spacing changes.
+
+- Date: 2026-05-31
+- Current stage: Tightened the `/[locale]/ueber-uns` hero layout so its breadcrumbs use the same 24px top offset as neighboring pages, the post-breadcrumb gap is smaller, and the text column aligns vertically with the ticker terminal.
+- Next action: Owner visually reviews the compact `/de/ueber-uns` hero spacing before further typography or terminal-card changes.
+
+- Date: 2026-05-31
+- Current stage: Simplified the `/[locale]/ueber-uns` hero terminal by removing the `Diagnose-Scan` tab/scan workflow and keeping `Einsatz-Ticker` as the single visible terminal section.
+- Next action: Owner reviews the ticker-only terminal in the `/de/ueber-uns` hero before further copy or layout adjustments.
+
+- Date: 2026-05-31
+- Current stage: Refined `/[locale]/ueber-uns` hero structure: kept breadcrumbs, main hero copy, and service simulator in the hero, and moved the three hero benefit items into a separate full-width section directly below.
+- Next action: Owner visually comments on the new `/de/ueber-uns` hero and benefit band before further spacing/accent adjustments.
+
+- Date: 2026-05-31
+- Current stage: Added localized hero breadcrumbs to `/[locale]/ueber-uns` while preserving its existing light hero layout and service simulator; no accent-line or layout redesign applied yet.
+- Next action: Owner comments on the `/de/ueber-uns` hero before any further visual changes such as accent line, spacing, or hero restructuring.
+
+- Date: 2026-05-31
+- Current stage: Applied the same secondary-page hero pattern to `/[locale]/probleme-loesungen`, `/[locale]/business`, and `/[locale]/referenzen`: localized hero breadcrumbs and the PixelRing terracotta accent line above H1, with mobile hero height aligned to the `/leistungen` pattern.
+- Next action: Owner visually reviews the three DE pages, then decides whether `/ueber-uns` should receive the same hero treatment.
+
+- Date: 2026-05-31
+- Current stage: Aligned the `/[locale]/leistungen` hero with the repair landing page visual pattern: added localized hero breadcrumbs and the PixelRing terracotta accent line above the rotating H1.
+- Next action: Owner visually reviews `/de/leistungen` on desktop and mobile, then decides whether to apply the same hero pattern to other secondary landing pages.
+
+- Date: 2026-05-31
+- Current stage: Updated the DE canonical SEO description and H1 on `/[locale]/leistungen/werbeanlagen-reparatur`: the title stays `Werbeanlagen-Reparatur Berlin & Brandenburg | PixelRing`, while the description now emphasizes defective signage in Berlin/Brandenburg, photo submission, and first assessment; the H1 is shortened to `Werbeanlagen-Reparatur in Berlin & Brandenburg`.
+- Next action: Continue the strategic plan with the next agreed repair-page quick win: hero intro/CTA wording or legal-safe Gewährleistung wording.
+
+- Date: 2026-05-31
+- Current stage: Fixed mobile overflow/hero readability on `/[locale]/leistungen/werbeanlagen-reparatur`: long German hero and symptom headings now wrap safely, the repair page wrapper prevents horizontal bleed, mobile hero height separates breadcrumb from H1, and the current breadcrumb truncates instead of widening the viewport.
+- Next action: Continue the strategic plan with the next agreed repair-page quick win: hero/CTA wording or legal-safe Gewährleistung wording.
+
+- Date: 2026-05-31
+- Current stage: Unified the `PixelRing` brand spelling inside the `/[locale]/leistungen/werbeanlagen-reparatur` repair landing page metadata, visible copy, JSON-LD, FAQ, and related repair diagnostic components. Portal demo references to `Pixel Ring GmbH` remain unchanged as separate demo/legal strings.
+- Next action: Continue the strategic plan with the next agreed repair-page quick win: CTA/hero wording, mobile overflow cleanup, or legal-safe Gewährleistung wording.
+
+- Date: 2026-05-31
 - Current stage: Removed the upper `/[locale]/leistungen/werbeanlagen-reparatur#diagnose` diagnostic block from the repair landing page render path, leaving only the lower `/[locale]/leistungen/werbeanlagen-reparatur#diagnose-variante` calculator/card module.
 - Next action: Owner visually verifies the shorter diagnostic flow on DE first, then spot-checks other MVP locales.
 
@@ -112,8 +168,8 @@ Read deep when:
 
 - Date: 2026-05-31
 - Updated by: Codex
-- **Current Stage**: Removed the upper `/[locale]/leistungen/werbeanlagen-reparatur#diagnose` diagnostic block from the repair landing page render path, leaving only the lower `/[locale]/leistungen/werbeanlagen-reparatur#diagnose-variante` calculator/card module.
-- **Next Action**: Owner visually verifies the shorter diagnostic flow on DE first, then spot-checks other MVP locales.
+- **Current Stage**: Reframed the public home `Sichtbare Qualität` carousel as service-aligned internal linking: legacy work cards now normalize to real PixelRing service categories, hashtag pills link to relevant `Leistungen` targets, card titles link to `Referenzen`, and a new branding/print storefront image replaces the generic design-office visual.
+- **Next Action**: Owner visually reviews the updated `/de` carousel and decides whether the same click model should be reused in other proof/gallery surfaces.
 
 - Date: 2026-05-31
 - Updated by: Codex

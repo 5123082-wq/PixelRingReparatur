@@ -94,7 +94,7 @@ export default function LeistungenProblemDrawer({
             <div className="relative flex items-center justify-between gap-4 border-b border-white/10 p-5 sm:p-6 z-10">
               <div className="ltr:text-left rtl:text-right">
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#B8643E]">
-                  Pixel Ring Service-Info
+                  PixelRing Service-Info
                 </span>
                 <h3 className="mt-1 text-xl sm:text-2xl font-black text-white leading-tight">
                   {title}
