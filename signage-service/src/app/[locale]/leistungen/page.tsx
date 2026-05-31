@@ -55,6 +55,7 @@ type ServiceShowcaseCard = {
   title: string;
   description: string;
   image: string;
+  imageAlt?: string;
   eyebrow?: string;
   cta: string;
   href?: string;
@@ -114,6 +115,40 @@ type HeroSlide = {
   cta: string;
 };
 
+const SERVICE_DETAIL_PATH_BY_CARD_ID: Partial<Record<string, string>> = {
+  'led-modernisierung': '/leistungen/lichtwerbung-led-modernisierung',
+  'audit-diagnose': '/leistungen/werbeanlagen-audit-diagnose',
+  'montage-demontage': '/leistungen/montage-demontage-werbeanlagen',
+  'druck-branding': '/leistungen/druckprodukte-branding-werbematerialien',
+};
+
+const BREADCRUMB_LABELS_BY_LOCALE: Record<Locale, { home: string; services: string }> = {
+  de: {
+    home: 'Home',
+    services: 'Leistungen',
+  },
+  en: {
+    home: 'Home',
+    services: 'Services',
+  },
+  ru: {
+    home: 'Главная',
+    services: 'Услуги',
+  },
+  tr: {
+    home: 'Ana sayfa',
+    services: 'Hizmetler',
+  },
+  pl: {
+    home: 'Strona główna',
+    services: 'Usługi',
+  },
+  ar: {
+    home: 'الرئيسية',
+    services: 'الخدمات',
+  },
+};
+
 const CONTENT: Record<Locale, LeistungenContent> = {
   de: {
     metaTitle: 'Leistungen für Reparatur, Wartung & Werbetechnik | PixelRing',
@@ -159,7 +194,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Reparatur & Wartung von Außenwerbung',
         description:
           'Professionelle Instandsetzung von Werbeanlagen, Leuchtwerbung und Außenwerbung. Wir erhalten bestehende Systeme durch gezielte Reparatur, Pflege und visuelle Wiederherstellung.',
-        image: '/images/about/service_deep_1.png',
+        image: '/images/leistungen/werbeanlagen-reparatur-led-module-pruefung.png',
+        imageAlt: 'LED-Module in einem geöffneten Leuchtkasten werden mit einem Multimeter geprüft',
         eyebrow: 'Werbeanlagen-Reparatur',
         cta: 'Mehr zur Reparatur',
         href: '/leistungen/werbeanlagen-reparatur',
@@ -176,7 +212,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Modernisierung und Service für Lichtwerbung, LED-Module, Netzteile, Controller und Neonröhren. Alte Anlagen werden geprüft und technisch sinnvoll aktualisiert.',
         image: '/images/about/service_deep_2.png',
-        cta: 'LED-Service anfragen',
+        cta: 'Mehr zum LED-Service',
         details: [
           { label: 'Technik', value: 'LED-Module, Netzteile, Controller und Neon' },
           { label: 'Prüfung', value: 'Stromversorgung, Verkabelung und typische Ausfallursachen' },
@@ -190,7 +226,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Wir erfassen Zustand, Ursache, Umfang und sichtbare Risiken einer Anlage. Daraus entsteht eine nachvollziehbare Empfehlung für Reparatur, Wartung oder den nächsten Schritt.',
         image: '/images/about/service_deep_3.png',
-        cta: 'Diagnose starten',
+        cta: 'Mehr zur Diagnose',
         details: [
           { label: 'Aufnahme', value: 'Vor-Ort-Prüfung oder strukturierte Ferneinschätzung' },
           { label: 'Check', value: 'Schäden, Montagepunkte, Elektrik und Standortbedingungen' },
@@ -204,7 +240,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Koordination für neue, bestehende oder zu versetzende Werbeanlagen. PixelRing plant die nächsten Schritte und stimmt die benötigten Fachleute ab.',
         image: '/images/leistungen/hero-maintenance.png',
-        cta: 'Montage anfragen',
+        cta: 'Mehr zur Montage',
         details: [
           { label: 'Montage', value: 'Einbau und Befestigung neuer oder bestehender Anlagen' },
           { label: 'Demontage', value: 'Rückbau, Entfernung und Vorbereitung der Fläche' },
@@ -218,7 +254,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Laufende Versorgung mit Werbematerialien: von Druckdaten und Gestaltung bis zu Folien, Bannern, Postern, Beschriftungen und Standort-Branding.',
         image: '/images/leistungen/hero-branding.png',
-        cta: 'Branding anfragen',
+        cta: 'Mehr zum Branding',
         details: [
           { label: 'Druckdaten', value: 'Aufbereitung, Anpassung und Abstimmung' },
           { label: 'Materialien', value: 'Poster, Banner, Aufkleber und Hinweisschilder' },
@@ -398,7 +434,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Outdoor advertising repair & maintenance',
         description:
           'Professional repair of signage, illuminated advertising and outdoor advertising systems. We preserve existing installations through targeted repair, care and visual restoration.',
-        image: '/images/about/service_deep_1.png',
+        image: '/images/leistungen/werbeanlagen-reparatur-led-module-pruefung.png',
+        imageAlt: 'LED modules in an open illuminated sign are checked with a multimeter',
         eyebrow: 'Sign repair',
         cta: 'Repair details',
         href: '/leistungen/werbeanlagen-reparatur',
@@ -415,7 +452,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Modernization and service for illuminated signage, LED modules, power supplies, controllers and neon tubes. Older systems are checked and updated where it makes technical sense.',
         image: '/images/about/service_deep_2.png',
-        cta: 'Request LED service',
+        cta: 'LED service details',
         details: [
           { label: 'Technology', value: 'LED modules, power supplies, controllers and neon' },
           { label: 'Inspection', value: 'Power, wiring and typical failure causes' },
@@ -429,7 +466,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'We record condition, cause, scope and visible risks. The result is a clear recommendation for repair, maintenance or the next sensible step.',
         image: '/images/about/service_deep_3.png',
-        cta: 'Start diagnostics',
+        cta: 'Diagnostics details',
         details: [
           { label: 'Intake', value: 'On-site inspection or structured remote assessment' },
           { label: 'Check', value: 'Damage, mounting points, electrics and site conditions' },
@@ -443,7 +480,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Coordination for new, existing or relocated signage. PixelRing plans the next steps and coordinates the required specialists.',
         image: '/images/leistungen/hero-maintenance.png',
-        cta: 'Request installation',
+        cta: 'Installation details',
         details: [
           { label: 'Installation', value: 'Mounting and fixing new or existing systems' },
           { label: 'Dismantling', value: 'Removal, takedown and surface preparation' },
@@ -457,7 +494,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Ongoing advertising material support: from artwork and print data to vinyl, banners, posters, lettering and location branding.',
         image: '/images/leistungen/hero-branding.png',
-        cta: 'Request branding',
+        cta: 'Branding details',
         details: [
           { label: 'Print data', value: 'Preparation, adaptation and coordination' },
           { label: 'Materials', value: 'Posters, banners, stickers and information signs' },
@@ -573,7 +610,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Ремонт и обслуживание наружной рекламы',
         description:
           'Профессиональное восстановление вывесок, световой рекламы и наружных рекламных конструкций',
-        image: '/images/about/service_deep_1.png',
+        image: '/images/leistungen/werbeanlagen-reparatur-led-module-pruefung.png',
+        imageAlt: 'Проверка LED-модулей в открытом световом коробе мультиметром',
         eyebrow: 'Ремонт вывесок',
         cta: 'Подробнее о ремонте',
         href: '/leistungen/werbeanlagen-reparatur',
@@ -591,7 +629,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
           'Модернизация и сервис световых вывесок, LED-модулей, блоков питания, контроллеров и неона. Старые системы проверяются и технически разумно обновляются.',
         image: '/images/about/service_deep_2.png',
         eyebrow: 'LED-сервис',
-        cta: 'Запросить LED-сервис',
+        cta: 'Подробнее о LED-сервисе',
         details: [
           { label: 'Что модернизируем', value: 'LED-модули, блоки питания, контроллеры, неон и световые короба' },
           { label: 'Что проверяем', value: 'Питание, проводку, яркость, влагу и причины неравномерной подсветки' },
@@ -606,7 +644,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
           'Фиксируем состояние, причину, объем задачи и видимые риски. По итогам даем понятную рекомендацию по ремонту, обслуживанию или следующему разумному шагу.',
         image: '/images/about/service_deep_3.png',
         eyebrow: 'Диагностика',
-        cta: 'Начать диагностику',
+        cta: 'Подробнее о диагностике',
         details: [
           { label: 'Что оцениваем', value: 'Состояние вывески, повреждения, крепления, электрику и условия локации' },
           { label: 'Что фиксируем', value: 'Причину проблемы, видимые риски, объем работ и срочность выполнения' },
@@ -621,7 +659,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
           'Координация работ для новых, существующих или переносимых рекламных конструкций. PixelRing планирует следующие шаги и согласует нужных специалистов.',
         image: '/images/leistungen/hero-maintenance.png',
         eyebrow: 'Монтаж',
-        cta: 'Запросить монтаж',
+        cta: 'Подробнее о монтаже',
         details: [
           { label: 'Что выполняем', value: 'Монтаж, демонтаж, перенос и крепление рекламных конструкций' },
           { label: 'Что согласуем', value: 'Локацию, доступ, крепления, поверхность и нужных специалистов' },
@@ -636,7 +674,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
           'Текущая поддержка рекламных материалов: от макетов и печатных данных до пленок, баннеров, постеров, надписей и брендинга локаций.',
         image: '/images/leistungen/hero-branding.png',
         eyebrow: 'Брендинг',
-        cta: 'Запросить брендинг',
+        cta: 'Подробнее о брендинге',
         details: [
           { label: 'Что готовим', value: 'Макеты, печатные данные, пленки, баннеры, постеры и надписи' },
           { label: 'Что поддерживаем', value: 'Витрины, поверхности, рекламные материалы и оформление локаций' },
@@ -752,7 +790,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Dış reklam onarımı ve bakımı',
         description:
           'Tabela, ışıklı reklam ve dış reklam sistemlerinin profesyonel onarımı. Mevcut sistemleri hedefli onarım, bakım ve görsel yenileme ile koruruz.',
-        image: '/images/about/service_deep_1.png',
+        image: '/images/leistungen/werbeanlagen-reparatur-led-module-pruefung.png',
+        imageAlt: 'Açık bir ışıklı tabeladaki LED modülleri multimetre ile kontrol ediliyor',
         eyebrow: 'Tabela onarımı',
         cta: 'Onarım detayları',
         href: '/leistungen/werbeanlagen-reparatur',
@@ -769,7 +808,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Işıklı tabelalar, LED modüller, güç kaynakları, kontrol cihazları ve neon için modernizasyon ve servis. Eski sistemler kontrol edilir ve teknik olarak mantıklıysa güncellenir.',
         image: '/images/about/service_deep_2.png',
-        cta: 'LED servisi talep et',
+        cta: 'LED servisi detayları',
         details: [
           { label: 'Teknik', value: 'LED modüller, güç kaynakları, kontrol cihazları ve neon' },
           { label: 'Kontrol', value: 'Güç, kablolama ve tipik arıza nedenleri' },
@@ -783,7 +822,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Durumu, nedeni, kapsamı ve görünür riskleri kayda alırız. Sonuç; onarım, bakım veya sonraki mantıklı adım için anlaşılır bir öneridir.',
         image: '/images/about/service_deep_3.png',
-        cta: 'Teşhisi başlat',
+        cta: 'Teşhis detayları',
         details: [
           { label: 'Format', value: 'Yerinde kontrol veya yapılandırılmış uzaktan değerlendirme' },
           { label: 'Kontrol', value: 'Hasarlar, bağlantılar, elektrik ve lokasyon koşulları' },
@@ -797,7 +836,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Yeni, mevcut veya taşınacak reklam sistemleri için koordinasyon. PixelRing sonraki adımları planlar ve gerekli uzmanları koordine eder.',
         image: '/images/leistungen/hero-maintenance.png',
-        cta: 'Montaj talep et',
+        cta: 'Montaj detayları',
         details: [
           { label: 'Montaj', value: 'Yeni veya mevcut sistemlerin kurulumu ve sabitlenmesi' },
           { label: 'Demontaj', value: 'Söküm, kaldırma ve yüzey hazırlığı' },
@@ -811,7 +850,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Sürekli reklam materyali desteği: tasarım ve baskı dosyalarından folyo, banner, poster, yazılama ve lokasyon markalamasına kadar.',
         image: '/images/leistungen/hero-branding.png',
-        cta: 'Markalama talep et',
+        cta: 'Markalama detayları',
         details: [
           { label: 'Baskı verisi', value: 'Hazırlama, uyarlama ve koordinasyon' },
           { label: 'Materyaller', value: 'Poster, banner, sticker ve bilgilendirme levhaları' },
@@ -927,7 +966,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Naprawa i obsługa reklamy zewnętrznej',
         description:
           'Profesjonalna naprawa szyldów, reklamy świetlnej i zewnętrznych konstrukcji reklamowych. Utrzymujemy istniejące systemy przez celowaną naprawę, pielęgnację i odnowę wizualną.',
-        image: '/images/about/service_deep_1.png',
+        image: '/images/leistungen/werbeanlagen-reparatur-led-module-pruefung.png',
+        imageAlt: 'Moduły LED w otwartym kasetonie świetlnym sprawdzane multimetrem',
         eyebrow: 'Naprawa szyldów',
         cta: 'Więcej o naprawie',
         href: '/leistungen/werbeanlagen-reparatur',
@@ -944,7 +984,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Modernizacja i serwis szyldów świetlnych, modułów LED, zasilaczy, sterowników i neonów. Starsze systemy są sprawdzane i aktualizowane tam, gdzie ma to sens techniczny.',
         image: '/images/about/service_deep_2.png',
-        cta: 'Zapytaj o serwis LED',
+        cta: 'Szczegóły serwisu LED',
         details: [
           { label: 'Technika', value: 'Moduły LED, zasilacze, sterowniki i neony' },
           { label: 'Kontrola', value: 'Zasilanie, okablowanie i typowe przyczyny awarii' },
@@ -958,7 +998,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Rejestrujemy stan, przyczynę, zakres zadania i widoczne ryzyka. Wynikiem jest czytelna rekomendacja naprawy, konserwacji lub kolejnego sensownego kroku.',
         image: '/images/about/service_deep_3.png',
-        cta: 'Rozpocznij diagnostykę',
+        cta: 'Szczegóły diagnostyki',
         details: [
           { label: 'Forma', value: 'Kontrola na miejscu albo uporządkowana ocena zdalna' },
           { label: 'Kontrola', value: 'Uszkodzenia, mocowania, elektryka i warunki lokalizacji' },
@@ -972,7 +1012,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Koordynacja prac dla nowych, istniejących lub przenoszonych instalacji reklamowych. PixelRing planuje kolejne kroki i uzgadnia potrzebnych specjalistów.',
         image: '/images/leistungen/hero-maintenance.png',
-        cta: 'Zapytaj o montaż',
+        cta: 'Szczegóły montażu',
         details: [
           { label: 'Montaż', value: 'Instalacja i mocowanie nowych lub istniejących systemów' },
           { label: 'Demontaż', value: 'Zdjęcie, usunięcie i przygotowanie powierzchni' },
@@ -986,7 +1026,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'Bieżące wsparcie materiałów reklamowych: od projektów i danych do druku po folie, banery, plakaty, oznakowanie i branding lokalizacji.',
         image: '/images/leistungen/hero-branding.png',
-        cta: 'Zapytaj o branding',
+        cta: 'Szczegóły brandingu',
         details: [
           { label: 'Dane do druku', value: 'Przygotowanie, dopasowanie i koordynacja' },
           { label: 'Materiały', value: 'Plakaty, banery, naklejki i tablice informacyjne' },
@@ -1102,7 +1142,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'إصلاح وصيانة الإعلانات الخارجية',
         description:
           'إصلاح احترافي للافتات والإعلانات المضيئة والهياكل الإعلانية الخارجية. نحافظ على الأنظمة القائمة عبر إصلاح موجه وعناية وترميم بصري.',
-        image: '/images/about/service_deep_1.png',
+        image: '/images/leistungen/werbeanlagen-reparatur-led-module-pruefung.png',
+        imageAlt: 'فحص وحدات LED داخل صندوق إضاءة مفتوح باستخدام مقياس متعدد',
         eyebrow: 'إصلاح اللافتات',
         cta: 'تفاصيل الإصلاح',
         href: '/leistungen/werbeanlagen-reparatur',
@@ -1119,7 +1160,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'تحديث وخدمة للافتات المضيئة ووحدات LED ومزودات الطاقة ووحدات التحكم والنيون. يتم فحص الأنظمة القديمة وتحديثها عندما يكون ذلك منطقياً تقنياً.',
         image: '/images/about/service_deep_2.png',
-        cta: 'اطلب خدمة LED',
+        cta: 'تفاصيل خدمة LED',
         details: [
           { label: 'التقنية', value: 'وحدات LED ومزودات الطاقة ووحدات التحكم والنيون' },
           { label: 'الفحص', value: 'الطاقة والأسلاك والأسباب الشائعة للأعطال' },
@@ -1133,7 +1174,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'نسجل الحالة والسبب ونطاق المهمة والمخاطر الظاهرة. والنتيجة توصية واضحة للإصلاح أو الصيانة أو الخطوة المنطقية التالية.',
         image: '/images/about/service_deep_3.png',
-        cta: 'ابدأ التشخيص',
+        cta: 'تفاصيل التشخيص',
         details: [
           { label: 'الشكل', value: 'فحص في الموقع أو تقييم منظم عن بعد' },
           { label: 'الفحص', value: 'الأضرار والتثبيت والكهرباء وظروف الموقع' },
@@ -1147,7 +1188,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'تنسيق الأعمال للمنشآت الإعلانية الجديدة أو القائمة أو المنقولة. تخطط PixelRing للخطوات التالية وتنسق المتخصصين المطلوبين.',
         image: '/images/leistungen/hero-maintenance.png',
-        cta: 'اطلب التركيب',
+        cta: 'تفاصيل التركيب',
         details: [
           { label: 'التركيب', value: 'تركيب وتثبيت الأنظمة الجديدة أو القائمة' },
           { label: 'الفك', value: 'الإزالة والتفكيك وتحضير السطح' },
@@ -1161,7 +1202,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'دعم مستمر لمواد الإعلان: من التصميم وملفات الطباعة إلى الفينيل واللافتات والملصقات والكتابة وهوية الموقع.',
         image: '/images/leistungen/hero-branding.png',
-        cta: 'اطلب الهوية التجارية',
+        cta: 'تفاصيل الهوية التجارية',
         details: [
           { label: 'ملفات الطباعة', value: 'الإعداد والتكييف والتنسيق' },
           { label: 'المواد', value: 'ملصقات ولافتات وملصقات لاصقة ولوحات إرشادية' },
@@ -1237,6 +1278,24 @@ const CONTENT: Record<Locale, LeistungenContent> = {
 
 function getContent(locale: string): LeistungenContent {
   return CONTENT[(locale as Locale) in CONTENT ? (locale as Locale) : 'de'];
+}
+
+function getLocale(locale: string): Locale {
+  return (locale in CONTENT ? locale : 'de') as Locale;
+}
+
+function getLeistungenBreadcrumbs(locale: Locale) {
+  const labels = BREADCRUMB_LABELS_BY_LOCALE[locale];
+
+  return [
+    {
+      label: labels.home,
+      href: '/',
+    },
+    {
+      label: labels.services,
+    },
+  ];
 }
 
 function applyCmsHeroSlide(
@@ -1372,13 +1431,16 @@ export default async function LeistungenPage({
   const { locale } = await params;
   const cmsContent = await getLeistungenPageCmsContent(locale);
   const content = mergeCmsContent(getContent(locale), cmsContent);
+  const safeLocale = getLocale(locale);
   const globalCms = await getGlobalPageCmsContent(locale);
   const showDraftServiceAbo =
     process.env.NODE_ENV === 'development' || process.env.SHOW_DRAFT_SERVICE_ABO === '1';
-  const renderServiceShowcaseCta = (card: ServiceShowcaseCard) =>
-    card.href ? (
+  const renderServiceShowcaseCta = (card: ServiceShowcaseCard) => {
+    const detailHref = card.href ?? SERVICE_DETAIL_PATH_BY_CARD_ID[card.id];
+
+    return detailHref ? (
       <Link
-        href={card.href}
+        href={detailHref}
         className="inline-flex min-h-12 min-w-[160px] items-center justify-center rounded-full border border-[#C8D6E3] bg-[#F8FAFC] px-7 py-3 text-center text-[15px] font-bold text-[#0E1A2B] shadow-sm shadow-[#0E1A2B0D] transition-colors hover:border-[#7BA190] hover:bg-[#EEF6F2] hover:text-[#24594D] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7BA190]"
       >
         {card.cta}
@@ -1390,12 +1452,16 @@ export default async function LeistungenPage({
         className="min-w-[160px] whitespace-normal px-7 text-center"
       />
     );
+  };
 
   return (
     <div className="min-h-screen bg-[#F7F1E8] text-[#15202A]">
       <Header content={globalCms?.header} />
       <main>
-        <LeistungenHero slides={content.heroSlides} />
+        <LeistungenHero
+          slides={content.heroSlides}
+          breadcrumbs={getLeistungenBreadcrumbs(safeLocale)}
+        />
 
         {(content.repairEnabled !== false || content.brandingEnabled !== false) && (
           <section id="servicebereiche" className="bg-[#F8FAFC] px-4 py-14 sm:px-6 sm:py-20">
@@ -1470,7 +1536,7 @@ export default async function LeistungenPage({
                       <div className="relative aspect-[16/10] min-h-[240px] overflow-hidden rounded-[22px] shadow-lg sm:min-h-[300px]">
                         <CmsImage
                           src={card.image}
-                          alt={card.title}
+                          alt={card.imageAlt ?? card.title}
                           fill
                           sizes="(min-width: 1280px) 560px, (min-width: 1024px) 45vw, 100vw"
                           className="object-cover object-center"

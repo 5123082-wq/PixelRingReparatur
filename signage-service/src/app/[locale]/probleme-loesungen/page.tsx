@@ -4,6 +4,7 @@ import type { CSSProperties } from "react";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import CmsImage from "@/components/common/CmsImage";
+import HeroBreadcrumbs from "@/components/common/HeroBreadcrumbs";
 import SectionEyebrow from "@/components/common/SectionEyebrow";
 import ProblemKnowledgeGrid from "@/components/probleme-loesungen/ProblemKnowledgeGrid";
 import ProblemRequestButton from "@/components/probleme-loesungen/ProblemRequestButton";
@@ -44,6 +45,15 @@ const CARD_CAUSE_TEXT_BY_LOCALE_AND_SLUG: Record<string, string> = {
 };
 
 type Locale = "de" | "en" | "ru" | "tr" | "pl" | "ar";
+
+const HOME_BREADCRUMB_LABELS: Record<Locale, string> = {
+  de: "Home",
+  en: "Home",
+  ru: "Главная",
+  tr: "Ana sayfa",
+  pl: "Strona główna",
+  ar: "الرئيسية",
+};
 
 type ProblemCard = {
   id: string;
@@ -1144,6 +1154,22 @@ function getContent(locale: string): SolutionsContent {
   return CONTENT[(locale as Locale) in CONTENT ? (locale as Locale) : "de"];
 }
 
+function getLocale(locale: string): Locale {
+  return (locale in CONTENT ? locale : "de") as Locale;
+}
+
+function getPageBreadcrumbs(locale: Locale, label: string) {
+  return [
+    {
+      label: HOME_BREADCRUMB_LABELS[locale],
+      href: "/",
+    },
+    {
+      label,
+    },
+  ];
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -1167,6 +1193,7 @@ export default async function ProblemeLoesungenPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  const safeLocale = getLocale(locale);
   const baseContent = getContent(locale);
   const [globalCms, cmsContent, symptomArticles] = await Promise.all([
     getGlobalPageCmsContent(locale),
@@ -1283,7 +1310,7 @@ export default async function ProblemeLoesungenPage({
       <main>
         {content.heroEnabled !== false && (
           <>
-            <section className="relative h-[440px] overflow-hidden bg-[#0E1A2B] text-white sm:h-[500px] lg:h-[560px]">
+            <section className="relative h-[520px] overflow-hidden bg-[#0E1A2B] text-white sm:h-[500px] lg:h-[560px]">
               <CmsImage
                 src="/images/references/circuit-repair.webp"
                 alt={content.heroTitle}
@@ -1294,8 +1321,10 @@ export default async function ProblemeLoesungenPage({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0E1A2B]/82 via-[#0E1A2B]/28 to-transparent" />
               <div className="absolute inset-0 bg-gradient-to-r from-[#0E1A2B]/48 via-[#0E1A2B]/12 to-transparent rtl:bg-gradient-to-l" />
+              <HeroBreadcrumbs items={getPageBreadcrumbs(safeLocale, content.badge)} />
 
               <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-4 pb-12 sm:px-6 sm:pb-14 lg:pb-16">
+                <div className="mb-4 h-1 w-20 bg-[#B8643E]" />
                 <h1 className="max-w-[860px] text-[36px] font-black leading-[1.05] text-white sm:text-[52px] lg:text-[60px]">
                   {content.heroTitle}
                 </h1>

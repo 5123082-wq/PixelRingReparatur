@@ -172,34 +172,34 @@
     "subtitle": "Tamamlanan projelerimiz her şeyi anlatıyor. Her detayda hassasiyet.",
     "items": [
       {
-        "title": "LED Montajı",
+        "title": "Tabela Montajı",
         "tag": "Montaj",
-        "description": "Cephelerdeki büyük reklam tabelalarının profesyonel montajı."
+        "description": "Büyük tabelalar, cephe reklamları ve işletme reklam alanları için profesyonel montaj."
       },
       {
-        "title": "Neon Onarımı",
+        "title": "Işıklı Reklam Onarımı",
         "tag": "Onarım",
-        "description": "Klasik neon tüplerin hassas restorasyonu."
+        "description": "Neon, LED sistemleri, ışıklı kutular ve görünür tabela arızalarının onarımı."
       },
       {
-        "title": "Yüksek Bakım",
+        "title": "Bakım ve Denetim",
         "tag": "Bakım",
-        "description": "Modern ekipmanlarla baş döndürücü yüksekliklerde servis."
+        "description": "İşletme tabelaları için düzenli kontrol, bakım ve durum değerlendirmesi."
       },
       {
-        "title": "Tabela Tasarımı",
-        "tag": "Tasarım",
-        "description": "Konseptten üretime hazır dosyalara kadar özel tabela tasarımı."
+        "title": "Markalama ve Baskı",
+        "tag": "Markalama",
+        "description": "İşyeri görünümü için folyolar, baskı dosyaları, yazılar ve reklam malzemeleri."
       },
       {
-        "title": "Işıklı Kutu Montajı",
-        "tag": "Işıklı Kutu",
-        "description": "Eşit ışık dağılımıyla enerji tasarruflu arkadan aydınlatmalı paneller."
+        "title": "LED Modernizasyonu",
+        "tag": "LED Servisi",
+        "description": "Işıklı kutular, LED modüller ve ışıklı reklamların dengeli görünürlük için yenilenmesi."
       },
       {
-        "title": "Güvenli Söküm",
+        "title": "Söküm ve Kaldırma",
         "tag": "Söküm",
-        "description": "Eski tabela yapılarının dikkatli sökümü ve geri dönüşümü."
+        "description": "Eski tabela yapılarının koordineli sökümü, kaldırılması ve alanın hazırlanması."
       }
     ]
   },
@@ -238,8 +238,20 @@
         "answer": "Tüm işçilik ve yedek parçalar için 6 ila 12 ay garanti veriyoruz."
       },
       {
-        "question": "Bireysel müşterilerle de çalışıyor musunuz?",
-        "answer": "Evet, hem ticari müşterilere hem de bireysel taleplere aynı özenle hizmet veriyoruz."
+        "question": "PixelRing hangi B2B görevleri üstlenebilir?",
+        "answer": "PixelRing ticari objelerle çalışır: tabelalar, ışıklı reklamlar, reklam konstrüksiyonları, vitrinler, cephe yönlendirmesi ve markalama. Onarım, montaj veya demontaj için tek seferlik talep bırakabilir ya da bir lokasyon veya mağaza ağı için düzenli servis desteğini görüşebilirsiniz."
+      },
+      {
+        "question": "Birden fazla lokasyon veya şube için talep bırakabilir miyim?",
+        "answer": "Evet. PixelRing farklı adresler, mağazalar, ofisler, restoranlar, satış noktaları veya şube ağları için talepleri yönetebilir. Başvuruda şehir, adres, yapı tipi ve fotoğraflar önemlidir."
+      },
+      {
+        "question": "Başka bir şirketin yaptığı tabelalara da servis veriyor musunuz?",
+        "answer": "Evet. Mevcut tabelayı başka bir şirket üretmiş olsa bile kontrol edebilir, onarabilir, demonte edebilir veya modernize edebiliriz. Çözüm yapının durumuna, erişime, elektriğe ve yedek parçaların bulunabilirliğine bağlıdır."
+      },
+      {
+        "question": "İlk değerlendirme için ne gerekir?",
+        "answer": "Genellikle obje adresi, kısa görev açıklaması ve birkaç fotoğraf yeterlidir: tabelanın genel görünümü, hasarlı alan, erişim durumu ve varsa güç kaynağı veya elektrik bağlantısı."
       },
       {
         "question": "Hangi bölgeleri kapsıyorsunuz?",

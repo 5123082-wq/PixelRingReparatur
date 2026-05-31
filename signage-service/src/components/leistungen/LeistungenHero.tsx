@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CmsImage from '../common/CmsImage';
+import HeroBreadcrumbs from '../common/HeroBreadcrumbs';
 
 type HeroSlide = {
   id: string;
@@ -16,10 +17,13 @@ type HeroSlide = {
 
 type LeistungenHeroProps = {
   slides: HeroSlide[];
-  locale: string;
+  breadcrumbs?: {
+    label: string;
+    href?: string;
+  }[];
 };
 
-export default function LeistungenHero({ slides }: Omit<LeistungenHeroProps, 'locale'>) {
+export default function LeistungenHero({ slides, breadcrumbs = [] }: LeistungenHeroProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const nextSlide = useCallback(() => {
@@ -48,7 +52,7 @@ export default function LeistungenHero({ slides }: Omit<LeistungenHeroProps, 'lo
   };
 
   return (
-    <section className="relative h-[440px] w-full overflow-hidden bg-[#0E1A2B] sm:h-[500px] lg:h-[560px]">
+    <section className="relative h-[520px] w-full overflow-hidden bg-[#0E1A2B] sm:h-[500px] lg:h-[560px]">
       <AnimatePresence initial={false}>
         <motion.div
           key={currentIndex}
@@ -73,7 +77,9 @@ export default function LeistungenHero({ slides }: Omit<LeistungenHeroProps, 'lo
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0E1A2B]/80 via-[#0E1A2B]/25 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-r from-[#0E1A2B]/45 via-[#0E1A2B]/10 to-transparent rtl:bg-gradient-to-l" />
-            
+
+            <HeroBreadcrumbs items={breadcrumbs} />
+
             <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-4 pb-12 sm:px-6 sm:pb-14 min-[1328px]:px-0 lg:pb-16">
               <motion.div
                 initial={{ y: 14, opacity: 0 }}
@@ -81,6 +87,7 @@ export default function LeistungenHero({ slides }: Omit<LeistungenHeroProps, 'lo
                 transition={{ delay: 0.15, duration: 0.65 }}
                 className="max-w-[760px]"
               >
+                <div className="mb-4 h-1 w-20 bg-[#B8643E]" />
                 <h1 className="text-[36px] font-extrabold leading-[1.05] text-white sm:text-[52px] lg:text-[60px]">
                   {slides[currentIndex].title}
                 </h1>

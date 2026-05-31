@@ -6,12 +6,39 @@ import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestBu
 import { getGlobalPageCmsContent, getBusinessPageCmsContent } from '@/lib/cms/pages';
 import Image from 'next/image';
 import CmsImage from '@/components/common/CmsImage';
+import HeroBreadcrumbs from '@/components/common/HeroBreadcrumbs';
 import SectionEyebrow from '@/components/common/SectionEyebrow';
 import BusinessShowcase from '@/components/sections/BusinessShowcase';
 import BusinessReportDemoButton from '@/components/business/BusinessReportDemoButton';
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
 const BUSINESS_PRESENTATION_HREF = '/downloads/pixelring-business-presentation.pdf';
+const BUSINESS_BREADCRUMB_LABELS: Record<Locale, { home: string; page: string }> = {
+  de: {
+    home: 'Home',
+    page: 'Für Unternehmen',
+  },
+  en: {
+    home: 'Home',
+    page: 'For businesses',
+  },
+  ru: {
+    home: 'Главная',
+    page: 'Для бизнеса',
+  },
+  tr: {
+    home: 'Ana sayfa',
+    page: 'Şirketler için',
+  },
+  pl: {
+    home: 'Strona główna',
+    page: 'Dla firm',
+  },
+  ar: {
+    home: 'الرئيسية',
+    page: 'للشركات',
+  },
+};
 const BUSINESS_SECTION_TITLE_CLASS =
   'text-[36px] font-extrabold leading-[42px] tracking-[0] text-[#081827] sm:text-[40px] sm:leading-[46px] lg:text-[44px] lg:leading-[50px]';
 const BUSINESS_SECTION_INTRO_CLASS =
@@ -492,6 +519,20 @@ const MOCKUP_CONTENT: Record<Locale, BusinessMockupContent> = {
   },
 };
 
+function getBusinessBreadcrumbs(locale: Locale) {
+  const labels = BUSINESS_BREADCRUMB_LABELS[locale];
+
+  return [
+    {
+      label: labels.home,
+      href: '/',
+    },
+    {
+      label: labels.page,
+    },
+  ];
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -584,7 +625,7 @@ export default async function BusinessPage({
 
       <main className="flex-grow">
         {content.heroEnabled !== false && (
-          <section className="relative h-[440px] w-full overflow-hidden bg-[#0E1A2B] sm:h-[500px] lg:h-[560px]">
+          <section className="relative h-[520px] w-full overflow-hidden bg-[#0E1A2B] sm:h-[500px] lg:h-[560px]">
             <div className="absolute inset-0 z-0">
               <CmsImage
                 src={content.heroImage}
@@ -598,9 +639,11 @@ export default async function BusinessPage({
               <div className="absolute inset-0 bg-gradient-to-t from-[#0E1A2B]/82 via-[#0E1A2B]/28 to-transparent" />
               <div className="absolute inset-0 bg-gradient-to-r from-[#0E1A2B]/48 via-[#0E1A2B]/12 to-transparent rtl:bg-gradient-to-l" />
             </div>
+            <HeroBreadcrumbs items={getBusinessBreadcrumbs(locale)} />
 
             <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col justify-end px-6 pb-12 sm:pb-14 lg:pb-16">
               <div className="max-w-[800px]">
+                <div className="mb-4 h-1 w-20 bg-[#B8643E]" />
                 <h1 className="text-[36px] font-extrabold leading-[1.05] tracking-tight text-white sm:text-[52px] lg:text-[60px]">
                   {content.heroTitle}
                 </h1>
