@@ -8,6 +8,54 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 
 Latest checkpoint:
 
+- Date: 2026-06-01
+- Current stage: Converted the `/[locale]/ueber-uns` who-we-are visual into a two-image collage with the new PixelRing service team vehicle photo as the main image and the service-vehicle repair photo as a supporting overlay, with localized alt text.
+- Next action: Owner visually reviews the new who-we-are collage on `/de/ueber-uns` and `/ru/ueber-uns`.
+
+- Date: 2026-06-01
+- Current stage: Replaced the `/[locale]/ueber-uns` who-we-are section blueprint image with the new PixelRing service vehicle asset and localized the image alt text across DE/EN/RU/TR/PL/AR.
+- Next action: Owner visually reviews the new service-vehicle image in the `/de/ueber-uns` who-we-are section.
+
+- Date: 2026-06-01
+- Current stage: Adjusted the `/[locale]/ueber-uns` who-we-are section layout so the text column appears on the left and the image appears on the right at desktop widths.
+- Next action: Owner reviews the updated `/de/ueber-uns` who-we-are section composition.
+
+- Date: 2026-05-31
+- Current stage: Rewrote the `/[locale]/ueber-uns` who-we-are block across DE/EN/RU/TR/PL/AR to start with PixelRing as a service company for signage, repair, maintenance, and modernization instead of leading with marketplace/platform negation.
+- Next action: Owner reviews the revised who-we-are block on `/ru/ueber-uns` and `/de/ueber-uns`.
+
+- Date: 2026-05-31
+- Current stage: Rewrote the `/[locale]/ueber-uns` materials lead and note across DE/EN/RU/TR/PL/AR so the premium-materials section explains durability, light/color stability, weather resistance, maintainability, and supplier trust without vague "strengthens the result" wording.
+- Next action: Owner reviews the revised materials block on `/ru/ueber-uns` and `/de/ueber-uns`.
+
+- Date: 2026-05-31
+- Current stage: Rewrote the `/[locale]/ueber-uns` request-process block across DE/EN/RU/TR/PL/AR to remove literal audit jargon such as "technically clarify" and replace it with plain steps from first message to work plan.
+- Next action: Owner reviews the revised process block on `/ru/ueber-uns`, then continues section-by-section copy cleanup if needed.
+
+- Date: 2026-05-31
+- Current stage: Replaced the awkward `/[locale]/ueber-uns` "technical service point" wording in the who-we-are block with accountable service-partner language across DE/EN/RU/TR/PL/AR.
+- Next action: Owner reviews the revised who-we-are block copy on `/ru/ueber-uns` and `/de/ueber-uns` before further copy refinement.
+
+- Date: 2026-05-31
+- Current stage: Reverted the `/[locale]/ueber-uns` hero copy from audit-style technical-service wording back to the earlier warmer brand-service framing across DE/EN/RU/TR/PL/AR and synced CMS records.
+- Next action: Owner reviews the restored `/ru/ueber-uns` and `/de/ueber-uns` hero copy before further structural or terminal placement changes.
+
+- Date: 2026-05-31
+- Current stage: Removed the conversion-style hero CTA buttons and microcopy from `/[locale]/ueber-uns` after owner review; About now keeps request action in the final CTA while the hero stays informational.
+- Next action: Owner visually reviews the cleaner About hero and decides whether the live terminal should remain there or move lower.
+
+- Date: 2026-05-31
+- Current stage: Rebuilt the `/[locale]/ueber-uns` page around the audit-backed trust narrative: hero now states technical signage service from Berlin with above-the-fold CTAs, and the page adds explicit who-we-are, serviced systems, 4-step request flow, repair-before-replacement, trust-safe materials, and anonymized-feedback context across MVP locales.
+- Next action: Owner reviews `/ru/ueber-uns` and `/de/ueber-uns` for content order, block rhythm, and whether the live terminal should remain in the hero or move lower as a process/status example.
+
+- Date: 2026-05-31
+- Current stage: Strengthened the `/[locale]/ueber-uns` materials strip heading across DE/EN/RU/TR/PL/AR so it explicitly emphasizes premium materials and trusted/verified supply partners as a trust signal.
+- Next action: Owner visually reviews the updated materials heading on `/ru/ueber-uns` and spot-checks DE/EN wording before deciding whether the strip needs supporting copy under the title.
+
+- Date: 2026-05-31
+- Current stage: Made the `/[locale]/ueber-uns` hero service terminal feel live: dispatch rows now cycle through localized real-time statuses/timestamps on the client, with a safer demo-live note that avoids exposing customer/CRM internals.
+- Next action: Owner visually reviews the live ticker rhythm on `/ru/ueber-uns`, especially desktop/mobile readability and whether the update speed feels natural.
+
 - Date: 2026-05-31
 - Current stage: Reframed the public home `Sichtbare Qualität` carousel as service-aligned internal linking: legacy work cards now normalize to real PixelRing service categories, hashtag pills link to relevant `Leistungen` targets, card titles link to `Referenzen`, and a new branding/print storefront image replaces the generic design-office visual.
 - Next action: Owner visually reviews the updated `/de` carousel and decides whether the same click model should be reused in other proof/gallery surfaces.
@@ -165,6 +213,66 @@ Read deep when:
 - **Engineering/Ops**: Open maintenance note recorded for future Postgres SSL connection-string cleanup before the next `pg`/Prisma/migration-tooling dependency upgrade.
 
 ## Last Updated
+
+- Date: 2026-06-01
+- Updated by: Codex
+- **Current Stage**: Converted the `/[locale]/ueber-uns` who-we-are visual into a two-image collage with the new PixelRing service team vehicle photo as the main image and the service-vehicle repair photo as a supporting overlay, with localized alt text.
+- **Next Action**: Owner visually reviews the new who-we-are collage on `/de/ueber-uns` and `/ru/ueber-uns`.
+
+- Date: 2026-06-01
+- Updated by: Codex
+- **Current Stage**: Replaced the `/[locale]/ueber-uns` who-we-are section blueprint image with the new PixelRing service vehicle asset and localized the image alt text across DE/EN/RU/TR/PL/AR.
+- **Next Action**: Owner visually reviews the new service-vehicle image in the `/de/ueber-uns` who-we-are section.
+
+- Date: 2026-06-01
+- Updated by: Codex
+- **Current Stage**: Adjusted the `/[locale]/ueber-uns` who-we-are section layout so the text column appears on the left and the image appears on the right at desktop widths.
+- **Next Action**: Owner reviews the updated `/de/ueber-uns` who-we-are section composition.
+
+- Date: 2026-05-31
+- Updated by: Codex
+- **Current Stage**: Rewrote the `/[locale]/ueber-uns` who-we-are block across DE/EN/RU/TR/PL/AR to start with PixelRing as a service company for signage, repair, maintenance, and modernization instead of leading with marketplace/platform negation.
+- **Next Action**: Owner reviews the revised who-we-are block on `/ru/ueber-uns` and `/de/ueber-uns`.
+
+- Date: 2026-05-31
+- Updated by: Codex
+- **Current Stage**: Rewrote the `/[locale]/ueber-uns` materials lead and note across DE/EN/RU/TR/PL/AR so the premium-materials section explains durability, light/color stability, weather resistance, maintainability, and supplier trust without vague "strengthens the result" wording.
+- **Next Action**: Owner reviews the revised materials block on `/ru/ueber-uns` and `/de/ueber-uns`.
+
+- Date: 2026-05-31
+- Updated by: Codex
+- **Current Stage**: Rewrote the `/[locale]/ueber-uns` request-process block across DE/EN/RU/TR/PL/AR to remove literal audit jargon such as "technically clarify" and replace it with plain steps from first message to work plan.
+- **Next Action**: Owner reviews the revised process block on `/ru/ueber-uns`, then continues section-by-section copy cleanup if needed.
+
+- Date: 2026-05-31
+- Updated by: Codex
+- **Current Stage**: Replaced the awkward `/[locale]/ueber-uns` "technical service point" wording in the who-we-are block with accountable service-partner language across DE/EN/RU/TR/PL/AR.
+- **Next Action**: Owner reviews the revised who-we-are block copy on `/ru/ueber-uns` and `/de/ueber-uns` before further copy refinement.
+
+- Date: 2026-05-31
+- Updated by: Codex
+- **Current Stage**: Reverted the `/[locale]/ueber-uns` hero copy from audit-style technical-service wording back to the earlier warmer brand-service framing across DE/EN/RU/TR/PL/AR and synced CMS records.
+- **Next Action**: Owner reviews the restored `/ru/ueber-uns` and `/de/ueber-uns` hero copy before further structural or terminal placement changes.
+
+- Date: 2026-05-31
+- Updated by: Codex
+- **Current Stage**: Removed the conversion-style hero CTA buttons and microcopy from `/[locale]/ueber-uns` after owner review; About now keeps request action in the final CTA while the hero stays informational.
+- **Next Action**: Owner visually reviews the cleaner About hero and decides whether the live terminal should remain there or move lower.
+
+- Date: 2026-05-31
+- Updated by: Codex
+- **Current Stage**: Rebuilt the `/[locale]/ueber-uns` page around the audit-backed trust narrative: hero now states technical signage service from Berlin with above-the-fold CTAs, and the page adds explicit who-we-are, serviced systems, 4-step request flow, repair-before-replacement, trust-safe materials, and anonymized-feedback context across MVP locales.
+- **Next Action**: Owner reviews `/ru/ueber-uns` and `/de/ueber-uns` for content order, block rhythm, and whether the live terminal should remain in the hero or move lower as a process/status example.
+
+- Date: 2026-05-31
+- Updated by: Codex
+- **Current Stage**: Strengthened the `/[locale]/ueber-uns` materials strip heading across DE/EN/RU/TR/PL/AR so it explicitly emphasizes premium materials and trusted/verified supply partners as a trust signal.
+- **Next Action**: Owner visually reviews the updated materials heading on `/ru/ueber-uns` and spot-checks DE/EN wording before deciding whether the strip needs supporting copy under the title.
+
+- Date: 2026-05-31
+- Updated by: Codex
+- **Current Stage**: Made the `/[locale]/ueber-uns` hero service terminal feel live: dispatch rows now cycle through localized real-time statuses/timestamps on the client, with a safer demo-live note that avoids exposing customer/CRM internals.
+- **Next Action**: Owner visually reviews the live ticker rhythm on `/ru/ueber-uns`, especially desktop/mobile readability and whether the update speed feels natural.
 
 - Date: 2026-05-31
 - Updated by: Codex

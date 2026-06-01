@@ -1,6 +1,10 @@
 'use client';
 
+import { useEffect, useMemo, useState } from 'react';
+
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
+type DispatchStatus = 'done' | 'enRoute' | 'working';
+type FeedLabelKey = 'feedMunich' | 'feedBerlin' | 'feedHamburg' | 'feedFrankfurt';
 
 const LABELS = {
   de: {
@@ -29,7 +33,12 @@ const LABELS = {
     feedFrankfurt: "Frankfurt: Objektaudit durchgeführt",
     feedEnRoute: "Unterwegs",
     feedWorking: "In Arbeit",
-    feedDone: "Erledigt"
+    feedDone: "Erledigt",
+    feedUpdated: "aktualisiert",
+    timeNow: "gerade eben",
+    timeMinuteAgo: "vor 1 Min.",
+    timeMinutesAgo: "vor {{count}} Min.",
+    feedNote: "Demo-Livefeed: echte Einsätze werden intern im PixelRing CRM protokolliert, ohne Kundendaten offenzulegen."
   },
   en: {
     title: "PixelRing Diagnostics Terminal",
@@ -57,7 +66,12 @@ const LABELS = {
     feedFrankfurt: "Frankfurt: Site audit performed",
     feedEnRoute: "En route",
     feedWorking: "Active",
-    feedDone: "Done"
+    feedDone: "Done",
+    feedUpdated: "updated",
+    timeNow: "just now",
+    timeMinuteAgo: "1 min ago",
+    timeMinutesAgo: "{{count}} min ago",
+    feedNote: "Demo live feed: real dispatches are logged internally in PixelRing CRM without exposing customer data."
   },
   ru: {
     title: "Диагностический терминал PixelRing",
@@ -85,7 +99,12 @@ const LABELS = {
     feedFrankfurt: "Франкфурт: Проведен технический аудит",
     feedEnRoute: "В пути",
     feedWorking: "В работе",
-    feedDone: "Готово"
+    feedDone: "Готово",
+    feedUpdated: "обновлено",
+    timeNow: "только что",
+    timeMinuteAgo: "1 мин назад",
+    timeMinutesAgo: "{{count}} мин назад",
+    feedNote: "Демо-лента в реальном времени: реальные выезды фиксируются внутри PixelRing CRM без раскрытия данных клиентов."
   },
   tr: {
     title: "PixelRing Arıza Tespit Terminali",
@@ -113,7 +132,12 @@ const LABELS = {
     feedFrankfurt: "Frankfurt: Saha denetimi yapıldı",
     feedEnRoute: "Yolda",
     feedWorking: "Çalışıyor",
-    feedDone: "Tamamlandı"
+    feedDone: "Tamamlandı",
+    feedUpdated: "güncellendi",
+    timeNow: "az önce",
+    timeMinuteAgo: "1 dk önce",
+    timeMinutesAgo: "{{count}} dk önce",
+    feedNote: "Demo canlı akış: gerçek servisler müşteri verileri gösterilmeden PixelRing CRM içinde kaydedilir."
   },
   pl: {
     title: "Terminal Diagnostyczny PixelRing",
@@ -141,7 +165,12 @@ const LABELS = {
     feedFrankfurt: "Frankfurt: Wykonano audyt obiektu",
     feedEnRoute: "W drodze",
     feedWorking: "W trakcie",
-    feedDone: "Ukończono"
+    feedDone: "Ukończono",
+    feedUpdated: "zaktualizowano",
+    timeNow: "przed chwilą",
+    timeMinuteAgo: "1 min temu",
+    timeMinutesAgo: "{{count}} min temu",
+    feedNote: "Demo na żywo: rzeczywiste wyjazdy są zapisywane wewnętrznie w PixelRing CRM bez ujawniania danych klientów."
   },
   ar: {
     title: "لوحة تشخيص بكسل رينج",
@@ -169,18 +198,96 @@ const LABELS = {
     feedFrankfurt: "فرانكفورت: تم إجراء تدقيق للموقع",
     feedEnRoute: "في الطريق",
     feedWorking: "قيد التنفيذ",
-    feedDone: "مكتمل"
+    feedDone: "مكتمل",
+    feedUpdated: "تم التحديث",
+    timeNow: "الآن",
+    timeMinuteAgo: "قبل دقيقة",
+    timeMinutesAgo: "قبل {{count}} دقائق",
+    feedNote: "بث تجريبي مباشر: يتم تسجيل العمليات الفعلية داخلياً في PixelRing CRM دون كشف بيانات العملاء."
   }
 };
 
+const FEED_PHASES: Array<
+  Array<{
+    id: string;
+    label: FeedLabelKey;
+    status: DispatchStatus;
+    minutesAgo: number;
+    isFresh?: boolean;
+  }>
+> = [
+  [
+    { id: 'berlin', label: 'feedBerlin', status: 'enRoute', minutesAgo: 0, isFresh: true },
+    { id: 'frankfurt', label: 'feedFrankfurt', status: 'working', minutesAgo: 7 },
+    { id: 'munich', label: 'feedMunich', status: 'done', minutesAgo: 18 },
+    { id: 'hamburg', label: 'feedHamburg', status: 'done', minutesAgo: 43 },
+  ],
+  [
+    { id: 'berlin', label: 'feedBerlin', status: 'working', minutesAgo: 1, isFresh: true },
+    { id: 'frankfurt', label: 'feedFrankfurt', status: 'done', minutesAgo: 9 },
+    { id: 'munich', label: 'feedMunich', status: 'done', minutesAgo: 20 },
+    { id: 'hamburg', label: 'feedHamburg', status: 'enRoute', minutesAgo: 0, isFresh: true },
+  ],
+  [
+    { id: 'hamburg', label: 'feedHamburg', status: 'working', minutesAgo: 1, isFresh: true },
+    { id: 'berlin', label: 'feedBerlin', status: 'done', minutesAgo: 4 },
+    { id: 'frankfurt', label: 'feedFrankfurt', status: 'done', minutesAgo: 11 },
+    { id: 'munich', label: 'feedMunich', status: 'enRoute', minutesAgo: 0, isFresh: true },
+  ],
+  [
+    { id: 'munich', label: 'feedMunich', status: 'working', minutesAgo: 1, isFresh: true },
+    { id: 'hamburg', label: 'feedHamburg', status: 'done', minutesAgo: 4 },
+    { id: 'berlin', label: 'feedBerlin', status: 'done', minutesAgo: 8 },
+    { id: 'frankfurt', label: 'feedFrankfurt', status: 'enRoute', minutesAgo: 0, isFresh: true },
+  ],
+];
+
+function formatLiveTime(t: (typeof LABELS)[Locale], minutesAgo: number) {
+  if (minutesAgo <= 0) {
+    return t.timeNow;
+  }
+
+  if (minutesAgo === 1) {
+    return t.timeMinuteAgo;
+  }
+
+  return t.timeMinutesAgo.replace('{{count}}', String(minutesAgo));
+}
+
+function getStatusLabel(t: (typeof LABELS)[Locale], status: DispatchStatus) {
+  if (status === 'done') {
+    return t.feedDone;
+  }
+
+  if (status === 'working') {
+    return t.feedWorking;
+  }
+
+  return t.feedEnRoute;
+}
+
 export default function ServiceSimulator({ locale }: { locale: Locale }) {
   const t = LABELS[locale] || LABELS.de;
-  const liveDispatches = [
-    { id: 1, text: t.feedMunich, status: 'done', time: '10 min ago' },
-    { id: 2, text: t.feedBerlin, status: 'enRoute', time: 'Just now' },
-    { id: 3, text: t.feedHamburg, status: 'done', time: '1 hour ago' },
-    { id: 4, text: t.feedFrankfurt, status: 'working', time: '40 min ago' },
-  ];
+  const [feedStep, setFeedStep] = useState(0);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setFeedStep((currentStep) => currentStep + 1);
+    }, 3200);
+
+    return () => window.clearInterval(interval);
+  }, []);
+
+  const liveDispatches = useMemo(() => {
+    const phase = FEED_PHASES[feedStep % FEED_PHASES.length];
+    const loopOffset = Math.floor(feedStep / FEED_PHASES.length) * 2;
+
+    return phase.map((dispatch) => ({
+      ...dispatch,
+      text: t[dispatch.label],
+      time: formatLiveTime(t, dispatch.minutesAgo + loopOffset),
+    }));
+  }, [feedStep, t]);
 
   return (
     <div className="w-full max-w-[540px] bg-[#0E1A2B] rounded-3xl overflow-hidden border border-slate-800 shadow-[0_30px_70px_rgba(14,26,43,0.35)] text-slate-100 flex flex-col font-mono text-xs">
@@ -211,19 +318,32 @@ export default function ServiceSimulator({ locale }: { locale: Locale }) {
       <div className="p-6 flex-1 min-h-[310px]">
         <div className="flex flex-col gap-4 flex-grow justify-between">
           <div className="flex flex-col gap-3">
-            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">{t.feedTitle}</span>
-            <div className="flex flex-col gap-2.5">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">{t.feedTitle}</span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2 py-1 text-[8px] font-bold uppercase tracking-wider text-emerald-300">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                {t.feedUpdated} {t.timeNow}
+              </span>
+            </div>
+            <div className="flex flex-col gap-2.5" aria-live="polite">
               {liveDispatches.map((dispatch) => (
-                <div key={dispatch.id} className="p-3 bg-[#070e17] rounded-xl border border-slate-800/80 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
+                <div
+                  key={`${dispatch.id}-${dispatch.status}`}
+                  className={`p-3 bg-[#070e17] rounded-xl border flex items-center justify-between gap-3 transition-all duration-500 ${
+                    dispatch.isFresh
+                      ? 'border-[#B8643E]/60 shadow-[0_0_24px_rgba(184,100,62,0.14)]'
+                      : 'border-slate-800/80'
+                  }`}
+                >
+                  <div className="flex min-w-0 items-center gap-3">
                     <span className={`w-2 h-2 rounded-full ${
                       dispatch.status === 'done'
                         ? 'bg-emerald-500'
                         : dispatch.status === 'working'
                         ? 'bg-yellow-500 animate-pulse'
-                        : 'bg-sky-500 animate-ping'
+                        : 'bg-sky-500 animate-pulse'
                     }`} />
-                    <span className="text-[11px] text-slate-200">{dispatch.text}</span>
+                    <span className="min-w-0 text-[11px] text-slate-200">{dispatch.text}</span>
                   </div>
                   <div className="flex flex-col items-end gap-1 shrink-0">
                     <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
@@ -233,11 +353,7 @@ export default function ServiceSimulator({ locale }: { locale: Locale }) {
                         ? 'bg-yellow-500/10 text-yellow-400'
                         : 'bg-sky-500/10 text-sky-400'
                     }`}>
-                      {dispatch.status === 'done'
-                        ? t.feedDone
-                        : dispatch.status === 'working'
-                        ? t.feedWorking
-                        : t.feedEnRoute}
+                      {getStatusLabel(t, dispatch.status)}
                     </span>
                     <span className="text-[8px] text-slate-500">{dispatch.time}</span>
                   </div>
@@ -251,7 +367,7 @@ export default function ServiceSimulator({ locale }: { locale: Locale }) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span>
-              All service dispatches are logged inside the <strong>PixelRing CRM</strong> platform for transparent, data-driven brand tracking.
+              {t.feedNote}
             </span>
           </div>
         </div>
