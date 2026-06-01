@@ -70,7 +70,7 @@ export const ABOUT_CONTENT: Record<Locale, AboutContent> = {
       cta: 'Mehr erfahren',
       accordions: [
         { title: 'Warum PixelRing SERVICE entstanden ist', content: 'Wenn eine Werbeanlage ausfällt, ist oft unklar, wer zuständig ist: Werbetechnik, Elektrik, Montage, Druckerei oder Hersteller. PixelRing SERVICE nimmt diese Anfrage auf und bringt Ordnung in die nächsten Schritte.' },
-        { title: 'Ein Ansprechpartner mit klarer Begleitung', content: 'PixelRing SERVICE ist keine anonyme Vermittlungsplattform. Wir klären die Aufgabe, sammeln die wichtigen Informationen und halten die Kommunikation an einer Stelle zusammen.' },
+        { title: 'Ein Ansprechpartner mit klarer Begleitung', content: 'PixelRing SERVICE bündelt Anfrage, Abstimmung und nächste Schritte an einer Stelle. Wir sammeln die wichtigen Informationen und halten die Kommunikation für den Kunden übersichtlich.' },
         { title: 'Ein fester Serviceablauf', content: 'Jeder Fall wird nachvollziehbar bearbeitet: Was wurde gemeldet, was ist geprüft, welche Maßnahme ist sinnvoll und was sollte als Nächstes passieren. So bleibt das Ergebnis auch später verständlich.' },
         { title: 'Wenn es mehrere Standorte gibt', content: 'Bei mehreren Standorten hilft ein einheitlicher Ablauf. Die Informationen werden ähnlich aufgenommen, die Dokumentation bleibt vergleichbar und dringende Themen lassen sich besser einordnen.' },
         { title: 'Die passenden Fachleute koordiniert', content: 'Werbeanlagen verbinden Lichttechnik, Konstruktion, Folien, Druck und Montage. PixelRing SERVICE koordiniert je nach Aufgabe die passenden Fachleute, damit der Kunde nicht alles parallel steuern muss.' }
@@ -142,7 +142,7 @@ export const ABOUT_CONTENT: Record<Locale, AboutContent> = {
       cta: 'Learn more',
       accordions: [
         { title: 'Why PixelRing SERVICE exists', content: 'When a sign fails, it is not always clear who should handle it: signage company, electrician, installer, printer, or manufacturer. PixelRing SERVICE takes the request and turns it into a clear next step.' },
-        { title: 'One contact with clear guidance', content: 'PixelRing SERVICE is not an anonymous marketplace. We clarify the task, collect the important details, and keep communication in one place.' },
+        { title: 'One contact with clear guidance', content: 'PixelRing SERVICE keeps the request, coordination, and next steps in one place. We collect the important details and keep communication clear for the client.' },
         { title: 'A fixed service flow', content: 'Each case follows a clear path: what was reported, what was checked, what action makes sense, and what should happen next. That keeps the result understandable later.' },
         { title: 'When there is more than one location', content: 'For companies with several locations, a consistent process helps. Information is collected in a similar way, documentation stays comparable, and urgent topics are easier to prioritize.' },
         { title: 'The right specialists coordinated', content: 'Signs combine lighting, structures, films, print, and installation. PixelRing SERVICE coordinates the right people for the task so the client does not have to manage several contacts at once.' }
@@ -214,7 +214,7 @@ export const ABOUT_CONTENT: Record<Locale, AboutContent> = {
       cta: 'Узнать больше',
       accordions: [
         { title: 'Почему появился PixelRing SERVICE', content: 'PixelRing появился в 2023 году из конкретного наблюдения: найти надёжного исполнителя для ремонта вывески или световой рекламы в Германии сложнее, чем кажется. Одни берутся только за монтаж, другие занимаются только электрикой, третьи не выезжают в другой район. Мы решили закрыть эту нишу: один сервисный партнёр, который берёт задачу целиком, от диагностики до монтажа.' },
-        { title: 'Один контакт — понятное сопровождение', content: 'PixelRing SERVICE — не анонимная платформа и не биржа мастеров. Мы уточняем задачу, собираем важные детали, проверяем ситуацию на объекте или по материалам и держим коммуникацию в одной точке.' },
+        { title: 'Один контакт — понятное сопровождение', content: 'PixelRing SERVICE собирает заявку, согласование и следующие шаги в одной точке. Мы уточняем задачу, собираем важные детали, проверяем ситуацию на объекте или по материалам и держим коммуникацию понятной для клиента.' },
         { title: 'Внутренний сервисный стандарт', content: 'Каждый случай ведётся по понятному алгоритму: что было заявлено, что проверено, какая мера выглядит разумной и какой следующий шаг рекомендуется. Так появляется документация, полезная для ремонта, модернизации или дальнейшего обслуживания.' },
         { title: 'Когда объектов больше одного', content: 'Для бизнеса с несколькими точками помогает единый порядок: одинаковый сбор информации, сопоставимая документация и понятная приоритизация. В зависимости от задачи PixelRing SERVICE может фиксировать историю по отдельным локациям и упрощать будущие решения.' },
         { title: 'Координация подходящих специалистов', content: 'Рекламные конструкции объединяют светотехнику, конструкции, плёнки, печать и монтаж. PixelRing SERVICE координирует подходящих специалистов под конкретную задачу, чтобы клиенту не приходилось параллельно управлять несколькими контактами.' }
@@ -474,9 +474,237 @@ export const ABOUT_CONTENT: Record<Locale, AboutContent> = {
   }
 };
 
+type AboutStructureLabels = {
+  heroMicrocopy: string;
+  whoEyebrow: string;
+  whoTitle: string;
+  whoParagraphs: string[];
+  scopeEyebrow: string;
+  scopeTitle: string;
+  scopeIntro: string;
+  scopeItems: string[];
+  processEyebrow: string;
+  processTitle: string;
+  processLead: string;
+  processSteps: { title: string; description: string }[];
+  repairEyebrow: string;
+  repairTitle: string;
+  repairText: string;
+  repairItems: string[];
+  audienceEyebrow: string;
+  materialsEyebrow: string;
+  materialsLead: string;
+  materialsNote: string;
+  testimonialsEyebrow: string;
+  testimonialsLead: string;
+  finalLead: string;
+};
+
+export const ABOUT_STRUCTURE_LABELS: Record<Locale, AboutStructureLabels> = {
+  de: {
+    heroMicrocopy: 'Kurze Beschreibung, Foto oder Video reichen für den ersten Schritt.',
+    whoEyebrow: 'Wer wir sind',
+    whoTitle: 'Serviceunternehmen für Werbeanlagen und sichtbare Markenflächen',
+    whoParagraphs: [
+      'PixelRing betreut Unternehmen bei Reparatur, Wartung und Modernisierung von Werbeanlagen, Lichtwerbung, LED-Schildern, Leuchtkästen, Folien und Fassadenbranding.',
+      'Wir nehmen die Anfrage auf, prüfen Fotos, Videos und Objektinformationen und schlagen einen klaren nächsten Schritt vor: Reparatur, Service, Teilmodernisierung oder Ersatz, wenn er wirklich gebraucht wird.',
+    ],
+    scopeEyebrow: 'Was wir betreuen',
+    scopeTitle: 'Sichtbare Marken- und Standortinfrastruktur',
+    scopeIntro: 'Wir arbeiten mit den Anlagen, die Kunden, Gäste und Mitarbeitende vor Ort tatsächlich sehen und nutzen.',
+    scopeItems: ['Leuchtreklame und LED-Schilder', 'Leuchtkästen und Einzelbuchstaben', 'Neon-Elemente und Lichttechnik', 'Folien, Fassadenwerbung und Orientierungssysteme', 'Montierte Werbeanlagen nach Umbau oder Standortwechsel', 'Schäden durch Wetter, Alterung, Zugang oder Befestigung'],
+    processEyebrow: 'So läuft eine Anfrage ab',
+    processTitle: 'Von der ersten Meldung zum klaren Arbeitsplan',
+    processLead: 'Am Anfang reichen eine kurze Beschreibung und, wenn möglich, Fotos oder ein Video. Danach ordnen wir den Fall ein, stellen die nötigen Rückfragen und schlagen den nächsten Schritt vor.',
+    processSteps: [
+      { title: 'Anfrage mit Foto oder Video senden', description: 'Sie beschreiben kurz, was sichtbar ist, und senden nach Möglichkeit Fotos oder ein kurzes Video der Anlage.' },
+      { title: 'Erste Einschätzung der Situation', description: 'Wir sehen uns Beschreibung, Fotos oder Video an, stellen Rückfragen und prüfen, was als Nächstes gebraucht wird.' },
+      { title: 'Arbeitsumfang, Zugang und Termin abstimmen', description: 'Wir stimmen ab, wie die Anlage erreichbar ist, welche Materialien oder Ersatzteile infrage kommen und wann die Arbeit eingeplant werden kann.' },
+      { title: 'Ausführung und Dokumentation', description: 'Nach Abstimmung wird die Arbeit vorbereitet, ausgeführt und für spätere Wartung oder Reparatur nachvollziehbar dokumentiert.' },
+    ],
+    repairEyebrow: 'Reparatur statt Reflex-Austausch',
+    repairTitle: 'Erst prüfen, dann reparieren, modernisieren oder ersetzen',
+    repairText: 'Eine defekte Werbeanlage muss nicht automatisch komplett ersetzt werden. Oft entscheidet die technische Prüfung, ob eine Reparatur, ein LED-Retrofit, ein Materialtausch oder eine neue Lösung sinnvoller ist.',
+    repairItems: ['Budget und Ausfallzeit bleiben besser einschätzbar.', 'Bestehende Konstruktionen können weiter genutzt werden, wenn Zustand und Sicherheit passen.', 'Modernisierung wird erst nach Befund geplant, nicht als Standardlösung verkauft.'],
+    audienceEyebrow: 'Für wen',
+    materialsEyebrow: 'Materialien und Systeme',
+    materialsLead: 'Wir wählen Materialien nach Einsatzort und Belastung aus: gleichmäßiges Licht, stabile Farben, wetterfeste Oberflächen, passende Netzteile und Komponenten, die später wartbar bleiben.',
+    materialsNote: 'Die Marken und Materialgruppen unten zeigen Beispiele aus unserem Arbeitsumfeld. Sie stehen für geprüfte Komponenten und Lieferquellen, nicht für eine pauschale offizielle Partnerschaft.',
+    testimonialsEyebrow: 'Anonymisierte Rückmeldungen',
+    testimonialsLead: 'Aus Datenschutzgründen nennen wir hier keine Kundennamen und keine genauen Objektadressen. Die Beispiele zeigen, was Unternehmen an einem strukturierten Serviceprozess schätzen.',
+    finalLead: 'Senden Sie uns eine kurze Beschreibung und nach Möglichkeit ein Foto oder Video der Anlage. PixelRing prüft die Informationen und klärt den nächsten sinnvollen Schritt.',
+  },
+  en: {
+    heroMicrocopy: 'A short description, photo, or video is enough for the first step.',
+    whoEyebrow: 'Who we are',
+    whoTitle: 'A service company for signage and visible brand surfaces',
+    whoParagraphs: [
+      'PixelRing supports companies with repair, maintenance, and modernization of signage, illuminated advertising, LED signs, light boxes, films, and facade branding.',
+      'We take the request, review photos, videos, and object information, then suggest a clear next step: repair, service, partial modernization, or replacement when it is truly needed.',
+    ],
+    scopeEyebrow: 'What we service',
+    scopeTitle: 'Visible brand and location infrastructure',
+    scopeIntro: 'We work with the systems that customers, guests, and employees actually see on site.',
+    scopeItems: ['Illuminated advertising and LED signs', 'Light boxes and individual letters', 'Neon elements and lighting components', 'Films, facade branding, and wayfinding systems', 'Mounted signage after renovations or relocation', 'Damage caused by weather, age, access, or fixings'],
+    processEyebrow: 'How a request works',
+    processTitle: 'From first report to a clear work plan',
+    processLead: 'A short description and, if possible, photos or a video are enough to start. Then we review the situation, ask the right follow-up questions, and suggest the next step.',
+    processSteps: [
+      { title: 'Send a request with photo or video', description: 'You briefly describe what is visible and, if possible, send photos or a short video of the sign.' },
+      { title: 'First situation review', description: 'We look at the description, photos or video, ask follow-up questions, and see what needs to happen next.' },
+      { title: 'Scope, access, and timing', description: 'We agree how the sign can be reached, which materials or spare parts may be needed, and when the work can be scheduled.' },
+      { title: 'Execution and documentation', description: 'After coordination, the work is prepared, carried out, and documented for future maintenance or repairs.' },
+    ],
+    repairEyebrow: 'Repair before reflex replacement',
+    repairTitle: 'Check first, then repair, modernize, or replace',
+    repairText: 'A defective sign does not automatically need full replacement. Technical assessment often decides whether repair, LED retrofit, material replacement, or a new solution is the better path.',
+    repairItems: ['Budget and downtime become easier to estimate.', 'Existing structures can stay in use when condition and safety allow it.', 'Modernization is planned after findings, not sold as a default answer.'],
+    audienceEyebrow: 'For whom',
+    materialsEyebrow: 'Materials and systems',
+    materialsLead: 'We choose materials around real operating conditions: even light, stable color, weather-resistant surfaces, suitable power supplies, and components that can still be serviced later.',
+    materialsNote: 'The brands and material groups below are examples from our working environment. They point to tested components and supply sources, not to a blanket official partnership claim.',
+    testimonialsEyebrow: 'Anonymized feedback',
+    testimonialsLead: 'For privacy reasons, we do not name customer names or exact object addresses here. The examples show what companies value in a structured service process.',
+    finalLead: 'Send a short description and, if possible, a photo or video of the sign. PixelRing reviews the information and clarifies the next sensible step.',
+  },
+  ru: {
+    heroMicrocopy: 'Короткого описания, фото или видео достаточно для первого шага.',
+    whoEyebrow: 'Кто мы',
+    whoTitle: 'Сервисная компания для рекламных систем и вывесок',
+    whoParagraphs: [
+      'PixelRing помогает бизнесу с ремонтом, обслуживанием и модернизацией рекламных систем: вывесок, световой рекламы, LED-элементов, лайтбоксов, плёнок и фасадного брендинга.',
+      'Мы принимаем заявку, разбираем фото, видео и информацию по объекту, а затем предлагаем понятный следующий шаг: ремонт, сервис, частичную модернизацию или замену, когда она действительно нужна.',
+    ],
+    scopeEyebrow: 'Что мы обслуживаем',
+    scopeTitle: 'Видимая инфраструктура бренда и локации',
+    scopeIntro: 'Мы работаем с теми системами, которые клиенты, гости и сотрудники действительно видят на объекте.',
+    scopeItems: ['Световая реклама и LED-вывески', 'Лайтбоксы и отдельные буквы', 'Неоновые элементы и светотехника', 'Плёнки, фасадный брендинг и навигация', 'Смонтированные рекламные конструкции после ремонта или переезда', 'Повреждения из-за погоды, старения, доступа или креплений'],
+    processEyebrow: 'Как проходит заявка',
+    processTitle: 'От первого сообщения до понятного плана работ',
+    processLead: 'Для начала достаточно коротко описать проблему и показать её на фото или видео. Дальше мы разбираем ситуацию, задаём нужные вопросы и предлагаем следующий шаг.',
+    processSteps: [
+      { title: 'Отправить заявку с фото или видео', description: 'Вы коротко описываете, что видно, и по возможности отправляете фотографии или короткое видео конструкции.' },
+      { title: 'Первичная оценка ситуации', description: 'Смотрим описание, фото или видео, задаём уточняющие вопросы и понимаем, что нужно проверить дальше.' },
+      { title: 'План работ, доступ и сроки', description: 'Согласуем, как подойти к конструкции, какие материалы или запчасти могут понадобиться и когда удобно выполнить работу.' },
+      { title: 'Выполнение и документация', description: 'После согласования работа подготавливается, выполняется, а важные детали сохраняются для будущего обслуживания.' },
+    ],
+    repairEyebrow: 'Ремонт вместо автоматической замены',
+    repairTitle: 'Сначала проверка, затем ремонт, модернизация или замена',
+    repairText: 'Неисправную рекламную систему не всегда нужно менять полностью. Часто именно техническая проверка показывает, что лучше: ремонт, LED-модернизация, замена материала или новая конструкция.',
+    repairItems: ['Бюджет и время простоя становятся понятнее.', 'Существующие конструкции можно использовать дальше, если состояние и безопасность это позволяют.', 'Модернизация планируется после проверки, а не продаётся как стандартный ответ.'],
+    audienceEyebrow: 'Для кого',
+    materialsEyebrow: 'Материалы и системы',
+    materialsLead: 'Мы подбираем материалы под реальные условия работы вывески: ровный свет, стабильный цвет, погодостойкие поверхности, подходящие блоки питания и компоненты, которые можно обслуживать позже.',
+    materialsNote: 'Бренды и группы материалов ниже — примеры из нашей рабочей среды. Они показывают уровень комплектующих и поставок, но не заявляют универсальное официальное партнёрство.',
+    testimonialsEyebrow: 'Анонимизированные отзывы',
+    testimonialsLead: 'Из соображений конфиденциальности мы не называем имена клиентов и точные адреса объектов. Примеры показывают, что компании ценят в структурированном сервисном процессе.',
+    finalLead: 'Отправьте короткое описание и по возможности фото или видео конструкции. PixelRing проверит информацию и уточнит следующий разумный шаг.',
+  },
+  tr: {
+    heroMicrocopy: 'İlk adım için kısa açıklama, fotoğraf veya video yeterlidir.',
+    whoEyebrow: 'Biz kimiz',
+    whoTitle: 'Tabela ve görünür marka yüzeyleri için servis şirketi',
+    whoParagraphs: [
+      'PixelRing şirketlere tabela, ışıklı reklam, LED tabelalar, ışıklı kutular, folyolar ve cephe markalama alanlarında onarım, bakım ve modernizasyon desteği verir.',
+      'Talebi alır, fotoğraf, video ve obje bilgilerini inceler, ardından net bir sonraki adımı öneririz: onarım, servis, kısmi modernizasyon veya gerçekten gerekiyorsa değişim.',
+    ],
+    scopeEyebrow: 'Neleri ele alıyoruz',
+    scopeTitle: 'Görünür marka ve konum altyapısı',
+    scopeIntro: 'Müşterilerin, misafirlerin ve çalışanların sahada gerçekten gördüğü sistemlerle çalışıyoruz.',
+    scopeItems: ['Işıklı reklam ve LED tabelalar', 'Işıklı kutular ve tekil harfler', 'Neon öğeler ve ışık tekniği', 'Folyolar, cephe reklamı ve yönlendirme sistemleri', 'Tadilat veya taşınma sonrası monte reklam sistemleri', 'Hava, yaşlanma, erişim veya bağlantı kaynaklı hasarlar'],
+    processEyebrow: 'Talep nasıl ilerler',
+    processTitle: 'İlk mesajdan net çalışma planına',
+    processLead: 'Başlamak için kısa bir açıklama ve mümkünse fotoğraf ya da video yeterlidir. Sonra durumu inceler, gerekli soruları sorar ve sonraki adımı öneririz.',
+    processSteps: [
+      { title: 'Fotoğraf veya video ile talep gönderin', description: 'Görünen sorunu kısaca anlatır, mümkünse tabelanın fotoğraflarını veya kısa videosunu gönderirsiniz.' },
+      { title: 'Durumun ilk değerlendirmesi', description: 'Açıklamayı, fotoğrafları veya videoyu inceler, ek sorular sorar ve bir sonraki adım için ne gerektiğini belirleriz.' },
+      { title: 'Çalışma planı, erişim ve tarih', description: 'Tabelaya nasıl erişileceğini, hangi malzeme veya parçaların gerekebileceğini ve işin ne zaman yapılabileceğini koordine ederiz.' },
+      { title: 'Uygulama ve dokümantasyon', description: 'Koordinasyondan sonra iş hazırlanır, uygulanır ve ilerideki bakım veya onarımlar için belgelenir.' },
+    ],
+    repairEyebrow: 'Otomatik değişim yerine onarım',
+    repairTitle: 'Önce kontrol, sonra onarım, modernizasyon veya değişim',
+    repairText: 'Arızalı bir tabela her zaman tamamen değiştirilmek zorunda değildir. Teknik değerlendirme çoğu zaman onarım, LED retrofit, malzeme değişimi veya yeni çözümden hangisinin daha uygun olduğunu gösterir.',
+    repairItems: ['Bütçe ve kesinti süresi daha iyi tahmin edilir.', 'Durum ve güvenlik uygunsa mevcut konstrüksiyonlar kullanılmaya devam edebilir.', 'Modernizasyon standart cevap olarak değil, bulguya göre planlanır.'],
+    audienceEyebrow: 'Kimler için',
+    materialsEyebrow: 'Malzemeler ve sistemler',
+    materialsLead: 'Malzemeleri gerçek kullanım koşullarına göre seçeriz: dengeli ışık, sabit renk, hava koşullarına dayanıklı yüzeyler, uygun güç kaynakları ve sonradan bakımı yapılabilen bileşenler.',
+    materialsNote: 'Aşağıdaki marka ve malzeme grupları çalışma alanımızdan örneklerdir. Test edilmiş bileşenleri ve tedarik kaynaklarını gösterir; genel bir resmi partnerlik iddiası değildir.',
+    testimonialsEyebrow: 'Anonimleştirilmiş geri bildirim',
+    testimonialsLead: 'Gizlilik nedeniyle burada müşteri adlarını veya tam adresleri paylaşmıyoruz. Örnekler, şirketlerin yapılandırılmış servis sürecinde neye değer verdiğini gösterir.',
+    finalLead: 'Kısa bir açıklama ve mümkünse tabelanın fotoğrafını veya videosunu gönderin. PixelRing bilgileri inceler ve mantıklı sonraki adımı netleştirir.',
+  },
+  pl: {
+    heroMicrocopy: 'Krótki opis, zdjęcie lub wideo wystarczą do pierwszego kroku.',
+    whoEyebrow: 'Kim jesteśmy',
+    whoTitle: 'Firma serwisowa dla systemów reklamowych i widocznych powierzchni marki',
+    whoParagraphs: [
+      'PixelRing pomaga firmom w naprawie, konserwacji i modernizacji systemów reklamowych: szyldów, reklamy świetlnej, znaków LED, kasetonów, folii i brandingu fasad.',
+      'Przyjmujemy zgłoszenie, analizujemy zdjęcia, wideo i informacje o obiekcie, a następnie proponujemy jasny kolejny krok: naprawę, serwis, częściową modernizację albo wymianę, gdy jest naprawdę potrzebna.',
+    ],
+    scopeEyebrow: 'Co obsługujemy',
+    scopeTitle: 'Widoczna infrastruktura marki i lokalizacji',
+    scopeIntro: 'Pracujemy z systemami, które klienci, goście i pracownicy faktycznie widzą na miejscu.',
+    scopeItems: ['Reklama świetlna i szyldy LED', 'Kasetony i litery przestrzenne', 'Elementy neonowe i technika świetlna', 'Folie, branding fasad i systemy orientacyjne', 'Zamontowane systemy reklamowe po remoncie lub zmianie lokalizacji', 'Uszkodzenia przez pogodę, starzenie, dostęp lub mocowania'],
+    processEyebrow: 'Jak przebiega zgłoszenie',
+    processTitle: 'Od pierwszej wiadomości do jasnego planu prac',
+    processLead: 'Na początek wystarczy krótki opis oraz, jeśli to możliwe, zdjęcia lub wideo. Potem analizujemy sytuację, zadajemy potrzebne pytania i proponujemy następny krok.',
+    processSteps: [
+      { title: 'Wyślij zgłoszenie ze zdjęciem lub wideo', description: 'Krótko opisujesz widoczny problem i, jeśli to możliwe, wysyłasz zdjęcia albo krótkie wideo systemu.' },
+      { title: 'Pierwsza ocena sytuacji', description: 'Sprawdzamy opis, zdjęcia lub wideo, zadajemy pytania uzupełniające i ustalamy, co trzeba sprawdzić dalej.' },
+      { title: 'Plan prac, dostęp i termin', description: 'Uzgadniamy, jak dostać się do systemu, jakie materiały lub części mogą być potrzebne i kiedy można wykonać pracę.' },
+      { title: 'Wykonanie i dokumentacja', description: 'Po uzgodnieniu praca jest przygotowana, wykonana i udokumentowana na potrzeby przyszłej konserwacji lub napraw.' },
+    ],
+    repairEyebrow: 'Naprawa zamiast automatycznej wymiany',
+    repairTitle: 'Najpierw sprawdzenie, potem naprawa, modernizacja albo wymiana',
+    repairText: 'Uszkodzony szyld nie zawsze wymaga pełnej wymiany. Ocena techniczna często pokazuje, czy lepsza będzie naprawa, retrofit LED, wymiana materiału czy nowe rozwiązanie.',
+    repairItems: ['Budżet i przestój można lepiej oszacować.', 'Istniejące konstrukcje mogą zostać w użyciu, jeśli pozwala na to stan i bezpieczeństwo.', 'Modernizacja jest planowana po ocenie, a nie sprzedawana jako standardowa odpowiedź.'],
+    audienceEyebrow: 'Dla kogo',
+    materialsEyebrow: 'Materiały i systemy',
+    materialsLead: 'Dobieramy materiały do realnych warunków pracy szyldu: równe światło, stabilny kolor, odporne na pogodę powierzchnie, właściwe zasilacze i komponenty, które można później serwisować.',
+    materialsNote: 'Poniższe marki i grupy materiałowe to przykłady z naszego środowiska pracy. Pokazują sprawdzone komponenty i źródła dostaw, ale nie oznaczają ogólnego oficjalnego partnerstwa.',
+    testimonialsEyebrow: 'Zanonimizowane opinie',
+    testimonialsLead: 'Ze względów prywatności nie podajemy tutaj nazw klientów ani dokładnych adresów obiektów. Przykłady pokazują, co firmy cenią w uporządkowanym procesie serwisowym.',
+    finalLead: 'Wyślij krótki opis oraz, jeśli to możliwe, zdjęcie lub wideo systemu. PixelRing sprawdzi informacje i wyjaśni kolejny sensowny krok.',
+  },
+  ar: {
+    heroMicrocopy: 'يكفي وصف قصير أو صورة أو فيديو للخطوة الأولى.',
+    whoEyebrow: 'من نحن',
+    whoTitle: 'شركة خدمة للأنظمة الإعلانية وواجهات العلامة المرئية',
+    whoParagraphs: [
+      'تساعد بكسل رينج الشركات في إصلاح وصيانة وتحديث أنظمة الإعلان: اللوحات، الإعلانات المضيئة، عناصر LED، الصناديق المضيئة، الأفلام الإعلانية وواجهات العلامة.',
+      'نستقبل الطلب، نراجع الصور والفيديو ومعلومات الموقع، ثم نقترح الخطوة التالية بوضوح: إصلاح، خدمة، تحديث جزئي أو استبدال عندما يكون ضرورياً فعلاً.',
+    ],
+    scopeEyebrow: 'ما الذي نخدمه',
+    scopeTitle: 'البنية المرئية للعلامة التجارية والموقع',
+    scopeIntro: 'نعمل مع الأنظمة التي يراها العملاء والضيوف والموظفون فعلياً في الموقع.',
+    scopeItems: ['الإعلانات المضيئة ولوحات LED', 'الصناديق المضيئة والحروف المنفصلة', 'عناصر النيون وتقنية الإضاءة', 'الأفلام الإعلانية وواجهات العلامة وأنظمة التوجيه', 'أنظمة إعلانية مركبة بعد التجديد أو تغيير الموقع', 'أضرار الطقس أو التقادم أو الوصول أو التثبيت'],
+    processEyebrow: 'كيف يسير الطلب',
+    processTitle: 'من الرسالة الأولى إلى خطة عمل واضحة',
+    processLead: 'للبداية يكفي وصف قصير، ومعه صور أو فيديو إن أمكن. بعد ذلك نراجع الحالة، نطرح الأسئلة اللازمة، ونقترح الخطوة التالية.',
+    processSteps: [
+      { title: 'إرسال طلب مع صورة أو فيديو', description: 'تصفون بإيجاز ما يظهر، وترسلون إن أمكن صوراً أو فيديو قصيراً للوحة.' },
+      { title: 'تقييم أولي للحالة', description: 'نراجع الوصف والصور أو الفيديو، نطرح أسئلة متابعة، ونفهم ما الذي يجب فحصه بعد ذلك.' },
+      { title: 'خطة العمل والوصول والموعد', description: 'ننسق طريقة الوصول إلى اللوحة، والمواد أو القطع التي قد تكون مطلوبة، والوقت المناسب لتنفيذ العمل.' },
+      { title: 'التنفيذ والتوثيق', description: 'بعد التنسيق، يتم تحضير العمل وتنفيذه وتوثيق التفاصيل المهمة للصيانة أو الإصلاحات المستقبلية.' },
+    ],
+    repairEyebrow: 'الإصلاح قبل الاستبدال التلقائي',
+    repairTitle: 'الفحص أولاً، ثم الإصلاح أو التحديث أو الاستبدال',
+    repairText: 'اللوحة المعطلة لا تحتاج دائماً إلى استبدال كامل. غالباً ما يوضح الفحص الفني ما إذا كان الإصلاح أو تحديث LED أو تغيير المادة أو حل جديد هو الخيار الأفضل.',
+    repairItems: ['تصبح الميزانية ووقت التوقف أسهل في التقدير.', 'يمكن استمرار استخدام الهياكل القائمة إذا سمحت الحالة والسلامة بذلك.', 'يتم تخطيط التحديث بعد الفحص، وليس بيعه كإجابة جاهزة.'],
+    audienceEyebrow: 'لمن',
+    materialsEyebrow: 'المواد والأنظمة',
+    materialsLead: 'نختار المواد وفق ظروف عمل اللوحة الفعلية: إضاءة متوازنة، لون ثابت، أسطح مقاومة للطقس، مزودات طاقة مناسبة، ومكونات يمكن صيانتها لاحقاً.',
+    materialsNote: 'العلامات ومجموعات المواد أدناه أمثلة من بيئة عملنا. وهي تشير إلى مكونات ومصادر توريد مجربة، ولا تعني ادعاء شراكة رسمية عامة.',
+    testimonialsEyebrow: 'آراء مجهولة الهوية',
+    testimonialsLead: 'لأسباب الخصوصية لا نذكر أسماء العملاء أو عناوين المواقع الدقيقة هنا. توضح الأمثلة ما تقدره الشركات في مسار خدمة منظم.',
+    finalLead: 'أرسلوا وصفاً قصيراً، وإذا أمكن صورة أو فيديو للوحة. تراجع بكسل رينج المعلومات وتوضح الخطوة التالية المناسبة.',
+  },
+};
+
 export const ABOUT_PAGE_LABELS: Record<Locale, {
   teamLabel: string;
   expertAlt: string;
+  serviceVehicleAlt: string;
   quickServicesTitle: string;
   serviceCardCta: string;
   materialTitle: string;
@@ -487,10 +715,11 @@ export const ABOUT_PAGE_LABELS: Record<Locale, {
 }> = {
   de: {
     teamLabel: 'Servis ekibi',
-    expertAlt: 'PixelRing Service-Team',
+    expertAlt: 'PixelRing Serviceteam mit Fahrzeug für Werbeanlagen-Reparatur in Berlin',
+    serviceVehicleAlt: 'PixelRing Servicefahrzeug für Werbeanlagen-Reparatur, Wartung und Diagnose',
     quickServicesTitle: 'Für wen ist PixelRing?',
     serviceCardCta: 'Branche ansehen',
-    materialTitle: 'Materialien und Lieferpartner',
+    materialTitle: 'Premium-Materialien und bewährte Lieferpartner',
     materialBrands: ['3M', 'ORAFOL', 'Samsung LED', 'Tridonic', 'Mean Well', 'PLEXIGLAS®', 'DIBOND®', 'Avery Dennison'],
     testimonialsTitle: 'Rückmeldungen aus Servicefällen',
     testimonials: [
@@ -502,10 +731,11 @@ export const ABOUT_PAGE_LABELS: Record<Locale, {
   },
   en: {
     teamLabel: 'Service Team',
-    expertAlt: 'PixelRing service team',
+    expertAlt: 'PixelRing service team with vehicle for signage repair in Berlin',
+    serviceVehicleAlt: 'PixelRing service van for signage repair, maintenance, and diagnostics',
     quickServicesTitle: 'Who is PixelRing for?',
     serviceCardCta: 'View sector',
-    materialTitle: 'Materials and supply partners',
+    materialTitle: 'Premium materials and trusted supply partners',
     materialBrands: ['3M', 'ORAFOL', 'Samsung LED', 'Tridonic', 'Mean Well', 'PLEXIGLAS®', 'DIBOND®', 'Avery Dennison'],
     testimonialsTitle: 'Feedback from service cases',
     testimonials: [
@@ -517,10 +747,11 @@ export const ABOUT_PAGE_LABELS: Record<Locale, {
   },
   ru: {
     teamLabel: 'Servis ekibi',
-    expertAlt: 'Сервисная команда PixelRing',
+    expertAlt: 'Сервисная команда PixelRing с автомобилем для ремонта вывесок в Берлине',
+    serviceVehicleAlt: 'Сервисный автомобиль PixelRing для ремонта, обслуживания и диагностики вывесок',
     quickServicesTitle: 'Для кого PixelRing?',
     serviceCardCta: 'Смотреть отрасль',
-    materialTitle: 'Премиальные материалы и поставщики',
+    materialTitle: 'Премиальные материалы и проверенные поставщики',
     materialBrands: ['3M', 'ORAFOL', 'Samsung LED', 'Tridonic', 'Mean Well', 'PLEXIGLAS®', 'DIBOND®', 'Avery Dennison'],
     testimonialsTitle: 'Отзывы из сервисных случаев',
     testimonials: [
@@ -532,10 +763,11 @@ export const ABOUT_PAGE_LABELS: Record<Locale, {
   },
   tr: {
     teamLabel: 'Service-Team',
-    expertAlt: 'PixelRing servis ekibi',
+    expertAlt: 'Berlin tabela onarımı için araçlı PixelRing servis ekibi',
+    serviceVehicleAlt: 'Tabela onarımı, bakımı ve teşhisi için PixelRing servis aracı',
     quickServicesTitle: 'PixelRing kimler için?',
     serviceCardCta: 'Sektörü incele',
-    materialTitle: 'Malzemeler ve tedarik ortakları',
+    materialTitle: 'Premium malzemeler ve güvenilir tedarik ortakları',
     materialBrands: ['3M', 'ORAFOL', 'Samsung LED', 'Tridonic', 'Mean Well', 'PLEXIGLAS®', 'DIBOND®', 'Avery Dennison'],
     testimonialsTitle: 'Servis işlerinden geri bildirimler',
     testimonials: [
@@ -547,10 +779,11 @@ export const ABOUT_PAGE_LABELS: Record<Locale, {
   },
   pl: {
     teamLabel: 'Zespół serwisowy',
-    expertAlt: 'Zespół serwisowy PixelRing',
+    expertAlt: 'Zespół serwisowy PixelRing z samochodem do naprawy szyldów w Berlinie',
+    serviceVehicleAlt: 'Samochód serwisowy PixelRing do naprawy, konserwacji i diagnostyki szyldów',
     quickServicesTitle: 'Dla kogo jest PixelRing?',
     serviceCardCta: 'Zobacz branżę',
-    materialTitle: 'Materiały i partnerzy dostaw',
+    materialTitle: 'Materiały premium i sprawdzeni partnerzy dostaw',
     materialBrands: ['3M', 'ORAFOL', 'Samsung LED', 'Tridonic', 'Mean Well', 'PLEXIGLAS®', 'DIBOND®', 'Avery Dennison'],
     testimonialsTitle: 'Opinie ze spraw serwisowych',
     testimonials: [
@@ -562,10 +795,11 @@ export const ABOUT_PAGE_LABELS: Record<Locale, {
   },
   ar: {
     teamLabel: 'فريق الخدمة',
-    expertAlt: 'فريق خدمة بكسل رينج',
+    expertAlt: 'فريق خدمة بكسل رينج مع سيارة لإصلاح اللوحات الإعلانية في برلين',
+    serviceVehicleAlt: 'سيارة خدمة بكسل رينج لإصلاح وصيانة وتشخيص اللوحات الإعلانية',
     quickServicesTitle: 'من هم عملاء بكسل رينج؟',
     serviceCardCta: 'عرض القطاع',
-    materialTitle: 'المواد وشركاء التوريد',
+    materialTitle: 'مواد متميزة وشركاء توريد موثوقون',
     materialBrands: ['3M', 'ORAFOL', 'Samsung LED', 'Tridonic', 'Mean Well', 'PLEXIGLAS®', 'DIBOND®', 'Avery Dennison'],
     testimonialsTitle: 'آراء من أعمال الخدمة',
     testimonials: [

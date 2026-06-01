@@ -9,7 +9,13 @@ import SectionEyebrow from '@/components/common/SectionEyebrow';
 import ServiceSimulator from '@/components/sections/ServiceSimulator';
 import AboutVideoPlayer from '@/components/sections/AboutVideoPlayer';
 
-import { ABOUT_CONTENT, ABOUT_PAGE_LABELS, type AboutContent, type Locale } from '@/lib/content/about-page';
+import {
+  ABOUT_CONTENT,
+  ABOUT_PAGE_LABELS,
+  ABOUT_STRUCTURE_LABELS,
+  type AboutContent,
+  type Locale,
+} from '@/lib/content/about-page';
 
 type AboutCmsContent = Awaited<ReturnType<typeof getAboutPageCmsContent>>;
 type AboutPageLabels = (typeof ABOUT_PAGE_LABELS)[Locale];
@@ -172,6 +178,7 @@ export default async function AboutPage({
   ]);
   const tContent = mergeAboutContent(fallbackContent, aboutCms);
   const pageLabels = mergeAboutPageLabels(fallbackLabels, aboutCms);
+  const structureLabels = ABOUT_STRUCTURE_LABELS[locale] ?? ABOUT_STRUCTURE_LABELS.de;
 
   return (
     <div className={`flex min-h-screen flex-col bg-[#F7F1E8] ${isRtl ? 'rtl' : 'ltr'}`} dir={isRtl ? 'rtl' : 'ltr'}>
@@ -202,6 +209,7 @@ export default async function AboutPage({
                     </p>
                   ))}
                 </div>
+
               </div>
 
               {/* Right Column: Interactive Diagnostic Simulator */}
@@ -233,163 +241,273 @@ export default async function AboutPage({
           </div>
         </section>
 
+        {/* WHO WE ARE */}
+        <section className="bg-white px-6 py-20 md:py-24">
+          <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-14">
+            <div className="max-w-2xl">
+              <SectionEyebrow className="mb-5">{structureLabels.whoEyebrow}</SectionEyebrow>
+              <h2 className="text-[32px] font-black leading-tight text-[#0E1A2B] md:text-[44px]">
+                {structureLabels.whoTitle}
+              </h2>
+              <div className="mt-6 space-y-4 text-[16px] leading-8 text-[#4A5568] md:text-[17px]">
+                {structureLabels.whoParagraphs.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
+              </div>
+            </div>
+
+            <div className="relative min-h-[390px] overflow-visible sm:min-h-[460px] lg:min-h-[420px]">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-lg shadow-xl">
+                <CmsImage
+                  src="/images/about/pixelring-service-team-fahrzeug-werbeanlagen-reparatur-berlin.png"
+                  alt={pageLabels.expertAlt}
+                  fill
+                  sizes="(min-width: 1024px) 520px, 100vw"
+                  className="object-cover object-center"
+                />
+              </div>
+
+              <div className="absolute -bottom-6 left-5 w-[58%] min-w-[220px] max-w-[360px] overflow-hidden rounded-lg border-[6px] border-white bg-white shadow-2xl sm:left-auto sm:right-0 lg:-bottom-8">
+                <div className="relative aspect-[16/9]">
+                  <CmsImage
+                    src="/images/about/pixelring-servicefahrzeug-werbeanlagen-reparatur-wartung-diagnose.png"
+                    alt={pageLabels.serviceVehicleAlt}
+                    fill
+                    sizes="(min-width: 1024px) 360px, 58vw"
+                    className="object-cover object-center"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* WHAT WE SERVICE */}
+        <section className="border-y border-[#E7DDD3] bg-[#F7F1E8] px-6 py-20 md:py-24">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-14">
+              <div>
+                <SectionEyebrow className="mb-5">{structureLabels.scopeEyebrow}</SectionEyebrow>
+                <h2 className="text-[32px] font-black leading-tight text-[#0E1A2B] md:text-[42px]">
+                  {structureLabels.scopeTitle}
+                </h2>
+                <p className="mt-5 text-[17px] leading-8 text-[#4A5568]">
+                  {structureLabels.scopeIntro}
+                </p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                {structureLabels.scopeItems.map((item) => (
+                  <div key={item} className="border-b border-[#DCCFC2] py-4">
+                    <div className="flex items-start gap-3">
+                      <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#B8643E]" />
+                      <span className="text-[16px] font-black leading-7 text-[#0E1A2B]">{item}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* PROCESS */}
+        <section className="bg-white px-6 py-20 md:py-24">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-12 max-w-3xl">
+              <SectionEyebrow className="mb-5">{structureLabels.processEyebrow}</SectionEyebrow>
+              <h2 className="text-[32px] font-black leading-tight text-[#0E1A2B] md:text-[42px]">
+                {structureLabels.processTitle}
+              </h2>
+              <p className="mt-5 text-[17px] leading-8 text-[#4A5568]">
+                {structureLabels.processLead}
+              </p>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-4">
+              {structureLabels.processSteps.map((step, index) => (
+                <article key={step.title} className="flex min-h-[240px] flex-col rounded-lg border border-[#D8E2EE] bg-[#F8FAFC] p-5">
+                  <div className="mb-6 flex h-9 w-9 items-center justify-center rounded-full bg-[#0E1A2B] text-[13px] font-black text-white">
+                    {index + 1}
+                  </div>
+                  <h3 className="text-[18px] font-black leading-snug text-[#0E1A2B]">{step.title}</h3>
+                  <p className="mt-4 text-[14px] leading-7 text-[#4A5568]">{step.description}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* REPAIR RATIONALE */}
+        <section className="bg-[#0E1A2B] px-6 py-20 text-white md:py-24">
+          <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
+            <div>
+              <SectionEyebrow className="mb-5 text-[#F0B38F]">{structureLabels.repairEyebrow}</SectionEyebrow>
+              <h2 className="text-[32px] font-black leading-tight md:text-[42px]">
+                {structureLabels.repairTitle}
+              </h2>
+              <p className="mt-6 text-[17px] leading-8 text-slate-300">
+                {structureLabels.repairText}
+              </p>
+            </div>
+
+            <div className="grid gap-4">
+              {structureLabels.repairItems.map((item) => (
+                <div key={item} className="rounded-lg border border-white/10 bg-white/5 p-5">
+                  <div className="flex items-start gap-3">
+                    <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#F0B38F]" />
+                    <p className="text-[16px] font-semibold leading-7 text-slate-100">{item}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* TARGET AUDIENCE / SECTORS SECTION */}
-        <section className="px-6 py-24 bg-white">
-           <div className="mx-auto max-w-7xl">
-              <div className="mb-16">
-                 <SectionEyebrow className="mb-5">FOR WHOM</SectionEyebrow>
-                 <h2 className="text-[42px] font-black text-[#0E1A2B] mb-4">{pageLabels.quickServicesTitle}</h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                 {tContent.services.map((service) => (
-                     <div key={service.id} className="flex flex-col h-full p-8 rounded-[32px] border border-[#E2E8F0] bg-[#F8FAFC] text-[#0E1A2B] transition-all duration-300 hover:shadow-xl hover:border-[#B8643E]/30">
-                        <h3 className="text-[20px] font-bold mb-4">{service.title}</h3>
-                        <p className="text-[15px] leading-relaxed mb-6 text-[#4A5568]">{service.description}</p>
-                        <a href={`${localePath}/business?sector=${service.id}`} className="mt-auto text-[14px] font-bold uppercase tracking-wider underline decoration-2 underline-offset-8 transition-colors hover:text-[#B8643E] inline-block">{pageLabels.serviceCardCta}</a>
-                     </div>
-                 ))}
-              </div>
-           </div>
+        <section className="bg-white px-6 py-20 md:py-24">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-12 max-w-3xl">
+              <SectionEyebrow className="mb-5">{structureLabels.audienceEyebrow}</SectionEyebrow>
+              <h2 className="text-[32px] font-black leading-tight text-[#0E1A2B] md:text-[42px]">
+                {pageLabels.quickServicesTitle}
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {tContent.services.map((service) => (
+                <article key={service.id} className="flex h-full flex-col rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-5 text-[#0E1A2B]">
+                  <h3 className="text-[19px] font-black leading-snug">{service.title}</h3>
+                  <p className="mt-4 text-[14px] leading-7 text-[#4A5568]">{service.description}</p>
+                  <a href={`${localePath}/business?sector=${service.id}`} className="mt-auto pt-6 text-[13px] font-black uppercase underline decoration-2 underline-offset-8 transition-colors hover:text-[#B8643E]">
+                    {pageLabels.serviceCardCta}
+                  </a>
+                </article>
+              ))}
+            </div>
+          </div>
         </section>
 
-        {/* ABOUT SECTION WITH COLLAGE & ACCORDIONS */}
-        <section className="px-6 py-24 overflow-hidden">
-           <div className="mx-auto max-w-7xl">
-              <div className="grid lg:grid-cols-[460px_minmax(0,1fr)] gap-10 lg:gap-12 items-start">
-                 {/* Visual */}
-                 <div className="relative w-full max-w-[520px] lg:max-w-[460px] mx-auto lg:mx-0">
-                    <div className="relative h-[460px] md:h-[560px] lg:h-[640px] w-full rounded-[36px] overflow-hidden shadow-2xl">
-                       <CmsImage src="/images/about/about_collage_1.png" alt="Collage 1" fill sizes="(min-width: 1024px) 460px, 100vw" className="object-cover object-center" />
-                    </div>
-                 </div>
-
-                 {/* Text Content */}
-                 <div className="min-w-0 w-full">
-                    <div className="mb-12">
-                       <h2 className="text-[42px] font-black text-[#0E1A2B]">{tContent.about.title}</h2>
-                    </div>
-
-                    <div className="space-y-2">
-                       {tContent.about.accordions.map((item, i) => (
-                         <div key={i} className="border-b border-[#0E1A2B]/10 py-6">
-                            <details name="about-process" className="group">
-                               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[20px] font-bold text-[#0E1A2B] group-open:text-[#B8643E]">
-                                  <span className="min-w-0">{item.title}</span>
-                                  <span className="shrink-0 transition-transform duration-300 group-open:rotate-180">
-                                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                     </svg>
-                                  </span>
-                               </summary>
-                               <div className="mt-6 text-[#4A5568] leading-relaxed">
-                                  {item.content}
-                               </div>
-                            </details>
-                         </div>
-                       ))}
-                    </div>
-                 </div>
+        {/* MATERIALS AND SYSTEMS */}
+        <section className="border-y border-[#E7DDD3] bg-[#FFFDF9] px-6 py-20 md:py-24">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-14">
+              <div>
+                <SectionEyebrow className="mb-5">{structureLabels.materialsEyebrow}</SectionEyebrow>
+                <h2 className="text-[32px] font-black leading-tight text-[#0E1A2B] md:text-[42px]">
+                  {pageLabels.materialTitle}
+                </h2>
+                <p className="mt-5 text-[17px] leading-8 text-[#4A5568]">
+                  {structureLabels.materialsLead}
+                </p>
               </div>
-           </div>
-        </section>
 
-        {/* LOGO CLOUD - Support Our Company */}
-        <section className="px-6 py-24 bg-white border-b border-[#0E1A2B]/5">
-           <div className="mx-auto max-w-7xl">
-              <div className="text-center mb-16">
-                 <h2 className="text-[32px] font-black text-[#0E1A2B]">{pageLabels.materialTitle}</h2>
+              <div className="min-w-0">
+                <div className="relative max-w-full overflow-hidden border-y border-[#0E1A2B]/10 py-6 [mask-image:linear-gradient(90deg,transparent,black_12%,black_88%,transparent)]">
+                  <style>{`
+                    @keyframes about-brand-marquee {
+                      from { transform: translateX(0); }
+                      to { transform: translateX(-50%); }
+                    }
+                  `}</style>
+                  <div className="flex w-max items-center gap-12 whitespace-nowrap motion-safe:animate-[about-brand-marquee_32s_linear_infinite] hover:[animation-play-state:paused]">
+                    {[...pageLabels.materialBrands, ...pageLabels.materialBrands].map((brand, i) => (
+                      <span
+                        key={`${brand}-${i}`}
+                        aria-label={brand}
+                        className="text-[23px] font-black uppercase tracking-tight text-[#0E1A2B]/35 grayscale transition-colors hover:text-[#0E1A2B]/60"
+                      >
+                        {brand}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <p className="mt-5 text-[13px] font-semibold leading-6 text-[#6B7788]">
+                  {structureLabels.materialsNote}
+                </p>
               </div>
-              <div className="relative overflow-hidden border-y border-[#0E1A2B]/5 py-6 [mask-image:linear-gradient(90deg,transparent,black_12%,black_88%,transparent)]">
-                 <style>{`
-                   @keyframes about-brand-marquee {
-                     from { transform: translateX(0); }
-                     to { transform: translateX(-50%); }
-                   }
-                 `}</style>
-                 <div className="flex w-max items-center gap-12 whitespace-nowrap motion-safe:animate-[about-brand-marquee_32s_linear_infinite] hover:[animation-play-state:paused]">
-                   {[...pageLabels.materialBrands, ...pageLabels.materialBrands].map((brand, i) => (
-                     <span
-                       key={`${brand}-${i}`}
-                       aria-label={brand}
-                       className="text-[24px] font-black uppercase tracking-tight text-[#0E1A2B]/35 grayscale transition-colors hover:text-[#0E1A2B]/60"
-                     >
-                       {brand}
-                     </span>
-                   ))}
-                 </div>
-              </div>
-           </div>
+            </div>
+          </div>
         </section>
 
         {/* VIDEO-FIRST ABOUT SECTION */}
-        <section className="px-6 py-24 bg-white">
-           <div className="mx-auto max-w-7xl">
-              <div className="grid lg:grid-cols-[1.25fr_0.75fr] gap-12 lg:gap-16 items-center">
-                 <div className="relative">
-                    <AboutVideoPlayer
-                      mediaLabel={tContent.quality.mediaLabel}
-                      playLabel={tContent.quality.playLabel}
-                      posterSrc="/images/about/quality_video.png"
-                      videoSrc="/videos/about-workshop-service.mp4"
-                    />
-                 </div>
-
-                 <div className="max-w-xl">
-                    <h2 className="text-[40px] font-black text-[#0E1A2B] leading-tight mb-5 md:text-[48px]">
-                       {tContent.quality.title}
-                    </h2>
-                    <p className="text-[19px] text-[#4A5568] leading-relaxed mb-7">
-                       {tContent.quality.description}
-                    </p>
-                    <div className="flex flex-wrap gap-3">
-                       {tContent.quality.features.map((feature) => (
-                         <span key={feature} className="rounded-full border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2 text-[13px] font-black text-[#0E1A2B]">
-                            {feature}
-                         </span>
-                       ))}
-                    </div>
-                    <a href={`${localePath}/referenzen`} className="mt-8 inline-flex text-[15px] font-black text-[#B8643E] underline decoration-[#DAB08A] underline-offset-4 hover:text-[#8E4B2F]">
-                       {tContent.quality.cta}
-                    </a>
-                 </div>
+        <section className="bg-white px-6 py-20 md:py-24">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-12 lg:grid-cols-[1.25fr_0.75fr] lg:items-center lg:gap-16">
+              <div className="relative">
+                <AboutVideoPlayer
+                  mediaLabel={tContent.quality.mediaLabel}
+                  playLabel={tContent.quality.playLabel}
+                  posterSrc="/images/about/quality_video.png"
+                  videoSrc="/videos/about-workshop-service.mp4"
+                />
               </div>
-           </div>
+
+              <div className="max-w-xl">
+                <h2 className="text-[32px] font-black leading-tight text-[#0E1A2B] md:text-[42px]">
+                  {tContent.quality.title}
+                </h2>
+                <p className="mt-5 text-[17px] leading-8 text-[#4A5568]">
+                  {tContent.quality.description}
+                </p>
+                <div className="mt-7 flex flex-wrap gap-3">
+                  {tContent.quality.features.map((feature) => (
+                    <span key={feature} className="rounded-full border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2 text-[13px] font-black text-[#0E1A2B]">
+                      {feature}
+                    </span>
+                  ))}
+                </div>
+                <a href={`${localePath}/referenzen`} className="mt-8 inline-flex text-[15px] font-black text-[#B8643E] underline decoration-[#DAB08A] underline-offset-4 hover:text-[#8E4B2F]">
+                  {tContent.quality.cta}
+                </a>
+              </div>
+            </div>
+          </div>
         </section>
 
-        {/* TESTIMONIALS SECTION (Why Say Our Customers) */}
-        <section className="px-6 py-14 bg-white">
-           <div className="mx-auto max-w-7xl">
-              <div className="mb-8 border-b border-[#E2E8F0] pb-6">
-                 <h2 className="max-w-3xl text-[30px] font-black leading-[1.08] text-[#0E1A2B] md:text-[38px]">{pageLabels.testimonialsTitle}</h2>
-              </div>
+        {/* TESTIMONIALS SECTION */}
+        <section className="bg-white px-6 py-16">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-10 max-w-3xl border-b border-[#E2E8F0] pb-6">
+              <SectionEyebrow className="mb-5">{structureLabels.testimonialsEyebrow}</SectionEyebrow>
+              <h2 className="text-[30px] font-black leading-tight text-[#0E1A2B] md:text-[38px]">
+                {pageLabels.testimonialsTitle}
+              </h2>
+              <p className="mt-4 text-[15px] leading-7 text-[#4A5568]">
+                {structureLabels.testimonialsLead}
+              </p>
+            </div>
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                 {pageLabels.testimonials.map((testimonial, i) => (
-                   <div key={i} className="flex min-h-[210px] flex-col rounded-lg border border-[#D8E2EE] bg-[#F8FAFC] p-5 shadow-sm">
-                      <div className="mb-5 flex items-start gap-3">
-                         <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg">
-                            <div className="flex h-full w-full items-center justify-center bg-[#0E1A2B] text-[12px] font-black uppercase text-white">
-                              {testimonial.name.slice(0, 2)}
-                            </div>
-                         </div>
-                         <div className="min-w-0">
-                            <div className="text-[15px] font-black leading-snug text-[#0E1A2B]">{testimonial.name}</div>
-                            <div className="mt-1 text-[12px] leading-5 text-[#4A5568]">{testimonial.role}</div>
-                         </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              {pageLabels.testimonials.map((testimonial) => (
+                <article key={`${testimonial.name}-${testimonial.role}`} className="flex min-h-[210px] flex-col rounded-lg border border-[#D8E2EE] bg-[#F8FAFC] p-5 shadow-sm">
+                  <div className="mb-5 flex items-start gap-3">
+                    <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg">
+                      <div className="flex h-full w-full items-center justify-center bg-[#0E1A2B] text-[12px] font-black uppercase text-white">
+                        {testimonial.name.slice(0, 2)}
                       </div>
-                      <p className="mt-auto border-l-2 border-[#C66A3D] pl-4 text-[14px] leading-6 text-[#40516A]">&ldquo;{testimonial.text}&rdquo;</p>
-                   </div>
-                 ))}
-              </div>
-           </div>
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[15px] font-black leading-snug text-[#0E1A2B]">{testimonial.name}</div>
+                      <div className="mt-1 text-[12px] leading-5 text-[#4A5568]">{testimonial.role}</div>
+                    </div>
+                  </div>
+                  <p className="mt-auto border-l-2 border-[#C66A3D] pl-4 text-[14px] leading-6 text-[#40516A]">&ldquo;{testimonial.text}&rdquo;</p>
+                </article>
+              ))}
+            </div>
+          </div>
         </section>
 
         {/* FINAL CTA */}
         <section className="bg-white px-6 py-8 sm:py-10">
-           <div className="mx-auto flex max-w-7xl flex-col gap-5 rounded-[28px] border border-[#D8E2EE] bg-[#EAF1F7] px-6 py-7 shadow-[0_16px_45px_rgba(14,26,43,0.07)] md:flex-row md:items-center md:justify-between md:px-9">
-              <h2 className="max-w-2xl text-[25px] font-black leading-[1.12] text-[#0E1A2B] md:text-[32px]">
-                 {tContent.final.title}
-              </h2>
+           <div className="mx-auto flex max-w-7xl flex-col gap-6 rounded-lg border border-[#D8E2EE] bg-[#EAF1F7] px-6 py-7 shadow-[0_16px_45px_rgba(14,26,43,0.07)] md:flex-row md:items-center md:justify-between md:px-9">
+              <div className="max-w-2xl">
+                <h2 className="text-[25px] font-black leading-[1.12] text-[#0E1A2B] md:text-[32px]">
+                   {tContent.final.title}
+                </h2>
+                <p className="mt-3 text-[15px] leading-7 text-[#4A5568]">
+                  {structureLabels.finalLead}
+                </p>
+              </div>
 
               <LeistungenRequestButton
                 label={tContent.final.button}
