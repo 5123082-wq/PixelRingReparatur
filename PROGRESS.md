@@ -8,6 +8,10 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 
 Latest checkpoint:
 
+- Date: 2026-06-08
+- Current stage: Added the Google Ads lead conversion label `NDbWCL3P5LocEMS7jfBD` for the `Service starten` conversion so successful website/chat requests can report to `AW-18220277188/NDbWCL3P5LocEMS7jfBD`.
+- Next action: Merge/deploy the Google Ads tracking PR and verify the conversion with Google Tag Assistant and Google Ads tag diagnostics.
+
 - Date: 2026-06-07
 - Current stage: Added minimal Google Ads measurement infrastructure for the public site: consent-default-denied Google tag `AW-18220277188`, localized consent banner, and no-op lead conversion helper until the Google Ads conversion label is available.
 - Next action: Add `NEXT_PUBLIC_GOOGLE_ADS_LEAD_CONVERSION_LABEL` after creating/finding the website lead conversion in Google Ads, then verify with Google Tag Assistant before scaling the campaign.
