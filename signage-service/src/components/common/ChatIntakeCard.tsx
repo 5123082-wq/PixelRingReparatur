@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useLocale } from 'next-intl';
+import { trackGoogleAdsLeadConversion } from '@/lib/google-ads';
 import LocationPicker, { type SelectedLocation } from './LocationPicker';
 
 type ContactMode = 'phone' | 'email';
@@ -166,6 +167,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
       setRequestNumber(data.publicRequestNumber);
       setPortalClaimUrl(data.portalClaimUrl ?? '');
       setDone(true);
+      trackGoogleAdsLeadConversion();
       onSuccess?.(data.publicRequestNumber);
     } catch (err) {
       setError(err instanceof Error ? err.message : copy.sendError);

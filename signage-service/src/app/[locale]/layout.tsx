@@ -7,6 +7,7 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { Analytics } from '@vercel/analytics/react';
 import { SITE_BASE_URL } from '@/lib/seo';
+import GoogleAdsTracking from '@/components/analytics/GoogleAdsTracking';
 
 type Locale = (typeof routing.locales)[number];
 
@@ -69,6 +70,7 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <NextIntlClientProvider messages={messages} locale={locale}>
           {children}
+          <GoogleAdsTracking locale={locale} />
           <Analytics />
         </NextIntlClientProvider>
       </body>

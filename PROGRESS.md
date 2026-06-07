@@ -8,6 +8,10 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 
 Latest checkpoint:
 
+- Date: 2026-06-07
+- Current stage: Added minimal Google Ads measurement infrastructure for the public site: consent-default-denied Google tag `AW-18220277188`, localized consent banner, and no-op lead conversion helper until the Google Ads conversion label is available.
+- Next action: Add `NEXT_PUBLIC_GOOGLE_ADS_LEAD_CONVERSION_LABEL` after creating/finding the website lead conversion in Google Ads, then verify with Google Tag Assistant before scaling the campaign.
+
 - Date: 2026-06-01
 - Current stage: Converted the `/[locale]/ueber-uns` who-we-are visual into a two-image collage with the new PixelRing service team vehicle photo as the main image and the service-vehicle repair photo as a supporting overlay, with localized alt text.
 - Next action: Owner visually reviews the new who-we-are collage on `/de/ueber-uns` and `/ru/ueber-uns`.
