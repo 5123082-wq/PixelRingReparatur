@@ -3,6 +3,7 @@
 import React, { useId, useRef, useState, useEffect } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
+import { trackGoogleAdsLeadConversion } from '@/lib/google-ads';
 import LocationPicker, { type SelectedLocation } from './LocationPicker';
 
 interface ContactFormProps {
@@ -133,6 +134,7 @@ const ContactForm = ({
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+      trackGoogleAdsLeadConversion();
 
       if (onSuccess) {
         setTimeout(() => {
