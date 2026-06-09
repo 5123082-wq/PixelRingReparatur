@@ -20,6 +20,24 @@
 
 ## Progress Log
 
+### 2026-06-05
+
+- Current sprint/block: `Leuchtstoffröhren in der Werbeanlage ersetzen oder auf LED umrüsten?` problem article RU draft.
+- Done: created `люминесцентные трубки или led – 07/` and wrote `problem_article_leuchtstoffroehren_werbeanlage_ersetzen_led_umruesten_ru.md` as a RU review draft with small card, modal, full article, SEO/CMS draft fields, related slugs, required safety-bounded `selfRepairTips` (советы по самостоятельному ремонту), and an internal AI note with source-backed technical boundaries.
+- In progress: owner review of the markdown draft.
+- Next action: after owner approval, prepare the German canonical draft and only then decide whether to continue with localization, CMS/database sync, seed scripts, sitemap entries, or route verification.
+- Blockers/risks: do not turn EU RoHS / Ecodesign context into legal advice; do not publish DIY instructions for opening signs, removing fluorescent tubes, replacing `starter`, `ballast / Vorschaltgerät`, wiring, LED modules, or power supplies.
+- Updated documents/files: `люминесцентные трубки или led – 07/problem_article_leuchtstoffroehren_werbeanlage_ersetzen_led_umruesten_ru.md`, `README.md`, `../README.md`, root `PROGRESS.md`.
+
+### 2026-06-02
+
+- Current sprint/block: future LED modernization problem-article intake.
+- Done: added `входящие новые статьи/led_modernisierung_future_problem_articles.md` as a backlog planning brief for two future real-problem articles derived from the LED modernization research: `Leuchtstoffröhren in der Werbeanlage ersetzen oder auf LED umrüsten?` (заменить люминесцентные трубки в рекламной установке или перейти на LED) and `Neonreklame reparieren oder auf LED umrüsten?` (ремонтировать неоновую рекламу или перейти на LED).
+- In progress: no article drafting yet; the service page `/[locale]/leistungen/lichtwerbung-led-modernisierung` must be modernized first.
+- Next action: after owner approval, create the next numbered problem-article folder and write the first markdown draft, following `../problem_article_rules.md` and `../problem_article_content_model.md`.
+- Blockers/risks: do not create CMS rows, seed files, public routes, sitemap entries, or localized drafts from the brief until the owner explicitly starts the article track.
+- Updated documents/files: `входящие новые статьи/led_modernisierung_future_problem_articles.md`, `../service_page_led_modernisierung_plan.md`, `README.md`, root `PROGRESS.md`.
+
 ### 2026-05-27
 
 - Current sprint/block: `folie-loest-sich` / film lifting article markdown intake.

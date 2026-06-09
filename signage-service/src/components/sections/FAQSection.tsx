@@ -6,10 +6,12 @@ import SectionEyebrow from '../common/SectionEyebrow';
 
 interface FAQSectionProps {
   content?: FaqCmsContent;
+  titleClassName?: string;
 }
 
-const FAQSection = ({ content }: FAQSectionProps) => {
+const FAQSection = ({ content, titleClassName }: FAQSectionProps) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const headingClassName = titleClassName || 'text-[36px] md:text-[44px] font-bold text-[#0E1A2B] leading-tight';
 
   const faqItems = (content?.items || []).map((item) => ({
     q: item.question || '',
@@ -21,7 +23,7 @@ const FAQSection = ({ content }: FAQSectionProps) => {
       <div className="max-w-3xl mx-auto flex flex-col gap-12">
         <div className="flex flex-col items-center gap-4 text-center">
           <SectionEyebrow>FAQ</SectionEyebrow>
-          <h2 className="text-[36px] md:text-[44px] font-bold text-[#0E1A2B] leading-tight">
+          <h2 className={headingClassName}>
             {content?.title || ''}
           </h2>
         </div>

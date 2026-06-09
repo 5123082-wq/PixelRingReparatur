@@ -647,10 +647,10 @@ const SCENARIOS: Record<Locale, Scenario[]> = {
 
 const CONTENT: Record<Locale, Content> = {
   de: {
-    eyebrow: 'Reparatur-Kostenrechner',
-    title: 'Reparaturkosten einschätzen',
+    eyebrow: 'Vorab-Orientierung',
+    title: 'Ersten Reparaturrahmen einschätzen',
     intro:
-      'Wählen Sie Bauart, Schadensbild, Servicegebiet, Zugang und Größe. Die Karte berechnet einen unverbindlichen Budgetrahmen für die mögliche Reparatur.',
+      'Wenn der sichtbare Defekt grob klar ist, hilft diese Karte beim Budgetgefühl. Die genaue Bewertung entsteht erst mit Fotos, Adresse, Zugang und Materialprüfung.',
     panelTitle: 'Parameter',
     panelIntro: 'Geben Sie die wichtigsten Eckdaten ein. Rechts sehen Sie, wie sich Budgetrahmen und Einsatzart verändern.',
     entityLabel: 'Anlagenart',
@@ -722,10 +722,10 @@ const CONTENT: Record<Locale, Content> = {
     ],
   },
   ru: {
-    eyebrow: 'Предварительный калькулятор ремонта',
-    title: 'Оцените стоимость ремонта',
+    eyebrow: 'Предварительный ориентир',
+    title: 'Предварительный ориентир по ремонту',
     intro:
-      'Выберите тип конструкции, неисправность, зону обслуживания, доступ и размер. Карта рассчитает ориентир бюджета для возможного ремонта.',
+      'Если видимый дефект примерно понятен, эта карта помогает почувствовать порядок бюджета. Точная оценка возможна только после фото, адреса, доступа и проверки материала.',
     panelTitle: 'Параметры',
     panelIntro: 'Укажите основные данные. Справа видно, как меняются бюджетный ориентир и тип выезда.',
     entityLabel: 'Тип конструкции',
@@ -797,10 +797,10 @@ const CONTENT: Record<Locale, Content> = {
     ],
   },
   en: {
-    eyebrow: 'Repair cost calculator',
-    title: 'Estimate repair costs',
+    eyebrow: 'Initial orientation',
+    title: 'Estimate the first repair range',
     intro:
-      'Choose construction type, fault, service area, access and size. The card calculates a non-binding budget range for the possible repair.',
+      'Once the visible defect is roughly clear, this card helps with budget orientation. The exact assessment depends on photos, address, access and material checks.',
     panelTitle: 'Parameters',
     panelIntro: 'Enter the key details. On the right you see how budget range and visit type change.',
     entityLabel: 'Construction type',
@@ -872,10 +872,10 @@ const CONTENT: Record<Locale, Content> = {
     ],
   },
   tr: {
-    eyebrow: 'Onarım maliyeti hesaplayıcı',
-    title: 'Onarım maliyetini tahmin edin',
+    eyebrow: 'İlk yönlendirme',
+    title: 'İlk onarım aralığını tahmin edin',
     intro:
-      'Konstrüksiyon tipini, arızayı, servis bölgesini, erişimi ve boyutu seçin. Kart olası onarım için bağlayıcı olmayan bütçe aralığını hesaplar.',
+      'Görünen arıza kabaca netleştiğinde bu kart bütçe hissi verir. Kesin değerlendirme fotoğraf, adres, erişim ve malzeme kontrolüne bağlıdır.',
     panelTitle: 'Parametreler',
     panelIntro: 'Temel bilgileri girin. Sağda bütçe aralığının ve servis türünün nasıl değiştiğini görürsünüz.',
     entityLabel: 'Konstrüksiyon tipi',
@@ -947,10 +947,10 @@ const CONTENT: Record<Locale, Content> = {
     ],
   },
   pl: {
-    eyebrow: 'Kalkulator kosztów naprawy',
-    title: 'Oszacuj koszt naprawy',
+    eyebrow: 'Wstępna orientacja',
+    title: 'Oszacuj pierwszy zakres naprawy',
     intro:
-      'Wybierz typ konstrukcji, usterkę, obszar obsługi, dostęp i rozmiar. Karta oblicza niewiążący zakres budżetu dla możliwej naprawy.',
+      'Gdy widoczna usterka jest już mniej więcej jasna, ta karta pomaga poczuć zakres budżetu. Dokładna ocena zależy od zdjęć, adresu, dostępu i materiału.',
     panelTitle: 'Parametry',
     panelIntro: 'Podaj najważniejsze dane. Po prawej zobaczysz, jak zmieniają się budżet i typ dojazdu.',
     entityLabel: 'Typ konstrukcji',
@@ -1022,10 +1022,10 @@ const CONTENT: Record<Locale, Content> = {
     ],
   },
   ar: {
-    eyebrow: 'حاسبة تكلفة الإصلاح',
-    title: 'قدّر تكلفة الإصلاح',
+    eyebrow: 'تقدير أولي',
+    title: 'تقدير نطاق الإصلاح الأول',
     intro:
-      'اختر نوع التركيب والعطل ومنطقة الخدمة وإمكانية الوصول والحجم. تحسب البطاقة نطاق ميزانية غير ملزم للإصلاح المحتمل.',
+      'عندما يكون العطل الظاهر واضحاً تقريباً، تساعد هذه البطاقة في فهم نطاق الميزانية. يعتمد التقييم الدقيق على الصور والعنوان والوصول وفحص المواد.',
     panelTitle: 'المعطيات',
     panelIntro: 'أدخل أهم البيانات. في الجهة الأخرى ترى كيف يتغير نطاق الميزانية ونوع الزيارة.',
     entityLabel: 'نوع التركيب',
@@ -1271,7 +1271,7 @@ export default function LeistungenDiagnosticPrototype({ locale }: LeistungenDiag
           <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(320px,0.62fr)] lg:items-end">
             <div className="text-start">
               <SectionEyebrow className="mb-3">{content.eyebrow}</SectionEyebrow>
-              <h2 className="max-w-4xl text-[34px] font-extrabold leading-[1.06] tracking-[0] text-[#0E1A2B] sm:text-[48px] lg:text-[56px]">
+              <h2 className="max-w-4xl text-3xl font-extrabold leading-[1.08] tracking-[0] text-[#0E1A2B] sm:text-5xl">
                 {content.title}
               </h2>
             </div>

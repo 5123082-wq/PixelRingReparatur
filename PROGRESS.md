@@ -8,6 +8,26 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 
 Latest checkpoint:
 
+- Date: 2026-06-09
+- Current stage: Unified the `/[locale]/leistungen/werbeanlagen-reparatur` section typography around the approved symptom-section H2 scale, including the proof strip, problem links, repair calculator, scope/service sections, FAQ, final next-step CTA, and softer card-heading weights.
+- Next action: Owner visually reviews the repaired heading rhythm on `/de/leistungen/werbeanlagen-reparatur`, especially long wrapped H2 titles and carousel card-title weight.
+
+- Date: 2026-06-09
+- Current stage: Reworked the `/[locale]/leistungen/werbeanlagen-reparatur` visible symptom section from a wrapping card grid/show-more pattern into a single Apple-like horizontal carousel with desktop arrow controls, swipe-friendly mobile behavior, and a separate no-image fallback CTA for cases that do not match the listed symptoms.
+- Next action: Owner visually reviews the symptom carousel and fallback CTA on `/de/leistungen/werbeanlagen-reparatur` desktop/mobile before deciding whether to tune card height, visible card count, or arrow placement.
+
+- Date: 2026-06-09
+- Current stage: Reworked the final `/[locale]/leistungen/werbeanlagen-reparatur` next-step CTA into a restrained Apple-like image-led section with one large heading, one dark rounded visual card, a single repair request action, and the existing repair hero service photo integrated as the primary visual.
+- Next action: Owner visually reviews the final CTA on `/de/leistungen/werbeanlagen-reparatur` desktop and mobile before deciding whether to generate a more bespoke PixelRing CTA image.
+
+- Date: 2026-06-09
+- Current stage: Reworked the `/[locale]/leistungen/werbeanlagen-reparatur` visible symptom cards into an Apple-like image-first interactive card rail with generated lightweight WebP defect visuals, short visible preview copy, localized category tags, and the existing request drawer preserved for full SEO/service text; simplified the following proof block into a lighter visual strip with one references link.
+- Next action: Owner visually reviews the new symptom card rail on `/de/leistungen/werbeanlagen-reparatur` and mobile before deciding whether to reuse the pattern on other diagnostic/service blocks.
+
+- Date: 2026-06-08
+- Current stage: Reworked `/[locale]/leistungen/werbeanlagen-reparatur` into the approved medium UX variant: action-first hero CTAs, shorter visible symptom cards with `show more`, compact proof strip from safe reference assets, lighter problem links, raised repair-orientation calculator, simplified scope/service blocks, and a simpler final photo CTA.
+- Next action: Owner visually reviews `/ru/leistungen/werbeanlagen-reparatur` and `/de/leistungen/werbeanlagen-reparatur` on desktop/mobile before applying the pattern to other service pages.
+
 - Date: 2026-06-08
 - Current stage: Added the Google Ads lead conversion label `NDbWCL3P5LocEMS7jfBD` for the `Service starten` conversion so successful website/chat requests can report to `AW-18220277188/NDbWCL3P5LocEMS7jfBD`.
 - Next action: Merge/deploy the Google Ads tracking PR and verify the conversion with Google Tag Assistant and Google Ads tag diagnostics.
@@ -15,6 +35,38 @@ Latest checkpoint:
 - Date: 2026-06-07
 - Current stage: Added minimal Google Ads measurement infrastructure for the public site: consent-default-denied Google tag `AW-18220277188`, localized consent banner, and no-op lead conversion helper until the Google Ads conversion label is available.
 - Next action: Add `NEXT_PUBLIC_GOOGLE_ADS_LEAD_CONVERSION_LABEL` after creating/finding the website lead conversion in Google Ads, then verify with Google Tag Assistant before scaling the campaign.
+
+- Date: 2026-06-06
+- Current stage: Reworked `/[locale]/leistungen/lichtwerbung-led-modernisierung` closer to the approved `werbeanlagen-reparatur` page rhythm: removed the generic post-hero CTA strip, placed one consolidated LED decision tool directly after the hero, moved problem links before the modernization scope cards, and kept one final page CTA.
+- Next action: Owner visually reviews `/de/leistungen/lichtwerbung-led-modernisierung` against the approved repair page structure before any broader reuse or further visual iteration.
+
+- Date: 2026-06-05
+- Current stage: Started the first deferred LED-modernization problem article track by creating the RU review draft for `Leuchtstoffröhren in der Werbeanlage ersetzen oder auf LED umrüsten?` in `docs/07_content_ai_seo/problem_articles/люминесцентные трубки или led – 07/`; the draft includes small card, modal, full article, SEO/CMS draft fields, and internal source-backed AI notes, but no CMS/database, seed, sitemap, route, or localization changes.
+- Next action: Owner reviews the RU markdown draft; after approval, prepare the German canonical draft and only later consider CMS/database synchronization.
+
+- Date: 2026-06-05
+- Current stage: Modernized `/[locale]/leistungen/lichtwerbung-led-modernisierung` as a broader `Modernisierung von Lichtwerbung & Außenwerbung` service page without `Berlin & Brandenburg` as visible regional positioning; added LED/task cards, `Passende Problemseiten`, request checklist, expanded FAQ, service-specific `NEXT STEP`, LED-specific `hasOfferCatalog`, and visually aligned the decision/problem/checklist blocks closer to the approved `werbeanlagen-reparatur` warm card pattern.
+- Next action: Owner visually reviews `/de/leistungen/lichtwerbung-led-modernisierung` on desktop/mobile, including the new `Reparatur / Teilmodernisierung / LED-Umrüstung / Ersatzlösung` decision block; future problem articles remain deferred until explicit approval.
+
+- Date: 2026-06-02
+- Current stage: Created `docs/07_content_ai_seo/service_page_led_modernisierung_plan.md` as the active plan for strengthening `/[locale]/leistungen/lichtwerbung-led-modernisierung`; future problem articles for old fluorescent tubes to LED and neon repair vs LED conversion are documented as deferred backlog in `docs/07_content_ai_seo/problem_articles/входящие новые статьи/led_modernisierung_future_problem_articles.md`, not current implementation.
+- Next action: Modernize the LED service page first, then start article markdown drafts only after explicit owner approval.
+
+- Date: 2026-06-02
+- Current stage: Documented the reusable service-page pattern from `/[locale]/leistungen/werbeanlagen-reparatur` in `docs/07_content_ai_seo/service_page_pattern_werbeanlagen_reparatur.md` and added a next-agent handoff in `docs/07_content_ai_seo/service_page_neighbor_handoff.md` for applying the structure to neighboring service pages without copying the repair calculator.
+- Next action: Use the handoff documents before strengthening `LED-Modernisierung`, `Audit & Diagnose`, `Montage & Demontage`, or `Druck & Branding` service pages.
+
+- Date: 2026-06-02
+- Current stage: Strengthened `/[locale]/leistungen/werbeanlagen-reparatur` with a compact `Passende Problemseiten` block linking to four relevant problem pages, replaced the generic final CTA on that page with a repair-specific `NEXT STEP` decision block linking to four related service pages, shortened localized meta descriptions, and added `hasOfferCatalog` to the Service JSON-LD.
+- Next action: Owner visually reviews the revised DE repair page around the new problem-links block and final next-step block before applying the same pattern to other service pages.
+
+- Date: 2026-06-02
+- Current stage: Added a compact public home `Leistungen` service navigator after the trust section: six localized service cards now link into repair, LED modernization, audit/diagnostics, installation/dismantling, print/branding, and the general services overview without adding another heavy carousel.
+- Next action: Owner visually reviews the new `/de` home services block on desktop/mobile and decides whether the section needs CMS editability or image-backed cards later.
+
+- Date: 2026-06-02
+- Current stage: Updated the public home `Typische Servicefälle` carousel into a lighter internal-linking surface: service-case cards are more compact and now show localized linked issue/service pills above the quote, including DE links to repair, LED flicker, film, letter outage, rain failure, and montage pages.
+- Next action: Owner visually reviews the revised `/de` service-case carousel on desktop/mobile before deciding whether to apply a stronger sticky-link navigation pattern.
 
 - Date: 2026-06-01
 - Current stage: Converted the `/[locale]/ueber-uns` who-we-are visual into a two-image collage with the new PixelRing service team vehicle photo as the main image and the service-vehicle repair photo as a supporting overlay, with localized alt text.

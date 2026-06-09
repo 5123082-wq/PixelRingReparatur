@@ -5,8 +5,8 @@ import { Link } from '@/i18n/routing';
 import SectionEyebrow from '@/components/common/SectionEyebrow';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
+import LeistungenLedDecisionTool from '@/components/leistungen/LeistungenLedDecisionTool';
 import LeistungenRepairHeroSlider from '@/components/leistungen/LeistungenRepairHeroSlider';
-import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestButton';
 import LeistungenFooterCTA from '@/components/sections/LeistungenFooterCTA';
 import { getGlobalPageCmsContent } from '@/lib/cms/pages';
 import { SITE_CONFIG } from '@/lib/site-config';
@@ -21,6 +21,13 @@ type ServiceDetailSlug =
   | 'montage-demontage-werbeanlagen'
   | 'druckprodukte-branding-werbematerialien';
 
+type ServiceDetailLinkCard = {
+  title: string;
+  text: string;
+  href: string;
+  tag: string;
+};
+
 type ServiceDetailContent = {
   serviceName: string;
   intent: string;
@@ -33,12 +40,33 @@ type ServiceDetailContent = {
   imageAlt: string;
   primaryCta: string;
   secondaryCta: string;
+  secondaryCtaHref?: string;
   tasksTitle: string;
   tasksIntro: string;
   tasks: Array<{ title: string; text: string }>;
+  problemLinks?: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    links: ServiceDetailLinkCard[];
+  };
   checksTitle: string;
   checksIntro: string;
   checks: string[];
+  decisionGuide?: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    options: Array<{ title: string; text: string; tag: string }>;
+    noteTitle: string;
+    noteText: string;
+  };
+  requestChecklist?: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    items: string[];
+  };
   processTitle: string;
   process: Array<{ title: string; text: string }>;
   boundaryTitle: string;
@@ -46,6 +74,19 @@ type ServiceDetailContent = {
   boundaries: string[];
   faqTitle: string;
   faqs: Array<{ question: string; answer: string }>;
+  nextStep?: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    requestTitle: string;
+    requestText: string;
+    requestCta: string;
+    servicesTitle: string;
+    servicesText: string;
+    links: ServiceDetailLinkCard[];
+  };
+  offerCatalog?: string[];
+  omitRegionalAreaServed?: boolean;
   finalHeadline: string;
   finalText: string;
 };
@@ -136,71 +177,161 @@ const RELATED_LABELS_BY_LOCALE: Record<
 const SERVICE_DETAIL_CONTENT: Record<Locale, Record<ServiceDetailSlug, ServiceDetailContent>> = {
   de: {
     'lichtwerbung-led-modernisierung': {
-      serviceName: 'Modernisierung von Lichtwerbung & LED-Systemen',
+      serviceName: 'Modernisierung von Lichtwerbung & Außenwerbung',
       intent: 'lichtwerbung-led',
-      metaTitle: 'Lichtwerbung & LED modernisieren | PixelRing',
+      metaTitle: 'Lichtwerbung modernisieren & LED-Umrüstung | PixelRing',
       metaDescription:
-        'PixelRing prüft und modernisiert Lichtwerbung, LED-Module, Netzteile, Controller, Neonröhren und Leuchtkästen in Berlin & Brandenburg.',
+        'PixelRing prüft und modernisiert bestehende Lichtwerbung: LED-Module, Netzteile, Controller, Neon, Leuchtkästen, Lichtbild und Konstruktion.',
       heroEyebrow: 'Lichtwerbung & LED-Service',
-      heroTitle: 'Modernisierung von Lichtwerbung & LED-Systemen',
+      heroTitle: 'Modernisierung von Lichtwerbung & Außenwerbung',
       heroIntro:
-        'PixelRing prüft bestehende Leuchtwerbung technisch und visuell: LED-Module, Netzteile, Controller, Verkabelung, Neon und Leuchtkästen. Ziel ist eine stabile, wartbare und sichtbar bessere Lösung.',
+        'Bestehende Leuchtwerbung muss nicht automatisch ersetzt werden. PixelRing prüft LED-Module, Netzteile, Trafos, Controller, Neon, Leuchtkästen, Verkabelung, Lichtbild und Konstruktion - und klärt, ob Reparatur, Teilmodernisierung, LED-Umrüstung oder eine Ersatzlösung der sinnvolle nächste Schritt ist.',
       image: '/images/about/service_deep_2.png',
-      imageAlt: 'Modernisierte Lichtwerbung und LED-Systeme an einem Geschäftsstandort',
-      primaryCta: 'LED-Service anfragen',
-      secondaryCta: 'Alle Leistungen',
-      tasksTitle: 'Typische Aufgaben bei Lichtwerbung',
+      imageAlt: 'Modernisierte Lichtwerbung und Außenwerbung an einem Geschäftsstandort',
+      primaryCta: 'Fotos senden und Einschätzung erhalten',
+      secondaryCta: 'Reparatur statt Austausch prüfen',
+      secondaryCtaHref: '/leistungen/werbeanlagen-reparatur',
+      tasksTitle: 'Was an bestehender Lichtwerbung modernisiert werden kann',
       tasksIntro:
-        'Die Seite bündelt Fälle, die über eine einfache Reparatur hinausgehen und eine technische Aktualisierung sinnvoll machen können.',
+        'Der Schwerpunkt liegt auf vorhandenen Anlagen: Beleuchtung, Lichtwirkung und Konstruktion werden geprüft, bevor Austausch oder Umbau empfohlen werden.',
       tasks: [
         {
-          title: 'LED-Module und Netzteile erneuern',
-          text: 'Defekte oder gealterte Komponenten werden geprüft und gezielt ersetzt, wenn die bestehende Anlage erhalten werden kann.',
+          title: 'Leuchtreklame auf LED umrüsten',
+          text: 'Ältere Leuchttechnik kann häufig auf LED-Technik umgerüstet werden, wenn Gehäuse, Platz, Stromversorgung und Feuchtigkeitsschutz passen.',
         },
         {
-          title: 'Controller, Sensoren und Verkabelung prüfen',
-          text: 'Schaltfehler, Feuchtigkeit, lose Kabel oder falsche Steuerung werden strukturiert eingeordnet.',
+          title: 'Leuchtkasten LED nachrüsten',
+          text: 'Bestehende Leuchtkästen werden auf Ausleuchtung, Modulpositionen, Netzteile, Fronten und Wartbarkeit geprüft.',
         },
         {
-          title: 'Neon und Leuchtkästen bewerten',
-          text: 'Bestehende Systeme werden auf Reparatur, Teilmodernisierung oder sinnvolle Ersatzlösung geprüft.',
+          title: 'Neon erhalten oder LED-Alternative prüfen',
+          text: 'Bei älterer Neon- oder Röhrentechnik wird zuerst geklärt, ob Erhalt, Reparatur, Teilmodernisierung oder LED-Alternative sinnvoll ist.',
         },
         {
-          title: 'Lichtbild und Markenwirkung verbessern',
-          text: 'Ungleichmäßige Ausleuchtung, dunkle Zonen oder veraltete Technik werden mit Blick auf Sichtbarkeit bewertet.',
+          title: 'Ungleichmäßige Ausleuchtung verbessern',
+          text: 'Dunkle Zonen, Hotspots, unterschiedliche Lichtfarben und sichtbare LED-Punkte werden mit Blick auf Markenwirkung und Lesbarkeit bewertet.',
+        },
+        {
+          title: 'LED-Module, Netzteile und Controller prüfen',
+          text: 'Module, LED-Bänder, Netzteile, Trafos, Controller, Timer und Dimmer werden als zusammenhängendes System betrachtet.',
+        },
+        {
+          title: 'Bestehende Konstruktion weiter nutzen',
+          text: 'Gehäuse, Acrylfronten, Befestigung, Dichtungen und Zugang werden geprüft, damit brauchbare Substanz nicht vorschnell ersetzt wird.',
         },
       ],
+      problemLinks: {
+        eyebrow: 'Passende Problemseiten',
+        title: 'Wenn die Modernisierung aus einem konkreten Fehler entsteht',
+        intro:
+          'Manchmal beginnt der Bedarf nicht mit einem Umbauwunsch, sondern mit Flackern, Ausfall oder einem schlechten Lichtbild. Diese Problemseiten helfen bei der Einordnung.',
+        links: [
+          {
+            title: 'Werbeanlage flackert',
+            text: 'Mögliche Hinweise auf Netzteile, Feuchtigkeit, LED-Module oder Steuerung.',
+            href: '/probleme-loesungen/werbeanlage-flackert',
+            tag: 'Flackern',
+          },
+          {
+            title: 'LED leuchtet ungleichmäßig',
+            text: 'Dunkle Zonen, sichtbare Punkte, falsche Lichtfarbe oder unruhiges Lichtbild.',
+            href: '/probleme-loesungen/led-leuchtet-ungleichmaessig',
+            tag: 'Lichtbild',
+          },
+          {
+            title: 'Buchstabe leuchtet nicht',
+            text: 'Ausfall einzelner Profilbuchstaben, Module, Verbindungen oder Netzteile.',
+            href: '/probleme-loesungen/buchstabe-leuchtet-nicht',
+            tag: 'Buchstaben',
+          },
+          {
+            title: 'Werbeanlage leuchtet nicht',
+            text: 'Kompletter Ausfall der Leuchtwerbung mit möglichem Prüfbedarf an Stromversorgung und Steuerung.',
+            href: '/probleme-loesungen/werbeanlage-leuchtet-nicht',
+            tag: 'Ausfall',
+          },
+        ],
+      },
       checksTitle: 'Was PixelRing vor einer Modernisierung prüft',
       checksIntro:
         'Modernisierung beginnt nicht mit Austausch um jeden Preis. Zuerst klären wir Zustand, Fehlerbild und technischen Rahmen.',
       checks: [
-        'Stromversorgung, Netzteile, Controller und Verkabelung',
-        'LED-Module, Neonröhren, Lichtfarbe und Ausleuchtung',
-        'Gehäuse, Dichtungen, Feuchtigkeit und Zugänglichkeit',
-        'Ob Reparatur, Teilmodernisierung oder Ersatz wirtschaftlich sinnvoll ist',
+        'Stromversorgung, Netzteile, Trafos, Sicherungen und Verkabelung',
+        'LED-Module, LED-Bänder, Neonröhren, Lichtfarbe und Helligkeit',
+        'Controller, Sensoren, Timer, Dimmer und Schaltverhalten',
+        'Gehäuse, Dichtungen, Feuchtigkeit, Korrosion und Zugänglichkeit',
+        'Lichtbild, Schatten, Hotspots, Lesbarkeit und Markenwirkung',
+        'Ob Reparatur, Teilmodernisierung, LED-Umrüstung oder Ersatzlösung sinnvoll ist',
       ],
+      decisionGuide: {
+        eyebrow: 'Entscheidungshilfe',
+        title: 'Reparatur, Teilmodernisierung, LED-Umrüstung oder Ersatzlösung?',
+        intro:
+          'Die richtige Empfehlung hängt nicht an einem einzelnen Schlagwort. PixelRing trennt zuerst Defekt, Lichtbild, vorhandene Substanz und gewünschte Markenwirkung.',
+        options: [
+          {
+            tag: '01',
+            title: 'Reparatur',
+            text: 'Passt, wenn ein konkreter Ausfall vorliegt und Gehäuse, Lichtbild und Konstruktion grundsätzlich weiter nutzbar sind.',
+          },
+          {
+            tag: '02',
+            title: 'Teilmodernisierung',
+            text: 'Sinnvoll, wenn die Anlage erhalten bleiben kann, aber Module, Netzteile, Steuerung, Dichtungen oder Lichtbild aktualisiert werden sollten.',
+          },
+          {
+            tag: '03',
+            title: 'LED-Umrüstung',
+            text: 'Relevant bei älterer Röhren-, Neon- oder ineffizienter Lichttechnik, wenn Platz, Wärme, Stromversorgung und gewünschte Lichtwirkung passen.',
+          },
+          {
+            tag: '04',
+            title: 'Ersatzlösung',
+            text: 'Wird geprüft, wenn Gehäuse, Fronten, Korrosion, Befestigung, Zugang oder Markenanforderungen gegen eine weitere Nutzung sprechen.',
+          },
+        ],
+        noteTitle: 'Keine fixe Empfehlung nur nach einem Foto',
+        noteText:
+          'Fotos und Videos helfen bei der ersten Einordnung. Eine verbindliche Empfehlung entsteht erst nach Prüfung von Zustand, Zugang, elektrischen Komponenten und gewünschtem Ergebnis.',
+      },
+      requestChecklist: {
+        eyebrow: 'Checkliste für die Anfrage',
+        title: 'Was bei einer ersten Einschätzung hilft',
+        intro:
+          'Sie müssen keine technischen Begriffe kennen. Fotos, kurze Videos und einfache Standortinformationen reichen oft für den ersten Schritt.',
+        items: [
+          'Gesamtfoto der Anlage',
+          'Nahaufnahme der betroffenen Stelle',
+          'Kurzes Video bei Flackern',
+          'Adresse, Stadt oder Standortangabe',
+          'Montagehöhe und Zugang zur Anlage',
+          'Alter der Anlage, falls bekannt',
+          'Zeitpunkt des Problems',
+          'Hinweise wie Regen, Geruch, Wärme oder ausgelöste Sicherung',
+        ],
+      },
       processTitle: 'Ablauf',
       process: [
         {
-          title: 'Foto oder Beschreibung senden',
-          text: 'Sie senden Bilder, Standortdaten und kurze Hinweise zum Fehlerbild oder gewünschten Ergebnis.',
+          title: 'Fotos, Video oder Ziel senden',
+          text: 'Sie senden Bilder, Standortangaben und kurze Hinweise zum Fehlerbild oder gewünschten Lichtbild.',
         },
         {
           title: 'Technische Ersteinschätzung',
-          text: 'PixelRing ordnet ein, welche Komponenten wahrscheinlich betroffen sind und ob ein Vor-Ort-Termin sinnvoll ist.',
+          text: 'PixelRing ordnet ein, welche Komponenten wahrscheinlich betroffen sind und ob eine Prüfung vor Ort sinnvoll ist.',
         },
         {
-          title: 'Umsetzung abstimmen',
-          text: 'Nach Prüfung werden Reparatur, Modernisierung oder Ersatzlösung transparent abgestimmt.',
+          title: 'Reparatur, Umrüstung oder Ersatzlösung abstimmen',
+          text: 'Nach Prüfung wird transparent geklärt, was erhalten, modernisiert oder ersetzt werden sollte.',
         },
       ],
       boundaryTitle: 'Klarer Rahmen',
       boundaryText:
         'PixelRing bleibt ein zentraler Ansprechpartner und koordiniert die fachliche Umsetzung. Es wird keine Vermittlungsplattform und kein unbegrenzter Technikvertrag versprochen.',
       boundaries: [
-        'Berlin & Brandenburg als Kerngebiet; weitere Regionen in Deutschland auf Anfrage.',
+        'Der Leistungsumfang wird nach Zustand, Zugang, Bauteilen und gewünschtem Lichtbild geprüft.',
         'Elektrische Arbeiten werden fachlich geprüft und passend koordiniert.',
-        'Verbindliche Preise und Termine entstehen erst nach Sichtung und Bestätigung.',
+        'Verbindliche Preise, Termine und Wirtschaftlichkeitsaussagen entstehen erst nach Sichtung und Bestätigung.',
       ],
       faqTitle: 'FAQ zur Lichtwerbung',
       faqs: [
@@ -210,14 +341,76 @@ const SERVICE_DETAIL_CONTENT: Record<Locale, Record<ServiceDetailSlug, ServiceDe
             'Oft ist eine Teilmodernisierung möglich. Entscheidend sind Gehäuse, Stromversorgung, Platz, Feuchtigkeitsschutz und gewünschtes Lichtbild.',
         },
         {
-          question: 'Muss die komplette Anlage ersetzt werden?',
+          question: 'Lohnt sich die LED-Umrüstung bei einem Leuchtkasten?',
+          answer:
+            'Das hängt von Zustand, Laufzeit, Stromversorgung, Wartbarkeit und Lichtbild ab. PixelRing prüft zuerst, ob eine Umrüstung technisch und wirtschaftlich sinnvoll sein kann.',
+        },
+        {
+          question: 'Kann ein Leuchtkasten modernisiert werden, ohne ihn komplett zu ersetzen?',
           answer:
             'Nicht automatisch. PixelRing prüft zuerst Reparatur und sinnvolle Teilmodernisierung, bevor eine Ersatzlösung empfohlen wird.',
         },
+        {
+          question: 'Warum flackert meine LED-Werbeanlage?',
+          answer:
+            'Flackern kann von Netzteilen, Feuchtigkeit, LED-Modulen, Verkabelung oder Steuerung kommen. Eine sichere Einschätzung entsteht erst nach Fotos, Beschreibung und gegebenenfalls Prüfung vor Ort.',
+        },
+        {
+          question: 'Was tun bei ungleichmäßiger Ausleuchtung?',
+          answer:
+            'Hilfreich sind Gesamtfoto, Nahaufnahme und ein Hinweis, ob die ungleichmäßige Stelle neu ist. Gehäuse, Modulposition, Lichtfarbe, Frontmaterial und Alter der Technik werden gemeinsam betrachtet.',
+        },
+        {
+          question: 'Ist LED-Werbung wartungsfrei?',
+          answer:
+            'Nein. LED-Technik kann wartungsärmer und besser wartbar sein, bleibt aber abhängig von Netzteilen, Feuchtigkeitsschutz, Wärme, Steuerung und Einbausituation.',
+        },
       ],
+      nextStep: {
+        eyebrow: 'NEXT STEP',
+        title: 'Nächsten Schritt für die bestehende Anlage wählen',
+        intro:
+          'Wenn es um Licht, Technik und bestehende Konstruktion geht, ist zuerst die richtige Einordnung wichtig: reparieren, teilweise modernisieren, auf LED umrüsten oder ersetzen.',
+        requestTitle: 'Modernisierung konkret anfragen',
+        requestText:
+          'Senden Sie Fotos, ein kurzes Video bei Flackern, Standortangaben, Zugangsinformationen und Ihr Ziel für Lichtbild oder Markenwirkung.',
+        requestCta: 'LED-Modernisierung anfragen',
+        servicesTitle: 'Wenn eine andere Leistung besser passt',
+        servicesText:
+          'Nicht jeder Lichtfall ist sofort eine Modernisierung. Diese Leistungsseiten grenzen Reparatur, Diagnose und Montage sauber ab.',
+        links: [
+          {
+            title: 'Werbeanlagen-Reparatur',
+            text: 'Wenn ein konkreter Defekt zuerst behoben werden soll.',
+            href: '/leistungen/werbeanlagen-reparatur',
+            tag: 'Reparatur',
+          },
+          {
+            title: 'Audit & Diagnose',
+            text: 'Wenn Zustand, Ursache oder Priorität erst strukturiert geprüft werden müssen.',
+            href: '/leistungen/werbeanlagen-audit-diagnose',
+            tag: 'Diagnose',
+          },
+          {
+            title: 'Montage & Demontage',
+            text: 'Wenn Ausbau, Zugang, Versetzung oder neue Befestigung Teil der Aufgabe ist.',
+            href: '/leistungen/montage-demontage-werbeanlagen',
+            tag: 'Montage',
+          },
+        ],
+      },
+      offerCatalog: [
+        'Leuchtkasten LED nachrüsten',
+        'LED-Module austauschen',
+        'Netzteile, Trafos und Controller prüfen',
+        'Neon erhalten oder LED-Alternative prüfen',
+        'Lichtbild und Ausleuchtung verbessern',
+        'Bestehende Konstruktion für Teilmodernisierung prüfen',
+      ],
+      omitRegionalAreaServed: true,
       finalHeadline: 'Soll Ihre Lichtwerbung wieder zuverlässig wirken?',
       finalText:
-        'Senden Sie Fotos oder eine kurze Beschreibung. PixelRing prüft, ob Reparatur, Modernisierung oder eine Ersatzlösung der nächste sinnvolle Schritt ist.',
+        'Senden Sie Fotos oder eine kurze Beschreibung. PixelRing prüft, ob Reparatur, Teilmodernisierung, LED-Umrüstung oder eine Ersatzlösung der nächste sinnvolle Schritt ist.',
     },
     'werbeanlagen-audit-diagnose': {
       serviceName: 'Inspektion, Audit & Diagnose von Werbeanlagen',
@@ -474,47 +667,102 @@ const SERVICE_DETAIL_CONTENT: Record<Locale, Record<ServiceDetailSlug, ServiceDe
   },
   en: {
     'lichtwerbung-led-modernisierung': {
-      serviceName: 'Illuminated signage modernization & LED systems',
+      serviceName: 'Illuminated signage & outdoor advertising modernization',
       intent: 'lichtwerbung-led',
-      metaTitle: 'Illuminated Signage & LED Modernization | PixelRing',
+      metaTitle: 'Illuminated Signage Modernization & LED Conversion | PixelRing',
       metaDescription:
-        'PixelRing reviews and modernizes illuminated signage, LED modules, power supplies, controllers, neon tubes and lightboxes in Berlin & Brandenburg.',
+        'PixelRing reviews and modernizes existing illuminated signage: LED modules, power supplies, controllers, neon, lightboxes, light output and structure.',
       heroEyebrow: 'Illuminated signage service',
-      heroTitle: 'Illuminated signage modernization & LED systems',
+      heroTitle: 'Illuminated signage & outdoor advertising modernization',
       heroIntro:
-        'PixelRing reviews existing illuminated signage technically and visually: LED modules, power supplies, controllers, wiring, neon and lightboxes. The goal is a stable, serviceable and visibly better solution.',
+        'Existing illuminated signage does not automatically need replacement. PixelRing reviews LED modules, power supplies, transformers, controllers, neon, lightboxes, wiring, light output and structure, then clarifies whether repair, partial modernization, LED conversion or replacement is the sensible next step.',
       image: '/images/about/service_deep_2.png',
-      imageAlt: 'Modern illuminated signage and LED systems at a business location',
-      primaryCta: 'Request LED service',
-      secondaryCta: 'All services',
-      tasksTitle: 'Typical illuminated signage tasks',
+      imageAlt: 'Modernized illuminated signage and outdoor advertising at a business location',
+      primaryCta: 'Send photos for an assessment',
+      secondaryCta: 'Check repair before replacement',
+      secondaryCtaHref: '/leistungen/werbeanlagen-reparatur',
+      tasksTitle: 'What can be modernized on existing illuminated signage',
       tasksIntro:
-        'This page covers cases where a technical update may make more sense than a simple one-part repair.',
+        'The focus is on existing assets: lighting, visual output and structure are checked before replacement or conversion is recommended.',
       tasks: [
-        { title: 'Replace LED modules and power supplies', text: 'Aged or defective parts are checked and replaced selectively when the existing installation can remain in use.' },
-        { title: 'Check controllers, sensors and wiring', text: 'Switching errors, moisture, loose cables and control issues are classified in a structured way.' },
-        { title: 'Review neon and lightboxes', text: 'Existing systems are assessed for repair, partial modernization or a sensible replacement.' },
-        { title: 'Improve light output and brand impact', text: 'Uneven lighting, dark zones or outdated technology are reviewed with visibility in mind.' },
+        { title: 'Convert illuminated signage to LED', text: 'Older lighting can often be converted to LED when housing, space, power supply and moisture protection are suitable.' },
+        { title: 'Retrofit LED in lightboxes', text: 'Existing lightboxes are checked for illumination, module placement, power supplies, faces and serviceability.' },
+        { title: 'Preserve neon or review an LED alternative', text: 'For older neon or tube systems, PixelRing first checks whether repair, preservation, partial modernization or an LED alternative makes sense.' },
+        { title: 'Improve uneven illumination', text: 'Dark zones, hotspots, mixed light colors and visible LED points are assessed with brand impact and readability in mind.' },
+        { title: 'Check LED modules, power supplies and controllers', text: 'Modules, LED strips, power supplies, transformers, controllers, timers and dimmers are reviewed as one connected system.' },
+        { title: 'Reuse the existing structure', text: 'Housing, acrylic faces, fixings, seals and access are checked so usable substance is not replaced prematurely.' },
       ],
+      problemLinks: {
+        eyebrow: 'Related problem pages',
+        title: 'When modernization starts with a concrete fault',
+        intro:
+          'Sometimes the need starts with flickering, failure or a poor light pattern rather than a planned upgrade. These pages help classify the issue.',
+        links: [
+          { title: 'Sign flickers', text: 'Possible clues around power supplies, moisture, LED modules or control systems.', href: '/probleme-loesungen/werbeanlage-flackert', tag: 'Flicker' },
+          { title: 'LED lights unevenly', text: 'Dark zones, visible points, wrong light color or uneven illumination.', href: '/probleme-loesungen/led-leuchtet-ungleichmaessig', tag: 'Light output' },
+          { title: 'Letter does not light up', text: 'Failure of individual channel letters, modules, connections or power supplies.', href: '/probleme-loesungen/buchstabe-leuchtet-nicht', tag: 'Letters' },
+          { title: 'Sign does not light up', text: 'Complete outage with possible checks around power supply and controls.', href: '/probleme-loesungen/werbeanlage-leuchtet-nicht', tag: 'Outage' },
+        ],
+      },
       checksTitle: 'What PixelRing checks first',
       checksIntro: 'Modernization does not start with replacement at any cost. We first clarify condition, symptoms and technical limits.',
-      checks: ['Power supply, drivers, controllers and wiring', 'LED modules, neon tubes, light color and illumination', 'Housing, seals, moisture and access', 'Whether repair, partial modernization or replacement is economically sensible'],
+      checks: ['Power supply, drivers, transformers, fuses and wiring', 'LED modules, LED strips, neon tubes, light color and brightness', 'Controllers, sensors, timers, dimmers and switching behavior', 'Housing, seals, moisture, corrosion and access', 'Light pattern, shadows, hotspots, readability and brand impact', 'Whether repair, partial modernization, LED conversion or replacement is sensible'],
+      decisionGuide: {
+        eyebrow: 'Decision guide',
+        title: 'Repair, partial modernization, LED conversion or replacement?',
+        intro: 'The right recommendation does not depend on one keyword. PixelRing first separates the defect, light output, existing substance and desired brand impact.',
+        options: [
+          { tag: '01', title: 'Repair', text: 'Fits when there is a concrete failure and housing, light output and structure can generally remain in use.' },
+          { tag: '02', title: 'Partial modernization', text: 'Useful when the installation can stay, but modules, power supplies, controls, seals or light output should be updated.' },
+          { tag: '03', title: 'LED conversion', text: 'Relevant for older tube, neon or inefficient lighting when space, heat, power supply and desired light effect are suitable.' },
+          { tag: '04', title: 'Replacement solution', text: 'Reviewed when housing, faces, corrosion, fixing, access or brand requirements argue against continued use.' },
+        ],
+        noteTitle: 'No fixed recommendation from one photo alone',
+        noteText: 'Photos and videos help with first classification. A binding recommendation only follows after reviewing condition, access, electrical components and the desired result.',
+      },
+      requestChecklist: {
+        eyebrow: 'Request checklist',
+        title: 'What helps with a first assessment',
+        intro: 'You do not need technical terms. Photos, short videos and simple location details are often enough for the first step.',
+        items: ['Overall photo of the sign', 'Close-up of the affected area', 'Short video when it flickers', 'Address, city or location note', 'Mounting height and access', 'Age of the installation if known', 'When the issue appears', 'Clues such as rain, smell, heat or tripped fuse'],
+      },
       processTitle: 'Process',
       process: [
-        { title: 'Send photos or a description', text: 'You send images, location details and short notes about the issue or desired result.' },
+        { title: 'Send photos, video or goal', text: 'You send images, location details and short notes about the issue or desired light output.' },
         { title: 'Technical first assessment', text: 'PixelRing classifies likely affected components and whether an on-site appointment makes sense.' },
-        { title: 'Agree implementation', text: 'After review, repair, modernization or replacement is coordinated transparently.' },
+        { title: 'Agree repair, conversion or replacement', text: 'After review, PixelRing clarifies what should be preserved, modernized or replaced.' },
       ],
       boundaryTitle: 'Clear frame',
       boundaryText: 'PixelRing remains the central contact and coordinates specialist execution. This is not a marketplace and not an unlimited technology contract.',
-      boundaries: ['Berlin & Brandenburg as core area; other German regions on request.', 'Electrical work is reviewed and coordinated in the appropriate specialist frame.', 'Binding prices and dates only follow after review and confirmation.'],
+      boundaries: ['The scope is reviewed based on condition, access, components and desired light output.', 'Electrical work is reviewed and coordinated in the appropriate specialist frame.', 'Binding prices, dates and economic statements only follow after review and confirmation.'],
       faqTitle: 'Illuminated signage FAQ',
       faqs: [
         { question: 'Can old illuminated signage be converted to LED?', answer: 'Often a partial modernization is possible. Housing, power, space, moisture protection and desired light output matter.' },
-        { question: 'Does the whole installation need replacement?', answer: 'Not automatically. PixelRing checks repair and sensible partial modernization first.' },
+        { question: 'Is LED conversion worthwhile for a lightbox?', answer: 'It depends on condition, operating time, power supply, serviceability and light output. PixelRing first checks whether conversion can make technical and economic sense.' },
+        { question: 'Can a lightbox be modernized without full replacement?', answer: 'Not automatically. PixelRing checks repair and sensible partial modernization before recommending a replacement.' },
+        { question: 'Why does my LED sign flicker?', answer: 'Flickering can come from power supplies, moisture, LED modules, wiring or controls. A reliable assessment requires photos, a description and sometimes an on-site check.' },
+        { question: 'What should I do with uneven illumination?', answer: 'An overall photo, close-up and note about whether the uneven area is new are helpful. Housing, module position, light color, face material and technology age are reviewed together.' },
+        { question: 'Is LED signage maintenance-free?', answer: 'No. LED technology can be lower-maintenance and easier to service, but still depends on drivers, moisture protection, heat, controls and installation context.' },
       ],
+      nextStep: {
+        eyebrow: 'NEXT STEP',
+        title: 'Choose the next step for the existing installation',
+        intro: 'When light, technology and existing structure are involved, the first task is classification: repair, partial modernization, LED conversion or replacement.',
+        requestTitle: 'Request modernization',
+        requestText: 'Send photos, a short flicker video if relevant, location details, access information and your goal for light output or brand impact.',
+        requestCta: 'Request LED modernization',
+        servicesTitle: 'When another service fits better',
+        servicesText: 'Not every lighting issue is immediately a modernization. These service pages separate repair, diagnostics and installation clearly.',
+        links: [
+          { title: 'Signage repair', text: 'When a concrete fault should be fixed first.', href: '/leistungen/werbeanlagen-reparatur', tag: 'Repair' },
+          { title: 'Audit & diagnostics', text: 'When condition, cause or priority need a structured review first.', href: '/leistungen/werbeanlagen-audit-diagnose', tag: 'Diagnostics' },
+          { title: 'Installation & dismantling', text: 'When removal, access, relocation or new fixing is part of the task.', href: '/leistungen/montage-demontage-werbeanlagen', tag: 'Installation' },
+        ],
+      },
+      offerCatalog: ['Lightbox LED retrofit', 'LED module replacement', 'Power supply, transformer and controller check', 'Preserve neon or review LED alternative', 'Improve light pattern and illumination', 'Check existing structure for partial modernization'],
+      omitRegionalAreaServed: true,
       finalHeadline: 'Should your illuminated signage work reliably again?',
-      finalText: 'Send photos or a short description. PixelRing checks whether repair, modernization or replacement is the next sensible step.',
+      finalText: 'Send photos or a short description. PixelRing checks whether repair, partial modernization, LED conversion or replacement is the next sensible step.',
     },
     'werbeanlagen-audit-diagnose': {
       serviceName: 'Inspection, audit & diagnostics for signage',
@@ -652,48 +900,101 @@ const SERVICE_DETAIL_CONTENT: Record<Locale, Record<ServiceDetailSlug, ServiceDe
 SERVICE_DETAIL_CONTENT.ru = {
   'lichtwerbung-led-modernisierung': {
     ...SERVICE_DETAIL_CONTENT.en['lichtwerbung-led-modernisierung'],
-    serviceName: 'Модернизация световой рекламы и LED-систем',
-    metaTitle: 'Модернизация световой рекламы и LED | PixelRing',
+    serviceName: 'Модернизация световой и наружной рекламы',
+    metaTitle: 'Модернизация световой рекламы и LED-переоборудование | PixelRing',
     metaDescription:
-      'PixelRing проверяет и модернизирует световую рекламу, LED-модули, блоки питания, контроллеры, неон и световые короба в Берлине и Бранденбурге.',
+      'PixelRing проверяет и модернизирует существующую световую рекламу: LED-модули, блоки питания, контроллеры, неон, световые короба, свет и конструкцию.',
     heroEyebrow: 'Световая реклама и LED-сервис',
-    heroTitle: 'Модернизация световой рекламы и LED-систем',
+    heroTitle: 'Модернизация световой и наружной рекламы',
     heroIntro:
-      'PixelRing проверяет существующую световую рекламу технически и визуально: LED-модули, блоки питания, контроллеры, проводку, неон и световые короба. Цель - стабильное, обслуживаемое и заметно лучшее решение.',
-    imageAlt: 'Модернизированная световая реклама и LED-системы на бизнес-локации',
-    primaryCta: 'Запросить LED-сервис',
-    secondaryCta: 'Все услуги',
-    tasksTitle: 'Типовые задачи по световой рекламе',
+      'Существующую световую рекламу не всегда нужно полностью менять. PixelRing проверяет LED-модули, блоки питания, трансформаторы, контроллеры, неон, световые короба, проводку, световой образ и конструкцию - и уточняет, что разумнее: ремонт, частичная модернизация, переход на LED или замена.',
+    imageAlt: 'Модернизированная световая и наружная реклама на бизнес-локации',
+    primaryCta: 'Отправить фото и получить оценку',
+    secondaryCta: 'Проверить ремонт вместо замены',
+    tasksTitle: 'Что можно модернизировать в существующей световой рекламе',
     tasksIntro:
-      'Эта страница покрывает случаи, когда техническое обновление может быть разумнее простой замены одной детали.',
+      'Фокус - на существующих установках: подсветка, световой образ и конструкция проверяются до рекомендации замены или переоборудования.',
     tasks: [
-      { title: 'Заменить LED-модули и блоки питания', text: 'Изношенные или неисправные компоненты проверяются и точечно заменяются, если существующую установку можно сохранить.' },
-      { title: 'Проверить контроллеры, датчики и проводку', text: 'Ошибки включения, влага, ослабленные кабели и проблемы управления структурируются по причинам.' },
-      { title: 'Оценить неон и световые короба', text: 'Существующие системы проверяются на ремонт, частичную модернизацию или разумную замену.' },
-      { title: 'Улучшить свет и восприятие бренда', text: 'Неравномерная подсветка, темные зоны и устаревшая техника оцениваются с точки зрения видимости.' },
+      { title: 'Перевести световую вывеску на LED', text: 'Старую светотехнику часто можно переоборудовать на LED, если подходят корпус, место, питание и защита от влаги.' },
+      { title: 'Дооснастить световой короб LED', text: 'Существующий короб проверяется по равномерности света, расположению модулей, блокам питания, фронтам и обслуживаемости.' },
+      { title: 'Сохранить неон или проверить LED-альтернативу', text: 'Для старого неона или трубок сначала оцениваются ремонт, сохранение, частичная модернизация или LED-альтернатива.' },
+      { title: 'Улучшить неравномерную подсветку', text: 'Темные зоны, пятна, разные оттенки света и видимые LED-точки оцениваются с учетом читаемости и бренда.' },
+      { title: 'Проверить LED-модули, питание и контроллеры', text: 'Модули, LED-ленты, блоки питания, трансформаторы, контроллеры, таймеры и диммеры рассматриваются как единая система.' },
+      { title: 'Сохранить существующую конструкцию', text: 'Корпус, акрил, крепления, уплотнения и доступ проверяются, чтобы пригодные части не заменялись преждевременно.' },
     ],
+    problemLinks: {
+      eyebrow: 'Подходящие страницы проблем',
+      title: 'Когда модернизация начинается с конкретной неисправности',
+      intro:
+        'Иногда запрос появляется не как плановый апгрейд, а из-за мерцания, отказа или плохого светового образа. Эти страницы помогают сориентироваться.',
+      links: [
+        { title: 'Вывеска мерцает', text: 'Возможные признаки проблем с питанием, влагой, LED-модулями или управлением.', href: '/probleme-loesungen/werbeanlage-flackert', tag: 'Мерцание' },
+        { title: 'LED светит неравномерно', text: 'Темные зоны, видимые точки, неправильный цвет или неровный свет.', href: '/probleme-loesungen/led-leuchtet-ungleichmaessig', tag: 'Свет' },
+        { title: 'Буква не светится', text: 'Отказ отдельных объемных букв, модулей, соединений или блоков питания.', href: '/probleme-loesungen/buchstabe-leuchtet-nicht', tag: 'Буквы' },
+        { title: 'Вывеска не светится', text: 'Полный отказ подсветки с возможной проверкой питания и управления.', href: '/probleme-loesungen/werbeanlage-leuchtet-nicht', tag: 'Отказ' },
+      ],
+    },
     checksTitle: 'Что PixelRing проверяет сначала',
     checksIntro:
       'Модернизация не начинается с замены любой ценой. Сначала уточняются состояние, симптомы и технические ограничения.',
-    checks: ['Питание, блоки питания, контроллеры и проводка', 'LED-модули, неон, цвет света и равномерность подсветки', 'Корпус, уплотнения, влага и доступность', 'Что разумнее: ремонт, частичная модернизация или замена'],
+    checks: ['Питание, блоки питания, трансформаторы, автоматы и проводка', 'LED-модули, LED-ленты, неоновые трубки, цвет и яркость света', 'Контроллеры, датчики, таймеры, диммеры и поведение включения', 'Корпус, уплотнения, влага, коррозия и доступность', 'Световой образ, тени, пятна, читаемость и восприятие бренда', 'Что разумнее: ремонт, частичная модернизация, переход на LED или замена'],
+    decisionGuide: {
+      eyebrow: 'Помощь с выбором',
+      title: 'Ремонт, частичная модернизация, переход на LED или замена?',
+      intro: 'Правильная рекомендация не зависит от одного красивого термина. PixelRing сначала разделяет неисправность, световой образ, существующую основу и желаемое восприятие бренда.',
+      options: [
+        { tag: '01', title: 'Ремонт', text: 'Подходит, когда есть конкретный отказ, а корпус, световой образ и конструкция в целом еще могут использоваться.' },
+        { tag: '02', title: 'Частичная модернизация', text: 'Имеет смысл, когда установку можно сохранить, но стоит обновить модули, питание, управление, уплотнения или световой образ.' },
+        { tag: '03', title: 'Переход на LED', text: 'Актуален для старых трубок, неона или неэффективной светотехники, если подходят место, теплоотвод, питание и желаемый свет.' },
+        { tag: '04', title: 'Замена', text: 'Проверяется, если корпус, фронты, коррозия, крепление, доступ или требования бренда говорят против дальнейшего использования.' },
+      ],
+      noteTitle: 'Нет фиксированной рекомендации только по одному фото',
+      noteText: 'Фото и видео помогают для первичной классификации. Обязательная рекомендация возможна только после проверки состояния, доступа, электрических компонентов и желаемого результата.',
+    },
+    requestChecklist: {
+      eyebrow: 'Чеклист заявки',
+      title: 'Что помогает для первой оценки',
+      intro: 'Технические термины знать не нужно. Обычно достаточно фото, короткого видео и простой информации о локации.',
+      items: ['Общее фото установки', 'Крупный план проблемного места', 'Короткое видео при мерцании', 'Адрес, город или описание локации', 'Высота монтажа и доступ', 'Возраст установки, если известен', 'Когда проявляется проблема', 'Признаки: дождь, запах, нагрев или сработавший автомат'],
+    },
     processTitle: 'Процесс',
     process: [
-      { title: 'Отправьте фото или описание', text: 'Вы отправляете изображения, данные локации и короткое описание проблемы или цели.' },
+      { title: 'Отправьте фото, видео или цель', text: 'Вы отправляете изображения, данные локации и короткое описание проблемы или желаемого света.' },
       { title: 'Первичная техническая оценка', text: 'PixelRing определяет вероятно затронутые компоненты и нужен ли выезд.' },
-      { title: 'Согласование выполнения', text: 'После проверки прозрачно согласуются ремонт, модернизация или замена.' },
+      { title: 'Согласование ремонта, переоборудования или замены', text: 'После проверки прозрачно уточняется, что сохранить, модернизировать или заменить.' },
     ],
     boundaryTitle: 'Понятные рамки',
     boundaryText:
       'PixelRing остается центральным контактом и координирует профильное выполнение. Это не маркетплейс и не безлимитный технический договор.',
-    boundaries: ['Берлин и Бранденбург - основная зона; другие регионы Германии по запросу.', 'Электротехнические работы проверяются и координируются в подходящих профессиональных рамках.', 'Обязательные цены и сроки появляются только после проверки и подтверждения.'],
+    boundaries: ['Объем услуги проверяется по состоянию, доступу, компонентам и желаемому световому образу.', 'Электротехнические работы проверяются и координируются в подходящих профессиональных рамках.', 'Обязательные цены, сроки и экономические выводы появляются только после проверки и подтверждения.'],
     faqTitle: 'FAQ по световой рекламе',
     faqs: [
       { question: 'Можно ли перевести старую световую рекламу на LED?', answer: 'Частичная модернизация часто возможна. Важны корпус, питание, место, защита от влаги и нужный световой результат.' },
-      { question: 'Нужно ли менять всю установку?', answer: 'Не автоматически. PixelRing сначала проверяет ремонт и разумную частичную модернизацию.' },
+      { question: 'Имеет ли смысл LED-переоборудование светового короба?', answer: 'Это зависит от состояния, времени работы, питания, обслуживаемости и светового образа. PixelRing сначала проверяет, может ли переоборудование быть технически и экономически разумным.' },
+      { question: 'Можно ли модернизировать световой короб без полной замены?', answer: 'Не автоматически. PixelRing сначала проверяет ремонт и разумную частичную модернизацию.' },
+      { question: 'Почему LED-вывеска мерцает?', answer: 'Причиной могут быть блоки питания, влага, LED-модули, проводка или управление. Надежная оценка возможна после фото, описания и при необходимости проверки на месте.' },
+      { question: 'Что делать при неравномерной подсветке?', answer: 'Помогают общее фото, крупный план и информация, новая ли эта проблема. Корпус, положение модулей, цвет света, материал фронта и возраст техники проверяются вместе.' },
+      { question: 'LED-реклама не требует обслуживания?', answer: 'Нет. LED-техника может быть менее требовательной и удобнее в обслуживании, но зависит от блоков питания, защиты от влаги, тепла, управления и монтажа.' },
     ],
+    nextStep: {
+      eyebrow: 'NEXT STEP',
+      title: 'Выбрать следующий шаг для существующей установки',
+      intro: 'Когда речь о свете, технике и существующей конструкции, сначала важно правильно классифицировать задачу: ремонт, частичная модернизация, переход на LED или замена.',
+      requestTitle: 'Запросить модернизацию',
+      requestText: 'Отправьте фото, короткое видео при мерцании, данные локации, информацию о доступе и желаемый световой результат.',
+      requestCta: 'Запросить LED-модернизацию',
+      servicesTitle: 'Если лучше подходит другая услуга',
+      servicesText: 'Не каждый световой случай сразу является модернизацией. Эти страницы отделяют ремонт, диагностику и монтаж.',
+      links: [
+        { title: 'Ремонт рекламных конструкций', text: 'Если сначала нужно устранить конкретную неисправность.', href: '/leistungen/werbeanlagen-reparatur', tag: 'Ремонт' },
+        { title: 'Аудит и диагностика', text: 'Если сначала нужно структурно проверить состояние, причину или приоритет.', href: '/leistungen/werbeanlagen-audit-diagnose', tag: 'Диагностика' },
+        { title: 'Монтаж и демонтаж', text: 'Если задача включает снятие, доступ, перенос или новое крепление.', href: '/leistungen/montage-demontage-werbeanlagen', tag: 'Монтаж' },
+      ],
+    },
+    offerCatalog: ['Дооснащение светового короба LED', 'Замена LED-модулей', 'Проверка блоков питания, трансформаторов и контроллеров', 'Сохранение неона или проверка LED-альтернативы', 'Улучшение светового образа и равномерности', 'Проверка существующей конструкции для частичной модернизации'],
     finalHeadline: 'Нужно, чтобы световая реклама снова работала надежно?',
     finalText:
-      'Отправьте фото или короткое описание. PixelRing проверит, что разумнее: ремонт, модернизация или замена.',
+      'Отправьте фото или короткое описание. PixelRing проверит, что разумнее: ремонт, частичная модернизация, переход на LED или замена.',
   },
   'werbeanlagen-audit-diagnose': {
     ...SERVICE_DETAIL_CONTENT.en['werbeanlagen-audit-diagnose'],
@@ -823,44 +1124,96 @@ SERVICE_DETAIL_CONTENT.ru = {
 SERVICE_DETAIL_CONTENT.tr = {
   'lichtwerbung-led-modernisierung': {
     ...SERVICE_DETAIL_CONTENT.en['lichtwerbung-led-modernisierung'],
-    serviceName: 'Işıklı reklam ve LED sistem modernizasyonu',
-    metaTitle: 'Işıklı Reklam ve LED Modernizasyonu | PixelRing',
+    serviceName: 'Işıklı reklam ve dış mekan reklamı modernizasyonu',
+    metaTitle: 'Işıklı Reklam Modernizasyonu ve LED Dönüşümü | PixelRing',
     metaDescription:
-      'PixelRing Berlin ve Brandenburg’da ışıklı reklam, LED modüller, güç kaynakları, kontrol cihazları, neon ve ışıklı kutuları kontrol eder ve modernize eder.',
+      'PixelRing mevcut ışıklı reklamları kontrol eder ve modernize eder: LED modüller, güç kaynakları, kontrol cihazları, neon, ışıklı kutu, ışık etkisi ve konstrüksiyon.',
     heroEyebrow: 'Işıklı reklam ve LED servisi',
-    heroTitle: 'Işıklı reklam ve LED sistem modernizasyonu',
+    heroTitle: 'Işıklı reklam ve dış mekan reklamı modernizasyonu',
     heroIntro:
-      'PixelRing mevcut ışıklı reklamları teknik ve görsel olarak kontrol eder: LED modüller, güç kaynakları, kontrol cihazları, kablolama, neon ve ışıklı kutular.',
-    imageAlt: 'Bir iş lokasyonunda modern ışıklı reklam ve LED sistemleri',
-    primaryCta: 'LED servisi iste',
-    secondaryCta: 'Tüm hizmetler',
-    tasksTitle: 'Tipik ışıklı reklam görevleri',
-    tasksIntro: 'Basit parça değişiminin ötesinde teknik güncelleme gerektiren durumlar burada toplanır.',
+      'Mevcut ışıklı reklam otomatik olarak tamamen değiştirilmek zorunda değildir. PixelRing LED modülleri, güç kaynaklarını, trafoları, kontrol cihazlarını, neon, ışıklı kutu, kablolama, ışık etkisi ve konstrüksiyonu kontrol eder; onarım, kısmi modernizasyon, LED dönüşümü veya değişimden hangisinin mantıklı olduğunu netleştirir.',
+    imageAlt: 'Bir iş lokasyonunda modernize edilmiş ışıklı reklam ve dış mekan reklamı',
+    primaryCta: 'Fotoğraf gönder ve değerlendirme al',
+    secondaryCta: 'Değişimden önce onarımı kontrol et',
+    tasksTitle: 'Mevcut ışıklı reklamda neler modernize edilebilir',
+    tasksIntro: 'Odak mevcut sistemdedir: aydınlatma, ışık etkisi ve konstrüksiyon, değişim veya dönüşüm önerilmeden önce kontrol edilir.',
     tasks: [
-      { title: 'LED modülleri ve güç kaynaklarını yenileme', text: 'Mevcut sistem korunabiliyorsa eski veya arızalı parçalar hedefli olarak değiştirilir.' },
-      { title: 'Kontrol cihazları ve kablolama kontrolü', text: 'Nem, gevşek kablolar ve kontrol hataları yapılandırılmış şekilde değerlendirilir.' },
-      { title: 'Neon ve ışıklı kutu değerlendirmesi', text: 'Sistemler onarım, kısmi modernizasyon veya mantıklı değişim açısından kontrol edilir.' },
-      { title: 'Işık etkisini iyileştirme', text: 'Düzensiz aydınlatma ve eski teknoloji görünürlük açısından değerlendirilir.' },
+      { title: 'Işıklı reklamı LED’e dönüştürme', text: 'Eski ışık tekniği, gövde, alan, güç kaynağı ve nem koruması uygunsa çoğu zaman LED’e dönüştürülebilir.' },
+      { title: 'Işıklı kutuya LED ekleme', text: 'Mevcut ışıklı kutu; aydınlatma, modül konumu, güç kaynakları, ön yüzeyler ve bakım kolaylığı açısından kontrol edilir.' },
+      { title: 'Neonu koruma veya LED alternatifini kontrol etme', text: 'Eski neon veya tüp sistemlerinde önce onarım, koruma, kısmi modernizasyon veya LED alternatifi değerlendirilir.' },
+      { title: 'Düzensiz aydınlatmayı iyileştirme', text: 'Karanlık bölgeler, parlak noktalar, farklı ışık renkleri ve görünen LED noktaları okunabilirlik ve marka etkisiyle birlikte değerlendirilir.' },
+      { title: 'LED modülleri, güç kaynakları ve kontrol cihazlarını kontrol etme', text: 'Modüller, LED şeritler, güç kaynakları, trafolar, kontrol cihazları, zamanlayıcılar ve dimmerler tek sistem olarak ele alınır.' },
+      { title: 'Mevcut konstrüksiyonu kullanmaya devam etme', text: 'Gövde, akrilik yüzeyler, bağlantılar, contalar ve erişim kontrol edilir; kullanılabilir parçalar erken değiştirilmez.' },
     ],
+    problemLinks: {
+      eyebrow: 'İlgili problem sayfaları',
+      title: 'Modernizasyon somut bir arızadan başladığında',
+      intro: 'Bazen ihtiyaç planlı bir yükseltme değil, titreme, kesinti veya kötü ışık etkisiyle başlar. Bu sayfalar sorunu sınıflandırmaya yardımcı olur.',
+      links: [
+        { title: 'Tabela titriyor', text: 'Güç kaynakları, nem, LED modülleri veya kontrol sistemiyle ilgili olası işaretler.', href: '/probleme-loesungen/werbeanlage-flackert', tag: 'Titreme' },
+        { title: 'LED düzensiz yanıyor', text: 'Karanlık bölgeler, görünen noktalar, yanlış ışık rengi veya düzensiz aydınlatma.', href: '/probleme-loesungen/led-leuchtet-ungleichmaessig', tag: 'Işık' },
+        { title: 'Harf yanmıyor', text: 'Tek harf, modül, bağlantı veya güç kaynağı arızaları.', href: '/probleme-loesungen/buchstabe-leuchtet-nicht', tag: 'Harf' },
+        { title: 'Tabela yanmıyor', text: 'Güç kaynağı ve kontrolün incelenmesini gerektirebilecek tam aydınlatma kesintisi.', href: '/probleme-loesungen/werbeanlage-leuchtet-nicht', tag: 'Kesinti' },
+      ],
+    },
     checksTitle: 'PixelRing önce neyi kontrol eder',
     checksIntro: 'Modernizasyon her şeyi değiştirmekle başlamaz; önce durum ve teknik çerçeve netleşir.',
-    checks: ['Güç kaynağı, kontrol cihazları ve kablolama', 'LED modüller, neon, ışık rengi ve aydınlatma', 'Gövde, contalar, nem ve erişim', 'Onarım, kısmi modernizasyon veya değişimden hangisinin mantıklı olduğu'],
+    checks: ['Güç kaynağı, trafolar, sigortalar ve kablolama', 'LED modüller, LED şeritler, neon tüpler, ışık rengi ve parlaklık', 'Kontrol cihazları, sensörler, zamanlayıcılar, dimmerler ve açma-kapama davranışı', 'Gövde, contalar, nem, korozyon ve erişim', 'Işık etkisi, gölgeler, parlak noktalar, okunabilirlik ve marka etkisi', 'Onarım, kısmi modernizasyon, LED dönüşümü veya değişimden hangisinin mantıklı olduğu'],
+    decisionGuide: {
+      eyebrow: 'Karar rehberi',
+      title: 'Onarım, kısmi modernizasyon, LED dönüşümü veya değişim?',
+      intro: 'Doğru öneri tek bir kelimeye bağlı değildir. PixelRing önce arızayı, ışık etkisini, mevcut yapıyı ve istenen marka etkisini ayırır.',
+      options: [
+        { tag: '01', title: 'Onarım', text: 'Somut bir arıza varsa ve gövde, ışık etkisi ve konstrüksiyon genel olarak kullanılmaya devam edebiliyorsa uygundur.' },
+        { tag: '02', title: 'Kısmi modernizasyon', text: 'Sistem korunabiliyor ancak modüller, güç kaynakları, kontrol, contalar veya ışık etkisi yenilenmeliyse mantıklıdır.' },
+        { tag: '03', title: 'LED dönüşümü', text: 'Eski tüp, neon veya verimsiz ışık tekniğinde; alan, ısı, güç kaynağı ve istenen ışık uygunsa değerlendirilir.' },
+        { tag: '04', title: 'Değişim çözümü', text: 'Gövde, ön yüzey, korozyon, bağlantı, erişim veya marka gereklilikleri kullanıma devam etmeye karşıysa kontrol edilir.' },
+      ],
+      noteTitle: 'Tek fotoğrafla sabit öneri yok',
+      noteText: 'Fotoğraf ve videolar ilk sınıflandırmaya yardımcı olur. Bağlayıcı öneri ancak durum, erişim, elektrik bileşenleri ve istenen sonuç incelendikten sonra oluşur.',
+    },
+    requestChecklist: {
+      eyebrow: 'Talep kontrol listesi',
+      title: 'İlk değerlendirme için neler yardımcı olur',
+      intro: 'Teknik terimleri bilmeniz gerekmez. Fotoğraflar, kısa videolar ve basit lokasyon bilgileri çoğu zaman ilk adım için yeterlidir.',
+      items: ['Sistemin genel fotoğrafı', 'Etkilenen noktanın yakın fotoğrafı', 'Titreme varsa kısa video', 'Adres, şehir veya lokasyon notu', 'Montaj yüksekliği ve erişim', 'Biliniyorsa sistemin yaşı', 'Sorunun ne zaman ortaya çıktığı', 'Yağmur, koku, ısı veya atan sigorta gibi ipuçları'],
+    },
     processTitle: 'Süreç',
     process: [
-      { title: 'Fotoğraf veya açıklama gönderin', text: 'Görseller, lokasyon bilgisi ve kısa sorun açıklaması gönderilir.' },
+      { title: 'Fotoğraf, video veya hedef gönderin', text: 'Görseller, lokasyon bilgisi ve sorun ya da istenen ışık etkisi hakkında kısa notlar gönderilir.' },
       { title: 'İlk teknik değerlendirme', text: 'PixelRing muhtemel etkilenen parçaları ve yerinde randevu gerekip gerekmediğini değerlendirir.' },
-      { title: 'Uygulama koordinasyonu', text: 'Kontrol sonrası onarım, modernizasyon veya değişim şeffaf şekilde koordine edilir.' },
+      { title: 'Onarım, dönüşüm veya değişimi netleştirme', text: 'Kontrol sonrası neyin korunacağı, modernize edileceği veya değiştirileceği şeffaf şekilde belirlenir.' },
     ],
     boundaryTitle: 'Net çerçeve',
     boundaryText: 'PixelRing merkezi muhatap olarak kalır ve uzman uygulamayı koordine eder. Bu bir pazar yeri değildir.',
-    boundaries: ['Ana bölge Berlin ve Brandenburg; Almanya’nın diğer bölgeleri talep üzerine.', 'Elektrik işleri uygun uzman çerçevede değerlendirilir.', 'Bağlayıcı fiyat ve tarihler ancak inceleme ve onaydan sonra oluşur.'],
+    boundaries: ['Hizmet kapsamı durum, erişim, parçalar ve istenen ışık etkisine göre kontrol edilir.', 'Elektrik işleri uygun uzman çerçevede değerlendirilir.', 'Bağlayıcı fiyatlar, tarihler ve ekonomik ifadeler ancak inceleme ve onaydan sonra oluşur.'],
     faqTitle: 'Işıklı reklam SSS',
     faqs: [
       { question: 'Eski ışıklı reklam LED’e çevrilebilir mi?', answer: 'Çoğu zaman kısmi modernizasyon mümkündür. Gövde, güç, alan, nem koruması ve ışık hedefi belirleyicidir.' },
-      { question: 'Tüm sistem değişmeli mi?', answer: 'Otomatik olarak hayır. PixelRing önce onarım ve mantıklı kısmi modernizasyonu kontrol eder.' },
+      { question: 'Işıklı kutuda LED dönüşümü mantıklı mı?', answer: 'Bu durum, çalışma süresi, güç kaynağı, bakım kolaylığı ve ışık etkisine bağlıdır. PixelRing önce dönüşümün teknik ve ekonomik olarak mantıklı olup olmadığını kontrol eder.' },
+      { question: 'Işıklı kutu tamamen değiştirilmeden modernize edilebilir mi?', answer: 'Otomatik olarak hayır. PixelRing önce onarım ve mantıklı kısmi modernizasyonu kontrol eder.' },
+      { question: 'LED tabela neden titrer?', answer: 'Titreme güç kaynakları, nem, LED modülleri, kablolama veya kontrol sisteminden kaynaklanabilir. Güvenilir değerlendirme için fotoğraf, açıklama ve bazen yerinde kontrol gerekir.' },
+      { question: 'Düzensiz aydınlatmada ne yapılmalı?', answer: 'Genel fotoğraf, yakın çekim ve bu durumun yeni olup olmadığı bilgisi yardımcı olur. Gövde, modül konumu, ışık rengi, ön yüzey malzemesi ve tekniğin yaşı birlikte kontrol edilir.' },
+      { question: 'LED reklam bakım gerektirmez mi?', answer: 'Hayır. LED tekniği daha az bakım gerektirebilir ve daha kolay servis edilebilir; ancak güç kaynaklarına, nem korumasına, ısıya, kontrole ve montaja bağlıdır.' },
     ],
+    nextStep: {
+      eyebrow: 'NEXT STEP',
+      title: 'Mevcut sistem için sonraki adımı seçin',
+      intro: 'Işık, teknik ve mevcut konstrüksiyon söz konusuysa önce doğru sınıflandırma gerekir: onarım, kısmi modernizasyon, LED dönüşümü veya değişim.',
+      requestTitle: 'Modernizasyon talep et',
+      requestText: 'Fotoğraflar, titreme varsa kısa video, lokasyon bilgisi, erişim bilgisi ve istediğiniz ışık etkisini gönderin.',
+      requestCta: 'LED modernizasyonu talep et',
+      servicesTitle: 'Başka bir hizmet daha uygunsa',
+      servicesText: 'Her ışık sorunu doğrudan modernizasyon değildir. Bu sayfalar onarım, teşhis ve montajı ayırır.',
+      links: [
+        { title: 'Tabela onarımı', text: 'Önce somut bir arıza giderilecekse.', href: '/leistungen/werbeanlagen-reparatur', tag: 'Onarım' },
+        { title: 'Audit ve teşhis', text: 'Durum, neden veya öncelik önce yapılandırılmış şekilde incelenecekse.', href: '/leistungen/werbeanlagen-audit-diagnose', tag: 'Teşhis' },
+        { title: 'Montaj ve demontaj', text: 'Söküm, erişim, taşıma veya yeni bağlantı işin parçasıysa.', href: '/leistungen/montage-demontage-werbeanlagen', tag: 'Montaj' },
+      ],
+    },
+    offerCatalog: ['Işıklı kutuya LED ekleme', 'LED modül değişimi', 'Güç kaynakları, trafolar ve kontrol cihazları kontrolü', 'Neonu koruma veya LED alternatifini kontrol etme', 'Işık etkisi ve aydınlatmayı iyileştirme', 'Kısmi modernizasyon için mevcut konstrüksiyon kontrolü'],
     finalHeadline: 'Işıklı reklamınız yeniden güvenilir çalışmalı mı?',
-    finalText: 'Fotoğraf veya kısa açıklama gönderin. PixelRing onarım, modernizasyon veya değişimin mantıklı olup olmadığını kontrol eder.',
+    finalText: 'Fotoğraf veya kısa açıklama gönderin. PixelRing onarım, kısmi modernizasyon, LED dönüşümü veya değişimden hangisinin mantıklı olduğunu kontrol eder.',
   },
   'werbeanlagen-audit-diagnose': {
     ...SERVICE_DETAIL_CONTENT.en['werbeanlagen-audit-diagnose'],
@@ -990,44 +1343,96 @@ SERVICE_DETAIL_CONTENT.tr = {
 SERVICE_DETAIL_CONTENT.pl = {
   'lichtwerbung-led-modernisierung': {
     ...SERVICE_DETAIL_CONTENT.en['lichtwerbung-led-modernisierung'],
-    serviceName: 'Modernizacja reklamy świetlnej i systemów LED',
-    metaTitle: 'Modernizacja reklamy świetlnej i LED | PixelRing',
+    serviceName: 'Modernizacja reklamy świetlnej i zewnętrznej',
+    metaTitle: 'Modernizacja reklamy świetlnej i konwersja LED | PixelRing',
     metaDescription:
-      'PixelRing sprawdza i modernizuje reklamę świetlną, moduły LED, zasilacze, sterowniki, neon i kasetony w Berlinie i Brandenburgii.',
+      'PixelRing sprawdza i modernizuje istniejącą reklamę świetlną: moduły LED, zasilacze, sterowniki, neon, kasetony, światło i konstrukcję.',
     heroEyebrow: 'Reklama świetlna i LED',
-    heroTitle: 'Modernizacja reklamy świetlnej i systemów LED',
+    heroTitle: 'Modernizacja reklamy świetlnej i zewnętrznej',
     heroIntro:
-      'PixelRing sprawdza istniejącą reklamę świetlną technicznie i wizualnie: moduły LED, zasilacze, sterowniki, okablowanie, neon i kasetony.',
-    imageAlt: 'Nowoczesna reklama świetlna i systemy LED przy lokalu firmowym',
-    primaryCta: 'Zgłoś serwis LED',
-    secondaryCta: 'Wszystkie usługi',
-    tasksTitle: 'Typowe zadania przy reklamie świetlnej',
-    tasksIntro: 'Ta strona obejmuje przypadki, w których techniczna aktualizacja może mieć większy sens niż prosta wymiana części.',
+      'Istniejąca reklama świetlna nie zawsze musi być całkowicie wymieniana. PixelRing sprawdza moduły LED, zasilacze, transformatory, sterowniki, neon, kasetony, okablowanie, obraz światła i konstrukcję, a następnie wyjaśnia, czy sens ma naprawa, częściowa modernizacja, konwersja na LED czy wymiana.',
+    imageAlt: 'Zmodernizowana reklama świetlna i zewnętrzna przy lokalu firmowym',
+    primaryCta: 'Wyślij zdjęcia i otrzymaj ocenę',
+    secondaryCta: 'Sprawdź naprawę przed wymianą',
+    tasksTitle: 'Co można zmodernizować w istniejącej reklamie świetlnej',
+    tasksIntro: 'Nacisk jest na istniejącą instalację: oświetlenie, efekt światła i konstrukcja są sprawdzane przed rekomendacją wymiany lub przebudowy.',
     tasks: [
-      { title: 'Wymiana modułów LED i zasilaczy', text: 'Zużyte lub uszkodzone komponenty są sprawdzane i wymieniane punktowo, jeśli instalacja może pozostać w użyciu.' },
-      { title: 'Kontrola sterowników i okablowania', text: 'Błędy przełączania, wilgoć, luźne przewody i problemy sterowania są porządkowane według przyczyn.' },
-      { title: 'Ocena neonu i kasetonów', text: 'Systemy są oceniane pod kątem naprawy, częściowej modernizacji lub sensownej wymiany.' },
-      { title: 'Poprawa światła i efektu marki', text: 'Nierówne oświetlenie i stara technologia są oceniane z punktu widzenia widoczności.' },
+      { title: 'Przebudowa reklamy świetlnej na LED', text: 'Starszą technikę światła często można przerobić na LED, jeśli pasują obudowa, miejsce, zasilanie i ochrona przed wilgocią.' },
+      { title: 'Doposażenie kasetonu w LED', text: 'Istniejący kaseton jest sprawdzany pod kątem rozkładu światła, pozycji modułów, zasilaczy, frontów i obsługi serwisowej.' },
+      { title: 'Zachowanie neonu albo sprawdzenie alternatywy LED', text: 'Przy starszym neonie lub rurach najpierw ocenia się naprawę, zachowanie, częściową modernizację albo alternatywę LED.' },
+      { title: 'Poprawa nierównego oświetlenia', text: 'Ciemne strefy, punkty światła, różne barwy i widoczne punkty LED są oceniane pod kątem czytelności i efektu marki.' },
+      { title: 'Kontrola modułów LED, zasilaczy i sterowników', text: 'Moduły, taśmy LED, zasilacze, transformatory, sterowniki, timery i dimmery są traktowane jako jeden system.' },
+      { title: 'Dalsze użycie istniejącej konstrukcji', text: 'Obudowa, akryl, mocowania, uszczelnienia i dostęp są sprawdzane, aby nie wymieniać przedwcześnie użytecznych części.' },
     ],
+    problemLinks: {
+      eyebrow: 'Powiązane strony problemów',
+      title: 'Gdy modernizacja zaczyna się od konkretnej usterki',
+      intro: 'Czasem potrzeba nie wynika z planowanej przebudowy, lecz z migania, awarii albo słabego efektu światła. Te strony pomagają uporządkować problem.',
+      links: [
+        { title: 'Reklama miga', text: 'Możliwe sygnały problemu z zasilaczami, wilgocią, modułami LED lub sterowaniem.', href: '/probleme-loesungen/werbeanlage-flackert', tag: 'Miganie' },
+        { title: 'LED świeci nierówno', text: 'Ciemne strefy, widoczne punkty, zła barwa albo niespokojny obraz światła.', href: '/probleme-loesungen/led-leuchtet-ungleichmaessig', tag: 'Światło' },
+        { title: 'Litera nie świeci', text: 'Awaria pojedynczych liter, modułów, połączeń albo zasilaczy.', href: '/probleme-loesungen/buchstabe-leuchtet-nicht', tag: 'Litery' },
+        { title: 'Reklama nie świeci', text: 'Całkowita awaria oświetlenia z możliwą kontrolą zasilania i sterowania.', href: '/probleme-loesungen/werbeanlage-leuchtet-nicht', tag: 'Awaria' },
+      ],
+    },
     checksTitle: 'Co PixelRing sprawdza najpierw',
     checksIntro: 'Modernizacja nie zaczyna się od wymiany za wszelką cenę. Najpierw wyjaśniamy stan i ramy techniczne.',
-    checks: ['Zasilanie, zasilacze, sterowniki i okablowanie', 'Moduły LED, neon, kolor i równomierność światła', 'Obudowa, uszczelnienia, wilgoć i dostęp', 'Czy sens ma naprawa, częściowa modernizacja czy wymiana'],
+    checks: ['Zasilanie, zasilacze, transformatory, bezpieczniki i okablowanie', 'Moduły LED, taśmy LED, rury neonowe, kolor i jasność światła', 'Sterowniki, czujniki, timery, dimmery i zachowanie przełączania', 'Obudowa, uszczelnienia, wilgoć, korozja i dostęp', 'Obraz światła, cienie, punkty, czytelność i efekt marki', 'Czy sens ma naprawa, częściowa modernizacja, konwersja LED czy wymiana'],
+    decisionGuide: {
+      eyebrow: 'Pomoc w decyzji',
+      title: 'Naprawa, częściowa modernizacja, konwersja LED czy wymiana?',
+      intro: 'Właściwa rekomendacja nie zależy od jednego hasła. PixelRing najpierw oddziela usterkę, obraz światła, istniejącą substancję i oczekiwany efekt marki.',
+      options: [
+        { tag: '01', title: 'Naprawa', text: 'Pasuje, gdy występuje konkretna awaria, a obudowa, światło i konstrukcja zasadniczo mogą pozostać w użyciu.' },
+        { tag: '02', title: 'Częściowa modernizacja', text: 'Ma sens, gdy instalacja może zostać, ale moduły, zasilacze, sterowanie, uszczelnienia albo światło wymagają aktualizacji.' },
+        { tag: '03', title: 'Konwersja LED', text: 'Istotna przy starszych rurach, neonie albo nieefektywnej technice, jeśli miejsce, ciepło, zasilanie i oczekiwany efekt światła pasują.' },
+        { tag: '04', title: 'Rozwiązanie zastępcze', text: 'Jest sprawdzane, gdy obudowa, fronty, korozja, mocowanie, dostęp albo wymagania marki przemawiają przeciw dalszemu użyciu.' },
+      ],
+      noteTitle: 'Brak stałej rekomendacji tylko z jednego zdjęcia',
+      noteText: 'Zdjęcia i filmy pomagają w pierwszej klasyfikacji. Wiążąca rekomendacja powstaje dopiero po sprawdzeniu stanu, dostępu, komponentów elektrycznych i oczekiwanego wyniku.',
+    },
+    requestChecklist: {
+      eyebrow: 'Checklista zapytania',
+      title: 'Co pomaga w pierwszej ocenie',
+      intro: 'Nie trzeba znać pojęć technicznych. Zdjęcia, krótkie filmy i prosta informacja o lokalizacji często wystarczą na pierwszy krok.',
+      items: ['Zdjęcie całej instalacji', 'Zbliżenie problematycznego miejsca', 'Krótki film przy miganiu', 'Adres, miasto albo opis lokalizacji', 'Wysokość montażu i dostęp', 'Wiek instalacji, jeśli znany', 'Kiedy pojawia się problem', 'Wskazówki: deszcz, zapach, ciepło albo wybite zabezpieczenie'],
+    },
     processTitle: 'Proces',
     process: [
-      { title: 'Wyślij zdjęcia lub opis', text: 'Przesyłasz zdjęcia, lokalizację i krótki opis problemu lub celu.' },
+      { title: 'Wyślij zdjęcia, film albo cel', text: 'Przesyłasz zdjęcia, dane lokalizacji i krótkie wskazówki o problemie albo oczekiwanym efekcie światła.' },
       { title: 'Pierwsza ocena techniczna', text: 'PixelRing określa możliwe komponenty i czy potrzebna jest wizyta na miejscu.' },
-      { title: 'Uzgodnienie realizacji', text: 'Po sprawdzeniu koordynowana jest naprawa, modernizacja albo wymiana.' },
+      { title: 'Uzgodnienie naprawy, konwersji albo wymiany', text: 'Po sprawdzeniu jasno określamy, co zachować, zmodernizować albo wymienić.' },
     ],
     boundaryTitle: 'Jasne ramy',
     boundaryText: 'PixelRing pozostaje centralnym kontaktem i koordynuje specjalistyczną realizację. To nie jest marketplace.',
-    boundaries: ['Berlin i Brandenburgia jako główny obszar; inne regiony Niemiec na zapytanie.', 'Prace elektryczne są oceniane i koordynowane w odpowiednich ramach specjalistycznych.', 'Wiążące ceny i terminy powstają dopiero po sprawdzeniu i potwierdzeniu.'],
+    boundaries: ['Zakres usługi jest sprawdzany według stanu, dostępu, komponentów i oczekiwanego efektu światła.', 'Prace elektryczne są oceniane i koordynowane w odpowiednich ramach specjalistycznych.', 'Wiążące ceny, terminy i wnioski ekonomiczne powstają dopiero po sprawdzeniu i potwierdzeniu.'],
     faqTitle: 'FAQ reklamy świetlnej',
     faqs: [
       { question: 'Czy starą reklamę świetlną można przerobić na LED?', answer: 'Często możliwa jest częściowa modernizacja. Ważna jest obudowa, zasilanie, miejsce, ochrona przed wilgocią i oczekiwany efekt światła.' },
-      { question: 'Czy trzeba wymienić całą instalację?', answer: 'Nie automatycznie. PixelRing najpierw sprawdza naprawę i sensowną częściową modernizację.' },
+      { question: 'Czy konwersja LED w kasetonie ma sens?', answer: 'To zależy od stanu, czasu pracy, zasilania, obsługi serwisowej i efektu światła. PixelRing najpierw sprawdza, czy konwersja może mieć sens techniczny i ekonomiczny.' },
+      { question: 'Czy kaseton można zmodernizować bez pełnej wymiany?', answer: 'Nie automatycznie. PixelRing najpierw sprawdza naprawę i sensowną częściową modernizację.' },
+      { question: 'Dlaczego reklama LED miga?', answer: 'Miganie może wynikać z zasilaczy, wilgoci, modułów LED, okablowania albo sterowania. Pewna ocena wymaga zdjęć, opisu i czasem kontroli na miejscu.' },
+      { question: 'Co zrobić przy nierównym oświetleniu?', answer: 'Pomaga zdjęcie całości, zbliżenie i informacja, czy nierówność jest nowa. Obudowa, pozycja modułów, barwa światła, materiał frontu i wiek techniki są oceniane razem.' },
+      { question: 'Czy reklama LED jest bezobsługowa?', answer: 'Nie. Technika LED może wymagać mniej obsługi i być łatwiejsza w serwisie, ale zależy od zasilaczy, ochrony przed wilgocią, ciepła, sterowania i montażu.' },
     ],
+    nextStep: {
+      eyebrow: 'NEXT STEP',
+      title: 'Wybierz następny krok dla istniejącej instalacji',
+      intro: 'Gdy chodzi o światło, technikę i istniejącą konstrukcję, najpierw trzeba dobrze sklasyfikować zadanie: naprawa, częściowa modernizacja, konwersja LED albo wymiana.',
+      requestTitle: 'Zgłoś modernizację',
+      requestText: 'Wyślij zdjęcia, krótki film przy miganiu, dane lokalizacji, informacje o dostępie i oczekiwany efekt światła.',
+      requestCta: 'Zgłoś modernizację LED',
+      servicesTitle: 'Gdy lepiej pasuje inna usługa',
+      servicesText: 'Nie każdy problem ze światłem jest od razu modernizacją. Te strony oddzielają naprawę, diagnostykę i montaż.',
+      links: [
+        { title: 'Naprawa reklam', text: 'Gdy najpierw trzeba usunąć konkretną usterkę.', href: '/leistungen/werbeanlagen-reparatur', tag: 'Naprawa' },
+        { title: 'Audyt i diagnostyka', text: 'Gdy stan, przyczyna albo priorytet wymagają najpierw uporządkowanej kontroli.', href: '/leistungen/werbeanlagen-audit-diagnose', tag: 'Diagnostyka' },
+        { title: 'Montaż i demontaż', text: 'Gdy częścią zadania jest demontaż, dostęp, przeniesienie albo nowe mocowanie.', href: '/leistungen/montage-demontage-werbeanlagen', tag: 'Montaż' },
+      ],
+    },
+    offerCatalog: ['Doposażenie kasetonu w LED', 'Wymiana modułów LED', 'Kontrola zasilaczy, transformatorów i sterowników', 'Zachowanie neonu albo sprawdzenie alternatywy LED', 'Poprawa obrazu światła i oświetlenia', 'Kontrola istniejącej konstrukcji dla częściowej modernizacji'],
     finalHeadline: 'Czy reklama świetlna ma znów działać niezawodnie?',
-    finalText: 'Wyślij zdjęcia lub krótki opis. PixelRing sprawdzi, czy kolejnym krokiem jest naprawa, modernizacja czy wymiana.',
+    finalText: 'Wyślij zdjęcia lub krótki opis. PixelRing sprawdzi, czy kolejnym krokiem jest naprawa, częściowa modernizacja, konwersja LED czy wymiana.',
   },
   'werbeanlagen-audit-diagnose': {
     ...SERVICE_DETAIL_CONTENT.en['werbeanlagen-audit-diagnose'],
@@ -1157,44 +1562,96 @@ SERVICE_DETAIL_CONTENT.pl = {
 SERVICE_DETAIL_CONTENT.ar = {
   'lichtwerbung-led-modernisierung': {
     ...SERVICE_DETAIL_CONTENT.en['lichtwerbung-led-modernisierung'],
-    serviceName: 'تحديث الإعلانات المضيئة وأنظمة LED',
-    metaTitle: 'تحديث الإعلانات المضيئة وLED | PixelRing',
+    serviceName: 'تحديث الإعلانات المضيئة والخارجية',
+    metaTitle: 'تحديث الإعلانات المضيئة وتحويلها إلى LED | PixelRing',
     metaDescription:
-      'تراجع PixelRing وتحدث الإعلانات المضيئة ووحدات LED ومزودات الطاقة ووحدات التحكم والنيون والصناديق المضيئة في برلين وبراندنبورغ.',
+      'تراجع PixelRing الإعلانات المضيئة القائمة وتحدث وحدات LED ومزودات الطاقة ووحدات التحكم والنيون والصناديق المضيئة والصورة الضوئية والبنية.',
     heroEyebrow: 'خدمة الإعلانات المضيئة وLED',
-    heroTitle: 'تحديث الإعلانات المضيئة وأنظمة LED',
+    heroTitle: 'تحديث الإعلانات المضيئة والخارجية',
     heroIntro:
-      'تراجع PixelRing الإعلانات المضيئة القائمة تقنياً وبصرياً: وحدات LED ومزودات الطاقة ووحدات التحكم والأسلاك والنيون والصناديق المضيئة.',
-    imageAlt: 'إعلانات مضيئة وأنظمة LED محدثة في موقع تجاري',
-    primaryCta: 'طلب خدمة LED',
-    secondaryCta: 'كل الخدمات',
-    tasksTitle: 'مهام شائعة للإعلانات المضيئة',
-    tasksIntro: 'تغطي هذه الصفحة الحالات التي قد يكون فيها التحديث التقني أنسب من إصلاح جزء واحد.',
+      'لا تحتاج الإعلانات المضيئة القائمة دائماً إلى استبدال كامل. تراجع PixelRing وحدات LED ومزودات الطاقة والمحولات ووحدات التحكم والنيون والصناديق المضيئة والأسلاك والصورة الضوئية والبنية، ثم توضح هل الأنسب هو الإصلاح أو التحديث الجزئي أو التحويل إلى LED أو الاستبدال.',
+    imageAlt: 'إعلانات مضيئة وخارجية محدثة في موقع تجاري',
+    primaryCta: 'إرسال صور والحصول على تقييم',
+    secondaryCta: 'فحص الإصلاح قبل الاستبدال',
+    tasksTitle: 'ما الذي يمكن تحديثه في الإعلان المضيء القائم',
+    tasksIntro: 'التركيز على النظام القائم: تتم مراجعة الإضاءة والصورة الضوئية والبنية قبل التوصية بالاستبدال أو التحويل.',
     tasks: [
-      { title: 'تبديل وحدات LED ومزودات الطاقة', text: 'يتم فحص المكونات القديمة أو المعطلة واستبدالها بشكل محدد إذا أمكن الحفاظ على النظام القائم.' },
-      { title: 'فحص وحدات التحكم والأسلاك', text: 'يتم تصنيف أخطاء التشغيل والرطوبة والكابلات المرتخية ومشكلات التحكم بشكل منظم.' },
-      { title: 'تقييم النيون والصناديق المضيئة', text: 'تتم مراجعة الأنظمة القائمة للإصلاح أو التحديث الجزئي أو الاستبدال المنطقي.' },
-      { title: 'تحسين الضوء وتأثير العلامة', text: 'تتم مراجعة الإضاءة غير المتساوية والمناطق الداكنة والتقنية القديمة من منظور الوضوح.' },
+      { title: 'تحويل الإعلان المضيء إلى LED', text: 'يمكن غالباً تحويل التقنية القديمة إلى LED إذا كان الهيكل والمساحة والطاقة وحماية الرطوبة مناسبة.' },
+      { title: 'إضافة LED إلى الصندوق المضيء', text: 'تتم مراجعة الصندوق القائم من حيث توزيع الضوء ومواضع الوحدات ومزودات الطاقة والواجهات وسهولة الصيانة.' },
+      { title: 'الحفاظ على النيون أو فحص بديل LED', text: 'في النيون أو الأنابيب القديمة يتم أولاً تقييم الإصلاح أو الحفاظ أو التحديث الجزئي أو بديل LED.' },
+      { title: 'تحسين الإضاءة غير المتساوية', text: 'تتم مراجعة المناطق الداكنة والنقاط الساطعة واختلاف لون الضوء ونقاط LED المرئية من حيث القراءة وتأثير العلامة.' },
+      { title: 'فحص وحدات LED والطاقة والتحكم', text: 'تتم مراجعة الوحدات وشرائط LED ومزودات الطاقة والمحولات ووحدات التحكم والمؤقتات والمخفتات كنظام واحد.' },
+      { title: 'استخدام البنية القائمة عند الإمكان', text: 'تتم مراجعة الهيكل وواجهات الأكريليك والتثبيت والعوازل والوصول حتى لا يتم استبدال الأجزاء الصالحة مبكراً.' },
     ],
+    problemLinks: {
+      eyebrow: 'صفحات مشاكل مناسبة',
+      title: 'عندما يبدأ التحديث من عطل محدد',
+      intro: 'أحياناً لا يبدأ الطلب كتحديث مخطط، بل بسبب وميض أو توقف أو صورة ضوئية سيئة. تساعد هذه الصفحات في تصنيف الحالة.',
+      links: [
+        { title: 'الإعلان يومض', text: 'مؤشرات محتملة على مزودات الطاقة أو الرطوبة أو وحدات LED أو التحكم.', href: '/probleme-loesungen/werbeanlage-flackert', tag: 'وميض' },
+        { title: 'LED يضيء بشكل غير متساو', text: 'مناطق داكنة أو نقاط مرئية أو لون ضوء خاطئ أو توزيع غير منتظم.', href: '/probleme-loesungen/led-leuchtet-ungleichmaessig', tag: 'ضوء' },
+        { title: 'حرف لا يضيء', text: 'تعطل حروف أو وحدات أو وصلات أو مزودات طاقة منفردة.', href: '/probleme-loesungen/buchstabe-leuchtet-nicht', tag: 'حروف' },
+        { title: 'الإعلان لا يضيء', text: 'توقف كامل للإضاءة مع حاجة محتملة لفحص الطاقة والتحكم.', href: '/probleme-loesungen/werbeanlage-leuchtet-nicht', tag: 'توقف' },
+      ],
+    },
     checksTitle: 'ما الذي تفحصه PixelRing أولاً',
     checksIntro: 'لا يبدأ التحديث بالاستبدال بأي ثمن. نوضح أولاً الحالة والأعراض والحدود التقنية.',
-    checks: ['الطاقة ومزودات الطاقة ووحدات التحكم والأسلاك', 'وحدات LED والنيون ولون الضوء وتوزيعه', 'الهيكل والعوازل والرطوبة والوصول', 'ما إذا كان الإصلاح أو التحديث الجزئي أو الاستبدال منطقياً'],
+    checks: ['الطاقة ومزودات الطاقة والمحولات والقواطع والأسلاك', 'وحدات LED وشرائط LED وأنابيب النيون ولون الضوء والسطوع', 'وحدات التحكم والحساسات والمؤقتات والمخفتات وسلوك التشغيل', 'الهيكل والعوازل والرطوبة والتآكل والوصول', 'الصورة الضوئية والظلال والنقاط والقراءة وتأثير العلامة', 'هل الأنسب هو الإصلاح أو التحديث الجزئي أو التحويل إلى LED أو الاستبدال'],
+    decisionGuide: {
+      eyebrow: 'مساعدة في القرار',
+      title: 'إصلاح أم تحديث جزئي أم تحويل إلى LED أم استبدال؟',
+      intro: 'لا تعتمد التوصية الصحيحة على كلمة واحدة. تفصل PixelRing أولاً بين العطل والصورة الضوئية والبنية القائمة وتأثير العلامة المطلوب.',
+      options: [
+        { tag: '01', title: 'إصلاح', text: 'يناسب الحالة عندما يوجد عطل محدد بينما يمكن للهيكل والصورة الضوئية والبنية أن تبقى قيد الاستخدام عموماً.' },
+        { tag: '02', title: 'تحديث جزئي', text: 'يكون منطقياً عندما يمكن الحفاظ على النظام، لكن الوحدات أو مزودات الطاقة أو التحكم أو العوازل أو الصورة الضوئية تحتاج إلى تحديث.' },
+        { tag: '03', title: 'تحويل إلى LED', text: 'مهم عند الأنابيب أو النيون أو التقنية غير الفعالة إذا كانت المساحة والحرارة والطاقة والنتيجة الضوئية المطلوبة مناسبة.' },
+        { tag: '04', title: 'حل بديل', text: 'تتم مراجعته عندما يشير الهيكل أو الواجهات أو التآكل أو التثبيت أو الوصول أو متطلبات العلامة إلى عدم مناسبة الاستخدام المستمر.' },
+      ],
+      noteTitle: 'لا توجد توصية ثابتة من صورة واحدة فقط',
+      noteText: 'تساعد الصور والفيديوهات في التصنيف الأول. تظهر التوصية الملزمة فقط بعد مراجعة الحالة والوصول والمكونات الكهربائية والنتيجة المطلوبة.',
+    },
+    requestChecklist: {
+      eyebrow: 'قائمة معلومات الطلب',
+      title: 'ما الذي يساعد في التقييم الأول',
+      intro: 'لا تحتاج إلى معرفة مصطلحات تقنية. غالباً تكفي الصور والفيديوهات القصيرة ومعلومات الموقع البسيطة للخطوة الأولى.',
+      items: ['صورة عامة للنظام', 'صورة قريبة للمكان المتأثر', 'فيديو قصير عند الوميض', 'العنوان أو المدينة أو وصف الموقع', 'ارتفاع التركيب وإمكانية الوصول', 'عمر النظام إذا كان معروفاً', 'وقت ظهور المشكلة', 'ملاحظات مثل المطر أو الرائحة أو الحرارة أو القاطع المفصول'],
+    },
     processTitle: 'العملية',
     process: [
-      { title: 'إرسال صور أو وصف', text: 'ترسل الصور وبيانات الموقع وملاحظات قصيرة عن المشكلة أو النتيجة المطلوبة.' },
+      { title: 'إرسال صور أو فيديو أو هدف', text: 'ترسل الصور ومعلومات الموقع وملاحظات قصيرة عن المشكلة أو الصورة الضوئية المطلوبة.' },
       { title: 'تقييم تقني أولي', text: 'تصنف PixelRing المكونات المحتملة وتحدد ما إذا كان الموعد في الموقع مناسباً.' },
-      { title: 'تنسيق التنفيذ', text: 'بعد المراجعة يتم تنسيق الإصلاح أو التحديث أو الاستبدال بشفافية.' },
+      { title: 'توضيح الإصلاح أو التحويل أو الاستبدال', text: 'بعد المراجعة يتم توضيح ما ينبغي الحفاظ عليه أو تحديثه أو استبداله بشفافية.' },
     ],
     boundaryTitle: 'إطار واضح',
     boundaryText: 'تبقى PixelRing جهة الاتصال المركزية وتنسق التنفيذ المتخصص. هذا ليس سوقاً ولا عقد تقنية غير محدود.',
-    boundaries: ['برلين وبراندنبورغ هما المنطقة الأساسية؛ مناطق ألمانية أخرى عند الطلب.', 'تتم مراجعة الأعمال الكهربائية وتنسيقها ضمن إطار متخصص مناسب.', 'الأسعار والمواعيد الملزمة تظهر فقط بعد المراجعة والتأكيد.'],
+    boundaries: ['يتم فحص نطاق الخدمة حسب الحالة والوصول والمكونات والصورة الضوئية المطلوبة.', 'تتم مراجعة الأعمال الكهربائية وتنسيقها ضمن إطار متخصص مناسب.', 'الأسعار والمواعيد والتقييمات الاقتصادية الملزمة تظهر فقط بعد المراجعة والتأكيد.'],
     faqTitle: 'أسئلة حول الإعلانات المضيئة',
     faqs: [
       { question: 'هل يمكن تحويل إعلان مضيء قديم إلى LED؟', answer: 'غالباً يكون التحديث الجزئي ممكناً. يعتمد ذلك على الهيكل والطاقة والمساحة وحماية الرطوبة ونتيجة الضوء المطلوبة.' },
-      { question: 'هل يجب استبدال النظام كله؟', answer: 'ليس تلقائياً. تفحص PixelRing أولاً الإصلاح والتحديث الجزئي المنطقي.' },
+      { question: 'هل تحويل الصندوق المضيء إلى LED مفيد؟', answer: 'يعتمد ذلك على الحالة ومدة التشغيل والطاقة وسهولة الصيانة والصورة الضوئية. تفحص PixelRing أولاً هل يمكن أن يكون التحويل منطقياً تقنياً واقتصادياً.' },
+      { question: 'هل يمكن تحديث الصندوق المضيء دون استبداله بالكامل؟', answer: 'ليس تلقائياً. تفحص PixelRing أولاً الإصلاح والتحديث الجزئي المنطقي قبل توصية الاستبدال.' },
+      { question: 'لماذا يومض إعلان LED؟', answer: 'قد يأتي الوميض من مزودات الطاقة أو الرطوبة أو وحدات LED أو الأسلاك أو التحكم. يحتاج التقييم الموثوق إلى صور ووصف وأحياناً فحص في الموقع.' },
+      { question: 'ماذا أفعل عند الإضاءة غير المتساوية؟', answer: 'تفيد صورة عامة وصورة قريبة ومعلومة هل المشكلة جديدة. تتم مراجعة الهيكل وموضع الوحدات ولون الضوء ومادة الواجهة وعمر التقنية معاً.' },
+      { question: 'هل إعلان LED لا يحتاج إلى صيانة؟', answer: 'لا. يمكن أن تكون تقنية LED أقل حاجة للصيانة وأسهل في الخدمة، لكنها تبقى مرتبطة بمزودات الطاقة وحماية الرطوبة والحرارة والتحكم وطريقة التركيب.' },
     ],
+    nextStep: {
+      eyebrow: 'NEXT STEP',
+      title: 'اختيار الخطوة التالية للنظام القائم',
+      intro: 'عند التعامل مع الضوء والتقنية والبنية القائمة، يجب أولاً تصنيف المهمة: إصلاح أو تحديث جزئي أو تحويل إلى LED أو استبدال.',
+      requestTitle: 'طلب التحديث',
+      requestText: 'أرسل صوراً وفيديو قصيراً عند الوميض ومعلومات الموقع والوصول والهدف المطلوب للصورة الضوئية أو تأثير العلامة.',
+      requestCta: 'طلب تحديث LED',
+      servicesTitle: 'إذا كانت خدمة أخرى أنسب',
+      servicesText: 'ليس كل عطل ضوئي تحديثاً مباشراً. هذه الصفحات تفصل بين الإصلاح والتشخيص والتركيب.',
+      links: [
+        { title: 'إصلاح اللوحات الإعلانية', text: 'عندما يجب إصلاح عطل محدد أولاً.', href: '/leistungen/werbeanlagen-reparatur', tag: 'إصلاح' },
+        { title: 'التدقيق والتشخيص', text: 'عندما يجب فحص الحالة أو السبب أو الأولوية بشكل منظم أولاً.', href: '/leistungen/werbeanlagen-audit-diagnose', tag: 'تشخيص' },
+        { title: 'التركيب والفك', text: 'عندما يكون الفك أو الوصول أو النقل أو التثبيت الجديد جزءاً من المهمة.', href: '/leistungen/montage-demontage-werbeanlagen', tag: 'تركيب' },
+      ],
+    },
+    offerCatalog: ['إضافة LED إلى الصندوق المضيء', 'استبدال وحدات LED', 'فحص مزودات الطاقة والمحولات ووحدات التحكم', 'الحفاظ على النيون أو فحص بديل LED', 'تحسين الصورة الضوئية وتوزيع الإضاءة', 'فحص البنية القائمة للتحديث الجزئي'],
     finalHeadline: 'هل يجب أن تعمل إعلاناتك المضيئة بشكل موثوق مرة أخرى؟',
-    finalText: 'أرسل صوراً أو وصفاً قصيراً. تتحقق PixelRing مما إذا كان الإصلاح أو التحديث أو الاستبدال هو الخطوة المنطقية التالية.',
+    finalText: 'أرسل صوراً أو وصفاً قصيراً. تتحقق PixelRing مما إذا كان الإصلاح أو التحديث الجزئي أو التحويل إلى LED أو الاستبدال هو الخطوة المنطقية التالية.',
   },
   'werbeanlagen-audit-diagnose': {
     ...SERVICE_DETAIL_CONTENT.en['werbeanlagen-audit-diagnose'],
@@ -1373,10 +1830,30 @@ function buildServiceDetailJsonLd(locale: Locale, slug: ServiceDetailSlug, conte
       provider,
       mainEntityOfPage: canonicalUrl,
       inLanguage: LANGUAGE_TAG_BY_LOCALE[locale],
-      areaServed: [
-        { '@type': 'AdministrativeArea', name: 'Berlin' },
-        { '@type': 'AdministrativeArea', name: 'Brandenburg' },
-      ],
+      ...(content.omitRegionalAreaServed
+        ? {}
+        : {
+            areaServed: [
+              { '@type': 'AdministrativeArea', name: 'Berlin' },
+              { '@type': 'AdministrativeArea', name: 'Brandenburg' },
+            ],
+          }),
+      ...(content.offerCatalog
+        ? {
+            hasOfferCatalog: {
+              '@type': 'OfferCatalog',
+              name: `${content.serviceName} - Leistungen`,
+              itemListElement: content.offerCatalog.map((name, index) => ({
+                '@type': 'Offer',
+                position: index + 1,
+                itemOffered: {
+                  '@type': 'Service',
+                  name,
+                },
+              })),
+            },
+          }
+        : {}),
       url: canonicalUrl,
     },
     {
@@ -1398,10 +1875,14 @@ function buildServiceDetailJsonLd(locale: Locale, slug: ServiceDetailSlug, conte
         addressCountry: 'DE',
       },
       openingHours: 'Mo-Fr 09:00-18:00',
-      areaServed: [
-        { '@type': 'AdministrativeArea', name: 'Berlin' },
-        { '@type': 'AdministrativeArea', name: 'Brandenburg' },
-      ],
+      ...(content.omitRegionalAreaServed
+        ? {}
+        : {
+            areaServed: [
+              { '@type': 'AdministrativeArea', name: 'Berlin' },
+              { '@type': 'AdministrativeArea', name: 'Brandenburg' },
+            ],
+          }),
       contactPoint: {
         '@type': 'ContactPoint',
         contactType: 'customer service',
@@ -1570,48 +2051,78 @@ export default async function ServiceDetailPage({ params }: PageProps) {
           breadcrumbs={getServiceBreadcrumbs(safeLocale, content.serviceName)}
         />
 
-        <section className="bg-white px-4 py-8 sm:px-6 sm:py-10">
-          <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3">
-            <LeistungenRequestButton
-              label={content.primaryCta}
-              serviceIntent={content.intent}
-              className="min-w-[168px] px-7"
-            />
-            <Link
-              href="/leistungen"
-              className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#C8D6E3] bg-[#F8FAFC] px-7 py-3 text-[15px] font-bold text-[#0E1A2B] shadow-sm transition-colors hover:border-[#7BA190] hover:bg-[#EEF6F2] hover:text-[#24594D] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7BA190]"
-            >
-              {content.secondaryCta}
-            </Link>
-            <p className="min-w-[240px] flex-1 text-[14px] font-semibold leading-6 text-[#526174]">
-              {content.boundaries[0]}
-            </p>
-          </div>
-        </section>
+        {content.decisionGuide && content.requestChecklist && content.nextStep ? (
+          <LeistungenLedDecisionTool
+            decisionGuide={content.decisionGuide}
+            requestChecklist={content.requestChecklist}
+            nextStep={content.nextStep}
+            serviceIntent={content.intent}
+          />
+        ) : null}
 
-        <section className="bg-white px-4 py-14 sm:px-6 sm:py-20">
+        {content.problemLinks ? (
+          <section className="border-t border-[#E7DDD3] bg-[#FFFDF9] px-4 py-12 sm:px-6 sm:py-16">
+            <div className="mx-auto max-w-7xl">
+              <div className="grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
+                <div className="text-start">
+                  <SectionEyebrow className="mb-3">{content.problemLinks.eyebrow}</SectionEyebrow>
+                  <h2 className="max-w-3xl text-3xl font-extrabold leading-[1.1] tracking-[0] text-[#0E1A2B] sm:text-4xl">
+                    {content.problemLinks.title}
+                  </h2>
+                </div>
+                <p className="max-w-2xl text-start text-[16px] font-semibold leading-8 text-[#526174]">
+                  {content.problemLinks.intro}
+                </p>
+              </div>
+              <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {content.problemLinks.links.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="group flex min-h-[158px] flex-col justify-between rounded-[18px] border border-[#E7DDD3] bg-[#F7F1E8] p-5 text-start transition duration-300 hover:-translate-y-0.5 hover:border-[#B8643E]/50 hover:bg-white hover:shadow-lg hover:shadow-[#0E1A2B]/[0.06]"
+                  >
+                    <div>
+                      <div className="mb-4 inline-flex rounded-full bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.08em] text-[#8F4C2F]">
+                        {link.tag}
+                      </div>
+                      <h3 className="break-words text-[18px] font-black leading-snug text-[#0E1A2B] transition-colors group-hover:text-[#8F4C2F]">
+                        {link.title}
+                      </h3>
+                    </div>
+                    <p className="mt-4 text-[13.5px] font-semibold leading-6 text-[#526174]">
+                      {link.text}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
+
+        <section className="border-t border-[#E7DDD3] bg-[#F7F1E8] px-4 py-14 sm:px-6 sm:py-20">
           <div className="mx-auto max-w-7xl">
-            <div className="max-w-4xl">
-              <SectionEyebrow className="mb-6">{relatedLabels.next}</SectionEyebrow>
-              <h2 className="text-[34px] font-black leading-[1.08] tracking-[0] text-[#0E1A2B] sm:text-[48px]">
-                {content.tasksTitle}
-              </h2>
-              <p className="mt-5 text-[17px] leading-8 text-[#4A5568]">{content.tasksIntro}</p>
+            <div className="grid gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(360px,0.88fr)] lg:items-end">
+              <div className="max-w-4xl text-start">
+                <SectionEyebrow className="mb-3">{relatedLabels.next}</SectionEyebrow>
+                <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">
+                  {content.tasksTitle}
+                </h2>
+              </div>
+              <p className="max-w-2xl text-start text-[16px] font-semibold leading-8 text-[#526174]">
+                {content.tasksIntro}
+              </p>
             </div>
 
-            <div className="mt-10 grid gap-4 md:grid-cols-2">
-              {content.tasks.map((task, index) => (
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {content.tasks.map((task) => (
                 <article
                   key={task.title}
-                  className="rounded-[22px] border border-[#E2E8F0] bg-[#F8FAFC] p-6 shadow-sm"
+                  className="min-h-[174px] rounded-[22px] border border-[#E7DDD3] bg-[#FFFDF9] p-5 text-start shadow-sm"
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#B8643E] text-[14px] font-black text-white">
-                    {String(index + 1).padStart(2, '0')}
-                  </div>
-                  <h3 className="mt-5 break-words text-[22px] font-black leading-tight text-[#0E1A2B]">
+                  <h3 className="break-words text-[18px] font-black leading-snug text-[#0E1A2B]">
                     {task.title}
                   </h3>
-                  <p className="mt-3 text-[15px] leading-7 text-[#536170]">{task.text}</p>
+                  <p className="mt-3 text-[14px] font-semibold leading-6 text-[#526174]">{task.text}</p>
                 </article>
               ))}
             </div>
@@ -1702,35 +2213,37 @@ export default async function ServiceDetailPage({ params }: PageProps) {
           </div>
         </section>
 
-        <section className="bg-white px-4 py-14 sm:px-6 sm:py-20">
-          <div className="mx-auto max-w-7xl">
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <SectionEyebrow className="mb-5">{relatedLabels.title}</SectionEyebrow>
-                <h2 className="text-[30px] font-black leading-tight text-[#0E1A2B]">
-                  {relatedLabels.title}
-                </h2>
-              </div>
-              <Link
-                href="/leistungen"
-                className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#C8D6E3] bg-[#F8FAFC] px-6 py-3 text-[15px] font-bold text-[#0E1A2B] transition-colors hover:border-[#7BA190] hover:bg-[#EEF6F2]"
-              >
-                {relatedLabels.overview}
-              </Link>
-            </div>
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
-              {relatedPages.map((page) => (
+        {!content.nextStep ? (
+          <section className="bg-white px-4 py-14 sm:px-6 sm:py-20">
+            <div className="mx-auto max-w-7xl">
+              <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <SectionEyebrow className="mb-5">{relatedLabels.title}</SectionEyebrow>
+                  <h2 className="text-[30px] font-black leading-tight text-[#0E1A2B]">
+                    {relatedLabels.title}
+                  </h2>
+                </div>
                 <Link
-                  key={page.slug}
-                  href={page.href}
-                  className="rounded-[20px] border border-[#E2E8F0] bg-[#F8FAFC] p-5 text-[16px] font-black leading-6 text-[#0E1A2B] transition-colors hover:border-[#7BA190] hover:bg-[#EEF6F2]"
+                  href="/leistungen"
+                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#C8D6E3] bg-[#F8FAFC] px-6 py-3 text-[15px] font-bold text-[#0E1A2B] transition-colors hover:border-[#7BA190] hover:bg-[#EEF6F2]"
                 >
-                  {page.title}
+                  {relatedLabels.overview}
                 </Link>
-              ))}
+              </div>
+              <div className="mt-8 grid gap-4 md:grid-cols-3">
+                {relatedPages.map((page) => (
+                  <Link
+                    key={page.slug}
+                    href={page.href}
+                    className="rounded-[20px] border border-[#E2E8F0] bg-[#F8FAFC] p-5 text-[16px] font-black leading-6 text-[#0E1A2B] transition-colors hover:border-[#7BA190] hover:bg-[#EEF6F2]"
+                  >
+                    {page.title}
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        ) : null}
 
         <LeistungenFooterCTA
           locale={safeLocale}
