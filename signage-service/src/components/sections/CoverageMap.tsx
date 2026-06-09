@@ -118,7 +118,7 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
   return (
     <section 
       ref={containerRef}
-      className="relative w-full h-[85vh] min-h-[640px] max-h-[880px] bg-[#F7F1E8] overflow-hidden select-none border-y border-[#0E1A2B05]"
+      className="relative w-full h-[85vh] min-h-[640px] max-h-[880px] bg-[#FFFDF9] overflow-hidden select-none border-y border-[#0E1A2B05]"
       style={{ perspective: "2500px" }}
     >
       {/* Background Ambience */}

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import CmsImage from '@/components/common/CmsImage';
 import HeroBreadcrumbs from '@/components/common/HeroBreadcrumbs';
+import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestButton';
 
 type RepairHeroSlide = {
   src: string;
@@ -20,6 +21,9 @@ type LeistungenRepairHeroSliderProps = {
   subline: string;
   slides: RepairHeroSlide[];
   breadcrumbs?: RepairHeroBreadcrumb[];
+  primaryCta?: string;
+  secondaryCta?: string;
+  secondaryHref?: string;
 };
 
 export default function LeistungenRepairHeroSlider({
@@ -27,6 +31,9 @@ export default function LeistungenRepairHeroSlider({
   subline,
   slides,
   breadcrumbs = [],
+  primaryCta,
+  secondaryCta,
+  secondaryHref = '#repair-proof',
 }: LeistungenRepairHeroSliderProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const safeSlides = slides.length > 0 ? slides : [{ src: '/images/leistungen/hero-repair.png', alt: title }];
@@ -57,6 +64,7 @@ export default function LeistungenRepairHeroSlider({
           alt={slide.alt}
           fill
           priority={index === 0}
+          loading="eager"
           fetchPriority={index === 0 ? 'high' : undefined}
           sizes="100vw"
           className={`object-cover transition-opacity duration-[1800ms] ease-in-out ${
@@ -79,6 +87,24 @@ export default function LeistungenRepairHeroSlider({
           <p className="animate-in fade-in slide-in-from-bottom-4 mt-4 max-w-[640px] break-words text-[15px] font-semibold leading-relaxed text-white/85 duration-600 [overflow-wrap:anywhere] sm:text-[17px]">
             {subline}
           </p>
+          {(primaryCta || secondaryCta) && (
+            <div className="mt-7 flex flex-wrap gap-3">
+              {primaryCta ? (
+                <LeistungenRequestButton
+                  label={primaryCta}
+                  serviceIntent="repair-hero-photo-request"
+                />
+              ) : null}
+              {secondaryCta ? (
+                <a
+                  href={secondaryHref}
+                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/24 bg-white/10 px-5 py-3 text-[15px] font-bold text-white backdrop-blur transition-colors hover:border-white/40 hover:bg-white/16 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                >
+                  {secondaryCta}
+                </a>
+              ) : null}
+            </div>
+          )}
         </div>
       </div>
     </section>

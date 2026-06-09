@@ -5,6 +5,7 @@ import HeroSection from "@/components/sections/HeroSection";
 import IntakeSection from "@/components/sections/IntakeSection";
 import BentoGridSection from "@/components/sections/BentoGridSection";
 import TrustSection from "@/components/sections/TrustSection";
+import HomeServicesSection from "@/components/sections/HomeServicesSection";
 import CoverageMap from "@/components/sections/CoverageMap";
 import ExcellenceCarousel from "@/components/sections/ExcellenceCarousel";
 import ReviewsSection from "@/components/sections/ReviewsSection";
@@ -183,6 +184,7 @@ export default async function HomePage({
           {homeCms?.intake && <IntakeSection content={homeCms.intake} />}
           {homeCms?.bento && <BentoGridSection content={homeCms.bento} />}
           {homeCms?.trust && <TrustSection content={homeCms.trust} />}
+          <HomeServicesSection locale={locale} />
           {homeCms?.coverage && <CoverageMap content={homeCms.coverage} />}
           {homeCms?.excellence && <ExcellenceCarousel content={homeCms.excellence} />}
           {homeCms?.reviews && <ReviewsSection content={homeCms.reviews} />}

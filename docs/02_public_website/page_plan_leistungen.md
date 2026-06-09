@@ -349,6 +349,24 @@ Implementation sequence:
 
 ## Progress Log
 
+### 2026-06-09 — Repair Symptom Card Visual Redesign
+
+- Current sprint/block: Public Website, dedicated Werbeanlagen-Reparatur symptom card UX.
+- Done: Reworked the `Was ist von außen sichtbar?` symptom block on `/[locale]/leistungen/werbeanlagen-reparatur` from text-heavy grid cards into an Apple-inspired image-first card rail. Generated a 3x2 defect-scene image sheet, cropped it into six optimized WebP assets under `signage-service/public/images/leistungen/repair-symptoms/`, mapped symptom IDs to visuals, kept short preview copy visible, preserved full symptom text for the existing drawer/accessible text, localized category tags across DE/EN/RU/TR/PL/AR, and kept the existing request drawer behavior on click. Simplified the following `Ähnliche Fälle` proof block into a lighter visual strip: one-line intro, one references link, compact photo cards, and no visible `Vorher/Danach` text blocks.
+- In progress: Owner visual review of the revised card rail on DE desktop and mobile.
+- Next action: Decide whether the image-first card pattern should be reused for neighboring diagnostic/service blocks after visual approval.
+- Blockers/risks: Generated visuals are illustrative service-scene assets, not documented real customer references. No CMS, CRM, request-flow, route, sitemap, migration, or pricing logic changes were made.
+- Updated documents: `PROGRESS.md`, `docs/02_public_website/page_plan_leistungen.md`, `signage-service/src/components/leistungen/LeistungenReparaturWorkflow.tsx`, `signage-service/src/components/leistungen/LeistungenRepairProofStrip.tsx`, `signage-service/public/images/leistungen/repair-symptoms/`.
+
+### 2026-06-08 — Repair Landing Page UX Reduction
+
+- Current sprint/block: Public Website, dedicated Werbeanlagen-Reparatur UX redesign
+- Done: Reworked `/[locale]/leistungen/werbeanlagen-reparatur` into the approved medium UX variant. The page now leads with photo-oriented hero CTAs, shows five primary symptom cards plus a fallback photo option before `show more`, adds a compact `LeistungenRepairProofStrip` proof block using safe existing reference images, lightens the related problem links as `Mehr dazu` / `Разобраться подробнее`, moves the repair-orientation calculator higher, simplifies `Womit wir arbeiten`, folds digital screens into a compact details block, reframes the service scope as `Was der Spezialist macht` / `Что сделает специалист`, and replaces the final CTA with a simpler photo-first request block. Localized copy was updated for DE/EN/RU/TR/PL/AR while keeping German canonical-first.
+- In progress: Owner visual review of the revised RU and DE repair pages on desktop/mobile, especially first-screen density, proof-strip tone, mobile wrapping, and CTA clarity.
+- Next action: If the owner approves the rhythm, reuse the pattern selectively for neighboring service pages without copying the repair calculator.
+- Blockers/risks: No CMS model, database, request-flow, CRM, sitemap, form, or migration changes were made. Full project lint still fails on unrelated existing backlog in `scratch_format.js` and `BusinessShowcase.tsx`; targeted lint for the changed repair page/components and `npm run build` pass.
+- Updated documents: `PROGRESS.md`, `docs/02_public_website/page_plan_leistungen.md`, `signage-service/src/app/[locale]/leistungen/werbeanlagen-reparatur/page.tsx`, `signage-service/src/components/leistungen/LeistungenRepairHeroSlider.tsx`, `signage-service/src/components/leistungen/LeistungenReparaturWorkflow.tsx`, `signage-service/src/components/leistungen/LeistungenDiagnosticPrototype.tsx`, `signage-service/src/components/leistungen/LeistungenRepairProofStrip.tsx`.
+
 ### 2026-05-31 — Dedicated Service Detail Pages
 
 - Current sprint/block: Public Website, Leistungen service-card detail page expansion

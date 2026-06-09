@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
+import { Link } from '@/i18n/routing';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import SectionEyebrow from '@/components/common/SectionEyebrow';
@@ -6,8 +8,8 @@ import { getGlobalPageCmsContent } from '@/lib/cms/pages';
 import LeistungenRepairHeroSlider from '@/components/leistungen/LeistungenRepairHeroSlider';
 import LeistungenReparaturWorkflow from '@/components/leistungen/LeistungenReparaturWorkflow';
 import LeistungenDiagnosticPrototype from '@/components/leistungen/LeistungenDiagnosticPrototype';
+import LeistungenRepairProofStrip from '@/components/leistungen/LeistungenRepairProofStrip';
 import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestButton';
-import LeistungenFooterCTA from '@/components/sections/LeistungenFooterCTA';
 import FAQSection from '@/components/sections/FAQSection';
 import { SITE_CONFIG } from '@/lib/site-config';
 import { SITE_BASE_URL, buildLanguageAlternates, buildLocaleUrl, buildSiteUrl } from '@/lib/seo';
@@ -36,6 +38,8 @@ type LandingPageContent = {
   heroTitle: string;
   heroSubline: string;
   heroImage: string;
+  heroPrimaryCta: string;
+  heroSecondaryCta: string;
   symptomsTitle: string;
   closeLabel: string;
   formTitle: string;
@@ -53,6 +57,13 @@ type RepairFaqContent = {
 type RepairScopeCard = {
   title: string;
   text: string;
+};
+
+type RepairLinkCard = {
+  title: string;
+  text: string;
+  href: string;
+  tag: string;
 };
 
 type RepairScopeContent = {
@@ -74,14 +85,35 @@ type RepairScopeContent = {
   ctaLabel: string;
 };
 
+type RepairProblemLinksContent = {
+  eyebrow: string;
+  title: string;
+  intro: string;
+  links: RepairLinkCard[];
+};
+
+type RepairNextStepContent = {
+  eyebrow: string;
+  title: string;
+  intro: string;
+  requestTitle: string;
+  requestText: string;
+  requestCta: string;
+  servicesTitle: string;
+  servicesText: string;
+  links: RepairLinkCard[];
+};
+
 const CONTENT: Record<Locale, LandingPageContent> = {
   de: {
     metaTitle: 'Werbeanlagen-Reparatur Berlin & Brandenburg | PixelRing',
-    metaDescription: 'Defekte Werbeanlage in Berlin oder Brandenburg? PixelRing prüft Leuchtkästen, LED-Module, Profilbuchstaben, Folien, Befestigung und Digital Signage. Fotos senden und erste Einschätzung erhalten.',
+    metaDescription: 'Werbeanlagen-Reparatur in Berlin & Brandenburg: PixelRing prüft Leuchtkästen, LED-Module, Buchstaben, Folien und Befestigungen per Foto oder vor Ort.',
     heroTitle: 'Werbeanlagen-Reparatur in Berlin & Brandenburg',
-    heroSubline: 'Direkter PixelRing Service für Leuchtkästen, LED-Beleuchtung, Profilbuchstaben, Folien und Befestigungen. Senden Sie ein Foto oder eine Beschreibung — wir prüfen die Situation und schlagen den nächsten Schritt vor.',
+    heroSubline: 'Wenn eine Werbeanlage dunkel bleibt, flackert, Folie sich löst oder eine Befestigung unsicher wirkt, senden Sie einfach ein Foto. PixelRing ordnet den sichtbaren Defekt, Zugang und den sicheren nächsten Schritt ein.',
     heroImage: '/images/leistungen/hero-repair.png',
-    symptomsTitle: 'Typische Defekte & Symptome',
+    heroPrimaryCta: 'Foto der Werbeanlage senden',
+    heroSecondaryCta: 'Ähnliche Fälle ansehen',
+    symptomsTitle: 'Was ist von außen sichtbar?',
     closeLabel: 'Schließen',
     formTitle: 'Reparatur anfragen',
     finalHeadline: 'Unsicher, ob Ihre Störung behoben werden kann?',
@@ -145,20 +177,22 @@ const CONTENT: Record<Locale, LandingPageContent> = {
       },
       {
         id: 'custom-issue',
-        title: 'Andere Störung / Nicht dabei?',
-        cardText: 'Haben Sie ein anderes Problem? Beschreiben Sie es kurz, und wir erstellen Ihnen ein individuelles Angebot.',
-        reassuringText: 'Beschreiben Sie den Defekt einfach in Ihren eigenen Worten. Wir reparieren alle Werbeanlagen und finden schnell eine Lösung.',
+        title: 'Nicht sicher? Einfach Foto senden',
+        cardText: 'Sie müssen den Defekt nicht benennen. Ein Foto und ein kurzer Satz reichen für die erste Einordnung.',
+        reassuringText: 'Beschreiben Sie den sichtbaren Zustand in Ihren eigenen Worten. PixelRing prüft die Fotos und schlägt den nächsten sinnvollen Schritt vor.',
         prefillMessage: '',
       },
     ],
   },
   ru: {
     metaTitle: 'Ремонт вывесок в Берлине и Бранденбурге | PixelRing',
-    metaDescription: 'Неисправная вывеска в Берлине или Бранденбурге? PixelRing проверяет световые короба, LED-модули, объемные буквы, пленки, крепления и digital signage. Отправьте фото и получите первичную оценку.',
+    metaDescription: 'Ремонт вывесок в Берлине и Бранденбурге: PixelRing проверяет световые короба, LED, буквы, пленки и крепления по фото или на месте.',
     heroTitle: 'Ремонт вывесок в Берлине и Бранденбурге',
-    heroSubline: 'Прямой сервис PixelRing для световых коробов, LED-подсветки, букв, пленок и креплений. Пришлите фото или описание — специалисты оценят ситуацию и предложат следующий шаг.',
+    heroSubline: 'Если вывеска не горит, мерцает, отклеилась пленка или ослабло крепление, просто отправьте фото. PixelRing оценит видимый дефект, доступ и безопасный следующий шаг.',
     heroImage: '/images/leistungen/hero-repair.png',
-    symptomsTitle: 'Выберите вашу неисправность',
+    heroPrimaryCta: 'Отправить фото вывески',
+    heroSecondaryCta: 'Посмотреть похожие случаи',
+    symptomsTitle: 'Что видно снаружи?',
     closeLabel: 'Закрыть',
     formTitle: 'Запросить ремонт',
     finalHeadline: 'Не уверены, подлежит ли вывеска ремонту?',
@@ -222,20 +256,22 @@ const CONTENT: Record<Locale, LandingPageContent> = {
       },
       {
         id: 'custom-issue',
-        title: 'Другая неисправность',
-        cardText: 'Не нашли вашу проблему в списке? Опишите ее своими словами, и мы подготовим индивидуальное решение.',
-        reassuringText: 'Опишите неисправность в свободной форме. Мы работаем со всеми типами наружной рекламы и решим вашу задачу в кратчайшие сроки.',
+        title: 'Не знаю, просто отправлю фото',
+        cardText: 'Не нужно точно называть дефект. Фото и одно короткое описание уже достаточно для первичной ориентации.',
+        reassuringText: 'Опишите, что видно снаружи, своими словами. PixelRing посмотрит фото и предложит следующий разумный шаг.',
         prefillMessage: '',
       },
     ],
   },
   en: {
     metaTitle: 'Signage Repair & Maintenance in Berlin & Brandenburg | PixelRing',
-    metaDescription: 'Defective sign in Berlin or Brandenburg? PixelRing checks lightboxes, LED modules, channel letters, films, fixings and digital signage. Send photos and receive a first assessment.',
+    metaDescription: 'Signage repair in Berlin & Brandenburg: PixelRing checks lightboxes, LED modules, channel letters, films and fixings from photos or on site.',
     heroTitle: 'Signage repair in Berlin & Brandenburg',
-    heroSubline: 'Direct PixelRing service for lightboxes, LED lighting, channel letters, films and fixings. Send a photo or short description — specialists review the situation and suggest the next step.',
+    heroSubline: 'If a sign stays dark, flickers, film is peeling or a fixing looks unsafe, just send a photo. PixelRing classifies the visible defect, access and the safe next step.',
     heroImage: '/images/leistungen/hero-repair.png',
-    symptomsTitle: 'Select your issue for a quick assessment',
+    heroPrimaryCta: 'Send a photo of the sign',
+    heroSecondaryCta: 'View similar cases',
+    symptomsTitle: 'What is visible from outside?',
     closeLabel: 'Close',
     formTitle: 'Request repair',
     finalHeadline: 'Unsure if your defect can be repaired?',
@@ -299,20 +335,22 @@ const CONTENT: Record<Locale, LandingPageContent> = {
       },
       {
         id: 'custom-issue',
-        title: 'Other Issue / Not Listed?',
-        cardText: 'Do you have another problem? Describe it briefly, and we will prepare a custom proposal.',
-        reassuringText: 'Simply describe the defect in your own words. We repair all types of outdoor signs and find a quick solution.',
+        title: 'Not sure? Just send a photo',
+        cardText: 'You do not need the technical name. A photo and one short sentence are enough for the first classification.',
+        reassuringText: 'Describe what is visible from the outside in your own words. PixelRing reviews the photo and suggests the next sensible step.',
         prefillMessage: '',
       },
     ],
   },
   tr: {
     metaTitle: 'Tabela onarımı Berlin & Brandenburg | PixelRing',
-    metaDescription: 'Berlin veya Brandenburg’da arızalı tabela mı var? PixelRing ışıklı kutuları, LED modülleri, profil harfleri, folyoları, bağlantıları ve dijital tabelaları kontrol eder. Fotoğraf gönderin ve ilk değerlendirmeyi alın.',
+    metaDescription: 'Berlin & Brandenburg tabela onarımı: PixelRing ışıklı kutu, LED, harf, folyo ve bağlantıları fotoğrafla veya yerinde kontrol eder.',
     heroTitle: 'Berlin & Brandenburg’da tabela onarımı',
-    heroSubline: 'Işıklı kutular, LED aydınlatma, harf tabelalar, folyolar ve bağlantı elemanları için doğrudan PixelRing servisi. Fotoğraf veya kısa açıklama gönderin — uzmanlar durumu inceler ve sonraki adımı önerir.',
+    heroSubline: 'Tabela karanlık kalıyor, titriyor, folyo kalkıyor veya bağlantı güvenli görünmüyorsa fotoğraf göndermeniz yeterlidir. PixelRing görünen arızayı, erişimi ve güvenli sonraki adımı sınıflandırır.',
     heroImage: '/images/leistungen/hero-repair.png',
-    symptomsTitle: 'Hızlı bir değerlendirme için sorununuzu seçin',
+    heroPrimaryCta: 'Tabela fotoğrafı gönder',
+    heroSecondaryCta: 'Benzer durumları gör',
+    symptomsTitle: 'Dışarıdan ne görünüyor?',
     closeLabel: 'Kapat',
     formTitle: 'Onarım talep et',
     finalHeadline: 'Arızanızın giderilip giderilemeyeceğinden emin değil misiniz?',
@@ -376,20 +414,22 @@ const CONTENT: Record<Locale, LandingPageContent> = {
       },
       {
         id: 'custom-issue',
-        title: 'Diğer Sorun / Listede Yok?',
-        cardText: 'Başka bir sorununuz mu var? Kısaca açıklayın, size özel bir teklif hazırlayalım.',
-        reassuringText: 'Arızayı kendi kelimelerinizle açıklamanız yeterlidir. Tüm dış mekan tabelalarını onarır ve hızlıca bir çözüm buluruz.',
+        title: 'Emin değil misiniz? Fotoğraf gönderin',
+        cardText: 'Teknik adı bilmeniz gerekmez. İlk sınıflandırma için fotoğraf ve kısa bir cümle yeterlidir.',
+        reassuringText: 'Dışarıdan görünen durumu kendi kelimelerinizle anlatın. PixelRing fotoğrafı inceler ve mantıklı sonraki adımı önerir.',
         prefillMessage: '',
       },
     ],
   },
   pl: {
     metaTitle: 'Naprawa reklam Berlin & Brandenburg | PixelRing',
-    metaDescription: 'Uszkodzona reklama w Berlinie lub Brandenburgii? PixelRing sprawdza kasetony świetlne, moduły LED, litery przestrzenne, folie, mocowania i digital signage. Wyślij zdjęcia i otrzymaj wstępną ocenę.',
+    metaDescription: 'Naprawa reklam w Berlinie i Brandenburgii: PixelRing sprawdza kasetony, LED, litery, folie i mocowania ze zdjęć lub na miejscu.',
     heroTitle: 'Naprawa reklam w Berlinie i Brandenburgii',
-    heroSubline: 'Bezpośredni serwis PixelRing dla kasetonów, LED, liter przestrzennych, folii i mocowań. Wyślij zdjęcie lub krótki opis — specjaliści ocenią sytuację i zaproponują następny krok.',
+    heroSubline: 'Jeśli szyld nie świeci, miga, folia odchodzi albo mocowanie wygląda niepewnie, wystarczy zdjęcie. PixelRing oceni widoczny defekt, dostęp i bezpieczny następny krok.',
     heroImage: '/images/leistungen/hero-repair.png',
-    symptomsTitle: 'Wybierz swój problem w celu szybkiej oceny',
+    heroPrimaryCta: 'Wyślij zdjęcie szyldu',
+    heroSecondaryCta: 'Zobacz podobne przypadki',
+    symptomsTitle: 'Co widać z zewnątrz?',
     closeLabel: 'Zamknij',
     formTitle: 'Zgłoś naprawę',
     finalHeadline: 'Nie masz pewności, czy usterka może zostać naprawiona?',
@@ -453,20 +493,22 @@ const CONTENT: Record<Locale, LandingPageContent> = {
       },
       {
         id: 'custom-issue',
-        title: 'Inna Usterka / Brak na Liście?',
-        cardText: 'Masz inny problem? Opisz go krótko, a my przygotujemy dla Ciebie indywidualną ofertę.',
-        reassuringText: 'Po prostu opisz usterkę własnymi słowami. Naprawiamy wszystkie rodzaje reklam i szybko znajdziemy rozwiązanie.',
+        title: 'Nie wiem, wyślę zdjęcie',
+        cardText: 'Nie musisz znać technicznej nazwy usterki. Zdjęcie i jedno krótkie zdanie wystarczą do pierwszej klasyfikacji.',
+        reassuringText: 'Opisz własnymi słowami, co widać z zewnątrz. PixelRing sprawdzi zdjęcie i zaproponuje rozsądny kolejny krok.',
         prefillMessage: '',
       },
     ],
   },
   ar: {
     metaTitle: 'إصلاح وصيانة اللوحات الإعلانية في برلين وبراندنبورغ | PixelRing',
-    metaDescription: 'هل لديك لوحة إعلانية معطلة في برلين أو براندنبورغ؟ تفحص PixelRing الصناديق المضيئة ووحدات LED والحروف البارزة والأفلام والتثبيت واللافتات الرقمية. أرسل الصور واحصل على تقييم أولي.',
+    metaDescription: 'إصلاح اللوحات في برلين وبراندنبورغ: تفحص PixelRing الصناديق المضيئة وLED والحروف والأفلام والتثبيت من الصور أو في الموقع.',
     heroTitle: 'إصلاح اللوحات الإعلانية في برلين وبراندنبورغ',
-    heroSubline: 'خدمة PixelRing مباشرة للصناديق المضيئة، وإضاءة LED، والحروف المضيئة، والأفلام اللاصقة، والتثبيت. أرسل صورة أو وصفًا قصيرًا — يراجع المختصون الحالة ويقترحون الخطوة التالية.',
+    heroSubline: 'إذا كانت اللوحة مظلمة أو تومض أو يتقشر الفيلم أو يبدو التثبيت غير آمن، أرسل صورة فقط. تصنف PixelRing العطل الظاهر والوصول والخطوة الآمنة التالية.',
     heroImage: '/images/leistungen/hero-repair.png',
-    symptomsTitle: 'اختر مشكلتك للحصول على تقييم سريع',
+    heroPrimaryCta: 'إرسال صورة اللوحة',
+    heroSecondaryCta: 'عرض حالات مشابهة',
+    symptomsTitle: 'ما الذي يظهر من الخارج؟',
     closeLabel: 'إغلاق',
     formTitle: 'طلب إصلاح',
     finalHeadline: 'هل أنت غير متأكد مما إذا كان من الممكن إصلاح العطل؟',
@@ -530,9 +572,9 @@ const CONTENT: Record<Locale, LandingPageContent> = {
       },
       {
         id: 'custom-issue',
-        title: 'مشكلة أخرى / غير مدرجة؟',
-        cardText: 'هل لديك مشكلة أخرى؟ صفها بإيجاز، وسنعد لك عرضاً مخصصاً.',
-        reassuringText: 'ببساطة صف العطل بكلماتك الخاصة. نحن نصلح جميع أنواع اللافتات الخارجية ونجد حلاً سريعاً.',
+        title: 'لست متأكداً؟ أرسل صورة فقط',
+        cardText: 'لا تحتاج إلى الاسم التقني للعطل. تكفي صورة وجملة قصيرة للتصنيف الأول.',
+        reassuringText: 'صف ما يظهر من الخارج بكلماتك. تراجع PixelRing الصورة وتقترح الخطوة العملية التالية.',
         prefillMessage: '',
       },
     ],
@@ -671,7 +713,7 @@ const REPAIR_FAQ_BY_LOCALE: Record<Locale, RepairFaqContent> = {
 const REPAIR_SCOPE_BY_LOCALE: Record<Locale, RepairScopeContent> = {
   de: {
     coverageEyebrow: 'Serviceumfang',
-    coverageTitle: 'Welche Werbeanlagen wir reparieren',
+    coverageTitle: 'Womit wir arbeiten',
     coverageIntro:
       'Nicht jede Störung sieht technisch gleich aus. PixelRing ordnet zuerst Konstruktion, Material, Zugang und sichtbaren Defekt ein, bevor ein Reparaturweg empfohlen wird.',
     coverageCards: [
@@ -692,7 +734,7 @@ const REPAIR_SCOPE_BY_LOCALE: Record<Locale, RepairScopeContent> = {
       { title: 'Gehäuse, Glas & Wetter', text: 'IP-Schutz, Dichtungen, Vandalismusschäden, Kondenswasser und Montagezugang bestimmen den nächsten Schritt.' },
     ],
     serviceEyebrow: 'Was wir übernehmen',
-    serviceTitle: 'Was im Reparaturservice enthalten sein kann',
+    serviceTitle: 'Was der Spezialist macht',
     serviceIntro:
       'Der genaue Umfang hängt von Fotos, Standort, Zugang, Material und Sicherheitslage ab. Die erste Einschätzung bleibt unverbindlich, hilft aber, den passenden Einsatz vorzubereiten.',
     serviceCards: [
@@ -716,7 +758,7 @@ const REPAIR_SCOPE_BY_LOCALE: Record<Locale, RepairScopeContent> = {
   },
   en: {
     coverageEyebrow: 'Service scope',
-    coverageTitle: 'Which signs and structures we repair',
+    coverageTitle: 'What we work with',
     coverageIntro:
       'Not every failure has the same technical cause. PixelRing first clarifies the construction, material, access and visible damage before recommending a repair path.',
     coverageCards: [
@@ -737,7 +779,7 @@ const REPAIR_SCOPE_BY_LOCALE: Record<Locale, RepairScopeContent> = {
       { title: 'Housing, glass & weather', text: 'IP protection, seals, vandal damage, condensation and access define the next step.' },
     ],
     serviceEyebrow: 'What we handle',
-    serviceTitle: 'What the repair service can include',
+    serviceTitle: 'What the specialist does',
     serviceIntro:
       'The exact scope depends on photos, location, access, material and safety conditions. The first assessment is non-binding, but it helps prepare the right visit.',
     serviceCards: [
@@ -761,7 +803,7 @@ const REPAIR_SCOPE_BY_LOCALE: Record<Locale, RepairScopeContent> = {
   },
   ru: {
     coverageEyebrow: 'Объем сервиса',
-    coverageTitle: 'Какие вывески и конструкции мы ремонтируем',
+    coverageTitle: 'С чем работаем',
     coverageIntro:
       'Одинаковый внешний симптом не всегда означает одну и ту же поломку. PixelRing сначала уточняет тип конструкции, материал, доступ и видимый дефект, а затем предлагает ремонтный сценарий.',
     coverageCards: [
@@ -782,7 +824,7 @@ const REPAIR_SCOPE_BY_LOCALE: Record<Locale, RepairScopeContent> = {
       { title: 'Корпус, стекло и погода', text: 'IP-защита (защита от влаги и пыли), уплотнения, вандальные повреждения, конденсат и доступ определяют следующий шаг.' },
     ],
     serviceEyebrow: 'Что мы берем на себя',
-    serviceTitle: 'Что может входить в ремонтный сервис',
+    serviceTitle: 'Что сделает специалист',
     serviceIntro:
       'Точный объем зависит от фото, адреса, доступа, материала и безопасности. Первая оценка не является обязательным предложением, но помогает подготовить правильный выезд.',
     serviceCards: [
@@ -806,7 +848,7 @@ const REPAIR_SCOPE_BY_LOCALE: Record<Locale, RepairScopeContent> = {
   },
   tr: {
     coverageEyebrow: 'Hizmet kapsamı',
-    coverageTitle: 'Hangi tabela ve yapıları onarıyoruz?',
+    coverageTitle: 'Nelerle çalışıyoruz?',
     coverageIntro:
       'Her belirti aynı teknik arıza anlamına gelmez. PixelRing önce yapı tipini, malzemeyi, erişimi ve görünen arızayı netleştirir, sonra onarım yolunu önerir.',
     coverageCards: [
@@ -827,7 +869,7 @@ const REPAIR_SCOPE_BY_LOCALE: Record<Locale, RepairScopeContent> = {
       { title: 'Kasa, cam ve hava koşulları', text: 'IP koruması, contalar, vandalizm hasarı, yoğuşma ve erişim sonraki adımı belirler.' },
     ],
     serviceEyebrow: 'Neleri üstleniyoruz?',
-    serviceTitle: 'Onarım hizmetine neler dahil olabilir?',
+    serviceTitle: 'Uzman ne yapar?',
     serviceIntro:
       'Kesin kapsam fotoğraflara, konuma, erişime, malzemeye ve güvenlik durumuna bağlıdır. İlk değerlendirme bağlayıcı değildir, ancak doğru ziyareti hazırlamaya yardımcı olur.',
     serviceCards: [
@@ -851,7 +893,7 @@ const REPAIR_SCOPE_BY_LOCALE: Record<Locale, RepairScopeContent> = {
   },
   pl: {
     coverageEyebrow: 'Zakres usługi',
-    coverageTitle: 'Jakie szyldy i konstrukcje naprawiamy',
+    coverageTitle: 'Z czym pracujemy',
     coverageIntro:
       'Ten sam widoczny objaw nie zawsze oznacza tę samą usterkę. PixelRing najpierw ustala konstrukcję, materiał, dostęp i widoczne uszkodzenie, a dopiero potem proponuje ścieżkę naprawy.',
     coverageCards: [
@@ -872,7 +914,7 @@ const REPAIR_SCOPE_BY_LOCALE: Record<Locale, RepairScopeContent> = {
       { title: 'Obudowa, szkło i pogoda', text: 'Ochrona IP, uszczelki, szkody wandalizmu, kondensacja i dostęp określają kolejny krok.' },
     ],
     serviceEyebrow: 'Co obejmujemy',
-    serviceTitle: 'Co może obejmować serwis naprawczy',
+    serviceTitle: 'Co zrobi specjalista',
     serviceIntro:
       'Dokładny zakres zależy od zdjęć, lokalizacji, dostępu, materiału i bezpieczeństwa. Pierwsza ocena jest niewiążąca, ale pomaga przygotować właściwą wizytę.',
     serviceCards: [
@@ -896,7 +938,7 @@ const REPAIR_SCOPE_BY_LOCALE: Record<Locale, RepairScopeContent> = {
   },
   ar: {
     coverageEyebrow: 'نطاق الخدمة',
-    coverageTitle: 'ما اللوحات والهياكل التي نصلحها',
+    coverageTitle: 'ما الذي نعمل عليه',
     coverageIntro:
       'ليس كل عرض ظاهر يعني العطل نفسه. تحدد PixelRing أولًا نوع التركيب، والمادة، وطريقة الوصول، والضرر الظاهر، ثم تقترح مسار الإصلاح.',
     coverageCards: [
@@ -917,7 +959,7 @@ const REPAIR_SCOPE_BY_LOCALE: Record<Locale, RepairScopeContent> = {
       { title: 'الهيكل والزجاج والطقس', text: 'حماية IP، الأختام، أضرار التخريب، التكثف وطريقة الوصول تحدد الخطوة التالية.' },
     ],
     serviceEyebrow: 'ما الذي نتولاه',
-    serviceTitle: 'ما الذي يمكن أن يشمله إصلاح اللوحة',
+    serviceTitle: 'ماذا يفعل المختص',
     serviceIntro:
       'يعتمد النطاق الدقيق على الصور، والموقع، وطريقة الوصول، والمادة، وحالة السلامة. التقييم الأولي غير ملزم، لكنه يساعد في تحضير الزيارة المناسبة.',
     serviceCards: [
@@ -938,6 +980,312 @@ const REPAIR_SCOPE_BY_LOCALE: Record<Locale, RepairScopeContent> = {
       'للشاشات: صورة الشاشة، رسالة الخطأ، وحدة التحكم/مشغل الوسائط وصورة الهيكل',
     ],
     ctaLabel: 'توضيح نطاق الإصلاح',
+  },
+};
+
+const REPAIR_PROBLEM_LINKS_BY_LOCALE: Record<Locale, RepairProblemLinksContent> = {
+  de: {
+    eyebrow: 'Mehr dazu',
+    title: 'Den Defekt genauer verstehen',
+    intro:
+      'Wenn Sie erst lesen möchten, was hinter einem Symptom stecken kann, führen diese kurzen Problemseiten tiefer.',
+    links: [
+      {
+        title: 'Werbeanlage flackert',
+        text: 'Ursachen für flackernde LED, instabile Beleuchtung und zeitweise Ausfälle.',
+        href: '/probleme-loesungen/werbeanlage-flackert',
+        tag: 'Licht',
+      },
+      {
+        title: 'Buchstabe leuchtet nicht',
+        text: 'Was hinter dunklen Profilbuchstaben, LED-Zonen oder unterbrochenen Ketten stecken kann.',
+        href: '/probleme-loesungen/buchstabe-leuchtet-nicht',
+        tag: 'Buchstaben',
+      },
+      {
+        title: 'Folie löst sich',
+        text: 'Warum Folien Blasen werfen, sich ablösen oder durch UV und Wetter sichtbar altern.',
+        href: '/probleme-loesungen/folie-loest-sich',
+        tag: 'Folie',
+      },
+      {
+        title: 'Werbeanlage schaltet nach Regen ab',
+        text: 'Hinweise zu Feuchtigkeit, Sicherungsausfall, Gehäuse, Kabelwegen und sicheren nächsten Schritten.',
+        href: '/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab',
+        tag: 'Regen',
+      },
+    ],
+  },
+  en: {
+    eyebrow: 'Read more',
+    title: 'Understand the defect more precisely',
+    intro:
+      'If you want to read first, these short problem pages explain what may be behind a visible symptom.',
+    links: [
+      {
+        title: 'Signage is flickering',
+        text: 'Typical causes of flickering LED, unstable lighting and intermittent outages.',
+        href: '/probleme-loesungen/werbeanlage-flackert',
+        tag: 'Light',
+      },
+      {
+        title: 'Letter does not light',
+        text: 'What can cause dark channel letters, failed LED zones or interrupted chains.',
+        href: '/probleme-loesungen/buchstabe-leuchtet-nicht',
+        tag: 'Letters',
+      },
+      {
+        title: 'Film is peeling',
+        text: 'Why films bubble, peel or visibly age from UV, weather and surface conditions.',
+        href: '/probleme-loesungen/folie-loest-sich',
+        tag: 'Film',
+      },
+      {
+        title: 'Sign switches off after rain',
+        text: 'Signals around moisture, breaker trips, housings, cable paths and safe next steps.',
+        href: '/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab',
+        tag: 'Rain',
+      },
+    ],
+  },
+  ru: {
+    eyebrow: 'Разобраться подробнее',
+    title: 'Если хотите понять причину до заявки',
+    intro:
+      'Эти короткие страницы объясняют, что может стоять за видимым симптомом и какие фото помогут для первой оценки.',
+    links: [
+      {
+        title: 'Вывеска мерцает',
+        text: 'Причины мерцания LED, нестабильного света и периодических отказов.',
+        href: '/probleme-loesungen/werbeanlage-flackert',
+        tag: 'Свет',
+      },
+      {
+        title: 'Буква не светится',
+        text: 'Что может стоять за темной буквой, отказом LED-зоны или разрывом цепи.',
+        href: '/probleme-loesungen/buchstabe-leuchtet-nicht',
+        tag: 'Буквы',
+      },
+      {
+        title: 'Пленка отклеивается',
+        text: 'Почему пленка пузырится, отходит или стареет из-за солнца, погоды и поверхности.',
+        href: '/probleme-loesungen/folie-loest-sich',
+        tag: 'Пленка',
+      },
+      {
+        title: 'Вывеска отключается после дождя',
+        text: 'Признаки влаги, срабатывания автомата, проблем корпуса, кабелей и безопасных следующих шагов.',
+        href: '/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab',
+        tag: 'Дождь',
+      },
+    ],
+  },
+  tr: {
+    eyebrow: 'Daha fazla oku',
+    title: 'Arızayı daha net anlamak',
+    intro:
+      'Önce okumak isterseniz, bu kısa problem sayfaları görünen belirtinin arkasında ne olabileceğini açıklar.',
+    links: [
+      {
+        title: 'Tabela titriyor',
+        text: 'Titreyen LED, dengesiz isik ve aralikli kesintilerin tipik nedenleri.',
+        href: '/probleme-loesungen/werbeanlage-flackert',
+        tag: 'Isik',
+      },
+      {
+        title: 'Harf yanmiyor',
+        text: 'Karanlik harfler, LED bolgeleri veya kesilen LED zincirleri arkasindaki olasi nedenler.',
+        href: '/probleme-loesungen/buchstabe-leuchtet-nicht',
+        tag: 'Harf',
+      },
+      {
+        title: 'Folyo kalkiyor',
+        text: 'Folyolarin kabarmasi, kalkmasi veya UV ve hava nedeniyle eskimesi.',
+        href: '/probleme-loesungen/folie-loest-sich',
+        tag: 'Folyo',
+      },
+      {
+        title: 'Tabela yagmurdan sonra kapaniyor',
+        text: 'Nem, sigorta atmasi, kasa, kablo gecisleri ve guvenli sonraki adimlar.',
+        href: '/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab',
+        tag: 'Yagmur',
+      },
+    ],
+  },
+  pl: {
+    eyebrow: 'Dowiedz się więcej',
+    title: 'Zrozumieć usterkę dokładniej',
+    intro:
+      'Jeśli chcesz najpierw poczytać, te krótkie strony wyjaśniają, co może stać za widocznym objawem.',
+    links: [
+      {
+        title: 'Reklama miga',
+        text: 'Typowe przyczyny migotania LED, niestabilnego swiatla i okresowych awarii.',
+        href: '/probleme-loesungen/werbeanlage-flackert',
+        tag: 'Swiatlo',
+      },
+      {
+        title: 'Litera nie swieci',
+        text: 'Co moze stac za ciemna litera, strefa LED albo przerwanym lancuchem.',
+        href: '/probleme-loesungen/buchstabe-leuchtet-nicht',
+        tag: 'Litery',
+      },
+      {
+        title: 'Folia odchodzi',
+        text: 'Dlaczego folia robi pecherze, odkleja sie albo starzeje od UV i pogody.',
+        href: '/probleme-loesungen/folie-loest-sich',
+        tag: 'Folia',
+      },
+      {
+        title: 'Reklama wylacza sie po deszczu',
+        text: 'Objawy wilgoci, wybicia zabezpieczenia, problemow obudowy i kabli.',
+        href: '/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab',
+        tag: 'Deszcz',
+      },
+    ],
+  },
+  ar: {
+    eyebrow: 'مزيد من الفهم',
+    title: 'فهم العطل بشكل أدق',
+    intro:
+      'إذا أردت القراءة أولاً، تشرح هذه الصفحات القصيرة ما قد يكون خلف العرض الظاهر.',
+    links: [
+      {
+        title: 'اللوحة تومض',
+        text: 'اسباب وميض LED وعدم استقرار الاضاءة والانقطاعات المؤقتة.',
+        href: '/probleme-loesungen/werbeanlage-flackert',
+        tag: 'اضاءة',
+      },
+      {
+        title: 'حرف لا يضيء',
+        text: 'ما قد يسبب ظلام الحروف او مناطق LED او انقطاع السلسلة.',
+        href: '/probleme-loesungen/buchstabe-leuchtet-nicht',
+        tag: 'حروف',
+      },
+      {
+        title: 'الفيلم يتقشر',
+        text: 'لماذا تظهر الفقاعات او يتقشر الفيلم بسبب الشمس والطقس والسطح.',
+        href: '/probleme-loesungen/folie-loest-sich',
+        tag: 'فيلم',
+      },
+      {
+        title: 'اللوحة تنطفئ بعد المطر',
+        text: 'اشارات الرطوبة وفصل الكهرباء ومشاكل الهيكل ومسارات الكابلات.',
+        href: '/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab',
+        tag: 'مطر',
+      },
+    ],
+  },
+};
+
+const REPAIR_NEXT_STEP_BY_LOCALE: Record<Locale, RepairNextStepContent> = {
+  de: {
+    eyebrow: 'NEXT STEP',
+    title: 'Zeigen Sie uns Ihre Werbeanlage',
+    intro:
+      'Sie müssen den Defekt nicht technisch benennen. Ein Foto, Standort oder Bezirk und eine kurze Beschreibung reichen für den Start.',
+    requestTitle: 'Starten Sie mit Foto oder Beschreibung',
+    requestText:
+      'PixelRing prüft den sichtbaren Zustand, Zugang und Sicherheitslage und meldet sich mit dem nächsten sinnvollen Schritt.',
+    requestCta: 'Foto und Reparaturfall senden',
+    servicesTitle: 'Vielleicht ist es ein Nachbarservice',
+    servicesText: 'Diese Servicebereiche passen, wenn Modernisierung, Diagnose, Montage oder Branding Teil der Aufgabe wird.',
+    links: [
+      { title: 'LED-Modernisierung', text: 'Wenn Beleuchtung, Module, Netzteile oder Neon technisch aktualisiert werden sollen.', href: '/leistungen/lichtwerbung-led-modernisierung', tag: 'Licht' },
+      { title: 'Audit & Diagnose', text: 'Wenn Zustand, Prioritaet oder mehrere Standorte zuerst strukturiert geprueft werden sollen.', href: '/leistungen/werbeanlagen-audit-diagnose', tag: 'Check' },
+      { title: 'Montage & Demontage', text: 'Wenn Zugang, Rueckbau, Versetzung oder neue Befestigung zur Aufgabe gehoeren.', href: '/leistungen/montage-demontage-werbeanlagen', tag: 'Montage' },
+      { title: 'Druck & Branding', text: 'Wenn Folien, Beschriftungen, Druckdaten oder Werbematerial erneuert werden muessen.', href: '/leistungen/druckprodukte-branding-werbematerialien', tag: 'Branding' },
+    ],
+  },
+  en: {
+    eyebrow: 'NEXT STEP',
+    title: 'Show us your sign',
+    intro:
+      'You do not need the technical name of the defect. A photo, location or district and a short description are enough to start.',
+    requestTitle: 'Start with a photo or description',
+    requestText:
+      'PixelRing checks the visible condition, access and safety situation, then replies with the next practical step.',
+    requestCta: 'Send photo and repair case',
+    servicesTitle: 'Maybe it is a neighboring service',
+    servicesText: 'These service areas fit when modernization, diagnostics, installation or branding becomes part of the task.',
+    links: [
+      { title: 'LED modernization', text: 'When lighting, modules, power supplies or neon should be technically updated.', href: '/leistungen/lichtwerbung-led-modernisierung', tag: 'Light' },
+      { title: 'Audit & diagnostics', text: 'When condition, priority or several locations should be checked first.', href: '/leistungen/werbeanlagen-audit-diagnose', tag: 'Check' },
+      { title: 'Installation & dismantling', text: 'When access, removal, relocation or new fixings are part of the task.', href: '/leistungen/montage-demontage-werbeanlagen', tag: 'Install' },
+      { title: 'Print & branding', text: 'When films, lettering, print data or advertising materials need renewal.', href: '/leistungen/druckprodukte-branding-werbematerialien', tag: 'Branding' },
+    ],
+  },
+  ru: {
+    eyebrow: 'СЛЕДУЮЩИЙ ШАГ',
+    title: 'Покажите нам вывеску',
+    intro:
+      'Не нужно знать точное название поломки. Для старта достаточно фото, адреса или района и короткого описания.',
+    requestTitle: 'Начните с фото или описания',
+    requestText:
+      'PixelRing проверит видимое состояние, доступ и безопасность, а затем предложит следующий разумный шаг.',
+    requestCta: 'Отправить фото и задачу',
+    servicesTitle: 'Возможно, нужна соседняя услуга',
+    servicesText: 'Эти услуги подходят, если нужна модернизация, диагностика, монтаж или восстановление брендинга.',
+    links: [
+      { title: 'LED-модернизация', text: 'Если нужно обновить подсветку, модули, блоки питания или неон.', href: '/leistungen/lichtwerbung-led-modernisierung', tag: 'Свет' },
+      { title: 'Аудит и диагностика', text: 'Если сначала нужно оценить состояние, приоритет или несколько объектов.', href: '/leistungen/werbeanlagen-audit-diagnose', tag: 'Проверка' },
+      { title: 'Монтаж и демонтаж', text: 'Если задача связана с доступом, снятием, переносом или креплением.', href: '/leistungen/montage-demontage-werbeanlagen', tag: 'Монтаж' },
+      { title: 'Печать и брендинг', text: 'Если нужно обновить пленки, надписи, макеты или рекламные материалы.', href: '/leistungen/druckprodukte-branding-werbematerialien', tag: 'Брендинг' },
+    ],
+  },
+  tr: {
+    eyebrow: 'SONRAKI ADIM',
+    title: 'Tabelanızı bize gösterin',
+    intro:
+      'Arızanın teknik adını bilmeniz gerekmez. Başlamak için fotoğraf, adres veya bölge ve kısa açıklama yeterlidir.',
+    requestTitle: 'Fotoğraf veya açıklama ile başlayın',
+    requestText:
+      'PixelRing görünen durumu, erişimi ve güvenliği kontrol eder, sonra mantıklı sonraki adımı önerir.',
+    requestCta: 'Fotoğraf ve onarım talebi gönder',
+    servicesTitle: 'Belki komşu bir hizmet gerekir',
+    servicesText: 'Modernizasyon, teshis, montaj veya markalama da gerekiyorsa bu hizmetler uygundur.',
+    links: [
+      { title: 'LED modernizasyonu', text: 'Aydinlatma, modul, guc kaynagi veya neon teknik olarak yenilenecekse.', href: '/leistungen/lichtwerbung-led-modernisierung', tag: 'Isik' },
+      { title: 'Audit ve teshis', text: 'Durum, oncelik veya birden fazla lokasyon once kontrol edilecekse.', href: '/leistungen/werbeanlagen-audit-diagnose', tag: 'Kontrol' },
+      { title: 'Montaj ve demontaj', text: 'Erisim, sokum, tasima veya yeni sabitleme isin parcasiysa.', href: '/leistungen/montage-demontage-werbeanlagen', tag: 'Montaj' },
+      { title: 'Baski ve markalama', text: 'Folyo, yazi, baski verisi veya reklam malzemesi yenilenecekse.', href: '/leistungen/druckprodukte-branding-werbematerialien', tag: 'Marka' },
+    ],
+  },
+  pl: {
+    eyebrow: 'NASTEPNY KROK',
+    title: 'Pokaż nam swój szyld',
+    intro:
+      'Nie musisz znać technicznej nazwy usterki. Na start wystarczy zdjęcie, adres lub dzielnica i krótki opis.',
+    requestTitle: 'Zacznij od zdjęcia albo opisu',
+    requestText:
+      'PixelRing sprawdzi widoczny stan, dostęp i bezpieczeństwo, a następnie zaproponuje rozsądny kolejny krok.',
+    requestCta: 'Wyślij zdjęcie i sprawę',
+    servicesTitle: 'Może potrzebna jest usługa pokrewna',
+    servicesText: 'Te uslugi pasuja, gdy potrzebna jest modernizacja, diagnostyka, montaz albo branding.',
+    links: [
+      { title: 'Modernizacja LED', text: 'Gdy oswietlenie, moduly, zasilacze albo neon wymagaja aktualizacji.', href: '/leistungen/lichtwerbung-led-modernisierung', tag: 'Swiatlo' },
+      { title: 'Audyt i diagnostyka', text: 'Gdy najpierw trzeba sprawdzic stan, priorytet albo kilka lokalizacji.', href: '/leistungen/werbeanlagen-audit-diagnose', tag: 'Kontrola' },
+      { title: 'Montaz i demontaz', text: 'Gdy zadanie obejmuje dostep, demontaz, przeniesienie albo mocowania.', href: '/leistungen/montage-demontage-werbeanlagen', tag: 'Montaz' },
+      { title: 'Druk i branding', text: 'Gdy trzeba odnowic folie, napisy, dane do druku albo materialy reklamowe.', href: '/leistungen/druckprodukte-branding-werbematerialien', tag: 'Branding' },
+    ],
+  },
+  ar: {
+    eyebrow: 'الخطوة التالية',
+    title: 'أرنا لوحتك',
+    intro:
+      'لا تحتاج إلى معرفة الاسم التقني للعطل. تكفي صورة، والعنوان أو المنطقة، ووصف قصير للبدء.',
+    requestTitle: 'ابدأ بصورة أو وصف',
+    requestText:
+      'تفحص PixelRing الحالة الظاهرة والوصول والسلامة، ثم تقترح الخطوة العملية التالية.',
+    requestCta: 'إرسال الصورة وحالة الإصلاح',
+    servicesTitle: 'قد تكون خدمة قريبة مناسبة',
+    servicesText: 'هذه الخدمات مناسبة اذا كانت المهمة تشمل التحديث او التشخيص او التركيب او الهوية.',
+    links: [
+      { title: 'تحديث LED', text: 'عندما تحتاج الاضاءة او الوحدات او مزودات الطاقة او النيون الى تحديث.', href: '/leistungen/lichtwerbung-led-modernisierung', tag: 'اضاءة' },
+      { title: 'فحص وتشخيص', text: 'عندما يجب اولا فحص الحالة او الاولوية او عدة مواقع.', href: '/leistungen/werbeanlagen-audit-diagnose', tag: 'فحص' },
+      { title: 'تركيب وفك', text: 'عندما يكون الوصول او الفك او النقل او التثبيت جزءا من المهمة.', href: '/leistungen/montage-demontage-werbeanlagen', tag: 'تركيب' },
+      { title: 'طباعة وهوية', text: 'عندما يجب تجديد الافلام او الكتابات او ملفات الطباعة او مواد الاعلان.', href: '/leistungen/druckprodukte-branding-werbematerialien', tag: 'هوية' },
+    ],
   },
 };
 
@@ -1082,6 +1430,54 @@ function buildRepairPageJsonLd(locale: string, content: LandingPageContent) {
         },
       ],
       url: canonicalUrl,
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: SERVICE_NAME_BY_LOCALE[safeLocale],
+        itemListElement: [
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'Leuchtkasten-Reparatur',
+            },
+          },
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'LED-Modul-Pruefung und Austausch',
+            },
+          },
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'Profilbuchstaben-Reparatur',
+            },
+          },
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'Folien- und Beschriftungsreparatur',
+            },
+          },
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'Befestigung und Wetterschutz',
+            },
+          },
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'Digital Signage Pruefung',
+            },
+          },
+        ],
+      },
     },
     {
       '@context': 'https://schema.org',
@@ -1223,95 +1619,140 @@ export async function generateMetadata({
   };
 }
 
-function RepairCoverageSection({ content }: { content: RepairScopeContent }) {
+function RepairProblemLinksSection({ content }: { content: RepairProblemLinksContent }) {
   return (
-    <section className="border-t border-[#E7DDD3] bg-[#FFFDF9] px-4 py-14 sm:px-6 sm:py-20">
+    <section className="border-t border-[#E7DDD3] bg-[#F7F1E8] px-4 py-10 sm:px-6 sm:py-12">
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(360px,0.88fr)] lg:items-end">
-          <div className="max-w-4xl text-start">
-            <SectionEyebrow className="mb-3">{content.coverageEyebrow}</SectionEyebrow>
-            <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">
-              {content.coverageTitle}
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:items-end">
+          <div className="text-start">
+            <SectionEyebrow className="mb-3">{content.eyebrow}</SectionEyebrow>
+            <h2 className="max-w-4xl text-3xl font-extrabold leading-[1.08] tracking-[0] text-[#0E1A2B] sm:text-5xl">
+              {content.title}
             </h2>
           </div>
-          <p className="max-w-2xl text-start text-[16px] font-semibold leading-8 text-[#526174]">
-            {content.coverageIntro}
+          <p className="max-w-2xl text-start text-[15px] font-semibold leading-7 text-[#526174]">
+            {content.intro}
           </p>
         </div>
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {content.coverageCards.map((card) => (
-            <article
-              key={card.title}
-              className="min-h-[174px] rounded-[22px] border border-[#E7DDD3] bg-[#F7F1E8] p-5 text-start shadow-sm"
+        <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {content.links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="group flex min-h-[118px] flex-col justify-between rounded-[16px] border border-[#E7DDD3] bg-[#FFFDF9] p-4 text-start transition duration-300 hover:-translate-y-0.5 hover:border-[#B8643E]/50 hover:bg-white hover:shadow-lg hover:shadow-[#0E1A2B]/[0.06]"
             >
-              <h3 className="text-[18px] font-black leading-snug text-[#0E1A2B]">
-                {card.title}
-              </h3>
-              <p className="mt-3 text-[14px] font-semibold leading-6 text-[#526174]">
-                {card.text}
+              <div>
+                <div className="mb-3 inline-flex rounded-full bg-[#F7F1E8] px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.08em] text-[#8F4C2F]">
+                  {link.tag}
+                </div>
+                <h3 className="text-[16px] font-extrabold leading-snug tracking-[0] text-[#0E1A2B] transition-colors group-hover:text-[#8F4C2F]">
+                  {link.title}
+                </h3>
+              </div>
+              <p className="mt-3 text-[13px] font-semibold leading-5 text-[#526174]">
+                {link.text}
               </p>
-            </article>
+            </Link>
           ))}
-        </div>
-
-        <div className="mt-10 overflow-hidden rounded-[28px] border border-[#1B2D42]/10 bg-[#0E1A2B] text-white shadow-[0_22px_60px_rgba(13,27,42,0.16)]">
-          <div className="grid gap-0 lg:grid-cols-[0.86fr_1.14fr]">
-            <div className="p-6 text-start sm:p-8">
-              <p className="text-[12px] font-black uppercase tracking-[0.14em] text-[#E2A07C]">
-                {content.digitalEyebrow}
-              </p>
-              <h3 className="mt-3 text-2xl font-black leading-tight sm:text-4xl">
-                {content.digitalTitle}
-              </h3>
-              <p className="mt-5 text-[15px] font-semibold leading-7 text-white/76">
-                {content.digitalText}
-              </p>
-            </div>
-            <div className="grid gap-px bg-white/10 sm:grid-cols-3">
-              {content.digitalCards.map((card) => (
-                <article key={card.title} className="bg-[#14283D] p-5 text-start sm:p-6">
-                  <h4 className="text-[17px] font-black leading-snug text-white">
-                    {card.title}
-                  </h4>
-                  <p className="mt-3 text-[13.5px] font-semibold leading-6 text-white/72">
-                    {card.text}
-                  </p>
-                </article>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </section>
   );
 }
 
-function RepairServiceScopeSection({ content }: { content: RepairScopeContent }) {
+function RepairCoverageSection({ content }: { content: RepairScopeContent }) {
+  const visibleCoverageCards = content.coverageCards.filter((_, index) => index !== 4);
+
   return (
-    <section className="border-t border-[#E7DDD3] bg-[#F7F1E8] px-4 py-14 sm:px-6 sm:py-20">
+    <section className="border-t border-[#E7DDD3] bg-[#FFFDF9] px-4 py-12 sm:px-6 sm:py-16">
+      <div className="mx-auto max-w-7xl">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(360px,0.88fr)] lg:items-end">
+          <div className="max-w-4xl text-start">
+            <SectionEyebrow className="mb-3">{content.coverageEyebrow}</SectionEyebrow>
+            <h2 className="text-3xl font-extrabold leading-[1.08] tracking-[0] text-[#0E1A2B] sm:text-5xl">
+              {content.coverageTitle}
+            </h2>
+          </div>
+          <p className="max-w-2xl text-start text-[15px] font-semibold leading-7 text-[#526174]">
+            {content.coverageIntro}
+          </p>
+        </div>
+
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          {visibleCoverageCards.map((card) => (
+            <article
+              key={card.title}
+              className="min-h-[160px] rounded-[20px] border border-[#E7DDD3] bg-[#F7F1E8] p-5 text-start shadow-sm"
+            >
+              <h3 className="text-[16px] font-extrabold leading-snug tracking-[0] text-[#0E1A2B]">
+                {card.title}
+              </h3>
+              <p className="mt-3 text-[13px] font-semibold leading-6 text-[#526174]">
+                {card.text}
+              </p>
+            </article>
+          ))}
+        </div>
+
+        <details className="mt-6 overflow-hidden rounded-[22px] border border-[#1B2D42]/10 bg-[#0E1A2B] text-white shadow-[0_18px_45px_rgba(13,27,42,0.12)]">
+          <summary className="cursor-pointer list-none p-5 text-start marker:hidden sm:p-6">
+            <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#E2A07C]">
+              {content.digitalEyebrow}
+            </p>
+            <h3 className="mt-2 text-[22px] font-extrabold leading-tight tracking-[0] sm:text-[28px]">
+              {content.digitalTitle}
+            </h3>
+            <p className="mt-3 max-w-4xl text-[14px] font-semibold leading-7 text-white/76">
+              {content.digitalText}
+            </p>
+          </summary>
+          <div className="grid gap-px bg-white/10 sm:grid-cols-3">
+            {content.digitalCards.map((card) => (
+              <article key={card.title} className="bg-[#14283D] p-5 text-start">
+                <h4 className="text-[16px] font-extrabold leading-snug tracking-[0] text-white">
+                  {card.title}
+                </h4>
+                <p className="mt-3 text-[13px] font-semibold leading-6 text-white/72">
+                  {card.text}
+                </p>
+              </article>
+            ))}
+          </div>
+        </details>
+      </div>
+    </section>
+  );
+}
+
+function RepairServiceScopeSection({ content }: { content: RepairScopeContent }) {
+  const visibleServiceCards = content.serviceCards.slice(0, 4);
+
+  return (
+    <section className="border-t border-[#E7DDD3] bg-[#F7F1E8] px-4 py-12 sm:px-6 sm:py-16">
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.18fr_0.82fr] lg:items-start">
         <div>
           <div className="max-w-4xl text-start">
             <SectionEyebrow className="mb-3">{content.serviceEyebrow}</SectionEyebrow>
-            <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">
+            <h2 className="text-3xl font-extrabold leading-[1.08] tracking-[0] text-[#0E1A2B] sm:text-5xl">
               {content.serviceTitle}
             </h2>
-            <p className="mt-5 text-[16px] font-semibold leading-8 text-[#526174]">
+            <p className="mt-5 text-[15px] font-semibold leading-7 text-[#526174]">
               {content.serviceIntro}
             </p>
           </div>
 
-          <div className="mt-10 grid gap-4 sm:grid-cols-2">
-            {content.serviceCards.map((card) => (
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            {visibleServiceCards.map((card, index) => (
               <article
                 key={card.title}
-                className="min-h-[168px] rounded-[22px] border border-[#E7DDD3] bg-[#FFFDF9] p-5 text-start shadow-sm"
+                className="min-h-[150px] rounded-[20px] border border-[#E7DDD3] bg-[#FFFDF9] p-5 text-start shadow-sm"
               >
-                <h3 className="text-[18px] font-black leading-snug text-[#0E1A2B]">
-                  {card.title}
-                </h3>
-                <p className="mt-3 text-[14px] font-semibold leading-6 text-[#526174]">
+                <div className="mb-4 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F7F1E8] text-[13px] font-extrabold text-[#8F4C2F]">
+                  {index + 1}
+                </div>
+                <h3 className="text-[17px] font-extrabold leading-snug tracking-[0] text-[#0E1A2B]">{card.title}</h3>
+                <p className="mt-3 text-[13.5px] font-semibold leading-6 text-[#526174]">
                   {card.text}
                 </p>
               </article>
@@ -1320,7 +1761,7 @@ function RepairServiceScopeSection({ content }: { content: RepairScopeContent })
         </div>
 
         <aside className="rounded-[28px] border border-[#D9C7BA] bg-[#FFFDF9] p-6 text-start shadow-[0_22px_60px_rgba(13,27,42,0.1)] lg:sticky lg:top-28">
-          <h3 className="text-2xl font-black leading-tight text-[#0E1A2B]">
+          <h3 className="text-2xl font-extrabold leading-tight tracking-[0] text-[#0E1A2B]">
             {content.checklistTitle}
           </h3>
           <p className="mt-3 text-[14.5px] font-semibold leading-7 text-[#526174]">
@@ -1345,6 +1786,48 @@ function RepairServiceScopeSection({ content }: { content: RepairScopeContent })
   );
 }
 
+function RepairNextStepSection({ content }: { content: RepairNextStepContent }) {
+  return (
+    <section className="bg-white px-4 py-14 sm:px-6 sm:py-20">
+      <div className="mx-auto max-w-7xl">
+        <h2 className="max-w-4xl text-3xl font-extrabold leading-[1.08] tracking-[0] text-[#0E1A2B] sm:text-5xl">
+          {content.title}
+        </h2>
+
+        <div className="mt-10 overflow-hidden rounded-[30px] bg-[#101112] shadow-[0_24px_70px_rgba(8,24,39,0.18)] sm:rounded-[36px]">
+          <div className="grid min-h-[560px] lg:grid-cols-[0.45fr_0.55fr]">
+            <div className="relative z-10 flex min-w-0 flex-col justify-center px-6 py-10 text-start text-white sm:px-10 lg:px-16 lg:py-16">
+              <h3 className="max-w-xl text-[30px] font-extrabold leading-[1.08] tracking-[0] sm:text-[44px]">
+                {content.requestTitle}
+              </h3>
+              <p className="mt-5 max-w-md text-[16px] font-semibold leading-8 text-white/72">
+                {content.requestText}
+              </p>
+              <div className="mt-8">
+                <LeistungenRequestButton
+                  label={content.requestCta}
+                  serviceIntent="repair-final-next-step"
+                />
+              </div>
+            </div>
+
+            <div className="relative min-h-[320px] overflow-hidden lg:min-h-full">
+              <Image
+                src="/images/leistungen/repair-hero/hero-sign-repair-01.jpg"
+                alt={content.requestTitle}
+                fill
+                sizes="(min-width: 1024px) 55vw, 100vw"
+                className="object-cover object-[58%_50%]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#101112] via-transparent to-transparent lg:bg-gradient-to-r lg:from-[#101112] lg:via-[#101112]/20 lg:to-transparent" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default async function WerbeanlagenReparaturPage({
   params,
 }: {
@@ -1356,11 +1839,13 @@ export default async function WerbeanlagenReparaturPage({
   const safeLocale = getLocale(locale);
   const faqContent = REPAIR_FAQ_BY_LOCALE[safeLocale];
   const scopeContent = REPAIR_SCOPE_BY_LOCALE[safeLocale];
+  const problemLinksContent = REPAIR_PROBLEM_LINKS_BY_LOCALE[safeLocale];
+  const nextStepContent = REPAIR_NEXT_STEP_BY_LOCALE[safeLocale];
   const headerContent = globalCms?.header ? { ...globalCms.header, links: undefined } : null;
   const repairPageJsonLd = buildRepairPageJsonLd(locale, content);
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#F7F1E8] text-[#15202A]">
+    <div className="min-h-screen overflow-x-clip bg-[#F7F1E8] text-[#15202A]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(repairPageJsonLd) }}
@@ -1372,6 +1857,8 @@ export default async function WerbeanlagenReparaturPage({
           subline={content.heroSubline}
           slides={getHeroSlides(locale)}
           breadcrumbs={getRepairBreadcrumbs(safeLocale)}
+          primaryCta={content.heroPrimaryCta}
+          secondaryCta={content.heroSecondaryCta}
         />
 
         {/* Symptoms Grid & Interactive workflow (Client Component) */}
@@ -1383,20 +1870,22 @@ export default async function WerbeanlagenReparaturPage({
           formTitle={content.formTitle}
         />
 
-        <RepairCoverageSection content={scopeContent} />
+        <LeistungenRepairProofStrip locale={safeLocale} />
+
+        <RepairProblemLinksSection content={problemLinksContent} />
 
         <LeistungenDiagnosticPrototype locale={safeLocale} />
 
+        <RepairCoverageSection content={scopeContent} />
+
         <RepairServiceScopeSection content={scopeContent} />
 
-        <FAQSection content={{ title: faqContent.title, items: faqContent.items }} />
-
-        {/* Footer CTA form */}
-        <LeistungenFooterCTA
-          locale={locale}
-          finalHeadline={content.finalHeadline}
-          finalText={content.finalText}
+        <FAQSection
+          content={{ title: faqContent.title, items: faqContent.items }}
+          titleClassName="text-3xl font-extrabold leading-[1.08] tracking-[0] text-[#0E1A2B] sm:text-5xl"
         />
+
+        <RepairNextStepSection content={nextStepContent} />
       </main>
       <Footer content={globalCms?.footer} />
     </div>

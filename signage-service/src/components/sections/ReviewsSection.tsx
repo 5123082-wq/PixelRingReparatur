@@ -3,11 +3,131 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { useLocale } from 'next-intl';
 import { useInView } from 'framer-motion';
+import { Link } from '@/i18n/routing';
 import { ReviewCmsContent } from '@/lib/cms/pages';
 import SectionEyebrow from '../common/SectionEyebrow';
 
 interface ReviewsSectionProps {
   content?: ReviewCmsContent;
+}
+
+type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
+
+type CaseLink = {
+  label: string;
+  href: string;
+};
+
+const CASE_LINKS_BY_LOCALE: Record<Locale, CaseLink[][]> = {
+  de: [
+    [
+      { label: 'LED flackert', href: '/probleme-loesungen/werbeanlage-flackert' },
+      { label: 'LED-Service', href: '/leistungen/lichtwerbung-led-modernisierung' },
+      { label: 'Reparatur', href: '/leistungen/werbeanlagen-reparatur' },
+    ],
+    [
+      { label: 'Folie löst sich', href: '/probleme-loesungen/folie-loest-sich' },
+      { label: 'Buchstabe defekt', href: '/probleme-loesungen/buchstabe-leuchtet-nicht' },
+      { label: 'Regenausfall', href: '/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab' },
+    ],
+    [
+      { label: 'Montage', href: '/leistungen/montage-demontage-werbeanlagen' },
+      { label: 'Standortwechsel', href: '/leistungen/montage-demontage-werbeanlagen' },
+      { label: 'Werbeanlagen-Reparatur', href: '/leistungen/werbeanlagen-reparatur' },
+    ],
+  ],
+  en: [
+    [
+      { label: 'Flickering LED', href: '/probleme-loesungen/werbeanlage-flackert' },
+      { label: 'LED service', href: '/leistungen/lichtwerbung-led-modernisierung' },
+      { label: 'Repair', href: '/leistungen/werbeanlagen-reparatur' },
+    ],
+    [
+      { label: 'Peeling film', href: '/probleme-loesungen/folie-loest-sich' },
+      { label: 'Letter outage', href: '/probleme-loesungen/buchstabe-leuchtet-nicht' },
+      { label: 'Rain failure', href: '/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab' },
+    ],
+    [
+      { label: 'Installation', href: '/leistungen/montage-demontage-werbeanlagen' },
+      { label: 'Relocation', href: '/leistungen/montage-demontage-werbeanlagen' },
+      { label: 'Signage repair', href: '/leistungen/werbeanlagen-reparatur' },
+    ],
+  ],
+  ru: [
+    [
+      { label: 'LED мерцает', href: '/probleme-loesungen/werbeanlage-flackert' },
+      { label: 'LED-сервис', href: '/leistungen/lichtwerbung-led-modernisierung' },
+      { label: 'Ремонт', href: '/leistungen/werbeanlagen-reparatur' },
+    ],
+    [
+      { label: 'Пленка отошла', href: '/probleme-loesungen/folie-loest-sich' },
+      { label: 'Буква не горит', href: '/probleme-loesungen/buchstabe-leuchtet-nicht' },
+      { label: 'После дождя', href: '/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab' },
+    ],
+    [
+      { label: 'Монтаж', href: '/leistungen/montage-demontage-werbeanlagen' },
+      { label: 'Переезд объекта', href: '/leistungen/montage-demontage-werbeanlagen' },
+      { label: 'Ремонт вывесок', href: '/leistungen/werbeanlagen-reparatur' },
+    ],
+  ],
+  tr: [
+    [
+      { label: 'LED titriyor', href: '/probleme-loesungen/werbeanlage-flackert' },
+      { label: 'LED servis', href: '/leistungen/lichtwerbung-led-modernisierung' },
+      { label: 'Onarim', href: '/leistungen/werbeanlagen-reparatur' },
+    ],
+    [
+      { label: 'Folyo kalkiyor', href: '/probleme-loesungen/folie-loest-sich' },
+      { label: 'Harf yanmiyor', href: '/probleme-loesungen/buchstabe-leuchtet-nicht' },
+      { label: 'Yagmur arizasi', href: '/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab' },
+    ],
+    [
+      { label: 'Montaj', href: '/leistungen/montage-demontage-werbeanlagen' },
+      { label: 'Adres degisimi', href: '/leistungen/montage-demontage-werbeanlagen' },
+      { label: 'Tabela onarimi', href: '/leistungen/werbeanlagen-reparatur' },
+    ],
+  ],
+  pl: [
+    [
+      { label: 'LED miga', href: '/probleme-loesungen/werbeanlage-flackert' },
+      { label: 'Serwis LED', href: '/leistungen/lichtwerbung-led-modernisierung' },
+      { label: 'Naprawa', href: '/leistungen/werbeanlagen-reparatur' },
+    ],
+    [
+      { label: 'Folia odchodzi', href: '/probleme-loesungen/folie-loest-sich' },
+      { label: 'Litera nie swieci', href: '/probleme-loesungen/buchstabe-leuchtet-nicht' },
+      { label: 'Awaria po deszczu', href: '/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab' },
+    ],
+    [
+      { label: 'Montaz', href: '/leistungen/montage-demontage-werbeanlagen' },
+      { label: 'Zmiana lokalu', href: '/leistungen/montage-demontage-werbeanlagen' },
+      { label: 'Naprawa szyldow', href: '/leistungen/werbeanlagen-reparatur' },
+    ],
+  ],
+  ar: [
+    [
+      { label: 'وميض LED', href: '/probleme-loesungen/werbeanlage-flackert' },
+      { label: 'خدمة LED', href: '/leistungen/lichtwerbung-led-modernisierung' },
+      { label: 'اصلاح', href: '/leistungen/werbeanlagen-reparatur' },
+    ],
+    [
+      { label: 'تقشر الفيلم', href: '/probleme-loesungen/folie-loest-sich' },
+      { label: 'حرف لا يضيء', href: '/probleme-loesungen/buchstabe-leuchtet-nicht' },
+      { label: 'عطل بعد المطر', href: '/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab' },
+    ],
+    [
+      { label: 'تركيب', href: '/leistungen/montage-demontage-werbeanlagen' },
+      { label: 'نقل الموقع', href: '/leistungen/montage-demontage-werbeanlagen' },
+      { label: 'اصلاح اللوحات', href: '/leistungen/werbeanlagen-reparatur' },
+    ],
+  ],
+};
+
+function getCaseLinks(locale: string, index: number): CaseLink[] {
+  const safeLocale = (locale in CASE_LINKS_BY_LOCALE ? locale : 'de') as Locale;
+  const links = CASE_LINKS_BY_LOCALE[safeLocale];
+
+  return links[index % links.length] ?? links[0];
 }
 
 const TypewriterQuote = ({ content, shouldAnimate }: { content: string; shouldAnimate: boolean }) => {
@@ -44,14 +164,14 @@ const TypewriterQuote = ({ content, shouldAnimate }: { content: string; shouldAn
 
   if (!shouldAnimate) {
     return (
-      <blockquote className="text-[26px] md:text-[36px] font-medium text-[#0E1A2B] leading-[1.3] tracking-tight italic">
+      <blockquote className="text-[22px] md:text-[30px] font-medium text-[#0E1A2B] leading-[1.28] tracking-tight italic">
         &quot;{content}&quot;
       </blockquote>
     );
   }
 
   return (
-    <blockquote ref={ref} className="text-[26px] md:text-[36px] font-medium text-[#0E1A2B] leading-[1.3] tracking-tight italic relative">
+    <blockquote ref={ref} className="text-[22px] md:text-[30px] font-medium text-[#0E1A2B] leading-[1.28] tracking-tight italic relative">
       <span className="sr-only">&quot;{content}&quot;</span>
       <span aria-hidden="true">
         &quot;{firstPart}{firstPart ? ' ' : ''}
@@ -92,7 +212,7 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
     if (!el || !isReady) return;
 
     const scrollLeft = Math.abs(el.scrollLeft);
-    const cardWidth = el.offsetWidth * 0.92; // Matches w-[92%]
+    const cardWidth = el.offsetWidth * 0.88; // Matches w-[88%]
     const currentVirtual = Math.min(reviewsCount - 1, Math.max(0, Math.round(scrollLeft / cardWidth)));
     setVirtualIndex(currentVirtual);
   }, [reviewsCount, isReady]);
@@ -107,7 +227,7 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
   const scrollToVirtualIndex = (index: number) => {
     const el = scrollRef.current;
     if (!el) return;
-    const cardWidth = el.offsetWidth * 0.92;
+    const cardWidth = el.offsetWidth * 0.88;
     el.scrollTo({
       left: isRTL ? -(index * cardWidth) : (index * cardWidth),
       behavior: 'smooth',
@@ -169,7 +289,7 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
       </div>
 
       {/* Carousel Container with Gradients */}
-      <div className="relative mt-16 w-full">
+      <div className="relative mt-12 w-full">
         {/* Gradients: reduced width for better visibility of neighbor peak */}
         <div className="absolute left-0 top-0 bottom-0 w-[10%] z-20 pointer-events-none bg-gradient-to-r from-[#F7F1E8] via-[#F7F1E8]/60 to-transparent" />
         <div className="absolute right-0 top-0 bottom-0 w-[10%] z-20 pointer-events-none bg-gradient-to-l from-[#F7F1E8] via-[#F7F1E8]/60 to-transparent" />
@@ -182,9 +302,9 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
           {originalIndices.map((idx, i) => (
             <div 
               key={`${idx}-${i}`} 
-              className="flex-shrink-0 w-[92%] snap-center px-3 flex"
+              className="flex-shrink-0 w-[88%] snap-center px-3 flex"
             >
-              <div className="bg-white rounded-[40px] md:rounded-[56px] p-8 md:p-16 border border-[#E7DDD3] shadow-2xl shadow-[#0E1A2B08] flex flex-col gap-10 relative overflow-hidden group w-full min-h-[460px]">
+              <div className="bg-white rounded-[28px] md:rounded-[36px] p-7 md:p-10 border border-[#E7DDD3] shadow-2xl shadow-[#0E1A2B08] flex flex-col gap-7 relative overflow-hidden group w-full min-h-[360px]">
                 {/* Large Background Quote Symbol */}
                 <div className="absolute -top-6 -right-6 text-[#B8643E] opacity-[0.03] select-none pointer-events-none transition-transform duration-700 group-hover:scale-110">
                   <svg className="w-64 h-64 fill-current" viewBox="0 0 32 32">
@@ -192,9 +312,20 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
                   </svg>
                 </div>
 
-                <div className="flex-1 flex flex-col gap-8 relative z-10">
+                <div className="flex-1 flex flex-col gap-6 relative z-10">
+                  <div className="flex flex-wrap gap-2">
+                    {getCaseLinks(locale, idx).map((link) => (
+                      <Link
+                        key={`${idx}-${link.href}-${link.label}`}
+                        href={link.href}
+                        className="inline-flex min-h-8 items-center rounded-full border border-[#E7DDD3] bg-[#FFF7EF] px-3 py-1 text-[12px] font-extrabold leading-none text-[#B8643E] transition-colors duration-200 hover:border-[#B8643E] hover:bg-[#F1E2D8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]/40"
+                      >
+                        #{link.label}
+                      </Link>
+                    ))}
+                  </div>
                   <div className="text-[#B8643E]">
-                    <svg className="w-12 h-12 fill-current opacity-20" viewBox="0 0 32 32">
+                    <svg className="w-10 h-10 fill-current opacity-20" viewBox="0 0 32 32">
                       <path d="M10 8c-3.3 0-6 2.7-6 6v10h10V14H8c0-1.1.9-2 2-2V8zm14 0c-3.3 0-6 2.7-6 6v10h10V14h-6c0-1.1.9-2 2-2V8z" />
                     </svg>
                   </div>
@@ -204,12 +335,12 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
                   />
                 </div>
 
-                <div className="flex items-center gap-5 relative z-10 mt-auto">
-                  <div className="flex-shrink-0 w-16 h-16 rounded-full bg-gradient-to-br from-[#B8643E] to-[#D47A4E] flex items-center justify-center text-[24px] font-bold text-white shadow-xl shadow-[#B8643E30] transition-transform duration-500 group-hover:rotate-6">
+                <div className="flex items-center gap-4 relative z-10 mt-auto">
+                  <div className="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-[#B8643E] to-[#D47A4E] flex items-center justify-center text-[22px] font-bold text-white shadow-xl shadow-[#B8643E30] transition-transform duration-500 group-hover:rotate-6">
                     {(content?.items?.[idx]?.name || '').charAt(0)}
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[20px] font-bold text-[#0E1A2B] tracking-tight">{content?.items?.[idx]?.name || ''}</span>
+                    <span className="text-[18px] font-bold text-[#0E1A2B] tracking-tight">{content?.items?.[idx]?.name || ''}</span>
                     <span className="text-[13px] text-[#B8643E] font-bold uppercase tracking-[0.15em] mt-0.5">{content?.items?.[idx]?.role || ''}</span>
                   </div>
                 </div>
