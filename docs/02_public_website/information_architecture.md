@@ -74,7 +74,7 @@
 Page briefs for the approved header-linked pages:
 
 - `Услуги` -> `docs/02_public_website/page_brief_services.md`
-- `Решения` -> `docs/02_public_website/page_brief_solutions.md`
+- `Решения` -> `docs/02_public_website/page_plan_solutions.md`
 - `Для бизнеса` -> `docs/02_public_website/page_brief_for_business.md`
 - `Примеры работ` -> `docs/02_public_website/page_brief_references.md`
 - `О нас` -> `docs/02_public_website/page_brief_about.md`

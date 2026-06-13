@@ -10,8 +10,8 @@
 - `docs/13_references_archive/historical_phase_2c_cms_crm_split.md`
 - `docs/06_crm/bitrix24_crm_integration_plan.md`
 - `docs/07_content_ai_seo/geo_optimization_strategy.md`
-- `docs/07_content_ai_seo/troubleshooting_content_plan.md`
-- `docs/07_content_ai_seo/troubleshooting_page_template.md`
+- `docs/07_content_ai_seo/problem_article_rules.md`
+- `docs/07_content_ai_seo/problem_article_content_model.md`
 - `docs/10_security_privacy/security_guardrails.md`
 - `docs/10_security_privacy/security_checklist.md`
 

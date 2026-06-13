@@ -373,11 +373,11 @@ PixelRing является:
 
 Для сайта:
 
-- `docs/02_public_website/german_site_audit.md`
 - `docs/02_public_website/information_architecture.md`
 - `docs/02_public_website/page_plan_leistungen.md`
 - `docs/02_public_website/page_plan_solutions.md`
 - `docs/02_public_website/page_plan_business.md`
+- `docs/13_references_archive/seo_content_legacy/german_site_audit.md` — archival audit decision log (архивный журнал решений аудита)
 - `docs/02_public_website/page_brief_references.md`
 - `docs/02_public_website/page_plan_references.md`
 - `docs/02_public_website/page_brief_about.md`

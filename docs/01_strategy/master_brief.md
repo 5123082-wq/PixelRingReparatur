@@ -327,9 +327,9 @@ AI не должен:
 
 - этот документ.
 
-Текущие решения по аудиту немецкого публичного сайта:
+Архивный журнал решений по аудиту немецкого публичного сайта:
 
-- `docs/02_public_website/german_site_audit.md`.
+- `docs/13_references_archive/seo_content_legacy/german_site_audit.md`.
 
 Исторические ссылки:
 

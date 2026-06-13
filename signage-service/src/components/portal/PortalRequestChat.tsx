@@ -2,9 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useRouter } from '@/i18n/routing';
+import { useLocale } from 'next-intl';
 import Logo from '@/components/common/Logo';
 import type { PortalDemoOrganization, PortalRequest } from '@/lib/portal/types';
 
+type PortalRequestDetailPresentation = 'page' | 'modal';
 type ChatAuthorRole = 'CUSTOMER' | 'SYSTEM' | 'OPERATOR';
 
 type PortalChatMessage = {
@@ -31,10 +33,16 @@ function formatTimestamp(value: string): string {
   return value.match(/\b\d{1,2}:\d{2}\b/)?.[0] ?? value;
 }
 
-function getRoleLabel(role: ChatAuthorRole): string {
-  if (role === 'CUSTOMER') return 'User';
-  if (role === 'OPERATOR') return 'Agent';
-  return 'Assistant';
+function getRoleLabel(role: ChatAuthorRole, locale: string): string {
+  if (locale === 'ru') {
+    if (role === 'CUSTOMER') return 'Вы';
+    if (role === 'OPERATOR') return 'PixelRing';
+    return 'Ассистент';
+  }
+
+  if (role === 'CUSTOMER') return 'Sie';
+  if (role === 'OPERATOR') return 'PixelRing';
+  return 'Assistent';
 }
 
 function getRolePalette(role: ChatAuthorRole) {
@@ -72,6 +80,29 @@ function mapPortalAuthor(author: PortalDemoOrganization['messages'][number]['aut
   if (author === 'Customer') return 'CUSTOMER';
   if (author === 'PixelRing Manager') return 'OPERATOR';
   return 'SYSTEM';
+}
+
+function isCustomerVisibleChatMessage(message: PortalDemoOrganization['messages'][number]): boolean {
+  if (message.author !== 'PixelRing AI' && message.author !== 'PixelRing Manager') {
+    return true;
+  }
+
+  const normalized = message.body.trim().toLowerCase();
+  if (normalized.startsWith('daten der anfrage wurden aktualisiert')) {
+    return false;
+  }
+
+  return true;
+}
+
+function mapInitialMessages(messages: PortalDemoOrganization['messages']): PortalChatMessage[] {
+  return messages.filter(isCustomerVisibleChatMessage).map((message) => ({
+    id: message.id,
+    authorRole: mapPortalAuthor(message.author),
+    body: message.body,
+    createdAt: message.sentAt,
+    attachments: message.attachments,
+  }));
 }
 
 function ChatAttachmentList({
@@ -167,21 +198,16 @@ export default function PortalRequestChat({
   request,
   messages,
   canPostMessages,
+  presentation = 'page',
 }: {
   request: PortalRequest;
   messages: PortalDemoOrganization['messages'];
   canPostMessages: boolean;
+  presentation?: PortalRequestDetailPresentation;
 }) {
+  const locale = useLocale();
   const router = useRouter();
-  const [chatMessages, setChatMessages] = useState<PortalChatMessage[]>(() =>
-    messages.map((message) => ({
-      id: message.id,
-      authorRole: mapPortalAuthor(message.author),
-      body: message.body,
-      createdAt: message.sentAt,
-      attachments: message.attachments,
-    }))
-  );
+  const [chatMessages, setChatMessages] = useState<PortalChatMessage[]>(() => mapInitialMessages(messages));
   const [inputText, setInputText] = useState('');
   const [pendingFiles, setPendingFiles] = useState<AttachmentPreview[]>([]);
   const [isSending, setIsSending] = useState(false);
@@ -190,13 +216,7 @@ export default function PortalRequestChat({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setChatMessages(messages.map((message) => ({
-      id: message.id,
-      authorRole: mapPortalAuthor(message.author),
-      body: message.body,
-      createdAt: message.sentAt,
-      attachments: message.attachments,
-    })));
+    setChatMessages(mapInitialMessages(messages));
   }, [messages]);
 
   const scrollToBottom = useCallback(() => {
@@ -340,7 +360,9 @@ export default function PortalRequestChat({
   }
 
   return (
-    <section className="flex min-h-[620px] flex-col bg-[#F7F1E8]/95 lg:h-[calc(100vh-164px)]">
+    <section className={`flex min-h-[620px] flex-col bg-[#F7F1E8]/95 ${
+      presentation === 'modal' ? 'lg:h-[calc(90vh-132px)]' : 'lg:h-[calc(100vh-164px)]'
+    }`}>
       <div className="flex items-center justify-between gap-2 border-b border-black/5 bg-white/80 p-4 sm:p-5">
         <div className="flex min-w-0 flex-1 items-center gap-4">
           <Logo className="origin-left scale-75 shrink-0" />
@@ -373,14 +395,14 @@ export default function PortalRequestChat({
           </div>
         )}
 
-        {chatMessages.map((message, index) => {
+        {chatMessages.map((message) => {
           const palette = getRolePalette(message.authorRole);
 
           return (
             <div key={message.id}>
               <div className={`flex flex-col ${palette.container} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
                 <span className={`mb-1 text-[10px] font-bold uppercase tracking-[0.18em] ${palette.label}`}>
-                  {index === 1 && message.authorRole === 'SYSTEM' ? 'System' : getRoleLabel(message.authorRole)}
+                  {getRoleLabel(message.authorRole, locale)}
                 </span>
                 <div className={`max-w-[80%] rounded-[24px] px-5 py-3 text-[14px] shadow-sm whitespace-pre-wrap ${palette.bubble}`}>
                   {renderMessageBody(message.body)}

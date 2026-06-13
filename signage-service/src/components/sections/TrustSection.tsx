@@ -6,6 +6,9 @@ import React, { useState } from 'react';
 import ContactModal from '../common/ContactModal';
 import ChatModal from '../common/ChatModal';
 import SectionEyebrow from '../common/SectionEyebrow';
+import CmsImage from '../common/CmsImage';
+
+const TRUST_VISUAL_SRC = '/generated/referenzen/agent-facade/wide-hero-service-result.png';
 
 const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
   const t = useTranslations('Trust');
@@ -32,86 +35,128 @@ const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
 
   const stats = (content?.stats && content.stats.length > 0) 
     ? content.stats 
-    : rawStats.slice(0, 5);
+    : rawStats.slice(0, 6);
+
+  const antiTitle = content?.antiTitle || safeT('antiTitle', 'Kein anonymes Portal. Ein verantwortlicher Serviceprozess.');
+  const antiText = content?.antiText || safeT(
+    'antiText',
+    'PixelRing verantwortet Aufnahme, Koordination, Qualitaetskontrolle und Ergebnis.'
+  );
+  const visualEyebrow = content?.visualEyebrow || safeT('visualEyebrow', 'Service am Objekt');
+  const visualTitle = content?.visualTitle || safeT('visualTitle', 'Fotos, Zugang und Ergebnis werden zusammengefuehrt');
+  const visualText = content?.visualText || safeT(
+    'visualText',
+    'Leuchtkasten, LED-Module, Folie oder Demontage werden als ein Fall betrachtet.'
+  );
+  const visualImageAlt = content?.visualImageAlt || safeT(
+    'visualImageAlt',
+    'PixelRing Serviceeinsatz an einer Geschaeftsfassade mit Lichtwerbung'
+  );
 
   return (
-    <section className="relative w-full bg-[#0E1A2B] py-20 overflow-hidden">
+    <section className="relative w-full bg-[#0E1A2B] py-16 md:py-18 overflow-hidden">
       {/* Background decorations */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-[#B8643E]/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-white/5 rounded-full blur-[100px]" />
+        <div className="absolute top-[-10%] right-[-10%] h-[min(520px,80vw)] w-[min(520px,80vw)] rounded-full bg-[#B8643E]/10 blur-[120px]" />
+        <div className="absolute bottom-[-10%] left-[-10%] h-[min(460px,72vw)] w-[min(460px,72vw)] rounded-full bg-white/5 blur-[100px]" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-9 md:gap-10">
           
           {/* HEADER */}
-          <div className="flex flex-col gap-6 max-w-4xl">
-            <SectionEyebrow>{content?.pretitle || safeT('pretitle', 'ADVANTAGE')}</SectionEyebrow>
-            <h2 className="text-[34px] md:text-[42px] font-black text-white leading-[1.1] tracking-[0]">
-              <span>{content?.titleStart || safeT('titleStart', 'Genug')}</span>
-              {' '}
-              <br />
-              <span className="text-[#B8643E] relative inline-block">
-                {content?.titleAccent || safeT('titleAccent', 'komplizierte Portale')}
-              </span>
-              {(content?.titleEnd || safeT('titleEnd', '')) ? (
-                <>
-                  <br />
-                  <span>{content?.titleEnd || safeT('titleEnd', '')}</span>
-                </>
-              ) : null}
-            </h2>
-            <p className="text-[16px] md:text-[17px] text-white/70 leading-[1.55] max-w-2xl">
-              {content?.description || safeT('description', 'Direkte Ausführung in нашем техническом ателье.')}
+          <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.82fr)] lg:items-center">
+            <div className="flex min-w-0 max-w-4xl flex-col gap-6">
+              <SectionEyebrow>{content?.pretitle || safeT('pretitle', 'ADVANTAGE')}</SectionEyebrow>
+              <h2 className="text-[34px] md:text-[42px] font-black text-white leading-[1.1] tracking-[0]">
+                <span>{content?.titleStart || safeT('titleStart', 'Genug')}</span>
+                {' '}
+                <br />
+                <span className="text-[#B8643E] relative inline-block">
+                  {content?.titleAccent || safeT('titleAccent', 'komplizierte Portale')}
+                </span>
+                {(content?.titleEnd || safeT('titleEnd', '')) ? (
+                  <>
+                    <br />
+                    <span>{content?.titleEnd || safeT('titleEnd', '')}</span>
+                  </>
+                ) : null}
+              </h2>
+              <p className="text-[16px] md:text-[17px] text-white/70 leading-[1.55] max-w-2xl">
+                {content?.description || safeT('description', 'Direkte Ausfuehrung fuer Werbeanlagen.')}
+              </p>
+            </div>
+
+            <div className="min-w-0 rounded-[24px] border border-white/10 bg-white/[0.06] p-2.5 shadow-2xl shadow-black/15">
+              <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[20px] lg:aspect-[21/9]">
+                <CmsImage
+                  src={TRUST_VISUAL_SRC}
+                  alt={visualImageAlt}
+                  fill
+                  sizes="(min-width: 1024px) 38vw, 100vw"
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0E1A2B]/82 via-[#0E1A2B]/10 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-4 text-white sm:p-5">
+                  <p className="w-fit rounded-full bg-white/16 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em]">
+                    {visualEyebrow}
+                  </p>
+                  <h3 className="text-[20px] font-black leading-tight tracking-[0] sm:text-[22px]">
+                    {visualTitle}
+                  </h3>
+                  <p className="text-[13px] font-semibold leading-[1.45] text-white/78">
+                    {visualText}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* BENEFITS GRID */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {stats.map((stat, idx) => (
+              <div
+                key={idx}
+                className={`group relative min-h-[190px] overflow-hidden rounded-[22px] border p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl
+                  ${idx === 0
+                    ? 'border-[#B8643E]/40 bg-[#B8643E]/18 shadow-[#B8643E]/10'
+                    : 'border-white/10 bg-white/[0.055] shadow-black/10'}`}
+              >
+                <div className="relative z-10 flex h-full min-w-0 flex-col justify-between gap-4">
+                  <div className="flex min-w-0 flex-col gap-2.5">
+                    <span className="w-fit rounded-full bg-[#B8643E]/12 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-[#D79A80]">
+                      {stat.label}
+                    </span>
+                    <h3 className="min-w-0 text-[18px] font-black leading-[1.14] tracking-[0] text-white">
+                      {stat.value}
+                    </h3>
+                    <p className="min-w-0 overflow-hidden text-[13px] font-medium leading-[1.45] text-white/62 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
+                      {stat.description}
+                    </p>
+                  </div>
+                  {stat.highlight ? (
+                    <p className="min-w-0 overflow-hidden border-t border-white/10 pt-2.5 text-[13px] font-extrabold leading-snug text-white/88 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
+                      {stat.highlight}
+                    </p>
+                  ) : null}
+                </div>
+
+                <div className="absolute -bottom-8 -right-8 h-28 w-28 rounded-full border border-[#B8643E]/30 opacity-30 transition-transform duration-500 group-hover:scale-125" />
+              </div>
+            ))}
+          </div>
+
+          <div className="grid gap-3 rounded-[24px] border border-white/[0.12] bg-white/[0.07] p-5 md:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] md:items-center md:gap-7 md:p-6">
+            <h3 className="min-w-0 text-[22px] font-black leading-[1.12] tracking-[0] text-white md:text-[25px]">
+              {antiTitle}
+            </h3>
+            <p className="min-w-0 text-[14px] font-semibold leading-[1.55] text-white/68 md:text-[15px]">
+              {antiText}
             </p>
           </div>
 
-          {/* BENTO GRID */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {stats.map((stat, idx) => {
-              const isLarge = idx === 0;
-              return (
-                <div 
-                  key={idx}
-                  className={`group relative p-7 rounded-[28px] border transition-all duration-500 overflow-hidden
-                    ${isLarge 
-                      ? 'md:col-span-2 lg:col-span-2 bg-gradient-to-br from-[#B8643E] to-[#8E4B2E] border-white/10 shadow-2xl shadow-[#B8643E]/20' 
-                      : 'bg-white/5 border-white/10 backdrop-blur-md'}
-                    hover:shadow-2xl hover:-translate-y-1`}
-                >
-                  <div className="relative z-10 flex h-full flex-col justify-between gap-7">
-                    <div className="flex flex-col gap-4">
-                      <div className="flex items-center gap-3 mb-6">
-                        <span className={`px-4 py-1.5 rounded-full text-[12px] font-bold uppercase tracking-widest
-                          ${isLarge ? 'bg-white/20 text-white' : 'bg-[#B8643E]/10 text-[#B8643E]'}`}>
-                          {stat.label}
-                        </span>
-                      </div>
-                      <h3 className="text-[22px] md:text-[26px] font-bold leading-tight tracking-[0] text-white">
-                        {stat.value}
-                      </h3>
-                      <p className={`text-[15px] md:text-[16px] leading-[1.55] max-w-xl ${isLarge ? 'text-white/88' : 'text-white/58'}`}>
-                        {stat.description}
-                      </p>
-                    </div>
-                    {stat.highlight ? (
-                      <p className={`border-t pt-4 text-[15px] font-extrabold leading-snug ${isLarge ? 'border-white/25 text-white' : 'border-white/10 text-white/86'}`}>
-                        {stat.highlight}
-                      </p>
-                    ) : null}
-                  </div>
-
-                  {/* Decorative circle */}
-                  <div className={`absolute -bottom-6 -right-6 w-32 h-32 rounded-full border opacity-10 group-hover:scale-150 transition-transform duration-700
-                    ${isLarge ? 'border-white' : 'border-[#B8643E]'}`} />
-                </div>
-              );
-            })}
-          </div>
-
           {/* CTA BOTTOM */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-8 mt-6">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-2">
             <button 
               onClick={() => setModalOpen(true)}
               className="w-full sm:w-auto px-10 py-5 bg-[#B8643E] text-white rounded-full font-bold text-[18px] text-center hover:bg-[#9E5332] transition-all hover:scale-105 shadow-xl shadow-[#B8643E]/20 active:scale-95 cursor-pointer"

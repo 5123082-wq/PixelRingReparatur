@@ -14,10 +14,18 @@ export type AiCmsArticle = {
   type: CmsArticleType;
   slug: string;
   title: string;
+  symptomLabel: string | null;
   shortAnswer: string | null;
   content: string;
   seoTitle: string | null;
+  seoDescription: string | null;
+  causes: string[];
+  safeChecks: string[];
+  urgentWarnings: string[];
+  serviceProcess: string[];
+  workScopeFactors: string[];
   publishedAt: Date | null;
+  lastReviewedAt: Date | null;
   updatedAt: Date;
 };
 
@@ -49,7 +57,11 @@ export type PublicSymptomArticle = {
   seoTitle: string | null;
   seoDescription: string | null;
   canonicalUrl: string | null;
+  ctaLabel: string | null;
+  ctaHref: string | null;
   sortOrder: number;
+  publishedAt: Date | null;
+  lastReviewedAt: Date | null;
   updatedAt: Date;
 };
 
@@ -103,10 +115,18 @@ export async function getPublishedCmsArticlesForAi(
       type: true,
       slug: true,
       title: true,
+      symptomLabel: true,
       shortAnswer: true,
       content: true,
       seoTitle: true,
+      seoDescription: true,
+      causes: true,
+      safeChecks: true,
+      urgentWarnings: true,
+      serviceProcess: true,
+      workScopeFactors: true,
       publishedAt: true,
+      lastReviewedAt: true,
       updatedAt: true,
     },
     orderBy: [
@@ -163,7 +183,11 @@ export async function getPublishedSymptomArticles(
       seoTitle: true,
       seoDescription: true,
       canonicalUrl: true,
+      ctaLabel: true,
+      ctaHref: true,
       sortOrder: true,
+      publishedAt: true,
+      lastReviewedAt: true,
       updatedAt: true,
     },
     orderBy: [{ sortOrder: 'asc' }, { updatedAt: 'desc' }],
@@ -208,7 +232,11 @@ export async function getPublishedSymptomArticleByPublicSlug(
       seoTitle: true,
       seoDescription: true,
       canonicalUrl: true,
+      ctaLabel: true,
+      ctaHref: true,
       sortOrder: true,
+      publishedAt: true,
+      lastReviewedAt: true,
       updatedAt: true,
     },
   });

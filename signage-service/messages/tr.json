@@ -4,10 +4,10 @@
     "hero_title_prefix": "PixelRing:",
     "hero_title_accent": "Onarım ve servis",
     "hero_title_suffix": "reklam sistemleri ve ışıklı reklamlar için.",
-    "description": "PixelRing, işletmelerin ticari lokasyonlarındaki arızalı reklam sistemleri, LED elemanları ve görsel altyapı sorunlarında destek olur. Kısa bir açıklama veya fotoğrafla başlayın — bilgileri inceler ve sonraki adımı koordine ederiz.",
+    "description": "PixelRing sirketlere arizali LED tabelalar, isikli kutular, cephe reklami, folyo ve sokum islerinde yardim eder. Kisa bir aciklama veya fotograf gonderin - bilgileri inceler ve mantikli sonraki adimi soyleriz.",
     "cta_primary": "Servisi başlat",
     "cta_secondary": "Sorunu ilet",
-    "trust_badge": "Tek iletişim noktası. Yapılandırılmış servis süreci. Net koordinasyon.",
+    "trust_badge": "Tek iletisim. Fotograf cogu zaman baslangic icin yeterli. Islerden once net degerlendirme.",
     "badge_label": "Acil durumlar için tepki süresi"
   },
   "Nav": {
@@ -49,51 +49,75 @@
     "contact": "İletişim"
   },
   "Trust": {
-    "pretitle": "AVANTAJ",
-    "titleStart": "İşletmeler neden",
-    "titleAccent": "PixelRing'i seçiyor",
+    "pretitle": "GUVEN",
+    "titleStart": "Sirketler neden",
+    "titleAccent": "PixelRing seçer",
     "titleEnd": "",
-    "description": "Portal değil, rastgele usta değil, dağınık koordinasyon değil. PixelRing talebi alır, sorunu anlamaya yardımcı olur, işleri organize eder ve objeyi servis desteğinde tutar.",
+    "description": "LED tabela titrediginde, isikli kutu karardiginda, harfler hasar gordugunde veya folyo ayrildiginda sirketlerin anonim aramaya ihtiyaci yoktur. PixelRing talebi alir, fotograf ve bilgileri inceler, isi koordine eder ve net iletisim noktasi olarak kalir.",
     "cta_label": "Servisi başlat",
-    "cta_subtext": "Kısa bir açıklama veya fotoğrafla başlayın.",
+    "cta_subtext": "Fotograf, adres ve kisa aciklama ile baslayin.",
     "stats": [
       {
-        "label": "DOĞRUDAN SERVİS",
-        "value": "Portal ve aracı yok",
-        "description": "PixelRing talebi tek bir servis şirketi olarak alır: ilk iletişimden işlerin koordinasyonuna ve sonraki desteğe kadar. Müşteri yüklenici aramaz, rastgele kişileri karşılaştırmaz ve görevi her katılımcıya yeniden anlatmaz.",
-        "highlight": "Tek talep — tek sorumluluk noktası."
+        "label": "BASLANGIC",
+        "value": "Fotograf cogu zaman ilk adim icin yeterli",
+        "description": "Genel gorunum, hasar yakin plani ve erisim durumu LED arizasi, karanlik isikli kutu, ayrilan folyo veya hasarli harfleri daha hizli siniflandirmaya yardim eder.",
+        "highlight": "Teknik hazirlik gerekmez."
       },
       {
-        "label": "BÜTÇE",
-        "value": "AI başlangıç maliyetini düşürür",
-        "description": "İlk talebin işlenmesine AI asistanı yardımcı olur: uzman devreye girmeden önce fotoğrafları, açıklamayı ve temel bilgileri toplar.",
-        "highlight": "İlk bilgi işleme maliyetinden tasarruf ederiz, kaliteden değil."
+        "label": "DEGERLENDIRME",
+        "value": "Islerden once net kontrol",
+        "description": "Ziyaretten once PixelRing muhtemel kontrol alanlarini netlestirir: guc kaynagi, LED moduller, folyo, sabitleme noktasi, sokum yolu veya yukseklik erisimi.",
+        "highlight": "Sonraki mantikli adimi bilirsiniz."
       },
       {
-        "label": "NETLİK",
-        "value": "Online durum",
-        "description": "Belirsizlik yok. Müşteri, talebin kabulünden koordinasyona, işlerin uygulanmasına ve servis desteğine kadar süreci PixelRing hesabında görür.",
-        "highlight": "Daha az belirsizlik — daha fazla kontrol."
+        "label": "ILETISIM",
+        "value": "Vaka icin tek iletisim",
+        "description": "Talep PixelRing uzerinden ilerler. Birden fazla montajci, tedarikci veya lokasyonu kendiniz koordine etmek zorunda kalmazsiniz.",
+        "highlight": "Dağinik yazisma yerine tek temas."
       },
       {
-        "label": "SORUMLULUK",
-        "value": "PixelRing süreci yönetir",
-        "description": "Talebi ilk iletişimden işlerin uygulanmasına kadar koordine eder ve obje için merkezi iletişim noktası olarak kalırız.",
-        "highlight": "Tüm katılımcıları manuel olarak birleştirmeniz gerekmez."
+        "label": "SONUC",
+        "value": "Belgelenmis tamamlanma",
+        "description": "Gorunur durum, yapilan isler ve acik noktalar kaydedilir; onarim, montaj veya sokum izlenebilir kalir.",
+        "highlight": "Once, is, sonuc - net belgelenir."
       },
       {
-        "label": "GARANTİ VE SERVİS",
-        "value": "Obje destek altında kalır",
-        "description": "Tamamlanan tüm işler garanti koşullarıyla desteklenir ve obje PixelRing sisteminde servis statüsü alır.",
-        "highlight": "PixelRing işletmeniz için destek noktası olarak kalır."
+        "label": "GARANTI",
+        "value": "Garanti ve servis gecmisi",
+        "description": "Tamamlanan isler uygun garanti kosullariyla birlikte gelir ve vaka sonraki sorular icin izlenebilir kalir.",
+        "highlight": "Lokasyon ziyaret sonrasi unutulmaz."
+      },
+      {
+        "label": "SUBELER",
+        "value": "Birden fazla lokasyon icin uygun",
+        "description": "Subeler, magazalar, klinikler, restoranlar veya ofisler fotograflar, adresler ve onceliklerle tek surecte ele alinabilir.",
+        "highlight": "Tek lokasyon veya sube agi icin tek surec."
       }
     ],
     "features": [
-      { "label": "Kendi üretimi", "icon": "factory" },
-      { "label": "Sertifikalı teknisyenler", "icon": "verified" },
-      { "label": "Şeffaf fiyatlandırma", "icon": "money" },
-      { "label": "Premium malzemeler", "icon": "diamond" }
-    ]
+      {
+        "label": "Kendi üretimi",
+        "icon": "factory"
+      },
+      {
+        "label": "Sertifikalı teknisyenler",
+        "icon": "verified"
+      },
+      {
+        "label": "Şeffaf fiyatlandırma",
+        "icon": "money"
+      },
+      {
+        "label": "Premium malzemeler",
+        "icon": "diamond"
+      }
+    ],
+    "antiTitle": "Anonim portal degil. Sorumlu bir servis sureci.",
+    "antiText": "PixelRing talep alimi, koordinasyon, kalite kontrolu ve sonuctan sorumludur. Musteri tek iletisim, tek PR numarasi ve anlasilir bir surec gorur; rastgele saglayici listesi degil.",
+    "visualEyebrow": "Sahada servis",
+    "visualTitle": "Fotograflar, erisim ve sonuc birlikte ele alinir",
+    "visualText": "Isikli kutu, LED moduller, folyo veya sokum tek bir vaka olarak degerlendirilir: ne gorunur sekilde arizali, hangi erisim mumkun ve sahada ne kontrol edilmeli?",
+    "visualImageAlt": "Isikli reklam bulunan ticari cephede PixelRing servis calismasi"
   },
   "Intake": {
     "eyebrow": "Talep",
@@ -102,10 +126,10 @@
     "chat_title": "Sitede Çevrimiçi Sohbet",
     "chat_desc": "İnteraktif Yapay Zeka Asistanı: fotoğraf ve sesli mesaj gönderimi, anında başlangıç.",
     "chat_badge": "ÖNERİLEN",
-    "chat_discount": "%5 indirim",
-    "chat_discount_context": "sohbetle",
-    "chat_discount_desc": "sohbet üzerinden siparişte işçilik indirimi",
-    "chat_discount_info": "Web sitesindeki çevrimiçi sohbet üzerinden talep başlattığınızda %5 indirim alırsınız.",
+    "chat_discount": "Hızlı",
+    "chat_discount_context": "foto ile",
+    "chat_discount_desc": "foto ile daha hızlı değerlendirme",
+    "chat_discount_info": "Reklam tabelasının fotoğrafı PixelRing'in talebi daha hızlı değerlendirmesine yardımcı olur.",
     "chat_cta": "Sohbeti Başlat",
     "form_title": "Standart Form",
     "form_desc": "Sitede basit bir form doldurun",
@@ -138,32 +162,32 @@
     ]
   },
   "Bento": {
-    "title": "Servisimiz nasıl işler?",
+    "title": "Hasar nasil net bir servis vakasina donusur",
     "steps": [
       {
-        "title": "Servisi başlat",
-        "description": "Sorunu kısaca açıklayın veya bir fotoğraf gönderin. AI asistanı durumu anlamaya ve ilk ön değerlendirmeyi yapmaya yardımcı olur.",
-        "highlight": "Teknik ayrıntıları bilmeniz gerekmez."
+        "title": "Fotograf veya aciklama gonderin",
+        "description": "LED tabela, isikli kutu, harfler, folyo, cephe veya sokum ihtiyacini gosterin. Bir kac fotograf cogu zaman baslangic icin yeterlidir.",
+        "highlight": "Genel gorunum, hasar noktasi ve erisim en onemlidir."
       },
       {
-        "title": "Uzman incelemesi",
-        "description": "İlk değerlendirmeden sonra uzmanımız bilgileri inceler, gerekirse ek sorular sorar ve en uygun sonraki adımı belirler.",
-        "highlight": "Bir sonraki adımın ne olduğunu hızlıca anlarsınız."
+        "title": "Ilk degerlendirmeyi alin",
+        "description": "PixelRing vakanin elektrik, LED modul, guc kaynagi, folyo, sabitleme, yukseklik erisimi veya sokumla ilgili olup olmadigini kontrol eder.",
+        "highlight": "Teknik jargon yerine net yon alirsiniz."
       },
       {
-        "title": "Çözümü netleştirme",
-        "description": "İş kapsamı, maliyet, süre, objeye erişim ve uygulama şekli netleştirilir. Ne yapılacağını ve hangi koşullarda yapılacağını bilirsiniz.",
-        "highlight": "Sürpriz yok, gereksiz koordinasyon yok."
+        "title": "Teklif ve akis netlessin",
+        "description": "Islerden once kapsam, erisim, olasi parcalar, zamanlama ve sonraki onay adimi netlestirilir.",
+        "highlight": "Anlasilir mutabakat olmadan is baslamaz."
       },
       {
-        "title": "İşlerin uygulanması",
-        "description": "Onaydan sonra işler koordine edilir ve uzmanlar tarafından uygulanır. PixelRing talebiniz için merkezi iletişim noktası olarak kalır.",
-        "highlight": "Tek süreç. Tek sorumluluk noktası."
+        "title": "Onarim, montaj veya sokum",
+        "description": "Onaydan sonra is koordine edilir: LED servis, isikli kutu onarimi, folyo, harfler, cephe reklami veya kaldirma.",
+        "highlight": "PixelRing merkezi iletisim olarak kalir."
       },
       {
-        "title": "Garanti ve servis",
-        "description": "Tamamlanan işler açık garanti koşullarıyla desteklenir; talep ve obje PixelRing servis geçmişinde izlenebilir kalır.",
-        "highlight": "PixelRing işletmeniz için merkezi servis noktası olmaya devam eder."
+        "title": "Sonuc belgelenir",
+        "description": "Tamamlandiktan sonra durum, yapilan isler, garanti notlari ve acik oneriler servis gecmisinde izlenebilir kalir.",
+        "highlight": "Vaka belgelenmis bir sonuc ile kapanir."
       }
     ]
   },
@@ -227,35 +251,47 @@
     ]
   },
   "FAQ": {
-    "title": "Sıkça Sorulan Sorular",
+    "title": "Talep oncesi sik sorular",
     "items": [
       {
-        "question": "Uzman ne kadar sürede gelir?",
-        "answer": "Talebin onaylanmasından sonra genellikle 24 ila 48 saat içinde yanınızdayız."
+        "question": "PixelRing ne kadar hizli tepki verebilir?",
+        "answer": "Sehir, erisim, aciliyet ve tabela tipine baglidir. Fotograf ve adres varsa PixelRing kisa sureli ziyaret, on kontrol veya planli randevunun mantikli olup olmadigini daha hizli degerlendirir."
       },
       {
-        "question": "Hangi garantiyi sunuyorsunuz?",
-        "answer": "Tüm işçilik ve yedek parçalar için 6 ila 12 ay garanti veriyoruz."
+        "question": "Baslamak icin fotograf yeterli mi?",
+        "answer": "Cogu zaman evet. Tum tabela, hasarin yakin plani, cephe veya isikli kutuya erisim ve gorunuyorsa guc kaynagi ya da baglanti alani faydalidir. Eksik varsa PixelRing hedefli soru sorar."
       },
       {
-        "question": "PixelRing hangi B2B görevleri üstlenebilir?",
-        "answer": "PixelRing ticari objelerle çalışır: tabelalar, ışıklı reklamlar, reklam konstrüksiyonları, vitrinler, cephe yönlendirmesi ve markalama. Onarım, montaj veya demontaj için tek seferlik talep bırakabilir ya da bir lokasyon veya mağaza ağı için düzenli servis desteğini görüşebilirsiniz."
+        "question": "PixelRing hangi tabelalari onarir?",
+        "answer": "Tipik vakalar LED tabelalar, isikli kutular, kutu harfler, neon veya kontur isik, cephe reklami, vitrin folyosu, yazilar ve ticari lokasyonlardaki gorunur marka elemanlaridir."
       },
       {
-        "question": "Birden fazla lokasyon veya şube için talep bırakabilir miyim?",
-        "answer": "Evet. PixelRing farklı adresler, mağazalar, ofisler, restoranlar, satış noktaları veya şube ağları için talepleri yönetebilir. Başvuruda şehir, adres, yapı tipi ve fotoğraflar önemlidir."
+        "question": "PixelRing Almanya genelinde calisir mi?",
+        "answer": "Evet, talepler Almanya genelinde incelenip koordine edilebilir. Berlin merkezi baslangictir; diger bolgelerde servis yolu gorev, erisim ve uygunluga baglidir."
       },
       {
-        "question": "Başka bir şirketin yaptığı tabelalara da servis veriyor musunuz?",
-        "answer": "Evet. Mevcut tabelayı başka bir şirket üretmiş olsa bile kontrol edebilir, onarabilir, demonte edebilir veya modernize edebiliriz. Çözüm yapının durumuna, erişime, elektriğe ve yedek parçaların bulunabilirliğine bağlıdır."
+        "question": "Islerden once teklif alir miyim?",
+        "answer": "Evet. Uygulamadan once kapsam, sonraki adim ve kosullar netlestirilir. Hasar belirsizse once teshis veya saha kontrolu gerekebilir."
       },
       {
-        "question": "İlk değerlendirme için ne gerekir?",
-        "answer": "Genellikle obje adresi, kısa görev açıklaması ve birkaç fotoğraf yeterlidir: tabelanın genel görünümü, hasarlı alan, erişim durumu ve varsa güç kaynağı veya elektrik bağlantısı."
+        "question": "Isler icin garanti var mi?",
+        "answer": "Tamamlanan isler uygun garanti kosullariyla birlikte gelir. Detaylar is turune, parcalara, uretici kosullarina ve mevcut tabelanin durumuna baglidir."
       },
       {
-        "question": "Hangi bölgeleri kapsıyorsunuz?",
-        "answer": "Ülke genelinde bir uzman ağımız bulunmaktadır ve tüm ülkedeki talepleri karşılayabiliriz."
+        "question": "Birden fazla sube yonetilebilir mi?",
+        "answer": "Evet. PixelRing birden fazla adresi fotograf, oncelik ve gorev tipiyle toplayabilir; acil arizalar ve planli isler ayri koordine edilir."
+      },
+      {
+        "question": "PixelRing sokum de yapiyor mu?",
+        "answer": "Evet. Sokum, kaldirma, tasima veya yeni yuzey hazirligi incelenebilir. Fotograf, yukseklik, sabitleme, zemin ve erisim onemlidir."
+      },
+      {
+        "question": "Yedek parca gerekirse ne olur?",
+        "answer": "PixelRing LED modul, guc kaynagi, folyo, harf veya diger parcalarin mevcut olup olmadigini ya da teknik bir alternatifin daha mantikli olup olmadigini netlestirir."
+      },
+      {
+        "question": "Acil durumda ne yapmaliyim?",
+        "answer": "Parcalar gevsekse, yanik kokusu, kivilcim, su girisi veya elektrik riski varsa tabela kullanilmamalidir. Aciliyeti degerlendirmek icin fotograf ve adres gonderin."
       }
     ]
   },
@@ -276,7 +312,7 @@
     "issue_maintenance": "Bakım",
     "field_location": "Adres veya konum (isteğe bağlı)",
     "field_contact": "Telefon veya e-posta",
-    "field_message": "Görevinizi açıklayın...",
+    "field_message": "Gorevi kisaca aciklayin. Ornekler: LED tabela titriyor, isikli kutu karanlik, harfler hasarli, folyo ayriliyor, tabela sokulecek.",
     "field_photo": "📎 Fotoğraf ekle",
     "attach_photo_btn": "Fotoğraf ekle (isteğe bağlı)",
     "form_footer": "Talebi oluşturacağız, bir PR numarası vereceğiz ve Status ile devam edebilirsiniz.",
@@ -396,12 +432,12 @@
     }
   },
   "FooterCTA": {
-    "title": "Hala sorularınız mı var? Projenizi tartışalım.",
-    "subtitle": "Ücretsiz teknik danışmanlık ve ön maliyet değerlendirmesi için her zaman hizmetinizdeyiz.",
+    "title": "LED arizasi, karanlik isikli kutu veya hasarli yazi mi?",
+    "subtitle": "Fotograf, adres ve kisa aciklama gonderin. PixelRing vakayi inceler ve mantikli sonraki adimla geri doner.",
     "connect_label": "MESSENGER ÜZERİNDEN HIZLI İLETİŞİM",
     "write_us": "Bize yazın",
     "form_title": "Servisi başlat",
-    "form_subtitle": "Görevinizi açıklayın ve mümkünse fotoğraf ekleyin. PixelRing bilgileri kontrol eder ve sonraki adımı önerir."
+    "form_subtitle": "LED tabela, isikli kutu, folyo, harfler, montaj veya sokumu aciklayin ve mumkunse fotograf ekleyin."
   },
   "Reviews": {
     "title": "Tipik Servis Vakaları",
@@ -426,7 +462,7 @@
   },
   "Coverage": {
     "title": "Almanya Genelinde Servis",
-    "description": "Berlin'deki merkezimiz geniş bir uzman ağını koordine etmektedir. Tüm büyük şehir merkezlerinde hızlı teknik servis sağlıyoruz.",
+    "description": "PixelRing Berlin merkezli olarak Almanya genelinde LED tabela, isikli kutu, cephe reklami, folyo, montaj ve sokum taleplerini koordine eder.",
     "hq": "Merkez Ofis",
     "serviceCity": "Servis Şehri",
     "cities": {
@@ -440,10 +476,10 @@
       "nuremberg": "Nürnberg"
     },
     "features": {
-      "nationwide": "Ülke Çapında Ağ",
-      "express": "Ekspres Müdahale",
-      "guaranteed": "Servis Garantisi",
-      "experts": "Sertifikalı Uzmanlar"
+      "nationwide": "Almanya genelinde koordinasyon",
+      "express": "Hizli ilk degerlendirme",
+      "guaranteed": "Is tipine gore garanti",
+      "experts": "Tabela uzmanlari"
     }
   },
   "Support": {
@@ -481,15 +517,42 @@
     "symptoms_desc": "Select a symptom to get detailed information on the cause and solution.",
     "all_articles": "All Articles",
     "symptoms": [
-      { "id": "no-light", "title": "Sign does not light up" },
-      { "id": "flicking", "title": "Sign is flickering" },
-      { "id": "uneven-light", "title": "Uneven LED illumination" },
-      { "id": "letter-out", "title": "Single letter does not light up" },
-      { "id": "rain-fail", "title": "Sign switches off after rain" },
-      { "id": "peeling-film", "title": "Vinyl on window has peeled off" },
-      { "id": "faded-film", "title": "Vinyl is faded" },
-      { "id": "shaky-sign", "title": "Sign is shaky" },
-      { "id": "urgent-repair", "title": "Urgent repair required" }
+      {
+        "id": "no-light",
+        "title": "Sign does not light up"
+      },
+      {
+        "id": "flicking",
+        "title": "Sign is flickering"
+      },
+      {
+        "id": "uneven-light",
+        "title": "Uneven LED illumination"
+      },
+      {
+        "id": "letter-out",
+        "title": "Single letter does not light up"
+      },
+      {
+        "id": "rain-fail",
+        "title": "Sign switches off after rain"
+      },
+      {
+        "id": "peeling-film",
+        "title": "Vinyl on window has peeled off"
+      },
+      {
+        "id": "faded-film",
+        "title": "Vinyl is faded"
+      },
+      {
+        "id": "shaky-sign",
+        "title": "Sign is shaky"
+      },
+      {
+        "id": "urgent-repair",
+        "title": "Urgent repair required"
+      }
     ],
     "related_services_title": "Related Services",
     "cta_title": "Need Expert Help?",
@@ -507,7 +570,13 @@
     "logout": "Çıkış yap",
     "logoutLoading": "Çıkış yapılıyor...",
     "safeBoundary": "Bu aşama yalnızca bağlı demo fixture verilerini gösterir. CRM iç bilgileri, özel belge yolları veya gerçek müşteri verileri yoktur.",
-    "nav": { "overview": "Genel bakış", "requests": "Talepler", "objects": "Objeler", "assets": "Varlıklar", "documents": "Belgeler" },
+    "nav": {
+      "overview": "Genel bakış",
+      "requests": "Talepler",
+      "objects": "Objeler",
+      "assets": "Varlıklar",
+      "documents": "Belgeler"
+    },
     "gate": {
       "badge": "Portal Stage 1",
       "title": "Müşteri portalı demo erişimini doğrulayın",
@@ -523,11 +592,31 @@
       "loading": "Kontrol ediliyor...",
       "error": "Erişim doğrulanamadı."
     },
-    "metrics": { "objects": "Objeler", "activeRequests": "Aktif talepler", "assetsWatch": "İzlenen varlıklar", "documents": "Belgeler" },
-    "requests": { "title": "Talepler", "activeTitle": "Aktif iş", "nextStep": "Sonraki adım" },
-    "objects": { "title": "Objeler", "assets": "varlık", "access": "Erişim", "contacts": "Sorumlu", "requests": "Talepler" },
-    "assets": { "title": "Reklam varlıkları", "lastService": "Son servis" },
-    "documents": { "title": "Raporlar, garantiler ve belgeler" },
+    "metrics": {
+      "objects": "Objeler",
+      "activeRequests": "Aktif talepler",
+      "assetsWatch": "İzlenen varlıklar",
+      "documents": "Belgeler"
+    },
+    "requests": {
+      "title": "Talepler",
+      "activeTitle": "Aktif iş",
+      "nextStep": "Sonraki adım"
+    },
+    "objects": {
+      "title": "Objeler",
+      "assets": "varlık",
+      "access": "Erişim",
+      "contacts": "Sorumlu",
+      "requests": "Talepler"
+    },
+    "assets": {
+      "title": "Reklam varlıkları",
+      "lastService": "Son servis"
+    },
+    "documents": {
+      "title": "Raporlar, garantiler ve belgeler"
+    },
     "detail": {
       "backToPortal": "Portala dön",
       "customerStatus": "Müşteri durumu",
@@ -567,13 +656,48 @@
       "confirmVisitWindow": "Saat aralığını onayla",
       "uploadMissingPhoto": "Yüklemeyi hazırla"
     },
-    "messageAuthor": { "customer": "Customer", "ai": "PixelRing AI", "manager": "PixelRing Manager" },
-    "attachmentStatus": { "received": "Alındı", "reviewed": "Kontrol edildi", "needs_more_context": "Ek bilgi gerekli" },
-    "messages": { "title": "Son yazışmalar" },
-    "comingSoon": { "eyebrow": "Ayrıldı", "title": "Onaylar, ekip ve faturalar sonra gelir", "description": "Bu alanlar kimlik doğrulama, roller ve belge erişimi üretime hazır olana kadar güvenli önizleme olarak kalır." },
-    "requestStatus": { "UNDER_REVIEW": "İncelemede", "IN_PROGRESS": "Devam ediyor", "WAITING_FOR_CUSTOMER": "Müşteri bekleniyor", "COMPLETED": "Tamamlandı", "PLANNED": "Planlandı" },
-    "assetStatus": { "OK": "OK", "WATCH": "İzle", "SERVICE_NEEDED": "Servis gerekli", "WARRANTY": "Garanti" },
-    "documentType": { "REPORT": "Foto raporu", "WARRANTY": "Garanti", "DOCUMENT": "Belge", "OFFER": "Onay", "INVOICE": "Fatura" },
-    "documentStatus": { "available": "Önizleme", "planned": "Hazırlanıyor", "locked": "Kilitli" }
+    "messageAuthor": {
+      "customer": "Customer",
+      "ai": "PixelRing AI",
+      "manager": "PixelRing Manager"
+    },
+    "attachmentStatus": {
+      "received": "Alındı",
+      "reviewed": "Kontrol edildi",
+      "needs_more_context": "Ek bilgi gerekli"
+    },
+    "messages": {
+      "title": "Son yazışmalar"
+    },
+    "comingSoon": {
+      "eyebrow": "Ayrıldı",
+      "title": "Onaylar, ekip ve faturalar sonra gelir",
+      "description": "Bu alanlar kimlik doğrulama, roller ve belge erişimi üretime hazır olana kadar güvenli önizleme olarak kalır."
+    },
+    "requestStatus": {
+      "UNDER_REVIEW": "İncelemede",
+      "IN_PROGRESS": "Devam ediyor",
+      "WAITING_FOR_CUSTOMER": "Müşteri bekleniyor",
+      "COMPLETED": "Tamamlandı",
+      "PLANNED": "Planlandı"
+    },
+    "assetStatus": {
+      "OK": "OK",
+      "WATCH": "İzle",
+      "SERVICE_NEEDED": "Servis gerekli",
+      "WARRANTY": "Garanti"
+    },
+    "documentType": {
+      "REPORT": "Foto raporu",
+      "WARRANTY": "Garanti",
+      "DOCUMENT": "Belge",
+      "OFFER": "Onay",
+      "INVOICE": "Fatura"
+    },
+    "documentStatus": {
+      "available": "Önizleme",
+      "planned": "Hazırlanıyor",
+      "locked": "Kilitli"
+    }
   }
 }

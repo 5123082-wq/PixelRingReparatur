@@ -7,10 +7,12 @@ This folder covers how the site should be understood by search engines and AI an
 Planned base documents:
 - `copy_system.md`
 - `cta_labels_master.md`
+- `probleme_loesungen_cluster_modernization_plan.md` - active modernization plan (активный план модернизации) for `/probleme-loesungen` (`Probleme & Lösungen` / проблемы и решения), based on the independent 2026-06-12 content cluster audit (аудит контентного кластера)
 - `problem_article_rules.md` - обязательный короткий стандарт для problem articles (статей о проблемах)
 - `problem_article_rules_master_ru.md` - расширенный master-стандарт (главный справочник) для глубокого редактирования problem articles (статей о проблемах)
 - `problem_article_content_model.md` - целевая content model (контентная модель) для CMS (системы управления контентом), карточек, модальных окон, полных статей, JSON-LD (структурированных данных) и AI/GEO (оптимизации для AI-ответов)
 - `seo_geo_readonly_audit_2026-05-30.md` - read-only SEO/GEO audit (аудит поисковой и AI-видимости без изменения данных) with closed items and next-agent backlog (список задач для следующего агента)
+- `source_audits/pixelring_content_cluster_audit_2026-06-12.md` - raw independent source audit (сырой независимый аудит-источник) for `/de/probleme-loesungen` (`Probleme & Lösungen` / проблемы и решения)
 - `service_page_pattern_werbeanlagen_reparatur.md` - reusable service page pattern (повторяемый шаблон страницы услуги) based on `/leistungen/werbeanlagen-reparatur` (страница ремонта рекламных конструкций)
 - `service_page_neighbor_handoff.md` - next-agent handoff (передача следующему агенту) for applying the pattern to neighboring service pages (соседние страницы услуг) without copying the repair calculator (калькулятор ремонта)
 - `service_page_led_modernisierung_plan.md` - active implementation plan (активный план внедрения) for strengthening `/leistungen/lichtwerbung-led-modernisierung` (страница LED-модернизации), with two future `Probleme & Lösungen` (Проблемы и решения) article briefs
@@ -21,6 +23,75 @@ Planned base documents:
 - `ai_visibility_strategy.md`
 
 ## Progress Log
+
+* **Date:** 2026-06-13
+* **Current sprint/block:** `Probleme & Lösungen` P1.1 `urgent-repair` Rewrite (переписывание P1.1 статьи о срочном ремонте)
+* **Done:**
+  - Used subagents (субагенты) for read-only content safety (проверка безопасности контента) and rendering surface (поверхность рендера) checks before implementation.
+  - Rewrote the existing published DE/EN/RU `CmsArticle` records (существующие опубликованные CMS-статьи) for `urgent-repair` / `dringende-reparatur-werbeanlage` (срочный ремонт рекламной конструкции), without creating new CMS rows (новые записи CMS), seed scripts (seed-скрипты), sitemap entries (записи sitemap), or routes (маршруты).
+  - Added safety-bounded `selfRepairTips` (советы по самостоятельному ремонту с границами безопасности) as explicit JSON (структурированный JSON) for DE, EN, and RU, including `intro` (введение), `withoutOpening` (без вскрытия), `technicalSpecialist` (технический специалист), `doNotDo` (чего не делать), and `qualificationNote` (сноска о квалификации).
+  - Rebuilt the full articles (полные статьи) around `Erste sichere Schritte` (первые безопасные шаги), `Symptom -> Risiko -> Handlung` (симптом -> риск -> действие) tables, Berlin/Brandenburg (Берлин/Бранденбург) service context, request checklist (чеклист заявки), PixelRing process (процесс PixelRing), scope factors (факторы объема работ), and urgent CTA labels (срочные CTA-метки).
+  - Updated code-backed small cards (кодовые маленькие карточки) for DE, EN, and RU so the hub (обзорная страница) still preserves the card/modal/full article (карточка/модальное окно/полная статья) model.
+  - Made the full article sidebar CTA (боковая кнопка полной статьи) use the existing `CmsArticle.ctaLabel` (поле CTA статьи CMS) when present, so `Dringenden Fall melden` (сообщить о срочном случае), `Report urgent case` (сообщить о срочном случае), and `Сообщить срочный случай` render on the article pages.
+  - Cleaned one adjacent DE published `CmsPage` FAQ question (немецкий опубликованный FAQ-вопрос CMS-страницы) on `/de/probleme-loesungen` (`Probleme & Lösungen` / проблемы и решения) to remove the public-facing `sofort` (немедленно) wording from the hub path.
+  - Verified targeted lint (точечная lint-проверка), production build (production-сборка), local rendered HTML (локальный HTML) for `/de/probleme-loesungen` and DE/EN/RU article URLs, one article table (таблица статьи), no duplicated fallback structured sections (дубли fallback-секций), visible urgent CTA (видимый срочный CTA), Article/BreadcrumbList JSON-LD (структурированные данные статьи и хлебных крошек), and no visible `Notdienst` (аварийная служба), `24/7` (круглосуточно), or `sofort` (немедленно) on the checked hub/article surfaces.
+* **In progress:** Owner visual and copy review (визуальная и редакторская проверка владельцем) of the rewritten DE article, hub card (карточка обзора), and modal (модальное окно).
+* **Next action:** If accepted, continue the weak-article rewrite sequence (цепочка переписывания слабых статей) with `werbeanlage-wackelt` (вывеска шатается) or `folie-ist-ausgeblichen` (пленка выцвела).
+* **Blockers/risks:** TR/PL/AR `urgent-repair` articles (турецкая, польская и арабская статьи) are still missing and remain outside this P1.1 scope (объем P1.1); no real emergency availability promise (обещание доступности аварийной службы) has been introduced.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/07_content_ai_seo/README.md`
+  - `signage-service/src/app/[locale]/probleme-loesungen/page.tsx`
+  - `signage-service/src/components/probleme-loesungen/ProblemArticleBody.tsx`
+  - `signage-service/src/lib/cms/articles.ts`
+  - Published CMS article records (опубликованные CMS-статьи) for `urgent-repair` in DE/EN/RU
+  - Published CMS page record (опубликованная CMS-страница) for `de/probleme-loesungen`
+
+* **Date:** 2026-06-13
+* **Current sprint/block:** `Probleme & Lösungen` P0.1 Technical/CMS Foundation (техническая и CMS-основа P0.1 для "Проблемы и решения")
+* **Done:**
+  - Used subagents (субагенты) for read-only checks of the CMS update path (путь обновления CMS) and article-template risks (риски шаблона статей).
+  - Cleaned the published DE `CmsPage` (немецкая CMS-страница) for `/de/probleme-loesungen` (`Probleme & Lösungen` / проблемы и решения) through the CMS Page API (API страницы CMS), preserving validation (валидацию), audit log (журнал аудита), and revision snapshot (снимок версии).
+  - Fixed public German copy defects (ошибки немецкого текста) such as `или` (русское "или"), `Waehlen` (нужно `Wählen` / выбрать), `noetig` (нужно `nötig` / необходимо), `oeffnen` (нужно `öffnen` / открыть), `Haeufige` (нужно `Häufige` / частые), and `klaert` (нужно `klärt` / проясняет).
+  - Added `datePublished` (дата публикации), `dateModified` (дата изменения), and `BreadcrumbList` (структурированные хлебные крошки) JSON-LD (структурированные данные) to problem article pages (страницы статей о проблемах).
+  - Fixed mobile overflow (горизонтальный переполз страницы) on full article pages at 360/390/430 px and kept markdown tables (таблицы markdown) inside their own horizontal scroller.
+  - Limited duplicated structured sections (дублированные структурные секции) on complete markdown articles (полные markdown-статьи) while keeping fallback sections (резервные секции) for weak short articles (слабые короткие статьи) until P1 rewrites.
+* **In progress:** P0 foundation is technically ready; remaining P0 choices are CTA/local trust block wording (CTA и локальный блок доверия) and article trust block design (блок авторства/проверки статьи).
+* **Next action:** Start P1 rewrite (переписывание P1) with `dringende-reparatur-werbeanlage` (срочный ремонт рекламной конструкции) or finish CTA/local trust block design first.
+* **Blockers/risks:** Do not rewrite weak articles (слабые статьи), create new CMS article rows (новые записи статей CMS), or publish seed scripts (seed-скрипты) without the next explicit owner confirmation.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/07_content_ai_seo/README.md`
+  - `signage-service/src/app/[locale]/probleme-loesungen/[slug]/page.tsx`
+  - `signage-service/src/components/probleme-loesungen/ProblemArticleBody.tsx`
+  - `signage-service/src/lib/cms/articles.ts`
+  - Published CMS page record (опубликованная запись CMS-страницы) for `de/probleme-loesungen`
+
+* **Date:** 2026-06-13
+* **Current sprint/block:** `Probleme & Lösungen` Cluster Modernization Planning (план модернизации кластера "Проблемы и решения")
+* **Done:**
+  - Saved the independent content cluster audit (независимый аудит контентного кластера) for `/de/probleme-loesungen` (`Probleme & Lösungen` / проблемы и решения) as a raw source document under `source_audits/`.
+  - Created `probleme_loesungen_cluster_modernization_plan.md` as the active step-by-step modernization plan (пошаговый план модернизации), separating quick QA/CRO fixes (исправления качества и конверсии), weak article rewrites (переписывание слабых статей), winner strengthening (усиление сильных статей), service/money pages (коммерческие страницы услуг), and future research-backed articles (будущие статьи на основе исследования).
+  - Added links in the plan to the confirmed future article tracks: `Leuchtstoffröhren in der Werbeanlage ersetzen oder auf LED umrüsten?` (заменить люминесцентные трубки в рекламной установке или перейти на LED) and `Neonreklame reparieren oder auf LED umrüsten?` (ремонтировать неоновую рекламу или перейти на LED).
+  - Documented the research-request workflow (процесс запроса дополнительного исследования) for future articles before drafting public copy.
+  - Deleted superseded problem-article prompt/template documents (устаревшие документы с промптами и шаблонами) and archived legacy SEO/public-website planning documents (архивные SEO и website planning документы) under `docs/13_references_archive/seo_content_legacy/`.
+* **In progress:** Ready to start P0/P1 execution from the modernization plan.
+* **Next action:** Start with German QA/CTA fixes or one weak article rewrite from `probleme_loesungen_cluster_modernization_plan.md`.
+* **Blockers/risks:** Do not create CMS rows, publish seed scripts, or rewrite article content until the owner confirms the specific execution step.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/00_project_overview/document_migration_matrix.md`
+  - `docs/00_project_overview/project_state_and_roadmap.md`
+  - `docs/01_strategy/master_brief.md`
+  - `docs/01_strategy/new/pixelring_master_brief_context_prompt.md`
+  - `docs/02_public_website/README.md`
+  - `docs/02_public_website/information_architecture.md`
+  - `docs/07_content_ai_seo/README.md`
+  - `docs/07_content_ai_seo/probleme_loesungen_cluster_modernization_plan.md`
+  - `docs/07_content_ai_seo/seo_geo_readonly_audit_2026-05-30.md`
+  - `docs/07_content_ai_seo/source_audits/pixelring_content_cluster_audit_2026-06-12.md`
+  - `docs/13_references_archive/README.md`
+  - `docs/13_references_archive/admin_platform_references.md`
 
 * **Date:** 2026-06-05
 * **Current sprint/block:** Leuchtstoffröhren vs LED-Retrofit Problem Article Draft

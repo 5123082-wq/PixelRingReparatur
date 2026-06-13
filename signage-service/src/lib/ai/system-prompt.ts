@@ -3,10 +3,7 @@ import 'server-only';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
-import {
-  buildAiCmsArticleBlock,
-  getPublishedCmsArticlesForAi,
-} from '@/lib/cms/articles';
+import { buildRetrievedCmsKnowledgeContext } from '@/lib/ai/cms-knowledge-retrieval';
 import { getProblemKnowledgePrompt } from '@/lib/content/problem-knowledge';
 
 export const KNOWLEDGE_BASE_FILES = [
@@ -15,8 +12,6 @@ export const KNOWLEDGE_BASE_FILES = [
   'faq.md',
   'boundaries.md',
 ] as const;
-
-const DEFAULT_CMS_CONTEXT_TOKEN_BUDGET = 1200;
 
 export type KnowledgeBaseFilename = (typeof KNOWLEDGE_BASE_FILES)[number];
 
@@ -27,6 +22,7 @@ export type SystemPromptOptions = {
   publicRequestNumber?: string | null;
   requestBoundPortal?: boolean;
   newRequestUrl?: string | null;
+  knowledgeQuery?: string | null;
 };
 
 export async function readKnowledgeBaseFile(
@@ -99,57 +95,6 @@ function buildPromptHeader(options: SystemPromptOptions): string {
   ].join('\n');
 }
 
-function estimateTokenCount(value: string): number {
-  return Math.ceil(value.length / 4);
-}
-
-function getCmsContextTokenBudget(): number {
-  const configured = Number(process.env.AI_CMS_CONTEXT_MAX_TOKENS);
-
-  if (!Number.isFinite(configured)) {
-    return DEFAULT_CMS_CONTEXT_TOKEN_BUDGET;
-  }
-
-  return Math.min(5000, Math.max(200, Math.floor(configured)));
-}
-
-async function buildCmsKnowledgeContext(locale: string): Promise<string> {
-  const articles = await getPublishedCmsArticlesForAi(locale);
-
-  if (articles.length === 0) {
-    return '';
-  }
-
-  const tokenBudget = getCmsContextTokenBudget();
-  let usedTokens = 0;
-  const blocks: string[] = [];
-
-  for (const article of articles) {
-    const block = buildAiCmsArticleBlock(article);
-    const estimatedTokens = estimateTokenCount(block);
-
-    if (usedTokens + estimatedTokens > tokenBudget) {
-      continue;
-    }
-
-    blocks.push(block);
-    usedTokens += estimatedTokens;
-
-    if (usedTokens >= tokenBudget) {
-      break;
-    }
-  }
-
-  if (blocks.length === 0) {
-    return '';
-  }
-
-  return [
-    `Published CMS knowledge (${locale}):`,
-    ...blocks,
-  ].join('\n\n');
-}
-
 export async function buildSystemPrompt(
   options: SystemPromptOptions = {}
 ): Promise<string> {
@@ -160,7 +105,10 @@ export async function buildSystemPrompt(
       content: await readKnowledgeBaseFile(filename),
     }))
   );
-  const cmsKnowledgeContext = await buildCmsKnowledgeContext(locale);
+  const cmsKnowledgeContext = await buildRetrievedCmsKnowledgeContext({
+    locale,
+    query: options.knowledgeQuery,
+  });
   const problemKnowledgeContext = getProblemKnowledgePrompt(locale);
 
   const knowledgeBase = sections

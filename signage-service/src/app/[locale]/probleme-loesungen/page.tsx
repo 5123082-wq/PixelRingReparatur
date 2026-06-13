@@ -211,11 +211,11 @@ const CONTENT: Record<Locale, SolutionsContent> = {
       {
         id: "urgent",
         intent: "urgent-safety-risk",
-        title: "Dringende Reparatur erforderlich",
+        title: "Dringende Reparatur der Werbeanlage",
         symptom:
-          "Brandgeruch, Funken, lose Bauteile, offene Kabel oder Gefahr für Passanten.",
+          "Brandgeruch, Funken, Wasser, offene Leitungen, lose Teile oder Risiko für Passanten.",
         solution:
-          "Bei Gefahr Strom abschalten, Abstand halten und direkt Kontakt aufnehmen. Keine Selbstreparatur versuchen.",
+          "Abstand halten, Bereich freihalten und nur dann abschalten, wenn Schalter oder Sicherung sicher erreichbar sind.",
       },
     ],
     impactTitle: "Was sich nach der Behebung verbessern kann",
@@ -283,7 +283,7 @@ const CONTENT: Record<Locale, SolutionsContent> = {
       },
       {
         question:
-          "Kann PixelRing sofort sagen, ob repariert oder ersetzt wird?",
+          "Kann PixelRing ohne Prüfung sagen, ob repariert oder ersetzt wird?",
         answer:
           "Eine Empfehlung erfolgt nach Prüfung. Der erste Fokus liegt auf sinnvoller Reparatur und Instandsetzung.",
       },
@@ -385,11 +385,11 @@ const CONTENT: Record<Locale, SolutionsContent> = {
       {
         id: "urgent",
         intent: "urgent-safety-risk",
-        title: "Urgent repair required",
+        title: "Urgent sign repair",
         symptom:
-          "Burning smell, sparks, loose parts, exposed cables or risk to pedestrians.",
+          "Burning smell, sparks, water, exposed wiring, loose parts or pedestrian risk.",
         solution:
-          "If there is danger, switch off the power, keep distance, and contact us directly. Do not attempt self-repair.",
+          "Keep distance, keep the area clear and switch off only if a known switch or breaker is safely accessible.",
       },
     ],
     impactTitle: "What can improve after the issue is fixed",
@@ -555,11 +555,11 @@ const CONTENT: Record<Locale, SolutionsContent> = {
       {
         id: "urgent",
         intent: "urgent-safety-risk",
-        title: "Нужен срочный ремонт",
+        title: "Срочный ремонт вывески",
         symptom:
-          "Запах гари, искры, болтающиеся части, открытые провода или риск для прохожих.",
+          "Запах гари, искры, вода, открытые провода, болтающиеся части или риск для прохожих.",
         solution:
-          "При опасности отключите питание, держитесь на расстоянии и свяжитесь с нами напрямую. Не пытайтесь ремонтировать самостоятельно.",
+          "Держитесь на расстоянии, освободите зону и отключайте только безопасно доступный выключатель или автомат.",
       },
     ],
     impactTitle: "Что может улучшиться после устранения проблемы",

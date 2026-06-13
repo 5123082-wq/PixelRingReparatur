@@ -4,10 +4,10 @@
     "hero_title_prefix": "PixelRing:",
     "hero_title_accent": "Repair and service",
     "hero_title_suffix": "for signage and illuminated advertising.",
-    "description": "PixelRing supports businesses with defective signage, LED elements and visual infrastructure at commercial locations. Start with a short note or photo — we review the details and coordinate the next step.",
+    "description": "PixelRing helps companies with faulty LED signs, lightboxes, facade advertising, films and dismantling. Send a short description or photos - we review the details and suggest the next sensible step.",
     "cta_primary": "Start service",
     "cta_secondary": "Send the issue",
-    "trust_badge": "One contact. One structured service process. Clear coordination.",
+    "trust_badge": "One contact. Photos are often enough to start. Clear assessment before work begins.",
     "badge_label": "Response time for urgent cases"
   },
   "Nav": {
@@ -49,51 +49,75 @@
     "contact": "Contact"
   },
   "Trust": {
-    "pretitle": "ADVANTAGE",
-    "titleStart": "Why businesses",
+    "pretitle": "TRUST",
+    "titleStart": "Why companies",
     "titleAccent": "choose PixelRing",
     "titleEnd": "",
-    "description": "Not a portal, not a random technician, and not scattered coordination. PixelRing accepts the request, helps understand the problem, organizes the work, and keeps the site in service support.",
+    "description": "When LEDs fail, a lightbox goes dark, letters are damaged or film starts peeling, companies do not need an anonymous search. PixelRing receives the case, reviews photos and details, coordinates the work and stays the clear contact.",
     "cta_label": "Start service",
-    "cta_subtext": "Start with a short note or photo.",
+    "cta_subtext": "Start with a photo, address and short description.",
     "stats": [
       {
-        "label": "DIRECT SERVICE",
-        "value": "No portals or middlemen",
-        "description": "PixelRing accepts the request as one service company: from first contact to work coordination and further support. The customer does not search for contractors, compare random contacts, or explain the task again to every participant.",
-        "highlight": "One request — one point of responsibility."
+        "label": "START",
+        "value": "Photos are often enough for the first step",
+        "description": "A full view, close-up of the defect and access situation help classify LED outages, dark lightboxes, peeling film or damaged letters faster.",
+        "highlight": "No technical preparation required."
       },
       {
-        "label": "BUDGET",
-        "value": "AI lowers the cost of getting started",
-        "description": "The AI assistant helps process the initial request: it gathers photos, a description, and basic data before a specialist joins.",
-        "highlight": "We save on initial information handling, not on quality."
+        "label": "ASSESSMENT",
+        "value": "Clear review before work begins",
+        "description": "Before a visit, PixelRing clarifies what likely needs checking: power supply, LED modules, film, fixing points, dismantling route or height access.",
+        "highlight": "You know which step makes sense next."
       },
       {
-        "label": "CLARITY",
-        "value": "Online status",
-        "description": "No uncertainty. The customer sees the request progress in the PixelRing account: from request acceptance to coordination, work execution, and service support.",
-        "highlight": "Less uncertainty — more control."
+        "label": "CONTACT",
+        "value": "One contact for the case",
+        "description": "The request runs through PixelRing. You do not have to coordinate several installers, suppliers or locations yourself.",
+        "highlight": "One contact instead of scattered coordination."
       },
       {
-        "label": "RESPONSIBILITY",
-        "value": "PixelRing manages the process",
-        "description": "We coordinate the request from first contact through work execution and remain the central contact point for the site.",
-        "highlight": "You do not need to connect every participant manually."
+        "label": "RESULT",
+        "value": "Documented completion",
+        "description": "The visible condition, completed work and open points are recorded so repair, installation or dismantling remain traceable.",
+        "highlight": "Before, work, result - clearly documented."
       },
       {
-        "label": "WARRANTY AND SERVICE",
-        "value": "The site stays supported",
-        "description": "All completed work is covered by warranty conditions, and the site receives a service status in the PixelRing system.",
-        "highlight": "PixelRing remains the business support point."
+        "label": "WARRANTY",
+        "value": "Warranty and service history",
+        "description": "Completed work is accompanied by suitable warranty conditions, and the case remains traceable for later questions.",
+        "highlight": "The site does not disappear from view after the visit."
+      },
+      {
+        "label": "BRANCHES",
+        "value": "Suitable for multiple sites",
+        "description": "Branches, shops, practices, restaurants or offices can clarify several sites with photos, addresses and priorities in one flow.",
+        "highlight": "One process for single sites or branch networks."
       }
     ],
     "features": [
-      { "label": "In-house production", "icon": "factory" },
-      { "label": "Certified technicians", "icon": "verified" },
-      { "label": "Transparent pricing", "icon": "money" },
-      { "label": "Premium materials", "icon": "diamond" }
-    ]
+      {
+        "label": "In-house production",
+        "icon": "factory"
+      },
+      {
+        "label": "Certified technicians",
+        "icon": "verified"
+      },
+      {
+        "label": "Transparent pricing",
+        "icon": "money"
+      },
+      {
+        "label": "Premium materials",
+        "icon": "diamond"
+      }
+    ],
+    "antiTitle": "No anonymous portal. One accountable service process.",
+    "antiText": "PixelRing is responsible for intake, coordination, quality control and the result. The customer sees one contact, one PR number and one understandable process - not a list of random providers.",
+    "visualEyebrow": "Service on site",
+    "visualTitle": "Photos, access and result are handled together",
+    "visualText": "A lightbox, LED modules, film or dismantling request is treated as one case: what is visibly damaged, what access is possible and what must be checked on site?",
+    "visualImageAlt": "PixelRing service work on a commercial facade with illuminated signage"
   },
   "Intake": {
     "eyebrow": "Request",
@@ -102,10 +126,10 @@
     "chat_title": "Online Chat on Website",
     "chat_desc": "Interactive AI Assistant: send photos, voice messages, instant start.",
     "chat_badge": "RECOMMENDED",
-    "chat_discount": "5% discount",
-    "chat_discount_context": "via chat",
-    "chat_discount_desc": "on services when ordering in chat",
-    "chat_discount_info": "When you start your request through the online chat on the website, you receive a 5% discount.",
+    "chat_discount": "Faster",
+    "chat_discount_context": "with photo",
+    "chat_discount_desc": "faster assessment with a photo",
+    "chat_discount_info": "A photo of the sign helps PixelRing assess the request faster.",
     "chat_cta": "Start Chat",
     "form_title": "Standard Form",
     "form_desc": "Fill out a simple form on the site",
@@ -138,32 +162,32 @@
     ]
   },
   "Bento": {
-    "title": "How our service works",
+    "title": "How damage becomes a clear service case",
     "steps": [
       {
-        "title": "Start service",
-        "description": "Briefly describe the issue or send a photo. The AI assistant helps assess the situation and prepare an initial review.",
-        "highlight": "You do not need to understand the technical details."
+        "title": "Send photos or a short description",
+        "description": "Show the LED sign, lightbox, letters, film, facade or dismantling need. A few photos are often enough to start.",
+        "highlight": "Full view, damaged area and access are most important."
       },
       {
-        "title": "Specialist review",
-        "description": "After the initial assessment, our specialist reviews the information, asks follow-up questions if needed, and defines the right next step.",
-        "highlight": "You quickly understand what should happen next."
+        "title": "Get an initial assessment",
+        "description": "PixelRing checks whether the case is about electrics, LED modules, power supply, film, fixing points, height access or dismantling.",
+        "highlight": "You get a clear direction instead of technical jargon."
       },
       {
-        "title": "Agree on the solution",
-        "description": "Scope, cost, timing, access to the site, and the execution format are clarified. You know what will be done and under which conditions.",
-        "highlight": "No surprises and no unnecessary coordination."
+        "title": "Clarify offer and workflow",
+        "description": "Before work begins, scope, access, possible parts, timing and the next approval are aligned.",
+        "highlight": "No work without understandable agreement."
       },
       {
-        "title": "Work execution",
-        "description": "After agreement, the work is coordinated and carried out by specialists. PixelRing remains the central contact point for your request.",
-        "highlight": "One process. One point of responsibility."
+        "title": "Repair, install or dismantle",
+        "description": "After approval, the job is coordinated: LED service, lightbox repair, film, letters, facade advertising or removal.",
+        "highlight": "PixelRing remains the central contact."
       },
       {
-        "title": "Warranty and service",
-        "description": "Completed work is covered by clear warranty conditions, and the request and site remain traceable in PixelRing's service history.",
-        "highlight": "PixelRing remains the central service point for your business."
+        "title": "Document the result",
+        "description": "After completion, condition, completed work, warranty notes and open recommendations remain traceable in the service history.",
+        "highlight": "The case ends with a documented result."
       }
     ]
   },
@@ -238,15 +262,42 @@
     "symptoms_desc": "Select a symptom to get detailed information on the cause and solution.",
     "all_articles": "All Articles",
     "symptoms": [
-      { "id": "no-light", "title": "Sign does not light up" },
-      { "id": "flicking", "title": "Sign is flickering" },
-      { "id": "uneven-light", "title": "Uneven LED illumination" },
-      { "id": "letter-out", "title": "Single letter does not light up" },
-      { "id": "rain-fail", "title": "Sign switches off after rain" },
-      { "id": "peeling-film", "title": "Vinyl on window has peeled off" },
-      { "id": "faded-film", "title": "Vinyl is faded" },
-      { "id": "shaky-sign", "title": "Sign is shaky" },
-      { "id": "urgent-repair", "title": "Urgent repair required" }
+      {
+        "id": "no-light",
+        "title": "Sign does not light up"
+      },
+      {
+        "id": "flicking",
+        "title": "Sign is flickering"
+      },
+      {
+        "id": "uneven-light",
+        "title": "Uneven LED illumination"
+      },
+      {
+        "id": "letter-out",
+        "title": "Single letter does not light up"
+      },
+      {
+        "id": "rain-fail",
+        "title": "Sign switches off after rain"
+      },
+      {
+        "id": "peeling-film",
+        "title": "Vinyl on window has peeled off"
+      },
+      {
+        "id": "faded-film",
+        "title": "Vinyl is faded"
+      },
+      {
+        "id": "shaky-sign",
+        "title": "Sign is shaky"
+      },
+      {
+        "id": "urgent-repair",
+        "title": "Urgent repair required"
+      }
     ],
     "related_services_title": "Related Services",
     "cta_title": "Need Expert Help?",
@@ -279,35 +330,47 @@
     ]
   },
   "FAQ": {
-    "title": "Frequently Asked Questions",
+    "title": "Common questions before a request",
     "items": [
       {
-        "question": "How fast do you respond?",
-        "answer": "After approval, we are usually on-site within 24 to 48 hours."
+        "question": "How quickly can PixelRing respond?",
+        "answer": "It depends on the city, access, urgency and type of sign. With photos and an address, PixelRing can assess faster whether a short-notice visit, pre-check or planned appointment makes sense."
       },
       {
-        "question": "What is the warranty period?",
-        "answer": "We provide a 6 to 12-month warranty on all labor and replacement parts."
+        "question": "Are photos enough to start?",
+        "answer": "Often yes. Useful photos show the whole sign, a close-up of the damage, facade or lightbox access and, if visible, the power supply or connection area. If anything is missing, PixelRing asks specifically."
       },
       {
-        "question": "What B2B tasks can PixelRing handle?",
-        "answer": "PixelRing works with commercial sites: signs, illuminated advertising, advertising structures, storefronts, facade wayfinding and branding. You can submit a one-off request for repair, installation or dismantling, or discuss regular service support for one site or a network of locations."
+        "question": "Which signs does PixelRing repair?",
+        "answer": "Typical cases include LED signs, lightboxes, channel letters, neon or contour lighting, facade advertising, window film, lettering and visible branding elements at business locations."
       },
       {
-        "question": "Can I submit one request for multiple sites or branches?",
-        "answer": "Yes. PixelRing can handle requests for individual addresses, shops, offices, restaurants, retail points or branch networks. The request should include the city, address, type of structure and clear photos."
+        "question": "Does PixelRing work across Germany?",
+        "answer": "Yes, requests can be reviewed and coordinated throughout Germany. Berlin is the central base; for other regions, the service route depends on task, access and availability."
       },
       {
-        "question": "Do you service signs installed by another company?",
-        "answer": "Yes. We can inspect, repair, dismantle or modernize an existing sign even if it was produced by another company. The solution depends on the condition of the structure, access, electrical setup and availability of parts."
+        "question": "Will I receive an offer before work begins?",
+        "answer": "Yes. Scope, next step and conditions are aligned before execution. If the damage is unclear, a diagnosis or site inspection may be needed first."
       },
       {
-        "question": "What do you need for an initial assessment?",
-        "answer": "Usually the site address, a short task description and a few photos are enough: an overall view of the sign, the damaged area, access to the structure and, if available, the power supply or electrical connection."
+        "question": "Is there a warranty on the work?",
+        "answer": "Completed work is accompanied by suitable warranty conditions. Details depend on the work, components, manufacturer terms and condition of the existing sign."
       },
       {
-        "question": "What areas do you cover?",
-        "answer": "We have a nationwide network of experts and can handle requests across the entire country."
+        "question": "Can several branches be handled?",
+        "answer": "Yes. PixelRing can bundle several sites with address, photos, priority and task type so urgent defects and planned work are coordinated separately."
+      },
+      {
+        "question": "Does PixelRing also handle dismantling?",
+        "answer": "Yes. Dismantling, removal, relocation or preparation of a new surface can be reviewed. Photos, height, fixing method, substrate and access are important."
+      },
+      {
+        "question": "What if replacement parts are needed?",
+        "answer": "PixelRing clarifies whether LED modules, power supplies, films, letters or other components are available, or whether a technical alternative makes more sense."
+      },
+      {
+        "question": "What applies in urgent cases?",
+        "answer": "If parts are loose, there is a burning smell, sparks, water ingress or electrical risk, the sign should not continue operating. Send photos and address so the urgency can be assessed."
       }
     ]
   },
@@ -328,7 +391,7 @@
     "issue_maintenance": "Maintenance",
     "field_location": "Address or location (optional)",
     "field_contact": "Phone or email",
-    "field_message": "Briefly describe the task. For example: display replacement, diagnostics after a fall, body restoration.",
+    "field_message": "Briefly describe the task. Examples: LED sign flickers, lightbox is dark, letters are damaged, film is peeling, dismantle the sign.",
     "field_photo": "📎 Attach a photo",
     "attach_photo_btn": "Attach photo (optional)",
     "form_footer": "We will create the request, issue a PR number, and you can continue from Status.",
@@ -448,12 +511,12 @@
     }
   },
   "FooterCTA": {
-    "title": "Still have questions? Let's discuss your project.",
-    "subtitle": "We are always available for a free technical consultation and preliminary cost assessment.",
+    "title": "Faulty LED, dark lightbox or damaged lettering?",
+    "subtitle": "Send photos, address and a short description. PixelRing reviews the case and responds with the next sensible step.",
     "connect_label": "FAST CONTACT VIA MESSENGERS",
     "write_us": "Write to us",
     "form_title": "Start service",
-    "form_subtitle": "Describe your task and add photos if possible. PixelRing reviews the information and suggests the next step."
+    "form_subtitle": "Describe the LED sign, lightbox, film, letters, installation or dismantling and add photos if possible."
   },
   "Reviews": {
     "title": "Typical Service Cases",
@@ -478,7 +541,7 @@
   },
   "Coverage": {
     "title": "Service across Germany",
-    "description": "Our headquarters in Berlin coordinates a broad network of experts. We provide fast technical service in all major urban centers.",
+    "description": "From Berlin, PixelRing coordinates requests for LED signs, lightboxes, facade advertising, film, installation and dismantling across Germany.",
     "hq": "Headquarters",
     "serviceCity": "Service City",
     "cities": {
@@ -492,10 +555,10 @@
       "nuremberg": "Nuremberg"
     },
     "features": {
-      "nationwide": "Nationwide Network",
-      "express": "Express Response",
-      "guaranteed": "Service Guarantee",
-      "experts": "Certified Experts"
+      "nationwide": "Germany-wide coordination",
+      "express": "Fast first assessment",
+      "guaranteed": "Warranty by work type",
+      "experts": "Signage specialists"
     }
   },
   "Portal": {
@@ -507,7 +570,13 @@
     "logout": "Log out",
     "logoutLoading": "Logging out...",
     "safeBoundary": "This stage shows only connected demo fixture data. No CRM internals, private document paths, or real customer data.",
-    "nav": { "overview": "Overview", "requests": "Requests", "objects": "Objects", "assets": "Assets", "documents": "Documents" },
+    "nav": {
+      "overview": "Overview",
+      "requests": "Requests",
+      "objects": "Objects",
+      "assets": "Assets",
+      "documents": "Documents"
+    },
     "gate": {
       "badge": "Portal Stage 1",
       "title": "Verify demo access to the customer portal",
@@ -523,11 +592,31 @@
       "loading": "Checking...",
       "error": "Access could not be verified."
     },
-    "metrics": { "objects": "Objects", "activeRequests": "Active requests", "assetsWatch": "Assets to watch", "documents": "Documents" },
-    "requests": { "title": "Requests", "activeTitle": "Active work", "nextStep": "Next step" },
-    "objects": { "title": "Objects", "assets": "assets", "access": "Access", "contacts": "Responsible", "requests": "Requests" },
-    "assets": { "title": "Advertising assets", "lastService": "Last service" },
-    "documents": { "title": "Reports, warranties, and documents" },
+    "metrics": {
+      "objects": "Objects",
+      "activeRequests": "Active requests",
+      "assetsWatch": "Assets to watch",
+      "documents": "Documents"
+    },
+    "requests": {
+      "title": "Requests",
+      "activeTitle": "Active work",
+      "nextStep": "Next step"
+    },
+    "objects": {
+      "title": "Objects",
+      "assets": "assets",
+      "access": "Access",
+      "contacts": "Responsible",
+      "requests": "Requests"
+    },
+    "assets": {
+      "title": "Advertising assets",
+      "lastService": "Last service"
+    },
+    "documents": {
+      "title": "Reports, warranties, and documents"
+    },
     "detail": {
       "backToPortal": "Back to portal",
       "customerStatus": "Customer status",
@@ -567,18 +656,49 @@
       "confirmVisitWindow": "Confirm window",
       "uploadMissingPhoto": "Prepare upload"
     },
-    "messageAuthor": { "customer": "Customer", "ai": "PixelRing AI", "manager": "PixelRing Manager" },
-    "attachmentStatus": { "received": "Received", "reviewed": "Reviewed", "needs_more_context": "Needs more context" },
-    "messages": { "title": "Latest correspondence" },
+    "messageAuthor": {
+      "customer": "Customer",
+      "ai": "PixelRing AI",
+      "manager": "PixelRing Manager"
+    },
+    "attachmentStatus": {
+      "received": "Received",
+      "reviewed": "Reviewed",
+      "needs_more_context": "Needs more context"
+    },
+    "messages": {
+      "title": "Latest correspondence"
+    },
     "comingSoon": {
       "eyebrow": "Reserved",
       "title": "Approvals, team, and invoices come later",
       "description": "These areas stay as a safe preview until authentication, roles, and document access are production-ready."
     },
-    "requestStatus": { "UNDER_REVIEW": "Under review", "IN_PROGRESS": "In progress", "WAITING_FOR_CUSTOMER": "Waiting for customer", "COMPLETED": "Completed", "PLANNED": "Planned" },
-    "assetStatus": { "OK": "OK", "WATCH": "Watch", "SERVICE_NEEDED": "Service needed", "WARRANTY": "Warranty" },
-    "documentType": { "REPORT": "Photo report", "WARRANTY": "Warranty", "DOCUMENT": "Document", "OFFER": "Approval", "INVOICE": "Invoice" },
-    "documentStatus": { "available": "Preview", "planned": "In preparation", "locked": "Locked" }
+    "requestStatus": {
+      "UNDER_REVIEW": "Under review",
+      "IN_PROGRESS": "In progress",
+      "WAITING_FOR_CUSTOMER": "Waiting for customer",
+      "COMPLETED": "Completed",
+      "PLANNED": "Planned"
+    },
+    "assetStatus": {
+      "OK": "OK",
+      "WATCH": "Watch",
+      "SERVICE_NEEDED": "Service needed",
+      "WARRANTY": "Warranty"
+    },
+    "documentType": {
+      "REPORT": "Photo report",
+      "WARRANTY": "Warranty",
+      "DOCUMENT": "Document",
+      "OFFER": "Approval",
+      "INVOICE": "Invoice"
+    },
+    "documentStatus": {
+      "available": "Preview",
+      "planned": "In preparation",
+      "locked": "Locked"
+    }
   },
   "CmsMedia": {
     "title": "Media Library",

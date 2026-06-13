@@ -12,6 +12,11 @@ Current migrated documents:
 - `historical_phase_1_website_foundation.md`
 - `historical_phase_2_crm_and_external_channels.md`
 - `historical_phase_2c_cms_crm_split.md`
+- `seo_content_legacy/german_site_audit.md`
+- `seo_content_legacy/page_brief_solutions.md`
+- `seo_content_legacy/pixelring_seo_audit_skill_final.md`
+- `seo_content_legacy/pixelring_ueber_uns_recommendations_ru_de.md`
+- `seo_content_legacy/pixelring_werbeanlagen_reparatur_strategic_plan_ru.md`
 
 Planned base documents:
 - `official_references.md`

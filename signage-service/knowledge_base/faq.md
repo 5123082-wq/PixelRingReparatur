@@ -1,39 +1,68 @@
 # FAQ
 
-## Repair Process
-**Q: How does repair work?** → Submit request → get PR-number → diagnosis → estimate → repair → pickup.
-**Q: How long?** → Simple: 1-3 days. Complex: 5-10 days. Exact time after diagnosis.
-**Q: Can I track status?** → Yes, use PR-number on the Status page.
-**Q: In person or by mail?** → Both. Contact us for shipping instructions.
+## Requests
+**Q: How do I start a service request?**  
+A: Describe what happened in chat. Once the issue is clear, the assistant can open the secure request form for contact details, location, photos, and notes.
 
-## Pricing
-**Q: How much?** → Depends on device and issue. Estimate after diagnosis.
-**Q: Pay for diagnosis if I cancel?** → Case-by-case. We inform you before proceeding.
+**Q: Do I need a photo or video?**  
+A: It is helpful but not mandatory. If the customer has no photo, continue the request flow and collect the minimum practical description.
 
-## Warranty
-**Q: Warranty on repairs?** → Yes. Duration depends on repair type.
-**Q: What's covered?** → The specific repair. Same issue in warranty period = free fix.
+**Q: Can PixelRing help if I do not know the brand, model, or exact construction type?**  
+A: Yes. The assistant should not block the request because technical details are missing.
+
+## Status
+**Q: How can a customer track a request?**  
+A: Use the public PR request number on the status page. Never expose internal case IDs, database IDs, session IDs, or CRM details.
+
+**Q: Can the assistant show private request data from only a request number?**  
+A: No. A request number alone must not expose private data.
+
+## Pricing And Timing
+**Q: How much will it cost?**  
+A: The exact cost depends on the sign, access, defect, parts, and work scope. The assistant may explain factors, but must not give a binding estimate.
+
+**Q: How long will it take?**  
+A: Timing depends on inspection, access, parts, weather, and urgency. The assistant must not promise exact timelines.
+
+## Safety
+**Q: What if there are sparks, smoke, smell of burning, exposed wires, water inside, or a loose sign?**  
+A: Tell the customer not to touch the installation, keep distance, switch off power only if it is safe, and open an urgent request.
 
 ## Scope
-**Q: What devices?** → LED ring lights, studio lighting, power supplies, dimmers.
-**Q: Phones or computers?** → No. Studio lighting and LED equipment only.
-**Q: Languages?** → DE, EN, RU team. Website: DE, EN, RU, TR, PL, AR.
+**Q: What does PixelRing handle?**  
+A: Sign repair, illuminated signage, LED faults, power supplies, controllers, installation, dismantling, modernization, film, print, lettering, branding, and related commercial service requests.
+
+**Q: Is PixelRing a contractor marketplace?**  
+A: No. PixelRing should be presented as one accountable service company.
 
 ---
 
 # Частые вопросы
 
-## Ремонт
-**В: Как работает ремонт?** → Заявка → PR-номер → диагностика → смета → ремонт → выдача.
-**В: Сколько длится?** → Простой: 1-3 дня. Сложный: 5-10 дней. Точный срок после диагностики.
-**В: Можно отслеживать?** → Да, по PR-номеру на странице «Статус».
+## Заявки
+**В: Как начать заявку?**  
+О: Клиент описывает, что произошло. Когда проблема понятна, ассистент открывает защищенную форму для контакта, адреса, фото и деталей.
 
-## Цены
-**В: Сколько стоит?** → Зависит от устройства. Смета после диагностики.
+**В: Фото или видео обязательно?**  
+О: Нет. Фото помогает, но если его нет, ассистент продолжает оформление заявки по описанию.
 
-## Гарантия
-**В: Есть гарантия?** → Да. Срок зависит от ремонта.
+**В: Можно обратиться, если клиент не знает марку, модель или точный тип конструкции?**  
+О: Да. Отсутствие технических деталей не должно блокировать заявку.
 
-## Что ремонтируем
-**В: Какие устройства?** → LED-лампы, студийное освещение, блоки питания, диммеры.
-**В: Телефоны, компьютеры?** → Нет. Только студийное освещение.
+## Статус
+**В: Как клиент отслеживает заявку?**  
+О: Через публичный номер PR на странице статуса. Внутренние ID, CRM-данные, session IDs и database IDs нельзя показывать клиенту.
+
+**В: Можно ли показать приватные данные только по номеру заявки?**  
+О: Нет. Один номер заявки не должен раскрывать приватные данные.
+
+## Цена и сроки
+**В: Сколько будет стоить ремонт?**  
+О: Точная стоимость зависит от вывески, доступа, дефекта, деталей и объема работ. Ассистент может объяснить факторы, но не должен давать обязательную смету.
+
+**В: Сколько времени займет работа?**  
+О: Срок зависит от осмотра, доступа, деталей, погоды и срочности. Ассистент не должен обещать точные сроки.
+
+## Безопасность
+**В: Что делать, если есть искры, дым, запах гари, открытые провода, вода внутри или вывеска шатается?**  
+О: Не трогать конструкцию, держаться на расстоянии, отключить питание только если это безопасно, и оформить срочную заявку.

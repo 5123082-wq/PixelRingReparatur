@@ -126,10 +126,18 @@ function getArticleBodyLabels(locale: string) {
   };
 }
 
-function renderMarkdownLite(content: string) {
+function normalizeHeadingText(value: string) {
+  return value.replace(/\s+/g, ' ').trim().toLocaleLowerCase();
+}
+
+function renderMarkdownLite(content: string, options?: { skipFirstHeadingText?: string }) {
   const blocks: string[] = [];
   const rawLines = content.split('\n');
   let buffer: string[] = [];
+  let skippedFirstHeading = false;
+  const skippedHeadingText = options?.skipFirstHeadingText
+    ? normalizeHeadingText(options.skipFirstHeadingText)
+    : null;
 
   // Group lines into blocks, keeping table rows together
   for (const line of rawLines) {
@@ -152,7 +160,8 @@ function renderMarkdownLite(content: string) {
   }
   if (buffer.length > 0) blocks.push(buffer.join('\n'));
 
-  return blocks.map((block, blockIndex) => {
+  return blocks
+    .map((block, blockIndex) => {
     const lines = block.split('\n').map((l) => l.trim()).filter(Boolean);
 
     // --- Horizontal rule ---
@@ -171,8 +180,8 @@ function renderMarkdownLite(content: string) {
       const dataRows = lines.slice(dataStartIndex).map(parseRow);
 
       return (
-        <div key={blockIndex} className="overflow-x-auto rounded-[16px] border border-[#E7DDD3]">
-          <table className="w-full text-left text-[15px]">
+        <div key={blockIndex} className="min-w-0 max-w-full overflow-x-auto rounded-[16px] border border-[#E7DDD3]">
+          <table className="min-w-[560px] w-full text-left text-[15px]">
             <thead>
               <tr className="border-b border-[#E7DDD3] bg-[#F7F1E8]">
                 {headerCells.map((cell, i) => (
@@ -219,6 +228,14 @@ function renderMarkdownLite(content: string) {
       if (match) {
         const level = match[1].length;
         const text = match[2];
+        if (
+          !skippedFirstHeading &&
+          skippedHeadingText &&
+          normalizeHeadingText(text) === skippedHeadingText
+        ) {
+          skippedFirstHeading = true;
+          return null;
+        }
         if (level <= 2) return <h2 key={blockIndex} className="text-xl font-bold text-[#0E1A2B] mt-6">{text}</h2>;
         return <h3 key={blockIndex} className="text-lg font-bold text-[#0E1A2B] mt-4">{text}</h3>;
       }
@@ -226,7 +243,8 @@ function renderMarkdownLite(content: string) {
 
     // --- Paragraph ---
     return <p key={blockIndex}>{block.replace(/^#+\s*/, '')}</p>;
-  });
+  })
+  .filter((block): block is NonNullable<typeof block> => block !== null);
 }
 
 function BulletSection({
@@ -275,7 +293,13 @@ export default function ProblemArticleBody({
 }: ProblemArticleBodyProps) {
   const labels = getArticleBodyLabels(locale);
   const knowledgeLabels = getProblemKnowledgeLabels(locale);
-  const bodyBlocks = renderMarkdownLite(article.content);
+  const bodySectionCount = article.content.match(/^##\s+/gm)?.length ?? 0;
+  const bodyLooksComplete = article.content.length >= 2500 && bodySectionCount >= 4;
+  const bodyBlocks = renderMarkdownLite(article.content, {
+    skipFirstHeadingText: article.title,
+  });
+  const renderStructuredSections = !bodyLooksComplete;
+  const ctaLabel = article.ctaLabel?.trim() || labels.cta;
 
   return (
     <article className="bg-[#F7F1E8]">
@@ -306,8 +330,8 @@ export default function ProblemArticleBody({
         </div>
       </section>
 
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[1fr_320px]">
-        <div className="space-y-8 rounded-[28px] bg-[#FFFDF9] p-5 shadow-sm sm:p-8">
+      <div className="mx-auto grid min-w-0 max-w-6xl grid-cols-1 gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="min-w-0 max-w-full space-y-8 rounded-[28px] bg-[#FFFDF9] p-5 shadow-sm sm:p-8">
           {article.shortAnswer && (
             <section>
               <p className="text-[13px] font-extrabold uppercase tracking-[0.12em] text-[#B8643E]">
@@ -320,19 +344,23 @@ export default function ProblemArticleBody({
           )}
 
           {bodyBlocks.length > 0 && (
-            <section className="space-y-4 text-[16px] leading-8 text-[#3E4A48]">
+            <section className="min-w-0 max-w-full space-y-4 break-words text-[16px] leading-8 text-[#3E4A48] [overflow-wrap:anywhere]">
               {bodyBlocks}
             </section>
           )}
 
-          <BulletSection title={labels.causes || knowledgeLabels.causes} items={article.causes} />
-          <BulletSection title={labels.safeChecks || knowledgeLabels.questions} items={article.safeChecks} tone="safe" />
-          <BulletSection title={labels.urgent || knowledgeLabels.warnings} items={article.urgentWarnings} tone="urgent" />
-          <BulletSection title={labels.process || knowledgeLabels.checks} items={article.serviceProcess} />
-          <BulletSection title={labels.scope} items={article.workScopeFactors} />
+          {renderStructuredSections && (
+            <>
+              <BulletSection title={labels.causes || knowledgeLabels.causes} items={article.causes} />
+              <BulletSection title={labels.safeChecks || knowledgeLabels.questions} items={article.safeChecks} tone="safe" />
+              <BulletSection title={labels.urgent || knowledgeLabels.warnings} items={article.urgentWarnings} tone="urgent" />
+              <BulletSection title={labels.process || knowledgeLabels.checks} items={article.serviceProcess} />
+              <BulletSection title={labels.scope} items={article.workScopeFactors} />
+            </>
+          )}
         </div>
 
-        <aside className="h-fit rounded-[24px] border border-[#E7DDD3] bg-white p-5 shadow-sm lg:sticky lg:top-8">
+        <aside className="h-fit min-w-0 max-w-full rounded-[24px] border border-[#E7DDD3] bg-white p-5 shadow-sm lg:sticky lg:top-8">
           <p className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-[#B8643E]">
             PixelRing
           </p>
@@ -343,7 +371,7 @@ export default function ProblemArticleBody({
             {labels.sidebarDescription}
           </p>
           <div className="mt-5">
-            <ProblemRequestButton label={labels.cta} problemIntent={problemIntent} />
+            <ProblemRequestButton label={ctaLabel} problemIntent={problemIntent} />
           </div>
 
           {navItems && navItems.length > 0 && (

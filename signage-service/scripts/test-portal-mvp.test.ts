@@ -243,6 +243,10 @@ test('portal request input is normalized before request creation', () => {
     buildPortalRequestMessage(normalized),
     'Typ: Reparatur\nStandort: Berlin Mitte\n\nLED Schrift flackert seit gestern'
   );
+  assert.equal(
+    buildPortalRequestMessage({ ...normalized, issueType: 'Ремонт' }, 'ru'),
+    'Тип: Ремонт\nАдрес: Berlin Mitte\n\nLED Schrift flackert seit gestern'
+  );
 });
 
 test('portal request detail input normalizes editable fields only', () => {

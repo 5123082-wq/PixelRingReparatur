@@ -188,6 +188,12 @@ export type TrustCmsContent = {
   titleAccent?: string;
   titleEnd?: string;
   description?: string;
+  antiTitle?: string;
+  antiText?: string;
+  visualEyebrow?: string;
+  visualTitle?: string;
+  visualText?: string;
+  visualImageAlt?: string;
   cta_label?: string;
   cta_subtext?: string;
   stats?: { value?: string; label?: string; description?: string; highlight?: string }[];
@@ -1247,6 +1253,12 @@ export async function getHomePageCmsContent(
           titleAccent: getBlockText(trust, 'titleAccent'),
           titleEnd: getBlockText(trust, 'titleEnd'),
           description: getBlockText(trust, 'description'),
+          antiTitle: getBlockText(trust, 'antiTitle'),
+          antiText: getBlockText(trust, 'antiText'),
+          visualEyebrow: getBlockText(trust, 'visualEyebrow'),
+          visualTitle: getBlockText(trust, 'visualTitle'),
+          visualText: getBlockText(trust, 'visualText'),
+          visualImageAlt: getBlockText(trust, 'visualImageAlt'),
           cta_label: getBlockText(trust, 'cta_label'),
           cta_subtext: getBlockText(trust, 'cta_subtext'),
           stats: getBlockObjectList(trust, 'stats')?.map(s => ({

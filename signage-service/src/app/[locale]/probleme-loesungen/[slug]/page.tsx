@@ -57,6 +57,10 @@ function buildGermanFallbackDescription(title: string): string {
   return `Erfahren Sie, warum ${title} auftreten kann, was Sie sicher prüfen können und wie PixelRing die nächsten Schritte koordiniert.`;
 }
 
+function safeJsonLd(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, '\\u003c');
+}
+
 async function getPublishedArticleLocales(publicSlug: string): Promise<SiteLocale[]> {
   const checks = await Promise.all(
     SITE_LOCALES.map(async (locale) => {
@@ -188,11 +192,16 @@ export default async function ProblemArticlePage({
 
   /* --- Article JSON-LD for rich results & AI citation --- */
   const canonicalUrl = `${SITE_BASE_URL}/${contentLocale}/probleme-loesungen/${article.publicSlug}`;
+  const overviewUrl = `${SITE_BASE_URL}/${contentLocale}/probleme-loesungen`;
+  const datePublished = article.publishedAt ?? article.updatedAt;
+  const dateModified = article.updatedAt;
   const articleJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: article.title,
     description: article.seoDescription ?? article.shortAnswer ?? article.title,
+    datePublished: datePublished.toISOString(),
+    dateModified: dateModified.toISOString(),
     author: {
       '@type': 'Organization',
       name: 'PixelRing',
@@ -208,12 +217,40 @@ export default async function ProblemArticlePage({
       '@id': canonicalUrl,
     },
   };
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'PixelRing',
+        item: `${SITE_BASE_URL}/${contentLocale}`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Probleme & Lösungen',
+        item: overviewUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: article.title,
+        item: canonicalUrl,
+      },
+    ],
+  };
 
   return (
     <div className="min-h-screen bg-[#F7F1E8] text-[#15202A]">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
       />
       <Header content={globalCms?.header} />
       <main>

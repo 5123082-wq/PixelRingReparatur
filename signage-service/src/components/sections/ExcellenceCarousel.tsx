@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
@@ -399,11 +399,8 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
     };
   });
 
-  const itemsCount = items.length;
   const carouselItems = items;
   
-  const [virtualIndex, setVirtualIndex] = useState(0);
-  const [isReady, setIsReady] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
@@ -416,52 +413,22 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
     return el.offsetWidth * (isMobile ? 0.88 : 0.32);
   };
 
-  // Initialize scroll position to the middle set
-  useEffect(() => {
+  const scrollRail = (direction: 'previous' | 'next') => {
     const el = scrollRef.current;
     if (!el) return;
 
-    el.scrollLeft = 0;
-    const readyFrame = window.requestAnimationFrame(() => setIsReady(true));
-
-    return () => window.cancelAnimationFrame(readyFrame);
-  }, [isRTL]);
-
-  const handleInfiniteScroll = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el || !isReady) return;
-
-    const scrollPos = Math.abs(el.scrollLeft);
     const cardWidth = getCardWidth(el);
-    const currentVirtual = Math.min(itemsCount - 1, Math.max(0, Math.round(scrollPos / cardWidth)));
-    setVirtualIndex(currentVirtual);
-  }, [itemsCount, isReady]);
+    const scrollDistance = Math.max(1, Math.min(cardWidth + 24, el.scrollWidth - el.clientWidth));
+    const offset = direction === 'next' ? scrollDistance : -scrollDistance;
 
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    el.addEventListener('scroll', handleInfiniteScroll, { passive: true });
-    window.addEventListener('resize', handleInfiniteScroll);
-    return () => {
-      el.removeEventListener('scroll', handleInfiniteScroll);
-      window.removeEventListener('resize', handleInfiniteScroll);
-    };
-  }, [handleInfiniteScroll]);
-
-  const scrollToVirtualIndex = (index: number) => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const cardWidth = getCardWidth(el);
     el.scrollTo({
-      left: isRTL ? -(index * cardWidth) : (index * cardWidth),
+      left: el.scrollLeft + (isRTL ? -offset : offset),
       behavior: 'smooth',
     });
   };
 
-  const next = () => scrollToVirtualIndex(virtualIndex + 1);
-  const prev = () => scrollToVirtualIndex(virtualIndex - 1);
-
-  const activeItemIndex = itemsCount > 0 ? virtualIndex % itemsCount : 0;
+  const next = () => scrollRail('next');
+  const prev = () => scrollRail('previous');
 
   // Drag to scroll handlers
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -483,8 +450,8 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
   const handleMouseUp = () => setIsDragging(false);
 
   return (
-    <section className="w-full bg-[#F4EDE4] py-24 overflow-hidden relative" dir={isRTL ? 'rtl' : 'ltr'}>
-      <div className="max-w-7xl mx-auto px-6 flex flex-col gap-10">
+    <section className="w-full bg-[#F5F5F7] py-20 sm:py-24 overflow-hidden relative" dir={isRTL ? 'rtl' : 'ltr'}>
+      <div className="mx-auto flex max-w-[1180px] flex-col gap-10 px-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="flex flex-col gap-4">
@@ -498,15 +465,14 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
           </div>
 
           {/* Navigation Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 md:pb-1">
             <button
               onClick={prev}
               aria-label="Previous"
-              className="relative group w-14 h-14 rounded-full flex items-center justify-center transition-all duration-500 ease-out bg-gradient-to-br from-[#0E1A2B] to-[#1A2D45] text-white shadow-lg shadow-[#0E1A2B30] hover:shadow-xl hover:shadow-[#0E1A2B40] hover:scale-110 active:scale-95"
+              className="group flex h-11 w-11 items-center justify-center rounded-full bg-[#E4E4E8] text-[#3B3B3F] transition-colors duration-200 hover:bg-[#D8D8DE] active:bg-[#CBCBD2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0E1A2B]/30"
             >
-              <span className="absolute inset-0 rounded-full transition-all duration-500 group-hover:ring-4 group-hover:ring-[#B8643E30]" />
               <svg
-                className={`w-5 h-5 relative z-10 transition-transform duration-300 group-hover:-translate-x-1 ${isRTL ? 'rotate-180' : ''}`}
+                className={`h-5 w-5 transition-transform duration-200 group-hover:-translate-x-0.5 ${isRTL ? 'rotate-180' : ''}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -515,26 +481,13 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
               </svg>
             </button>
 
-            {/* Dot indicators */}
-            <div className="flex gap-2 mx-2">
-              {items.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => scrollToVirtualIndex(index + itemsCount)}
-                  className={`rounded-full transition-all duration-400 ease-out ${activeItemIndex === index ? 'w-8 h-3 bg-[#B8643E]' : 'w-3 h-3 bg-[#C9BAA9] hover:bg-[#A89B8F]'}`}
-                  aria-label={`Go to slide ${index + 1}`}
-                />
-              ))}
-            </div>
-
             <button
               onClick={next}
               aria-label="Next"
-              className="relative group w-14 h-14 rounded-full flex items-center justify-center transition-all duration-500 ease-out bg-gradient-to-br from-[#B8643E] to-[#D47A4E] text-white shadow-lg shadow-[#B8643E30] hover:shadow-xl hover:shadow-[#B8643E40] hover:scale-110 active:scale-95"
+              className="group flex h-11 w-11 items-center justify-center rounded-full bg-[#E4E4E8] text-[#3B3B3F] transition-colors duration-200 hover:bg-[#D8D8DE] active:bg-[#CBCBD2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0E1A2B]/30"
             >
-              <span className="absolute inset-0 rounded-full transition-all duration-500 group-hover:ring-4 group-hover:ring-[#B8643E30]" />
               <svg
-                className={`w-5 h-5 relative z-10 transition-transform duration-300 group-hover:translate-x-1 ${isRTL ? 'rotate-180' : ''}`}
+                className={`h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5 ${isRTL ? 'rotate-180' : ''}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -549,8 +502,8 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
       {/* Carousel Container with Gradients */}
       <div className="relative mt-12 w-full">
         {/* Narrower Edge Gradients to see neighbor cards better */}
-        <div className="absolute left-0 top-0 bottom-0 w-[6%] z-20 pointer-events-none bg-gradient-to-r from-[#F4EDE4] via-[#F4EDE4]/60 to-transparent" />
-        <div className="absolute right-0 top-0 bottom-0 w-[6%] z-20 pointer-events-none bg-gradient-to-l from-[#F4EDE4] via-[#F4EDE4]/60 to-transparent" />
+        <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-20 w-[5%] bg-gradient-to-r from-[#F5F5F7] via-[#F5F5F7]/50 to-transparent" />
+        <div className="pointer-events-none absolute bottom-0 right-0 top-0 z-20 w-[5%] bg-gradient-to-l from-[#F5F5F7] via-[#F5F5F7]/50 to-transparent" />
 
         <div
           ref={scrollRef}
@@ -559,7 +512,7 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
           className={`
-            flex overflow-x-auto snap-x snap-mandatory no-scrollbar px-[4%] pb-8
+            no-scrollbar flex snap-x snap-mandatory scroll-px-[max(1rem,calc((100vw-1180px)/2+1.5rem))] gap-5 overflow-x-auto scroll-smooth px-[max(1rem,calc((100vw-1180px)/2+1.5rem))] pb-8 sm:gap-6
             ${isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'}
           `}
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
@@ -568,41 +521,48 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
             <div
               key={`${index}-${item.title}`}
               data-card
-              className="flex-shrink-0 w-[88%] md:w-[32%] snap-center px-3 flex"
+              className="flex w-[84vw] max-w-[360px] flex-shrink-0 snap-start sm:w-[340px] lg:w-[350px]"
             >
               <div
-                className="w-full aspect-[3/4] relative rounded-[32px] md:rounded-[40px] overflow-hidden group shadow-2xl shadow-[#0E1A2B08] transition-all duration-500"
+                className="group relative h-[520px] w-full overflow-hidden rounded-[28px] bg-white shadow-[0_18px_44px_rgba(15,23,42,0.08)] ring-1 ring-black/[0.04] transition duration-500 hover:-translate-y-0.5 hover:shadow-[0_22px_56px_rgba(15,23,42,0.12)] sm:h-[560px] lg:h-[590px]"
               >
                 <Image
                   src={item.image}
                   alt={item.imageAlt}
                   fill
-                  sizes="100vw"
+                  sizes="(min-width: 1024px) 350px, (min-width: 640px) 340px, 84vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0E1A2BDD] via-[#0E1A2B30] to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/58 via-black/10 to-black/42" />
 
-                <div className="absolute bottom-0 left-0 right-0 p-8 sm:p-10 flex flex-col gap-4 text-white">
+                <div className="absolute inset-x-0 top-0 flex flex-col gap-3 p-7 text-white sm:p-8">
+                  <span className="self-start text-[13px] font-bold leading-none text-white/90">
+                    #{item.tag}
+                  </span>
+                  <h3 className="max-w-[14rem] text-[27px] font-bold leading-[1.06] tracking-[0] sm:text-[30px]">
+                    {item.title}
+                  </h3>
+                </div>
+
+                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-5 p-7 text-white sm:p-8">
+                  <p className="max-w-[15.5rem] text-[14px] font-medium leading-6 text-white/84 sm:text-[15px]">
+                    {item.description}
+                  </p>
                   <Link
                     href={item.serviceHref}
                     aria-label={`${item.tag}: ${item.title}`}
-                    className="self-start px-4 py-1.5 bg-[#B8643E] rounded-full text-[12px] font-bold uppercase tracking-wider transition-colors duration-200 hover:bg-[#9F5131] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/88 text-[#1D1D1F] shadow-[0_10px_26px_rgba(0,0,0,0.16)] transition duration-200 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
                   >
-                    #{item.tag}
+                    <svg
+                      className={`h-4 w-4 ${isRTL ? 'rotate-180' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.4} d="M5 12h14m-6-6 6 6-6 6" />
+                    </svg>
                   </Link>
-                  <div className="flex flex-col gap-2">
-                    <h3 className="text-[22px] sm:text-[26px] font-bold leading-tight tracking-[0]">
-                      <Link
-                        href="/referenzen#recent-work"
-                        className="transition-colors duration-200 hover:text-white/82 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
-                      >
-                        {item.title}
-                      </Link>
-                    </h3>
-                    <p className="text-[14px] sm:text-[16px] text-white/80 leading-relaxed line-clamp-2">
-                      {item.description}
-                    </p>
-                  </div>
                 </div>
               </div>
             </div>

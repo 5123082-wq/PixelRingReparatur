@@ -17,6 +17,50 @@ import {
 } from '@/lib/rate-limit';
 import { DEFAULT_SITE_LOCALE, SITE_LOCALES, type SiteLocale } from '@/lib/seo';
 
+const PORTAL_REQUEST_API_COPY: Record<SiteLocale, {
+  rateLimited: string;
+  loginRequired: string;
+  validation: string;
+  generic: string;
+}> = {
+  de: {
+    rateLimited: 'Bitte versuchen Sie es spaeter erneut.',
+    loginRequired: 'Bitte melden Sie sich zuerst im Kundenportal an.',
+    validation: 'Bitte beschreiben Sie kurz, was gemacht werden soll.',
+    generic: 'Die Anfrage konnte nicht erstellt werden.',
+  },
+  en: {
+    rateLimited: 'Please try again later.',
+    loginRequired: 'Please sign in to the customer portal first.',
+    validation: 'Please briefly describe what needs to be done.',
+    generic: 'The request could not be created.',
+  },
+  ru: {
+    rateLimited: 'Попробуйте еще раз позже.',
+    loginRequired: 'Сначала войдите в клиентский кабинет.',
+    validation: 'Коротко опишите, что нужно сделать.',
+    generic: 'Не удалось создать заявку.',
+  },
+  tr: {
+    rateLimited: 'Lütfen daha sonra tekrar deneyin.',
+    loginRequired: 'Lütfen önce müşteri portalına giriş yapın.',
+    validation: 'Lütfen ne yapılması gerektiğini kısaca açıklayın.',
+    generic: 'Talep oluşturulamadı.',
+  },
+  pl: {
+    rateLimited: 'Spróbuj ponownie później.',
+    loginRequired: 'Najpierw zaloguj się do portalu klienta.',
+    validation: 'Krótko opisz, co trzeba zrobić.',
+    generic: 'Nie udało się utworzyć zgłoszenia.',
+  },
+  ar: {
+    rateLimited: 'يرجى المحاولة مرة أخرى لاحقا.',
+    loginRequired: 'يرجى تسجيل الدخول إلى بوابة العميل أولا.',
+    validation: 'يرجى وصف ما يجب القيام به باختصار.',
+    generic: 'تعذر إنشاء الطلب.',
+  },
+};
+
 function inferRequestLocale(request: NextRequest): SiteLocale {
   const referer = request.headers.get('referer');
 
@@ -36,6 +80,8 @@ function inferRequestLocale(request: NextRequest): SiteLocale {
 
 export async function POST(request: NextRequest) {
   const mutationError = validatePortalMutationRequest(request);
+  const locale = inferRequestLocale(request);
+  const copy = PORTAL_REQUEST_API_COPY[locale] ?? PORTAL_REQUEST_API_COPY[DEFAULT_SITE_LOCALE];
 
   if (mutationError) {
     return mutationError;
@@ -46,7 +92,7 @@ export async function POST(request: NextRequest) {
 
   if (!limit.allowed) {
     return NextResponse.json(
-      { success: false, message: 'Bitte versuchen Sie es spaeter erneut.' },
+      { success: false, message: copy.rateLimited },
       { status: 429, headers: { 'Retry-After': String(Math.ceil(limit.resetMs / 1000)) } }
     );
   }
@@ -58,7 +104,7 @@ export async function POST(request: NextRequest) {
 
   if (!session) {
     return NextResponse.json(
-      { success: false, message: 'Bitte melden Sie sich zuerst im Kundenportal an.' },
+      { success: false, message: copy.loginRequired },
       { status: 401 }
     );
   }
@@ -78,7 +124,7 @@ export async function POST(request: NextRequest) {
       portalSessionId: session.sessionId,
       email: session.email,
       requestInput: body ?? {},
-      locale: inferRequestLocale(request),
+      locale,
       origin: request.headers.get('origin') || request.nextUrl.origin,
       userAgent: request.headers.get('user-agent'),
       ipAddress: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? ip,
@@ -118,8 +164,8 @@ export async function POST(request: NextRequest) {
       {
         success: false,
         message: isValidationError
-          ? error.message
-          : 'Die Anfrage konnte nicht erstellt werden.',
+          ? copy.validation
+          : copy.generic,
       },
       { status: isValidationError ? 400 : 500 }
     );
