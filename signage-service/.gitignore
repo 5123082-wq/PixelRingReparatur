@@ -43,3 +43,6 @@ next-env.d.ts
 
 # local private uploads
 /.data/
+
+# local temporary artifacts
+/tmp/
