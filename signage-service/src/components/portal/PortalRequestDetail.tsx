@@ -15,6 +15,9 @@ import type {
 
 import PortalRequestChat from './PortalRequestChat';
 import PortalRequestDetailsEditor from './PortalRequestDetailsEditor';
+import PortalRequestModalShell from './PortalRequestModalShell';
+
+export type PortalRequestDetailPresentation = 'page' | 'modal';
 
 const statusTone = {
   UNDER_REVIEW: 'border-amber-200 bg-amber-50 text-amber-800',
@@ -51,12 +54,15 @@ const detailCopy = {
     updated: 'Aktualisiert',
     result: 'Ergebnis der Arbeiten',
     noResult: 'Noch kein Ergebnis freigegeben. PixelRing ergaenzt diesen Bereich nach Abschluss oder Zwischenstand.',
-    files: 'Dateien',
-    noFiles: 'Noch keine freigegebenen Dateien fuer diese Anfrage.',
+    files: 'Ihre Fotos und Dateien',
+    noFiles: 'Noch keine Fotos oder Dateien fuer diese Anfrage.',
+    nextStep: 'Naechster Schritt',
+    photoReport: 'Fotobericht PixelRing',
+    customerData: 'Ihre Angaben',
     timeline: 'Statusverlauf',
     notSpecified: 'Noch nicht angegeben',
     serviceTeam: 'PixelRing Service-Team',
-    close: 'Schliessen',
+    close: 'Zum Portal',
     edit: 'Bearbeiten',
     cancel: 'Abbrechen',
     save: 'Speichern',
@@ -81,12 +87,15 @@ const detailCopy = {
     updated: 'Обновлена',
     result: 'Результат работ',
     noResult: 'Результат пока не добавлен. PixelRing заполнит этот блок после выполнения работ или промежуточного отчета.',
-    files: 'Файлы',
-    noFiles: 'По этой заявке пока нет клиентских файлов или опубликованных документов.',
+    files: 'Ваши фото и файлы',
+    noFiles: 'По этой заявке пока нет фото или файлов.',
+    nextStep: 'Следующий шаг',
+    photoReport: 'Фотоотчет PixelRing',
+    customerData: 'Ваши данные',
     timeline: 'История статусов',
     notSpecified: 'Пока не указано',
     serviceTeam: 'PixelRing Service-Team',
-    close: 'Закрыть',
+    close: 'В портал',
     edit: 'Редактировать',
     cancel: 'Отмена',
     save: 'Сохранить',
@@ -130,55 +139,96 @@ function joinValues(values: Array<string | null | undefined>, fallback: string):
   return clean.length > 0 ? clean.join(' · ') : fallback;
 }
 
+function safeRequestTitle(title: string, publicRequestNumber: string): string {
+  const cleanTitle = title.trim();
+  const lower = cleanTitle.toLowerCase();
+  const unsafeMarkers = ['[silent]', 'please communicate', 'ignore previous', 'system prompt', 'developer message'];
+
+  if (!cleanTitle || unsafeMarkers.some((marker) => lower.includes(marker))) {
+    return `Anfrage ${publicRequestNumber}`;
+  }
+
+  return cleanTitle.length > 110 ? `${cleanTitle.slice(0, 107)}...` : cleanTitle;
+}
+
 async function RequestWorkspaceFrame({
   title,
   subtitle,
+  presentation = 'page',
   children,
 }: {
   title: string;
   subtitle: string;
+  presentation?: PortalRequestDetailPresentation;
   children: ReactNode;
 }) {
   const locale = await getLocale();
   const copy = copyForLocale(locale);
+  const isModal = presentation === 'modal';
+
+  const frame = (
+    <section
+      role={isModal ? 'dialog' : undefined}
+      aria-modal={isModal ? true : undefined}
+      aria-label={isModal ? title : undefined}
+      className={`mx-auto flex flex-col overflow-hidden rounded-[28px] border border-white bg-white shadow-2xl shadow-slate-900/10 ${
+        isModal
+          ? 'h-[calc(100vh-1rem)] w-[calc(100vw-1rem)] max-w-[1880px] sm:h-[88vh] sm:w-[92vw]'
+          : 'min-h-[calc(100vh-24px)] max-w-[1840px] sm:min-h-[calc(100vh-40px)]'
+      }`}
+    >
+      <header className="flex flex-col gap-3 border-b border-[#E5EAF0] bg-white px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0">
+          <Link href="/portal" className="text-[13px] font-black text-[#B8643E] transition hover:text-[#944D2F]">
+            {copy.back}
+          </Link>
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <p className="text-[12px] font-black uppercase tracking-[0.18em] text-[#98A2B3]">{subtitle}</p>
+          </div>
+          <h1 className="mt-2 max-w-5xl text-[24px] font-black leading-tight tracking-0 text-[#172033] sm:text-[30px]">
+            {title}
+          </h1>
+        </div>
+        <div className="flex items-start justify-end">
+          <Link
+            href="/portal"
+            aria-label={copy.close}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#D9E0EA] bg-white text-[24px] font-semibold leading-none text-[#27364A] transition hover:border-[#B8643E] hover:text-[#B8643E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8643E]"
+          >
+            <span aria-hidden="true">&times;</span>
+          </Link>
+        </div>
+      </header>
+      {children}
+    </section>
+  );
+
+  if (isModal) {
+    return (
+      <PortalRequestModalShell>
+        {frame}
+      </PortalRequestModalShell>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[#E8EDF2] p-3 text-[#172033] sm:p-5">
-      <section className="mx-auto flex min-h-[calc(100vh-24px)] max-w-[1840px] flex-col overflow-hidden rounded-[28px] border border-white bg-white shadow-2xl shadow-slate-900/10 sm:min-h-[calc(100vh-40px)]">
-        <header className="flex flex-col gap-3 border-b border-[#E5EAF0] bg-white px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
-          <div className="min-w-0">
-            <Link href="/portal" className="text-[13px] font-black text-[#B8643E] transition hover:text-[#944D2F]">
-              {copy.back}
-            </Link>
-            <div className="mt-2 flex flex-wrap items-center gap-3">
-              <p className="text-[12px] font-black uppercase tracking-[0.18em] text-[#98A2B3]">{subtitle}</p>
-            </div>
-            <h1 className="mt-2 max-w-5xl text-[24px] font-black leading-tight tracking-0 text-[#172033] sm:text-[30px]">
-              {title}
-            </h1>
-          </div>
-          <Link
-            href="/portal"
-            className="inline-flex h-11 items-center justify-center rounded-2xl border border-[#D9E0EA] bg-white px-5 text-[14px] font-black text-[#27364A] transition hover:border-[#B8643E] hover:text-[#B8643E]"
-          >
-            {copy.close}
-          </Link>
-        </header>
-        {children}
-      </section>
+      {frame}
     </main>
   );
 }
 
 export async function PortalRequestNotFound({
   organization,
+  presentation = 'page',
 }: {
   organization: PortalDemoOrganization;
+  presentation?: PortalRequestDetailPresentation;
 }) {
   const t = await getTranslations('Portal');
 
   return (
-    <RequestWorkspaceFrame title={t('detail.unknownTitle')} subtitle="Kundenportal">
+    <RequestWorkspaceFrame title={t('detail.unknownTitle')} subtitle="Kundenportal" presentation={presentation}>
       <div className="grid flex-1 place-items-center bg-[#F5F7FA] p-6">
         <section className="w-full max-w-2xl rounded-[22px] border border-[#E5EAF0] bg-white p-6 shadow-sm">
           <p className="text-[14px] leading-7 text-[#667085]">{t('detail.unknownSafeCopy')}</p>
@@ -196,7 +246,6 @@ export async function PortalRequestNotFound({
 }
 
 export default async function PortalRequestDetail({
-  organization,
   request,
   object,
   messages,
@@ -205,6 +254,7 @@ export default async function PortalRequestDetail({
   documents,
   requiredActions,
   canPostMessages = false,
+  presentation = 'page',
 }: {
   organization: PortalDemoOrganization;
   request: PortalRequest;
@@ -216,6 +266,7 @@ export default async function PortalRequestDetail({
   documents: PortalDocument[];
   requiredActions: PortalRequiredAction[];
   canPostMessages?: boolean;
+  presentation?: PortalRequestDetailPresentation;
 }) {
   const t = await getTranslations('Portal');
   const locale = await getLocale();
@@ -231,32 +282,60 @@ export default async function PortalRequestDetail({
     : null;
   const requestContactPerson = nonEmpty(request.customerName) || copy.notSpecified;
   const requestContactDetails = joinValues([request.contactPhone, request.contactEmail], copy.notSpecified);
-  const portalAccountOwner = joinValues([organization.name, organization.demoEmail], copy.notSpecified);
+  const safeTitle = safeRequestTitle(request.title, request.publicRequestNumber);
   const publishedReports = documents.filter((document) => document.type === 'REPORT' && document.status === 'available');
+  const otherDocuments = documents.filter((document) => document.type !== 'REPORT');
 
   return (
     <RequestWorkspaceFrame
-      title={request.title}
+      title={safeTitle}
       subtitle={`${copy.task} ${request.publicRequestNumber}`}
+      presentation={presentation}
     >
-      <div className="grid flex-1 bg-[#F3F6FA] lg:grid-cols-[minmax(420px,0.92fr)_minmax(520px,1.08fr)]">
-        <section className="min-h-0 overflow-y-auto border-b border-[#E5EAF0] bg-[#F4F7FA] p-4 lg:h-[calc(100vh-164px)] lg:border-b-0 lg:border-e sm:p-5">
+      <div className={`grid flex-1 bg-[#F3F6FA] ${
+        presentation === 'modal'
+          ? 'lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]'
+          : 'lg:grid-cols-[minmax(420px,0.92fr)_minmax(520px,1.08fr)]'
+      }`}>
+        <section className={`min-h-0 overflow-y-auto border-b border-[#E5EAF0] bg-[#F4F7FA] p-4 lg:border-b-0 lg:border-e sm:p-5 ${
+          presentation === 'modal' ? 'lg:h-[calc(90vh-132px)]' : 'lg:h-[calc(100vh-164px)]'
+        }`}>
           <div className="grid gap-4">
             <section className="rounded-[22px] border border-[#E5EAF0] bg-white p-5 shadow-sm">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="font-mono text-[12px] font-black uppercase tracking-[0.16em] text-[#B8643E]">{request.publicRequestNumber}</p>
-                  <h2 className="mt-2 text-[22px] font-black text-[#172033]">{copy.details}</h2>
+                  <h2 className="mt-2 text-[22px] font-black text-[#172033]">{copy.nextStep}</h2>
+                  <p className="mt-2 max-w-2xl text-[14px] leading-6 text-[#667085]">{request.nextStep}</p>
                 </div>
                 <span className={`rounded-full border px-3 py-1 text-[11px] font-black ${statusTone[request.status]}`}>
                   {statusLabel}
                 </span>
               </div>
+            </section>
+
+            {requiredActions.length > 0 && (
+              <section className="rounded-[22px] border border-[#F0D7C7] bg-[#FFF8F2] p-5 shadow-sm">
+                <h2 className="text-[18px] font-black text-[#172033]">{t('detail.requiresAction')}</h2>
+                <div className="mt-4 grid gap-3">
+                  {requiredActions.map((action) => (
+                    <article key={action.id} className="rounded-2xl border border-[#E5D1C2] bg-white p-4">
+                      <p className="text-[14px] leading-6 text-[#6C5B50]">{action.description}</p>
+                      <span className="mt-3 inline-flex rounded-full bg-[#F3F6FA] px-3 py-1 text-[11px] font-black text-[#667085]">
+                        {action.dueLabel}
+                      </span>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            <section className="rounded-[22px] border border-[#E5EAF0] bg-white p-5 shadow-sm">
+              <h2 className="text-[18px] font-black text-[#172033]">{copy.customerData}</h2>
               <div className="mt-5 grid gap-3">
                 <FactRow label={copy.address} value={address} href={addressHref} />
                 <FactRow label={copy.requestContactPerson} value={requestContactPerson} />
                 <FactRow label={copy.requestContactDetails} value={requestContactDetails} />
-                <FactRow label={copy.portalAccountOwner} value={portalAccountOwner} />
                 <FactRow label={copy.pixelringResponsible} value={copy.serviceTeam} />
                 <FactRow label={copy.created} value={request.openedAt} />
                 <FactRow label={copy.updated} value={request.updatedAt} />
@@ -287,7 +366,7 @@ export default async function PortalRequestDetail({
 
             <section className="rounded-[22px] border border-[#E5EAF0] bg-white p-5 shadow-sm">
               <div className="flex items-center justify-between gap-3">
-                <h2 className="text-[18px] font-black text-[#172033]">{copy.result}</h2>
+                <h2 className="text-[18px] font-black text-[#172033]">{copy.photoReport}</h2>
                 <span className="rounded-full bg-[#F3F6FA] px-3 py-1 text-[11px] font-black text-[#667085]">
                   {publishedReports.length}
                 </span>
@@ -307,15 +386,15 @@ export default async function PortalRequestDetail({
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-[18px] font-black text-[#172033]">{copy.files}</h2>
                 <span className="rounded-full bg-[#F3F6FA] px-3 py-1 text-[11px] font-black text-[#667085]">
-                  {customerAttachments.length + documents.length}
+                  {customerAttachments.length + otherDocuments.length}
                 </span>
               </div>
-              {customerAttachments.length > 0 || documents.length > 0 ? (
+              {customerAttachments.length > 0 || otherDocuments.length > 0 ? (
                 <div className="mt-4 grid gap-3">
                   {customerAttachments.map((attachment) => (
                     <AttachmentRow key={attachment.id} attachment={attachment} />
                   ))}
-                  {documents.map((document) => (
+                  {otherDocuments.map((document) => (
                     <DocumentRow key={document.id} document={document} />
                   ))}
                 </div>
@@ -339,21 +418,6 @@ export default async function PortalRequestDetail({
               </div>
             </section>
 
-            {requiredActions.length > 0 && (
-              <section className="rounded-[22px] border border-[#F0D7C7] bg-[#FFF8F2] p-5 shadow-sm">
-                <h2 className="text-[18px] font-black text-[#172033]">{t('detail.requiresAction')}</h2>
-                <div className="mt-4 grid gap-3">
-                  {requiredActions.map((action) => (
-                    <article key={action.id} className="rounded-2xl border border-[#E5D1C2] bg-white p-4">
-                      <p className="text-[14px] leading-6 text-[#6C5B50]">{action.description}</p>
-                      <span className="mt-3 inline-flex rounded-full bg-[#F3F6FA] px-3 py-1 text-[11px] font-black text-[#667085]">
-                        {action.dueLabel}
-                      </span>
-                    </article>
-                  ))}
-                </div>
-              </section>
-            )}
           </div>
         </section>
 
@@ -361,6 +425,7 @@ export default async function PortalRequestDetail({
           request={request}
           messages={messages}
           canPostMessages={canPostMessages}
+          presentation={presentation}
         />
       </div>
     </RequestWorkspaceFrame>

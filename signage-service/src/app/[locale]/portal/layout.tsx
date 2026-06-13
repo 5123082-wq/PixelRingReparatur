@@ -10,8 +10,15 @@ export const metadata: Metadata = {
 
 export default function PortalLayout({
   children,
+  modal,
 }: {
   children: ReactNode;
+  modal: ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      {children}
+      {modal}
+    </>
+  );
 }

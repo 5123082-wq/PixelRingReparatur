@@ -8,6 +8,50 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 
 Latest checkpoint:
 
+- Date: 2026-06-13
+- Current stage: Refined the customer portal request UX: the portal logout action is now parked at the lower-left sidebar, and request detail links opened from `/[locale]/portal` render as a large centered intercepted modal with blurred backdrop and outside-click close while direct request URLs still render as standalone safe detail pages.
+- Next action: Owner visually reviews `/ru/portal` and `/de/portal`: open a request from the dashboard, confirm the modal size/backdrop/close behavior, and spot-check direct refresh on `/[locale]/portal/requests/[PR-number]`.
+
+- Date: 2026-06-13
+- Current stage: Completed P1.1 rewrite for `/de/probleme-loesungen/dringende-reparatur-werbeanlage`: updated existing DE/EN/RU `urgent-repair` CMS articles with safety-bounded emergency content, explicit `selfRepairTips`, `Symptom -> Risiko -> Handlung` tables, Berlin/Brandenburg request context, and urgent CTA labels; updated code-backed DE/EN/RU hub cards and made article sidebar CTA labels use existing CMS article CTA fields.
+- Next action: Owner reviews the DE article and hub card/modal flow, then continue the P1 weak-article sequence with `werbeanlage-wackelt` or `folie-ist-ausgeblichen`.
+
+- Date: 2026-06-13
+- Current stage: Connected the customer portal with the public site navigation: portal dashboard and request detail now expose the same language switcher plus a localized website link, and the public home header shows a localized portal CTA when a real or demo portal session is active.
+- Next action: Owner visually reviews the portal/site loop on `/de` and `/ru`: portal language switch, `Zur Website`/`На сайт`, and the authenticated `Zum Portal`/`В кабинет` return CTA from the home page.
+
+- Date: 2026-06-13
+- Current stage: Simplified the customer portal MVP surface toward a classic request dashboard: active navigation now shows only overview, requests, photo reports, and new request; future B2B-suite modules are hidden from the visible portal; request detail now prioritizes next step, customer data, photo report, customer files, status history, and chat.
+- Next action: Owner visually reviews `/de/portal`, `/ru/portal`, and a representative request detail page; then decide whether to further localize test request content, collapse old chat history, or add real secure photo-report downloads.
+
+- Date: 2026-06-13
+- Current stage: Completed P0.1 for `/de/probleme-loesungen`: cleaned dirty German CMS overview copy through the CMS Page API with audit/revision, added Article/BreadcrumbList JSON-LD dates on problem article pages, fixed mobile article overflow at 360/390/430 px, and limited duplicated structured sections on complete markdown articles while keeping fallback sections for weak articles.
+- Next action: Continue the modernization plan with either CTA/local trust-block design for the current articles or the first P1 rewrite, preferably `dringende-reparatur-werbeanlage`.
+
+- Date: 2026-06-13
+- Current stage: Refreshed the AI assistant baseline Markdown knowledge files under `signage-service/knowledge_base/`, replacing obsolete ring-light/Dusseldorf repair-shop context with compact signage-service scope, request intake, safety, FAQ, and boundary guidance.
+- Next action: QA chat prompts where no CMS article is retrieved, then tune the baseline wording or retrieval rules if the assistant still falls back incorrectly.
+
+- Date: 2026-06-13
+- Current stage: Added a temporary live CMS knowledge retrieval layer for the AI assistant so public chat ranks published CMS articles by the latest user message and sends compact structured article fragments instead of broad full-article prompt injection.
+- Next action: QA representative DE/RU chat prompts against published problem articles, then decide whether to add automatic chunk indexing, embeddings/vector retrieval, OpenAI File Search evaluation, or a draft preview assistant mode.
+
+- Date: 2026-06-13
+- Current stage: Saved the independent `/de/probleme-loesungen` content cluster audit as a raw source, created `docs/07_content_ai_seo/probleme_loesungen_cluster_modernization_plan.md` as the active step-by-step plan, deleted superseded problem-article prompt/template docs, and archived legacy SEO/public-website planning docs under `docs/13_references_archive/seo_content_legacy/`.
+- Next action: Start with P0 German QA/CTA fixes or the first P1 weak article rewrite from `docs/07_content_ai_seo/probleme_loesungen_cluster_modernization_plan.md`.
+
+- Date: 2026-06-12
+- Current stage: Reworked the public home trust, FAQ, form-helper, coverage, bento, and final CTA copy across DE/EN/RU/TR/PL/AR toward concrete signage-service language; synchronized published CMS `home/global` records; added a real service visual and anti-portal trust block; verified `/de`, `/ru`, and `/ar` mobile widths 360/390/430 with visible cookie banner and no document horizontal overflow.
+- Next action: Owner visually reviews the updated home page on `/de`, `/ru`, and `/ar`, especially TrustSection, FAQ wording/order, and footer/cookie-banner spacing.
+
+- Date: 2026-06-11
+- Current stage: Added and tuned a public home `Vorher / Nachher` proof section directly after the hero, now using a full-bleed Apple-like horizontal two-row card rail with one large before/after lightbox card, three columns of smaller service-case cards, one large closing card, neutral card shadows/backgrounds, improved RU copy, localized DE/EN/RU/TR/PL/AR text, and local reference assets.
+- Next action: Owner visually reviews `/ru` and `/de` home on desktop/mobile, especially the horizontal rail behavior, proof-card proportions, image choices, and cookie-banner overlap.
+
+- Date: 2026-06-09
+- Current stage: Reworked the public home `Sichtbare Qualität` carousel toward an Apple-like visual rhythm: taller/narrower cards, lighter gray section surface, quieter top arrow controls, no dot indicators, top-aligned non-linked hashtag labels/titles, retained existing card descriptions, single arrow service link per card, and corrected image `sizes`.
+- Next action: Owner visually reviews `/de` home carousel on desktop/mobile, especially card height, text readability over images, hashtag feel, and bottom arrow link treatment.
+
 - Date: 2026-06-09
 - Current stage: Unified the `/[locale]/leistungen/werbeanlagen-reparatur` section typography around the approved symptom-section H2 scale, including the proof strip, problem links, repair calculator, scope/service sections, FAQ, final next-step CTA, and softer card-heading weights.
 - Next action: Owner visually reviews the repaired heading rhythm on `/de/leistungen/werbeanlagen-reparatur`, especially long wrapped H2 titles and carousel card-title weight.
@@ -862,7 +906,7 @@ Read deep when:
 - Date: 2026-05-04
 - Updated by: Codex
 - **Current Stage**: Strategy master brief re-baselined as current PixelRing company/source-of-truth document; unsupported marketplace, geography, SLA, portal, warranty, production, and integration claims are now guarded as unverified/planned.
-- **Next Action**: Align German public website semantic copy and problem-article implementation to `docs/01_strategy/master_brief.md` and `docs/02_public_website/german_site_audit.md`.
+- **Next Action**: Align German public website semantic copy and problem-article implementation to `docs/01_strategy/master_brief.md`, the current public website plans, and the archived audit decision log at `docs/13_references_archive/seo_content_legacy/german_site_audit.md`.
 
 - Date: 2026-05-04
 - Updated by: Codex

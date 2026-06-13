@@ -4,10 +4,10 @@
     "hero_title_prefix": "PixelRing:",
     "hero_title_accent": "Naprawa i serwis",
     "hero_title_suffix": "reklam oraz reklamy świetlnej.",
-    "description": "PixelRing wspiera firmy przy uszkodzonych nośnikach reklamowych, elementach LED i infrastrukturze wizualnej w lokalizacjach komercyjnych. Zacznij od krótkiego opisu albo zdjęcia — sprawdzimy informacje i skoordynujemy kolejny krok.",
+    "description": "PixelRing pomaga firmom przy uszkodzonych szyldach LED, kasetonach, reklamie fasadowej, foliach i demontazu. Wyslij krotki opis lub zdjecia - sprawdzimy szczegoly i wskazemy kolejny rozsadny krok.",
     "cta_primary": "Rozpocznij serwis",
     "cta_secondary": "Przekaż zgłoszenie",
-    "trust_badge": "Jeden kontakt. Uporządkowany proces serwisowy. Jasna koordynacja.",
+    "trust_badge": "Jeden kontakt. Zdjecia czesto wystarcza na start. Jasna ocena przed pracami.",
     "badge_label": "Czas reakcji dla pilnych przypadków"
   },
   "Nav": {
@@ -49,51 +49,75 @@
     "contact": "Kontakt"
   },
   "Trust": {
-    "pretitle": "PRZEWAGA",
+    "pretitle": "ZAUFANIE",
     "titleStart": "Dlaczego firmy",
-    "titleAccent": "wybierają PixelRing",
+    "titleAccent": "wybieraja PixelRing",
     "titleEnd": "",
-    "description": "Nie portal, nie przypadkowy fachowiec i nie rozproszona koordynacja. PixelRing przyjmuje zgłoszenie, pomaga zrozumieć problem, organizuje wykonanie prac i pozostawia obiekt pod opieką serwisową.",
+    "description": "Gdy szyld LED migocze, kaseton jest ciemny, litery sa uszkodzone albo folia odchodzi, firma nie potrzebuje anonimowego portalu. PixelRing przyjmuje sprawe, sprawdza zdjecia i dane, koordynuje wykonanie i pozostaje jasnym kontaktem.",
     "cta_label": "Rozpocznij serwis",
-    "cta_subtext": "Zacznij od krótkiego opisu albo zdjęcia.",
+    "cta_subtext": "Zacznij od zdjecia, adresu i krotkiego opisu.",
     "stats": [
       {
-        "label": "BEZPOŚREDNI SERWIS",
-        "value": "Bez portali i pośredników",
-        "description": "PixelRing przyjmuje zgłoszenie jako jedna firma serwisowa: od pierwszego kontaktu przez koordynację prac po dalszą opiekę. Klient nie szuka wykonawców, nie porównuje przypadkowych kontaktów i nie tłumaczy zadania każdemu uczestnikowi od nowa.",
-        "highlight": "Jedno zgłoszenie — jeden punkt odpowiedzialności."
+        "label": "START",
+        "value": "Zdjecia czesto wystarcza na pierwszy krok",
+        "description": "Widok ogolny, zblizenie uszkodzenia i sytuacja dostepu pomagaja szybciej rozpoznac awarie LED, ciemny kaseton, odchodzaca folie lub uszkodzone litery.",
+        "highlight": "Nie trzeba przygotowania technicznego."
       },
       {
-        "label": "BUDŻET",
-        "value": "AI obniża koszt startu",
-        "description": "Wstępne zgłoszenie pomaga obsłużyć asystent AI: zbiera zdjęcia, opis i podstawowe dane przed podłączeniem specjalisty.",
-        "highlight": "Oszczędzamy na wstępnym opracowaniu informacji, nie na jakości."
+        "label": "OCENA",
+        "value": "Jasna ocena przed pracami",
+        "description": "Przed wizyta PixelRing wyjasnia, co prawdopodobnie trzeba sprawdzic: zasilacz, moduly LED, folie, mocowania, droge demontazu lub dostep na wysokosci.",
+        "highlight": "Wiesz, jaki krok ma sens dalej."
       },
       {
-        "label": "JASNOŚĆ",
-        "value": "Status online",
-        "description": "Bez niepewności. Klient widzi przebieg zgłoszenia w koncie PixelRing: od przyjęcia zgłoszenia przez uzgodnienie i wykonanie prac po opiekę serwisową.",
-        "highlight": "Mniej niepewności — więcej kontroli."
+        "label": "KONTAKT",
+        "value": "Jeden kontakt dla sprawy",
+        "description": "Zgloszenie prowadzi PixelRing. Nie musisz samodzielnie koordynowac kilku monterow, dostawcow lub lokalizacji.",
+        "highlight": "Jeden kontakt zamiast rozproszonej komunikacji."
       },
       {
-        "label": "ODPOWIEDZIALNOŚĆ",
-        "value": "PixelRing prowadzi proces",
-        "description": "Koordynujemy zgłoszenie od pierwszego kontaktu do wykonania prac i pozostajemy centralnym punktem kontaktu dla obiektu.",
-        "highlight": "Nie musisz ręcznie łączyć wszystkich uczestników."
+        "label": "REZULTAT",
+        "value": "Udokumentowane zakonczenie",
+        "description": "Widoczny stan, wykonane prace i otwarte punkty sa zapisywane, aby naprawa, montaz lub demontaz pozostaly czytelne.",
+        "highlight": "Przed, praca, wynik - jasno udokumentowane."
       },
       {
-        "label": "GWARANCJA I SERWIS",
-        "value": "Obiekt pozostaje pod opieką",
-        "description": "Wszystkie wykonane prace są objęte warunkami gwarancji, a obiekt otrzymuje status serwisowy w systemie PixelRing.",
-        "highlight": "PixelRing pozostaje punktem wsparcia dla biznesu."
+        "label": "GWARANCJA",
+        "value": "Gwarancja i historia serwisu",
+        "description": "Wykonane prace sa objete odpowiednimi warunkami gwarancji, a sprawa pozostaje dostepna dla pozniejszych pytan.",
+        "highlight": "Obiekt nie znika z pola widzenia po wizycie."
+      },
+      {
+        "label": "ODDZIALY",
+        "value": "Dobre dla wielu lokalizacji",
+        "description": "Oddzialy, sklepy, gabinety, restauracje lub biura moga zebrac kilka adresow ze zdjeciami, priorytetami i zadaniami w jednym procesie.",
+        "highlight": "Jeden proces dla lokalizacji lub sieci oddzialow."
       }
     ],
     "features": [
-      { "label": "Własna produkcja", "icon": "factory" },
-      { "label": "Certyfikowani technicy", "icon": "verified" },
-      { "label": "Przejrzyste ceny", "icon": "money" },
-      { "label": "Materiały premium", "icon": "diamond" }
-    ]
+      {
+        "label": "Własna produkcja",
+        "icon": "factory"
+      },
+      {
+        "label": "Certyfikowani technicy",
+        "icon": "verified"
+      },
+      {
+        "label": "Przejrzyste ceny",
+        "icon": "money"
+      },
+      {
+        "label": "Materiały premium",
+        "icon": "diamond"
+      }
+    ],
+    "antiTitle": "Nie anonimowy portal. Jeden odpowiedzialny proces serwisowy.",
+    "antiText": "PixelRing odpowiada za przyjecie zgloszenia, koordynacje, kontrole jakosci i rezultat. Klient widzi jeden kontakt, jeden numer PR i jeden zrozumialy proces, a nie liste przypadkowych wykonawcow.",
+    "visualEyebrow": "Serwis na obiekcie",
+    "visualTitle": "Zdjecia, dostep i rezultat sa laczone w jedna sprawe",
+    "visualText": "Kaseton, moduly LED, folia lub demontaz sa traktowane jako jedna sprawa: co jest widocznie uszkodzone, jaki dostep jest mozliwy i co trzeba sprawdzic na miejscu?",
+    "visualImageAlt": "Praca serwisowa PixelRing na fasadzie lokalu z reklama swietlna"
   },
   "Intake": {
     "eyebrow": "Zgłoszenie",
@@ -102,10 +126,10 @@
     "chat_title": "Czat online na stronie",
     "chat_desc": "Interaktywny Asystent AI: wysyłanie zdjęć, wiadomości głosowych, natychmiastowy start.",
     "chat_badge": "POLECANE",
-    "chat_discount": "5% rabatu",
-    "chat_discount_context": "przez czat",
-    "chat_discount_desc": "na prace przy zgłoszeniu na czacie",
-    "chat_discount_info": "Gdy rozpoczniesz zgłoszenie przez czat online na stronie, otrzymasz 5% rabatu.",
+    "chat_discount": "Szybciej",
+    "chat_discount_context": "ze zdjęciem",
+    "chat_discount_desc": "szybsza ocena ze zdjęciem",
+    "chat_discount_info": "Zdjęcie reklamy pomaga PixelRing szybciej ocenić zgłoszenie.",
     "chat_cta": "Uruchom czat",
     "form_title": "Standardowy formularz",
     "form_desc": "Wypełnij prosty formularz na stronie",
@@ -138,32 +162,32 @@
     ]
   },
   "Bento": {
-    "title": "Jak działa nasz serwis",
+    "title": "Jak uszkodzenie staje sie jasna sprawa serwisowa",
     "steps": [
       {
-        "title": "Rozpocznij serwis",
-        "description": "Krótko opisz problem albo wyślij zdjęcie. Asystent AI pomaga rozpoznać sytuację i przygotować wstępną ocenę.",
-        "highlight": "Nie musisz znać szczegółów technicznych."
+        "title": "Wyslij zdjecia lub opis",
+        "description": "Pokaz szyld LED, kaseton, litery, folie, fasade albo potrzebe demontazu. Kilka zdjec czesto wystarcza na start.",
+        "highlight": "Najwazniejszy jest widok ogolny, miejsce uszkodzenia i dostep."
       },
       {
-        "title": "Weryfikacja przez specjalistę",
-        "description": "Po wstępnej ocenie nasz specjalista analizuje informacje, w razie potrzeby zadaje pytania i określa najlepszy kolejny krok.",
-        "highlight": "Szybko wiesz, co należy zrobić dalej."
+        "title": "Otrzymaj pierwsza ocene",
+        "description": "PixelRing sprawdza, czy sprawa dotyczy elektryki, modulow LED, zasilacza, folii, mocowan, dostepu na wysokosci lub demontazu.",
+        "highlight": "Dostajesz jasny kierunek bez technicznego zargonu."
       },
       {
-        "title": "Uzgodnienie rozwiązania",
-        "description": "Ustalany jest zakres prac, koszt, terminy, dostęp do obiektu i sposób wykonania. Wiesz, co zostanie zrobione i na jakich warunkach.",
-        "highlight": "Bez niespodzianek i zbędnej koordynacji."
+        "title": "Uzgodnij oferte i przebieg",
+        "description": "Przed pracami ustala sie zakres, dostep, mozliwe czesci, termin i kolejny krok akceptacji.",
+        "highlight": "Bez zrozumialego uzgodnienia prace nie ruszaja."
       },
       {
-        "title": "Wykonanie prac",
-        "description": "Po uzgodnieniu prace są koordynowane i realizowane przez specjalistów. PixelRing pozostaje centralnym punktem kontaktu dla zgłoszenia.",
-        "highlight": "Jeden proces. Jeden punkt odpowiedzialności."
+        "title": "Naprawa, montaz lub demontaz",
+        "description": "Po akceptacji koordynowany jest wyjazd: serwis LED, naprawa kasetonu, folia, litery, reklama fasadowa lub usuniecie.",
+        "highlight": "PixelRing pozostaje centralnym kontaktem."
       },
       {
-        "title": "Gwarancja i serwis",
-        "description": "Wykonane prace są objęte jasnymi warunkami gwarancyjnymi, a zgłoszenie i obiekt pozostają widoczne w historii serwisowej PixelRing.",
-        "highlight": "PixelRing pozostaje centralnym punktem wsparcia dla Twojej firmy."
+        "title": "Dokumentacja rezultatu",
+        "description": "Po zakonczeniu stan, wykonane prace, uwagi gwarancyjne i otwarte rekomendacje pozostaja w historii serwisu.",
+        "highlight": "Sprawa konczy sie udokumentowanym wynikiem."
       }
     ]
   },
@@ -227,35 +251,47 @@
     ]
   },
   "FAQ": {
-    "title": "Często zadawane pytania",
+    "title": "Czeste pytania przed zgloszeniem",
     "items": [
       {
-        "question": "Jak szybko pojawi się fachowiec?",
-        "answer": "Po zatwierdzeniu zapytania zazwyczaj jesteśmy u Ciebie w ciągu 24 do 48 godzin."
+        "question": "Jak szybko PixelRing moze zareagowac?",
+        "answer": "To zalezy od miasta, dostepu, pilnosci i typu reklamy. Ze zdjeciami i adresem PixelRing szybciej oceni, czy sensowny jest szybki wyjazd, wstepna kontrola czy planowany termin."
       },
       {
-        "question": "Jaką gwarancję oferujecie?",
-        "answer": "Udzielamy od 6 do 12 miesięcy gwarancji na wszystkie prace i części zamienne."
+        "question": "Czy zdjecia wystarcza na start?",
+        "answer": "Czesto tak. Pomaga widok calej reklamy, zblizenie uszkodzenia, dostep do fasady lub kasetonu oraz, jesli widoczne, zasilacz albo miejsce podlaczenia. Jesli czegos brakuje, PixelRing dopyta konkretnie."
       },
       {
-        "question": "Jakie zadania B2B może przejąć PixelRing?",
-        "answer": "PixelRing pracuje przy obiektach komercyjnych: szyldach, reklamie świetlnej, konstrukcjach reklamowych, witrynach, oznakowaniu fasad i brandingu. Możesz zgłosić jednorazową naprawę, montaż lub demontaż albo omówić regularną obsługę obiektu lub sieci punktów."
+        "question": "Jakie reklamy naprawia PixelRing?",
+        "answer": "Typowe przypadki to szyldy LED, kasetony, litery przestrzenne, neon lub swiatlo konturowe, reklama fasadowa, folie witrynowe, napisy i widoczne elementy brandingu w lokalizacjach biznesowych."
       },
       {
-        "question": "Czy mogę zgłosić kilka obiektów lub oddziałów?",
-        "answer": "Tak. PixelRing może prowadzić zgłoszenia dla pojedynczych adresów, sklepów, biur, restauracji, punktów sprzedaży lub sieci oddziałów. W zgłoszeniu ważne są miasto, adres, typ konstrukcji i zdjęcia."
+        "question": "Czy PixelRing dziala w calych Niemczech?",
+        "answer": "Tak, zgloszenia moga byc sprawdzane i koordynowane w Niemczech. Berlin jest centralna baza; w innych regionach sposob serwisu zalezy od zadania, dostepu i dostepnosci."
       },
       {
-        "question": "Czy serwisujecie reklamy wykonane przez inną firmę?",
-        "answer": "Tak. Możemy sprawdzić, naprawić, zdemontować lub zmodernizować istniejącą reklamę, nawet jeśli wykonała ją inna firma. Rozwiązanie zależy od stanu konstrukcji, dostępu, elektryki i dostępności części."
+        "question": "Czy dostane oferte przed pracami?",
+        "answer": "Tak. Przed wykonaniem uzgadnia sie zakres, kolejny krok i warunki. Przy niejasnym uszkodzeniu najpierw moze byc potrzebna diagnostyka lub ogledziny na miejscu."
       },
       {
-        "question": "Co jest potrzebne do wstępnej oceny?",
-        "answer": "Zwykle wystarczy adres obiektu, krótki opis zadania i kilka zdjęć: ogólny widok reklamy, miejsce uszkodzenia, dostęp do konstrukcji oraz, jeśli jest, zasilacz lub przyłącze elektryczne."
+        "question": "Czy na prace jest gwarancja?",
+        "answer": "Wykonane prace sa objete odpowiednimi warunkami gwarancji. Szczegoly zaleza od rodzaju prac, komponentow, warunkow producenta i stanu istniejacej reklamy."
       },
       {
-        "question": "Jakie regiony obsługujecie?",
-        "answer": "Posiadamy ogólnokrajową sieć ekspertów i możemy obsłużyć zapytania w całym kraju."
+        "question": "Czy mozna obslugiwac kilka oddzialow?",
+        "answer": "Tak. PixelRing moze zebrac kilka adresow ze zdjeciami, priorytetem i typem zadania, aby pilne usterki i prace planowe byly koordynowane oddzielnie."
+      },
+      {
+        "question": "Czy PixelRing wykonuje demontaz?",
+        "answer": "Tak. Demontaz, usuniecie starego szyldu, przeniesienie lub przygotowanie nowej powierzchni mozna sprawdzic. Wazne sa zdjecia, wysokosc, mocowanie, podloze i dostep."
+      },
+      {
+        "question": "Co jesli potrzebne sa czesci zamienne?",
+        "answer": "PixelRing sprawdza, czy dostepne sa moduly LED, zasilacze, folie, litery lub inne komponenty, albo czy technicznie rozsadniejsza jest alternatywa."
+      },
+      {
+        "question": "Co zrobic w pilnym przypadku?",
+        "answer": "Jesli elementy sa luzne, czuc spalenizne, widac iskry, wode w srodku lub ryzyko elektryczne, reklamy nie nalezy dalej uzywac. Wyslij zdjecia i adres, aby ocenic pilnosc."
       }
     ]
   },
@@ -276,7 +312,7 @@
     "issue_maintenance": "Konserwacja",
     "field_location": "Adres lub lokalizacja (opcjonalnie)",
     "field_contact": "Telefon lub e-mail",
-    "field_message": "Opisz swoje zadanie...",
+    "field_message": "Krotko opisz zadanie. Przyklady: szyld LED migocze, kaseton jest ciemny, litery uszkodzone, folia odchodzi, demontaz szyldu.",
     "field_photo": "📎 Załącz zdjęcie",
     "attach_photo_btn": "Załącz zdjęcie (opcjonalnie)",
     "form_footer": "Utworzymy zgłoszenie, nadamy numer PR i możesz kontynuować w Status.",
@@ -396,12 +432,12 @@
     }
   },
   "FooterCTA": {
-    "title": "Masz pytania? Omówmy Twój projekt.",
-    "subtitle": "Jesteśmy zawsze dostępni w celu bezpłatnej konsultacji technicznej i wstępnej kalkulacji kosztów.",
+    "title": "Migoczacy LED, ciemny kaseton albo uszkodzony napis?",
+    "subtitle": "Wyslij zdjecia, adres i krotki opis. PixelRing sprawdzi sprawe i wroci z kolejnym rozsadnym krokiem.",
     "connect_label": "SZYBKI KONTAKT PRZEZ KOMUNIKATORY",
     "write_us": "Napisz do nas",
     "form_title": "Rozpocznij serwis",
-    "form_subtitle": "Opisz zadanie i, jeśli to możliwe, dodaj zdjęcia. PixelRing sprawdzi informacje i zaproponuje kolejny krok."
+    "form_subtitle": "Opisz szyld LED, kaseton, folie, litery, montaz lub demontaz i dolacz zdjecia, jesli to mozliwe."
   },
   "Reviews": {
     "title": "Typowe sprawy serwisowe",
@@ -426,7 +462,7 @@
   },
   "Coverage": {
     "title": "Serwis w całych Niemczech",
-    "description": "Nasza siedziba w Berlinie koordynuje szeroką sieć ekspertów. Zapewniamy szybki serwis techniczny we wszystkich głównych ośrodkach miejskich.",
+    "description": "Z Berlina PixelRing koordynuje w Niemczech zgloszenia dotyczace szyldow LED, kasetonow, reklam fasadowych, folii, montazu i demontazu.",
     "hq": "Siedziba główna",
     "serviceCity": "Miasto serwisowe",
     "cities": {
@@ -440,10 +476,10 @@
       "nuremberg": "Norymberga"
     },
     "features": {
-      "nationwide": "Sieć ogólnokrajowa",
-      "express": "Reakcja ekspresowa",
-      "guaranteed": "Gwarancja serwisu",
-      "experts": "Certyfikowani eksperci"
+      "nationwide": "Koordynacja w Niemczech",
+      "express": "Szybka pierwsza ocena",
+      "guaranteed": "Gwarancja wedlug typu prac",
+      "experts": "Specjalisci od reklam"
     }
   },
   "Support": {
@@ -481,15 +517,42 @@
     "symptoms_desc": "Wybierz objaw, aby uzyskać szczegółowe informacje o przyczynie i rozwiązaniu.",
     "all_articles": "Wszystkie Artykuły",
     "symptoms": [
-      { "id": "no-light", "title": "Reklama nie świeci" },
-      { "id": "flicking", "title": "Reklama migocze" },
-      { "id": "uneven-light", "title": "Nierównomierne podświetlenie LED" },
-      { "id": "letter-out", "title": "Pojedyncza litera nie świeci" },
-      { "id": "rain-fail", "title": "Reklama wyłącza się po deszczu" },
-      { "id": "peeling-film", "title": "Folia na witrynie się odkleiła" },
-      { "id": "faded-film", "title": "Folia wyblakła" },
-      { "id": "shaky-sign", "title": "Reklama się chwieje" },
-      { "id": "urgent-repair", "title": "Wymagana pilna naprawa" }
+      {
+        "id": "no-light",
+        "title": "Reklama nie świeci"
+      },
+      {
+        "id": "flicking",
+        "title": "Reklama migocze"
+      },
+      {
+        "id": "uneven-light",
+        "title": "Nierównomierne podświetlenie LED"
+      },
+      {
+        "id": "letter-out",
+        "title": "Pojedyncza litera nie świeci"
+      },
+      {
+        "id": "rain-fail",
+        "title": "Reklama wyłącza się po deszczu"
+      },
+      {
+        "id": "peeling-film",
+        "title": "Folia na witrynie się odkleiła"
+      },
+      {
+        "id": "faded-film",
+        "title": "Folia wyblakła"
+      },
+      {
+        "id": "shaky-sign",
+        "title": "Reklama się chwieje"
+      },
+      {
+        "id": "urgent-repair",
+        "title": "Wymagana pilna naprawa"
+      }
     ],
     "related_services_title": "Powiązane Usługi",
     "cta_title": "Potrzebujesz Pomocy Eksperta?",
@@ -507,7 +570,13 @@
     "logout": "Wyloguj",
     "logoutLoading": "Wylogowywanie...",
     "safeBoundary": "Ten etap pokazuje tylko połączone dane demo fixture. Bez wewnętrznych danych CRM, prywatnych ścieżek dokumentów i prawdziwych danych klientów.",
-    "nav": { "overview": "Przegląd", "requests": "Zgłoszenia", "objects": "Obiekty", "assets": "Aktywa", "documents": "Dokumenty" },
+    "nav": {
+      "overview": "Przegląd",
+      "requests": "Zgłoszenia",
+      "objects": "Obiekty",
+      "assets": "Aktywa",
+      "documents": "Dokumenty"
+    },
     "gate": {
       "badge": "Portal Stage 1",
       "title": "Zweryfikuj dostęp demo do portalu klienta",
@@ -523,11 +592,31 @@
       "loading": "Sprawdzanie...",
       "error": "Nie udało się zweryfikować dostępu."
     },
-    "metrics": { "objects": "Obiekty", "activeRequests": "Aktywne zgłoszenia", "assetsWatch": "Aktywa do obserwacji", "documents": "Dokumenty" },
-    "requests": { "title": "Zgłoszenia", "activeTitle": "Aktywna praca", "nextStep": "Następny krok" },
-    "objects": { "title": "Obiekty", "assets": "aktywa", "access": "Dostęp", "contacts": "Odpowiedzialni", "requests": "Zgłoszenia" },
-    "assets": { "title": "Aktywa reklamowe", "lastService": "Ostatni serwis" },
-    "documents": { "title": "Raporty, gwarancje i dokumenty" },
+    "metrics": {
+      "objects": "Obiekty",
+      "activeRequests": "Aktywne zgłoszenia",
+      "assetsWatch": "Aktywa do obserwacji",
+      "documents": "Dokumenty"
+    },
+    "requests": {
+      "title": "Zgłoszenia",
+      "activeTitle": "Aktywna praca",
+      "nextStep": "Następny krok"
+    },
+    "objects": {
+      "title": "Obiekty",
+      "assets": "aktywa",
+      "access": "Dostęp",
+      "contacts": "Odpowiedzialni",
+      "requests": "Zgłoszenia"
+    },
+    "assets": {
+      "title": "Aktywa reklamowe",
+      "lastService": "Ostatni serwis"
+    },
+    "documents": {
+      "title": "Raporty, gwarancje i dokumenty"
+    },
     "detail": {
       "backToPortal": "Wróć do portalu",
       "customerStatus": "Status klienta",
@@ -567,13 +656,48 @@
       "confirmVisitWindow": "Potwierdź okno",
       "uploadMissingPhoto": "Przygotuj upload"
     },
-    "messageAuthor": { "customer": "Customer", "ai": "PixelRing AI", "manager": "PixelRing Manager" },
-    "attachmentStatus": { "received": "Odebrane", "reviewed": "Sprawdzone", "needs_more_context": "Wymaga uzupełnienia" },
-    "messages": { "title": "Ostatnia korespondencja" },
-    "comingSoon": { "eyebrow": "Zarezerwowane", "title": "Zgody, zespół i faktury pojawią się później", "description": "Te obszary pozostają bezpiecznym podglądem, dopóki uwierzytelnianie, role i dostęp do dokumentów nie będą gotowe produkcyjnie." },
-    "requestStatus": { "UNDER_REVIEW": "W analizie", "IN_PROGRESS": "W realizacji", "WAITING_FOR_CUSTOMER": "Czeka na klienta", "COMPLETED": "Zakończone", "PLANNED": "Planowane" },
-    "assetStatus": { "OK": "OK", "WATCH": "Obserwuj", "SERVICE_NEEDED": "Wymaga serwisu", "WARRANTY": "Gwarancja" },
-    "documentType": { "REPORT": "Raport foto", "WARRANTY": "Gwarancja", "DOCUMENT": "Dokument", "OFFER": "Zgoda", "INVOICE": "Faktura" },
-    "documentStatus": { "available": "Podgląd", "planned": "W przygotowaniu", "locked": "Zablokowane" }
+    "messageAuthor": {
+      "customer": "Customer",
+      "ai": "PixelRing AI",
+      "manager": "PixelRing Manager"
+    },
+    "attachmentStatus": {
+      "received": "Odebrane",
+      "reviewed": "Sprawdzone",
+      "needs_more_context": "Wymaga uzupełnienia"
+    },
+    "messages": {
+      "title": "Ostatnia korespondencja"
+    },
+    "comingSoon": {
+      "eyebrow": "Zarezerwowane",
+      "title": "Zgody, zespół i faktury pojawią się później",
+      "description": "Te obszary pozostają bezpiecznym podglądem, dopóki uwierzytelnianie, role i dostęp do dokumentów nie będą gotowe produkcyjnie."
+    },
+    "requestStatus": {
+      "UNDER_REVIEW": "W analizie",
+      "IN_PROGRESS": "W realizacji",
+      "WAITING_FOR_CUSTOMER": "Czeka na klienta",
+      "COMPLETED": "Zakończone",
+      "PLANNED": "Planowane"
+    },
+    "assetStatus": {
+      "OK": "OK",
+      "WATCH": "Obserwuj",
+      "SERVICE_NEEDED": "Wymaga serwisu",
+      "WARRANTY": "Gwarancja"
+    },
+    "documentType": {
+      "REPORT": "Raport foto",
+      "WARRANTY": "Gwarancja",
+      "DOCUMENT": "Dokument",
+      "OFFER": "Zgoda",
+      "INVOICE": "Faktura"
+    },
+    "documentStatus": {
+      "available": "Podgląd",
+      "planned": "W przygotowaniu",
+      "locked": "Zablokowane"
+    }
   }
 }

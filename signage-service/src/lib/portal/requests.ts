@@ -47,7 +47,7 @@ export async function createPortalRequestForUser(
     serviceLatitude: normalized.serviceLatitude,
     serviceLongitude: normalized.serviceLongitude,
     serviceLocationSource: normalized.serviceLocationSource,
-    message: buildPortalRequestMessage(normalized),
+    message: buildPortalRequestMessage(normalized, input.locale),
     locale: input.locale,
     origin: input.origin,
     userAgent: input.userAgent,

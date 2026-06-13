@@ -1,50 +1,58 @@
-# PixelRing — Service Information
+# PixelRing Reparatur — Service Information
 
-## About Us
-PixelRing is a technical repair atelier in Düsseldorf, Germany. We specialize in professional repair of LED ring lights, studio lighting, and related electronic devices for content creators, photographers, and videographers.
+## Identity
+PixelRing Reparatur is one accountable service company for signage, light advertising, branding surfaces, and related service requests.
 
-## Services
-- LED Ring Light Repair (all brands and sizes)
-- Power Supply & Controller Repair
-- Color Temperature Calibration
-- Custom Modifications (brightness upgrades, diffusers, mounts)
-- Preventive Maintenance
+PixelRing is not a marketplace, contractor directory, listing platform, or "find a master" product.
 
-## Contact
-- Location: Düsseldorf, Germany
-- Website: pixelring.de
-- Channels: Website chat, WhatsApp, Telegram, Email, Phone
+## Core Service Scope
+- Sign repair and troubleshooting.
+- Light advertising and illuminated signage repair.
+- LED modules, power supplies, controllers, wiring, and visible lighting defects in signs.
+- Sign installation, dismantling, relocation, and service coordination.
+- Partial modernization, LED conversion, and replacement planning when repair is not enough.
+- Print, film, lettering, branding, storefront, and visual-surface service requests.
+- B2B and commercial service requests for shops, offices, restaurants, practices, venues, and multi-site operators.
 
-## Hours
-- Mon–Fri: 10:00–18:00
-- Sat: by appointment
-- Sun: closed
+## Request Entry Point
+- The website chat can help understand the problem and open the secure request form.
+- The assistant may ask what happened, what kind of sign or object is affected, and whether there are safety risks.
+- Contact details, exact address, and private customer data should be collected through the secure embedded form, not repeated in free-text chat.
+- Every submitted request can receive a public PR request number for status tracking.
 
-## Key Facts
-- All requests get a tracking number: PR-XXXX-XXXX
-- Initial diagnosis before any repair
-- Timeline depends on complexity and parts availability
+## Knowledge Sources
+- Published CMS articles are the freshest public knowledge source for problem-specific answers.
+- If CMS knowledge is available in the prompt, prefer it over this baseline file.
+- If no article matches, use this file only for general service orientation and safe next steps.
+
+## Safety Rules
+- Do not diagnose a defect as certain from chat alone.
+- Do not promise exact price, timeline, warranty duration, availability, or final repair outcome.
+- For smoke, smell of burning, sparks, exposed wiring, water ingress, short circuits, loose signs, falling parts, or risk to passers-by: tell the customer not to touch the installation, keep distance, switch off power only if it is safe, and create an urgent request.
+
+## Supported Languages
+The assistant must support German, English, Russian, Turkish, Polish, and Arabic. German is canonical-first for service wording, but the reply must follow the user's language.
 
 ---
 
-# Информация о сервисе PixelRing
+# PixelRing Reparatur — базовая информация
 
-## О нас
-PixelRing — техническая мастерская в Дюссельдорфе. Ремонт LED-кольцевых ламп, студийного освещения и связанной электроники.
+## Кто мы
+PixelRing Reparatur — единая ответственная сервисная компания по ремонту вывесок, световой рекламы, брендированных поверхностей и связанным сервисным заявкам.
 
-## Услуги
-- Ремонт LED-кольцевых ламп
-- Ремонт блоков питания и контроллеров
-- Калибровка цветовой температуры
-- Индивидуальные модификации
-- Профилактика
+PixelRing не является маркетплейсом, каталогом подрядчиков, доской объявлений или сервисом "найти мастера".
 
-## Контакты
-- Дюссельдорф, Германия
-- pixelring.de
-- Чат на сайте, WhatsApp, Telegram, Email, телефон
+## Что входит в сервис
+- Ремонт и диагностика вывесок.
+- Ремонт световой рекламы и подсветки.
+- LED-модули, блоки питания, контроллеры, проводка и видимые дефекты подсветки вывесок.
+- Монтаж, демонтаж, перенос и сервисное сопровождение вывесок.
+- Частичная модернизация, переход на LED и подбор замены, если ремонта недостаточно.
+- Пленка, печать, надписи, брендинг, витрины и визуальные поверхности.
+- Коммерческие заявки для магазинов, офисов, ресторанов, клиник, объектов услуг и сетевых точек.
 
-## Часы работы
-- Пн–Пт: 10:00–18:00
-- Сб: по записи
-- Вс: выходной
+## Как начинается заявка
+- Чат помогает понять проблему и открыть защищенную форму заявки.
+- Ассистент может уточнить, что произошло, какая вывеска или объект затронуты, есть ли риск безопасности.
+- Контакты, точный адрес и персональные данные нужно собирать через защищенную форму, а не повторять в открытом тексте чата.
+- После отправки заявки клиент может получить публичный номер PR для проверки статуса.

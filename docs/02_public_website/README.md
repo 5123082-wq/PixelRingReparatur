@@ -9,7 +9,6 @@ Planned base documents:
 - `request_intake_ux.md`
 - `multilingual_routes.md`
 - `page_brief_services.md`
-- `page_brief_solutions.md`
 - `page_brief_for_business.md`
 - `page_brief_references.md`
 - `page_plan_references.md`
@@ -19,6 +18,39 @@ Planned base documents:
 - `page_plan_solutions.md`
 
 ## Progress Log
+
+* **Date:** 2026-06-12
+* **Current sprint/block:** Home Trust, FAQ, and Mobile Overflow Cleanup
+* **Done:**
+  - Rewrote the home form helper text across DE/EN/RU/TR/PL/AR from repair-template examples to signage examples such as LED flicker, dark lightbox, damaged letters, peeling film, and sign dismantling.
+  - Reworked TrustSection copy around concrete customer concerns: photo-first start, assessment before work, one contact, documented result, warranty, and branch/multi-site coordination.
+  - Added a real service-result visual and an anti-portal trust block that frames PixelRing as one accountable service process rather than an anonymous intermediary.
+  - Reordered and rewrote the home FAQ around speed, photos, signage types, Germany/regions, offer before work, warranty, branches, dismantling, parts, and urgent cases.
+  - Cleaned abstract home copy in hero, bento/process, trust, coverage, and final CTA surfaces toward concrete signage-service language.
+  - Synchronized the published CMS `home/global` JSON records for DE/EN/RU/TR/PL/AR and created CMS revisions/audit entries.
+  - Verified `/de`, `/ru`, and `/ar` at 360/390/430 px with visible cookie banner; all checks kept `document.documentElement.scrollWidth === document.documentElement.clientWidth`.
+  - Added mobile-only cookie-banner bottom spacing so the footer can scroll above the fixed consent banner.
+* **In progress:** Owner visual review of the revised home page on target locales.
+* **Next action:** Review TrustSection, FAQ, and footer/cookie-banner spacing on `/de`, `/ru`, and `/ar`; decide whether any wording needs tone tuning.
+* **Blockers/risks:** CMS public audit still reports pre-existing missing problem articles for TR/PL/AR on several problem slugs; this is outside the home cleanup.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/02_public_website/README.md`
+
+* **Date:** 2026-06-11
+* **Current sprint/block:** Home Before/After Proof Section
+* **Done:**
+  - Added a new public home `Vorher / Nachher` section directly after the hero and before the request-method block.
+  - Implemented a full-bleed Apple-like horizontal proof rail: one large before/after lightbox card, three columns of smaller service-case cards stacked in two rows, and one large closing card at the end.
+  - Used existing local reference assets for lightbox, LED module repair, film, illuminated letters, and mounting/dismantling visuals.
+  - Added localized DE/EN/RU/TR/PL/AR copy, then tightened the RU copy so the cases read like service examples instead of machine-translated labels.
+  - Neutralized visible card underlay/shadow colors and verified targeted ESLint, production build, Browser DOM placement, desktop screenshot, mobile screenshot, and mobile viewport width behavior.
+* **In progress:** Owner visual review of the new home proof section on `/ru` and `/de`.
+* **Next action:** Owner reviews the tuned horizontal rail on `/ru` and `/de`; decide whether card proportions, first visible card order, and image choices need another visual pass.
+* **Blockers/risks:** Current mobile clipping in the existing hero/header remains a separate pre-existing issue; the new section does not increase document `scrollWidth`, but the cookie banner can cover the lower part of the first proof card on short mobile screenshots.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/02_public_website/README.md`
 
 * **Date:** 2026-05-31
 * **Current sprint/block:** Home Work Carousel Internal Linking

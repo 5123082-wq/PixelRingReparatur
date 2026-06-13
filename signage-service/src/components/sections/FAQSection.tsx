@@ -29,20 +29,23 @@ const FAQSection = ({ content, titleClassName }: FAQSectionProps) => {
         </div>
 
         <div className="flex flex-col gap-4">
-          {faqItems.map((item, index) => (
+          {faqItems.map((item, index) => {
+            const isActive = activeIndex === index;
+
+            return (
             <div
               key={index}
               className="bg-white rounded-3xl border border-[#E7DDD3] overflow-hidden transition-all duration-300"
             >
               <button
-                onClick={() => setActiveIndex(activeIndex === index ? null : index)}
-                className="w-full px-8 py-6 flex items-center justify-between text-start hover:bg-[#F4EDE450] transition-colors"
-                aria-expanded={activeIndex === index}
+                onClick={() => setActiveIndex(isActive ? null : index)}
+                className="flex w-full items-start justify-between gap-4 px-5 py-5 text-start transition-colors hover:bg-[#F4EDE450] sm:px-8 sm:py-6"
+                aria-expanded={isActive}
               >
-                <span className="text-[18px] font-bold text-[#0E1A2B]">
+                <span className="min-w-0 text-[17px] font-bold leading-snug text-[#0E1A2B] [overflow-wrap:anywhere] sm:text-[18px]">
                   {item.q}
                 </span>
-                <span className={`transform transition-transform duration-300 ${activeIndex === index ? 'rotate-180' : ''}`}>
+                <span className={`mt-0.5 shrink-0 transform transition-transform duration-300 ${isActive ? 'rotate-180' : ''}`}>
                   <svg className="w-6 h-6 text-[#B8643E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
@@ -50,16 +53,19 @@ const FAQSection = ({ content, titleClassName }: FAQSectionProps) => {
               </button>
               
               <div
-                className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                  activeIndex === index ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+                className={`grid transition-all duration-300 ease-in-out ${
+                  isActive ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
                 }`}
               >
-                <div className="px-8 pb-6 text-[16px] leading-[1.6] text-[#72665D] border-t border-[#E7DDD310] pt-2">
-                  {item.a}
+                <div className="min-h-0 overflow-hidden">
+                  <div className="border-t border-[#E7DDD310] px-5 pb-6 pt-3 text-[15px] leading-[1.65] text-[#72665D] sm:px-8 sm:text-[16px]">
+                    {item.a}
+                  </div>
                 </div>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

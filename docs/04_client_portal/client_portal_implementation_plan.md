@@ -1423,6 +1423,15 @@ Suggested first user-visible result:
 
 ## Progress Log
 
+### 2026-06-13
+
+- Current sprint/block: Client Portal MVP simplification for classic customer request tracking.
+- Done: approved and implemented the modernization scope for the first customer-facing portal pass: the active dashboard navigation now shows only overview, request list, request-linked photo reports, and new request; future B2B-suite surfaces such as objects, assets, maintenance, standalone warranties, offers, billing, document archive, team, and settings are hidden from the active MVP navigation; request detail now prioritizes next step, customer data, photo report, customer files, status history, and chat; visible chat no longer shows raw request-update diff messages as ordinary conversation; portal dashboard and request detail now expose the same language switcher plus a localized public-site link, while the public home header shows a localized portal CTA when a real or demo portal session is active; the logout action is now parked in the lower-left sidebar; request detail links opened from `/[locale]/portal` now render as a large centered intercepted modal with a blurred backdrop and outside-click close while direct request URLs still render as standalone pages.
+- In progress: owner visual review of the simplified `/[locale]/portal` flow, request-detail modal behavior, and the authenticated public-site-to-portal return loop; future component code remains parked in `PortalDashboard.tsx` but is not reachable from the visible MVP navigation.
+- Next action: review `/de/portal` and `/ru/portal`: open a representative request from the dashboard, confirm modal size/close behavior, refresh/direct-open the same `/[locale]/portal/requests/[PR-number]` URL, then decide whether to further collapse old chat history and add real secure photo-report downloads.
+- Blockers/risks: real report downloads and secure document authorization remain a separate backend/security track; existing live/test request data can still contain mixed-language customer text, so only unsafe prompt-like titles are currently replaced with a safe fallback.
+- Updated documents: `docs/04_client_portal/client_portal_implementation_plan.md`, `PROGRESS.md`.
+
 ### 2026-05-18
 
 - Current sprint/block: Client Portal request detail editing, request-bound AI chat, and new request address UX.

@@ -11,7 +11,7 @@ This document records a read-only (без изменений данных) audit
 - `PROGRESS.md` (короткий журнал состояния проекта)
 - `docs/07_content_ai_seo/geo_optimization_strategy.md` (GEO-стратегия)
 - `docs/01_strategy/new/Block 7 — SEO & GEO Strategy.md` (стратегический блок SEO/GEO)
-- `docs/02_public_website/german_site_audit.md` (немецкий аудит сайта)
+- `docs/13_references_archive/seo_content_legacy/german_site_audit.md` (архивный немецкий аудит сайта)
 - `signage-service/src/lib/seo.ts` (общие SEO-константы)
 - `signage-service/src/app/sitemap.ts` (XML sitemap / карта сайта)
 - `signage-service/src/app/robots.ts` (robots.txt / правила обхода)

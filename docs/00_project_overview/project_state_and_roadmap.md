@@ -597,7 +597,9 @@ Use these as current or active planning sources:
 - `docs/07_content_ai_seo/copy_system.md`
 - `docs/07_content_ai_seo/cta_labels_master.md`
 - `docs/07_content_ai_seo/geo_optimization_strategy.md`
-- `docs/07_content_ai_seo/troubleshooting_content_plan.md`
+- `docs/07_content_ai_seo/problem_article_rules.md`
+- `docs/07_content_ai_seo/problem_article_content_model.md`
+- `docs/07_content_ai_seo/probleme_loesungen_cluster_modernization_plan.md`
 - `docs/08_ai_assistant/ai_conversation_design.md`
 - `docs/10_security_privacy/admin_security_and_governance.md`
 - `docs/10_security_privacy/privacy_consent.md`

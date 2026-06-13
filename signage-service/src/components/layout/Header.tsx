@@ -25,6 +25,12 @@ type HeaderContent = {
   requestHref?: string | null;
 };
 
+type PortalAccess = {
+  isActive: boolean;
+  label: string;
+  href?: string;
+};
+
 type NavLink = {
   name: string;
   href: string;
@@ -75,7 +81,13 @@ function DesktopNavLink({ link, isActive }: { link: NavLink; isActive: boolean }
   );
 }
 
-const Header = ({ content }: { content?: HeaderContent | null }) => {
+const Header = ({
+  content,
+  portalAccess,
+}: {
+  content?: HeaderContent | null;
+  portalAccess?: PortalAccess;
+}) => {
   const t = useTranslations('Nav');
   const pathname = usePathname();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -126,11 +138,16 @@ const Header = ({ content }: { content?: HeaderContent | null }) => {
   });
   const activeNavHref = navLinks.find((link) => isActiveNavPath(pathname, link.href))?.href ?? null;
   const servicePill = content?.servicePill || '';
-  const accountStatusLabel =
-    content?.accountStatusLabel && !content.accountStatusLabel.startsWith('Nav.')
+  const hasCmsAccountStatusLabel =
+    content?.accountStatusLabel && !content.accountStatusLabel.startsWith('Nav.');
+  const accountStatusLabel = portalAccess?.isActive
+    ? portalAccess.label
+    : hasCmsAccountStatusLabel
       ? content.accountStatusLabel
       : t('account_status');
-  const accountStatusHref = content?.accountStatusHref || '/status';
+  const accountStatusHref = portalAccess?.isActive
+    ? portalAccess.href || '/portal'
+    : content?.accountStatusHref || '/status';
   const requestLabel =
     content?.requestLabel && !content.requestLabel.startsWith('Nav.')
       ? content.requestLabel

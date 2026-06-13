@@ -214,6 +214,7 @@ export async function generateChatReply(
         : null,
       requestBoundPortal: input.requestBoundPortal,
       newRequestUrl: input.newRequestUrl,
+      knowledgeQuery: input.message,
     });
     const privacyContext = input.privacyContext?.trim();
     const aiText = await callOpenAI(

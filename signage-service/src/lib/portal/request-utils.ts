@@ -11,6 +11,14 @@ const MAX_PORTAL_NAME_LENGTH = 160;
 const MAX_PORTAL_EMAIL_LENGTH = 254;
 const MAX_PORTAL_PHONE_LENGTH = 80;
 const MIN_PORTAL_MESSAGE_LENGTH = 5;
+const PORTAL_REQUEST_MESSAGE_LABELS = {
+  de: { issueType: 'Typ', serviceLocation: 'Standort' },
+  en: { issueType: 'Type', serviceLocation: 'Location' },
+  ru: { issueType: 'Тип', serviceLocation: 'Адрес' },
+  tr: { issueType: 'Tür', serviceLocation: 'Adres' },
+  pl: { issueType: 'Typ', serviceLocation: 'Adres' },
+  ar: { issueType: 'النوع', serviceLocation: 'العنوان' },
+} as const;
 
 export type PortalRequestInput = {
   issueType?: unknown;
@@ -181,10 +189,23 @@ export function normalizePortalMessageBody(value: unknown): string | null {
   return body.length >= 1 ? body : null;
 }
 
-export function buildPortalRequestMessage(input: NormalizedPortalRequestInput): string {
+function portalRequestMessageLabels(locale?: string | null) {
+  if (locale && Object.prototype.hasOwnProperty.call(PORTAL_REQUEST_MESSAGE_LABELS, locale)) {
+    return PORTAL_REQUEST_MESSAGE_LABELS[locale as keyof typeof PORTAL_REQUEST_MESSAGE_LABELS];
+  }
+
+  return PORTAL_REQUEST_MESSAGE_LABELS.de;
+}
+
+export function buildPortalRequestMessage(
+  input: NormalizedPortalRequestInput,
+  locale?: string | null
+): string {
+  const labels = portalRequestMessageLabels(locale);
+
   return [
-    `Typ: ${input.issueType}`,
-    input.serviceLocation ? `Standort: ${input.serviceLocation}` : null,
+    `${labels.issueType}: ${input.issueType}`,
+    input.serviceLocation ? `${labels.serviceLocation}: ${input.serviceLocation}` : null,
     '',
     input.message,
   ].filter((line): line is string => line !== null).join('\n');

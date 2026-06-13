@@ -46,8 +46,8 @@ All current Markdown documents are assigned to the new folder structure. Use thi
 | `docs/07_content_ai_seo/copy_system.md` | `07_content_ai_seo/` | keep | Done | Moved from `docs/04_content_and_ai/copy_system.md`. Copy and content rules. |
 | `docs/08_ai_assistant/ai_conversation_design.md` | `08_ai_assistant/` | keep | Done | Moved from `docs/04_content_and_ai/ai_conversation_design.md`. AI assistant conversation behavior. |
 | `docs/07_content_ai_seo/geo_optimization_strategy.md` | `07_content_ai_seo/` | keep | Done | Moved from `docs/04_content_and_ai/geo_optimization_strategy.md`. GEO/AI visibility strategy. |
-| `docs/07_content_ai_seo/troubleshooting_content_plan.md` | `07_content_ai_seo/` | keep | Done | Moved from `docs/04_content_and_ai/troubleshooting_content_plan.md`. Troubleshooting content strategy. |
-| `docs/07_content_ai_seo/troubleshooting_page_template.md` | `07_content_ai_seo/` | keep | Done | Moved from `docs/04_content_and_ai/troubleshooting_page_template.md`. Troubleshooting page template. |
+| `docs/07_content_ai_seo/troubleshooting_content_plan.md` | `07_content_ai_seo/` | delete | Removed 2026-06-13 | Moved from `docs/04_content_and_ai/troubleshooting_content_plan.md`, then deleted as superseded by `docs/07_content_ai_seo/problem_article_rules.md`, `docs/07_content_ai_seo/problem_article_content_model.md`, and `docs/07_content_ai_seo/probleme_loesungen_cluster_modernization_plan.md`. |
+| `docs/07_content_ai_seo/troubleshooting_page_template.md` | `07_content_ai_seo/` | delete | Removed 2026-06-13 | Moved from `docs/04_content_and_ai/troubleshooting_page_template.md`, then deleted as superseded by `docs/07_content_ai_seo/problem_article_rules.md` and `docs/07_content_ai_seo/problem_article_content_model.md`. |
 | `docs/05_admin_platform/README.md` | `05_admin_platform/` | keep | New | Admin platform target folder index. |
 | `docs/10_security_privacy/privacy_consent.md` | `10_security_privacy/` | keep | Done | Moved from `docs/05_security_and_privacy/privacy_consent.md`. Privacy and consent. |
 | `docs/10_security_privacy/security_checklist.md` | `10_security_privacy/` | keep | Done | Moved from `docs/05_security_and_privacy/security_checklist.md`. Security checklist. |
@@ -92,8 +92,8 @@ Completed content and AI split:
 
 1. Moved `docs/04_content_and_ai/copy_system.md` to `docs/07_content_ai_seo/copy_system.md`.
 2. Moved `docs/04_content_and_ai/geo_optimization_strategy.md` to `docs/07_content_ai_seo/geo_optimization_strategy.md`.
-3. Moved `docs/04_content_and_ai/troubleshooting_content_plan.md` to `docs/07_content_ai_seo/troubleshooting_content_plan.md`.
-4. Moved `docs/04_content_and_ai/troubleshooting_page_template.md` to `docs/07_content_ai_seo/troubleshooting_page_template.md`.
+3. Moved `docs/04_content_and_ai/troubleshooting_content_plan.md` to `docs/07_content_ai_seo/troubleshooting_content_plan.md`; removed it on 2026-06-13 after the current problem-article rules and modernization plan superseded it.
+4. Moved `docs/04_content_and_ai/troubleshooting_page_template.md` to `docs/07_content_ai_seo/troubleshooting_page_template.md`; removed it on 2026-06-13 after the current problem-article rules and content model superseded it.
 5. Moved `docs/04_content_and_ai/ai_conversation_design.md` to `docs/08_ai_assistant/ai_conversation_design.md`.
 
 Reason:

@@ -125,7 +125,7 @@ const IntakeSection = ({ content }: { content?: IntakeSectionContent | null }) =
                       {t('chat_discount')}
                     </span>
                     <span className="mt-1 text-[10px] font-black uppercase tracking-[0.12em] text-white/80">
-                      {t('chat_discount_context')} *
+                      {t('chat_discount_context')}
                     </span>
                   </span>
                 </button>
