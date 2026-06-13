@@ -17,6 +17,18 @@ interface City {
   isHQ?: boolean;
 }
 
+interface RouteParticle {
+  id: string;
+  routeIndex: number;
+  particleIndex: number;
+  x: number;
+  y: number;
+  z: number;
+  size: number;
+  shadowSize: number;
+  opacity: number;
+}
+
 // Custom Brand-Styled Icons (Sized down by ~30%)
 const NationwideIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -78,6 +90,48 @@ const cities: City[] = [
   { id: 'nuremberg', name: 'Nürnberg', x: 58, y: 72 },
 ];
 
+const ROUTE_PARTICLE_COUNT = 56;
+const ROUTE_PARTICLE_START_DELAY = 0.85;
+const ROUTE_PARTICLE_DELAY_STEP = 0.012;
+const ROUTE_DELAY_STEP = 0.1;
+const CITY_NODE_RADIUS = 0.8;
+const CITY_NODE_EXPANDED_RADIUS = CITY_NODE_RADIUS * 1.5;
+
+function getRouteArrivalDelay(routeIndex: number) {
+  return ROUTE_PARTICLE_START_DELAY + routeIndex * ROUTE_DELAY_STEP + (ROUTE_PARTICLE_COUNT - 1) * ROUTE_PARTICLE_DELAY_STEP + 0.2;
+}
+
+function buildRouteParticles(hq: City, city: City, routeIndex: number): RouteParticle[] {
+  const dx = city.x - hq.x;
+  const dy = city.y - hq.y;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  if (!distance) {
+    return [];
+  }
+
+  const bridgeHeight = Math.min(Math.max(distance * 1.55, 34), 112);
+
+  return Array.from({ length: ROUTE_PARTICLE_COUNT }, (_, particleIndex) => {
+    const progress = particleIndex / (ROUTE_PARTICLE_COUNT - 1);
+    const z = Math.sin(Math.PI * progress) * bridgeHeight;
+    const liftFade = Math.sin(Math.PI * progress);
+    const size = 8.5 - progress * 4.6;
+
+    return {
+      id: `${city.id}-${particleIndex}`,
+      routeIndex,
+      particleIndex,
+      x: hq.x + dx * progress,
+      y: hq.y + dy * progress,
+      z,
+      size,
+      shadowSize: size * (1.15 + liftFade * 0.75),
+      opacity: 0.46 + (1 - progress) * 0.22 + liftFade * 0.14,
+    };
+  });
+}
+
 const CoverageMap = ({ content }: CoverageMapProps) => {
   const t = useTranslations('Coverage');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -87,6 +141,10 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
   const rotateZ = -18;
   const rotateXInverse = -64;
   const rotateZInverse = 18;
+  const hq = cities.find(c => c.isHQ)!;
+  const routeParticles = cities
+    .filter(c => !c.isHQ)
+    .flatMap((city, routeIndex) => buildRouteParticles(hq, city, routeIndex));
 
   // ULTRA PERFORMANCE: Single Path rendering logic
   const { mainMatrixPath } = useMemo(() => {
@@ -189,12 +247,6 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
               fill="none" 
               xmlns="http://www.w3.org/2000/svg"
             >
-              <defs>
-                <linearGradient id="arcGradientPerformance" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#C86E4A" />
-                  <stop offset="100%" stopColor="#E7B792" />
-                </linearGradient>
-              </defs>
               <path 
                 d={mainMatrixPath}
                 stroke="#0E1A2B"
@@ -202,30 +254,6 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
                 strokeLinecap="round"
                 strokeOpacity={0.25}
               />
-
-              {/* Arcs */}
-              {isInView && cities.filter(c => !c.isHQ).map((city, idx) => {
-                const hq = cities.find(c => c.isHQ)!;
-                const dx = city.x - hq.x;
-                const dy = city.y - hq.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                const arcHeight = Math.min(Math.max(distance * 0.45, 4), 22);
-
-                const cx = (hq.x + city.x) / 2;
-                const cy = (hq.y + city.y) / 2 - arcHeight;
-                return (
-                  <motion.path
-                    key={`arc-perf-${city.id}`}
-                    d={`M${hq.x} ${hq.y} Q${cx} ${cy} ${city.x} ${city.y}`}
-                    stroke="url(#arcGradientPerformance)"
-                    strokeWidth="0.55"
-                    strokeLinecap="round"
-                    initial={{ pathLength: 0, opacity: 0 }}
-                    animate={{ pathLength: 1, opacity: 0.5 }}
-                    transition={{ duration: 2.5, delay: 1 + idx * 0.12, ease: "easeInOut" }}
-                  />
-                );
-              })}
 
               {/* Nodes */}
               {cities.map((city, idx) => (
@@ -235,7 +263,23 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
                   animate={isInView ? { opacity: 1, scale: 1 } : {}}
                   transition={{ delay: 1.2 + idx * 0.08, duration: 0.6 }}
                 >
-                  <circle cx={city.x} cy={city.y} r={city.isHQ ? 1.3 : 0.8} fill={city.isHQ ? "#C86E4A" : "#0E1A2B"} />
+                  {city.isHQ ? (
+                    <circle cx={city.x} cy={city.y} r="1.3" fill="#C86E4A" />
+                  ) : (
+                    <motion.circle
+                      data-city-node="true"
+                      cx={city.x}
+                      cy={city.y}
+                      r={CITY_NODE_RADIUS}
+                      fill="#0E1A2B"
+                      animate={isInView ? { r: CITY_NODE_EXPANDED_RADIUS } : {}}
+                      transition={{
+                        delay: getRouteArrivalDelay(cities.filter(c => !c.isHQ).findIndex(c => c.id === city.id)),
+                        duration: 0.45,
+                        ease: "easeOut"
+                      }}
+                    />
+                  )}
                   {city.isHQ && (
                     <motion.circle
                       cx={city.x}
@@ -250,6 +294,50 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
                 </motion.g>
               ))}
             </svg>
+
+            {/* 3D Pixel Streams */}
+            <div className="absolute inset-0 pointer-events-none" style={{ transformStyle: "preserve-3d" }}>
+              {isInView && routeParticles.map((particle) => (
+                <React.Fragment key={particle.id}>
+                  <motion.span
+                    data-route-shadow="true"
+                    className="absolute block rounded-full bg-[#0E1A2B]/10 blur-[1.5px]"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 0.08 }}
+                    transition={{
+                      duration: 0.35,
+                      delay: 0.7 + particle.routeIndex * ROUTE_DELAY_STEP + particle.particleIndex * 0.01,
+                      ease: "easeOut"
+                    }}
+                    style={{
+                      left: `${particle.x}%`,
+                      top: `${particle.y}%`,
+                      width: `${particle.shadowSize}px`,
+                      height: `${particle.shadowSize * 0.68}px`,
+                      transform: "translate3d(-50%, -50%, 1px)",
+                    }}
+                  />
+                  <motion.span
+                    data-route-pixel="true"
+                    className="absolute block rounded-full bg-gradient-to-br from-[#E7B792] via-[#C86E4A] to-[#9E4F34] shadow-[0_0_12px_rgba(200,110,74,0.32)]"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: particle.opacity }}
+                    transition={{
+                      duration: 0.45,
+                      delay: ROUTE_PARTICLE_START_DELAY + particle.routeIndex * ROUTE_DELAY_STEP + particle.particleIndex * ROUTE_PARTICLE_DELAY_STEP,
+                      ease: "easeOut"
+                    }}
+                    style={{
+                      left: `${particle.x}%`,
+                      top: `${particle.y}%`,
+                      width: `${particle.size}px`,
+                      height: `${particle.size}px`,
+                      transform: `translate3d(-50%, -50%, ${particle.z}px)`,
+                    }}
+                  />
+                </React.Fragment>
+              ))}
+            </div>
           </div>
 
           {/* Labels */}

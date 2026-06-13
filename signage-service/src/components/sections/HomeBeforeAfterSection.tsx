@@ -34,15 +34,15 @@ const COPY: Record<Locale, BeforeAfterCopy> = {
     title: 'Echte Servicefälle.',
     titleMuted: 'Schnell erkennbar.',
     intro:
-      'Typische Schäden und Ergebnisse aus Lichtwerbung, Folie, Buchstaben und Demontage - kompakt sichtbar, bevor Sie eine Anfrage starten.',
+      'Typische Schäden und Ergebnisse bei Lichtwerbung, Folien, Buchstaben und Demontage - kompakt sichtbar, bevor Sie eine Anfrage starten.',
     beforeLabel: 'Vorher',
     afterLabel: 'Nachher',
     featuredTag: 'Leuchtkasten',
     featuredTitle: 'Leuchtkasten wieder gleichmäßig beleuchtet',
     featuredProblem: 'Vorher: ungleichmäßige Beleuchtung und dunkle Bereiche.',
-    featuredResult: 'Nachher: Netzteil, LED-Bereiche und Funktion geprüft, sichtbares Ergebnis dokumentiert.',
+    featuredResult: 'Nachher: Netzteil, LED-Module und Funktion geprüft; das sichtbare Ergebnis wurde dokumentiert.',
     featuredBeforeAlt: 'Ungleichmäßig beleuchteter Leuchtkasten vor der Reparatur',
-    featuredAfterAlt: 'Wieder sichtbar beleuchteter Leuchtkasten nach der Reparatur',
+    featuredAfterAlt: 'Gleichmäßig beleuchteter Leuchtkasten nach der Reparatur',
     cases: [
       {
         tag: 'LED-Service',
@@ -54,30 +54,30 @@ const COPY: Record<Locale, BeforeAfterCopy> = {
       {
         tag: 'Folie',
         title: 'Folie löst sich',
-        text: 'Fläche gereinigt, Folie neu vorbereitet und sauber verarbeitet.',
-        image: '/generated/referenzen/local-main/window-film-after.png',
-        imageAlt: 'Neu verarbeitete Fensterfolie an einem Geschäftsstandort',
+        text: 'Fläche gereinigt, Folie neu vorbereitet und sauber neu verklebt.',
+        image: '/generated/referenzen/local-main/schaufensterfolie-neu-verarbeitet-service.webp',
+        imageAlt: 'Schaufensterfolie wird sauber neu verarbeitet',
       },
       {
         tag: 'Buchstaben',
         title: 'Buchstaben beschädigt',
-        text: 'Sichtbare Elemente geprüft, erneuert und wieder ausgerichtet.',
-        image: '/generated/referenzen/agent-facade/led-letters-after-result.png',
-        imageAlt: 'Erneuerte leuchtende Buchstaben an einer Fassade',
+        text: 'Sichtbare Buchstaben geprüft, bei Bedarf erneuert und wieder ausgerichtet.',
+        image: '/generated/referenzen/local-main/leuchtbuchstaben-beschaedigt-reparatur.webp',
+        imageAlt: 'Beschädigte leuchtende Buchstaben werden repariert',
       },
       {
         tag: 'Demontage',
         title: 'Alte Anlage entfernt',
-        text: 'Rückbau, Zugang und Vorbereitung für den nächsten Standortschritt.',
-        image: '/generated/referenzen/agent-facade/facade-mounting-lift.png',
-        imageAlt: 'Arbeitsbühne bei Montage oder Demontage einer Fassadenwerbung',
+        text: 'Rückbau, Zugang und Vorbereitung für den nächsten Schritt am Standort abgestimmt.',
+        image: '/generated/referenzen/local-main/alte-werbeanlage-demontage-fassade.webp',
+        imageAlt: 'Alte Werbeanlage wird sicher demontiert',
       },
       {
         tag: 'Diagnose',
         title: 'Stromversorgung geprüft',
-        text: 'Netzteil, Zuleitung und sichtbare Fehlerquellen eingeordnet.',
-        image: '/generated/referenzen/local-main/power-diagnostics.png',
-        imageAlt: 'Prüfung der Stromversorgung einer Werbeanlage',
+        text: 'Netzteil, Zuleitung und sichtbare Fehlerquellen geprüft und bewertet.',
+        image: '/generated/referenzen/local-main/stromversorgung-werbeanlage-diagnose.webp',
+        imageAlt: 'Stromversorgung einer Werbeanlage wird geprüft',
       },
       {
         tag: 'Fassade',
@@ -100,63 +100,63 @@ const COPY: Record<Locale, BeforeAfterCopy> = {
     title: 'Real service cases.',
     titleMuted: 'Easy to scan.',
     intro:
-      'Typical defects and results across illuminated signage, films, letters and dismantling - visible before you start a request.',
+      'Typical defects and outcomes for illuminated signs, window film, sign letters and dismantling - visible before you start a request.',
     beforeLabel: 'Before',
     afterLabel: 'After',
     featuredTag: 'Lightbox',
     featuredTitle: 'Lightbox lighting restored',
     featuredProblem: 'Before: uneven lighting and dark sections.',
-    featuredResult: 'After: power supply, LED areas and function checked, visible result documented.',
+    featuredResult: 'After: power supply, LED sections and function tested; the visible result was documented.',
     featuredBeforeAlt: 'Unevenly illuminated lightbox before repair',
     featuredAfterAlt: 'Restored illuminated lightbox after repair',
     cases: [
       {
         tag: 'LED service',
-        title: 'LED flickering',
-        text: 'Modules and power supply checked, defective components replaced.',
+        title: 'Flickering LEDs',
+        text: 'LED modules and power supply were checked; faulty components were replaced.',
         image: '/generated/referenzen/local-main/led-module-repair.png',
         imageAlt: 'LED module being repaired in illuminated signage',
       },
       {
         tag: 'Film',
-        title: 'Film peeling',
-        text: 'Surface cleaned, film prepared again and applied cleanly.',
+        title: 'Peeling window film',
+        text: 'The surface was cleaned and prepared, then the film was reapplied cleanly.',
         image: '/generated/referenzen/local-main/window-film-after.png',
         imageAlt: 'Freshly applied window film at a business location',
       },
       {
         tag: 'Letters',
-        title: 'Damaged letters',
-        text: 'Visible elements checked, renewed and aligned again.',
+        title: 'Damaged sign letters',
+        text: 'Letter elements were inspected, repaired where needed, and realigned.',
         image: '/generated/referenzen/agent-facade/led-letters-after-result.png',
         imageAlt: 'Renewed illuminated letters on a facade',
       },
       {
         tag: 'Dismantling',
         title: 'Old sign removed',
-        text: 'Removal, access planning and preparation for the next site step.',
+        text: 'Removal, access and preparation for the next site step were coordinated.',
         image: '/generated/referenzen/agent-facade/facade-mounting-lift.png',
         imageAlt: 'Work platform during installation or dismantling of facade signage',
       },
       {
         tag: 'Diagnostics',
         title: 'Power supply checked',
-        text: 'Power unit, wiring and visible fault sources reviewed.',
+        text: 'Power unit, wiring and visible fault sources were inspected.',
         image: '/generated/referenzen/local-main/power-diagnostics.png',
         imageAlt: 'Power supply diagnostics for signage',
       },
       {
         tag: 'Facade',
         title: 'Access prepared',
-        text: 'Mounting point, height and work access clarified before service.',
+        text: 'Mounting point, height and work access were clarified before the service visit.',
         image: '/generated/referenzen/local-main/facade-mounting-check.png',
         imageAlt: 'Facade access and mounting point check',
       },
     ],
     closing: {
       tag: 'Service case',
-      title: 'Several tasks at one location',
-      text: 'Repair, film, installation or removal can be bundled into one clear service flow.',
+      title: 'Multiple tasks at one site',
+      text: 'Repairs, film work, installation or removal can be combined in one clear service plan.',
       image: '/generated/referenzen/agent-facade/wide-hero-service-result.png',
       imageAlt: 'Completed service case at a business facade',
     },
@@ -462,46 +462,48 @@ export default function HomeBeforeAfterSection({ locale }: { locale: string }) {
           }}
         >
           <div className="flex w-max snap-x snap-mandatory gap-4 md:gap-5">
-            <article className="flex h-[584px] w-[340px] shrink-0 snap-start flex-col overflow-hidden rounded-[28px] border border-black/5 bg-white shadow-[0_10px_26px_rgba(0,0,0,0.055)] sm:h-[620px] sm:w-[430px] lg:h-[660px] lg:w-[560px]">
-              <div className="grid h-[300px] grid-cols-2 overflow-hidden sm:h-[340px] lg:h-[390px]">
-                <div className="relative min-w-0">
+            <article className="relative h-[584px] w-[340px] shrink-0 snap-start overflow-hidden rounded-[28px] border border-white/35 bg-[#101827] shadow-[0_10px_26px_rgba(0,0,0,0.055)] sm:h-[620px] sm:w-[430px] lg:h-[660px] lg:w-[560px]">
+              <div className="absolute inset-x-0 top-0 h-[91%] overflow-hidden">
+                <div className="absolute inset-0 [clip-path:inset(0_50%_0_0)]">
                   <Image
-                    src="/generated/referenzen/local-main/lightbox-before.png"
+                    src="/generated/referenzen/local-main/leuchtkasten-vorher-ungleichmaessige-beleuchtung.webp"
                     alt={copy.featuredBeforeAlt}
                     fill
-                    sizes="(min-width: 1024px) 25vw, 43vw"
-                    className="object-cover"
+                    sizes="(min-width: 1024px) 560px, (min-width: 640px) 430px, 340px"
+                    className="object-cover [transform:translateY(-4%)_scale(1.04)]"
                   />
                   <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.12em] text-[#0E1A2B] shadow-sm rtl:left-auto rtl:right-4">
                     {copy.beforeLabel}
                   </span>
                 </div>
-                <div className="relative min-w-0 border-s border-white/40">
+                <div className="absolute inset-0 [clip-path:inset(0_0_0_50%)]">
                   <Image
-                    src="/generated/referenzen/local-main/lightbox-after.png"
+                    src="/generated/referenzen/local-main/leuchtkasten-nachher-gleichmaessige-beleuchtung.webp"
                     alt={copy.featuredAfterAlt}
                     fill
-                    sizes="(min-width: 1024px) 25vw, 43vw"
-                    className="object-cover"
+                    sizes="(min-width: 1024px) 560px, (min-width: 640px) 430px, 340px"
+                    className="object-cover [transform:translateY(5%)_scale(1.04)]"
                   />
-                  <span className="absolute left-4 top-4 rounded-full bg-[#B8643E] px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.12em] text-white shadow-sm rtl:left-auto rtl:right-4">
+                  <span className="absolute right-4 top-4 rounded-full bg-[#B8643E] px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.12em] text-white shadow-sm rtl:left-4 rtl:right-auto">
                     {copy.afterLabel}
                   </span>
                 </div>
+                <div className="absolute inset-y-0 left-1/2 w-9 -translate-x-1/2 bg-gradient-to-r from-transparent via-white/38 to-transparent backdrop-blur-[1px]" />
+                <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/45" />
               </div>
-
-              <div className="flex flex-1 flex-col gap-4 p-6 md:p-7">
-                <span className="w-fit rounded-full bg-[#F0E2D8] px-3 py-1 text-[11px] font-black uppercase tracking-[0.12em] text-[#8F4C2F]">
-                  {copy.featuredTag}
-                </span>
-                <div className="flex flex-col gap-3">
-                  <h3 className="text-[24px] font-black leading-[1.1] tracking-[0] text-[#0E1A2B] md:text-[30px]">
+              <div className="absolute -inset-x-px -bottom-px flex flex-col justify-end px-5 pb-5 pt-14 sm:px-6 sm:pb-6 sm:pt-16 lg:px-7 lg:pb-7 lg:pt-20">
+                <div className="absolute inset-0 bg-gradient-to-t from-white/76 via-white/48 to-transparent backdrop-blur-md [mask-image:linear-gradient(to_top,#000_0%,#000_58%,rgba(0,0,0,0)_100%)]" />
+                <div className="relative z-10 flex flex-col gap-3">
+                  <span className="w-fit rounded-full bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-[#8F4C2F] shadow-sm">
+                    {copy.featuredTag}
+                  </span>
+                  <h3 className="text-[23px] font-black leading-[1.08] tracking-[0] text-[#0E1A2B] md:text-[28px]">
                     {copy.featuredTitle}
                   </h3>
-                  <p className="text-[14px] font-semibold leading-[1.5] text-[#6E6E73]">
+                  <p className="text-[13px] font-semibold leading-[1.42] text-[#536072] md:text-[14px]">
                     {copy.featuredProblem}
                   </p>
-                  <p className="border-t border-[#E4E7EC] pt-3 text-[14px] font-black leading-[1.45] text-[#0E1A2B]">
+                  <p className="border-t border-[#0E1A2B]/12 pt-2 text-[13px] font-black leading-[1.38] text-[#0E1A2B] md:text-[14px]">
                     {copy.featuredResult}
                   </p>
                 </div>
@@ -516,9 +518,9 @@ export default function HomeBeforeAfterSection({ locale }: { locale: string }) {
                 {column.map((item) => (
                   <article
                     key={`${item.tag}-${item.title}`}
-                    className="flex min-h-0 flex-col overflow-hidden rounded-[28px] border border-black/5 bg-white shadow-[0_10px_26px_rgba(0,0,0,0.055)]"
+                    className="relative min-h-0 overflow-hidden rounded-[28px] border border-white/35 bg-[#101827] shadow-[0_10px_26px_rgba(0,0,0,0.055)]"
                   >
-                    <div className="relative h-[145px] shrink-0 overflow-hidden sm:h-[162px] lg:h-[176px]">
+                    <div className="absolute inset-x-0 top-0 h-[90%] overflow-hidden">
                       <Image
                         src={item.image}
                         alt={item.imageAlt}
@@ -526,26 +528,28 @@ export default function HomeBeforeAfterSection({ locale }: { locale: string }) {
                         sizes="(min-width: 1024px) 360px, (min-width: 640px) 330px, 286px"
                         className="object-cover"
                       />
-                      <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/34 to-transparent" />
-                      <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-[#8F4C2F] shadow-sm rtl:left-auto rtl:right-4">
-                        {item.tag}
-                      </span>
                     </div>
-                    <div className="flex min-h-0 flex-1 flex-col gap-2 p-5">
-                      <h3 className="text-[21px] font-black leading-[1.12] tracking-[0] text-[#0E1A2B]">
+                    <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-[#8F4C2F] shadow-sm rtl:left-auto rtl:right-4">
+                      {item.tag}
+                    </span>
+                    <div className="absolute -inset-x-px -bottom-px flex flex-col gap-1.5 px-5 pb-5 pt-9">
+                      <div className="absolute inset-0 bg-gradient-to-t from-white/82 via-white/54 to-transparent backdrop-blur-md [mask-image:linear-gradient(to_top,#000_0%,#000_68%,rgba(0,0,0,0)_100%)]" />
+                      <div className="relative z-10 flex flex-col gap-1.5">
+                      <h3 className="text-[20px] font-black leading-[1.08] tracking-[0] text-[#0E1A2B]">
                         {item.title}
                       </h3>
-                      <p className="text-[14px] font-semibold leading-[1.45] text-[#6E6E73]">
+                      <p className="text-[13px] font-semibold leading-[1.35] text-[#536072]">
                         {item.text}
                       </p>
+                      </div>
                     </div>
                   </article>
                 ))}
               </div>
             ))}
 
-            <article className="flex h-[584px] w-[340px] shrink-0 snap-start flex-col overflow-hidden rounded-[28px] border border-black/5 bg-white shadow-[0_10px_26px_rgba(0,0,0,0.055)] sm:h-[620px] sm:w-[430px] lg:h-[660px] lg:w-[560px]">
-              <div className="relative h-[350px] shrink-0 overflow-hidden sm:h-[385px] lg:h-[430px]">
+            <article className="relative h-[584px] w-[340px] shrink-0 snap-start overflow-hidden rounded-[28px] border border-white/35 bg-[#101827] shadow-[0_10px_26px_rgba(0,0,0,0.055)] sm:h-[620px] sm:w-[430px] lg:h-[660px] lg:w-[560px]">
+              <div className="absolute inset-x-0 top-0 h-[91%] overflow-hidden">
                 <Image
                   src={copy.closing.image}
                   alt={copy.closing.imageAlt}
@@ -553,18 +557,20 @@ export default function HomeBeforeAfterSection({ locale }: { locale: string }) {
                   sizes="(min-width: 1024px) 560px, (min-width: 640px) 430px, 340px"
                   className="object-cover"
                 />
-                <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/38 to-transparent" />
-                <span className="absolute left-5 top-5 rounded-full bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-[#8F4C2F] shadow-sm rtl:left-auto rtl:right-5">
-                  {copy.closing.tag}
-                </span>
               </div>
-              <div className="flex flex-1 flex-col gap-3 p-6 md:p-7">
-                <h3 className="text-[24px] font-black leading-[1.1] tracking-[0] text-[#0E1A2B] md:text-[30px]">
-                  {copy.closing.title}
-                </h3>
-                <p className="text-[14px] font-semibold leading-[1.5] text-[#6E6E73]">
-                  {copy.closing.text}
-                </p>
+              <span className="absolute left-5 top-5 rounded-full bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-[#8F4C2F] shadow-sm rtl:left-auto rtl:right-5">
+                {copy.closing.tag}
+              </span>
+              <div className="absolute -inset-x-px -bottom-px flex flex-col gap-2 px-5 pb-5 pt-14 sm:px-6 sm:pb-6 sm:pt-16 lg:px-7 lg:pb-7 lg:pt-20">
+                <div className="absolute inset-0 bg-gradient-to-t from-white/76 via-white/48 to-transparent backdrop-blur-md [mask-image:linear-gradient(to_top,#000_0%,#000_58%,rgba(0,0,0,0)_100%)]" />
+                <div className="relative z-10 flex flex-col gap-2">
+                  <h3 className="text-[23px] font-black leading-[1.08] tracking-[0] text-[#0E1A2B] md:text-[28px]">
+                    {copy.closing.title}
+                  </h3>
+                  <p className="text-[13px] font-semibold leading-[1.42] text-[#536072] md:text-[14px]">
+                    {copy.closing.text}
+                  </p>
+                </div>
               </div>
             </article>
           </div>

@@ -87,7 +87,7 @@ const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
               </p>
             </div>
 
-            <div className="min-w-0 rounded-[24px] border border-white/10 bg-white/[0.06] p-2.5 shadow-2xl shadow-black/15">
+            <div className="min-w-0 rounded-[24px] border border-white/14 bg-white/[0.075] p-2.5 shadow-2xl shadow-black/15 backdrop-blur-md">
               <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[20px] lg:aspect-[21/9]">
                 <CmsImage
                   src={TRUST_VISUAL_SRC}
@@ -117,36 +117,43 @@ const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
             {stats.map((stat, idx) => (
               <div
                 key={idx}
-                className={`group relative min-h-[190px] overflow-hidden rounded-[22px] border p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl
+                className={`group relative min-h-[190px] overflow-hidden rounded-[22px] border p-4 shadow-[0_18px_44px_rgba(0,0,0,0.12)] backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-white/22 hover:bg-white/[0.105] hover:shadow-xl
                   ${idx === 0
-                    ? 'border-[#B8643E]/40 bg-[#B8643E]/18 shadow-[#B8643E]/10'
-                    : 'border-white/10 bg-white/[0.055] shadow-black/10'}`}
+                    ? 'border-[#B8643E]/34 bg-white/[0.09] ring-1 ring-[#B8643E]/18'
+                    : 'border-white/12 bg-white/[0.07]'}`}
               >
                 <div className="relative z-10 flex h-full min-w-0 flex-col justify-between gap-4">
                   <div className="flex min-w-0 flex-col gap-2.5">
-                    <span className="w-fit rounded-full bg-[#B8643E]/12 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-[#D79A80]">
+                    <span className={`w-fit rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em]
+                      ${idx === 0
+                        ? 'bg-[#B8643E]/18 text-[#F0B197]'
+                        : 'bg-white/[0.08] text-[#D8E6F5]/78'}`}
+                    >
                       {stat.label}
                     </span>
                     <h3 className="min-w-0 text-[18px] font-black leading-[1.14] tracking-[0] text-white">
                       {stat.value}
                     </h3>
-                    <p className="min-w-0 overflow-hidden text-[13px] font-medium leading-[1.45] text-white/62 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
+                    <p className="min-w-0 overflow-hidden text-[13px] font-medium leading-[1.45] text-[#D8E6F5]/70 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
                       {stat.description}
                     </p>
                   </div>
                   {stat.highlight ? (
-                    <p className="min-w-0 overflow-hidden border-t border-white/10 pt-2.5 text-[13px] font-extrabold leading-snug text-white/88 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
+                    <p className="min-w-0 overflow-hidden border-t border-white/12 pt-2.5 text-[13px] font-extrabold leading-snug text-[#EAF3FF]/90 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
                       {stat.highlight}
                     </p>
                   ) : null}
                 </div>
 
-                <div className="absolute -bottom-8 -right-8 h-28 w-28 rounded-full border border-[#B8643E]/30 opacity-30 transition-transform duration-500 group-hover:scale-125" />
+                <div className="absolute -bottom-8 -right-8 h-28 w-28 rounded-full border border-white/12 opacity-35 transition-transform duration-500 group-hover:scale-125" />
+                {idx === 0 ? (
+                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-[#B8643E]/0 via-[#B8643E]/70 to-[#B8643E]/0" />
+                ) : null}
               </div>
             ))}
           </div>
 
-          <div className="grid gap-3 rounded-[24px] border border-white/[0.12] bg-white/[0.07] p-5 md:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] md:items-center md:gap-7 md:p-6">
+          <div className="grid gap-3 rounded-[24px] border border-white/[0.14] bg-white/[0.075] p-5 shadow-[0_18px_44px_rgba(0,0,0,0.12)] backdrop-blur-md md:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] md:items-center md:gap-7 md:p-6">
             <h3 className="min-w-0 text-[22px] font-black leading-[1.12] tracking-[0] text-white md:text-[25px]">
               {antiTitle}
             </h3>
