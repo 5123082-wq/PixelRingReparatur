@@ -17,16 +17,12 @@ interface City {
   isHQ?: boolean;
 }
 
-interface RouteParticle {
+interface RouteStream {
   id: string;
   routeIndex: number;
-  particleIndex: number;
-  x: number;
-  y: number;
-  z: number;
-  size: number;
-  shadowSize: number;
-  opacity: number;
+  pathD: string;
+  duration: number;
+  delay: number;
 }
 
 // Custom Brand-Styled Icons (Sized down by ~30%)
@@ -90,46 +86,33 @@ const cities: City[] = [
   { id: 'nuremberg', name: 'Nürnberg', x: 58, y: 72 },
 ];
 
-const ROUTE_PARTICLE_COUNT = 56;
-const ROUTE_PARTICLE_START_DELAY = 0.85;
-const ROUTE_PARTICLE_DELAY_STEP = 0.012;
+const ROUTE_STREAM_START_DELAY = 0.55;
 const ROUTE_DELAY_STEP = 0.1;
 const CITY_NODE_RADIUS = 0.8;
 const CITY_NODE_EXPANDED_RADIUS = CITY_NODE_RADIUS * 1.5;
 
 function getRouteArrivalDelay(routeIndex: number) {
-  return ROUTE_PARTICLE_START_DELAY + routeIndex * ROUTE_DELAY_STEP + (ROUTE_PARTICLE_COUNT - 1) * ROUTE_PARTICLE_DELAY_STEP + 0.2;
+  return ROUTE_STREAM_START_DELAY + routeIndex * ROUTE_DELAY_STEP + 0.95;
 }
 
-function buildRouteParticles(hq: City, city: City, routeIndex: number): RouteParticle[] {
+function buildRouteStream(hq: City, city: City, routeIndex: number): RouteStream {
   const dx = city.x - hq.x;
   const dy = city.y - hq.y;
   const distance = Math.sqrt(dx * dx + dy * dy);
+  const curveLift = Math.min(Math.max(distance * 0.22, 7), 15);
 
-  if (!distance) {
-    return [];
-  }
-
-  const bridgeHeight = Math.min(Math.max(distance * 1.55, 34), 112);
-
-  return Array.from({ length: ROUTE_PARTICLE_COUNT }, (_, particleIndex) => {
-    const progress = particleIndex / (ROUTE_PARTICLE_COUNT - 1);
-    const z = Math.sin(Math.PI * progress) * bridgeHeight;
-    const liftFade = Math.sin(Math.PI * progress);
-    const size = 8.5 - progress * 4.6;
-
-    return {
-      id: `${city.id}-${particleIndex}`,
-      routeIndex,
-      particleIndex,
-      x: hq.x + dx * progress,
-      y: hq.y + dy * progress,
-      z,
-      size,
-      shadowSize: size * (1.15 + liftFade * 0.75),
-      opacity: 0.46 + (1 - progress) * 0.22 + liftFade * 0.14,
-    };
-  });
+  return {
+    id: city.id,
+    routeIndex,
+    pathD: [
+      `M ${hq.x} ${hq.y}`,
+      `C ${(hq.x + dx * 0.2).toFixed(2)} ${(hq.y + dy * 0.2 - curveLift).toFixed(2)}`,
+      `${(hq.x + dx * 0.62).toFixed(2)} ${(hq.y + dy * 0.62 - curveLift).toFixed(2)}`,
+      `${city.x} ${city.y}`,
+    ].join(' '),
+    duration: Math.min(Math.max(distance / 18, 2.35), 3.9),
+    delay: ROUTE_STREAM_START_DELAY + routeIndex * ROUTE_DELAY_STEP,
+  };
 }
 
 const CoverageMap = ({ content }: CoverageMapProps) => {
@@ -142,9 +125,9 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
   const rotateXInverse = -64;
   const rotateZInverse = 18;
   const hq = cities.find(c => c.isHQ)!;
-  const routeParticles = cities
+  const routeStreams = cities
     .filter(c => !c.isHQ)
-    .flatMap((city, routeIndex) => buildRouteParticles(hq, city, routeIndex));
+    .map((city, routeIndex) => buildRouteStream(hq, city, routeIndex));
 
   // ULTRA PERFORMANCE: Single Path rendering logic
   const { mainMatrixPath } = useMemo(() => {
@@ -154,8 +137,8 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
       .filter(p => p.trim())
       .map(p => p.split(',').map(Number) as [number, number]);
 
-    const cols = 62; 
-    const rows = 75;
+    const cols = 52; 
+    const rows = 64;
     let mainD = "";
 
     for (let r = 0; r < rows; r++) {
@@ -255,6 +238,26 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
                 strokeOpacity={0.25}
               />
 
+              {/* Lightweight service streams: one curve per route, a few SVG dots moving on it. */}
+              {routeStreams.map((route) => (
+                <motion.path
+                  key={`route-trail-${route.id}`}
+                  d={route.pathD}
+                  fill="none"
+                  stroke="#C86E4A"
+                  strokeWidth="0.24"
+                  strokeLinecap="round"
+                  strokeOpacity={0.32}
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={isInView ? { pathLength: 1, opacity: 1 } : {}}
+                  transition={{
+                    duration: 0.8,
+                    delay: route.delay,
+                    ease: 'easeOut',
+                  }}
+                />
+              ))}
+
               {/* Nodes */}
               {cities.map((city, idx) => (
                 <motion.g
@@ -295,49 +298,6 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
               ))}
             </svg>
 
-            {/* 3D Pixel Streams */}
-            <div className="absolute inset-0 pointer-events-none" style={{ transformStyle: "preserve-3d" }}>
-              {isInView && routeParticles.map((particle) => (
-                <React.Fragment key={particle.id}>
-                  <motion.span
-                    data-route-shadow="true"
-                    className="absolute block rounded-full bg-[#0E1A2B]/10 blur-[1.5px]"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 0.08 }}
-                    transition={{
-                      duration: 0.35,
-                      delay: 0.7 + particle.routeIndex * ROUTE_DELAY_STEP + particle.particleIndex * 0.01,
-                      ease: "easeOut"
-                    }}
-                    style={{
-                      left: `${particle.x}%`,
-                      top: `${particle.y}%`,
-                      width: `${particle.shadowSize}px`,
-                      height: `${particle.shadowSize * 0.68}px`,
-                      transform: "translate3d(-50%, -50%, 1px)",
-                    }}
-                  />
-                  <motion.span
-                    data-route-pixel="true"
-                    className="absolute block rounded-full bg-gradient-to-br from-[#E7B792] via-[#C86E4A] to-[#9E4F34] shadow-[0_0_12px_rgba(200,110,74,0.32)]"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: particle.opacity }}
-                    transition={{
-                      duration: 0.45,
-                      delay: ROUTE_PARTICLE_START_DELAY + particle.routeIndex * ROUTE_DELAY_STEP + particle.particleIndex * ROUTE_PARTICLE_DELAY_STEP,
-                      ease: "easeOut"
-                    }}
-                    style={{
-                      left: `${particle.x}%`,
-                      top: `${particle.y}%`,
-                      width: `${particle.size}px`,
-                      height: `${particle.size}px`,
-                      transform: `translate3d(-50%, -50%, ${particle.z}px)`,
-                    }}
-                  />
-                </React.Fragment>
-              ))}
-            </div>
           </div>
 
           {/* Labels */}

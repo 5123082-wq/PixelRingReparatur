@@ -9,8 +9,8 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 Latest checkpoint:
 
 - Date: 2026-06-13
-- Current stage: Tuned public home coverage-map 3D pixel streams: routes now use denser particle trails, destination-end pixels are 50% larger than before, and city nodes grow from their base dot size when the stream arrives.
-- Next action: Owner visually reviews `/de` home coverage map and decides whether the pixel stream should be brighter, calmer, or more directional.
+- Current stage: Reworked public home coverage-map streams from hundreds of animated DOM particles into lightweight static SVG route curves, removing flying dots while preserving city route context.
+- Next action: Owner visually reviews `/de` home coverage map and decides whether the route lines should be brighter, subtler, or removed entirely.
 
 - Date: 2026-06-13
 - Current stage: Tuned the public home trust section card palette toward glass-style surfaces: benefit cards and the anti-portal block now use translucent white overlays, soft borders, medium blur, and only restrained PixelRing terracotta accents for hierarchy.
