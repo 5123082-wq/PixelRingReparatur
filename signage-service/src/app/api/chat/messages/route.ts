@@ -10,7 +10,14 @@ import {
   getClientIP,
 } from '@/lib/rate-limit';
 
-import { generateChatReply } from '@/lib/ai/chat-engine';
+import {
+  classifyIntakeTurn,
+  generateChatReply,
+} from '@/lib/ai/chat-engine';
+import {
+  isAcceptingIntakeDecision,
+  type IntakeTurnDecision,
+} from '@/lib/ai/intake-intent-core';
 import { resolveChatSession } from '@/lib/ai/chat-session';
 import {
   buildPiiPresenceContext,
@@ -81,7 +88,7 @@ const FILE_ONLY_MESSAGE_RE =
 const FORM_OPEN_FOLLOWUP_RE =
   /как\s+открыть|откр(?:ой|ыть|ывай|ываем)|где\s+форм|форма\s+не|ссылк.*форм|open.*form|where.*form|form.*link/i;
 const ISSUE_KEYWORDS: Array<{ issueType: string; patterns: RegExp[] }> = [
-  { issueType: 'Reparatur', patterns: [/repar/i, /ремонт/i, /kaputt/i, /broken/i, /defekt/i, /сломал/i, /сломалась/i, /не\s+работ/i, /почин/i] },
+  { issueType: 'Reparatur', patterns: [/repar/i, /ремонт/i, /kaputt/i, /broken/i, /defekt/i, /сломал/i, /сломалась/i, /не\s+работ/i, /почин/i, /упал/i, /упала/i, /разбил/i, /опасн/i, /fallen/i, /heruntergefallen/i] },
   { issueType: 'Montage', patterns: [/montage/i, /install/i, /установ/i, /монтаж/i] },
   { issueType: 'Neue Beschilderung', patterns: [/neue beschilderung/i, /new sign/i, /нов(?:ая|ую|ой|ые|ый)?\s+(?:вывес|таблич|реклам)/i] },
   { issueType: 'Branding', patterns: [/branding/i, /бренд/i] },
@@ -154,6 +161,7 @@ function isLikelyContactOnly(value: string): boolean {
 
 function isLowSignalIntakeSummary(value: string): boolean {
   const trimmed = value.trim().toLowerCase();
+  const hasProblemSignal = Boolean(inferIssueTypeFromText(trimmed));
 
   return (
     trimmed.length < 6 ||
@@ -161,7 +169,7 @@ function isLowSignalIntakeSummary(value: string): boolean {
     isAffirmativeIntakeConsent(trimmed) ||
     isFormOpeningFollowup(trimmed) ||
     isLikelyContactOnly(trimmed) ||
-    /заяв|статус|request|status|anfrag/i.test(trimmed) ||
+    (/заяв|статус|request|status|anfrag/i.test(trimmed) && !hasProblemSignal) ||
     /^(привет|здравств|hello|hi|hey|hallo|guten tag|добрый день)([!,.?\s]|$)/i.test(trimmed) ||
     FILE_ONLY_MESSAGE_RE.test(trimmed)
   );
@@ -200,16 +208,8 @@ function isAffirmativeIntakeConsent(value: string): boolean {
 function latestAssistantOfferedIntake(
   messages: Awaited<ReturnType<typeof loadSessionMessages>>
 ): boolean {
-  const latestCustomerIndex = messages.findLastIndex(
-    (message) => message.authorRole === MessageAuthorRole.CUSTOMER
-  );
-  const messagesBeforeLatestCustomer =
-    latestCustomerIndex >= 0 ? messages.slice(0, latestCustomerIndex) : messages;
-  const latestAssistantMessage = [...messagesBeforeLatestCustomer]
-    .reverse()
-    .find((message) => message.authorRole === MessageAuthorRole.SYSTEM)
-    ?.body
-    .toLowerCase();
+  const latestAssistantMessage = getLatestAssistantMessageBeforeLatestCustomer(messages)
+    ?.toLowerCase();
 
   if (!latestAssistantMessage) {
     return false;
@@ -239,6 +239,21 @@ function latestAssistantOfferedIntake(
     /ich kann.*formular/i,
     /formular.*(?:oeffnen|öffnen|vorbereiten)/i,
   ].some((pattern) => pattern.test(latestAssistantMessage));
+}
+
+function getLatestAssistantMessageBeforeLatestCustomer(
+  messages: Awaited<ReturnType<typeof loadSessionMessages>>
+): string | null {
+  const latestCustomerIndex = messages.findLastIndex(
+    (message) => message.authorRole === MessageAuthorRole.CUSTOMER
+  );
+  const messagesBeforeLatestCustomer =
+    latestCustomerIndex >= 0 ? messages.slice(0, latestCustomerIndex) : messages;
+
+  return [...messagesBeforeLatestCustomer]
+    .reverse()
+    .find((message) => message.authorRole === MessageAuthorRole.SYSTEM)
+    ?.body ?? null;
 }
 
 function isInternalPortalAccessMessage(value: string): boolean {
@@ -392,17 +407,19 @@ function shouldSuggestIntake(
   prefill: ChatIntakePrefill,
   latestCustomerMessage: string | null | undefined,
   messages: Awaited<ReturnType<typeof loadSessionMessages>>,
-  markerSuggested: boolean
+  markerSuggested: boolean,
+  intakeTurnDecision?: IntakeTurnDecision | null
 ): boolean {
   if (latestCustomerMessage && isStatusOrAccountQuestion(latestCustomerMessage)) {
     return false;
   }
 
   const hasConsent =
-    latestCustomerMessage &&
-    (isExplicitRequestCreationIntent(latestCustomerMessage) ||
-      (isFormOpeningFollowup(latestCustomerMessage) && latestAssistantOfferedIntake(messages)) ||
-      (isAffirmativeIntakeConsent(latestCustomerMessage) && latestAssistantOfferedIntake(messages)));
+    isAcceptingIntakeDecision(intakeTurnDecision) ||
+    (latestCustomerMessage &&
+      (isExplicitRequestCreationIntent(latestCustomerMessage) ||
+        (isFormOpeningFollowup(latestCustomerMessage) && latestAssistantOfferedIntake(messages)) ||
+        (isAffirmativeIntakeConsent(latestCustomerMessage) && latestAssistantOfferedIntake(messages))));
 
   if (
     latestCustomerMessage &&
@@ -721,6 +738,7 @@ export async function POST(request: NextRequest) {
     });
 
     let reply: import('@/lib/ai/chat-engine').GenerateChatReplyResult | null = null;
+    let intakeTurnDecision: IntakeTurnDecision | null = null;
 
     if (!session.operatorTakeover) {
       const messages = await loadSessionMessages(prisma, session.id, session.caseId);
@@ -755,8 +773,25 @@ export async function POST(request: NextRequest) {
       if (lastMsg?.authorRole === MessageAuthorRole.CUSTOMER) {
         const draft = await getSessionIntakeDraft(prisma, session.id);
         const deterministicPrefill = buildIntakePrefill(messages, null, session, draft);
+        const assistantOfferedIntake = latestAssistantOfferedIntake(messages);
 
-        if (shouldSuggestIntake(deterministicPrefill, messageForStorage, messages, false)) {
+        intakeTurnDecision = await classifyIntakeTurn({
+          locale,
+          latestCustomerMessage: messageForStorage,
+          latestAssistantMessage: getLatestAssistantMessageBeforeLatestCustomer(messages),
+          problemSummary: deterministicPrefill.summary,
+          assistantOfferedIntake,
+        });
+
+        if (
+          shouldSuggestIntake(
+            deterministicPrefill,
+            messageForStorage,
+            messages,
+            false,
+            intakeTurnDecision
+          )
+        ) {
           reply = {
             text: buildSecureFormOpeningReply(locale),
             intent: 'request',
@@ -822,7 +857,8 @@ export async function POST(request: NextRequest) {
           intakePrefill,
           latestCustomerMessage,
           persistedMessages,
-          reply?.suggestIntake ?? false
+          reply?.suggestIntake ?? false,
+          intakeTurnDecision
         ),
       intakePrefill: !session.operatorTakeover ? intakePrefill : null,
     });

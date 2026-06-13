@@ -15,7 +15,7 @@ The website chat (`ChatModal`) now supports in-chat request creation.
 1. User opens the chat and describes the problem.
 2. AI asks short clarifying questions until it knows at least what happened or what service is needed.
 3. Once the problem is understood, the AI offers to help create the request but does not open the form yet.
-4. Only after the user explicitly agrees, the AI appends `<<SHOW_INTAKE:{...}>>` to its reply or the backend consent guard opens the card.
+4. Only after the user explicitly agrees, the AI appends `<<SHOW_INTAKE:{...}>>` to its reply or the backend intake-intent classifier confirms `accept_intake`.
 5. The backend strips the marker and returns `suggestIntake: true` + `intakePrefill` in the POST response.
 6. The frontend renders an `ChatIntakeCard` component inline in the chat stream.
 7. The card collects: issue type (pre-filled), contact (phone or email toggle, pre-filled from the current chat when detected), optional name, optional address/location, optional photo/video.
@@ -38,7 +38,7 @@ Current extracted fields:
 
 If a user uploads a photo/video in the chat before creating a request, the file metadata is already stored as a chat attachment. When the request is created from the same chat session, those existing session attachments are linked to the new case so the user does not need to upload the same file again.
 
-The backend also has a deterministic intake fallback for the current unresolved intake window. It no longer opens the form just because the current chat window contains contact data and a problem summary. It requires a usable problem summary plus explicit request-creation consent, or an AI marker that passed the same consent-oriented conversation rules. This prevents the UI from opening a form immediately after low-signal messages such as "I have a new problem" / "у меня новая проблема".
+The backend also has a consent-gated intake decision layer for the current unresolved intake window. It no longer opens the form just because the current chat window contains contact data and a problem summary. It requires a usable problem summary plus explicit request-creation consent, either through the AI marker or through a compact intake-turn classifier that returns `accept_intake`. This prevents the UI from opening a form immediately after low-signal messages such as "I have a new problem" / "у меня новая проблема", while avoiding an endless list of exact consent phrases.
 
 The current intake window starts after the latest successful request registration message (`Anfrage erfolgreich registriert. Nummer: ...`). Older contact details, photos, and summaries from already-created requests must not reopen the form on later small talk or status questions.
 
@@ -196,6 +196,15 @@ Full localization (DE, EN, RU, TR, PL, AR) is planned using `next-intl` translat
 ---
 
 ## Progress Log
+
+### 2026-06-13 — Intent-based intake opening
+
+- Sprint/block: AI Chat Intake / Request handoff behavior
+- Done: replaced the fragile regex-first consent path with a compact intake-turn intent classifier for the handoff moment; the backend can now open the embedded request card when the customer naturally agrees to create/open the request after a problem is known, while preserving existing marker and safety guards.
+- In progress: browser QA against the live chat sequence remains useful after deployment.
+- Next action: verify the RU flow "fallen sign" -> assistant offers request -> natural consent -> inline intake card opens.
+- Blockers/risks: live behavior depends on the configured OpenAI provider for the classifier; fallback remains conservative if classification is unavailable.
+- Updated documents: `docs/08_ai_assistant/ai_chat_intake.md`, `PROGRESS.md`
 
 ### 2026-05-16 — Request success card and portal CTA
 

@@ -9,6 +9,10 @@ import {
 } from './safety-filter';
 import type { AiRuntimeConfig } from './config';
 import { getAiRuntimeConfig } from './config';
+import {
+  normalizeIntakeTurnDecision,
+  type IntakeTurnDecision,
+} from './intake-intent-core';
 import { redactAssistantVisiblePii } from './pii-redaction';
 import { buildSystemPrompt } from './system-prompt';
 
@@ -28,6 +32,14 @@ export type GenerateChatReplyInput = {
   publicRequestNumber?: string | null;
   requestBoundPortal?: boolean;
   newRequestUrl?: string | null;
+};
+
+export type ClassifyIntakeTurnInput = {
+  locale?: string;
+  latestCustomerMessage: string;
+  latestAssistantMessage?: string | null;
+  problemSummary?: string | null;
+  assistantOfferedIntake: boolean;
 };
 
 export type IntakePrefill = {
@@ -112,7 +124,12 @@ async function callOpenAI(
   config: AiRuntimeConfig,
   systemPrompt: string,
   message: string,
-  history: ChatHistoryItem[]
+  history: ChatHistoryItem[],
+  options: {
+    temperature?: number;
+    maxTokens?: number;
+    responseFormat?: { type: 'json_object' };
+  } = {}
 ): Promise<string | null> {
   if (!config.apiKeyConfigured || !config.apiKey || !config.supportedProvider) {
     return null;
@@ -122,8 +139,9 @@ async function callOpenAI(
   const timeout = setTimeout(() => controller.abort(), config.timeoutMs);
   const payload = {
     model: config.model,
-    temperature: config.temperature,
-    max_tokens: config.maxOutputTokens,
+    temperature: options.temperature ?? config.temperature,
+    max_tokens: options.maxTokens ?? config.maxOutputTokens,
+    ...(options.responseFormat ? { response_format: options.responseFormat } : {}),
     messages: [
       {
         role: 'system',
@@ -170,6 +188,81 @@ async function callOpenAI(
     return content.length > 0 ? content : null;
   } finally {
     clearTimeout(timeout);
+  }
+}
+
+function buildIntakeTurnClassifierPrompt(locale?: string): string {
+  return [
+    'You classify one customer message in the PixelRing signage-service chat.',
+    'Return JSON only with this shape: {"intent":"accept_intake|reject_intake|ask_question|status_or_existing_request|unclear","confidence":0.0}',
+    '',
+    'Definitions:',
+    '- accept_intake: the customer agrees to open/create/submit/prepare the service request or form, asks the assistant to do it, or says the form did not open after agreeing. This can be phrased naturally in any supported language and does not need exact words.',
+    '- reject_intake: the customer clearly declines, postpones, or says they do not want a request/form.',
+    '- ask_question: the customer asks a normal service or process question before deciding.',
+    '- status_or_existing_request: the customer asks about an existing request, request number, status, portal, or account history.',
+    '- unclear: short ambiguous replies or text that does not clearly fit another intent.',
+    '',
+    'Important rules:',
+    '- Do not classify as accept_intake unless a problem summary is already present in the input.',
+    '- If the assistant did not offer intake yet, accept_intake is still valid when the customer directly asks to create/open/submit a request for the described problem.',
+    '- Prefer status_or_existing_request over accept_intake for existing-request/status/account questions.',
+    `The UI locale is "${locale?.trim() || 'de'}", but classify by meaning, not by exact language.`,
+  ].join('\n');
+}
+
+export async function classifyIntakeTurn(
+  input: ClassifyIntakeTurnInput
+): Promise<IntakeTurnDecision> {
+  if (!input.latestCustomerMessage.trim() || !input.problemSummary?.trim()) {
+    return {
+      intent: 'unclear',
+      confidence: 0,
+      provider: 'fallback',
+    };
+  }
+
+  try {
+    const config = await getAiRuntimeConfig();
+    const content = await callOpenAI(
+      config,
+      buildIntakeTurnClassifierPrompt(input.locale),
+      JSON.stringify({
+        latestCustomerMessage: input.latestCustomerMessage,
+        latestAssistantMessage: input.latestAssistantMessage ?? '',
+        problemSummary: input.problemSummary,
+        assistantOfferedIntake: input.assistantOfferedIntake,
+      }),
+      [],
+      {
+        temperature: 0,
+        maxTokens: 80,
+        responseFormat: { type: 'json_object' },
+      }
+    );
+
+    if (!content) {
+      return {
+        intent: 'unclear',
+        confidence: 0,
+        provider: 'fallback',
+      };
+    }
+
+    const decision = normalizeIntakeTurnDecision(JSON.parse(content));
+
+    return {
+      ...decision,
+      provider: 'openai',
+    };
+  } catch (error) {
+    console.error('AI intake intent classification failed:', error);
+
+    return {
+      intent: 'unclear',
+      confidence: 0,
+      provider: 'fallback',
+    };
   }
 }
 

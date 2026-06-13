@@ -9,6 +9,10 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 Latest checkpoint:
 
 - Date: 2026-06-13
+- Current stage: Reworked AI chat request-intake opening from phrase-list consent matching toward an intent-based handoff: after a problem is known, the chat API can classify natural customer agreement as `accept_intake` and return `suggestIntake` while preserving existing marker and safety guards.
+- Next action: Owner verifies the RU chat flow where the assistant offers to create a request and the customer responds naturally, confirming the inline intake card opens instead of stopping at a text promise.
+
+- Date: 2026-06-13
 - Current stage: Refined the customer portal request UX: the portal logout action is now parked at the lower-left sidebar, and request detail links opened from `/[locale]/portal` render as a large centered intercepted modal with blurred backdrop and outside-click close while direct request URLs still render as standalone safe detail pages.
 - Next action: Owner visually reviews `/ru/portal` and `/de/portal`: open a request from the dashboard, confirm the modal size/backdrop/close behavior, and spot-check direct refresh on `/[locale]/portal/requests/[PR-number]`.
 
