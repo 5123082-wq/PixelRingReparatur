@@ -195,8 +195,11 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
     window.addEventListener('resize', scheduleUpdate);
 
     const frame = mapFrameRef.current;
-    const resizeObserver = typeof ResizeObserver !== 'undefined' && frame ? new ResizeObserver(scheduleUpdate) : null;
-    resizeObserver?.observe(frame);
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && frame) {
+      resizeObserver = new ResizeObserver(scheduleUpdate);
+      resizeObserver.observe(frame);
+    }
 
     return () => {
       window.cancelAnimationFrame(frameId);
