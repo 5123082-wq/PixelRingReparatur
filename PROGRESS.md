@@ -9,6 +9,18 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 Latest checkpoint:
 
 - Date: 2026-06-13
+- Current stage: Tuned public home coverage-map 3D pixel streams: routes now use denser particle trails, destination-end pixels are 50% larger than before, and city nodes grow from their base dot size when the stream arrives.
+- Next action: Owner visually reviews `/de` home coverage map and decides whether the pixel stream should be brighter, calmer, or more directional.
+
+- Date: 2026-06-13
+- Current stage: Tuned the public home trust section card palette toward glass-style surfaces: benefit cards and the anti-portal block now use translucent white overlays, soft borders, medium blur, and only restrained PixelRing terracotta accents for hierarchy.
+- Next action: Owner visually reviews `/de` home trust section and decides whether to further brighten card text, reduce blur, or soften the first-card accent.
+
+- Date: 2026-06-13
+- Current stage: Reworked the public home `Vorher / Nachher` proof rail card design so featured and small case cards keep their existing sizes but use dominant imagery with compact blurred text overlays, short bottom gradients, and mobile-safe horizontal rail behavior.
+- Next action: Owner visually reviews `/de` home desktop/mobile and decides whether to tune overlay opacity, card crop positions, or add eager loading for the proof image if the LCP warning matters.
+
+- Date: 2026-06-13
 - Current stage: Reworked AI chat request-intake opening from phrase-list consent matching toward an intent-based handoff: after a problem is known, the chat API can classify natural customer agreement as `accept_intake` and return `suggestIntake` while preserving existing marker and safety guards.
 - Next action: Owner verifies the RU chat flow where the assistant offers to create a request and the customer responds naturally, confirming the inline intake card opens instead of stopping at a text promise.
 
