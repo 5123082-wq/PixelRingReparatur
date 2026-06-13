@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useEffect, useCallback, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { CoverageMapCmsContent } from '@/lib/cms/pages';
@@ -15,12 +15,13 @@ interface City {
   x: number;
   y: number;
   isHQ?: boolean;
+  labelOffsetX?: string;
+  labelOffsetY?: string;
 }
 
 interface RouteStream {
   id: string;
   routeIndex: number;
-  pathD: string;
   duration: number;
   delay: number;
 }
@@ -78,18 +79,22 @@ const isPointInPolygon = (x: number, y: number, polygon: [number, number][]) => 
 const cities: City[] = [
   { id: 'berlin', name: 'Berlin', x: 74, y: 35, isHQ: true },
   { id: 'hamburg', name: 'Hamburg', x: 38, y: 20 },
-  { id: 'munich', name: 'München', x: 65, y: 85 },
-  { id: 'cologne', name: 'Köln', x: 15, y: 52 },
+  { id: 'bremen', name: 'Bremen', x: 30, y: 31, labelOffsetX: '-84%', labelOffsetY: '-110%' },
+  { id: 'hannover', name: 'Hannover', x: 43, y: 40, labelOffsetX: '-16%', labelOffsetY: '-210%' },
+  { id: 'duesseldorf', name: 'Düsseldorf', x: 18, y: 48, labelOffsetX: '-12%', labelOffsetY: '-225%' },
+  { id: 'cologne', name: 'Köln', x: 15, y: 55, labelOffsetX: '-92%', labelOffsetY: '12%' },
   { id: 'frankfurt', name: 'Frankfurt am Main', x: 32, y: 64 },
   { id: 'stuttgart', name: 'Stuttgart', x: 34, y: 82 },
-  { id: 'leipzig', name: 'Leipzig', x: 66, y: 48 },
   { id: 'nuremberg', name: 'Nürnberg', x: 58, y: 72 },
+  { id: 'munich', name: 'München', x: 65, y: 85 },
+  { id: 'leipzig', name: 'Leipzig', x: 66, y: 48 },
+  { id: 'dresden', name: 'Dresden', x: 77, y: 56 },
 ];
 
 const ROUTE_STREAM_START_DELAY = 0.55;
 const ROUTE_DELAY_STEP = 0.1;
-const CITY_NODE_RADIUS = 0.8;
-const CITY_NODE_EXPANDED_RADIUS = CITY_NODE_RADIUS * 1.5;
+const CITY_NODE_RADIUS = 0.52;
+const CITY_NODE_RING_RADIUS = 1.2;
 
 function getRouteArrivalDelay(routeIndex: number) {
   return ROUTE_STREAM_START_DELAY + routeIndex * ROUTE_DELAY_STEP + 0.95;
@@ -99,17 +104,10 @@ function buildRouteStream(hq: City, city: City, routeIndex: number): RouteStream
   const dx = city.x - hq.x;
   const dy = city.y - hq.y;
   const distance = Math.sqrt(dx * dx + dy * dy);
-  const curveLift = Math.min(Math.max(distance * 0.22, 7), 15);
 
   return {
     id: city.id,
     routeIndex,
-    pathD: [
-      `M ${hq.x} ${hq.y}`,
-      `C ${(hq.x + dx * 0.2).toFixed(2)} ${(hq.y + dy * 0.2 - curveLift).toFixed(2)}`,
-      `${(hq.x + dx * 0.62).toFixed(2)} ${(hq.y + dy * 0.62 - curveLift).toFixed(2)}`,
-      `${city.x} ${city.y}`,
-    ].join(' '),
     duration: Math.min(Math.max(distance / 18, 2.35), 3.9),
     delay: ROUTE_STREAM_START_DELAY + routeIndex * ROUTE_DELAY_STEP,
   };
@@ -118,16 +116,95 @@ function buildRouteStream(hq: City, city: City, routeIndex: number): RouteStream
 const CoverageMap = ({ content }: CoverageMapProps) => {
   const t = useTranslations('Coverage');
   const containerRef = useRef<HTMLDivElement>(null);
+  const mapFrameRef = useRef<HTMLDivElement>(null);
+  const [routeOverlay, setRouteOverlay] = useState<{
+    width: number;
+    height: number;
+    paths: Record<string, string>;
+  }>({ width: 0, height: 0, paths: {} });
   const isInView = useInView(containerRef, { once: true, amount: 0.1 });
   // Static isometric angle (final settled pose from previous scroll-based motion)
   const rotateX = 64;
-  const rotateZ = -18;
+  const mapRotateZ = -18;
+  const cityRotateZ = -3;
   const rotateXInverse = -64;
-  const rotateZInverse = 18;
+  const cityRotateZInverse = 3;
   const hq = cities.find(c => c.isHQ)!;
   const routeStreams = cities
     .filter(c => !c.isHQ)
     .map((city, routeIndex) => buildRouteStream(hq, city, routeIndex));
+
+  const updateRouteOverlay = useCallback(() => {
+    const frame = mapFrameRef.current;
+    if (!frame) return;
+
+    const frameRect = frame.getBoundingClientRect();
+    const hqAnchor = frame.querySelector<SVGGraphicsElement>('[data-city-anchor="berlin"]');
+    if (!hqAnchor || frameRect.width === 0 || frameRect.height === 0) return;
+
+    const centerInFrame = (element: SVGGraphicsElement) => {
+      const rect = element.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width / 2 - frameRect.left,
+        y: rect.top + rect.height / 2 - frameRect.top,
+      };
+    };
+
+    const start = centerInFrame(hqAnchor);
+    const paths: Record<string, string> = {};
+
+    cities.filter(c => !c.isHQ).forEach((city) => {
+      const anchor = frame.querySelector<SVGGraphicsElement>(`[data-city-anchor="${city.id}"]`);
+      if (!anchor) return;
+
+      const end = centerInFrame(anchor);
+      const dx = end.x - start.x;
+      const dy = end.y - start.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      const lift = Math.min(Math.max(distance * 0.18, 18), frameRect.height * 0.12);
+      const apexX = start.x + dx * 0.5;
+      const apexY = Math.min(start.y, end.y) - lift;
+      const controlX = 2 * apexX - (start.x + end.x) * 0.5;
+      const controlY = 2 * apexY - (start.y + end.y) * 0.5;
+
+      paths[city.id] = [
+        `M ${start.x.toFixed(1)} ${start.y.toFixed(1)}`,
+        `Q ${controlX.toFixed(1)} ${controlY.toFixed(1)}`,
+        `${end.x.toFixed(1)} ${end.y.toFixed(1)}`,
+      ].join(' ');
+    });
+
+    setRouteOverlay({
+      width: frameRect.width,
+      height: frameRect.height,
+      paths,
+    });
+  }, []);
+
+  useEffect(() => {
+    let frameId = 0;
+    let timeoutId = 0;
+
+    const scheduleUpdate = () => {
+      window.cancelAnimationFrame(frameId);
+      frameId = window.requestAnimationFrame(updateRouteOverlay);
+    };
+
+    scheduleUpdate();
+    timeoutId = window.setTimeout(scheduleUpdate, 450);
+    window.addEventListener('resize', scheduleUpdate);
+
+    const frame = mapFrameRef.current;
+    const resizeObserver = typeof ResizeObserver !== 'undefined' && frame ? new ResizeObserver(scheduleUpdate) : null;
+    resizeObserver?.observe(frame);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.clearTimeout(timeoutId);
+      window.removeEventListener('resize', scheduleUpdate);
+      resizeObserver?.disconnect();
+    };
+  }, [updateRouteOverlay]);
 
   // ULTRA PERFORMANCE: Single Path rendering logic
   const { mainMatrixPath } = useMemo(() => {
@@ -209,138 +286,184 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
 
       {/* 3D MAP SCENE */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <motion.div 
-          initial={false}
-          style={{ 
-            rotateX, 
-            rotateZ,
-            transformStyle: "preserve-3d",
-            willChange: "transform"
-          }}
-          className="relative w-[85%] max-w-[1000px] aspect-square flex items-center justify-center"
-        >
-          {/* Floor Shadow */}
-          <div className="absolute inset-x-0 bottom-0 top-1/2 bg-[#0E1A2B03] blur-[100px] translate-y-24 -translate-z-[100px] scale-x-[1.3] scale-y-[0.7] rounded-full pointer-events-none" />
-
-          <div className="relative w-full h-full" style={{ transformStyle: "preserve-3d" }}>
-            {/* Main Matrix Surface */}
-            <svg 
-              viewBox="0 0 100 100" 
-              className="w-full h-full drop-shadow-[0_4px_12px_rgba(14,26,43,0.03)] overflow-visible translate-z-0"
-              fill="none" 
+        <div ref={mapFrameRef} className="relative w-[85%] max-w-[1000px] aspect-square">
+          {routeOverlay.width > 0 && routeOverlay.height > 0 && (
+            <svg
+              viewBox={`0 0 ${routeOverlay.width} ${routeOverlay.height}`}
+              className="absolute inset-0 z-20 h-full w-full overflow-visible"
+              fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <path 
-                d={mainMatrixPath}
-                stroke="#0E1A2B"
-                strokeWidth="0.85"
-                strokeLinecap="round"
-                strokeOpacity={0.25}
-              />
+              {/* Routes are drawn after measuring the CSS-rotated city nodes, so each arc is built in screen space. */}
+              {routeStreams.map((route) => {
+                const pathD = routeOverlay.paths[route.id];
+                if (!pathD) return null;
 
-              {/* Lightweight service streams: one curve per route, a few SVG dots moving on it. */}
-              {routeStreams.map((route) => (
-                <motion.path
-                  key={`route-trail-${route.id}`}
-                  d={route.pathD}
-                  fill="none"
-                  stroke="#C86E4A"
-                  strokeWidth="0.24"
-                  strokeLinecap="round"
-                  strokeOpacity={0.32}
-                  initial={{ pathLength: 0, opacity: 0 }}
-                  animate={isInView ? { pathLength: 1, opacity: 1 } : {}}
-                  transition={{
-                    duration: 0.8,
-                    delay: route.delay,
-                    ease: 'easeOut',
-                  }}
-                />
-              ))}
-
-              {/* Nodes */}
-              {cities.map((city, idx) => (
-                <motion.g
-                  key={`node-perf-${city.id}`}
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                  transition={{ delay: 1.2 + idx * 0.08, duration: 0.6 }}
-                >
-                  {city.isHQ ? (
-                    <circle cx={city.x} cy={city.y} r="1.3" fill="#C86E4A" />
-                  ) : (
-                    <motion.circle
-                      data-city-node="true"
-                      cx={city.x}
-                      cy={city.y}
-                      r={CITY_NODE_RADIUS}
-                      fill="#0E1A2B"
-                      animate={isInView ? { r: CITY_NODE_EXPANDED_RADIUS } : {}}
-                      transition={{
-                        delay: getRouteArrivalDelay(cities.filter(c => !c.isHQ).findIndex(c => c.id === city.id)),
-                        duration: 0.45,
-                        ease: "easeOut"
-                      }}
-                    />
-                  )}
-                  {city.isHQ && (
-                    <motion.circle
-                      cx={city.x}
-                      cy={city.y}
-                      r="4"
-                      fill="#C86E4A"
-                      fillOpacity="0.15"
-                      animate={{ r: [3, 5, 3], opacity: [0.1, 0.2, 0.1] }}
-                      transition={{ duration: 3, repeat: Infinity }}
-                    />
-                  )}
-                </motion.g>
-              ))}
+                return (
+                  <motion.path
+                    key={`route-trail-${route.id}`}
+                    d={pathD}
+                    fill="none"
+                    stroke="#C86E4A"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeOpacity={0.34}
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={isInView ? { pathLength: 1, opacity: 1 } : {}}
+                    transition={{
+                      duration: 0.8,
+                      delay: route.delay,
+                      ease: 'easeOut',
+                    }}
+                  />
+                );
+              })}
             </svg>
+          )}
 
-          </div>
+          <motion.div
+            initial={false}
+            style={{
+              rotateX,
+              rotateZ: mapRotateZ,
+              transformStyle: "preserve-3d",
+              willChange: "transform"
+            }}
+            className="absolute inset-0 z-10 flex items-center justify-center"
+          >
+            {/* Floor Shadow */}
+            <div className="absolute inset-x-0 bottom-0 top-1/2 bg-[#0E1A2B03] blur-[100px] translate-y-24 -translate-z-[100px] scale-x-[1.3] scale-y-[0.7] rounded-full pointer-events-none" />
 
-          {/* Labels */}
-          <div className="absolute inset-0 pointer-events-none" style={{ transformStyle: "preserve-3d" }}>
-            {cities.map((city) => (
-              <motion.div
-                key={`label-perf-${city.id}`}
-                className="absolute pointer-events-none"
-                initial={false}
-                style={{ 
-                  left: `${city.x}%`, 
-                  top: `${city.y}%`,
-                  rotateX: rotateXInverse,
-                  rotateZ: rotateZInverse,
-                  translateZ: "30px",
-                  x: "-50%",
-                  y: "-180%",
-                  transformStyle: "preserve-3d",
-                  willChange: "transform"
-                }}
+            <div className="relative h-full w-full" style={{ transformStyle: "preserve-3d" }}>
+              {/* Main Matrix Surface */}
+              <svg
+                viewBox="0 0 100 100"
+                className="h-full w-full overflow-visible translate-z-0 drop-shadow-[0_4px_12px_rgba(14,26,43,0.03)]"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                <div className="flex flex-col items-center gap-0.5 whitespace-nowrap">
-                  <span 
-                    className={`text-[11px] md:text-[12px] font-bold drop-shadow-sm ${city.isHQ ? 'text-[#0E1A2B]' : 'text-[#0E1A2BB0]'}`}
-                    style={{ 
-                      fontFamily: 'Inter, sans-serif',
-                      background: 'rgba(255, 255, 255, 0.35)',
-                      padding: '1px 6px',
-                      borderRadius: '4px',
-                      backdropFilter: 'blur(3px)',
-                      border: '1px solid rgba(255, 255, 255, 0.2)'
+                <path
+                  d={mainMatrixPath}
+                  stroke="#0E1A2B"
+                  strokeWidth="0.85"
+                  strokeLinecap="round"
+                  strokeOpacity={0.25}
+                />
+              </svg>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={false}
+            style={{
+              rotateX,
+              rotateZ: cityRotateZ,
+              transformStyle: "preserve-3d",
+              willChange: "transform"
+            }}
+            className="absolute inset-0 z-30 flex items-center justify-center"
+          >
+            <div className="relative h-full w-full" style={{ transformStyle: "preserve-3d" }}>
+              <svg
+                viewBox="0 0 100 100"
+                className="h-full w-full overflow-visible translate-z-0"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                {/* Nodes */}
+                {cities.map((city, idx) => (
+                  <motion.g
+                    key={`node-perf-${city.id}`}
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                    transition={{ delay: 1.2 + idx * 0.08, duration: 0.6 }}
+                  >
+                    {city.isHQ ? (
+                      <circle data-city-anchor={city.id} cx={city.x} cy={city.y} r="1.3" fill="#C86E4A" />
+                    ) : (
+                      <>
+                        <circle
+                          data-city-node="true"
+                          data-city-anchor={city.id}
+                          cx={city.x}
+                          cy={city.y}
+                          r={CITY_NODE_RADIUS}
+                          fill="#0E1A2B"
+                        />
+                        <motion.circle
+                          cx={city.x}
+                          cy={city.y}
+                          fill="transparent"
+                          stroke="#C86E4A"
+                          strokeWidth="0.22"
+                          initial={{ opacity: 0, r: CITY_NODE_RADIUS }}
+                          animate={isInView ? { opacity: 1, r: CITY_NODE_RING_RADIUS } : {}}
+                          transition={{
+                            delay: getRouteArrivalDelay(cities.filter(c => !c.isHQ).findIndex(c => c.id === city.id)),
+                            duration: 0.45,
+                            ease: "easeOut"
+                          }}
+                        />
+                      </>
+                    )}
+                    {city.isHQ && (
+                      <motion.circle
+                        cx={city.x}
+                        cy={city.y}
+                        r="4"
+                        fill="#C86E4A"
+                        fillOpacity="0.15"
+                        animate={{ r: [3, 5, 3], opacity: [0.1, 0.2, 0.1] }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                      />
+                    )}
+                  </motion.g>
+                ))}
+              </svg>
+
+              {/* Labels */}
+              <div className="absolute inset-0 pointer-events-none" style={{ transformStyle: "preserve-3d" }}>
+                {cities.map((city) => (
+                  <motion.div
+                    key={`label-perf-${city.id}`}
+                    className="absolute pointer-events-none"
+                    initial={false}
+                    style={{
+                      left: `${city.x}%`,
+                      top: `${city.y}%`,
+                      rotateX: rotateXInverse,
+                      rotateZ: cityRotateZInverse,
+                      translateZ: "30px",
+                      x: city.labelOffsetX || "-50%",
+                      y: city.labelOffsetY || "-180%",
+                      transformStyle: "preserve-3d",
+                      willChange: "transform"
                     }}
                   >
-                    {city.name}
-                  </span>
-                  {city.isHQ && (
-                    <span className="text-[9px] font-black uppercase tracking-widest text-[#C86E4A]">HQ</span>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+                    <div className="flex flex-col items-center gap-0.5 whitespace-nowrap">
+                      <span
+                        className={`text-[7px] sm:text-[8px] md:text-[12px] font-bold drop-shadow-sm ${city.isHQ ? 'text-[#0E1A2B]' : 'text-[#0E1A2BB0]'}`}
+                        style={{
+                          fontFamily: 'Inter, sans-serif',
+                          background: 'rgba(255, 255, 255, 0.35)',
+                          padding: '1px 4px',
+                          borderRadius: '4px',
+                          backdropFilter: 'blur(3px)',
+                          border: '1px solid rgba(255, 255, 255, 0.2)'
+                        }}
+                      >
+                        {city.name}
+                      </span>
+                      {city.isHQ && (
+                        <span className="text-[9px] font-black uppercase tracking-widest text-[#C86E4A]">HQ</span>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

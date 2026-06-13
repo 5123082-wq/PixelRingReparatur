@@ -8,6 +8,10 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 
 Latest checkpoint:
 
+- Date: 2026-06-14
+- Current stage: Updated the public home coverage map to show 12 separate German city nodes, adding Bremen, Hannover, Düsseldorf, and Dresden while keeping Köln separate; city nodes are smaller, receive a PixelRing terracotta arrival ring after route completion, routes render as screen-space apex arcs measured from the CSS-rotated Berlin/city positions, and the city/route overlay is rotated 15 degrees clockwise while the Germany dot-matrix underlay keeps its original pose.
+- Next action: Owner visually reviews `/de` home coverage map on desktop/mobile and decides whether arc height, route brightness, or city labels need another visual tuning pass.
+
 - Date: 2026-06-13
 - Current stage: Reworked public home coverage-map streams from hundreds of animated DOM particles into lightweight static SVG route curves, removing flying dots while preserving city route context.
 - Next action: Owner visually reviews `/de` home coverage map and decides whether the route lines should be brighter, subtler, or removed entirely.
