@@ -625,7 +625,7 @@ export default async function BusinessPage({
 
       <main className="flex-grow">
         {content.heroEnabled !== false && (
-          <section className="relative h-[520px] w-full overflow-hidden bg-[#0E1A2B] sm:h-[500px] lg:h-[560px]">
+          <section className="relative h-[520px] w-full overflow-hidden bg-[#0E1A2B] sm:h-[440px] lg:h-[480px]">
             <div className="absolute inset-0 z-0">
               <CmsImage
                 src={content.heroImage}

@@ -19,6 +19,9 @@ type WorkCardConfig = {
   description: string;
   image: string;
   imageAlt: string;
+  video?: string;
+  poster?: string;
+  videoLabel?: string;
   serviceHref: string;
 };
 
@@ -28,16 +31,16 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'Werbeanlagen-Montage',
       tag: 'Montage',
       description: 'Fachgerechte Montage großer Werbeanlagen, Fassadenschilder und Standortwerbung.',
-      image: '/images/ex-mounting.png',
-      imageAlt: 'Montage einer beleuchteten Werbeanlage an einer Glasfassade',
+      image: '/images/ex-mounting-dietz-autohaus-werbepylon.webp',
+      imageAlt: 'Beleuchteter Werbepylon und Fassadenwerbung eines Autohauses bei Nacht',
       serviceHref: '/leistungen/montage-demontage-werbeanlagen',
     },
     {
       title: 'Lichtwerbung-Reparatur',
       tag: 'Reparatur',
       description: 'Instandsetzung von Neon, LED-Technik, Leuchtkästen und sichtbaren Defekten.',
-      image: '/images/ex-repair.png',
-      imageAlt: 'Reparatur einer klassischen Neon- und Lichtwerbung in der Werkstatt',
+      image: '/images/ex-repair-libitina-leuchtkasten-fassade.webp',
+      imageAlt: 'Beleuchtete Fassadenwerbung eines Geschäftsstandorts bei Nacht',
       serviceHref: '/leistungen/werbeanlagen-reparatur',
     },
     {
@@ -52,8 +55,11 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'Branding & Druck',
       tag: 'Branding',
       description: 'Folien, Druckdaten, Beschriftungen und Werbematerialien für einen klaren Standortauftritt.',
-      image: '/images/ex-branding-print.png',
-      imageAlt: 'Montage von Schaufensterfolie und gedruckten Branding-Elementen an einem Geschäftsstandort',
+      image: '/images/ex-branding-print-folienmontage-poster.webp',
+      imageAlt: 'Montage von Schaufensterfolie und Branding-Elementen an einem Geschäftsstandort',
+      video: '/videos/ex-branding-print-folienmontage.mp4',
+      poster: '/images/ex-branding-print-folienmontage-poster.webp',
+      videoLabel: 'Video einer Folienmontage und Branding-Arbeit an einer Geschäftsfassade',
       serviceHref: '/leistungen/druckprodukte-branding-werbematerialien',
     },
     {
@@ -78,16 +84,16 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'Signage Installation',
       tag: 'Installation',
       description: 'Professional installation of large signage, facade signs, and site advertising.',
-      image: '/images/ex-mounting.png',
-      imageAlt: 'Installation of an illuminated sign on a glass facade',
+      image: '/images/ex-mounting-dietz-autohaus-werbepylon.webp',
+      imageAlt: 'Illuminated advertising pylon and car dealership facade sign at night',
       serviceHref: '/leistungen/montage-demontage-werbeanlagen',
     },
     {
       title: 'Light Advertising Repair',
       tag: 'Repair',
       description: 'Repair of neon, LED systems, lightboxes, and visible signage defects.',
-      image: '/images/ex-repair.png',
-      imageAlt: 'Repair of classic neon and light advertising in a workshop',
+      image: '/images/ex-repair-libitina-leuchtkasten-fassade.webp',
+      imageAlt: 'Illuminated facade sign at a business location at night',
       serviceHref: '/leistungen/werbeanlagen-reparatur',
     },
     {
@@ -102,8 +108,11 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'Branding & Print',
       tag: 'Branding',
       description: 'Films, print files, lettering, and advertising materials for a clear site presence.',
-      image: '/images/ex-branding-print.png',
-      imageAlt: 'Installation of window film and printed branding elements on a storefront',
+      image: '/images/ex-branding-print-folienmontage-poster.webp',
+      imageAlt: 'Installation of window film and branding elements on a storefront',
+      video: '/videos/ex-branding-print-folienmontage.mp4',
+      poster: '/images/ex-branding-print-folienmontage-poster.webp',
+      videoLabel: 'Video of window film installation and branding work on a storefront facade',
       serviceHref: '/leistungen/druckprodukte-branding-werbematerialien',
     },
     {
@@ -128,16 +137,16 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'Монтаж рекламных конструкций',
       tag: 'Монтаж',
       description: 'Профессиональный монтаж крупных вывесок, фасадных конструкций и рекламы на объекте.',
-      image: '/images/ex-mounting.png',
-      imageAlt: 'Монтаж световой рекламной конструкции на стеклянном фасаде',
+      image: '/images/ex-mounting-dietz-autohaus-werbepylon.webp',
+      imageAlt: 'Освещенный рекламный пилон и фасадная вывеска автоцентра ночью',
       serviceHref: '/leistungen/montage-demontage-werbeanlagen',
     },
     {
       title: 'Ремонт световой рекламы',
       tag: 'Ремонт',
       description: 'Ремонт неона, LED-систем, световых коробов и видимых дефектов вывесок.',
-      image: '/images/ex-repair.png',
-      imageAlt: 'Ремонт классической неоновой и световой рекламы в мастерской',
+      image: '/images/ex-repair-libitina-leuchtkasten-fassade.webp',
+      imageAlt: 'Световая фасадная вывеска коммерческого объекта ночью',
       serviceHref: '/leistungen/werbeanlagen-reparatur',
     },
     {
@@ -152,8 +161,11 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'Брендинг и печать',
       tag: 'Брендинг',
       description: 'Пленки, печатные материалы, надписи и брендирование для коммерческого объекта.',
-      image: '/images/ex-branding-print.png',
-      imageAlt: 'Монтаж витринной пленки и печатных бренд-элементов на фасаде магазина',
+      image: '/images/ex-branding-print-folienmontage-poster.webp',
+      imageAlt: 'Монтаж витринной пленки и бренд-элементов на фасаде коммерческого объекта',
+      video: '/videos/ex-branding-print-folienmontage.mp4',
+      poster: '/images/ex-branding-print-folienmontage-poster.webp',
+      videoLabel: 'Видео монтажа витринной пленки и брендирования фасада коммерческого объекта',
       serviceHref: '/leistungen/druckprodukte-branding-werbematerialien',
     },
     {
@@ -178,16 +190,16 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'Tabela Montajı',
       tag: 'Montaj',
       description: 'Büyük tabelalar, cephe reklamları ve işletme reklam alanları için profesyonel montaj.',
-      image: '/images/ex-mounting.png',
-      imageAlt: 'Cam cephede ışıklı tabela montajı',
+      image: '/images/ex-mounting-dietz-autohaus-werbepylon.webp',
+      imageAlt: 'Gece aydınlatılan oto galerisi reklam pilonu ve cephe tabelası',
       serviceHref: '/leistungen/montage-demontage-werbeanlagen',
     },
     {
       title: 'Işıklı Reklam Onarımı',
       tag: 'Onarım',
       description: 'Neon, LED sistemleri, ışıklı kutular ve görünür tabela arızalarının onarımı.',
-      image: '/images/ex-repair.png',
-      imageAlt: 'Atölyede klasik neon ve ışıklı reklam onarımı',
+      image: '/images/ex-repair-libitina-leuchtkasten-fassade.webp',
+      imageAlt: 'Gece bir işletme cephesinde aydınlatmalı tabela',
       serviceHref: '/leistungen/werbeanlagen-reparatur',
     },
     {
@@ -202,8 +214,11 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'Markalama ve Baskı',
       tag: 'Markalama',
       description: 'İşyeri görünümü için folyolar, baskı dosyaları, yazılar ve reklam malzemeleri.',
-      image: '/images/ex-branding-print.png',
-      imageAlt: 'Mağaza cephesine vitrin filmi ve baskılı marka öğeleri uygulanması',
+      image: '/images/ex-branding-print-folienmontage-poster.webp',
+      imageAlt: 'Bir mağaza cephesine vitrin filmi ve marka öğeleri uygulanması',
+      video: '/videos/ex-branding-print-folienmontage.mp4',
+      poster: '/images/ex-branding-print-folienmontage-poster.webp',
+      videoLabel: 'Bir mağaza cephesinde vitrin filmi montajı ve markalama çalışması videosu',
       serviceHref: '/leistungen/druckprodukte-branding-werbematerialien',
     },
     {
@@ -228,16 +243,16 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'Montaż reklam zewnętrznych',
       tag: 'Montaż',
       description: 'Profesjonalny montaż dużych szyldów, oznakowania fasad i reklamy przy lokalizacji.',
-      image: '/images/ex-mounting.png',
-      imageAlt: 'Montaż podświetlanego szyldu na szklanej fasadzie',
+      image: '/images/ex-mounting-dietz-autohaus-werbepylon.webp',
+      imageAlt: 'Podświetlony pylon reklamowy i szyld fasadowy salonu samochodowego nocą',
       serviceHref: '/leistungen/montage-demontage-werbeanlagen',
     },
     {
       title: 'Naprawa reklamy świetlnej',
       tag: 'Naprawa',
       description: 'Naprawa neonów, systemów LED, kasetonów i widocznych usterek szyldów.',
-      image: '/images/ex-repair.png',
-      imageAlt: 'Naprawa klasycznej reklamy neonowej i świetlnej w warsztacie',
+      image: '/images/ex-repair-libitina-leuchtkasten-fassade.webp',
+      imageAlt: 'Podświetlany szyld fasadowy lokalu firmowego nocą',
       serviceHref: '/leistungen/werbeanlagen-reparatur',
     },
     {
@@ -252,8 +267,11 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'Branding i druk',
       tag: 'Branding',
       description: 'Folie, pliki do druku, napisy i materiały reklamowe dla spójnego wyglądu lokalu.',
-      image: '/images/ex-branding-print.png',
-      imageAlt: 'Montaż folii okiennej i drukowanych elementów brandingu na witrynie',
+      image: '/images/ex-branding-print-folienmontage-poster.webp',
+      imageAlt: 'Montaż folii okiennej i elementów brandingu na witrynie firmowej',
+      video: '/videos/ex-branding-print-folienmontage.mp4',
+      poster: '/images/ex-branding-print-folienmontage-poster.webp',
+      videoLabel: 'Film z montażu folii okiennej i brandingu na fasadzie firmowej',
       serviceHref: '/leistungen/druckprodukte-branding-werbematerialien',
     },
     {
@@ -278,16 +296,16 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'تركيب اللوحات الإعلانية',
       tag: 'تركيب',
       description: 'تركيب احترافي للوحات الكبيرة ولافتات الواجهات وإعلانات مواقع الأعمال.',
-      image: '/images/ex-mounting.png',
-      imageAlt: 'تركيب لوحة إعلانية مضيئة على واجهة زجاجية',
+      image: '/images/ex-mounting-dietz-autohaus-werbepylon.webp',
+      imageAlt: 'عمود إعلاني مضيء ولافتة واجهة لمعرض سيارات ليلاً',
       serviceHref: '/leistungen/montage-demontage-werbeanlagen',
     },
     {
       title: 'إصلاح الإعلانات المضيئة',
       tag: 'إصلاح',
       description: 'إصلاح النيون وأنظمة LED والصناديق المضيئة والأعطال الظاهرة في اللافتات.',
-      image: '/images/ex-repair.png',
-      imageAlt: 'إصلاح إعلان نيون وإعلان مضيء كلاسيكي داخل ورشة',
+      image: '/images/ex-repair-libitina-leuchtkasten-fassade.webp',
+      imageAlt: 'لافتة واجهة مضيئة لموقع تجاري ليلاً',
       serviceHref: '/leistungen/werbeanlagen-reparatur',
     },
     {
@@ -302,8 +320,11 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'الهوية والطباعة',
       tag: 'هوية بصرية',
       description: 'أفلام ونماذج طباعة وكتابات ومواد إعلانية لظهور واضح لموقع العمل.',
-      image: '/images/ex-branding-print.png',
-      imageAlt: 'تركيب فيلم واجهة وعناصر هوية مطبوعة على متجر',
+      image: '/images/ex-branding-print-folienmontage-poster.webp',
+      imageAlt: 'تركيب فيلم واجهة وعناصر هوية بصرية على واجهة متجر',
+      video: '/videos/ex-branding-print-folienmontage.mp4',
+      poster: '/images/ex-branding-print-folienmontage-poster.webp',
+      videoLabel: 'فيديو لتركيب فيلم واجهة وعمل هوية بصرية على واجهة متجر',
       serviceHref: '/leistungen/druckprodukte-branding-werbematerialien',
     },
     {
@@ -369,6 +390,22 @@ function isLocale(value: string): value is Locale {
   return value === 'de' || value === 'en' || value === 'ru' || value === 'tr' || value === 'pl' || value === 'ar';
 }
 
+function getWorkCardOrder(item: WorkCardConfig) {
+  const label = `${item.title} ${item.tag}`.toLowerCase();
+
+  if (label.includes('demontage') || label.includes('dismantling') || label.includes('демонтаж') || label.includes('söküm') || label.includes('demontaż') || label.includes('تفكيك')) {
+    return 5;
+  }
+
+  if (item.serviceHref.includes('montage-demontage')) return 0;
+  if (item.serviceHref.includes('werbeanlagen-reparatur')) return 1;
+  if (item.serviceHref.includes('druckprodukte-branding')) return 2;
+  if (item.serviceHref.includes('wartung-servicevertraege')) return 3;
+  if (item.serviceHref.includes('lichtwerbung-led-modernisierung')) return 4;
+
+  return 10;
+}
+
 const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
   const localeValue = useLocale();
   const locale = isLocale(localeValue) ? localeValue : 'de';
@@ -377,10 +414,10 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
 
   // Default fallback images aligned to static translation order
   const DEFAULT_IMAGES = [
-    '/images/ex-mounting.png',
-    '/images/ex-repair.png',
+    '/images/ex-mounting-dietz-autohaus-werbepylon.webp',
+    '/images/ex-repair-libitina-leuchtkasten-fassade.webp',
     '/images/ex-maintenance.png',
-    '/images/ex-design.png',
+    '/images/ex-branding-print-folienmontage-poster.webp',
     '/images/ex-lightbox.png',
     '/images/ex-dismantling.png',
   ];
@@ -395,11 +432,14 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
       description: isLegacyItem ? config.description : cmsItem.description || config.description,
       image: isLegacyItem ? config.image : cmsItem.image || config.image || DEFAULT_IMAGES[idx % DEFAULT_IMAGES.length],
       imageAlt: isLegacyItem ? config.imageAlt : cmsItem.imageAlt || config.imageAlt || cmsItem.title || '',
+      video: config.video,
+      poster: config.poster,
+      videoLabel: config.videoLabel,
       serviceHref: config.serviceHref,
     };
   });
 
-  const carouselItems = items;
+  const carouselItems = [...items].sort((a, b) => getWorkCardOrder(a) - getWorkCardOrder(b));
   
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -526,13 +566,28 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
               <div
                 className="group relative h-[520px] w-full overflow-hidden rounded-[28px] bg-white shadow-[0_18px_44px_rgba(15,23,42,0.08)] ring-1 ring-black/[0.04] transition duration-500 hover:-translate-y-0.5 hover:shadow-[0_22px_56px_rgba(15,23,42,0.12)] sm:h-[560px] lg:h-[590px]"
               >
-                <Image
-                  src={item.image}
-                  alt={item.imageAlt}
-                  fill
-                  sizes="(min-width: 1024px) 350px, (min-width: 640px) 340px, 84vw"
-                  className="object-cover group-hover:scale-105 transition-transform duration-700"
-                />
+                {item.video ? (
+                  <video
+                    aria-label={item.videoLabel || item.imageAlt}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    poster={item.poster || item.image}
+                    preload="metadata"
+                    className="pointer-events-none absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  >
+                    <source src={item.video} type="video/mp4" />
+                  </video>
+                ) : (
+                  <Image
+                    src={item.image}
+                    alt={item.imageAlt}
+                    fill
+                    sizes="(min-width: 1024px) 350px, (min-width: 640px) 340px, 84vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/58 via-black/10 to-black/42" />
 
                 <div className="absolute inset-x-0 top-0 flex flex-col gap-3 p-7 text-white sm:p-8">

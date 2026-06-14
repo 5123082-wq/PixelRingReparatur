@@ -23,7 +23,12 @@
     "support": "الدعم",
     "book": "احجز إصلاحاً",
     "service_pill": "خدمة",
-    "hilfe": "مساعدة"
+    "hilfe": "مساعدة",
+    "services_repair": "إصلاح اللوحات الإعلانية",
+    "services_led": "الإعلانات المضيئة وتحديث LED",
+    "services_audit": "التدقيق والتشخيص",
+    "services_installation": "التركيب والفك",
+    "services_branding": "الطباعة والهوية"
   },
   "Footer": {
     "copyright": "© 2024 PixelRing Technical Atelier. جميع الحقوق محفوظة.",

@@ -23,7 +23,12 @@
     "support": "Поддержка",
     "book": "Заказать ремонт",
     "service_pill": "СЕРВИС",
-    "hilfe": "Помощь"
+    "hilfe": "Помощь",
+    "services_repair": "Ремонт рекламных конструкций",
+    "services_led": "Световая реклама и LED-модернизация",
+    "services_audit": "Аудит и диагностика",
+    "services_installation": "Монтаж и демонтаж",
+    "services_branding": "Печать и брендинг"
   },
   "Footer": {
     "copyright": "© 2024 PixelRing Technical Atelier. Все права защищены.",

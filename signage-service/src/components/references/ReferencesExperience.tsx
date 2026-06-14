@@ -614,7 +614,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
 
   return (
     <main className="flex-grow bg-white text-[#101418]">
-      <section className="relative h-[520px] w-full overflow-hidden bg-[#0E1A2B] sm:h-[500px] lg:h-[560px]">
+      <section className="relative h-[520px] w-full overflow-hidden bg-[#0E1A2B] sm:h-[440px] lg:h-[480px]">
         <HeroBreadcrumbs items={getReferencesBreadcrumbs(content.locale, content.badge)} />
         <AnimatePresence initial={false}>
           <motion.div
