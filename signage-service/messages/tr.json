@@ -23,7 +23,12 @@
     "support": "Destek",
     "book": "Onarım Rezerve Et",
     "service_pill": "SERVİS",
-    "hilfe": "Yardım"
+    "hilfe": "Yardım",
+    "services_repair": "Reklam sistemi onarımı",
+    "services_led": "Işıklı reklam ve LED modernizasyonu",
+    "services_audit": "Denetim ve teşhis",
+    "services_installation": "Montaj ve demontaj",
+    "services_branding": "Baskı ürünleri ve markalama"
   },
   "Footer": {
     "copyright": "© 2024 PixelRing Technical Atelier. Tüm hakları saklıdır.",

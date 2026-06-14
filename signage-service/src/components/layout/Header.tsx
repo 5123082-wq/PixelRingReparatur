@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/i18n/routing';
 import Logo from '../common/Logo';
 import LanguageSwitcher from '../common/LanguageSwitcher';
@@ -36,7 +36,58 @@ type NavLink = {
   href: string;
 };
 
+type NavMenuLink = {
+  label: string;
+  href: string;
+};
+
+type HeaderLocale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
+
 const LOCALE_PREFIX_REGEX = /^\/(de|en|ru|tr|pl|ar)(?=\/|$)/;
+const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
+  de: {
+    services_repair: 'Werbeanlagen-Reparatur',
+    services_led: 'Lichtwerbung & LED-Modernisierung',
+    services_audit: 'Audit & Diagnose',
+    services_installation: 'Montage & Demontage',
+    services_branding: 'Druckprodukte & Branding',
+  },
+  en: {
+    services_repair: 'Signage repair',
+    services_led: 'Illuminated signage & LED modernization',
+    services_audit: 'Audit & diagnostics',
+    services_installation: 'Installation & dismantling',
+    services_branding: 'Print products & branding',
+  },
+  ru: {
+    services_repair: 'Ремонт рекламных конструкций',
+    services_led: 'Световая реклама и LED-модернизация',
+    services_audit: 'Аудит и диагностика',
+    services_installation: 'Монтаж и демонтаж',
+    services_branding: 'Печать и брендинг',
+  },
+  tr: {
+    services_repair: 'Reklam sistemi onarımı',
+    services_led: 'Işıklı reklam ve LED modernizasyonu',
+    services_audit: 'Denetim ve teşhis',
+    services_installation: 'Montaj ve demontaj',
+    services_branding: 'Baskı ürünleri ve markalama',
+  },
+  pl: {
+    services_repair: 'Naprawa reklam',
+    services_led: 'Reklama świetlna i modernizacja LED',
+    services_audit: 'Audyt i diagnostyka',
+    services_installation: 'Montaż i demontaż',
+    services_branding: 'Druk i branding',
+  },
+  ar: {
+    services_repair: 'إصلاح اللوحات الإعلانية',
+    services_led: 'الإعلانات المضيئة وتحديث LED',
+    services_audit: 'التدقيق والتشخيص',
+    services_installation: 'التركيب والفك',
+    services_branding: 'الطباعة والهوية',
+  },
+};
 
 function normalizeNavPath(path: string): string {
   const pathWithoutQuery = path.split(/[?#]/)[0] || '/';
@@ -58,17 +109,34 @@ function isActiveNavPath(pathname: string, href: string): boolean {
   return currentPath === targetPath || currentPath.startsWith(`${targetPath}/`);
 }
 
-function DesktopNavLink({ link, isActive }: { link: NavLink; isActive: boolean }) {
-  return (
-    <Link
-      href={link.href}
-      aria-current={isActive ? 'page' : undefined}
-      className={`relative whitespace-nowrap rounded-full px-3.5 py-1.5 text-[15px] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]/40 ${
-        isActive
-          ? 'font-semibold text-[#0E1A2B]'
-          : 'font-medium text-[#72665D] hover:text-[#B8643E] hover:bg-white/24 focus-visible:bg-white/24'
-      }`}
-    >
+function isExactNavPath(pathname: string, href: string): boolean {
+  if (!href.startsWith('/')) {
+    return false;
+  }
+
+  return normalizeNavPath(pathname) === normalizeNavPath(href);
+}
+
+function DesktopNavLink({
+  link,
+  isActive,
+  pathname,
+  menuLinks,
+}: {
+  link: NavLink;
+  isActive: boolean;
+  pathname: string;
+  menuLinks?: NavMenuLink[];
+}) {
+  const hasMenu = Boolean(menuLinks?.length);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const triggerClassName = `relative inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[15px] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]/40 ${
+    isActive
+      ? 'font-semibold text-[#0E1A2B]'
+      : 'font-medium text-[#72665D] hover:bg-white/24 hover:text-[#B8643E] focus-visible:bg-white/24'
+  }`;
+  const triggerContent = (
+    <>
       {isActive && (
         <motion.span
           layoutId="active-nav-pill"
@@ -77,7 +145,101 @@ function DesktopNavLink({ link, isActive }: { link: NavLink; isActive: boolean }
         />
       )}
       <span className="relative z-10">{link.name}</span>
-    </Link>
+      {hasMenu && (
+        <svg
+          className={`relative z-10 h-3.5 w-3.5 text-[#8C7A6E] transition-transform duration-200 ${
+            isMenuOpen ? 'rotate-180' : ''
+          }`}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.3"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+        </svg>
+      )}
+    </>
+  );
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setIsMenuOpen(true)}
+      onMouseLeave={(event) => {
+        if (!event.currentTarget.contains(document.activeElement)) {
+          setIsMenuOpen(false);
+        }
+      }}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setIsMenuOpen(false);
+        }
+      }}
+    >
+      {hasMenu ? (
+        <Link
+          href={link.href}
+          aria-current={isActive ? 'page' : undefined}
+          aria-haspopup="menu"
+          onFocus={() => setIsMenuOpen(true)}
+          className={triggerClassName}
+        >
+          {triggerContent}
+        </Link>
+      ) : (
+        <Link
+          href={link.href}
+          aria-current={isActive ? 'page' : undefined}
+          className={triggerClassName}
+        >
+          {triggerContent}
+        </Link>
+      )}
+
+      {hasMenu && (
+        <div
+          role="menu"
+          aria-label={link.name}
+          className={`absolute left-1/2 top-full z-[70] mt-3 w-[330px] -translate-x-1/2 rounded-[18px] border border-[#E7DDD3] bg-[#FFFDF9]/95 p-2 shadow-[0_18px_44px_rgba(14,26,43,0.14)] backdrop-blur-xl transition-all duration-200 ${
+            isMenuOpen
+              ? 'visible translate-y-0 opacity-100'
+              : 'invisible translate-y-2 opacity-0 pointer-events-none'
+          }`}
+        >
+          <div className="absolute -top-3 left-0 h-3 w-full" />
+          {menuLinks!.map((item) => {
+            const isMenuItemActive = isExactNavPath(pathname, item.href);
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                role="menuitem"
+                aria-current={isMenuItemActive ? 'page' : undefined}
+                className={`flex items-center justify-between gap-3 rounded-[12px] px-3.5 py-3 text-[14px] font-semibold transition-colors ${
+                  isMenuItemActive
+                    ? 'bg-[#F3E9DF] text-[#0E1A2B]'
+                    : 'text-[#6F625A] hover:bg-[#EEF3FB] hover:text-[#B8643E] focus-visible:bg-[#EEF3FB] focus-visible:text-[#B8643E] focus-visible:outline-none'
+                }`}
+              >
+                <span>{item.label}</span>
+                <svg
+                  className="h-3.5 w-3.5 shrink-0 text-[#B8643E]"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -89,12 +251,14 @@ const Header = ({
   portalAccess?: PortalAccess;
 }) => {
   const t = useTranslations('Nav');
+  const locale = useLocale();
   const pathname = usePathname();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDesktopNavOpen, setIsDesktopNavOpen] = useState(false);
+  const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
 
   const fallbackNavLinks = [
     { name: t('services'), href: '/leistungen' },
@@ -137,6 +301,16 @@ const Header = ({
     return link;
   });
   const activeNavHref = navLinks.find((link) => isActiveNavPath(pathname, link.href))?.href ?? null;
+  const fallbackServiceMenuLabels =
+    SERVICES_MENU_LABELS[locale as HeaderLocale] ?? SERVICES_MENU_LABELS.de;
+  const getNavLabel = (key: string) => (t.has(key) ? t(key) : fallbackServiceMenuLabels[key]);
+  const servicesMenuLinks: NavMenuLink[] = [
+    { label: getNavLabel('services_repair'), href: '/leistungen/werbeanlagen-reparatur' },
+    { label: getNavLabel('services_led'), href: '/leistungen/lichtwerbung-led-modernisierung' },
+    { label: getNavLabel('services_audit'), href: '/leistungen/werbeanlagen-audit-diagnose' },
+    { label: getNavLabel('services_installation'), href: '/leistungen/montage-demontage-werbeanlagen' },
+    { label: getNavLabel('services_branding'), href: '/leistungen/druckprodukte-branding-werbematerialien' },
+  ];
   const servicePill = content?.servicePill || '';
   const hasCmsAccountStatusLabel =
     content?.accountStatusLabel && !content.accountStatusLabel.startsWith('Nav.');
@@ -169,6 +343,7 @@ const Header = ({
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
         setIsMenuOpen(false);
+        setIsMobileServicesOpen(false);
       }
     };
     window.addEventListener('resize', handleResize);
@@ -239,7 +414,13 @@ const Header = ({
               )}
 
               <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                onClick={() => {
+                  const nextIsMenuOpen = !isMenuOpen;
+                  setIsMenuOpen(nextIsMenuOpen);
+                  if (nextIsMenuOpen) {
+                    setIsMobileServicesOpen(activeNavHref === '/leistungen');
+                  }
+                }}
                 className="lg:hidden p-2 text-[#72665D] hover:text-[#C86E4A] transition-colors"
                 aria-label="Toggle menu"
               >
@@ -264,7 +445,7 @@ const Header = ({
                 opacity: isScrolled ? 0 : 1
               }}
               transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="overflow-hidden"
+              className={`relative z-30 ${isScrolled ? 'pointer-events-none overflow-hidden' : 'overflow-visible'}`}
             >
               <nav className="flex items-center justify-center gap-5 border-t border-[#E7DDD3]/70 py-1.5">
                 {navLinks.map((link) => (
@@ -272,6 +453,8 @@ const Header = ({
                     key={link.name}
                     link={link}
                     isActive={activeNavHref === link.href}
+                    pathname={pathname}
+                    menuLinks={link.href === '/leistungen' ? servicesMenuLinks : undefined}
                   />
                 ))}
               </nav>
@@ -298,7 +481,7 @@ const Header = ({
                         height: isDesktopNavOpen ? 56 : 24,
                       }}
                       transition={{ type: 'spring', stiffness: 400, damping: 35 }}
-                      className={`relative flex items-center justify-center overflow-hidden border border-t-0 rounded-b-[20px] outline-none backdrop-blur-md transition-[background-color,border-color,box-shadow] duration-200 group ${
+                      className={`relative flex items-center justify-center overflow-visible border border-t-0 rounded-b-[20px] outline-none backdrop-blur-md transition-[background-color,border-color,box-shadow] duration-200 group ${
                         isDesktopNavOpen
                           ? 'border-[#D9C7BA] bg-[#FFFDF9]/95 shadow-xl'
                           : 'border-[#D9C7BA]/60 bg-white/75 shadow-md'
@@ -339,6 +522,8 @@ const Header = ({
                                 key={link.name}
                                 link={link}
                                 isActive={activeNavHref === link.href}
+                                pathname={pathname}
+                                menuLinks={link.href === '/leistungen' ? servicesMenuLinks : undefined}
                               />
                             ))}
                           </motion.nav>
@@ -359,6 +544,86 @@ const Header = ({
             <div className="flex flex-col gap-2">
               {navLinks.map((link) => {
                 const isActive = activeNavHref === link.href;
+                const isServices = link.href === '/leistungen';
+
+                if (isServices) {
+                  return (
+                    <div key={link.name} className="rounded-2xl">
+                      <div
+                        className={`flex w-full items-center justify-between rounded-2xl border px-4 py-4 text-left text-[24px] font-bold transition-colors ${
+                          isActive
+                            ? 'border-[#E7DDD3] bg-[#F7F1E8] text-[#0E1A2B] shadow-[0_10px_26px_rgba(14,26,43,0.07)]'
+                            : 'border-transparent text-[#72665D] hover:bg-[#F7F1E8]/45 hover:text-[#B8643E]'
+                          }`}
+                      >
+                        <Link
+                          href={link.href}
+                          aria-current={isActive ? 'page' : undefined}
+                          onClick={() => setIsMenuOpen(false)}
+                          className="min-w-0 flex-1"
+                        >
+                          {link.name}
+                        </Link>
+                        <button
+                          type="button"
+                          aria-label={`${link.name} Untermenü`}
+                          aria-expanded={isMobileServicesOpen}
+                          onClick={() => setIsMobileServicesOpen((isOpen) => !isOpen)}
+                          className="-mr-2 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#B8643E] transition-colors hover:bg-white/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]/40"
+                        >
+                          <svg
+                            className={`h-5 w-5 transition-transform duration-200 ${
+                              isMobileServicesOpen ? 'rotate-180' : ''
+                            }`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                          </svg>
+                        </button>
+                      </div>
+
+                      <AnimatePresence initial={false}>
+                        {isMobileServicesOpen && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2, ease: 'easeInOut' }}
+                            className="overflow-hidden"
+                          >
+                            <div className="mt-2 grid gap-1 rounded-2xl border border-[#E7DDD3]/80 bg-[#FFFDF9] p-2">
+                              {servicesMenuLinks.map((item) => {
+                                const isMenuItemActive = isExactNavPath(pathname, item.href);
+
+                                return (
+                                  <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    aria-current={isMenuItemActive ? 'page' : undefined}
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className={`flex items-center justify-between rounded-xl px-3.5 py-3 text-[16px] font-semibold transition-colors ${
+                                      isMenuItemActive
+                                        ? 'bg-[#F3E9DF] text-[#0E1A2B]'
+                                        : 'text-[#6F625A] hover:bg-[#EEF3FB] hover:text-[#B8643E]'
+                                    }`}
+                                  >
+                                    <span>{item.label}</span>
+                                    <svg className="h-4 w-4 text-[#B8643E]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                    </svg>
+                                  </Link>
+                                );
+                              })}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  );
+                }
 
                 return (
                   <Link

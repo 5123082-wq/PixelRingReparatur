@@ -112,8 +112,8 @@ const CONTENT: Record<Locale, LandingPageContent> = {
     heroSubline: 'Wenn eine Werbeanlage dunkel bleibt, flackert, Folie sich löst oder eine Befestigung unsicher wirkt, senden Sie einfach ein Foto. PixelRing ordnet den sichtbaren Defekt, Zugang und den sicheren nächsten Schritt ein.',
     heroImage: '/images/leistungen/hero-repair.png',
     heroPrimaryCta: 'Foto der Werbeanlage senden',
-    heroSecondaryCta: 'Ähnliche Fälle ansehen',
-    symptomsTitle: 'Was ist von außen sichtbar?',
+    heroSecondaryCta: 'Reparaturergebnisse ansehen',
+    symptomsTitle: 'Welcher Fall passt zu Ihrer Werbeanlage?',
     closeLabel: 'Schließen',
     formTitle: 'Reparatur anfragen',
     finalHeadline: 'Unsicher, ob Ihre Störung behoben werden kann?',
@@ -191,8 +191,8 @@ const CONTENT: Record<Locale, LandingPageContent> = {
     heroSubline: 'Если вывеска не горит, мерцает, отклеилась пленка или ослабло крепление, просто отправьте фото. PixelRing оценит видимый дефект, доступ и безопасный следующий шаг.',
     heroImage: '/images/leistungen/hero-repair.png',
     heroPrimaryCta: 'Отправить фото вывески',
-    heroSecondaryCta: 'Посмотреть похожие случаи',
-    symptomsTitle: 'Что видно снаружи?',
+    heroSecondaryCta: 'Посмотреть результат после ремонта',
+    symptomsTitle: 'Какой случай похож на ваш?',
     closeLabel: 'Закрыть',
     formTitle: 'Запросить ремонт',
     finalHeadline: 'Не уверены, подлежит ли вывеска ремонту?',
@@ -270,8 +270,8 @@ const CONTENT: Record<Locale, LandingPageContent> = {
     heroSubline: 'If a sign stays dark, flickers, film is peeling or a fixing looks unsafe, just send a photo. PixelRing classifies the visible defect, access and the safe next step.',
     heroImage: '/images/leistungen/hero-repair.png',
     heroPrimaryCta: 'Send a photo of the sign',
-    heroSecondaryCta: 'View similar cases',
-    symptomsTitle: 'What is visible from outside?',
+    heroSecondaryCta: 'View repair results',
+    symptomsTitle: 'Which case matches your sign?',
     closeLabel: 'Close',
     formTitle: 'Request repair',
     finalHeadline: 'Unsure if your defect can be repaired?',
@@ -349,8 +349,8 @@ const CONTENT: Record<Locale, LandingPageContent> = {
     heroSubline: 'Tabela karanlık kalıyor, titriyor, folyo kalkıyor veya bağlantı güvenli görünmüyorsa fotoğraf göndermeniz yeterlidir. PixelRing görünen arızayı, erişimi ve güvenli sonraki adımı sınıflandırır.',
     heroImage: '/images/leistungen/hero-repair.png',
     heroPrimaryCta: 'Tabela fotoğrafı gönder',
-    heroSecondaryCta: 'Benzer durumları gör',
-    symptomsTitle: 'Dışarıdan ne görünüyor?',
+    heroSecondaryCta: 'Onarım sonuçlarını gör',
+    symptomsTitle: 'Tabelanız hangi duruma benziyor?',
     closeLabel: 'Kapat',
     formTitle: 'Onarım talep et',
     finalHeadline: 'Arızanızın giderilip giderilemeyeceğinden emin değil misiniz?',
@@ -428,8 +428,8 @@ const CONTENT: Record<Locale, LandingPageContent> = {
     heroSubline: 'Jeśli szyld nie świeci, miga, folia odchodzi albo mocowanie wygląda niepewnie, wystarczy zdjęcie. PixelRing oceni widoczny defekt, dostęp i bezpieczny następny krok.',
     heroImage: '/images/leistungen/hero-repair.png',
     heroPrimaryCta: 'Wyślij zdjęcie szyldu',
-    heroSecondaryCta: 'Zobacz podobne przypadki',
-    symptomsTitle: 'Co widać z zewnątrz?',
+    heroSecondaryCta: 'Zobacz efekty naprawy',
+    symptomsTitle: 'Który przypadek pasuje do Twojej reklamy?',
     closeLabel: 'Zamknij',
     formTitle: 'Zgłoś naprawę',
     finalHeadline: 'Nie masz pewności, czy usterka może zostać naprawiona?',
@@ -507,8 +507,8 @@ const CONTENT: Record<Locale, LandingPageContent> = {
     heroSubline: 'إذا كانت اللوحة مظلمة أو تومض أو يتقشر الفيلم أو يبدو التثبيت غير آمن، أرسل صورة فقط. تصنف PixelRing العطل الظاهر والوصول والخطوة الآمنة التالية.',
     heroImage: '/images/leistungen/hero-repair.png',
     heroPrimaryCta: 'إرسال صورة اللوحة',
-    heroSecondaryCta: 'عرض حالات مشابهة',
-    symptomsTitle: 'ما الذي يظهر من الخارج؟',
+    heroSecondaryCta: 'عرض نتائج الإصلاح',
+    symptomsTitle: 'أي حالة تشبه لوحتك؟',
     closeLabel: 'إغلاق',
     formTitle: 'طلب إصلاح',
     finalHeadline: 'هل أنت غير متأكد مما إذا كان من الممكن إصلاح العطل؟',
@@ -1623,10 +1623,10 @@ function RepairProblemLinksSection({ content }: { content: RepairProblemLinksCon
   return (
     <section className="border-t border-[#E7DDD3] bg-[#F7F1E8] px-4 py-10 sm:px-6 sm:py-12">
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:items-end">
-          <div className="text-start">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(360px,0.88fr)] lg:items-end">
+          <div className="max-w-4xl text-start">
             <SectionEyebrow className="mb-3">{content.eyebrow}</SectionEyebrow>
-            <h2 className="max-w-4xl text-3xl font-extrabold leading-[1.08] tracking-[0] text-[#0E1A2B] sm:text-5xl">
+            <h2 className="text-3xl font-extrabold leading-[1.08] tracking-[0] text-[#0E1A2B] sm:text-5xl">
               {content.title}
             </h2>
           </div>

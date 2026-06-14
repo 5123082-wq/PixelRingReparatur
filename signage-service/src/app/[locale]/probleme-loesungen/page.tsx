@@ -1310,7 +1310,7 @@ export default async function ProblemeLoesungenPage({
       <main>
         {content.heroEnabled !== false && (
           <>
-            <section className="relative h-[520px] overflow-hidden bg-[#0E1A2B] text-white sm:h-[500px] lg:h-[560px]">
+            <section className="relative h-[520px] overflow-hidden bg-[#0E1A2B] text-white sm:h-[440px] lg:h-[480px]">
               <CmsImage
                 src="/images/references/circuit-repair.webp"
                 alt={content.heroTitle}

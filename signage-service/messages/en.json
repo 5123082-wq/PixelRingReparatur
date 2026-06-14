@@ -23,7 +23,12 @@
     "support": "Support",
     "book": "Book Repair",
     "service_pill": "SERVICE",
-    "hilfe": "Help"
+    "hilfe": "Help",
+    "services_repair": "Signage repair",
+    "services_led": "Illuminated signage & LED modernization",
+    "services_audit": "Audit & diagnostics",
+    "services_installation": "Installation & dismantling",
+    "services_branding": "Print products & branding"
   },
   "Footer": {
     "copyright": "© 2024 PixelRing Technical Atelier. All rights reserved.",

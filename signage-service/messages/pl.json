@@ -23,7 +23,12 @@
     "support": "Pomoc",
     "book": "Zarezerwuj naprawę",
     "service_pill": "SERWIS",
-    "hilfe": "Pomoc"
+    "hilfe": "Pomoc",
+    "services_repair": "Naprawa reklam",
+    "services_led": "Reklama świetlna i modernizacja LED",
+    "services_audit": "Audyt i diagnostyka",
+    "services_installation": "Montaż i demontaż",
+    "services_branding": "Druk i branding"
   },
   "Footer": {
     "copyright": "© 2024 PixelRing Technical Atelier. Wszelkie prawa zastrzeżone.",

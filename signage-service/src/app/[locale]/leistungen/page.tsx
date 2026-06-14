@@ -9,7 +9,6 @@ import LeistungenHero from '@/components/leistungen/LeistungenHero';
 import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestButton';
 import LeistungenFooterCTA from '@/components/sections/LeistungenFooterCTA';
 import { getGlobalPageCmsContent, getLeistungenPageCmsContent } from '@/lib/cms/pages';
-import type { LeistungenHeroSlideCmsContent } from '@/lib/cms/pages';
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
 
@@ -157,23 +156,34 @@ const CONTENT: Record<Locale, LeistungenContent> = {
     heroSlides: [
       {
         id: 'repair',
-        title: 'Reparatur & Diagnose vom Profi',
-        description: 'Ihr Partner für Werbeanlagen in Berlin & Brandenburg. Fachliche Prüfung und Umsetzung durch Spezialisten.',
-        image: '/images/leistungen/hero-repair.png',
+        title: 'Reparatur & Wartung von Außenwerbung',
+        description: 'Professionelle Instandsetzung von Werbeanlagen, Leuchtwerbung und Außenwerbung.',
+        image: '/images/leistungen/werbeanlagen-reparatur-led-module-pruefung.png',
+        imageAlt: 'LED-Module in einem geöffneten Leuchtkasten werden mit einem Multimeter geprüft',
         cta: 'Service starten',
       },
       {
         id: 'led',
         title: 'Moderne Lichtwerbung & LED-Service',
         description: 'Lichtwerbung, die auffaellt. Wir reparieren LED-Module, Netzteile und Neonröhren fachgerecht.',
-        image: '/images/leistungen/hero-led-natural.png',
+        image: '/images/leistungen/lichtwerbung-led-modernisierung-lichtkasten-led-module.webp',
+        imageAlt: 'Geöffneter Lichtkasten mit installierten LED-Modulen während der LED-Modernisierung einer Lichtwerbung auf einem Gebäudedach',
         cta: 'Service starten',
       },
       {
-        id: 'maintenance',
-        title: 'Wartung & Sorgenfreier Betrieb',
-        description: 'Serviceverträge für Unternehmen mit einem oder mehreren Standorten. Geplante Wartung statt Notfall.',
-        image: '/images/leistungen/hero-maintenance.png',
+        id: 'audit',
+        title: 'Inspektion, Audit & Diagnose',
+        description: 'Zustand, Ursache, Umfang und sichtbare Risiken werden strukturiert erfasst.',
+        image: '/images/leistungen/werbeanlagen-audit-diagnose-ladenfassade-vor-ort-pruefung.webp',
+        imageAlt: 'Techniker prüft eine Werbeanlage an einer Ladenfassade während Inspektion und Diagnose vor Ort',
+        cta: 'Diagnose anfragen',
+      },
+      {
+        id: 'montage',
+        title: 'Montage, Demontage & Versetzung',
+        description: 'Koordinierte Umsetzung für neue, bestehende oder zu versetzende Werbeanlagen.',
+        image: '/images/leistungen/werbeanlagen-montage-demontage-sportzentrum-fassade.webp',
+        imageAlt: 'Techniker montieren einen Leuchtkasten an einer Geschaeftsfassade mit Arbeitsplattform',
         cta: 'Service anfragen',
       },
       {
@@ -211,7 +221,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Modernisierung von Lichtwerbung & LED-Systemen',
         description:
           'Modernisierung und Service für Lichtwerbung, LED-Module, Netzteile, Controller und Neonröhren. Alte Anlagen werden geprüft und technisch sinnvoll aktualisiert.',
-        image: '/images/about/service_deep_2.png',
+        image: '/images/leistungen/lichtwerbung-led-modernisierung-lichtkasten-led-module.webp',
+        imageAlt: 'Geöffneter Lichtkasten mit installierten LED-Modulen während der LED-Modernisierung einer Lichtwerbung auf einem Gebäudedach',
         cta: 'Mehr zum LED-Service',
         details: [
           { label: 'Technik', value: 'LED-Module, Netzteile, Controller und Neon' },
@@ -225,7 +236,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Inspektion, Audit & Diagnose von Werbeanlagen',
         description:
           'Wir erfassen Zustand, Ursache, Umfang und sichtbare Risiken einer Anlage. Daraus entsteht eine nachvollziehbare Empfehlung für Reparatur, Wartung oder den nächsten Schritt.',
-        image: '/images/about/service_deep_3.png',
+        image: '/images/leistungen/werbeanlagen-audit-diagnose-ladenfassade-vor-ort-pruefung.webp',
+        imageAlt: 'Techniker prüft eine Werbeanlage an einer Ladenfassade während Inspektion und Diagnose vor Ort',
         cta: 'Mehr zur Diagnose',
         details: [
           { label: 'Aufnahme', value: 'Vor-Ort-Prüfung oder strukturierte Ferneinschätzung' },
@@ -239,7 +251,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Montage, Demontage & Versetzung von Werbeanlagen',
         description:
           'Koordination für neue, bestehende oder zu versetzende Werbeanlagen. PixelRing plant die nächsten Schritte und stimmt die benötigten Fachleute ab.',
-        image: '/images/leistungen/hero-maintenance.png',
+        image: '/images/leistungen/werbeanlagen-montage-demontage-sportzentrum-fassade.webp',
+        imageAlt: 'Techniker montieren einen Leuchtkasten an einer Geschaeftsfassade mit Arbeitsplattform',
         cta: 'Mehr zur Montage',
         details: [
           { label: 'Montage', value: 'Einbau und Befestigung neuer oder bestehender Anlagen' },
@@ -397,23 +410,34 @@ const CONTENT: Record<Locale, LeistungenContent> = {
     heroSlides: [
       {
         id: 'repair',
-        title: 'Professional Repair & Diagnostics',
-        description: 'Your partner for signage in Berlin & Brandenburg. Specialist review and execution.',
-        image: '/images/leistungen/hero-repair.png',
+        title: 'Outdoor advertising repair & maintenance',
+        description: 'Professional repair of signage, illuminated advertising and outdoor advertising systems.',
+        image: '/images/leistungen/werbeanlagen-reparatur-led-module-pruefung.png',
+        imageAlt: 'LED modules in an open illuminated sign are checked with a multimeter',
         cta: 'Start service',
       },
       {
         id: 'led',
         title: 'Modern Lighting & LED Service',
         description: 'Signage that stands out. We repair LED modules, power supplies and neon tubes professionally.',
-        image: '/images/leistungen/hero-led-natural.png',
+        image: '/images/leistungen/lichtwerbung-led-modernisierung-lichtkasten-led-module.webp',
+        imageAlt: 'Open lightbox with installed LED modules during illuminated signage modernization',
         cta: 'Start service',
       },
       {
-        id: 'maintenance',
-        title: 'Maintenance & Worry-Free Operation',
-        description: 'Service contracts for companies with one or more locations. Planned maintenance instead of emergency.',
-        image: '/images/leistungen/hero-maintenance.png',
+        id: 'audit',
+        title: 'Inspection, audit & diagnostics',
+        description: 'Condition, cause, scope and visible risks are captured in a structured way.',
+        image: '/images/leistungen/werbeanlagen-audit-diagnose-ladenfassade-vor-ort-pruefung.webp',
+        imageAlt: 'Technician inspects a storefront sign during on-site signage audit and diagnostics',
+        cta: 'Request diagnostics',
+      },
+      {
+        id: 'montage',
+        title: 'Installation, dismantling & relocation',
+        description: 'Coordinated work for new, existing or relocated signage.',
+        image: '/images/leistungen/werbeanlagen-montage-demontage-sportzentrum-fassade.webp',
+        imageAlt: 'Technicians install an illuminated sign box on a storefront facade from a work platform',
         cta: 'Request service',
       },
       {
@@ -451,7 +475,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Illuminated signage modernization & LED systems',
         description:
           'Modernization and service for illuminated signage, LED modules, power supplies, controllers and neon tubes. Older systems are checked and updated where it makes technical sense.',
-        image: '/images/about/service_deep_2.png',
+        image: '/images/leistungen/lichtwerbung-led-modernisierung-lichtkasten-led-module.webp',
+        imageAlt: 'Geöffneter Lichtkasten mit installierten LED-Modulen während der LED-Modernisierung einer Lichtwerbung auf einem Gebäudedach',
         cta: 'LED service details',
         details: [
           { label: 'Technology', value: 'LED modules, power supplies, controllers and neon' },
@@ -465,7 +490,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Inspection, audit & diagnostics for signage',
         description:
           'We record condition, cause, scope and visible risks. The result is a clear recommendation for repair, maintenance or the next sensible step.',
-        image: '/images/about/service_deep_3.png',
+        image: '/images/leistungen/werbeanlagen-audit-diagnose-ladenfassade-vor-ort-pruefung.webp',
+        imageAlt: 'Technician inspects a storefront sign during on-site signage audit and diagnostics',
         cta: 'Diagnostics details',
         details: [
           { label: 'Intake', value: 'On-site inspection or structured remote assessment' },
@@ -479,7 +505,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Installation, dismantling & relocation of signage',
         description:
           'Coordination for new, existing or relocated signage. PixelRing plans the next steps and coordinates the required specialists.',
-        image: '/images/leistungen/hero-maintenance.png',
+        image: '/images/leistungen/werbeanlagen-montage-demontage-sportzentrum-fassade.webp',
+        imageAlt: 'Technicians install an illuminated sign box on a storefront facade from a work platform',
         cta: 'Installation details',
         details: [
           { label: 'Installation', value: 'Mounting and fixing new or existing systems' },
@@ -573,23 +600,34 @@ const CONTENT: Record<Locale, LeistungenContent> = {
     heroSlides: [
       {
         id: 'repair',
-        title: 'Профессиональный ремонт и диагностика',
-        description: 'Ваш партнер по рекламным конструкциям в Берлине и Бранденбурге. Проверка и выполнение специалистами.',
-        image: '/images/leistungen/hero-repair.png',
+        title: 'Ремонт и обслуживание наружной рекламы',
+        description: 'Профессиональное восстановление вывесок, световой рекламы и наружных рекламных конструкций.',
+        image: '/images/leistungen/werbeanlagen-reparatur-led-module-pruefung.png',
+        imageAlt: 'Проверка LED-модулей в открытом световом коробе мультиметром',
         cta: 'Запустить сервис',
       },
       {
         id: 'led',
         title: 'Современная световая реклама и LED-сервис',
         description: 'Реклама, которую замечают. Профессиональный ремонт LED-модулей, блоков питания и неона.',
-        image: '/images/leistungen/hero-led-natural.png',
+        image: '/images/leistungen/lichtwerbung-led-modernisierung-lichtkasten-led-module.webp',
+        imageAlt: 'Открытый световой короб с LED-модулями во время модернизации световой рекламы',
         cta: 'Запустить сервис',
       },
       {
-        id: 'maintenance',
-        title: 'Обслуживание и работа без забот',
-        description: 'Сервисные договоры для компаний с одним или несколькими филиалами. Плановое обслуживание вместо аварий.',
-        image: '/images/leistungen/hero-maintenance.png',
+        id: 'audit',
+        title: 'Инспекция, аудит и диагностика',
+        description: 'Фиксируем состояние, причину, объем задачи и видимые риски.',
+        image: '/images/leistungen/werbeanlagen-audit-diagnose-ladenfassade-vor-ort-pruefung.webp',
+        imageAlt: 'Специалист проверяет вывеску на фасаде магазина во время выездной инспекции и диагностики',
+        cta: 'Запросить диагностику',
+      },
+      {
+        id: 'montage',
+        title: 'Монтаж, демонтаж и перенос',
+        description: 'Координация работ для новых, существующих или переносимых рекламных конструкций.',
+        image: '/images/leistungen/werbeanlagen-montage-demontage-sportzentrum-fassade.webp',
+        imageAlt: 'Специалисты монтируют световой короб на фасаде магазина с рабочей платформы',
         cta: 'Запросить сервис',
       },
       {
@@ -627,7 +665,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Модернизация световой рекламы и LED-систем',
         description:
           'Модернизация и сервис световых вывесок, LED-модулей, блоков питания, контроллеров и неона. Старые системы проверяются и технически разумно обновляются.',
-        image: '/images/about/service_deep_2.png',
+        image: '/images/leistungen/lichtwerbung-led-modernisierung-lichtkasten-led-module.webp',
+        imageAlt: 'Geöffneter Lichtkasten mit installierten LED-Modulen während der LED-Modernisierung einer Lichtwerbung auf einem Gebäudedach',
         eyebrow: 'LED-сервис',
         cta: 'Подробнее о LED-сервисе',
         details: [
@@ -642,7 +681,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Инспекция, аудит и диагностика рекламных установок',
         description:
           'Фиксируем состояние, причину, объем задачи и видимые риски. По итогам даем понятную рекомендацию по ремонту, обслуживанию или следующему разумному шагу.',
-        image: '/images/about/service_deep_3.png',
+        image: '/images/leistungen/werbeanlagen-audit-diagnose-ladenfassade-vor-ort-pruefung.webp',
+        imageAlt: 'Специалист проверяет вывеску на фасаде магазина во время выездной инспекции и диагностики',
         eyebrow: 'Диагностика',
         cta: 'Подробнее о диагностике',
         details: [
@@ -657,7 +697,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Монтаж, демонтаж и перенос рекламных конструкций',
         description:
           'Координация работ для новых, существующих или переносимых рекламных конструкций. PixelRing планирует следующие шаги и согласует нужных специалистов.',
-        image: '/images/leistungen/hero-maintenance.png',
+        image: '/images/leistungen/werbeanlagen-montage-demontage-sportzentrum-fassade.webp',
+        imageAlt: 'Специалисты монтируют световой короб на фасаде магазина с рабочей платформы',
         eyebrow: 'Монтаж',
         cta: 'Подробнее о монтаже',
         details: [
@@ -753,23 +794,34 @@ const CONTENT: Record<Locale, LeistungenContent> = {
     heroSlides: [
       {
         id: 'repair',
-        title: 'Uzman Onarım ve Teşhis',
-        description: 'Berlin ve Brandenburg\'daki reklam sistemleri partneriniz. Uzmanlar tarafından inceleme ve uygulama.',
-        image: '/images/leistungen/hero-repair.png',
+        title: 'Dış reklam onarımı ve bakımı',
+        description: 'Tabela, ışıklı reklam ve dış reklam sistemlerinin profesyonel onarımı.',
+        image: '/images/leistungen/werbeanlagen-reparatur-led-module-pruefung.png',
+        imageAlt: 'Açık bir ışıklı tabeladaki LED modülleri multimetre ile kontrol ediliyor',
         cta: 'Servisi başlat',
       },
       {
         id: 'led',
         title: 'Modern Işıklı Reklam ve LED Servisi',
         description: 'Dikkat çeken reklamlar. LED modülleri, güç kaynakları ve neon tüplerini profesyonelce onarıyoruz.',
-        image: '/images/leistungen/hero-led-natural.png',
+        image: '/images/leistungen/lichtwerbung-led-modernisierung-lichtkasten-led-module.webp',
+        imageAlt: 'Işıklı reklam modernizasyonu sırasında LED modülleri takılmış açık ışıklı tabela',
         cta: 'Servisi başlat',
       },
       {
-        id: 'maintenance',
-        title: 'Bakım ve Sorunsuz Operasyon',
-        description: 'Bir veya birden fazla lokasyonu olan işletmeler için servis sözleşmeleri. Acil durum yerine planlı bakım.',
-        image: '/images/leistungen/hero-maintenance.png',
+        id: 'audit',
+        title: 'İnspeksiyon, denetim ve teşhis',
+        description: 'Durum, neden, kapsam ve görünür riskler yapılandırılmış şekilde kayda alınır.',
+        image: '/images/leistungen/werbeanlagen-audit-diagnose-ladenfassade-vor-ort-pruefung.webp',
+        imageAlt: 'Bir teknisyen mağaza cephesindeki tabelayı yerinde denetim ve teşhis sırasında kontrol ediyor',
+        cta: 'Teşhis iste',
+      },
+      {
+        id: 'montage',
+        title: 'Montaj, demontaj ve taşıma',
+        description: 'Yeni, mevcut veya taşınacak reklam sistemleri için koordineli uygulama.',
+        image: '/images/leistungen/werbeanlagen-montage-demontage-sportzentrum-fassade.webp',
+        imageAlt: 'Teknisyenler bir mağaza cephesine çalışma platformundan ışıklı tabela monte ediyor',
         cta: 'Servis talep et',
       },
       {
@@ -807,7 +859,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Işıklı reklam ve LED sistem modernizasyonu',
         description:
           'Işıklı tabelalar, LED modüller, güç kaynakları, kontrol cihazları ve neon için modernizasyon ve servis. Eski sistemler kontrol edilir ve teknik olarak mantıklıysa güncellenir.',
-        image: '/images/about/service_deep_2.png',
+        image: '/images/leistungen/lichtwerbung-led-modernisierung-lichtkasten-led-module.webp',
+        imageAlt: 'Geöffneter Lichtkasten mit installierten LED-Modulen während der LED-Modernisierung einer Lichtwerbung auf einem Gebäudedach',
         cta: 'LED servisi detayları',
         details: [
           { label: 'Teknik', value: 'LED modüller, güç kaynakları, kontrol cihazları ve neon' },
@@ -821,7 +874,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Reklam sistemleri için inspeksiyon, denetim ve teşhis',
         description:
           'Durumu, nedeni, kapsamı ve görünür riskleri kayda alırız. Sonuç; onarım, bakım veya sonraki mantıklı adım için anlaşılır bir öneridir.',
-        image: '/images/about/service_deep_3.png',
+        image: '/images/leistungen/werbeanlagen-audit-diagnose-ladenfassade-vor-ort-pruefung.webp',
+        imageAlt: 'Bir teknisyen mağaza cephesindeki tabelayı yerinde denetim ve teşhis sırasında kontrol ediyor',
         cta: 'Teşhis detayları',
         details: [
           { label: 'Format', value: 'Yerinde kontrol veya yapılandırılmış uzaktan değerlendirme' },
@@ -835,7 +889,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Reklam sistemlerinin montajı, demontajı ve taşınması',
         description:
           'Yeni, mevcut veya taşınacak reklam sistemleri için koordinasyon. PixelRing sonraki adımları planlar ve gerekli uzmanları koordine eder.',
-        image: '/images/leistungen/hero-maintenance.png',
+        image: '/images/leistungen/werbeanlagen-montage-demontage-sportzentrum-fassade.webp',
+        imageAlt: 'Teknisyenler bir mağaza cephesine çalışma platformundan ışıklı tabela monte ediyor',
         cta: 'Montaj detayları',
         details: [
           { label: 'Montaj', value: 'Yeni veya mevcut sistemlerin kurulumu ve sabitlenmesi' },
@@ -929,23 +984,34 @@ const CONTENT: Record<Locale, LeistungenContent> = {
     heroSlides: [
       {
         id: 'repair',
-        title: 'Profesjonalna Naprawa i Diagnostyka',
-        description: 'Twój partner w zakresie reklam w Berlinie i Brandenburgii. Ocena i wykonanie przez specjalistów.',
-        image: '/images/leistungen/hero-repair.png',
+        title: 'Naprawa i obsługa reklamy zewnętrznej',
+        description: 'Profesjonalna naprawa szyldów, reklamy świetlnej i zewnętrznych konstrukcji reklamowych.',
+        image: '/images/leistungen/werbeanlagen-reparatur-led-module-pruefung.png',
+        imageAlt: 'Moduły LED w otwartym kasetonie świetlnym sprawdzane multimetrem',
         cta: 'Rozpocznij serwis',
       },
       {
         id: 'led',
         title: 'Nowoczesna Reklama Świetlna i Serwis LED',
         description: 'Reklama, która rzuca się w oczy. Profesjonalnie naprawiamy moduły LED, zasilacze i neony.',
-        image: '/images/leistungen/hero-led-natural.png',
+        image: '/images/leistungen/lichtwerbung-led-modernisierung-lichtkasten-led-module.webp',
+        imageAlt: 'Otwarty kaseton świetlny z modułami LED podczas modernizacji reklamy świetlnej',
         cta: 'Rozpocznij serwis',
       },
       {
-        id: 'maintenance',
-        title: 'Konserwacja i Bezproblemowa Praca',
-        description: 'Umowy serwisowe dla firm z jednym lub wieloma oddziałami. Planowana konserwacja zamiast awarii.',
-        image: '/images/leistungen/hero-maintenance.png',
+        id: 'audit',
+        title: 'Inspekcja, audyt i diagnostyka',
+        description: 'Stan, przyczyna, zakres zadania i widoczne ryzyka są ujmowane w uporządkowany sposób.',
+        image: '/images/leistungen/werbeanlagen-audit-diagnose-ladenfassade-vor-ort-pruefung.webp',
+        imageAlt: 'Technik sprawdza szyld na fasadzie sklepu podczas audytu i diagnostyki na miejscu',
+        cta: 'Zgłoś diagnostykę',
+      },
+      {
+        id: 'montage',
+        title: 'Montaż, demontaż i przeniesienie',
+        description: 'Koordynacja dla nowych, istniejących lub przenoszonych reklam.',
+        image: '/images/leistungen/werbeanlagen-montage-demontage-sportzentrum-fassade.webp',
+        imageAlt: 'Technicy montuja kaseton swietlny na fasadzie sklepu z platformy roboczej',
         cta: 'Zapytaj o serwis',
       },
       {
@@ -983,7 +1049,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Modernizacja reklamy świetlnej i systemów LED',
         description:
           'Modernizacja i serwis szyldów świetlnych, modułów LED, zasilaczy, sterowników i neonów. Starsze systemy są sprawdzane i aktualizowane tam, gdzie ma to sens techniczny.',
-        image: '/images/about/service_deep_2.png',
+        image: '/images/leistungen/lichtwerbung-led-modernisierung-lichtkasten-led-module.webp',
+        imageAlt: 'Geöffneter Lichtkasten mit installierten LED-Modulen während der LED-Modernisierung einer Lichtwerbung auf einem Gebäudedach',
         cta: 'Szczegóły serwisu LED',
         details: [
           { label: 'Technika', value: 'Moduły LED, zasilacze, sterowniki i neony' },
@@ -997,7 +1064,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Inspekcja, audyt i diagnostyka instalacji reklamowych',
         description:
           'Rejestrujemy stan, przyczynę, zakres zadania i widoczne ryzyka. Wynikiem jest czytelna rekomendacja naprawy, konserwacji lub kolejnego sensownego kroku.',
-        image: '/images/about/service_deep_3.png',
+        image: '/images/leistungen/werbeanlagen-audit-diagnose-ladenfassade-vor-ort-pruefung.webp',
+        imageAlt: 'Technik sprawdza szyld na fasadzie sklepu podczas audytu i diagnostyki na miejscu',
         cta: 'Szczegóły diagnostyki',
         details: [
           { label: 'Forma', value: 'Kontrola na miejscu albo uporządkowana ocena zdalna' },
@@ -1011,7 +1079,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Montaż, demontaż i przeniesienie reklam',
         description:
           'Koordynacja prac dla nowych, istniejących lub przenoszonych instalacji reklamowych. PixelRing planuje kolejne kroki i uzgadnia potrzebnych specjalistów.',
-        image: '/images/leistungen/hero-maintenance.png',
+        image: '/images/leistungen/werbeanlagen-montage-demontage-sportzentrum-fassade.webp',
+        imageAlt: 'Technicy montuja kaseton swietlny na fasadzie sklepu z platformy roboczej',
         cta: 'Szczegóły montażu',
         details: [
           { label: 'Montaż', value: 'Instalacja i mocowanie nowych lub istniejących systemów' },
@@ -1105,23 +1174,34 @@ const CONTENT: Record<Locale, LeistungenContent> = {
     heroSlides: [
       {
         id: 'repair',
-        title: 'الإصلاح والتشخيص من قبل المحترفين',
-        description: 'شريكك في اللوحات الإعلانية في برلين وبراندنبورغ. فحص وتنفيذ من قبل متخصصين.',
-        image: '/images/leistungen/hero-repair.png',
+        title: 'إصلاح وصيانة الإعلانات الخارجية',
+        description: 'إصلاح احترافي للافتات والإعلانات المضيئة والهياكل الإعلانية الخارجية.',
+        image: '/images/leistungen/werbeanlagen-reparatur-led-module-pruefung.png',
+        imageAlt: 'فحص وحدات LED داخل صندوق إضاءة مفتوح باستخدام مقياس متعدد',
         cta: 'ابدأ الخدمة',
       },
       {
         id: 'led',
         title: 'الإعلانات المضيئة الحديثة وخدمة LED',
         description: 'إعلانات تجذب الأنظار. نقوم بإصلاح وحدات LED ومزودات الطاقة وأنابيب النيون باحترافية.',
-        image: '/images/leistungen/hero-led-natural.png',
+        image: '/images/leistungen/lichtwerbung-led-modernisierung-lichtkasten-led-module.webp',
+        imageAlt: 'صندوق اضاءة مفتوح مع وحدات LED اثناء تحديث اعلان مضيء',
         cta: 'ابدأ الخدمة',
       },
       {
-        id: 'maintenance',
-        title: 'الصيانة والتشغيل الخالي من المتاعب',
-        description: 'عقود خدمة للشركات ذات موقع واحد أو عدة مواقع. صيانة مخططة بدلاً من حالات الطوارئ.',
-        image: '/images/leistungen/hero-maintenance.png',
+        id: 'audit',
+        title: 'فحص وتدقيق وتشخيص',
+        description: 'نسجل الحالة والسبب ونطاق المهمة والمخاطر الظاهرة بشكل منظم.',
+        image: '/images/leistungen/werbeanlagen-audit-diagnose-ladenfassade-vor-ort-pruefung.webp',
+        imageAlt: 'فني يفحص لافتة على واجهة متجر أثناء التدقيق والتشخيص في الموقع',
+        cta: 'طلب التشخيص',
+      },
+      {
+        id: 'montage',
+        title: 'التركيب والفك والنقل',
+        description: 'تنفيذ منسق للوحات الجديدة أو القائمة أو المنقولة.',
+        image: '/images/leistungen/werbeanlagen-montage-demontage-sportzentrum-fassade.webp',
+        imageAlt: 'فنيون يركبون صندوق اضاءة على واجهة متجر من منصة عمل',
         cta: 'اطلب الخدمة',
       },
       {
@@ -1159,7 +1239,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'تحديث الإعلانات المضيئة وأنظمة LED',
         description:
           'تحديث وخدمة للافتات المضيئة ووحدات LED ومزودات الطاقة ووحدات التحكم والنيون. يتم فحص الأنظمة القديمة وتحديثها عندما يكون ذلك منطقياً تقنياً.',
-        image: '/images/about/service_deep_2.png',
+        image: '/images/leistungen/lichtwerbung-led-modernisierung-lichtkasten-led-module.webp',
+        imageAlt: 'Geöffneter Lichtkasten mit installierten LED-Modulen während der LED-Modernisierung einer Lichtwerbung auf einem Gebäudedach',
         cta: 'تفاصيل خدمة LED',
         details: [
           { label: 'التقنية', value: 'وحدات LED ومزودات الطاقة ووحدات التحكم والنيون' },
@@ -1173,7 +1254,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'فحص وتدقيق وتشخيص المنشآت الإعلانية',
         description:
           'نسجل الحالة والسبب ونطاق المهمة والمخاطر الظاهرة. والنتيجة توصية واضحة للإصلاح أو الصيانة أو الخطوة المنطقية التالية.',
-        image: '/images/about/service_deep_3.png',
+        image: '/images/leistungen/werbeanlagen-audit-diagnose-ladenfassade-vor-ort-pruefung.webp',
+        imageAlt: 'فني يفحص لافتة على واجهة متجر أثناء التدقيق والتشخيص في الموقع',
         cta: 'تفاصيل التشخيص',
         details: [
           { label: 'الشكل', value: 'فحص في الموقع أو تقييم منظم عن بعد' },
@@ -1187,7 +1269,8 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'تركيب وفك ونقل الهياكل الإعلانية',
         description:
           'تنسيق الأعمال للمنشآت الإعلانية الجديدة أو القائمة أو المنقولة. تخطط PixelRing للخطوات التالية وتنسق المتخصصين المطلوبين.',
-        image: '/images/leistungen/hero-maintenance.png',
+        image: '/images/leistungen/werbeanlagen-montage-demontage-sportzentrum-fassade.webp',
+        imageAlt: 'فنيون يركبون صندوق اضاءة على واجهة متجر من منصة عمل',
         cta: 'تفاصيل التركيب',
         details: [
           { label: 'التركيب', value: 'تركيب وتثبيت الأنظمة الجديدة أو القائمة' },
@@ -1298,25 +1381,6 @@ function getLeistungenBreadcrumbs(locale: Locale) {
   ];
 }
 
-function applyCmsHeroSlide(
-  fallback: HeroSlide,
-  cmsSlide: LeistungenHeroSlideCmsContent | undefined
-): HeroSlide {
-  if (!cmsSlide) {
-    return fallback;
-  }
-
-  return {
-    id: cmsSlide.id ?? fallback.id,
-    title: cmsSlide.title ?? fallback.title,
-    description: cmsSlide.description ?? fallback.description,
-    image: cmsSlide.image ?? fallback.image,
-    imageAlt: cmsSlide.imageAlt ?? (cmsSlide.title ?? fallback.title),
-    fallbackSrc: cmsSlide.fallbackSrc,
-    cta: cmsSlide.cta ?? fallback.cta,
-  };
-}
-
 function mergeCmsContent(
   fallback: LeistungenContent,
   cmsContent: Awaited<ReturnType<typeof getLeistungenPageCmsContent>>
@@ -1325,18 +1389,9 @@ function mergeCmsContent(
     return fallback;
   }
 
-  const heroSlides = cmsContent.heroSlides?.length
-    ? fallback.heroSlides.map((slide, index) => {
-        const matchingSlide = cmsContent.heroSlides?.find((item) => item.id === slide.id);
-        const indexedSlide = cmsContent.heroSlides?.[index];
-        const cmsSlide = matchingSlide ?? (indexedSlide?.id ? undefined : indexedSlide);
-        return applyCmsHeroSlide(slide, cmsSlide);
-      })
-    : fallback.heroSlides;
-
   return {
     ...fallback,
-    heroSlides,
+    heroSlides: fallback.heroSlides,
     repairTitle: cmsContent.repair?.title ?? fallback.repairTitle,
     repairIntro: cmsContent.repair?.description ?? fallback.repairIntro,
     repairCards: cmsContent.repair?.items?.length

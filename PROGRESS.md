@@ -9,6 +9,46 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 Latest checkpoint:
 
 - Date: 2026-06-14
+- Current stage: Moved the public home `Sichtbare Qualität` branding/print card one position earlier in the carousel render order, placing it before maintenance/audit while preserving its video media, service link, and localized copy across DE/EN/RU/TR/PL/AR.
+- Next action: Owner visually reviews `/de` and `/ru` home carousel order: Montage, repair, branding/print, maintenance/audit, LED, dismantling.
+
+- Date: 2026-06-14
+- Current stage: Replaced the public home `Sichtbare Qualität` repair/light-advertising card visual across DE/EN/RU/TR/PL/AR with the owner-provided illuminated facade-sign photo, converted to cropped WebP, and updated localized alt text.
+- Next action: Owner visually reviews `/de` and `/ru` home around the repair carousel card to confirm the crop and overlay readability.
+
+- Date: 2026-06-14
+- Current stage: Connected the public home `Sichtbare Qualität` branding/print card to the owner-provided folienmontage MP4 as a muted looping background video across DE/EN/RU/TR/PL/AR, with a WebP poster fallback and localized video labels.
+- Next action: Owner visually reviews `/de` and `/ru` home around the branding/print carousel card to confirm playback, crop, and overlay readability.
+
+- Date: 2026-06-14
+- Current stage: Replaced the public home `Sichtbare Qualität` montage card visual across DE/EN/RU/TR/PL/AR with the owner-provided night autohaus advertising-pylon photo, converted to cropped WebP, and updated localized alt text.
+- Next action: Owner visually reviews `/de` and `/ru` home around the `Sichtbare Qualität` carousel to confirm the crop and overlay readability.
+
+- Date: 2026-06-14
+- Current stage: Retitled the `/[locale]/leistungen/werbeanlagen-reparatur` hero anchor CTA and proof/reference strip across DE/EN/RU/TR/PL/AR so they read as after-restoration examples instead of another symptom or case selector.
+- Next action: Owner visually reviews `/de` and `/ru` `/leistungen/werbeanlagen-reparatur` around the proof/reference strip and decides whether the result-focused wording needs further tuning.
+
+- Date: 2026-06-14
+- Current stage: Replaced the montage/demontage service visual with the owner-provided sport-center facade image, converted to WebP and connected via a new cache-busting asset path across `/leistungen` hero/card usage and the montage detail hero while leaving existing alt text unchanged.
+- Next action: Owner visually reviews `/de/leistungen` and `/de/leistungen/montage-demontage-werbeanlagen` to confirm the new photo crop works in both card and full-width hero contexts.
+
+- Date: 2026-06-14
+- Current stage: Unified the public full-bleed photo hero height across `/leistungen`, service detail pages, `/probleme-loesungen`, `/referenzen`, and `/business` to `h-[520px] sm:h-[440px] lg:h-[480px]`, leaving home/about/article heroes unchanged because they use different compositions.
+- Next action: Owner visually reviews `/de/probleme-loesungen`, `/de/referenzen`, and `/de/business` at desktop width for crop and text density after the shorter hero height.
+
+- Date: 2026-06-14
+- Current stage: Reworked the public `/leistungen` hero carousel into canonical service-area slides that use the same imagery as the service cards: repair, LED modernization, audit/diagnostics, montage/demontage, and print/branding; old CMS hero image overrides no longer replace this service-area hero set.
+- Next action: Owner visually reviews the `/de/leistungen` hero rotation and decides whether the slide copy, order, or hero crop should be tuned.
+
+- Date: 2026-06-14
+- Current stage: Generated and connected a dedicated montage/demontage signage visual for the public `/leistungen` montage card and `/leistungen/montage-demontage-werbeanlagen` detail hero, replacing the old generic maintenance image for that service.
+- Next action: Owner visually reviews `/de/leistungen` and the montage detail page to decide whether the crop, realism, or service-card order needs further tuning.
+
+- Date: 2026-06-14
+- Current stage: Added a public header `Leistungen` dropdown with visible chevron, localized service links, desktop click/hover/focus behavior, and mobile accordion links to the service detail pages.
+- Next action: Owner visually reviews `/de` desktop full header, scrolled hover header, and mobile menu to decide whether the dropdown width, opacity, or link labels need tuning.
+
+- Date: 2026-06-14
 - Current stage: Tightened Google Ads lead conversion tracking so the primary website/chat request conversion still fires only after a successful request is created and now sends the Google-recommended `value: 1.0` and `currency: EUR` parameters.
 - Next action: After deployment, verify the conversion with Google Tag Assistant and Google Ads tag diagnostics; keep WhatsApp, Telegram, email, and later CRM-quality/order signals separate from the primary lead conversion unless separate conversion labels are created.
 

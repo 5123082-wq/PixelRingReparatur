@@ -19,6 +19,60 @@ Planned base documents:
 
 ## Progress Log
 
+* **Date:** 2026-06-14
+* **Current sprint/block:** Home Work Carousel Card Order
+* **Done:**
+  - Moved the branding/print card one position earlier in the rendered `Sichtbare Qualität` carousel.
+  - Preserved the branding card video media, localized text, video label, and service link while placing it before maintenance/audit.
+  - Kept the order consistent across DE/EN/RU/TR/PL/AR through render-order logic so CMS/fallback item order cannot separate the card text from its media/link configuration.
+* **In progress:** Rendered review of `/de` and `/ru` home carousel order.
+* **Next action:** Confirm the visible order: montage, repair, branding/print, maintenance/audit, LED, dismantling.
+* **Blockers/risks:** If future CMS editors add new carousel items outside the known service set, they will fall after the canonical service cards unless order logic is expanded.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/02_public_website/README.md`
+
+* **Date:** 2026-06-14
+* **Current sprint/block:** Home Work Carousel Repair Visual Update
+* **Done:**
+  - Replaced the public home `Sichtbare Qualität` repair/light-advertising card visual with the owner-provided illuminated facade-sign photo.
+  - Converted the source JPEG into a vertical card-ready WebP at `signage-service/public/images/ex-repair-libitina-leuchtkasten-fassade.webp`.
+  - Connected the new image across DE/EN/RU/TR/PL/AR carousel configs and updated localized alt text, with DE as the canonical wording.
+* **In progress:** Rendered review of `/de` and `/ru` home carousel after asset replacement.
+* **Next action:** Confirm the crop and text overlay readability in the live carousel.
+* **Blockers/risks:** The source image is wider than the carousel card ratio, so the card crop intentionally prioritizes the central illuminated facade sign and entrance.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/02_public_website/README.md`
+
+* **Date:** 2026-06-14
+* **Current sprint/block:** Home Work Carousel Branding Video
+* **Done:**
+  - Added the owner-provided folienmontage MP4 as a muted looping background video for the home `Sichtbare Qualität` branding/print card.
+  - Saved the video under a neutral site filename at `signage-service/public/videos/ex-branding-print-folienmontage.mp4`.
+  - Generated a vertical WebP poster fallback at `signage-service/public/images/ex-branding-print-folienmontage-poster.webp`.
+  - Extended `ExcellenceCarousel` so video media is supported only where configured, while the other cards continue using `next/image`.
+  - Added localized image fallback text and video labels across DE/EN/RU/TR/PL/AR.
+* **In progress:** Rendered review of `/de` and `/ru` home carousel after video connection.
+* **Next action:** Confirm autoplay, crop, text readability, and card link behavior in the live carousel.
+* **Blockers/risks:** The MP4 remains the original H.264 source because the available `avconvert` preset increased size and produced unreliable metadata.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/02_public_website/README.md`
+
+* **Date:** 2026-06-14
+* **Current sprint/block:** Home Work Carousel Visual Update
+* **Done:**
+  - Replaced the first home `Sichtbare Qualität` montage-card visual with the owner-provided night autohaus advertising-pylon photo.
+  - Cropped out the source black bars, lightly adjusted quality, resized to a vertical card-ready WebP, and saved it as `signage-service/public/images/ex-mounting-dietz-autohaus-werbepylon.webp`.
+  - Connected the new image across DE/EN/RU/TR/PL/AR carousel configs and updated localized alt text, with DE as the canonical wording.
+* **In progress:** Rendered review of `/de` and `/ru` home carousel after asset replacement.
+* **Next action:** Confirm the crop and text overlay readability in the live carousel.
+* **Blockers/risks:** Existing CMS overrides could still affect custom non-legacy carousel items if a future CMS image is explicitly set.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/02_public_website/README.md`
+
 * **Date:** 2026-06-12
 * **Current sprint/block:** Home Trust, FAQ, and Mobile Overflow Cleanup
 * **Done:**

@@ -506,7 +506,7 @@ const SERVICE_DETAIL_CONTENT: Record<Locale, Record<ServiceDetailSlug, ServiceDe
       heroTitle: 'Montage, Demontage & Versetzung von Werbeanlagen',
       heroIntro:
         'PixelRing koordiniert neue, bestehende oder zu versetzende Werbeanlagen: von der Prüfung der Fläche bis zur Abstimmung der passenden Fachleute und nächsten Schritte.',
-      image: '/images/leistungen/hero-maintenance.png',
+      image: '/images/leistungen/werbeanlagen-montage-demontage-sportzentrum-fassade.webp',
       imageAlt: 'Montage und Demontage von Werbeanlagen an einem Geschäftsstandort',
       primaryCta: 'Montage anfragen',
       secondaryCta: 'Alle Leistungen',
@@ -816,7 +816,7 @@ const SERVICE_DETAIL_CONTENT: Record<Locale, Record<ServiceDetailSlug, ServiceDe
       heroTitle: 'Installation, dismantling & relocation of signage',
       heroIntro:
         'PixelRing coordinates new, existing or relocated signage: from surface review to the right specialist coordination and next steps.',
-      image: '/images/leistungen/hero-maintenance.png',
+      image: '/images/leistungen/werbeanlagen-montage-demontage-sportzentrum-fassade.webp',
       imageAlt: 'Signage installation and dismantling at a business location',
       primaryCta: 'Request installation',
       secondaryCta: 'All services',
