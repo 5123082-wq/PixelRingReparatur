@@ -9,6 +9,10 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 Latest checkpoint:
 
 - Date: 2026-06-14
+- Current stage: Tightened Google Ads lead conversion tracking so the primary website/chat request conversion still fires only after a successful request is created and now sends the Google-recommended `value: 1.0` and `currency: EUR` parameters.
+- Next action: After deployment, verify the conversion with Google Tag Assistant and Google Ads tag diagnostics; keep WhatsApp, Telegram, email, and later CRM-quality/order signals separate from the primary lead conversion unless separate conversion labels are created.
+
+- Date: 2026-06-14
 - Current stage: Updated the public home coverage map to show 12 separate German city nodes, adding Bremen, Hannover, Düsseldorf, and Dresden while keeping Köln separate; city nodes are smaller, receive a PixelRing terracotta arrival ring after route completion, routes render as screen-space apex arcs measured from the CSS-rotated Berlin/city positions, and the city/route overlay is rotated 15 degrees clockwise while the Germany dot-matrix underlay keeps its original pose.
 - Next action: Owner visually reviews `/de` home coverage map on desktop/mobile and decides whether arc height, route brightness, or city labels need another visual tuning pass.
 

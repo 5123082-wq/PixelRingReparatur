@@ -38,5 +38,7 @@ export function trackGoogleAdsLeadConversion() {
 
   window.gtag('event', 'conversion', {
     send_to: `${GOOGLE_ADS_ID}/${LEAD_CONVERSION_LABEL}`,
+    value: 1.0,
+    currency: 'EUR',
   });
 }
