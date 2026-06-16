@@ -176,24 +176,6 @@ function buildIntakeOfferText(locale?: string | null): string {
   }
 }
 
-function buildKnownContactNewRequestOfferText(locale?: string | null): string {
-  switch (locale) {
-    case 'ru':
-      return 'Понял. Создать новую заявку по этому Telegram-чату? Контактные данные повторно вводить не нужно.';
-    case 'en':
-      return 'Understood. Create a new request from this Telegram chat? You do not need to enter contact details again.';
-    case 'tr':
-      return 'Anladim. Bu Telegram sohbetinden yeni bir talep olusturulsun mu? Iletisim bilgilerini tekrar girmeniz gerekmez.';
-    case 'pl':
-      return 'Rozumiem. Utworzyc nowe zgloszenie z tej rozmowy Telegram? Nie musisz ponownie podawac danych kontaktowych.';
-    case 'ar':
-      return 'فهمت. هل تريد إنشاء طلب جديد من محادثة Telegram هذه؟ لا تحتاج إلى إدخال بيانات الاتصال مرة أخرى.';
-    case 'de':
-    default:
-      return 'Verstanden. Soll ich aus diesem Telegram-Chat eine neue Anfrage erstellen? Kontaktdaten muessen nicht erneut eingegeben werden.';
-  }
-}
-
 function buildKnownContactNewRequestCreatedText(input: {
   locale?: string | null;
   publicRequestNumber: string;
@@ -254,46 +236,7 @@ function buildKnownContactFallbackText(locale?: string | null): string {
 function shouldOfferTelegramIntakeForm(body: string): boolean {
   const normalized = body.trim().toLowerCase();
 
-  if (!normalized) {
-    return false;
-  }
-
-  if (normalized === '/request' || normalized.startsWith('/request@')) {
-    return true;
-  }
-
-  return [
-    /форм[ауые]/i,
-    /заявк/i,
-    /оформ/i,
-    /заполн/i,
-    /подать/i,
-    /request\s+form/i,
-    /contact\s+form/i,
-    /feedback\s+form/i,
-    /open\s+form/i,
-    /send\s+form/i,
-    /application/i,
-    /anfrage/i,
-    /formular/i,
-  ].some((pattern) => pattern.test(body));
-}
-
-function shouldConfirmKnownTelegramRequest(body: string): boolean {
-  if (shouldOfferTelegramIntakeForm(body)) {
-    return true;
-  }
-
-  return [
-    /нов(?:ая|ую|ой|ое|ый)\s+(?:проблем|заявк|обращен)/i,
-    /другая\s+(?:проблем|заявк)/i,
-    /созда(?:й|йте|ть)\s+(?:новую\s+)?заявк/i,
-    /new\s+(?:problem|issue|request)/i,
-    /another\s+(?:problem|issue|request)/i,
-    /create\s+(?:a\s+)?new\s+request/i,
-    /neue[snr]?\s+(?:problem|anfrage)/i,
-    /ander(?:es|e|er)\s+(?:problem|anfrage)/i,
-  ].some((pattern) => pattern.test(body));
+  return normalized === '/request' || normalized.startsWith('/request@');
 }
 
 function normalizeTelegramLocale(languageCode?: string | null): string {
@@ -941,10 +884,6 @@ export async function POST(request: NextRequest) {
     }
 
     let assistantReplyText: string | null = null;
-    const shouldSendKnownRequestConfirmation =
-      canRunAssistant &&
-      result.hasStoredTelegramContact &&
-      shouldConfirmKnownTelegramRequest(body);
     const shouldSendIntakeForm =
       canRunAssistant &&
       !result.hasStoredTelegramContact &&
@@ -967,24 +906,6 @@ export async function POST(request: NextRequest) {
         },
       }).catch((error) => {
         console.error('Telegram AI auto-resume failed:', error);
-      });
-    }
-
-    if (shouldSendKnownRequestConfirmation) {
-      assistantReplyText = buildKnownContactNewRequestOfferText(result.locale);
-      await sendTelegramMessage({
-        chatId: meta.chatId,
-        text: assistantReplyText,
-        replyMarkup: {
-          inline_keyboard: [[
-            {
-              text: getConfirmNewRequestButtonLabel(result.locale),
-              callback_data: CONFIRM_NEW_REQUEST_CALLBACK,
-            },
-          ]],
-        },
-      }).catch((error) => {
-        console.error('Telegram known-contact request confirmation delivery failed:', error);
       });
     }
 
@@ -1030,7 +951,7 @@ export async function POST(request: NextRequest) {
         latestCustomerMessage: body,
         publicRequestNumber: result.publicRequestNumber,
         messengerKnownContact: result.hasStoredTelegramContact,
-        capabilities: [],
+        capabilities: ['inline_buttons'],
       }).catch((error) => {
         console.error('Telegram AI assistant turn failed:', error);
         return null;
@@ -1038,8 +959,13 @@ export async function POST(request: NextRequest) {
 
       if (assistantReply?.text) {
         assistantReplyText = assistantReply.text;
+        const shouldShowCreateRequestButton =
+          result.hasStoredTelegramContact &&
+          assistantReply.actions.some((action) => action.type === 'show_intake');
         const shouldShowStatusButton =
-          Boolean(result.publicRequestNumber) && shouldAttachStatusAction(body);
+          !shouldShowCreateRequestButton &&
+          Boolean(result.publicRequestNumber) &&
+          shouldAttachStatusAction(body);
         const statusUrl = shouldShowStatusButton
           ? await createCaseStatusAccessLink(prisma, {
               caseId: result.caseId,
@@ -1055,16 +981,25 @@ export async function POST(request: NextRequest) {
         await sendTelegramMessage({
           chatId: meta.chatId,
           text: assistantReply.text,
-          replyMarkup: statusUrl
+          replyMarkup: shouldShowCreateRequestButton
             ? {
                 inline_keyboard: [[
                   {
-                    text: getStatusButtonLabel(result.locale),
-                    url: statusUrl,
+                    text: getConfirmNewRequestButtonLabel(result.locale),
+                    callback_data: CONFIRM_NEW_REQUEST_CALLBACK,
                   },
                 ]],
               }
-            : undefined,
+            : statusUrl
+              ? {
+                  inline_keyboard: [[
+                    {
+                      text: getStatusButtonLabel(result.locale),
+                      url: statusUrl,
+                    },
+                  ]],
+                }
+              : undefined,
         }).catch((error) => {
           console.error('Telegram AI reply delivery failed:', error);
         });

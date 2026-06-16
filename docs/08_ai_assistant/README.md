@@ -29,6 +29,22 @@ Planned improvement options:
 ## Progress Log
 
 ### 2026-06-16
+**Telegram Known-Contact Intent Hotfix**
+- **Status**: Hotfix implemented.
+- **Done**:
+  - Removed broad pre-AI keyword matching for known Telegram repeat-request creation so words such as "заявка" no longer create a new PR path by themselves.
+  - Kept `/request` as the deterministic fallback command for unknown-contact secure form routing.
+  - Let the shared assistant decide when a known Telegram customer needs the create-request confirmation button by emitting the existing action marker through the `inline_buttons` capability.
+  - Tightened prompt guidance so greetings stay neutral, status questions stay status-oriented, and known-contact request creation is not treated as a website form handoff.
+- **In Progress**:
+  - Live Telegram QA after deployment.
+- **Next Action**:
+  - Retest `Привет`, `Что с моей заявкой?`, `/request`, and one clear new-problem request in the real Telegram bot.
+- **Blockers/Risks**:
+  - The final decision still depends on the configured AI provider; backend remains responsible for the actual PR creation confirmation.
+- **Updated Documents**: `docs/08_ai_assistant/README.md`, `PROGRESS.md`
+
+### 2026-06-16
 **Telegram Known-Contact Assistant Context**
 - **Status**: Implementation baseline updated.
 - **Done**:
