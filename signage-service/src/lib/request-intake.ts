@@ -220,18 +220,20 @@ export async function createWebsiteRequest(
       },
     });
 
-    await syncCaseCustomerProfile(tx, {
-      caseId: createdCase.id,
-      customerName: input.name?.trim() || null,
-      customerEmail: parsedContact.customerEmail,
-      customerPhone: parsedContact.customerPhone,
-      serviceAddress: input.serviceLocation?.trim() || null,
-      serviceLatitude: input.serviceLatitude ?? null,
-      serviceLongitude: input.serviceLongitude ?? null,
-      serviceLocationSource: input.serviceLocationSource?.trim() || null,
-      preferredLanguage: input.locale?.trim() || null,
-      preferredContactMethod: parsedContact.method,
-    });
+    if (input.portalUser) {
+      await syncCaseCustomerProfile(tx, {
+        caseId: createdCase.id,
+        customerName: input.name?.trim() || null,
+        customerEmail: parsedContact.customerEmail,
+        customerPhone: parsedContact.customerPhone,
+        serviceAddress: input.serviceLocation?.trim() || null,
+        serviceLatitude: input.serviceLatitude ?? null,
+        serviceLongitude: input.serviceLongitude ?? null,
+        serviceLocationSource: input.serviceLocationSource?.trim() || null,
+        preferredLanguage: input.locale?.trim() || null,
+        preferredContactMethod: parsedContact.method,
+      });
+    }
 
     let session;
     let finalSessionToken = sessionToken;

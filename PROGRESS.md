@@ -13,6 +13,10 @@ Latest checkpoint:
 - Next action: Deploy the code, test `/request` in a real Telegram chat, submit the form, and confirm the same CRM case receives the PR number, timeline message, attachments, Telegram confirmation, status button, and return flow.
 
 - Date: 2026-06-16
+- Current stage: Tightened Telegram and public website intake safety: Telegram form submissions now reject mismatched contacts for already-linked Telegram cases, unverified Telegram/public form contacts no longer sync into `CustomerProfile`, repeat public case-cookie submissions are blocked with `verification_required` before file storage/PR creation, and verified portal-session request creation still issues PR numbers immediately.
+- Next action: QA first public form submit, repeat submit from the same browser cookie, verified portal new-request submit, Telegram locked-contact submit, Telegram mismatched-contact rejection, and chat-intake draft conversion.
+
+- Date: 2026-06-16
 - Current stage: Added the seventh before/after visual to the `/[locale]/leistungen/werbeanlagen-reparatur` symptom carousel: the moisture/short-circuit card now uses owner-provided PixelRing rain-damage/repaired WebP images with the existing hover/focus/touch repaired preview behavior.
 - Next action: Owner visually reviews `/ru/leistungen/werbeanlagen-reparatur` and `/de/leistungen/werbeanlagen-reparatur` around the moisture/short-circuit card to confirm crop, overlay readability, and repaired-state hover behavior.
 

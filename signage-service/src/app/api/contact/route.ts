@@ -50,10 +50,29 @@ function readLocationSource(value: FormDataEntryValue | null): string | null {
   return value.trim() === 'photon' ? 'photon' : null;
 }
 
+function verificationRequiredMessage(locale: SiteLocale): string {
+  switch (locale) {
+    case 'ru':
+      return 'Перед созданием новой заявки из этой сессии подтвердите контакт в клиентском кабинете.';
+    case 'en':
+      return 'Please verify your contact in the customer portal before creating another request from this browser session.';
+    case 'tr':
+      return 'Bu tarayici oturumundan yeni talep olusturmadan once musteri portalinda iletisim bilginizi dogrulayin.';
+    case 'pl':
+      return 'Przed utworzeniem kolejnego zgloszenia z tej sesji przegladarki potwierdz kontakt w portalu klienta.';
+    case 'ar':
+      return 'يرجى تأكيد بيانات الاتصال في بوابة العميل قبل إنشاء طلب جديد من جلسة المتصفح هذه.';
+    case 'de':
+    default:
+      return 'Bitte bestaetigen Sie Ihren Kontakt im Kundenportal, bevor Sie aus dieser Browser-Sitzung eine weitere Anfrage erstellen.';
+  }
+}
+
 export async function POST(request: NextRequest) {
   const ip = getClientIP(request);
   const limit = checkRateLimit(ip, CONTACT_LIMIT);
   let storedAttachments: StoredAttachmentInput[] = [];
+  const locale = inferRequestLocale(request);
 
   if (!limit.allowed) {
     return NextResponse.json(
@@ -78,29 +97,45 @@ export async function POST(request: NextRequest) {
     let existingSessionToken: string | null = null;
     let draftContactKnown = false;
     let draftLocationKnown = false;
+    const cookieToken = request.cookies.get(CASE_SESSION_COOKIE_NAME)?.value ?? null;
 
-    if (isFromChat) {
+    if (cookieToken) {
       const { resolveChatSession } = await import('@/lib/ai/chat-session');
-      const token = request.cookies.get(CASE_SESSION_COOKIE_NAME)?.value ?? null;
-      const resolved = await resolveChatSession(prisma, token, {
+      const resolved = await resolveChatSession(prisma, cookieToken, {
         createIfMissing: false,
         userAgent: request.headers.get('user-agent'),
         ipAddress: getClientIP(request),
       });
       if (resolved) {
-        existingSessionId = resolved.session.id;
-        existingSessionToken = resolved.cookieToken || token;
-        const draft = await getSessionIntakeDraft(prisma, resolved.session.id);
-        name = name || draft?.customerName || '';
-        contact = contact || draft?.customerEmail || draft?.customerPhone || '';
-        if (!location) {
-          location = draft?.serviceLocation || '';
-          serviceLatitude = draft?.serviceLatitude ?? null;
-          serviceLongitude = draft?.serviceLongitude ?? null;
-          serviceLocationSource = draft?.serviceLocationSource ?? null;
+        if (resolved.session.caseId) {
+          const message = verificationRequiredMessage(locale);
+
+          return NextResponse.json(
+            {
+              error: message,
+              message,
+              code: 'verification_required',
+            },
+            { status: 409 }
+          );
         }
-        draftContactKnown = Boolean(draft?.customerEmail || draft?.customerPhone);
-        draftLocationKnown = Boolean(draft?.serviceLocation);
+
+        existingSessionId = resolved.session.id;
+        existingSessionToken = resolved.cookieToken || cookieToken;
+
+        if (isFromChat) {
+          const draft = await getSessionIntakeDraft(prisma, resolved.session.id);
+          name = name || draft?.customerName || '';
+          contact = contact || draft?.customerEmail || draft?.customerPhone || '';
+          if (!location) {
+            location = draft?.serviceLocation || '';
+            serviceLatitude = draft?.serviceLatitude ?? null;
+            serviceLongitude = draft?.serviceLongitude ?? null;
+            serviceLocationSource = draft?.serviceLocationSource ?? null;
+          }
+          draftContactKnown = Boolean(draft?.customerEmail || draft?.customerPhone);
+          draftLocationKnown = Boolean(draft?.serviceLocation);
+        }
       }
     }
 
@@ -126,8 +161,8 @@ export async function POST(request: NextRequest) {
 
     const messageParts = [];
     if (issueType) messageParts.push(`Тип: ${issueType}`);
-    
-    const finalMessage = messageParts.length > 0 
+
+    const finalMessage = messageParts.length > 0
       ? `${messageParts.join(' | ')}\n\n${message}`
       : message;
 
@@ -140,7 +175,7 @@ export async function POST(request: NextRequest) {
       serviceLocationSource,
       message: finalMessage,
       userAgent: request.headers.get('user-agent'),
-      locale: inferRequestLocale(request),
+      locale,
       origin: request.headers.get('origin') || request.nextUrl.origin,
       ipAddress:
         request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null,

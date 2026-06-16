@@ -105,13 +105,16 @@ const ContactForm = ({
 
       const data = (await response.json()) as {
         error?: string;
+        code?: string;
         publicRequestNumber?: string;
         portalClaimUrl?: string;
       };
 
       if (!response.ok) {
         const translatedError =
-          response.status === 400
+          data.code === 'verification_required' && data.error
+            ? data.error
+            : response.status === 400
             ? t('error_invalid_contact')
             : t('error_generic');
         throw new Error(data.error ? translatedError : t('error_generic'));
