@@ -173,6 +173,9 @@ test('active telegram request continues current case instead of creating a dupli
   assert.ok(webhookSource.includes('activeMessengerRequest: result.activeTelegramRequest'));
   assert.ok(webhookSource.includes('!result.activeTelegramRequest &&'));
   assert.ok(webhookSource.includes('buildActiveRequestPhotoReceivedText'));
+  assert.ok(webhookSource.includes('function buildTelegramAssistantMessage'));
+  assert.ok(webhookSource.includes('hasPhoto: Boolean(telegramPhoto)'));
+  assert.ok(webhookSource.includes('It has already been stored on the current active request'));
   assert.ok(promptSource.includes('# Active Messenger Request Mode'));
   assert.ok(promptSource.includes('send them directly in this chat'));
   assert.ok(promptSource.includes('Do not append <<SHOW_INTAKE:...>> while the customer is continuing the current request.'));

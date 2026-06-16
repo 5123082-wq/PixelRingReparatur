@@ -245,6 +245,22 @@ function buildActiveRequestPhotoReceivedText(locale?: string | null): string {
   }
 }
 
+function buildTelegramAssistantMessage(input: {
+  body: string;
+  hasPhoto: boolean;
+  activeTelegramRequest: boolean;
+}): string {
+  if (!input.hasPhoto) {
+    return input.body;
+  }
+
+  const note = input.activeTelegramRequest
+    ? '[System note: The customer attached a photo to this Telegram message. It has already been stored on the current active request. Briefly acknowledge receipt and continue with the current request.]'
+    : '[System note: The customer attached a photo to this Telegram message. Briefly acknowledge receipt if relevant, but do not claim that a request was created unless the backend has created it.]';
+
+  return `${input.body}\n\n${note}`;
+}
+
 function buildKnownContactFallbackText(locale?: string | null): string {
   switch (locale) {
     case 'ru':
@@ -984,7 +1000,11 @@ export async function POST(request: NextRequest) {
         channel: CaseOriginChannel.TELEGRAM,
         locale: result.locale,
         latestMessageId: result.customerMessageId,
-        latestCustomerMessage: body,
+        latestCustomerMessage: buildTelegramAssistantMessage({
+          body,
+          hasPhoto: Boolean(telegramPhoto),
+          activeTelegramRequest: result.activeTelegramRequest,
+        }),
         publicRequestNumber: shouldAttachStatusAction(body)
           ? result.publicRequestNumber
           : null,
