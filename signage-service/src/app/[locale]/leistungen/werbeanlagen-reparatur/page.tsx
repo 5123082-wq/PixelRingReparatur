@@ -19,8 +19,22 @@ export const revalidate = 3600;
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
 type JsonLdObject = Record<string, unknown>;
 
+const SYMPTOM_DISPLAY_ORDER = [
+  'trafo',
+  'flackern',
+  'led-letters',
+  'rain-short',
+  'structure',
+  'mounting',
+  'film',
+  'neon',
+  'custom-issue',
+] as const;
+
+type SymptomId = (typeof SYMPTOM_DISPLAY_ORDER)[number];
+
 type Symptom = {
-  id: string;
+  id: SymptomId;
   title: string;
   cardText: string;
   reassuringText: string;
@@ -47,18 +61,6 @@ type LandingPageContent = {
   finalText: string;
   symptoms: Symptom[];
 };
-
-const SYMPTOM_DISPLAY_ORDER = [
-  'trafo',
-  'flackern',
-  'led-letters',
-  'rain-short',
-  'structure',
-  'mounting',
-  'film',
-  'neon',
-  'custom-issue',
-] as const;
 
 const SYMPTOM_DISPLAY_RANK = new Map(
   SYMPTOM_DISPLAY_ORDER.map((symptomId, index) => [symptomId, index]),
