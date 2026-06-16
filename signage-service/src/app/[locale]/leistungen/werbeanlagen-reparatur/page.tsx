@@ -48,6 +48,29 @@ type LandingPageContent = {
   symptoms: Symptom[];
 };
 
+const SYMPTOM_DISPLAY_ORDER = [
+  'trafo',
+  'flackern',
+  'led-letters',
+  'rain-short',
+  'structure',
+  'mounting',
+  'film',
+  'neon',
+  'custom-issue',
+] as const;
+
+const SYMPTOM_DISPLAY_RANK = new Map(
+  SYMPTOM_DISPLAY_ORDER.map((symptomId, index) => [symptomId, index]),
+);
+
+const sortSymptomsByDemand = (symptoms: Symptom[]) =>
+  [...symptoms].sort(
+    (left, right) =>
+      (SYMPTOM_DISPLAY_RANK.get(left.id) ?? SYMPTOM_DISPLAY_ORDER.length) -
+      (SYMPTOM_DISPLAY_RANK.get(right.id) ?? SYMPTOM_DISPLAY_ORDER.length),
+  );
+
 type RepairFaqContent = {
   eyebrow: string;
   title: string;
@@ -1843,6 +1866,7 @@ export default async function WerbeanlagenReparaturPage({
   const nextStepContent = REPAIR_NEXT_STEP_BY_LOCALE[safeLocale];
   const headerContent = globalCms?.header ? { ...globalCms.header, links: undefined } : null;
   const repairPageJsonLd = buildRepairPageJsonLd(locale, content);
+  const rankedSymptoms = sortSymptomsByDemand(content.symptoms);
 
   return (
     <div className="min-h-screen overflow-x-clip bg-[#F7F1E8] text-[#15202A]">
@@ -1863,7 +1887,7 @@ export default async function WerbeanlagenReparaturPage({
 
         {/* Symptoms Grid & Interactive workflow (Client Component) */}
         <LeistungenReparaturWorkflow
-          symptoms={content.symptoms}
+          symptoms={rankedSymptoms}
           title={content.symptomsTitle}
           locale={locale}
           closeLabel={content.closeLabel}

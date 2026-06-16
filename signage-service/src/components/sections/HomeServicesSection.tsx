@@ -304,7 +304,7 @@ export default function HomeServicesSection({ locale }: { locale: string }) {
         <div className="flex flex-col gap-5 md:max-w-3xl">
           <SectionEyebrow>{copy.eyebrow}</SectionEyebrow>
           <div className="flex flex-col gap-4">
-            <h2 className="text-[34px] font-black leading-[1.08] tracking-[0] text-[#0E1A2B] md:text-[42px]">
+            <h2 className="text-[32px] font-extrabold leading-[1.1] tracking-[0] text-[#0E1A2B] md:text-[42px]">
               {copy.title}
             </h2>
             <p className="max-w-2xl text-[16px] leading-[1.6] text-[#72665D] md:text-[17px]">

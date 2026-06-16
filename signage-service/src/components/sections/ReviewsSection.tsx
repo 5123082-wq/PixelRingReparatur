@@ -164,14 +164,14 @@ const TypewriterQuote = ({ content, shouldAnimate }: { content: string; shouldAn
 
   if (!shouldAnimate) {
     return (
-      <blockquote className="text-[22px] md:text-[30px] font-medium text-[#0E1A2B] leading-[1.28] tracking-tight italic">
+      <blockquote className="line-clamp-7 text-[19px] font-medium italic leading-[1.35] tracking-[0] text-[#0E1A2B] sm:text-[22px] sm:leading-[1.28] md:line-clamp-none md:text-[30px]">
         &quot;{content}&quot;
       </blockquote>
     );
   }
 
   return (
-    <blockquote ref={ref} className="text-[22px] md:text-[30px] font-medium text-[#0E1A2B] leading-[1.28] tracking-tight italic relative">
+    <blockquote ref={ref} className="relative line-clamp-7 text-[19px] font-medium italic leading-[1.35] tracking-[0] text-[#0E1A2B] sm:text-[22px] sm:leading-[1.28] md:line-clamp-none md:text-[30px]">
       <span className="sr-only">&quot;{content}&quot;</span>
       <span aria-hidden="true">
         &quot;{firstPart}{firstPart ? ' ' : ''}
@@ -212,7 +212,8 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
     if (!el || !isReady) return;
 
     const scrollLeft = Math.abs(el.scrollLeft);
-    const cardWidth = el.offsetWidth * 0.88; // Matches w-[88%]
+    const firstCard = el.firstElementChild instanceof HTMLElement ? el.firstElementChild : null;
+    const cardWidth = firstCard?.offsetWidth ?? el.offsetWidth * 0.82;
     const currentVirtual = Math.min(reviewsCount - 1, Math.max(0, Math.round(scrollLeft / cardWidth)));
     setVirtualIndex(currentVirtual);
   }, [reviewsCount, isReady]);
@@ -227,7 +228,8 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
   const scrollToVirtualIndex = (index: number) => {
     const el = scrollRef.current;
     if (!el) return;
-    const cardWidth = el.offsetWidth * 0.88;
+    const firstCard = el.firstElementChild instanceof HTMLElement ? el.firstElementChild : null;
+    const cardWidth = firstCard?.offsetWidth ?? el.offsetWidth * 0.82;
     el.scrollTo({
       left: isRTL ? -(index * cardWidth) : (index * cardWidth),
       behavior: 'smooth',
@@ -253,7 +255,7 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-4">
               <SectionEyebrow>CASES</SectionEyebrow>
-              <h2 className="text-[34px] md:text-[44px] font-bold text-[#0E1A2B] leading-[1.1] tracking-[0]">
+              <h2 className="text-[32px] font-extrabold leading-[1.1] tracking-[0] text-[#0E1A2B] md:text-[42px]">
                 {content?.title || ''}
               </h2>
               {content?.subtitle ? (
@@ -265,7 +267,7 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
           </div>
 
           {/* Navigation Controls */}
-          <div className="flex items-center gap-4">
+          <div className="hidden items-center gap-4 md:flex">
             <button
               onClick={prev}
               className="w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 border border-[#B8643E] text-[#B8643E] hover:bg-[#B8643E] hover:text-white group"
@@ -291,20 +293,20 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
       {/* Carousel Container with Gradients */}
       <div className="relative mt-12 w-full">
         {/* Gradients: reduced width for better visibility of neighbor peak */}
-        <div className="absolute left-0 top-0 bottom-0 w-[10%] z-20 pointer-events-none bg-gradient-to-r from-[#F7F1E8] via-[#F7F1E8]/60 to-transparent" />
-        <div className="absolute right-0 top-0 bottom-0 w-[10%] z-20 pointer-events-none bg-gradient-to-l from-[#F7F1E8] via-[#F7F1E8]/60 to-transparent" />
+        <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-20 hidden w-[10%] bg-gradient-to-r from-[#F7F1E8] via-[#F7F1E8]/60 to-transparent md:block" />
+        <div className="pointer-events-none absolute bottom-0 right-0 top-0 z-20 hidden w-[10%] bg-gradient-to-l from-[#F7F1E8] via-[#F7F1E8]/60 to-transparent md:block" />
 
         <div 
           ref={scrollRef}
-          className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar px-[4%]"
+          className="no-scrollbar flex overflow-x-auto snap-x snap-mandatory px-[3%] md:px-[4%]"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {originalIndices.map((idx, i) => (
             <div 
               key={`${idx}-${i}`} 
-              className="flex-shrink-0 w-[88%] snap-center px-3 flex"
+              className="flex w-[82%] flex-shrink-0 snap-center px-2.5 sm:w-[74%] md:w-[88%] md:px-3"
             >
-              <div className="bg-white rounded-[28px] md:rounded-[36px] p-7 md:p-10 border border-[#E7DDD3] shadow-2xl shadow-[#0E1A2B08] flex flex-col gap-7 relative overflow-hidden group w-full min-h-[360px]">
+              <div className="group relative flex min-h-[370px] w-full flex-col gap-5 overflow-hidden rounded-[24px] border border-[#E7DDD3] bg-white p-5 shadow-2xl shadow-[#0E1A2B08] sm:min-h-[360px] sm:gap-7 sm:p-7 md:rounded-[36px] md:p-10">
                 {/* Large Background Quote Symbol */}
                 <div className="absolute -top-6 -right-6 text-[#B8643E] opacity-[0.03] select-none pointer-events-none transition-transform duration-700 group-hover:scale-110">
                   <svg className="w-64 h-64 fill-current" viewBox="0 0 32 32">
@@ -312,13 +314,13 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
                   </svg>
                 </div>
 
-                <div className="flex-1 flex flex-col gap-6 relative z-10">
+                <div className="relative z-10 flex flex-1 flex-col gap-5 sm:gap-6">
                   <div className="flex flex-wrap gap-2">
                     {getCaseLinks(locale, idx).map((link) => (
                       <Link
                         key={`${idx}-${link.href}-${link.label}`}
                         href={link.href}
-                        className="inline-flex min-h-8 items-center rounded-full border border-[#E7DDD3] bg-[#FFF7EF] px-3 py-1 text-[12px] font-extrabold leading-none text-[#B8643E] transition-colors duration-200 hover:border-[#B8643E] hover:bg-[#F1E2D8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]/40"
+                        className="inline-flex min-h-7 items-center rounded-full border border-[#E7DDD3] bg-[#FFF7EF] px-2.5 py-1 text-[11px] font-extrabold leading-none text-[#B8643E] transition-colors duration-200 hover:border-[#B8643E] hover:bg-[#F1E2D8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]/40 sm:min-h-8 sm:px-3 sm:text-[12px]"
                       >
                         #{link.label}
                       </Link>
@@ -335,13 +337,13 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
                   />
                 </div>
 
-                <div className="flex items-center gap-4 relative z-10 mt-auto">
-                  <div className="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-[#B8643E] to-[#D47A4E] flex items-center justify-center text-[22px] font-bold text-white shadow-xl shadow-[#B8643E30] transition-transform duration-500 group-hover:rotate-6">
+                <div className="relative z-10 mt-auto flex items-center gap-3 sm:gap-4">
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#B8643E] to-[#D47A4E] text-[20px] font-bold text-white shadow-xl shadow-[#B8643E30] transition-transform duration-500 group-hover:rotate-6 sm:h-14 sm:w-14 sm:text-[22px]">
                     {(content?.items?.[idx]?.name || '').charAt(0)}
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-[18px] font-bold text-[#0E1A2B] tracking-tight">{content?.items?.[idx]?.name || ''}</span>
-                    <span className="text-[13px] text-[#B8643E] font-bold uppercase tracking-[0.15em] mt-0.5">{content?.items?.[idx]?.role || ''}</span>
+                  <div className="flex min-w-0 flex-col">
+                    <span className="break-words text-[16px] font-bold leading-tight tracking-[0] text-[#0E1A2B] sm:text-[18px]">{content?.items?.[idx]?.name || ''}</span>
+                    <span className="mt-1 break-words text-[11px] font-bold uppercase leading-[1.45] tracking-[0.14em] text-[#B8643E] sm:text-[13px]">{content?.items?.[idx]?.role || ''}</span>
                   </div>
                 </div>
               </div>

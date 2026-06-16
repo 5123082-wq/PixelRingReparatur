@@ -254,7 +254,7 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
       >
         <div className="p-6 md:p-9 bg-gradient-to-br from-white/30 via-[#F7F1E8]/44 to-[#F7F1E8]/58 rounded-[28px] md:rounded-[44px] shadow-[inset_0_1px_0_rgba(255,255,255,0.38),0_16px_32px_rgba(0,0,0,0.02)] flex flex-col gap-4 md:gap-5">
           <div className="flex flex-col gap-1.5">
-            <h2 className="text-[30px] md:text-[42px] font-bold text-[#0E1A2B] leading-[1.05] tracking-tight">
+            <h2 className="text-[32px] font-extrabold leading-[1.1] tracking-[0] text-[#0E1A2B] md:text-[42px]">
               {content?.title || ''}
             </h2>
           </div>

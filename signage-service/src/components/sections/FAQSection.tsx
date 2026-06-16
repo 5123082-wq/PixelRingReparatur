@@ -11,7 +11,7 @@ interface FAQSectionProps {
 
 const FAQSection = ({ content, titleClassName }: FAQSectionProps) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const headingClassName = titleClassName || 'text-[36px] md:text-[44px] font-bold text-[#0E1A2B] leading-tight';
+  const headingClassName = titleClassName || 'text-[32px] font-extrabold leading-[1.1] tracking-[0] text-[#0E1A2B] md:text-[42px]';
 
   const faqItems = (content?.items || []).map((item) => ({
     q: item.question || '',

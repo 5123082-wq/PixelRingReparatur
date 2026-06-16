@@ -96,27 +96,35 @@ const WORKFLOW_LABELS: Record<
   },
 };
 
-const SYMPTOM_VISUALS: Record<string, { image: string }> = {
+const SYMPTOM_VISUALS: Record<string, { image: string; repairedImage?: string; unoptimized?: boolean }> = {
   flackern: {
-    image: '/images/leistungen/repair-symptoms/symptom-flicker-led-modules.webp',
+    image: '/images/leistungen/repair-symptoms/generated/pixelring-lightbox-flicker-smooth-before.webp',
+    repairedImage: '/images/leistungen/repair-symptoms/generated/pixelring-lightbox-flicker-after.webp',
+    unoptimized: true,
   },
   'led-letters': {
-    image: '/images/leistungen/repair-symptoms/symptom-channel-letter-out.webp',
+    image: '/images/leistungen/repair-symptoms/generated/pixelring-led-letters-before.webp',
+    repairedImage: '/images/leistungen/repair-symptoms/generated/pixelring-led-letters-after.webp',
   },
   'rain-short': {
-    image: '/images/leistungen/repair-symptoms/symptom-rain-water-damage.webp',
+    image: '/images/leistungen/repair-symptoms/generated/pixelring-rain-short-before.webp',
+    repairedImage: '/images/leistungen/repair-symptoms/generated/pixelring-rain-short-after.webp',
   },
   trafo: {
-    image: '/images/leistungen/repair-symptoms/symptom-power-supply-replacement.webp',
+    image: '/images/leistungen/repair-symptoms/generated/pixelring-power-supply-before.webp',
+    repairedImage: '/images/leistungen/repair-symptoms/generated/pixelring-power-supply-after.webp',
   },
   structure: {
-    image: '/images/leistungen/repair-symptoms/symptom-mechanical-storm-damage.webp',
+    image: '/images/leistungen/repair-symptoms/generated/pixelring-mechanical-damage-before.webp',
+    repairedImage: '/images/leistungen/repair-symptoms/generated/pixelring-mechanical-damage-after.webp',
   },
   film: {
-    image: '/images/references/window-film-install.webp',
+    image: '/images/leistungen/repair-symptoms/generated/pixelring-film-damage-before.webp',
+    repairedImage: '/images/leistungen/repair-symptoms/generated/pixelring-film-damage-after.webp',
   },
   neon: {
-    image: '/images/references/neon-bench.webp',
+    image: '/images/leistungen/repair-symptoms/generated/pixelring-neon-repair-before.webp',
+    repairedImage: '/images/leistungen/repair-symptoms/generated/pixelring-neon-repair-after.webp',
   },
   mounting: {
     image: '/images/references/lightbox-lift.webp',
@@ -214,6 +222,7 @@ export default function LeistungenReparaturWorkflow({
 }: LeistungenReparaturWorkflowProps) {
   const [activeSymptom, setActiveSymptom] = useState<Symptom | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [previewedSymptomId, setPreviewedSymptomId] = useState<string | null>(null);
   const railRef = useRef<HTMLDivElement | null>(null);
   const labels = WORKFLOW_LABELS[locale] ?? WORKFLOW_LABELS.de;
   const fallbackSymptom = symptoms.find((symptom) => symptom.id === 'custom-issue');
@@ -302,12 +311,22 @@ export default function LeistungenReparaturWorkflow({
         <div className="flex w-max snap-x snap-mandatory gap-5 lg:gap-6">
           {regularSymptoms.map((symptom) => {
             const visual = SYMPTOM_VISUALS[symptom.id] ?? SYMPTOM_VISUALS['custom-issue'];
+            const showRepairPreview = previewedSymptomId === symptom.id;
 
             return (
               <button
                 type="button"
                 key={symptom.id}
                 onClick={() => handleCardClick(symptom)}
+                onBlur={() => setPreviewedSymptomId(null)}
+                onFocus={() => setPreviewedSymptomId(symptom.id)}
+                onMouseEnter={() => setPreviewedSymptomId(symptom.id)}
+                onMouseLeave={() => setPreviewedSymptomId(null)}
+                onMouseMove={() => setPreviewedSymptomId(symptom.id)}
+                onPointerDown={() => setPreviewedSymptomId(symptom.id)}
+                onPointerEnter={() => setPreviewedSymptomId(symptom.id)}
+                onPointerLeave={() => setPreviewedSymptomId(null)}
+                onPointerMove={() => setPreviewedSymptomId(symptom.id)}
                 aria-label={`${labels.selectCta}: ${symptom.title}`}
                 className="group relative min-h-[500px] w-[82vw] shrink-0 snap-start cursor-pointer overflow-hidden rounded-[28px] border border-white/35 bg-[#101827] p-0 text-start shadow-[0_10px_26px_rgba(0,0,0,0.055)] transition duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B8643E] sm:w-[390px] lg:w-[392px] xl:w-[414px]"
               >
@@ -316,9 +335,19 @@ export default function LeistungenReparaturWorkflow({
                     src={visual.image}
                     alt=""
                     fill
+                    unoptimized={visual.unoptimized}
                     sizes="(min-width: 1280px) 414px, (min-width: 1024px) 392px, (min-width: 640px) 390px, 82vw"
                     className="object-cover transition duration-700 group-hover:scale-[1.04]"
                   />
+                  {visual.repairedImage ? (
+                    <Image
+                      src={visual.repairedImage}
+                      alt=""
+                      fill
+                      sizes="(min-width: 1280px) 414px, (min-width: 1024px) 392px, (min-width: 640px) 390px, 82vw"
+                      className={`object-cover transition duration-700 ${showRepairPreview ? 'scale-[1.04] opacity-100' : 'opacity-0'}`}
+                    />
+                  ) : null}
                 </div>
 
                 <div className="absolute left-5 top-5 z-20 rounded-full bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-[#8F4C2F] shadow-sm rtl:left-auto rtl:right-5">

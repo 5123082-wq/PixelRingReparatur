@@ -59,7 +59,7 @@ const IntakeSection = ({ content }: { content?: IntakeSectionContent | null }) =
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
           <div className="flex max-w-2xl flex-col gap-4 text-start">
             <SectionEyebrow>{t('eyebrow')}</SectionEyebrow>
-            <h2 className="text-[30px] font-black leading-[1.08] tracking-tight text-[#0E1A2B] md:text-[36px]">
+            <h2 className="text-[32px] font-extrabold leading-[1.1] tracking-[0] text-[#0E1A2B] md:text-[42px]">
               {content?.title || t('title')}
             </h2>
             <p className="max-w-xl text-[15px] leading-[1.55] text-[#72665D] md:text-[16px]">
