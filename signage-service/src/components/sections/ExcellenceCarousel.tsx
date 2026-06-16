@@ -496,7 +496,7 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="flex flex-col gap-4">
             <SectionEyebrow>WORK</SectionEyebrow>
-            <h2 className="text-[32px] md:text-[42px] font-bold text-[#0E1A2B] leading-[1.1] tracking-[0]">
+            <h2 className="text-[32px] font-extrabold leading-[1.1] tracking-[0] text-[#0E1A2B] md:text-[42px]">
               {content?.title || ''}
             </h2>
             <p className="text-[16px] md:text-[18px] text-[#72665D] max-w-xl">
@@ -505,32 +505,38 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
           </div>
 
           {/* Navigation Controls */}
-          <div className="flex items-center gap-3 md:pb-1">
+          <div className="hidden items-center gap-2 md:flex md:pb-1" aria-label="Carousel navigation">
             <button
+              type="button"
               onClick={prev}
               aria-label="Previous"
-              className="group flex h-11 w-11 items-center justify-center rounded-full bg-[#E4E4E8] text-[#3B3B3F] transition-colors duration-200 hover:bg-[#D8D8DE] active:bg-[#CBCBD2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0E1A2B]/30"
+              title="Previous"
+              className="group inline-flex size-14 items-center justify-center rounded-full border border-[#B8643E] bg-white/92 text-[#B8643E] shadow-[0_12px_30px_rgba(184,100,62,0.14)] transition-all duration-300 hover:scale-105 hover:bg-[#B8643E] hover:text-white hover:shadow-[0_16px_36px_rgba(184,100,62,0.28)] active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8643E]"
             >
               <svg
-                className={`h-5 w-5 transition-transform duration-200 group-hover:-translate-x-0.5 ${isRTL ? 'rotate-180' : ''}`}
+                className={`size-6 transition-transform duration-300 group-hover:-translate-x-0.5 ${isRTL ? 'rotate-180 group-hover:translate-x-0.5' : ''}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
 
             <button
+              type="button"
               onClick={next}
               aria-label="Next"
-              className="group flex h-11 w-11 items-center justify-center rounded-full bg-[#E4E4E8] text-[#3B3B3F] transition-colors duration-200 hover:bg-[#D8D8DE] active:bg-[#CBCBD2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0E1A2B]/30"
+              title="Next"
+              className="group inline-flex size-14 items-center justify-center rounded-full border border-[#B8643E] bg-white/92 text-[#B8643E] shadow-[0_12px_30px_rgba(184,100,62,0.14)] transition-all duration-300 hover:scale-105 hover:bg-[#B8643E] hover:text-white hover:shadow-[0_16px_36px_rgba(184,100,62,0.28)] active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8643E]"
             >
               <svg
-                className={`h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5 ${isRTL ? 'rotate-180' : ''}`}
+                className={`size-6 transition-transform duration-300 group-hover:translate-x-0.5 ${isRTL ? 'rotate-180 group-hover:-translate-x-0.5' : ''}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
               </svg>
@@ -542,8 +548,8 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
       {/* Carousel Container with Gradients */}
       <div className="relative mt-12 w-full">
         {/* Narrower Edge Gradients to see neighbor cards better */}
-        <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-20 w-[5%] bg-gradient-to-r from-[#F5F5F7] via-[#F5F5F7]/50 to-transparent" />
-        <div className="pointer-events-none absolute bottom-0 right-0 top-0 z-20 w-[5%] bg-gradient-to-l from-[#F5F5F7] via-[#F5F5F7]/50 to-transparent" />
+        <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-20 hidden w-[5%] bg-gradient-to-r from-[#F5F5F7] via-[#F5F5F7]/50 to-transparent md:block" />
+        <div className="pointer-events-none absolute bottom-0 right-0 top-0 z-20 hidden w-[5%] bg-gradient-to-l from-[#F5F5F7] via-[#F5F5F7]/50 to-transparent md:block" />
 
         <div
           ref={scrollRef}
@@ -561,7 +567,7 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
             <div
               key={`${index}-${item.title}`}
               data-card
-              className="flex w-[84vw] max-w-[360px] flex-shrink-0 snap-start sm:w-[340px] lg:w-[350px]"
+              className="flex w-[80vw] max-w-[340px] flex-shrink-0 snap-start sm:w-[340px] lg:w-[350px]"
             >
               <div
                 className="group relative h-[520px] w-full overflow-hidden rounded-[28px] bg-white shadow-[0_18px_44px_rgba(15,23,42,0.08)] ring-1 ring-black/[0.04] transition duration-500 hover:-translate-y-0.5 hover:shadow-[0_22px_56px_rgba(15,23,42,0.12)] sm:h-[560px] lg:h-[590px]"

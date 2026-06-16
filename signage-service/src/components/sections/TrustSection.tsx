@@ -68,11 +68,11 @@ const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
           <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.82fr)] lg:items-center">
             <div className="flex min-w-0 max-w-4xl flex-col gap-6">
               <SectionEyebrow>{content?.pretitle || safeT('pretitle', 'ADVANTAGE')}</SectionEyebrow>
-              <h2 className="text-[34px] md:text-[42px] font-black text-white leading-[1.1] tracking-[0]">
+              <h2 className="text-[32px] font-extrabold leading-[1.1] tracking-[0] text-white md:text-[42px]">
                 <span>{content?.titleStart || safeT('titleStart', 'Genug')}</span>
                 {' '}
                 <br />
-                <span className="text-[#B8643E] relative inline-block">
+                <span className="relative inline-block text-[#B8643E]">
                   {content?.titleAccent || safeT('titleAccent', 'komplizierte Portale')}
                 </span>
                 {(content?.titleEnd || safeT('titleEnd', '')) ? (

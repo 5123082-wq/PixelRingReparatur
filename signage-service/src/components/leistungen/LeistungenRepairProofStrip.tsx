@@ -12,6 +12,7 @@ type ProofCase = {
   result: string;
   image: string;
   alt: string;
+  hoverImage?: string;
 };
 
 type ProofContent = {
@@ -37,24 +38,25 @@ const PROOF_CONTENT: Record<Locale, ProofContent> = {
         title: 'Der Leuchtkasten leuchtet wieder gleichmäßig',
         before: 'Vorher: ungleiches Licht und gealterter Kasten.',
         result: 'Danach: Lichtfeld, Netzteil und LED-Zonen sind geprüft und sauber abgestimmt.',
-        image: '/images/references/lightbox-lift.webp',
-        alt: 'Beispiel eines wieder gleichmäßig leuchtenden Leuchtkastens',
+        image: '/images/leistungen/repair-proof/leuchtkasten-kosmetikstudio-fassade-nachher.webp',
+        alt: 'Gleichmäßig beleuchteter Leuchtkasten eines Kosmetikstudios an einer Fassade',
       },
       {
         tag: 'LED',
         title: 'LED-Buchstaben ergeben wieder ein klares Lichtbild',
         before: 'Vorher: einzelne Zonen fehlen im Lichtbild.',
         result: 'Danach: Defekte Module sind erkannt und gezielt instand gesetzt.',
-        image: '/images/references/led-detail.webp',
-        alt: 'Nahaufnahme instand gesetzter LED-Module einer Werbeanlage',
+        image: '/images/leistungen/repair-proof/led-leuchtbuchstaben-bildungszentrum-berlin-fassade-nachher.webp',
+        alt: 'LED-Leuchtbuchstaben an der Fassade eines Bildungszentrums in Berlin',
       },
       {
         tag: 'Folie',
         title: 'Folie und Oberfläche wirken wieder sauber',
         before: 'Vorher: Kanten, Blasen oder UV-Schäden sind sichtbar.',
         result: 'Danach: Oberfläche, Material und Teilersatz sind geprüft und ordentlich erneuert.',
-        image: '/images/references/window-film-install.webp',
-        alt: 'Beispiel einer sauber erneuerten Folie an einer Schaufensterfläche',
+        image: '/images/leistungen/repair-proof/folienarbeit-apotheke-fassade-service.webp',
+        alt: 'Arbeit an einer Apothekenfassade mit Lichtkreuz und erneuerter Beschriftungsfläche',
+        hoverImage: '/images/leistungen/repair-proof/folienarbeit-apotheke-fassade-nachher.webp',
       },
     ],
   },
@@ -71,24 +73,25 @@ const PROOF_CONTENT: Record<Locale, ProofContent> = {
         title: 'The lightbox is evenly lit again',
         before: 'Before: uneven light and a tired housing.',
         result: 'After: The light field, power supply and LED zones are checked and balanced.',
-        image: '/images/references/lightbox-lift.webp',
-        alt: 'Example of a lightbox lit evenly again after repair',
+        image: '/images/leistungen/repair-proof/leuchtkasten-kosmetikstudio-fassade-nachher.webp',
+        alt: 'Evenly illuminated lightbox sign for a cosmetics studio on a facade',
       },
       {
         tag: 'LED',
         title: 'LED letters form a clear light image again',
         before: 'Before: individual zones are missing from the light image.',
         result: 'After: Faulty modules are identified and repaired in place.',
-        image: '/images/references/led-detail.webp',
-        alt: 'Close-up of repaired LED modules in outdoor advertising',
+        image: '/images/leistungen/repair-proof/led-leuchtbuchstaben-bildungszentrum-berlin-fassade-nachher.webp',
+        alt: 'LED illuminated letters on the facade of an education center in Berlin',
       },
       {
         tag: 'Film',
         title: 'Film and surfaces look clean again',
         before: 'Before: edges, bubbles or UV damage are visible.',
         result: 'After: The surface, material and replacement areas are checked and renewed cleanly.',
-        image: '/images/references/window-film-install.webp',
-        alt: 'Example of cleanly renewed film on a storefront surface',
+        image: '/images/leistungen/repair-proof/folienarbeit-apotheke-fassade-service.webp',
+        alt: 'Work on a pharmacy facade with an illuminated cross and renewed lettering surface',
+        hoverImage: '/images/leistungen/repair-proof/folienarbeit-apotheke-fassade-nachher.webp',
       },
     ],
   },
@@ -105,24 +108,25 @@ const PROOF_CONTENT: Record<Locale, ProofContent> = {
         title: 'Световой короб снова светится ровно',
         before: 'До: неравномерный свет и уставший корпус.',
         result: 'После: Световое поле, питание и LED-зоны проверены и настроены для ровной подсветки.',
-        image: '/images/references/lightbox-lift.webp',
-        alt: 'Пример светового короба с ровной подсветкой после ремонта',
+        image: '/images/leistungen/repair-proof/leuchtkasten-kosmetikstudio-fassade-nachher.webp',
+        alt: 'Ровно подсвеченный световой короб косметологической студии на фасаде',
       },
       {
         tag: 'LED',
         title: 'LED-буквы снова дают цельную световую картину',
         before: 'До: отдельные зоны выпадают из световой картинки.',
         result: 'После: Неисправные модули найдены и восстановлены локально.',
-        image: '/images/references/led-detail.webp',
-        alt: 'Крупный план восстановленных LED-модулей наружной рекламы',
+        image: '/images/leistungen/repair-proof/led-leuchtbuchstaben-bildungszentrum-berlin-fassade-nachher.webp',
+        alt: 'Световые LED-буквы на фасаде образовательного центра в Берлине',
       },
       {
         tag: 'Пленка',
         title: 'Пленка и поверхность снова выглядят чисто',
         before: 'До: видны края, пузыри или выцветание.',
         result: 'После: Поверхность, материал и участки замены проверены и аккуратно обновлены.',
-        image: '/images/references/window-film-install.webp',
-        alt: 'Пример аккуратно обновленной пленки на витрине',
+        image: '/images/leistungen/repair-proof/folienarbeit-apotheke-fassade-service.webp',
+        alt: 'Работа на фасаде аптеки со световым крестом и обновленной поверхностью вывески',
+        hoverImage: '/images/leistungen/repair-proof/folienarbeit-apotheke-fassade-nachher.webp',
       },
     ],
   },
@@ -139,24 +143,25 @@ const PROOF_CONTENT: Record<Locale, ProofContent> = {
         title: 'Işıklı kutu yeniden eşit aydınlanır',
         before: 'Önce: düzensiz ışık ve yıpranmış kasa.',
         result: 'Sonra: Işık alanı, güç kaynağı ve LED bölgeleri kontrol edilir ve ayarlanır.',
-        image: '/images/references/lightbox-lift.webp',
-        alt: 'Onarımdan sonra eşit aydınlanan ışıklı kutu örneği',
+        image: '/images/leistungen/repair-proof/leuchtkasten-kosmetikstudio-fassade-nachher.webp',
+        alt: 'Cephede eşit aydınlanan kozmetik stüdyosu ışıklı kutu tabelası',
       },
       {
         tag: 'LED',
         title: 'LED harfler yeniden bütün bir ışık görüntüsü verir',
         before: 'Önce: ışık görüntüsünde bazı bölgeler eksik.',
         result: 'Sonra: Arızalı modüller bulunur ve yerinde onarılır.',
-        image: '/images/references/led-detail.webp',
-        alt: 'Onarılan LED modüllerinin yakın görünümü',
+        image: '/images/leistungen/repair-proof/led-leuchtbuchstaben-bildungszentrum-berlin-fassade-nachher.webp',
+        alt: 'Berlin’de bir eğitim merkezinin cephesinde LED ışıklı harfler',
       },
       {
         tag: 'Folyo',
         title: 'Folyo ve yüzey yeniden temiz görünür',
         before: 'Önce: kenarlar, kabarcıklar veya UV hasarı görünür.',
         result: 'Sonra: Yüzey, malzeme ve değiştirilen bölümler kontrol edilip düzgünce yenilenir.',
-        image: '/images/references/window-film-install.webp',
-        alt: 'Vitrinde düzgünce yenilenmiş folyo örneği',
+        image: '/images/leistungen/repair-proof/folienarbeit-apotheke-fassade-service.webp',
+        alt: 'Işıklı haç ve yenilenen yazı yüzeyiyle eczane cephesinde çalışma',
+        hoverImage: '/images/leistungen/repair-proof/folienarbeit-apotheke-fassade-nachher.webp',
       },
     ],
   },
@@ -173,24 +178,25 @@ const PROOF_CONTENT: Record<Locale, ProofContent> = {
         title: 'Kaseton znów świeci równomiernie',
         before: 'Przed: nierówne światło i zużyta obudowa.',
         result: 'Po: Pole świetlne, zasilanie i strefy LED są sprawdzone i ustawione na równą pracę.',
-        image: '/images/references/lightbox-lift.webp',
-        alt: 'Przykład kasetonu świecącego równomiernie po naprawie',
+        image: '/images/leistungen/repair-proof/leuchtkasten-kosmetikstudio-fassade-nachher.webp',
+        alt: 'Równomiernie podświetlany kaseton studia kosmetycznego na fasadzie',
       },
       {
         tag: 'LED',
         title: 'Litery LED znów tworzą spójny obraz światła',
         before: 'Przed: pojedyncze strefy znikają z obrazu światła.',
         result: 'Po: Uszkodzone moduły są namierzone i naprawione punktowo.',
-        image: '/images/references/led-detail.webp',
-        alt: 'Zbliżenie naprawionych modułów LED w reklamie zewnętrznej',
+        image: '/images/leistungen/repair-proof/led-leuchtbuchstaben-bildungszentrum-berlin-fassade-nachher.webp',
+        alt: 'Podświetlane litery LED na fasadzie centrum edukacyjnego w Berlinie',
       },
       {
         tag: 'Folia',
         title: 'Folia i powierzchnia znów wyglądają czysto',
         before: 'Przed: widoczne krawędzie, pęcherze lub wyblaknięcie.',
         result: 'Po: Powierzchnia, materiał i wymieniane fragmenty są sprawdzone i starannie odnowione.',
-        image: '/images/references/window-film-install.webp',
-        alt: 'Przykład starannie odnowionej folii na witrynie',
+        image: '/images/leistungen/repair-proof/folienarbeit-apotheke-fassade-service.webp',
+        alt: 'Praca przy fasadzie apteki z podświetlanym krzyżem i odnowioną powierzchnią oznakowania',
+        hoverImage: '/images/leistungen/repair-proof/folienarbeit-apotheke-fassade-nachher.webp',
       },
     ],
   },
@@ -207,24 +213,25 @@ const PROOF_CONTENT: Record<Locale, ProofContent> = {
         title: 'يضيء الصندوق المضيء بتوازن من جديد',
         before: 'قبل: ضوء غير متساو وهيكل متعب.',
         result: 'بعد: يتم فحص مساحة الإضاءة ومصدر الطاقة ومناطق LED وضبطها.',
-        image: '/images/references/lightbox-lift.webp',
-        alt: 'مثال لصندوق مضيء يضيء بتوازن بعد الإصلاح',
+        image: '/images/leistungen/repair-proof/leuchtkasten-kosmetikstudio-fassade-nachher.webp',
+        alt: 'صندوق إعلاني مضيء بتوازن لاستوديو تجميل على واجهة',
       },
       {
         tag: 'LED',
         title: 'تعود حروف LED إلى صورة ضوئية متناسقة',
         before: 'قبل: مناطق منفردة غائبة من صورة الضوء.',
         result: 'بعد: تُحدَّد الوحدات المعطلة وتُصلح في موضعها.',
-        image: '/images/references/led-detail.webp',
-        alt: 'لقطة قريبة لوحدات LED بعد إصلاحها',
+        image: '/images/leistungen/repair-proof/led-leuchtbuchstaben-bildungszentrum-berlin-fassade-nachher.webp',
+        alt: 'حروف LED مضيئة على واجهة مركز تعليمي في برلين',
       },
       {
         tag: 'فيلم',
         title: 'يعود الفيلم والسطح إلى مظهر نظيف',
         before: 'قبل: حواف أو فقاعات أو بهتان ظاهر.',
         result: 'بعد: يتم فحص السطح والمادة ومواضع الاستبدال وتجديدها بعناية.',
-        image: '/images/references/window-film-install.webp',
-        alt: 'مثال لفيلم لاصق مجدد بعناية على واجهة',
+        image: '/images/leistungen/repair-proof/folienarbeit-apotheke-fassade-service.webp',
+        alt: 'عمل على واجهة صيدلية مع صليب مضيء وسطح كتابة مجدد',
+        hoverImage: '/images/leistungen/repair-proof/folienarbeit-apotheke-fassade-nachher.webp',
       },
     ],
   },
@@ -267,9 +274,9 @@ export default function LeistungenRepairProofStrip({ locale }: { locale: string 
           {content.cases.map((item) => (
             <article
               key={item.title}
-              className="group mb-3 inline-block w-[78vw] overflow-hidden rounded-[18px] border border-[#E7DDD3] bg-white align-top shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(13,27,42,0.09)] sm:w-[340px] lg:mb-0 lg:w-auto"
+              className="group mb-3 inline-block w-[78vw] overflow-hidden rounded-[18px] border border-[#D9C7BA] bg-[#0E1A2B] align-top shadow-[0_16px_36px_rgba(13,27,42,0.10)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_48px_rgba(13,27,42,0.16)] sm:w-[340px] lg:mb-0 lg:w-auto"
             >
-              <div className="relative aspect-[16/10] overflow-hidden bg-[#0E1A2B]">
+              <div className="relative h-[360px] overflow-hidden bg-[#0E1A2B] sm:h-[360px] lg:h-[340px]">
                 <Image
                   src={item.image}
                   alt={item.alt}
@@ -277,20 +284,25 @@ export default function LeistungenRepairProofStrip({ locale }: { locale: string 
                   sizes="(min-width: 1024px) 33vw, 100vw"
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                <div className="absolute bottom-3 left-3 right-3 text-white">
-                  <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-white/72">
+                {item.hoverImage ? (
+                  <Image
+                    src={item.hoverImage}
+                    alt=""
+                    aria-hidden="true"
+                    fill
+                    sizes="(min-width: 1024px) 33vw, 100vw"
+                    className="object-cover opacity-0 transition duration-700 group-hover:scale-105 group-hover:opacity-100"
+                  />
+                ) : null}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/8 via-black/14 to-black/78" />
+                <div className="absolute inset-x-0 bottom-0 p-4 text-white sm:p-5">
+                  <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-white/72 sm:text-[11px]">
                     {item.tag}
                   </p>
-                  <h3 className="mt-1 text-[20px] font-extrabold leading-tight tracking-[0]">
+                  <h3 className="mt-1 text-[21px] font-extrabold leading-[1.08] tracking-[0] sm:text-[23px]">
                     {item.title}
                   </h3>
                 </div>
-              </div>
-              <div className="p-4 text-start">
-                <p className="line-clamp-2 text-[14px] font-semibold leading-6 text-[#24594D]">
-                  {item.result.replace(/^Danach: /, '').replace(/^After: /, '').replace(/^После: /, '').replace(/^Sonra: /, '').replace(/^Po: /, '').replace(/^بعد: /, '')}
-                </p>
               </div>
             </article>
           ))}

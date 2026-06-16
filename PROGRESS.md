@@ -8,6 +8,42 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 
 Latest checkpoint:
 
+- Date: 2026-06-16
+- Current stage: Added the seventh before/after visual to the `/[locale]/leistungen/werbeanlagen-reparatur` symptom carousel: the moisture/short-circuit card now uses owner-provided PixelRing rain-damage/repaired WebP images with the existing hover/focus/touch repaired preview behavior.
+- Next action: Owner visually reviews `/ru/leistungen/werbeanlagen-reparatur` and `/de/leistungen/werbeanlagen-reparatur` around the moisture/short-circuit card to confirm crop, overlay readability, and repaired-state hover behavior.
+
+- Date: 2026-06-16
+- Current stage: Reordered the `/[locale]/leistungen/werbeanlagen-reparatur` symptom carousel by likely request demand: complete power-supply outage first, flickering light second, failed letters third, followed by moisture, mechanical damage, mounting, film, neon, and photo fallback.
+- Next action: Owner visually reviews the RU/DE symptom carousel opening order and decides whether the same demand-led priority should be mirrored in any diagnostic prototype flows.
+
+- Date: 2026-06-16
+- Current stage: Added the sixth before/after visual to the `/[locale]/leistungen/werbeanlagen-reparatur` symptom carousel: the power-supply card now uses owner-provided split PixelRing lightbox dark/illuminated WebP images with the existing hover/focus/touch repaired preview behavior.
+- Next action: Owner visually reviews `/ru/leistungen/werbeanlagen-reparatur` and `/de/leistungen/werbeanlagen-reparatur` around the power-supply symptom card to confirm crop, overlay readability, and repaired-state hover behavior.
+
+- Date: 2026-06-16
+- Current stage: Added the fifth before/after visual to the `/[locale]/leistungen/werbeanlagen-reparatur` symptom carousel: the neon-repair card now uses owner-provided PixelRing neon logo faulty/repaired WebP images with the existing hover/focus/touch repaired preview behavior.
+- Next action: Owner visually reviews `/de/leistungen/werbeanlagen-reparatur` and `/ru/leistungen/werbeanlagen-reparatur` around the neon-repair card to confirm crop, overlay readability, and repaired-state hover behavior.
+
+- Date: 2026-06-16
+- Current stage: Added the fourth before/after visual to the `/[locale]/leistungen/werbeanlagen-reparatur` symptom carousel: the film-defect card now uses owner-provided split PixelRing storefront film WebP images with the existing hover/focus/touch repaired preview behavior.
+- Next action: Owner visually reviews `/de/leistungen/werbeanlagen-reparatur` and `/ru/leistungen/werbeanlagen-reparatur` around the film-defect card to confirm crop, overlay readability, and repaired-state hover behavior.
+
+- Date: 2026-06-16
+- Current stage: Added the third before/after visual to the `/[locale]/leistungen/werbeanlagen-reparatur` symptom carousel: the mechanical-damage card now uses owner-provided PixelRing lightbox damaged/repaired WebP images with the existing hover/focus/touch repaired preview behavior.
+- Next action: Owner visually reviews `/ru/leistungen/werbeanlagen-reparatur` and `/de/leistungen/werbeanlagen-reparatur` around the mechanical-damage symptom card to confirm crop, overlay readability, and repaired-state hover behavior.
+
+- Date: 2026-06-16
+- Current stage: Retuned the second before/after visual in the `/[locale]/leistungen/werbeanlagen-reparatur` symptom carousel: the flickering-light card now uses a smooth animated WebP blended from two owner-selected PixelRing lightbox images and a repaired static WebP for hover/focus/touch preview.
+- Next action: Owner visually reviews `/ru/leistungen/werbeanlagen-reparatur` and `/de/leistungen/werbeanlagen-reparatur` around the first two symptom cards to confirm the smoother flicker intensity, overlay readability, and shared PixelRing visual direction before generating the remaining card pairs.
+
+- Date: 2026-06-15
+- Current stage: Added the first before/after hover visual pilot to the `/[locale]/leistungen/werbeanlagen-reparatur` symptom carousel: the letter-outage card now uses owner-provided PixelRing channel-letter images, showing the failed letter by default and the repaired illuminated state on hover/focus/touch.
+- Next action: Owner visually reviews `/ru/leistungen/werbeanlagen-reparatur` and `/de/leistungen/werbeanlagen-reparatur` around the symptom carousel to confirm the PixelRing before/after direction before generating the remaining card pairs.
+
+- Date: 2026-06-15
+- Current stage: Replaced all three `/[locale]/leistungen/werbeanlagen-reparatur` after-restoration proof card visuals with owner-provided photos and redesigned the proof cards into cleaner full-image overlay cards that show only tag and title, removing the separate white text footer and the smaller result line while preserving the pharmacy hover image and localized alt text across DE/EN/RU/TR/PL/AR.
+- Next action: Owner visually reviews `/de/leistungen/werbeanlagen-reparatur` and `/ru/leistungen/werbeanlagen-reparatur` around the `Ihre Werbung wird wieder sichtbar` proof strip to confirm the simplified full-image card rhythm, overlay readability, mobile stacking, and the pharmacy hover transition.
+
 - Date: 2026-06-14
 - Current stage: Moved the public home `Sichtbare Qualität` branding/print card one position earlier in the carousel render order, placing it before maintenance/audit while preserving its video media, service link, and localized copy across DE/EN/RU/TR/PL/AR.
 - Next action: Owner visually reviews `/de` and `/ru` home carousel order: Montage, repair, branding/print, maintenance/audit, LED, dismantling.

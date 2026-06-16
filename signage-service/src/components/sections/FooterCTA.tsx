@@ -40,7 +40,7 @@ const FooterCTA = ({ content }: { content?: FooterCtaContent | null }) => {
           {/* Left Column: Text & Messengers */}
           <div className="lg:col-span-4 flex flex-col justify-between gap-12 lg:gap-0 lg:py-6">
             <div className="flex flex-col gap-6 ltr:text-left rtl:text-right">
-              <h2 className="text-[34px] md:text-[42px] xl:text-[44px] font-extrabold text-white leading-[1.1] tracking-[0]">
+              <h2 className="text-[32px] font-extrabold leading-[1.1] tracking-[0] text-white md:text-[42px]">
                 {content?.title ?? t('title')}
               </h2>
               <p className="text-[17px] md:text-[19px] text-white/70 max-w-xl leading-relaxed">

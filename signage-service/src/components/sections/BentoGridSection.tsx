@@ -163,7 +163,7 @@ const BentoGridSection = ({ content }: BentoGridSectionProps) => {
             <div className="w-8 h-[2px] bg-[#B8643E]" />
             <span className="text-[#B8643E] font-bold tracking-[0.2em] uppercase text-[12px]">Process</span>
           </motion.div>
-          <h2 className="text-[36px] md:text-[42px] font-black text-[#0E1A2B] leading-[1.1] tracking-tight">
+          <h2 className="text-[32px] font-extrabold leading-[1.1] tracking-[0] text-[#0E1A2B] md:text-[42px]">
             {content?.title || 'Wie es funktioniert'}
           </h2>
         </div>
