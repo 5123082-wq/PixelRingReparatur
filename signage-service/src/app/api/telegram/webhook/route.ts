@@ -949,7 +949,11 @@ export async function POST(request: NextRequest) {
         locale: result.locale,
         latestMessageId: result.customerMessageId,
         latestCustomerMessage: body,
-        publicRequestNumber: result.publicRequestNumber,
+        publicRequestNumber: result.hasStoredTelegramContact
+          ? result.publicRequestNumber
+          : shouldAttachStatusAction(body)
+            ? result.publicRequestNumber
+            : null,
         messengerKnownContact: result.hasStoredTelegramContact,
         capabilities: ['inline_buttons'],
       }).catch((error) => {
@@ -962,10 +966,12 @@ export async function POST(request: NextRequest) {
         const shouldShowCreateRequestButton =
           result.hasStoredTelegramContact &&
           assistantReply.actions.some((action) => action.type === 'show_intake');
+        const shouldShowAssistantStatusButton =
+          assistantReply.actions.some((action) => action.type === 'show_status');
         const shouldShowStatusButton =
           !shouldShowCreateRequestButton &&
           Boolean(result.publicRequestNumber) &&
-          shouldAttachStatusAction(body);
+          (shouldShowAssistantStatusButton || shouldAttachStatusAction(body));
         const statusUrl = shouldShowStatusButton
           ? await createCaseStatusAccessLink(prisma, {
               caseId: result.caseId,

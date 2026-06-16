@@ -9,8 +9,8 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 Latest checkpoint:
 
 - Date: 2026-06-16
-- Current stage: Hotfixed Telegram known-contact intent handling: broad pre-AI keyword matching for repeat requests was removed, `/request` remains the deterministic command, and ordinary known-customer messages now let the shared AI decide whether to show a Telegram confirmation button via action marker instead of treating words like "заявка" as create-new-request intent.
-- Next action: Deploy and retest Telegram with: `Привет`, `Что с моей заявкой?`, `/request`, and a clear new-problem request; confirm only the clear request path shows the create button.
+- Current stage: Hotfixed Telegram known-contact intent/status handling: broad pre-AI keyword matching for repeat requests was removed, `/request` remains the deterministic command, ordinary known-customer messages now let the shared AI decide whether to show a Telegram confirmation button, and status questions can use the active PR via `<<SHOW_STATUS>>` instead of asking the customer for the number again.
+- Next action: Deploy and retest Telegram with: `Привет`, `Что с моей заявкой?`, `/request`, and a clear new-problem request; confirm status questions get a status button and only the clear request path shows the create button.
 
 - Date: 2026-06-16
 - Current stage: Changed Telegram repeat-request flow so known Telegram contacts no longer open the secure website form for ordinary new requests: `/request`/new-request intent now sends an inline confirmation button, confirmation creates a new PR from the saved contact without exposing contact data to the assistant, Telegram routing switches to the new case, and CRM replies can still fall back to Telegram chat IDs stored in previous case messages.

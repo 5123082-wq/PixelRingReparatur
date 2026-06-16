@@ -121,3 +121,28 @@ test('telegram assistant receives known-contact state without direct contact val
   assert.equal(customerEmailAfterAssistantIndex, -1);
   assert.equal(customerPhoneAfterAssistantIndex, -1);
 });
+
+test('known telegram status uses assistant action instead of asking for a request number again', () => {
+  const webhookSource = readFileSync(
+    resolve(__dirname, '../src/app/api/telegram/webhook/route.ts'),
+    'utf8'
+  );
+  const promptSource = readFileSync(
+    resolve(__dirname, '../src/lib/ai/system-prompt.ts'),
+    'utf8'
+  );
+  const orchestratorSource = readFileSync(
+    resolve(__dirname, '../src/lib/ai/assistant-orchestrator.ts'),
+    'utf8'
+  );
+  const chatEngineSource = readFileSync(
+    resolve(__dirname, '../src/lib/ai/chat-engine.ts'),
+    'utf8'
+  );
+
+  assert.ok(promptSource.includes('<<SHOW_STATUS>>'));
+  assert.ok(orchestratorSource.includes("{ type: 'show_status' }"));
+  assert.ok(chatEngineSource.includes('suggestStatus'));
+  assert.ok(webhookSource.includes("action.type === 'show_status'"));
+  assert.ok(webhookSource.includes('publicRequestNumber: result.hasStoredTelegramContact'));
+});
