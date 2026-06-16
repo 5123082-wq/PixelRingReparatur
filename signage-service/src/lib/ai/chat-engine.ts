@@ -62,23 +62,32 @@ export type GenerateChatReplyResult = {
   model?: string;
   refused?: boolean;
   suggestIntake?: boolean;
+  suggestStatus?: boolean;
   intakePrefill?: IntakePrefill;
 };
 
 const INTAKE_MARKER_RE = /\n?<<SHOW_INTAKE:(\{[^>]*\})>>/;
+const STATUS_MARKER_RE = /\n?<<SHOW_STATUS>>/;
 
-function parseIntakeMarker(text: string): {
+function parseActionMarkers(text: string): {
   cleanText: string;
   suggestIntake: boolean;
+  suggestStatus: boolean;
   intakePrefill?: IntakePrefill;
 } {
-  const match = INTAKE_MARKER_RE.exec(text);
+  const statusMatch = STATUS_MARKER_RE.test(text);
+  const textWithoutStatus = text.replace(STATUS_MARKER_RE, '').trim();
+  const match = INTAKE_MARKER_RE.exec(textWithoutStatus);
 
   if (!match) {
-    return { cleanText: text, suggestIntake: false };
+    return {
+      cleanText: textWithoutStatus,
+      suggestIntake: false,
+      suggestStatus: statusMatch,
+    };
   }
 
-  const cleanText = text.replace(INTAKE_MARKER_RE, '').trim();
+  const cleanText = textWithoutStatus.replace(INTAKE_MARKER_RE, '').trim();
 
   try {
     const rawPrefill = JSON.parse(match[1]) as IntakePrefill;
@@ -92,9 +101,14 @@ function parseIntakeMarker(text: string): {
       prefill.summary = redactAssistantVisiblePii(rawPrefill.summary);
     }
 
-    return { cleanText, suggestIntake: true, intakePrefill: prefill };
+    return {
+      cleanText,
+      suggestIntake: true,
+      suggestStatus: statusMatch,
+      intakePrefill: prefill,
+    };
   } catch {
-    return { cleanText, suggestIntake: true };
+    return { cleanText, suggestIntake: true, suggestStatus: statusMatch };
   }
 }
 
@@ -328,7 +342,7 @@ export async function generateChatReply(
 
       if (outputVerdict.allowed) {
         const redactedAiText = redactAssistantVisiblePii(aiText);
-        const { cleanText, suggestIntake, intakePrefill } = parseIntakeMarker(redactedAiText);
+        const { cleanText, suggestIntake, suggestStatus, intakePrefill } = parseActionMarkers(redactedAiText);
 
         if (input.requestBoundPortal && suggestIntake) {
           return {
@@ -346,6 +360,7 @@ export async function generateChatReply(
           provider: 'openai',
           model: config.model || DEFAULT_MODEL,
           suggestIntake,
+          suggestStatus,
           intakePrefill,
         };
       }

@@ -35,6 +35,7 @@ Planned improvement options:
   - Removed broad pre-AI keyword matching for known Telegram repeat-request creation so words such as "заявка" no longer create a new PR path by themselves.
   - Kept `/request` as the deterministic fallback command for unknown-contact secure form routing.
   - Let the shared assistant decide when a known Telegram customer needs the create-request confirmation button by emitting the existing action marker through the `inline_buttons` capability.
+  - Added a status action marker so known Telegram status questions can use the active public PR and attach a status button instead of asking the customer to provide the number again.
   - Tightened prompt guidance so greetings stay neutral, status questions stay status-oriented, and known-contact request creation is not treated as a website form handoff.
 - **In Progress**:
   - Live Telegram QA after deployment.

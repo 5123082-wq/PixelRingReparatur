@@ -17,6 +17,7 @@ export type AssistantChannelCapability =
 
 export type AssistantAction =
   | { type: 'show_intake'; prefill?: IntakePrefill }
+  | { type: 'show_status' }
   | { type: 'handoff_requested' }
   | { type: 'language_selector' };
 
@@ -51,6 +52,7 @@ function sanitizeHistoryBody(value: string): string {
 
 function buildActions(input: {
   suggestIntake?: boolean;
+  suggestStatus?: boolean;
   intakePrefill?: IntakePrefill;
   intent: string;
   capabilities: AssistantChannelCapability[];
@@ -68,6 +70,10 @@ function buildActions(input: {
       type: 'show_intake',
       prefill: input.intakePrefill,
     });
+  }
+
+  if (input.suggestStatus && input.capabilities.includes('inline_buttons')) {
+    actions.push({ type: 'show_status' });
   }
 
   if (input.intent === 'human') {
@@ -141,6 +147,7 @@ export async function runAssistantTurn(
     text,
     actions: buildActions({
       suggestIntake: reply.suggestIntake,
+      suggestStatus: reply.suggestStatus,
       intakePrefill: reply.intakePrefill,
       intent: reply.intent,
       capabilities: input.capabilities ?? [],
