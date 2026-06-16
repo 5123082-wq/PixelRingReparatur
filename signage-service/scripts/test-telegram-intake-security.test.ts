@@ -144,5 +144,41 @@ test('known telegram status uses assistant action instead of asking for a reques
   assert.ok(orchestratorSource.includes("{ type: 'show_status' }"));
   assert.ok(chatEngineSource.includes('suggestStatus'));
   assert.ok(webhookSource.includes("action.type === 'show_status'"));
-  assert.ok(webhookSource.includes('publicRequestNumber: result.hasStoredTelegramContact'));
+  assert.ok(webhookSource.includes('publicRequestNumber: shouldAttachStatusAction(body)'));
+  assert.equal(webhookSource.includes('publicRequestNumber: result.hasStoredTelegramContact'), false);
+});
+
+test('active telegram request continues current case instead of creating a duplicate', () => {
+  const webhookSource = readFileSync(
+    resolve(__dirname, '../src/app/api/telegram/webhook/route.ts'),
+    'utf8'
+  );
+  const promptSource = readFileSync(
+    resolve(__dirname, '../src/lib/ai/system-prompt.ts'),
+    'utf8'
+  );
+  const orchestratorSource = readFileSync(
+    resolve(__dirname, '../src/lib/ai/assistant-orchestrator.ts'),
+    'utf8'
+  );
+  const chatEngineSource = readFileSync(
+    resolve(__dirname, '../src/lib/ai/chat-engine.ts'),
+    'utf8'
+  );
+
+  assert.ok(webhookSource.includes('function isActiveCustomerVisibleRequest'));
+  assert.ok(webhookSource.includes('input.status !== CaseStatus.COMPLETED'));
+  assert.ok(webhookSource.includes('input.status !== CaseStatus.CANCELLED'));
+  assert.ok(webhookSource.includes('activeTelegramRequest'));
+  assert.ok(webhookSource.includes('activeMessengerRequest: result.activeTelegramRequest'));
+  assert.ok(webhookSource.includes('!result.activeTelegramRequest &&'));
+  assert.ok(webhookSource.includes('buildActiveRequestPhotoReceivedText'));
+  assert.ok(webhookSource.includes('function buildTelegramAssistantMessage'));
+  assert.ok(webhookSource.includes('hasPhoto: Boolean(telegramPhoto)'));
+  assert.ok(webhookSource.includes('It has already been stored on the current active request'));
+  assert.ok(promptSource.includes('# Active Messenger Request Mode'));
+  assert.ok(promptSource.includes('send them directly in this chat'));
+  assert.ok(promptSource.includes('Do not append <<SHOW_INTAKE:...>> while the customer is continuing the current request.'));
+  assert.ok(orchestratorSource.includes('activeMessengerRequest?: boolean'));
+  assert.ok(chatEngineSource.includes('activeMessengerRequest?: boolean'));
 });

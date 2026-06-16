@@ -30,6 +30,18 @@ const CONFIRM_NEW_REQUEST_CALLBACK = 'pr_new_request_confirm';
 const KNOWN_TELEGRAM_REQUEST_SUMMARY = 'Neue Telegram-Anfrage aus bekanntem Kontakt';
 const KNOWN_REQUEST_CALLBACK_DEDUP_MS = 10 * 60 * 1000;
 
+function isActiveCustomerVisibleRequest(input: {
+  publicRequestNumber?: string | null;
+  status?: CaseStatus | null;
+}): boolean {
+  return Boolean(
+    input.publicRequestNumber &&
+    input.status &&
+    input.status !== CaseStatus.COMPLETED &&
+    input.status !== CaseStatus.CANCELLED
+  );
+}
+
 function buildCaseSummary(body: string): string {
   const clean = body.trim().replace(/\s+/g, ' ');
 
@@ -213,6 +225,40 @@ function buildKnownContactNewRequestCreatedText(input: {
         'Beschreiben Sie bitte kurz, was gemacht werden soll, und senden Sie gern ein Foto.',
       ].join('\n');
   }
+}
+
+function buildActiveRequestPhotoReceivedText(locale?: string | null): string {
+  switch (locale) {
+    case 'ru':
+      return 'Фото получено и добавлено к текущей заявке. Если есть ещё детали, напишите их здесь.';
+    case 'en':
+      return 'The photo was received and added to the current request. If there are more details, send them here.';
+    case 'tr':
+      return 'Fotograf alindi ve mevcut talebe eklendi. Baska detay varsa buradan gonderebilirsiniz.';
+    case 'pl':
+      return 'Zdjecie zostalo odebrane i dodane do obecnego zgloszenia. Jesli sa dodatkowe szczegoly, wyslij je tutaj.';
+    case 'ar':
+      return 'تم استلام الصورة وإضافتها إلى الطلب الحالي. إذا كانت هناك تفاصيل أخرى، أرسلها هنا.';
+    case 'de':
+    default:
+      return 'Das Foto wurde empfangen und zur aktuellen Anfrage hinzugefuegt. Weitere Details koennen Sie hier senden.';
+  }
+}
+
+function buildTelegramAssistantMessage(input: {
+  body: string;
+  hasPhoto: boolean;
+  activeTelegramRequest: boolean;
+}): string {
+  if (!input.hasPhoto) {
+    return input.body;
+  }
+
+  const note = input.activeTelegramRequest
+    ? '[System note: The customer attached a photo to this Telegram message. It has already been stored on the current active request. Briefly acknowledge receipt and continue with the current request.]'
+    : '[System note: The customer attached a photo to this Telegram message. Briefly acknowledge receipt if relevant, but do not claim that a request was created unless the backend has created it.]';
+
+  return `${input.body}\n\n${note}`;
 }
 
 function buildKnownContactFallbackText(locale?: string | null): string {
@@ -839,8 +885,13 @@ export async function POST(request: NextRequest) {
           aiPausedAt: true,
           aiPausedReason: true,
           locale: true,
+          status: true,
           publicRequestNumber: true,
         },
+      });
+      const activeTelegramRequest = isActiveCustomerVisibleRequest({
+        publicRequestNumber: caseRecord.publicRequestNumber,
+        status: caseRecord.status,
       });
 
       return {
@@ -850,6 +901,7 @@ export async function POST(request: NextRequest) {
         aiPausedReason: caseRecord.aiPausedReason,
         locale: caseRecord.locale,
         publicRequestNumber: caseRecord.publicRequestNumber,
+        activeTelegramRequest,
         customerMessageId: customerMessage.id,
         externalConversationId: conversation.id,
         externalUserId: meta.externalUserId,
@@ -948,13 +1000,16 @@ export async function POST(request: NextRequest) {
         channel: CaseOriginChannel.TELEGRAM,
         locale: result.locale,
         latestMessageId: result.customerMessageId,
-        latestCustomerMessage: body,
-        publicRequestNumber: result.hasStoredTelegramContact
+        latestCustomerMessage: buildTelegramAssistantMessage({
+          body,
+          hasPhoto: Boolean(telegramPhoto),
+          activeTelegramRequest: result.activeTelegramRequest,
+        }),
+        publicRequestNumber: shouldAttachStatusAction(body)
           ? result.publicRequestNumber
-          : shouldAttachStatusAction(body)
-            ? result.publicRequestNumber
-            : null,
+          : null,
         messengerKnownContact: result.hasStoredTelegramContact,
+        activeMessengerRequest: result.activeTelegramRequest,
         capabilities: ['inline_buttons'],
       }).catch((error) => {
         console.error('Telegram AI assistant turn failed:', error);
@@ -964,6 +1019,7 @@ export async function POST(request: NextRequest) {
       if (assistantReply?.text) {
         assistantReplyText = assistantReply.text;
         const shouldShowCreateRequestButton =
+          !result.activeTelegramRequest &&
           result.hasStoredTelegramContact &&
           assistantReply.actions.some((action) => action.type === 'show_intake');
         const shouldShowAssistantStatusButton =
@@ -1010,6 +1066,16 @@ export async function POST(request: NextRequest) {
           console.error('Telegram AI reply delivery failed:', error);
         });
       }
+    }
+
+    if (!assistantReplyText && result.activeTelegramRequest && telegramPhoto) {
+      assistantReplyText = buildActiveRequestPhotoReceivedText(result.locale);
+      await sendTelegramMessage({
+        chatId: meta.chatId,
+        text: assistantReplyText,
+      }).catch((error) => {
+        console.error('Telegram active request photo acknowledgement failed:', error);
+      });
     }
 
     if (result.createdNewConversation && !assistantReplyText) {

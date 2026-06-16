@@ -13,6 +13,7 @@ import {
 import {
   classifyIntakeTurn,
   generateChatReply,
+  stripReservedActionMarkers,
 } from '@/lib/ai/chat-engine';
 import {
   isAcceptingIntakeDecision,
@@ -99,18 +100,18 @@ const ISSUE_KEYWORDS: Array<{ issueType: string; patterns: RegExp[] }> = [
 function buildInitialGreeting(locale?: string): string {
   switch (locale) {
     case 'en':
-      return 'Hello. I am the PixelRing virtual assistant. Tell me which device needs repair and what is happening with it.';
+      return 'Hello. I am the PixelRing virtual assistant. Tell me what happened with your sign, illuminated advertising, storefront, or service object.';
     case 'ru':
-      return 'Здравствуйте. Я виртуальный ассистент PixelRing. Напишите, какое устройство нужно отремонтировать и что с ним произошло.';
+      return 'Здравствуйте. Я виртуальный ассистент PixelRing. Напишите, что произошло с вывеской, световой рекламой, витриной или другим сервисным объектом.';
     case 'tr':
-      return 'Merhaba. Ben PixelRing sanal asistanıyım. Hangi cihazın onarılması gerektiğini ve sorunu kısaca yazın.';
+      return 'Merhaba. Ben PixelRing sanal asistanıyım. Tabela, ışıklı reklam, vitrin veya servis nesnesinde ne olduğunu kısaca yazın.';
     case 'pl':
-      return 'Dzień dobry. Jestem wirtualnym asystentem PixelRing. Napisz, jakie urządzenie wymaga naprawy i co się z nim dzieje.';
+      return 'Dzień dobry. Jestem wirtualnym asystentem PixelRing. Napisz, co stało się z szyldem, reklamą świetlną, witryną albo innym obiektem serwisowym.';
     case 'ar':
-      return 'مرحباً. أنا المساعد الافتراضي لـ PixelRing. أخبرني ما الجهاز الذي يحتاج إلى إصلاح وما المشكلة.';
+      return 'مرحباً. أنا المساعد الافتراضي لـ PixelRing. أخبرني ما الذي حدث للافتة أو الإعلان المضيء أو الواجهة أو عنصر الخدمة.';
     case 'de':
     default:
-      return 'Hallo. Ich bin der virtuelle Assistent von PixelRing. Schreiben Sie kurz, welches Gerät repariert werden soll und was passiert ist.';
+      return 'Hallo. Ich bin der virtuelle Assistent von PixelRing. Schreiben Sie kurz, was mit Ihrer Werbeanlage, Beschilderung, Leuchtreklame oder dem Serviceobjekt passiert ist.';
   }
 }
 
@@ -261,11 +262,13 @@ function isInternalPortalAccessMessage(value: string): boolean {
 }
 
 function sanitizeAiHistoryBody(value: string): string {
-  return redactPiiForAi(
-    value
-      .replace(/<<SHOW_LANGUAGE_SELECTOR>>/g, '')
-      .replace(/https?:\/\/[^\s)]*\/portal\/claim\?token=[^\s)]*/gi, '[PORTAL_LINK_REMOVED]')
-      .trim()
+  return stripReservedActionMarkers(
+    redactPiiForAi(
+      value
+        .replace(/<<SHOW_LANGUAGE_SELECTOR>>/g, '')
+        .replace(/https?:\/\/[^\s)]*\/portal\/claim\?token=[^\s)]*/gi, '[PORTAL_LINK_REMOVED]')
+        .trim()
+    )
   );
 }
 

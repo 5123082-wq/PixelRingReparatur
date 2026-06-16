@@ -9,6 +9,10 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 Latest checkpoint:
 
 - Date: 2026-06-16
+- Current stage: Hardened AI assistant rules and Telegram active-request handling: the prompt now separates hard rules, reference knowledge, channel modes, and action markers; runtime guards cover prompt injection, PII, status intent, and active Telegram PR chats now continue the current request without reopening the secure form or duplicating the create-request button.
+- Next action: Deploy and retest representative website and Telegram conversations: greeting, small talk, new signage problem, natural intake consent, status question, manager callback, prompt-injection attempt, and Telegram post-PR photo/detail follow-up.
+
+- Date: 2026-06-16
 - Current stage: Hotfixed Telegram known-contact intent/status handling: broad pre-AI keyword matching for repeat requests was removed, `/request` remains the deterministic command, ordinary known-customer messages now let the shared AI decide whether to show a Telegram confirmation button, and status questions can use the active PR via `<<SHOW_STATUS>>` instead of asking the customer for the number again.
 - Next action: Deploy and retest Telegram with: `Привет`, `Что с моей заявкой?`, `/request`, and a clear new-problem request; confirm status questions get a status button and only the clear request path shows the create button.
 

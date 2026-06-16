@@ -33,6 +33,7 @@ export type GenerateChatReplyInput = {
   requestBoundPortal?: boolean;
   newRequestUrl?: string | null;
   messengerKnownContact?: boolean;
+  activeMessengerRequest?: boolean;
 };
 
 export type ClassifyIntakeTurnInput = {
@@ -66,8 +67,23 @@ export type GenerateChatReplyResult = {
   intakePrefill?: IntakePrefill;
 };
 
-const INTAKE_MARKER_RE = /\n?<<SHOW_INTAKE:(\{[^>]*\})>>/;
-const STATUS_MARKER_RE = /\n?<<SHOW_STATUS>>/;
+const INTAKE_MARKER_RE = /\n?<<SHOW_INTAKE:(\{[^>\n]*\})>>\s*$/;
+const STATUS_MARKER_RE = /\n?<<SHOW_STATUS>>\s*$/;
+const RESERVED_ACTION_MARKER_RE = /<<SHOW_STATUS>>|<<SHOW_INTAKE:\{[^>\n]*\}>>/g;
+const ALLOWED_INTAKE_ISSUE_TYPES = new Set([
+  'Reparatur',
+  'Montage',
+  'Neue Beschilderung',
+  'Branding',
+  'Lichterwerbung',
+  'Wartung',
+  'Sonstiges',
+]);
+const MAX_MARKER_SUMMARY_LENGTH = 500;
+
+export function stripReservedActionMarkers(value: string): string {
+  return value.replace(RESERVED_ACTION_MARKER_RE, '').trim();
+}
 
 function parseActionMarkers(text: string): {
   cleanText: string;
@@ -75,8 +91,9 @@ function parseActionMarkers(text: string): {
   suggestStatus: boolean;
   intakePrefill?: IntakePrefill;
 } {
-  const statusMatch = STATUS_MARKER_RE.test(text);
-  const textWithoutStatus = text.replace(STATUS_MARKER_RE, '').trim();
+  const normalizedText = text.trim();
+  const statusMatch = STATUS_MARKER_RE.test(normalizedText);
+  const textWithoutStatus = normalizedText.replace(STATUS_MARKER_RE, '').trim();
   const match = INTAKE_MARKER_RE.exec(textWithoutStatus);
 
   if (!match) {
@@ -93,12 +110,24 @@ function parseActionMarkers(text: string): {
     const rawPrefill = JSON.parse(match[1]) as IntakePrefill;
     const prefill: IntakePrefill = {};
 
+    if (
+      rawPrefill.issueType !== undefined &&
+      (
+        typeof rawPrefill.issueType !== 'string' ||
+        !ALLOWED_INTAKE_ISSUE_TYPES.has(rawPrefill.issueType)
+      )
+    ) {
+      return { cleanText, suggestIntake: false, suggestStatus: statusMatch };
+    }
+
     if (typeof rawPrefill.issueType === 'string') {
       prefill.issueType = rawPrefill.issueType;
     }
 
     if (typeof rawPrefill.summary === 'string') {
-      prefill.summary = redactAssistantVisiblePii(rawPrefill.summary);
+      prefill.summary = redactAssistantVisiblePii(rawPrefill.summary)
+        .slice(0, MAX_MARKER_SUMMARY_LENGTH)
+        .trim();
     }
 
     return {
@@ -108,7 +137,7 @@ function parseActionMarkers(text: string): {
       intakePrefill: prefill,
     };
   } catch {
-    return { cleanText, suggestIntake: true, suggestStatus: statusMatch };
+    return { cleanText, suggestIntake: false, suggestStatus: statusMatch };
   }
 }
 
@@ -284,8 +313,9 @@ export async function classifyIntakeTurn(
 export async function generateChatReply(
   input: GenerateChatReplyInput
 ): Promise<GenerateChatReplyResult> {
+  const sanitizedMessage = stripReservedActionMarkers(input.message);
   const incomingVerdict = guardChatText(
-    input.message,
+    sanitizedMessage,
     input.locale,
     input.publicRequestNumber
   );
@@ -323,13 +353,14 @@ export async function generateChatReply(
       requestBoundPortal: input.requestBoundPortal,
       newRequestUrl: input.newRequestUrl,
       messengerKnownContact: input.messengerKnownContact,
-      knowledgeQuery: input.message,
+      activeMessengerRequest: input.activeMessengerRequest,
+      knowledgeQuery: sanitizedMessage,
     });
     const privacyContext = input.privacyContext?.trim();
     const aiText = await callOpenAI(
       config,
       systemPrompt,
-      privacyContext ? `${input.message}\n\n[Privacy context: ${privacyContext}]` : input.message,
+      privacyContext ? `${sanitizedMessage}\n\n[Privacy context: ${privacyContext}]` : sanitizedMessage,
       history
     );
 
