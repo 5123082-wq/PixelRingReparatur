@@ -29,6 +29,24 @@ Planned improvement options:
 ## Progress Log
 
 ### 2026-06-16
+**Assistant Rule Hardening And Runtime Guardrails**
+- **Status**: Implemented.
+- **Done**:
+  - Reorganized the main assistant system prompt into explicit identity, hard-rule, service-scope, privacy/status, knowledge-context, channel-mode, and action-marker sections.
+  - Marked Markdown knowledge, problem knowledge, live CMS retrieval, and owner-configured assistant notes as reference data that cannot override hard rules, privacy rules, safety rules, channel mode, or action marker behavior.
+  - Tightened runtime handling for prompt-injection attempts, reserved action markers, public status questions, Telegram known-contact status exposure, portal-token leakage, and PII redaction.
+  - Added active Telegram request mode so an open PR-bound Telegram conversation continues collecting details and photos in the same chat instead of reopening the secure form or creating a duplicate request button.
+  - Updated baseline knowledge and intake guidance away from stale device/ring-light wording toward signage, illuminated advertising, storefront, installation, modernization, film/print, and branding service context.
+  - Added targeted AI assistant rule tests covering prompt injection, status/request intent separation, PII redaction, action marker stripping, Telegram public request number minimization, and active Telegram request duplicate prevention.
+- **In Progress**:
+  - Live website and Telegram conversation QA after deployment.
+- **Next Action**:
+  - Retest representative DE/RU website chat and Telegram flows: greeting, small talk, new signage problem, natural intake consent, status question, manager callback, prompt-injection attempt, and post-PR photo/detail follow-up in Telegram.
+- **Blockers/Risks**:
+  - The assistant still depends on provider output quality; backend marker parsing, PII redaction, privacy context, and channel-specific gating remain the enforceable boundaries.
+- **Updated Documents**: `docs/08_ai_assistant/README.md`, `PROGRESS.md`
+
+### 2026-06-16
 **Telegram Known-Contact Intent Hotfix**
 - **Status**: Hotfix implemented.
 - **Done**:

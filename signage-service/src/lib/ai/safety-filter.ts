@@ -30,10 +30,18 @@ const INJECTION_PATTERNS = [
   /jailbreak/i,
   /prompt injection/i,
   /you are now/i,
-  /act as/i,
+  /act as (?:dan|developer|system|jailbreak|unfiltered|a different)/i,
   /reveal (the )?(system|hidden|internal) prompt/i,
   /print (the )?(system|developer) prompt/i,
   /show (me )?(the )?instructions/i,
+  /игнорируй\s+(?:все\s+)?(?:предыдущие|системные)\s+инструкц/i,
+  /покажи\s+(?:системн|скрыт).*(?:промпт|инструкц)/i,
+  /раскрой\s+(?:системн|скрыт).*(?:промпт|инструкц)/i,
+  /забудь\s+(?:свои\s+)?инструкц/i,
+  /ignoriere\s+(?:alle\s+)?(?:vorherigen|system)\s*(?:anweisungen|instruktionen)/i,
+  /zeige\s+(?:mir\s+)?(?:den\s+)?(?:system|versteckten).*(?:prompt|anweisungen|instruktionen)/i,
+  /ujawnij\s+(?:systemowy|ukryty).*(?:prompt|instrukcje)/i,
+  /sistem\s+talimatlarini\s+(?:goster|yazdir|acikla)/i,
 ];
 
 const OFF_TOPIC_PATTERNS = [
@@ -57,7 +65,6 @@ const OFF_TOPIC_PATTERNS = [
   /\blaw\b/i,
   /\bessay\b/i,
   /\bstory\b/i,
-  /\bjoke\b/i,
   /\bgenerate (an? )?image\b/i,
   /\bcreate (an? )?image\b/i,
   /\bmake (an? )?image\b/i,
@@ -78,10 +85,13 @@ const REQUEST_PATTERNS = [
   /\bcontact\b/i,
   /\bphone\b/i,
   /\bemail\b/i,
-  /\bdevice\b/i,
-  /\blamp\b/i,
-  /\bring light\b/i,
   /\bsign(?:age)?\b/i,
+  /\bsignboard\b/i,
+  /\bshopfront\b/i,
+  /\bstorefront\b/i,
+  /\billuminated sign\b/i,
+  /\blightbox\b/i,
+  /\bletter(?:ing)?\b/i,
   /\bled\b/i,
   /\bflicker/i,
   /\bbroken\b/i,
@@ -93,9 +103,12 @@ const REQUEST_PATTERNS = [
   /\bcreate (a )?request\b/i,
   /\banfrage\b/i,
   /\breparatur\b/i,
-  /\bgerät\b/i,
-  /\blampe\b/i,
   /\bschild\b/i,
+  /\bbeschilderung\b/i,
+  /\bwerbeanlage\b/i,
+  /\bleuchtreklame\b/i,
+  /\bleuchtkasten\b/i,
+  /\bbuchstabe\b/i,
   /\bwerbung\b/i,
   /\bdefekt\b/i,
   /\bkaputt\b/i,
@@ -103,9 +116,10 @@ const REQUEST_PATTERNS = [
   /\bhilfe\b/i,
   /заявк/i,
   /ремонт/i,
-  /устрой/i,
-  /ламп/i,
   /вывес/i,
+  /таблич/i,
+  /реклам/i,
+  /витрин/i,
   /букв/i,
   /свет/i,
   /мерца/i,
@@ -126,9 +140,14 @@ const STATUS_PATTERNS = [
   /\btrack(?:ing)?\b/i,
   /\bPR[-\s]?[A-Z0-9-]+\b/i,
   /\brequest number\b/i,
+  /\b(?:status|track(?:ing)?|what(?:'s| is)?|happening).{0,40}\bmy\s+request\b/i,
   /\banfragenummer\b/i,
+  /\bmeine\s+anfrage\b/i,
   /статус/i,
-  /номер/i,
+  /что\s+с\s+(?:моей\s+)?заявк/i,
+  /как\s+(?:там\s+)?(?:моя\s+)?заявк/i,
+  /номер\s+(?:заяв|обращ|pr)/i,
+  /(?:заяв|обращ).*номер/i,
 ];
 
 const HUMAN_PATTERNS = [
@@ -218,7 +237,9 @@ export function guardChatText(
     };
   }
 
-  if (matchesAny(OFF_TOPIC_PATTERNS, normalizedText) && !caseId) {
+  const intent = detectSafetyIntent(normalizedText);
+
+  if (matchesAny(OFF_TOPIC_PATTERNS, normalizedText) && !caseId && intent === 'general') {
     return {
       allowed: false,
       intent: 'refusal',
@@ -229,7 +250,7 @@ export function guardChatText(
 
   return {
     allowed: true,
-    intent: detectSafetyIntent(normalizedText),
+    intent,
     refusalText: getRefusalText(locale),
   };
 }

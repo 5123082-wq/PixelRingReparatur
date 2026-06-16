@@ -4,6 +4,7 @@ import { CaseOriginChannel, MessageAuthorRole, type PrismaClient } from '@prisma
 
 import {
   generateChatReply,
+  stripReservedActionMarkers,
   type ChatHistoryItem,
   type IntakePrefill,
 } from './chat-engine';
@@ -32,6 +33,7 @@ export type RunAssistantTurnInput = {
   requestBoundPortal?: boolean;
   newRequestUrl?: string | null;
   messengerKnownContact?: boolean;
+  activeMessengerRequest?: boolean;
 };
 
 export type RunAssistantTurnResult = {
@@ -47,7 +49,15 @@ function mapHistoryRole(authorRole: MessageAuthorRole): ChatHistoryItem['role'] 
 }
 
 function sanitizeHistoryBody(value: string): string {
-  return redactPiiForAi(value.replace(/<<SHOW_LANGUAGE_SELECTOR>>/g, '').trim());
+  return stripReservedActionMarkers(
+    redactPiiForAi(
+      value
+        .replace(/<<SHOW_LANGUAGE_SELECTOR>>/g, '')
+        .replace(/https?:\/\/[^\s)]*\/portal\/claim\?token=[^\s)]*/gi, '[PORTAL_LINK_REMOVED]')
+        .replace(/Kundenportal-Link:\s*/gi, '')
+        .trim()
+    )
+  );
 }
 
 function buildActions(input: {
@@ -121,6 +131,7 @@ export async function runAssistantTurn(
     requestBoundPortal: input.requestBoundPortal,
     newRequestUrl: input.newRequestUrl,
     messengerKnownContact: input.messengerKnownContact,
+    activeMessengerRequest: input.activeMessengerRequest,
   });
   const text = reply.text.trim();
 

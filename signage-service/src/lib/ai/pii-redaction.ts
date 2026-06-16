@@ -20,6 +20,8 @@ const LOCATION_RE =
   /\b(адрес|объект|локация|место|standort|adresse|address|location)\s*[:\-]?\s*([^\n.;]{4,160})/i;
 const PROBLEM_AFTER_LOCATION_RE =
   /(вывес|таблич|реклам|свет|букв|мига|слом|упал|schild|sign|led|licht|leucht|flack|kaputt|broken|fallen)/i;
+const SERVICE_CONTEXT_AFTER_NAME_RE =
+  /\s+(und|and|и)\s+(?=(?:das|die|der|the|мой|моя|это|эта)?\s*(вывес|таблич|реклам|свет|букв|мига|слом|упал|schild|sign|led|licht|leucht|flack|kaputt|broken|fallen))/i;
 
 function cleanValue(value: string | undefined): string | undefined {
   const clean = value?.trim().replace(/\s+/g, ' ');
@@ -55,15 +57,37 @@ function splitLocationValue(value: string): {
 
   const beforeComma = value.slice(0, commaIndex).trim();
   const afterComma = value.slice(commaIndex + 1).trim();
+  const problemMatch = afterComma.match(PROBLEM_AFTER_LOCATION_RE);
 
-  if (PROBLEM_AFTER_LOCATION_RE.test(afterComma)) {
+  if (problemMatch?.index !== undefined) {
+    const commaBeforeProblem = afterComma.lastIndexOf(',', problemMatch.index);
+    const splitIndex = commaBeforeProblem >= 0 ? commaBeforeProblem : problemMatch.index;
+    const locationTail = afterComma.slice(0, splitIndex).replace(/,\s*$/, '').trim();
+    const remainder = afterComma.slice(splitIndex).replace(/^,\s*/, '').trim();
+
     return {
-      location: beforeComma,
-      remainder: `, ${afterComma}`,
+      location: [beforeComma, locationTail].filter(Boolean).join(', '),
+      remainder: remainder ? `, ${remainder}` : '',
     };
   }
 
   return { location: value, remainder: '' };
+}
+
+function splitNameValue(value: string): {
+  name: string;
+  remainder: string;
+} {
+  const serviceContextMatch = value.match(SERVICE_CONTEXT_AFTER_NAME_RE);
+
+  if (serviceContextMatch?.index !== undefined) {
+    return {
+      name: value.slice(0, serviceContextMatch.index).trim(),
+      remainder: value.slice(serviceContextMatch.index),
+    };
+  }
+
+  return { name: value, remainder: '' };
 }
 
 export function redactPiiFromText(value: string): RedactionResult {
@@ -76,7 +100,8 @@ export function redactPiiFromText(value: string): RedactionResult {
 
   if (email) extracted.customerEmail = email;
   if (phone) extracted.customerPhone = phone;
-  if (nameMatch?.[2]) extracted.customerName = cleanValue(nameMatch[2]);
+  const nameParts = nameMatch?.[2] ? splitNameValue(nameMatch[2]) : null;
+  if (nameParts?.name) extracted.customerName = cleanValue(nameParts.name);
   const locationParts = locationMatch?.[2]
     ? splitLocationValue(locationMatch[2])
     : null;
@@ -89,7 +114,10 @@ export function redactPiiFromText(value: string): RedactionResult {
   redactedText = redactedText.replace(PHONE_RE, '[PHONE_PROVIDED]');
 
   if (nameMatch?.[0]) {
-    redactedText = redactedText.replace(nameMatch[0], `${nameMatch[1]} [NAME_PROVIDED]`);
+    redactedText = redactedText.replace(
+      nameMatch[0],
+      `${nameMatch[1]} [NAME_PROVIDED]${nameParts?.remainder ?? ''}`
+    );
   }
 
   if (locationMatch?.[0]) {
