@@ -8,6 +8,7 @@ import { storeAttachmentBuffer } from '@/lib/attachments';
 import { prisma } from '@/lib/prisma';
 import { publishCaseRealtimeEvent } from '@/lib/realtime';
 import { createCaseStatusAccessLink } from '@/lib/status-access-link';
+import { createTelegramIntakeLink } from '@/lib/telegram-intake';
 import {
   downloadTelegramFile,
   extractTelegramMessageBody,
@@ -98,6 +99,88 @@ function getStatusButtonLabel(locale?: string | null): string {
   }
 }
 
+function getIntakeButtonLabel(locale?: string | null): string {
+  switch (locale) {
+    case 'ru':
+      return 'Открыть защищённую форму';
+    case 'en':
+      return 'Open secure form';
+    case 'tr':
+      return 'Guvenli formu ac';
+    case 'pl':
+      return 'Otworz bezpieczny formularz';
+    case 'ar':
+      return 'فتح النموذج الآمن';
+    case 'de':
+    default:
+      return 'Geschuetztes Formular oeffnen';
+  }
+}
+
+function buildIntakeOfferText(locale?: string | null): string {
+  switch (locale) {
+    case 'ru':
+      return [
+        'Откройте защищённую форму PixelRing.',
+        'Данные будут отправлены на сайт PixelRing, а общение продолжится здесь, в Telegram.',
+      ].join('\n');
+    case 'en':
+      return [
+        'Open the secure PixelRing form.',
+        'The details go to the PixelRing site, and the conversation continues here in Telegram.',
+      ].join('\n');
+    case 'tr':
+      return [
+        'Guvenli PixelRing formunu acin.',
+        'Bilgiler PixelRing sitesine gider, gorusme burada Telegramda devam eder.',
+      ].join('\n');
+    case 'pl':
+      return [
+        'Otworz bezpieczny formularz PixelRing.',
+        'Dane trafia na strone PixelRing, a rozmowa bedzie kontynuowana tutaj w Telegramie.',
+      ].join('\n');
+    case 'ar':
+      return [
+        'افتح نموذج PixelRing الآمن.',
+        'سيتم إرسال البيانات إلى موقع PixelRing، وستستمر المحادثة هنا في Telegram.',
+      ].join('\n');
+    case 'de':
+    default:
+      return [
+        'Oeffnen Sie das geschuetzte PixelRing Formular.',
+        'Die Daten gehen an die PixelRing Website, der Dialog geht hier in Telegram weiter.',
+      ].join('\n');
+  }
+}
+
+function shouldOfferTelegramIntakeForm(body: string): boolean {
+  const normalized = body.trim().toLowerCase();
+
+  if (!normalized) {
+    return false;
+  }
+
+  if (normalized === '/request' || normalized.startsWith('/request@')) {
+    return true;
+  }
+
+  return [
+    /форм[ауые]/i,
+    /заявк/i,
+    /оформ/i,
+    /заполн/i,
+    /подать/i,
+    /request\s+form/i,
+    /contact\s+form/i,
+    /feedback\s+form/i,
+    /open\s+form/i,
+    /send\s+form/i,
+    /application/i,
+    /anfrage/i,
+    /formular/i,
+  ].some((pattern) => pattern.test(body));
+}
+
 function normalizeTelegramLocale(languageCode?: string | null): string {
   const normalized = languageCode?.trim().toLowerCase().split(/[-_]/)[0] ?? '';
 
@@ -108,6 +191,30 @@ function isChatIdCommand(message: TelegramMessage): boolean {
   const text = message.text?.trim().toLowerCase() ?? '';
 
   return text === '/chatid' || text.startsWith('/chatid@');
+}
+
+function isReturnCommand(message: TelegramMessage): boolean {
+  const text = message.text?.trim() ?? '';
+
+  return /^\/start(?:@\w+)?\s+return_[A-Za-z0-9_-]+$/i.test(text);
+}
+
+function buildReturnCommandText(locale?: string | null): string {
+  switch (locale) {
+    case 'ru':
+      return 'Вы вернулись в Telegram. Общение по заявке можно продолжить здесь.';
+    case 'en':
+      return 'You are back in Telegram. The request conversation can continue here.';
+    case 'tr':
+      return 'Telegrama geri dondunuz. Talep gorusmesi burada devam edebilir.';
+    case 'pl':
+      return 'Wrociles do Telegrama. Rozmowe o zgloszeniu mozna kontynuowac tutaj.';
+    case 'ar':
+      return 'عدت إلى Telegram. يمكن متابعة محادثة الطلب هنا.';
+    case 'de':
+    default:
+      return 'Sie sind zurueck in Telegram. Der Dialog zur Anfrage kann hier weitergehen.';
+  }
 }
 
 function buildMessageMetadata(message: TelegramMessage) {
@@ -161,6 +268,18 @@ export async function POST(request: NextRequest) {
   }
 
   const meta = buildMessageMetadata(telegramMessage);
+
+  if (isReturnCommand(telegramMessage)) {
+    await sendTelegramMessage({
+      chatId: meta.chatId,
+      text: buildReturnCommandText(meta.locale),
+    }).catch((error) => {
+      console.error('Telegram return command reply failed:', error);
+    });
+
+    return NextResponse.json({ ok: true, returnCommand: true });
+  }
+
   const externalMessageId = String(telegramMessage.message_id);
   const body = normalizeBody(extractTelegramMessageBody(telegramMessage));
   const canRunAssistant = hasTextContent(telegramMessage);
@@ -193,6 +312,7 @@ export async function POST(request: NextRequest) {
         select: {
           id: true,
           caseId: true,
+          externalUserId: true,
         },
       });
 
@@ -228,6 +348,7 @@ export async function POST(request: NextRequest) {
           select: {
             id: true,
             caseId: true,
+            externalUserId: true,
           },
         });
 
@@ -287,6 +408,8 @@ export async function POST(request: NextRequest) {
         locale: caseRecord.locale,
         publicRequestNumber: caseRecord.publicRequestNumber,
         customerMessageId: customerMessage.id,
+        externalConversationId: conversation.id,
+        externalUserId: meta.externalUserId,
         createdNewConversation,
       };
     });
@@ -317,6 +440,7 @@ export async function POST(request: NextRequest) {
     }
 
     let assistantReplyText: string | null = null;
+    const shouldSendIntakeForm = canRunAssistant && shouldOfferTelegramIntakeForm(body);
     const aiPauseExpired = isAutoResumableAiPause({
       aiEnabled: result.aiEnabled,
       aiPausedAt: result.aiPausedAt,
@@ -338,7 +462,40 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    if (canRunAssistant && canAnswerWithAssistant) {
+    if (shouldSendIntakeForm) {
+      const intakeLink = await createTelegramIntakeLink(prisma, {
+        caseId: result.caseId,
+        externalConversationId: result.externalConversationId,
+        telegramChatId: meta.chatId,
+        telegramUserId: result.externalUserId,
+        locale: result.locale,
+        origin: request.nextUrl.origin,
+        now,
+      }).catch((error) => {
+        console.error('Telegram intake link creation failed:', error);
+        return null;
+      });
+
+      if (intakeLink) {
+        assistantReplyText = buildIntakeOfferText(result.locale);
+        await sendTelegramMessage({
+          chatId: meta.chatId,
+          text: assistantReplyText,
+          replyMarkup: {
+            inline_keyboard: [[
+              {
+                text: getIntakeButtonLabel(result.locale),
+                url: intakeLink.url,
+              },
+            ]],
+          },
+        }).catch((error) => {
+          console.error('Telegram intake link delivery failed:', error);
+        });
+      }
+    }
+
+    if (!assistantReplyText && canRunAssistant && canAnswerWithAssistant) {
       const assistantReply = await runAssistantTurn(prisma, {
         caseId: result.caseId,
         channel: CaseOriginChannel.TELEGRAM,

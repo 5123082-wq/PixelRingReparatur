@@ -168,6 +168,7 @@ model Case {
   attachments              Attachment[]
   sessions                 Session[]
   portalClaimLinks         PortalClaimLink[]
+  telegramIntakeLinks      TelegramIntakeLink[]
   portalEmailVerifications PortalEmailVerification[]
   portalEmailCodes         PortalEmailCode[]
   portalCaseAccesses       PortalCaseAccess[]
@@ -250,11 +251,38 @@ model ExternalConversation {
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
   case           Case              @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  intakeLinks    TelegramIntakeLink[]
 
   @@unique([channel, externalChatId])
   @@index([caseId])
   @@index([channel, lastMessageAt])
   @@map("external_conversations")
+}
+
+model TelegramIntakeLink {
+  id                     String               @id @default(uuid()) @db.Uuid
+  tokenHash              String               @unique
+  caseId                 String               @db.Uuid
+  externalConversationId String               @db.Uuid
+  telegramChatId         String
+  telegramUserId         String?
+  locale                 String?
+  returnNonce            String               @unique
+  openedAt               DateTime?
+  submittedAt            DateTime?
+  revokedAt              DateTime?
+  expiresAt              DateTime
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  case                   Case                 @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  externalConversation   ExternalConversation @relation(fields: [externalConversationId], references: [id], onDelete: Cascade)
+
+  @@index([caseId, expiresAt])
+  @@index([externalConversationId, expiresAt])
+  @@index([expiresAt])
+  @@index([telegramChatId, createdAt])
+  @@index([submittedAt])
+  @@map("telegram_intake_links")
 }
 
 model CaseReadState {
