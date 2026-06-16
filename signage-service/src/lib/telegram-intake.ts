@@ -11,11 +11,11 @@ import {
 
 import type { StoredAttachmentInput } from './attachments';
 import { createCaseSessionToken, hashCaseSessionToken } from './case-session';
-import { syncCaseCustomerProfile } from './customer-profiles';
 import { ensurePublicRequestNumberForCase } from './request-number';
 import { parseContact } from './request-intake';
 import { buildLocalePath, buildLocaleUrl, DEFAULT_SITE_LOCALE, SITE_LOCALES, type SiteLocale } from './seo';
 import { createCaseStatusAccessLink } from './status-access-link';
+import { isTelegramContactAllowed } from './telegram-contact-lock';
 import { getTelegramBotUsername } from './telegram';
 
 const TELEGRAM_INTAKE_TOKEN_TTL_MS = 60 * 60 * 1000;
@@ -169,6 +169,16 @@ function buildStoredMessage(input: { issueType?: string | null; message: string 
   return issueType ? `Typ: ${issueType}\n\n${input.message.trim()}` : input.message.trim();
 }
 
+function assertTelegramContactAllowed(existing: Parameters<typeof isTelegramContactAllowed>[0], nextContact: Parameters<typeof isTelegramContactAllowed>[1]): void {
+  if (!isTelegramContactAllowed(existing, nextContact)) {
+    throw new TelegramIntakeError(
+      'contact_locked',
+      'This Telegram chat is already linked to a different contact. Please use the existing contact or ask a manager to change it.',
+      409
+    );
+  }
+}
+
 export async function submitTelegramIntake(
   prisma: PrismaClient,
   input: {
@@ -223,8 +233,18 @@ export async function submitTelegramIntake(
           select: {
             id: true,
             originChannel: true,
+            customerEmail: true,
+            customerPhone: true,
+            primaryContactMethod: true,
+            primaryContactValue: true,
             formalizedAt: true,
             numberIssuedAt: true,
+            customerProfile: {
+              select: {
+                emailNormalized: true,
+                phoneNormalized: true,
+              },
+            },
           },
         },
         externalConversation: {
@@ -258,6 +278,8 @@ export async function submitTelegramIntake(
     ) {
       throw new TelegramIntakeError('invalid_link_context', 'Invalid Telegram intake context.', 400);
     }
+
+    assertTelegramContactAllowed(link.case, parsedContact);
 
     const locale = normalizeLocale(link.locale);
     const publicRequestNumber = await ensurePublicRequestNumberForCase(tx, link.caseId);
@@ -296,19 +318,6 @@ export async function submitTelegramIntake(
         statusUpdatedAt: now,
       },
       select: { id: true },
-    });
-
-    await syncCaseCustomerProfile(tx, {
-      caseId: link.caseId,
-      customerName,
-      customerEmail: parsedContact.customerEmail,
-      customerPhone: parsedContact.customerPhone,
-      serviceAddress: serviceLocation,
-      serviceLatitude: input.serviceLatitude ?? null,
-      serviceLongitude: input.serviceLongitude ?? null,
-      serviceLocationSource,
-      preferredLanguage: locale,
-      preferredContactMethod: parsedContact.method,
     });
 
     if (attachments.length > 0) {
