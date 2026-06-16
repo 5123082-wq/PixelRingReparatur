@@ -8,8 +8,10 @@ import { storeAttachmentBuffer } from '@/lib/attachments';
 import { prisma } from '@/lib/prisma';
 import { publishCaseRealtimeEvent } from '@/lib/realtime';
 import { createCaseStatusAccessLink } from '@/lib/status-access-link';
+import { ensurePublicRequestNumberForCase } from '@/lib/request-number';
 import { createTelegramIntakeLink } from '@/lib/telegram-intake';
 import {
+  answerTelegramCallbackQuery,
   downloadTelegramFile,
   extractTelegramMessageBody,
   getTelegramDisplayName,
@@ -24,6 +26,9 @@ const TELEGRAM_SECRET_HEADER = 'x-telegram-bot-api-secret-token';
 const MAX_TELEGRAM_MESSAGE_LENGTH = 4000;
 const OPERATOR_MESSAGE_AI_PAUSE_MS = 2 * 60 * 60 * 1000;
 const SUPPORTED_LOCALES = new Set(['de', 'en', 'ru', 'tr', 'pl', 'ar']);
+const CONFIRM_NEW_REQUEST_CALLBACK = 'pr_new_request_confirm';
+const KNOWN_TELEGRAM_REQUEST_SUMMARY = 'Neue Telegram-Anfrage aus bekanntem Kontakt';
+const KNOWN_REQUEST_CALLBACK_DEDUP_MS = 10 * 60 * 1000;
 
 function buildCaseSummary(body: string): string {
   const clean = body.trim().replace(/\s+/g, ' ');
@@ -117,6 +122,24 @@ function getIntakeButtonLabel(locale?: string | null): string {
   }
 }
 
+function getConfirmNewRequestButtonLabel(locale?: string | null): string {
+  switch (locale) {
+    case 'ru':
+      return 'Создать новую заявку';
+    case 'en':
+      return 'Create new request';
+    case 'tr':
+      return 'Yeni talep olustur';
+    case 'pl':
+      return 'Utworz nowe zgloszenie';
+    case 'ar':
+      return 'إنشاء طلب جديد';
+    case 'de':
+    default:
+      return 'Neue Anfrage erstellen';
+  }
+}
+
 function buildIntakeOfferText(locale?: string | null): string {
   switch (locale) {
     case 'ru':
@@ -153,6 +176,81 @@ function buildIntakeOfferText(locale?: string | null): string {
   }
 }
 
+function buildKnownContactNewRequestOfferText(locale?: string | null): string {
+  switch (locale) {
+    case 'ru':
+      return 'Понял. Создать новую заявку по этому Telegram-чату? Контактные данные повторно вводить не нужно.';
+    case 'en':
+      return 'Understood. Create a new request from this Telegram chat? You do not need to enter contact details again.';
+    case 'tr':
+      return 'Anladim. Bu Telegram sohbetinden yeni bir talep olusturulsun mu? Iletisim bilgilerini tekrar girmeniz gerekmez.';
+    case 'pl':
+      return 'Rozumiem. Utworzyc nowe zgloszenie z tej rozmowy Telegram? Nie musisz ponownie podawac danych kontaktowych.';
+    case 'ar':
+      return 'فهمت. هل تريد إنشاء طلب جديد من محادثة Telegram هذه؟ لا تحتاج إلى إدخال بيانات الاتصال مرة أخرى.';
+    case 'de':
+    default:
+      return 'Verstanden. Soll ich aus diesem Telegram-Chat eine neue Anfrage erstellen? Kontaktdaten muessen nicht erneut eingegeben werden.';
+  }
+}
+
+function buildKnownContactNewRequestCreatedText(input: {
+  locale?: string | null;
+  publicRequestNumber: string;
+}): string {
+  switch (input.locale) {
+    case 'ru':
+      return [
+        `Новая заявка создана: ${input.publicRequestNumber}.`,
+        'Опишите, пожалуйста, что именно нужно сделать, и пришлите фото, если удобно.',
+      ].join('\n');
+    case 'en':
+      return [
+        `New request created: ${input.publicRequestNumber}.`,
+        'Please describe what needs to be done and send a photo if convenient.',
+      ].join('\n');
+    case 'tr':
+      return [
+        `Yeni talep olusturuldu: ${input.publicRequestNumber}.`,
+        'Lutfen ne yapilmasi gerektigini yazin ve uygunsa bir fotograf gonderin.',
+      ].join('\n');
+    case 'pl':
+      return [
+        `Nowe zgloszenie utworzone: ${input.publicRequestNumber}.`,
+        'Opisz prosze, co trzeba zrobic, i wyslij zdjecie, jesli to wygodne.',
+      ].join('\n');
+    case 'ar':
+      return [
+        `تم إنشاء طلب جديد: ${input.publicRequestNumber}.`,
+        'يرجى وصف المطلوب وإرسال صورة إذا كان ذلك مناسبا.',
+      ].join('\n');
+    case 'de':
+    default:
+      return [
+        `Neue Anfrage erstellt: ${input.publicRequestNumber}.`,
+        'Beschreiben Sie bitte kurz, was gemacht werden soll, und senden Sie gern ein Foto.',
+      ].join('\n');
+  }
+}
+
+function buildKnownContactFallbackText(locale?: string | null): string {
+  switch (locale) {
+    case 'ru':
+      return 'Для новой заявки сначала нужна защищённая контактная привязка. Откройте форму, чтобы один раз сохранить контакт.';
+    case 'en':
+      return 'A protected contact link is needed before creating a new request. Open the form once to save the contact.';
+    case 'tr':
+      return 'Yeni talep icin once guvenli iletisim baglantisi gerekir. Iletisimi bir kez kaydetmek icin formu acin.';
+    case 'pl':
+      return 'Przed utworzeniem nowego zgloszenia potrzebne jest bezpieczne powiazanie kontaktu. Otworz formularz, aby raz zapisac kontakt.';
+    case 'ar':
+      return 'قبل إنشاء طلب جديد، نحتاج إلى ربط آمن لبيانات الاتصال. افتح النموذج مرة واحدة لحفظ بيانات الاتصال.';
+    case 'de':
+    default:
+      return 'Fuer eine neue Anfrage brauchen wir zuerst eine geschuetzte Kontaktzuordnung. Oeffnen Sie das Formular einmal, um den Kontakt zu speichern.';
+  }
+}
+
 function shouldOfferTelegramIntakeForm(body: string): boolean {
   const normalized = body.trim().toLowerCase();
 
@@ -181,10 +279,269 @@ function shouldOfferTelegramIntakeForm(body: string): boolean {
   ].some((pattern) => pattern.test(body));
 }
 
+function shouldConfirmKnownTelegramRequest(body: string): boolean {
+  if (shouldOfferTelegramIntakeForm(body)) {
+    return true;
+  }
+
+  return [
+    /нов(?:ая|ую|ой|ое|ый)\s+(?:проблем|заявк|обращен)/i,
+    /другая\s+(?:проблем|заявк)/i,
+    /созда(?:й|йте|ть)\s+(?:новую\s+)?заявк/i,
+    /new\s+(?:problem|issue|request)/i,
+    /another\s+(?:problem|issue|request)/i,
+    /create\s+(?:a\s+)?new\s+request/i,
+    /neue[snr]?\s+(?:problem|anfrage)/i,
+    /ander(?:es|e|er)\s+(?:problem|anfrage)/i,
+  ].some((pattern) => pattern.test(body));
+}
+
 function normalizeTelegramLocale(languageCode?: string | null): string {
   const normalized = languageCode?.trim().toLowerCase().split(/[-_]/)[0] ?? '';
 
   return SUPPORTED_LOCALES.has(normalized) ? normalized : 'de';
+}
+
+type TelegramMessageMeta = ReturnType<typeof buildMessageMetadata>;
+
+function hasStoredContact(caseRecord: {
+  customerEmail?: string | null;
+  customerPhone?: string | null;
+  primaryContactMethod?: string | null;
+  primaryContactValue?: string | null;
+  customerProfile?: {
+    email?: string | null;
+    phone?: string | null;
+    emailNormalized?: string | null;
+    phoneNormalized?: string | null;
+  } | null;
+}): boolean {
+  return Boolean(
+    caseRecord.customerEmail ||
+    caseRecord.customerPhone ||
+    caseRecord.customerProfile?.email ||
+    caseRecord.customerProfile?.phone ||
+    caseRecord.customerProfile?.emailNormalized ||
+    caseRecord.customerProfile?.phoneNormalized ||
+    (
+      caseRecord.primaryContactMethod &&
+      caseRecord.primaryContactMethod !== 'TELEGRAM' &&
+      caseRecord.primaryContactValue
+    )
+  );
+}
+
+function getStoredContact(caseRecord: {
+  customerName?: string | null;
+  customerEmail?: string | null;
+  customerPhone?: string | null;
+  primaryContactMethod?: string | null;
+  primaryContactValue?: string | null;
+  customerProfile?: {
+    displayName?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    emailNormalized?: string | null;
+    phoneNormalized?: string | null;
+  } | null;
+}): {
+  customerName: string | null;
+  customerEmail: string | null;
+  customerPhone: string | null;
+  primaryContactMethod: 'EMAIL' | 'PHONE' | null;
+  primaryContactValue: string | null;
+} {
+  const customerEmail =
+    caseRecord.customerEmail ??
+    caseRecord.customerProfile?.email ??
+    caseRecord.customerProfile?.emailNormalized ??
+    (
+      caseRecord.primaryContactMethod === 'EMAIL'
+        ? caseRecord.primaryContactValue
+        : null
+    ) ??
+    null;
+  const customerPhone =
+    caseRecord.customerPhone ??
+    caseRecord.customerProfile?.phone ??
+    caseRecord.customerProfile?.phoneNormalized ??
+    (
+      caseRecord.primaryContactMethod === 'PHONE'
+        ? caseRecord.primaryContactValue
+        : null
+    ) ??
+    null;
+  const primaryContactMethod = customerEmail ? 'EMAIL' : customerPhone ? 'PHONE' : null;
+
+  return {
+    customerName:
+      caseRecord.customerName ??
+      caseRecord.customerProfile?.displayName ??
+      null,
+    customerEmail,
+    customerPhone,
+    primaryContactMethod,
+    primaryContactValue:
+      primaryContactMethod === 'EMAIL'
+        ? customerEmail
+        : primaryContactMethod === 'PHONE'
+          ? customerPhone
+          : null,
+  };
+}
+
+async function createKnownTelegramRequest(input: {
+  chatId: string;
+  meta: TelegramMessageMeta;
+  now: Date;
+}): Promise<{
+  caseId: string;
+  publicRequestNumber: string;
+  statusUrl: string;
+  locale: string | null;
+  customerName: string | null;
+  contactLabel: string;
+} | null> {
+  return prisma.$transaction(async (tx) => {
+    const conversation = await tx.externalConversation.findUnique({
+      where: {
+        channel_externalChatId: {
+          channel: CaseOriginChannel.TELEGRAM,
+          externalChatId: input.chatId,
+        },
+      },
+      select: {
+        id: true,
+        case: {
+          select: {
+            id: true,
+            publicRequestNumber: true,
+            summary: true,
+            numberIssuedAt: true,
+            customerName: true,
+            customerEmail: true,
+            customerPhone: true,
+            customerProfileId: true,
+            primaryContactMethod: true,
+            primaryContactValue: true,
+            locale: true,
+            customerProfile: {
+              select: {
+                displayName: true,
+                email: true,
+                phone: true,
+                emailNormalized: true,
+                phoneNormalized: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!conversation || !hasStoredContact(conversation.case)) {
+      return null;
+    }
+
+    const storedContact = getStoredContact(conversation.case);
+    const locale = conversation.case.locale ?? input.meta.locale;
+    const isRecentConfirmedRequest =
+      conversation.case.summary === KNOWN_TELEGRAM_REQUEST_SUMMARY &&
+      conversation.case.publicRequestNumber &&
+      conversation.case.numberIssuedAt &&
+      input.now.getTime() - conversation.case.numberIssuedAt.getTime() <= KNOWN_REQUEST_CALLBACK_DEDUP_MS;
+
+    if (isRecentConfirmedRequest) {
+      const statusUrl = await createCaseStatusAccessLink(tx, {
+        caseId: conversation.case.id,
+        publicRequestNumber: conversation.case.publicRequestNumber!,
+        locale,
+        now: input.now,
+      });
+
+      return {
+        caseId: conversation.case.id,
+        publicRequestNumber: conversation.case.publicRequestNumber!,
+        statusUrl,
+        locale,
+        customerName: storedContact.customerName ?? input.meta.displayName,
+        contactLabel: input.meta.username ? `@${input.meta.username}` : `Telegram chat ${input.chatId}`,
+      };
+    }
+
+    const createdCase = await tx.case.create({
+      data: {
+        status: CaseStatus.NUMBER_ISSUED,
+        originChannel: CaseOriginChannel.TELEGRAM,
+        customerName: storedContact.customerName ?? input.meta.displayName,
+        customerEmail: storedContact.customerEmail,
+        customerPhone: storedContact.customerPhone,
+        customerProfileId: conversation.case.customerProfileId,
+        primaryContactMethod: storedContact.primaryContactMethod,
+        primaryContactValue: storedContact.primaryContactValue,
+        locale,
+        summary: KNOWN_TELEGRAM_REQUEST_SUMMARY,
+        description: 'Neue Telegram-Anfrage wurde im bestehenden Telegram-Chat bestaetigt.',
+        formalizedAt: input.now,
+        numberIssuedAt: input.now,
+        statusUpdatedAt: input.now,
+      },
+      select: { id: true },
+    });
+    const publicRequestNumber = await ensurePublicRequestNumberForCase(tx, createdCase.id);
+    const statusUrl = await createCaseStatusAccessLink(tx, {
+      caseId: createdCase.id,
+      publicRequestNumber,
+      locale,
+      now: input.now,
+    });
+
+    await tx.externalConversation.update({
+      where: { id: conversation.id },
+      data: {
+        caseId: createdCase.id,
+        externalUserId: input.meta.externalUserId,
+        username: input.meta.username,
+        firstName: input.meta.firstName,
+        lastName: input.meta.lastName,
+        lastMessageAt: input.now,
+      },
+    });
+
+    await tx.message.create({
+      data: {
+        caseId: createdCase.id,
+        channel: CaseOriginChannel.TELEGRAM,
+        authorRole: MessageAuthorRole.SYSTEM,
+        authorName: 'Telegram Assistant',
+        body: buildKnownContactNewRequestCreatedText({ locale, publicRequestNumber }),
+        isCustomerVisible: true,
+        sentAt: input.now,
+      },
+    });
+
+    await tx.caseStatusEvent.create({
+      data: {
+        caseId: createdCase.id,
+        fromStatus: CaseStatus.DRAFT,
+        toStatus: CaseStatus.NUMBER_ISSUED,
+        reason: 'Telegram known contact confirmed new request',
+        metadata: {
+          publicRequestNumber,
+          channel: CaseOriginChannel.TELEGRAM,
+        },
+      },
+    });
+
+    return {
+      caseId: createdCase.id,
+      publicRequestNumber,
+      statusUrl,
+      locale,
+      customerName: storedContact.customerName ?? input.meta.displayName,
+      contactLabel: input.meta.username ? `@${input.meta.username}` : `Telegram chat ${input.chatId}`,
+    };
+  });
 }
 
 function isChatIdCommand(message: TelegramMessage): boolean {
@@ -235,6 +592,29 @@ function buildMessageMetadata(message: TelegramMessage) {
   };
 }
 
+function buildCallbackMetadata(query: NonNullable<TelegramUpdate['callback_query']>): TelegramMessageMeta | null {
+  const chat = query.message?.chat;
+
+  if (!chat) {
+    return null;
+  }
+
+  const user = query.from;
+  const firstName = user.first_name || chat.first_name || null;
+  const lastName = user.last_name || chat.last_name || null;
+  const username = user.username || chat.username || null;
+
+  return {
+    chatId: String(chat.id),
+    externalUserId: String(user.id),
+    firstName,
+    lastName,
+    username,
+    displayName: getTelegramDisplayName({ firstName, lastName, username }),
+    locale: normalizeTelegramLocale(user.language_code),
+  };
+}
+
 export async function POST(request: NextRequest) {
   const secretHeader = request.headers.get(TELEGRAM_SECRET_HEADER);
 
@@ -243,6 +623,94 @@ export async function POST(request: NextRequest) {
   }
 
   const update = (await request.json().catch(() => null)) as TelegramUpdate | null;
+  const callbackQuery = update?.callback_query;
+
+  if (callbackQuery) {
+    if (
+      callbackQuery.data !== CONFIRM_NEW_REQUEST_CALLBACK ||
+      callbackQuery.message?.chat.type !== 'private'
+    ) {
+      return NextResponse.json({ ok: true, ignored: 'unsupported-callback' });
+    }
+
+    const meta = buildCallbackMetadata(callbackQuery);
+
+    if (!meta) {
+      return NextResponse.json({ ok: true, ignored: 'missing-callback-message' });
+    }
+
+    const now = new Date();
+    const created = await createKnownTelegramRequest({
+      chatId: meta.chatId,
+      meta,
+      now,
+    }).catch((error) => {
+      console.error('Known Telegram request creation failed:', error);
+      return null;
+    });
+
+    await answerTelegramCallbackQuery({
+      callbackQueryId: callbackQuery.id,
+      text: created
+        ? getConfirmNewRequestButtonLabel(created.locale)
+        : buildKnownContactFallbackText(meta.locale),
+      showAlert: !created,
+    }).catch((error) => {
+      console.error('Telegram callback answer failed:', error);
+    });
+
+    if (!created) {
+      await sendTelegramMessage({
+        chatId: meta.chatId,
+        text: buildKnownContactFallbackText(meta.locale),
+      }).catch((error) => {
+        console.error('Telegram known-contact fallback reply failed:', error);
+      });
+
+      return NextResponse.json({ ok: true, callback: true, created: false });
+    }
+
+    await sendTelegramMessage({
+      chatId: meta.chatId,
+      text: buildKnownContactNewRequestCreatedText({
+        locale: created.locale,
+        publicRequestNumber: created.publicRequestNumber,
+      }),
+      replyMarkup: {
+        inline_keyboard: [[
+          {
+            text: getStatusButtonLabel(created.locale),
+            url: created.statusUrl,
+          },
+        ]],
+      },
+    }).catch((error) => {
+      console.error('Telegram known-contact request confirmation failed:', error);
+    });
+
+    await publishCaseRealtimeEvent({
+      caseId: created.caseId,
+      reason: 'public_request_number.issued',
+    }).catch((error) => {
+      console.error('Telegram known-contact realtime publish failed:', error);
+    });
+
+    await sendAdminTelegramNotification({
+      kind: 'telegram_customer_message_created',
+      caseId: created.caseId,
+      publicRequestNumber: created.publicRequestNumber,
+      customerName: created.customerName,
+      contactLabel: created.contactLabel,
+      originLabel: 'Telegram',
+      messagePreview: 'New Telegram request created from saved contact.',
+      isNewCase: true,
+    }).catch((error) => {
+      console.error('Admin Telegram known-contact notification failed:', error);
+    });
+
+    return NextResponse.json({ ok: true, callback: true, caseId: created.caseId });
+  }
+
   const telegramMessage = update?.message;
 
   if (!telegramMessage) {
@@ -313,6 +781,22 @@ export async function POST(request: NextRequest) {
           id: true,
           caseId: true,
           externalUserId: true,
+          case: {
+            select: {
+              customerEmail: true,
+              customerPhone: true,
+              primaryContactMethod: true,
+              primaryContactValue: true,
+              customerProfile: {
+                select: {
+                  email: true,
+                  phone: true,
+                  emailNormalized: true,
+                  phoneNormalized: true,
+                },
+              },
+            },
+          },
         },
       });
 
@@ -349,6 +833,22 @@ export async function POST(request: NextRequest) {
             id: true,
             caseId: true,
             externalUserId: true,
+            case: {
+              select: {
+                customerEmail: true,
+                customerPhone: true,
+                primaryContactMethod: true,
+                primaryContactValue: true,
+                customerProfile: {
+                  select: {
+                    email: true,
+                    phone: true,
+                    emailNormalized: true,
+                    phoneNormalized: true,
+                  },
+                },
+              },
+            },
           },
         });
 
@@ -411,6 +911,7 @@ export async function POST(request: NextRequest) {
         externalConversationId: conversation.id,
         externalUserId: meta.externalUserId,
         createdNewConversation,
+        hasStoredTelegramContact: hasStoredContact(conversation.case),
       };
     });
 
@@ -440,7 +941,14 @@ export async function POST(request: NextRequest) {
     }
 
     let assistantReplyText: string | null = null;
-    const shouldSendIntakeForm = canRunAssistant && shouldOfferTelegramIntakeForm(body);
+    const shouldSendKnownRequestConfirmation =
+      canRunAssistant &&
+      result.hasStoredTelegramContact &&
+      shouldConfirmKnownTelegramRequest(body);
+    const shouldSendIntakeForm =
+      canRunAssistant &&
+      !result.hasStoredTelegramContact &&
+      shouldOfferTelegramIntakeForm(body);
     const aiPauseExpired = isAutoResumableAiPause({
       aiEnabled: result.aiEnabled,
       aiPausedAt: result.aiPausedAt,
@@ -462,7 +970,25 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    if (shouldSendIntakeForm) {
+    if (shouldSendKnownRequestConfirmation) {
+      assistantReplyText = buildKnownContactNewRequestOfferText(result.locale);
+      await sendTelegramMessage({
+        chatId: meta.chatId,
+        text: assistantReplyText,
+        replyMarkup: {
+          inline_keyboard: [[
+            {
+              text: getConfirmNewRequestButtonLabel(result.locale),
+              callback_data: CONFIRM_NEW_REQUEST_CALLBACK,
+            },
+          ]],
+        },
+      }).catch((error) => {
+        console.error('Telegram known-contact request confirmation delivery failed:', error);
+      });
+    }
+
+    if (!assistantReplyText && shouldSendIntakeForm) {
       const intakeLink = await createTelegramIntakeLink(prisma, {
         caseId: result.caseId,
         externalConversationId: result.externalConversationId,
@@ -503,6 +1029,7 @@ export async function POST(request: NextRequest) {
         latestMessageId: result.customerMessageId,
         latestCustomerMessage: body,
         publicRequestNumber: result.publicRequestNumber,
+        messengerKnownContact: result.hasStoredTelegramContact,
         capabilities: [],
       }).catch((error) => {
         console.error('Telegram AI assistant turn failed:', error);

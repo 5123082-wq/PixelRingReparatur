@@ -38,9 +38,17 @@ export type TelegramMessage = {
   audio?: unknown;
 };
 
+export type TelegramCallbackQuery = {
+  id: string;
+  from: TelegramUser;
+  message?: TelegramMessage;
+  data?: string;
+};
+
 export type TelegramUpdate = {
   update_id: number;
   message?: TelegramMessage;
+  callback_query?: TelegramCallbackQuery;
 };
 
 type TelegramApiResponse<T> = {
@@ -70,7 +78,8 @@ export type TelegramDownloadedFile = {
 export type TelegramInlineKeyboardMarkup = {
   inline_keyboard: Array<Array<{
     text: string;
-    url: string;
+    url?: string;
+    callback_data?: string;
   }>>;
 };
 
@@ -171,6 +180,30 @@ export async function sendTelegramMessage(input: {
   }
 
   return data.result;
+}
+
+export async function answerTelegramCallbackQuery(input: {
+  callbackQueryId: string;
+  text?: string;
+  showAlert?: boolean;
+}): Promise<void> {
+  const response = await fetch(getTelegramApiUrl('answerCallbackQuery'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      callback_query_id: input.callbackQueryId,
+      text: input.text,
+      show_alert: input.showAlert,
+    }),
+  });
+
+  const data = (await response.json().catch(() => null)) as
+    | TelegramApiResponse<boolean>
+    | null;
+
+  if (!response.ok || !data?.ok) {
+    throw new Error(data?.description || `Telegram answerCallbackQuery failed (${response.status}).`);
+  }
 }
 
 export function getLargestTelegramPhoto(message: TelegramMessage): TelegramPhotoSize | null {

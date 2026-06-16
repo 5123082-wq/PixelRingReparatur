@@ -14,6 +14,23 @@ Planned base documents:
 ## Progress Log
 
 ### 2026-06-16
+**Telegram Known-Contact Repeat Requests**
+- **Status**: Implementation baseline updated.
+- **Done**:
+  - Changed known Telegram repeat-request handling so `/request` and new-request intent no longer open the protected website form when the Telegram chat already has saved contact data.
+  - Added Telegram inline callback confirmation for creating a new request from the known Telegram chat.
+  - Added backend creation of a new Telegram CRM case with a new public PR number from the saved contact, without asking the customer to re-enter email or phone.
+  - Kept protected Telegram intake links as fallback for unknown Telegram chats, first contact capture, contact-change scenarios, and manager-driven secure handoff.
+  - Added CRM delivery fallback from previous Telegram timeline messages so manager replies can still reach older Telegram cases after active routing switches to a newly created case.
+- **In Progress**:
+  - Production validation with a real Telegram account and known saved contact.
+- **Next Action**:
+  - Deploy, create or use a Telegram chat with saved contact data, send `/request`, confirm the inline button, verify a new PR is created without opening the form, then send details/photos and test manager replies from old and new cases.
+- **Blockers/Risks**:
+  - The current implementation uses the existing `ExternalConversation` row as active Telegram routing. A future identity model should separate Telegram identity from per-case routing more explicitly.
+- **Updated Documents**: `docs/06_crm/README.md`, `docs/08_ai_assistant/README.md`, `PROGRESS.md`
+
+### 2026-06-16
 **Telegram Secure Intake Handoff**
 - **Status**: Implementation baseline added.
 - **Done**:

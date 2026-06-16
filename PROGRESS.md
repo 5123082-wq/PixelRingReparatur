@@ -9,6 +9,10 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 Latest checkpoint:
 
 - Date: 2026-06-16
+- Current stage: Changed Telegram repeat-request flow so known Telegram contacts no longer open the secure website form for ordinary new requests: `/request`/new-request intent now sends an inline confirmation button, confirmation creates a new PR from the saved contact without exposing contact data to the assistant, Telegram routing switches to the new case, and CRM replies can still fall back to Telegram chat IDs stored in previous case messages.
+- Next action: Deploy and test with a real Telegram account: first create/lock a contact, then send `/request`, confirm the inline button, verify the new PR is created without the form, send a photo/detail afterward, and spot-check manager replies from both the old and new Telegram cases.
+
+- Date: 2026-06-16
 - Current stage: Added Telegram secure intake handoff baseline: one-time hashed intake links, dedicated `/[locale]/telegram/request` form page, `/[locale]/telegram/return` fallback page, Telegram submit API that formalizes the existing Telegram case, PR/status confirmation buttons, and `/request`/form-intent webhook handling.
 - Next action: Deploy the code, test `/request` in a real Telegram chat, submit the form, and confirm the same CRM case receives the PR number, timeline message, attachments, Telegram confirmation, status button, and return flow.
 

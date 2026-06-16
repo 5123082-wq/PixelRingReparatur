@@ -405,6 +405,17 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
             },
             take: 1,
           },
+          messages: {
+            where: {
+              channel: CaseOriginChannel.TELEGRAM,
+              externalChatId: { not: null },
+            },
+            orderBy: { createdAt: 'desc' },
+            select: {
+              externalChatId: true,
+            },
+            take: 1,
+          },
         },
       }),
       prisma.session.count({
@@ -495,7 +506,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         });
 
         telegramReplyChatId =
-          caseRecord.externalConversations[0]?.externalChatId ?? null;
+          caseRecord.externalConversations[0]?.externalChatId ??
+          caseRecord.messages[0]?.externalChatId ??
+          null;
         realtimeReasons.add('message.created');
       }
 
@@ -671,7 +684,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         });
 
         telegramPrChatId =
-          caseRecord.externalConversations[0]?.externalChatId ?? null;
+          caseRecord.externalConversations[0]?.externalChatId ??
+          caseRecord.messages[0]?.externalChatId ??
+          null;
         realtimeReasons.add('public_request_number.issued');
       }
     });

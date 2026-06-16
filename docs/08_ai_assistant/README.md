@@ -28,6 +28,21 @@ Planned improvement options:
 
 ## Progress Log
 
+### 2026-06-16
+**Telegram Known-Contact Assistant Context**
+- **Status**: Implementation baseline updated.
+- **Done**:
+  - Added a privacy-safe known-contact state for Telegram assistant turns so the assistant can behave naturally with returning Telegram customers without receiving full email, phone, Telegram chat id, or CRM identifiers.
+  - Updated assistant prompt behavior for known messenger contacts: do not announce recognition, do not ask for email/phone again, do not reveal saved contact data, and do not route ordinary new-request creation to a contact form.
+  - Connected the Telegram webhook so known contacts can confirm a new request through Telegram while the shared assistant still handles normal follow-up conversation.
+- **In Progress**:
+  - Runtime QA of natural Telegram conversations after a known contact creates a second PR.
+- **Next Action**:
+  - Test a returning Telegram user asking a question, asking for a new request, and attempting to change contact data; confirm the assistant stays natural and the backend keeps contact changes out of normal chat.
+- **Blockers/Risks**:
+  - The prompt is guidance only; backend enforcement remains the safety boundary for contact changes and PR creation.
+- **Updated Documents**: `docs/08_ai_assistant/README.md`, `docs/06_crm/README.md`, `PROGRESS.md`
+
 ### 2026-06-13
 **Baseline Markdown Knowledge Refresh**
 - **Status**: Implemented
