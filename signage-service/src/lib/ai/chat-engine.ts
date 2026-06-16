@@ -32,6 +32,7 @@ export type GenerateChatReplyInput = {
   publicRequestNumber?: string | null;
   requestBoundPortal?: boolean;
   newRequestUrl?: string | null;
+  messengerKnownContact?: boolean;
 };
 
 export type ClassifyIntakeTurnInput = {
@@ -307,6 +308,7 @@ export async function generateChatReply(
         : null,
       requestBoundPortal: input.requestBoundPortal,
       newRequestUrl: input.newRequestUrl,
+      messengerKnownContact: input.messengerKnownContact,
       knowledgeQuery: input.message,
     });
     const privacyContext = input.privacyContext?.trim();

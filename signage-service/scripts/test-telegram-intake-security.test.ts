@@ -86,3 +86,35 @@ test('telegram intake does not sync unverified form contacts into customer profi
 
   assert.equal(source.includes('syncCaseCustomerProfile'), false);
 });
+
+test('known telegram contacts are routed to request confirmation before fallback form', () => {
+  const source = readFileSync(
+    resolve(__dirname, '../src/app/api/telegram/webhook/route.ts'),
+    'utf8'
+  );
+
+  assert.ok(source.includes('CONFIRM_NEW_REQUEST_CALLBACK'));
+  assert.ok(source.includes('result.hasStoredTelegramContact &&'));
+  assert.ok(source.includes('!result.hasStoredTelegramContact &&'));
+  assert.ok(source.includes('callback_data: CONFIRM_NEW_REQUEST_CALLBACK'));
+  assert.ok(source.includes('createTelegramIntakeLink(prisma'));
+  assert.ok(source.includes('KNOWN_REQUEST_CALLBACK_DEDUP_MS'));
+  assert.ok(source.includes('isRecentConfirmedRequest'));
+});
+
+test('telegram assistant receives known-contact state without direct contact values', () => {
+  const source = readFileSync(
+    resolve(__dirname, '../src/app/api/telegram/webhook/route.ts'),
+    'utf8'
+  );
+  const assistantCallIndex = source.indexOf('runAssistantTurn(prisma, {');
+  const knownContactFlagIndex = source.indexOf('messengerKnownContact: result.hasStoredTelegramContact');
+  const customerEmailAfterAssistantIndex = source.indexOf('customerEmail', assistantCallIndex);
+  const customerPhoneAfterAssistantIndex = source.indexOf('customerPhone', assistantCallIndex);
+
+  assert.notEqual(assistantCallIndex, -1);
+  assert.notEqual(knownContactFlagIndex, -1);
+  assert.ok(assistantCallIndex < knownContactFlagIndex);
+  assert.equal(customerEmailAfterAssistantIndex, -1);
+  assert.equal(customerPhoneAfterAssistantIndex, -1);
+});

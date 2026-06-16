@@ -30,6 +30,7 @@ export type RunAssistantTurnInput = {
   capabilities?: AssistantChannelCapability[];
   requestBoundPortal?: boolean;
   newRequestUrl?: string | null;
+  messengerKnownContact?: boolean;
 };
 
 export type RunAssistantTurnResult = {
@@ -107,6 +108,7 @@ export async function runAssistantTurn(
     publicRequestNumber: input.publicRequestNumber ?? null,
     requestBoundPortal: input.requestBoundPortal,
     newRequestUrl: input.newRequestUrl,
+    messengerKnownContact: input.messengerKnownContact,
   });
   const text = reply.text.trim();
 

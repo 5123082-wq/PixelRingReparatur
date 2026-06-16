@@ -23,6 +23,7 @@ export type SystemPromptOptions = {
   requestBoundPortal?: boolean;
   newRequestUrl?: string | null;
   knowledgeQuery?: string | null;
+  messengerKnownContact?: boolean;
 };
 
 export async function readKnowledgeBaseFile(
@@ -70,6 +71,9 @@ function buildPromptHeader(options: SystemPromptOptions): string {
         'Only emit this marker once for the current unresolved problem.',
         'Do NOT emit the marker if the client has already submitted a request for this problem, if they are only asking about existing request status/account history, if they have not described what happened, or if they have not agreed to open the form.',
         'If contact, name, or address is missing, the secure embedded form can collect it after the client agrees; do not ask for those values in free-text chat and do not claim that the request was created before the form is submitted.',
+        options.messengerKnownContact
+          ? 'MESSENGER KNOWN CONTACT MODE: The backend has already linked this messenger chat to saved customer contact data. Behave naturally; do not announce that you recognize the customer, do not ask for email or phone again, do not mention or reveal saved contact data, and do not send the customer to a contact form for ordinary questions or ordinary new-request creation. If the customer wants a new request, ask only for practical service details such as what happened, object address if changed, photos, and urgency. If the customer asks to change contact data, say that contact changes require separate verification or manager confirmation.'
+          : '',
       ].join('\n');
 
   return [
