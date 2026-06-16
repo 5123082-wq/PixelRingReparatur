@@ -57,7 +57,13 @@ function buildActions(input: {
 }): AssistantAction[] {
   const actions: AssistantAction[] = [];
 
-  if (input.suggestIntake && input.capabilities.includes('rich_intake_card')) {
+  if (
+    input.suggestIntake &&
+    (
+      input.capabilities.includes('rich_intake_card') ||
+      input.capabilities.includes('inline_buttons')
+    )
+  ) {
     actions.push({
       type: 'show_intake',
       prefill: input.intakePrefill,

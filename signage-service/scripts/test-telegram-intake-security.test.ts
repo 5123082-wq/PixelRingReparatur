@@ -96,10 +96,13 @@ test('known telegram contacts are routed to request confirmation before fallback
   assert.ok(source.includes('CONFIRM_NEW_REQUEST_CALLBACK'));
   assert.ok(source.includes('result.hasStoredTelegramContact &&'));
   assert.ok(source.includes('!result.hasStoredTelegramContact &&'));
+  assert.ok(source.includes("assistantReply.actions.some((action) => action.type === 'show_intake')"));
   assert.ok(source.includes('callback_data: CONFIRM_NEW_REQUEST_CALLBACK'));
   assert.ok(source.includes('createTelegramIntakeLink(prisma'));
   assert.ok(source.includes('KNOWN_REQUEST_CALLBACK_DEDUP_MS'));
   assert.ok(source.includes('isRecentConfirmedRequest'));
+  assert.equal(source.includes('function shouldConfirmKnownTelegramRequest'), false);
+  assert.equal(source.includes('/заявк/i'), false);
 });
 
 test('telegram assistant receives known-contact state without direct contact values', () => {
