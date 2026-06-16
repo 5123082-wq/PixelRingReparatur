@@ -77,6 +77,11 @@ const OFF_TOPIC_PATTERNS = [
   /\bgeneral AI\b/i,
 ];
 
+const SAFE_SERVICE_SUPPORT_PATTERNS = [
+  /\bdiagnos(?:e|is)\b.{0,120}\b(?:sign(?:age)?|signboard|shopfront|storefront|illuminated sign|lightbox|letter(?:ing)?|led|schild|beschilderung|werbeanlage|leuchtreklame|leuchtkasten|buchstabe|вывес|таблич|реклам|витрин|букв|свет)/i,
+  /\bcalculate\b.{0,80}\b(?:rough|approx(?:imate)?|estimated?)\b.{0,80}\b(?:repair\s+)?cost\b.{0,120}\b(?:sign(?:age)?|signboard|shopfront|storefront|illuminated sign|lightbox|letter(?:ing)?|led|fallen|repair|schild|beschilderung|werbeanlage|leuchtreklame|leuchtkasten|buchstabe|вывес|таблич|реклам|витрин|букв|свет|ремонт|упал)/i,
+];
+
 const REQUEST_PATTERNS = [
   /\brequest\b/i,
   /\brepair\b/i,
@@ -192,6 +197,10 @@ function matchesAny(patterns: RegExp[], text: string): boolean {
   return patterns.some((pattern) => pattern.test(text));
 }
 
+function isSafeServiceSupportPrompt(text: string): boolean {
+  return matchesAny(SAFE_SERVICE_SUPPORT_PATTERNS, text);
+}
+
 export function detectSafetyIntent(text: string): SafetyIntent {
   if (matchesAny(STATUS_PATTERNS, text)) {
     return 'status';
@@ -239,7 +248,11 @@ export function guardChatText(
 
   const intent = detectSafetyIntent(normalizedText);
 
-  if (matchesAny(OFF_TOPIC_PATTERNS, normalizedText) && !caseId && intent === 'general') {
+  if (
+    matchesAny(OFF_TOPIC_PATTERNS, normalizedText) &&
+    !caseId &&
+    !isSafeServiceSupportPrompt(normalizedText)
+  ) {
     return {
       allowed: false,
       intent: 'refusal',

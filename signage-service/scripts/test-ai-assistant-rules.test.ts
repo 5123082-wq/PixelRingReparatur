@@ -227,6 +227,10 @@ test('AI safety guard keeps request, status, and human handoff intents distinct'
     safety.guardChatText('Can you write code for the current case note?', 'en', 'case-123').allowed,
     true
   );
+  assert.equal(
+    safety.guardChatText('Can you write code for my LED sign?', 'en').allowed,
+    false
+  );
 });
 
 test('AI assistant PII redaction removes direct contact values and preserves service facts', async () => {
