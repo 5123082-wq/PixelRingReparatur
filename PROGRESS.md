@@ -9,6 +9,10 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 Latest checkpoint:
 
 - Date: 2026-06-16
+- Current stage: Added Telegram secure intake handoff baseline: one-time hashed intake links, dedicated `/[locale]/telegram/request` form page, `/[locale]/telegram/return` fallback page, Telegram submit API that formalizes the existing Telegram case, PR/status confirmation buttons, and `/request`/form-intent webhook handling.
+- Next action: Deploy the code, test `/request` in a real Telegram chat, submit the form, and confirm the same CRM case receives the PR number, timeline message, attachments, Telegram confirmation, status button, and return flow.
+
+- Date: 2026-06-16
 - Current stage: Added the seventh before/after visual to the `/[locale]/leistungen/werbeanlagen-reparatur` symptom carousel: the moisture/short-circuit card now uses owner-provided PixelRing rain-damage/repaired WebP images with the existing hover/focus/touch repaired preview behavior.
 - Next action: Owner visually reviews `/ru/leistungen/werbeanlagen-reparatur` and `/de/leistungen/werbeanlagen-reparatur` around the moisture/short-circuit card to confirm crop, overlay readability, and repaired-state hover behavior.
 

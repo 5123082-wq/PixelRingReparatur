@@ -13,6 +13,23 @@ Planned base documents:
 
 ## Progress Log
 
+### 2026-06-16
+**Telegram Secure Intake Handoff**
+- **Status**: Implementation baseline added.
+- **Done**:
+  - Added one-time Telegram intake links so the bot can send a protected website form URL for an existing Telegram CRM case.
+  - Added a dedicated Telegram request form page and return page, keeping personal data submission on the PixelRing website while returning the customer to Telegram.
+  - Added a Telegram intake submit API that formalizes the existing Telegram case, issues the PR number, stores attachments, sends the customer confirmation, and notifies managers.
+  - Added `/request` and explicit form/request intent handling in the Telegram webhook, plus a return-command guard for `return_` deep links.
+- **In Progress**:
+  - Production validation with a real Telegram mobile client after deploying the migration and webhook code.
+- **Next Action**:
+  - Deploy, send `/request` in Telegram, submit the form, and confirm the same CRM case receives the PR number, timeline message, attachments, status button, and Telegram return.
+- **Blockers/Risks**:
+  - Automatic app return from a normal browser can be blocked by mobile OS/browser behavior; the fallback Telegram button remains required.
+  - Telegram intent detection is keyword/command based for this MVP; broader AI-triggered form offers can be tuned later.
+- **Updated Documents**: `docs/06_crm/README.md`, `docs/10_security_privacy/privacy_consent.md`, `PROGRESS.md`
+
 ### 2026-05-11
 **CRM Operational Object Map Concept**
 - **Status**: Planned / documentation-only.
