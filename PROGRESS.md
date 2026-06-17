@@ -9,6 +9,10 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 Latest checkpoint:
 
 - Date: 2026-06-17
+- Current stage: Added a Telegram active-request backend guard: after a PR is issued, AI replies that try to reopen or reprepare the secure form are replaced with a deterministic "request already received, continue here in Telegram" response.
+- Next action: Deploy and retest the real Telegram post-submit flow: submit the form, press "continue in chat", send `Ok` / `Что дальше?` / `Есть информация?`, and confirm no secure-form loop appears.
+
+- Date: 2026-06-17
 - Current stage: Fixed Telegram unknown-contact AI intake handoff: when the assistant emits the intake action after natural consent, Telegram now creates the one-time secure intake link and attaches the real form button instead of sending only a text promise.
 - Next action: Deploy and retest the real Telegram flow from a fresh chat: `/start`, describe broken sign, agree to create the request, confirm the secure form button appears and submits back into the Telegram case.
 

@@ -245,6 +245,82 @@ function buildActiveRequestPhotoReceivedText(locale?: string | null): string {
   }
 }
 
+function buildActiveRequestContinuationText(input: {
+  locale?: string | null;
+  publicRequestNumber?: string | null;
+}): string {
+  const requestNumber = input.publicRequestNumber?.trim();
+
+  switch (input.locale) {
+    case 'ru':
+      return [
+        requestNumber
+          ? `Заявка ${requestNumber} уже получена.`
+          : 'Заявка уже получена.',
+        'Общение продолжается здесь, в Telegram. Можете прислать фото, видео или дополнительные детали — они будут добавлены к этой заявке.',
+      ].join('\n');
+    case 'en':
+      return [
+        requestNumber
+          ? `Request ${requestNumber} has already been received.`
+          : 'The request has already been received.',
+        'The conversation continues here in Telegram. You can send photos, videos, or extra details here, and they will be added to this request.',
+      ].join('\n');
+    case 'tr':
+      return [
+        requestNumber
+          ? `${requestNumber} numarali talep zaten alindi.`
+          : 'Talep zaten alindi.',
+        'Gorusme burada Telegramda devam eder. Fotograf, video veya ek detaylari buradan gonderebilirsiniz; mevcut talebe eklenecek.',
+      ].join('\n');
+    case 'pl':
+      return [
+        requestNumber
+          ? `Zgloszenie ${requestNumber} zostalo juz przyjete.`
+          : 'Zgloszenie zostalo juz przyjete.',
+        'Rozmowa trwa tutaj, w Telegramie. Mozesz wyslac tu zdjecia, wideo albo dodatkowe szczegoly; zostana dodane do tego zgloszenia.',
+      ].join('\n');
+    case 'ar':
+      return [
+        requestNumber
+          ? `تم استلام الطلب ${requestNumber} بالفعل.`
+          : 'تم استلام الطلب بالفعل.',
+        'ستستمر المحادثة هنا في Telegram. يمكنك إرسال صور أو فيديو أو تفاصيل إضافية هنا، وسيتم إضافتها إلى هذا الطلب.',
+      ].join('\n');
+    case 'de':
+    default:
+      return [
+        requestNumber
+          ? `Anfrage ${requestNumber} ist bereits angekommen.`
+          : 'Die Anfrage ist bereits angekommen.',
+        'Der Dialog geht hier in Telegram weiter. Sie koennen Fotos, Videos oder weitere Details hier senden; sie werden dieser Anfrage hinzugefuegt.',
+      ].join('\n');
+  }
+}
+
+function isActiveRequestFormResetText(text: string): boolean {
+  const normalized = text.trim().toLowerCase();
+
+  return [
+    /защищ[её]нн\w*\s+форм/u,
+    /откро\w*\s+[^.!?\n]{0,80}форм/u,
+    /заполн\w*\s+[^.!?\n]{0,80}форм/u,
+    /подготов\w*\s+[^.!?\n]{0,80}форм/u,
+    /вот\s+форм/u,
+    /secure\s+(?:embedded\s+)?form/,
+    /open\s+(?:the\s+)?(?:secure\s+)?form/,
+    /fill\s+(?:out\s+)?(?:the\s+)?(?:secure\s+)?form/,
+    /protected\s+contact\s+link/,
+    /geschuetz\w*\s+formular/,
+    /gesch[uü]tz\w*\s+formular/,
+    /formular\s+oeffnen/,
+    /formular\s+[oö]ffnen/,
+    /guvenli\s+form/,
+    /bezpieczn\w*\s+formularz/,
+    /النموذج\s+الآمن/u,
+  ].some((pattern) => pattern.test(normalized));
+}
+
 function buildTelegramAssistantMessage(input: {
   body: string;
   hasPhoto: boolean;
@@ -1039,7 +1115,16 @@ export async function POST(request: NextRequest) {
       });
 
       if (assistantReply?.text) {
-        assistantReplyText = assistantReply.text;
+        const outgoingAssistantText =
+          result.activeTelegramRequest &&
+          isActiveRequestFormResetText(assistantReply.text)
+            ? buildActiveRequestContinuationText({
+                locale: result.locale,
+                publicRequestNumber: result.publicRequestNumber,
+              })
+            : assistantReply.text;
+
+        assistantReplyText = outgoingAssistantText;
         const shouldShowIntakeAction =
           !result.activeTelegramRequest &&
           assistantReply.actions.some((action) => action.type === 'show_intake');
@@ -1080,7 +1165,7 @@ export async function POST(request: NextRequest) {
 
         await sendTelegramMessage({
           chatId: meta.chatId,
-          text: assistantReply.text,
+          text: outgoingAssistantText,
           replyMarkup: shouldShowCreateRequestButton
             ? {
                 inline_keyboard: [[

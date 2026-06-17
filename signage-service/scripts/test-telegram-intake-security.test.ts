@@ -198,3 +198,20 @@ test('active telegram request continues current case instead of creating a dupli
   assert.ok(orchestratorSource.includes('activeMessengerRequest?: boolean'));
   assert.ok(chatEngineSource.includes('activeMessengerRequest?: boolean'));
 });
+
+test('active telegram request blocks assistant form reset text', () => {
+  const webhookSource = readFileSync(
+    resolve(__dirname, '../src/app/api/telegram/webhook/route.ts'),
+    'utf8'
+  );
+
+  assert.ok(webhookSource.includes('function isActiveRequestFormResetText'));
+  assert.ok(webhookSource.includes('function buildActiveRequestContinuationText'));
+  assert.ok(webhookSource.includes('result.activeTelegramRequest &&'));
+  assert.ok(webhookSource.includes('isActiveRequestFormResetText(assistantReply.text)'));
+  assert.ok(webhookSource.includes('publicRequestNumber: result.publicRequestNumber'));
+  assert.ok(webhookSource.includes('assistantReplyText = outgoingAssistantText'));
+  assert.ok(webhookSource.includes('text: outgoingAssistantText'));
+  assert.ok(webhookSource.includes('Заявка ${requestNumber} уже получена.'));
+  assert.ok(webhookSource.includes('Общение продолжается здесь, в Telegram.'));
+});

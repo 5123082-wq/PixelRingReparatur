@@ -29,6 +29,21 @@ Planned improvement options:
 ## Progress Log
 
 ### 2026-06-17
+**Telegram Active-Request Form Loop Guard**
+- **Status**: Implemented.
+- **Done**:
+  - Added a backend guard for active Telegram requests so AI text that tries to reopen, prepare, or refill the secure form after a PR has already been issued is replaced before delivery.
+  - Added localized deterministic continuation copy that tells the customer the request is already received and that photos, videos, and details can be sent directly in Telegram.
+  - Added a regression test covering the active-request form-reset failure mode.
+- **In Progress**:
+  - Live Telegram QA after deployment.
+- **Next Action**:
+  - Retest the post-submit Telegram flow with short follow-ups such as `Ok`, `Что дальше?`, and `Есть информация?`; verify the bot keeps the active PR context and does not offer the secure form again.
+- **Blockers/Risks**:
+  - This guard blocks the worst loop, but richer "living conversation" still depends on future state-aware response templates and manager/AI handoff policy.
+- **Updated Documents**: `docs/08_ai_assistant/README.md`, `PROGRESS.md`
+
+### 2026-06-17
 **Telegram Unknown-Contact Intake Button Fix**
 - **Status**: Implemented.
 - **Done**:
