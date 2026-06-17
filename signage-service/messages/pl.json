@@ -316,7 +316,9 @@
     "issue_installation": "Montaż",
     "issue_maintenance": "Konserwacja",
     "field_location": "Adres lub lokalizacja (opcjonalnie)",
-    "field_contact": "Telefon lub e-mail",
+    "field_contact": "E-mail do zgłoszenia",
+    "field_email": "E-mail do zgłoszenia",
+    "field_phone": "Telefon (opcjonalnie)",
     "field_message": "Krotko opisz zadanie. Przyklady: szyld LED migocze, kaseton jest ciemny, litery uszkodzone, folia odchodzi, demontaz szyldu.",
     "field_photo": "📎 Załącz zdjęcie",
     "attach_photo_btn": "Załącz zdjęcie (opcjonalnie)",
@@ -326,7 +328,7 @@
     "success_number_label": "Twój numer PR",
     "success_message": "Użyj Status z tym numerem, aby kontynuować.",
     "open_status": "Otwórz Status",
-    "error_invalid_contact": "Podaj poprawny numer telefonu lub adres e-mail.",
+    "error_invalid_contact": "Podaj poprawny adres e-mail, aby utworzyć zgłoszenie i przygotować dostęp do portalu klienta. Telefon jest opcjonalny.",
     "error_generic": "Nie udało się wysłać zgłoszenia. Spróbuj ponownie."
   },
   "StatusPage": {
@@ -424,6 +426,13 @@
     "chat_gate_body": "Aby bezpiecznie pokazać wiadomości, dokumenty i kolejne kroki zgłoszenia, musisz się zarejestrować i potwierdzić dostęp. Po zalogowaniu chat i historia serwisu będą w jednym miejscu.",
     "chat_gate_primary": "Przejdź do panelu",
     "chat_gate_secondary": "Później",
+    "portal_activation_title": "Aktywuj panel klienta",
+    "portal_activation_body": "Zachowaj dostep do tego zgloszenia, historii i pozniejszych dokumentow. Link uruchamia weryfikacje kodem e-mail i sam nie otwiera prywatnych danych.",
+    "portal_activation_activate": "Aktywuj panel",
+    "portal_activation_session_title": "Dostep do panelu jest aktywny",
+    "portal_activation_session_body": "To zgloszenie jest juz powiazane z Twoja sesja panelu. Otworz panel klienta, aby korzystac z bezpiecznego dlugoterminowego dostepu.",
+    "portal_activation_open": "Przejdź do panelu",
+    "portal_activation_unavailable_body": "Link aktywacyjny nie jest juz aktywny. W razie potrzeby PixelRing moze wyslac nowy bezpieczny link.",
     "progress_steps": {
       "accepted": "Przyjęte",
       "diagnostics": "Diagnostyka",

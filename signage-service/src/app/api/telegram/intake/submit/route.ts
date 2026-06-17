@@ -8,6 +8,8 @@ import {
   type StoredAttachmentInput,
 } from '@/lib/attachments';
 import { redactPiiForAi } from '@/lib/ai/pii-redaction';
+import { parseOptionalContactDetails } from '@/lib/contact-policy';
+import { sendPortalActivationInviteEmail } from '@/lib/email/portal-claim-email';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, type RateLimitConfig } from '@/lib/rate-limit';
 import { publishCaseRealtimeEvent } from '@/lib/realtime';
@@ -25,6 +27,8 @@ const FIELD_LIMITS = {
   token: 256,
   name: 160,
   contact: 160,
+  email: 160,
+  phone: 160,
   location: 500,
   locationSource: 40,
   issueType: 120,
@@ -62,42 +66,69 @@ function readLocationSource(value: string): string | null {
 function buildConfirmationText(input: {
   locale: string;
   publicRequestNumber: string;
+  hasPortalClaim: boolean;
+  activationInviteSent: boolean;
 }): string {
+  const portalLine = input.hasPortalClaim
+    ? input.activationInviteSent
+      ? {
+          ru: 'Письмо для активации личного кабинета отправлено. Кабинет также можно открыть кнопкой ниже.',
+          en: 'The customer portal activation email has been sent. You can also open the portal with the button below.',
+          tr: 'Musteri portali aktivasyon e-postasi gonderildi. Portali asagidaki dugmeyle de acabilirsiniz.',
+          pl: 'E-mail aktywacyjny do panelu klienta zostal wyslany. Panel mozna tez otworzyc przyciskiem ponizej.',
+          ar: 'تم إرسال بريد تفعيل بوابة العميل. يمكنك أيضاً فتح البوابة من الزر أدناه.',
+          de: 'Die E-Mail zur Aktivierung des Kundenportals wurde gesendet. Das Portal koennen Sie auch ueber die Taste unten oeffnen.',
+        }
+      : {
+          ru: 'Для долгосрочного доступа активируйте личный кабинет кнопкой ниже.',
+          en: 'For long-term access, activate the customer portal with the button below.',
+          tr: 'Uzun sureli erisim icin musteri portalini asagidaki dugmeyle etkinlestirin.',
+          pl: 'Aby zachowac dlugoterminowy dostep, aktywuj panel klienta przyciskiem ponizej.',
+          ar: 'للوصول طويل الأمد، فعّل بوابة العميل من الزر أدناه.',
+          de: 'Fuer dauerhaften Zugriff aktivieren Sie das Kundenportal ueber die Taste unten.',
+        }
+    : null;
+
   switch (input.locale) {
     case 'ru':
       return [
         'Спасибо, ваша заявка получена.',
         '',
         `Номер: ${input.publicRequestNumber}`,
-        'Менеджер продолжит общение здесь, в Telegram.',
+        'Статус можно проверить по ссылке ниже. Диалог можно продолжить здесь, в Telegram.',
+        portalLine?.ru,
       ].join('\n');
     case 'en':
       return [
         'Thank you, your request has been received.',
         '',
         `Number: ${input.publicRequestNumber}`,
-        'A manager can continue the conversation here in Telegram.',
+        'Status can be checked by the link below. The conversation can continue here in Telegram.',
+        portalLine?.en,
       ].join('\n');
     case 'tr':
       return [
         'Tesekkurler, talebiniz alindi.',
         '',
         `Numara: ${input.publicRequestNumber}`,
-        'Yonetici gorusmeye burada, Telegram icinde devam edebilir.',
+        'Durum asagidaki baglantidan kontrol edilebilir. Gorusme burada, Telegram icinde devam edebilir.',
+        portalLine?.tr,
       ].join('\n');
     case 'pl':
       return [
         'Dziekujemy, zgloszenie zostalo przyjete.',
         '',
         `Numer: ${input.publicRequestNumber}`,
-        'Menedzer moze kontynuowac rozmowe tutaj, w Telegramie.',
+        'Status mozna sprawdzic przez ponizszy link. Rozmowe mozna kontynuowac tutaj, w Telegramie.',
+        portalLine?.pl,
       ].join('\n');
     case 'ar':
       return [
         'تم استلام طلبك.',
         '',
         `الرقم: ${input.publicRequestNumber}`,
-        'يمكن للمدير متابعة المحادثة هنا في Telegram.',
+        'يمكن التحقق من الحالة عبر الرابط أدناه. ويمكن متابعة المحادثة هنا في Telegram.',
+        portalLine?.ar,
       ].join('\n');
     case 'de':
     default:
@@ -105,7 +136,8 @@ function buildConfirmationText(input: {
         'Danke, Ihre Anfrage ist angekommen.',
         '',
         `Nummer: ${input.publicRequestNumber}`,
-        'Ein Manager kann hier im Telegram-Chat weiter antworten.',
+        'Den Status koennen Sie ueber den Link unten pruefen. Der Dialog kann hier in Telegram weitergehen.',
+        portalLine?.de,
       ].join('\n');
   }
 }
@@ -146,6 +178,24 @@ function getContinueButtonLabel(locale: string): string {
   }
 }
 
+function getPortalButtonLabel(locale: string, hasEmail: boolean): string {
+  switch (locale) {
+    case 'ru':
+      return hasEmail ? 'Открыть кабинет' : 'Активировать кабинет';
+    case 'en':
+      return hasEmail ? 'Open portal' : 'Activate portal';
+    case 'tr':
+      return hasEmail ? 'Portali ac' : 'Portali etkinlestir';
+    case 'pl':
+      return hasEmail ? 'Otworz panel' : 'Aktywuj panel';
+    case 'ar':
+      return hasEmail ? 'فتح البوابة' : 'تفعيل البوابة';
+    case 'de':
+    default:
+      return hasEmail ? 'Portal oeffnen' : 'Kundenportal aktivieren';
+  }
+}
+
 export async function POST(request: NextRequest) {
   const ip = getClientIP(request);
   const limit = checkRateLimit(ip, TELEGRAM_INTAKE_LIMIT);
@@ -163,6 +213,8 @@ export async function POST(request: NextRequest) {
     const token = readText(formData, 'token', FIELD_LIMITS.token);
     const name = readText(formData, 'name', FIELD_LIMITS.name);
     const contact = readText(formData, 'contact', FIELD_LIMITS.contact);
+    const email = readText(formData, 'email', FIELD_LIMITS.email);
+    const phone = readText(formData, 'phone', FIELD_LIMITS.phone);
     const serviceLocation = readText(formData, 'location', FIELD_LIMITS.location);
     const serviceLocationSource = readLocationSource(
       readText(formData, 'locationSource', FIELD_LIMITS.locationSource)
@@ -172,12 +224,14 @@ export async function POST(request: NextRequest) {
     const serviceLatitude = readCoordinate(formData.get('locationLatitude'), -90, 90);
     const serviceLongitude = readCoordinate(formData.get('locationLongitude'), -180, 180);
 
-    if (!token || !contact || !message) {
+    if (!token || !message) {
       return NextResponse.json(
-        { error: 'Please provide a valid form link, contact and message.' },
+        { error: 'Please provide a valid form link and message.' },
         { status: 400 }
       );
     }
+
+    const submittedContact = parseOptionalContactDetails({ contact, email, phone });
 
     const linkState = await getTelegramIntakeLinkState(prisma, token);
     if (linkState.status !== 'valid') {
@@ -200,6 +254,8 @@ export async function POST(request: NextRequest) {
       token,
       name,
       contact,
+      email,
+      phone,
       serviceLocation,
       serviceLatitude,
       serviceLongitude,
@@ -207,10 +263,33 @@ export async function POST(request: NextRequest) {
       issueType,
       message,
       attachments: storedAttachments,
+      origin: request.headers.get('origin') || request.nextUrl.origin,
     });
+
+    let activationInviteSent = false;
+    if (submittedContact.customerEmail && result.portalClaimUrl && result.portalClaimExpiresAt) {
+      try {
+        const delivery = await sendPortalActivationInviteEmail({
+          to: submittedContact.customerEmail,
+          claimUrl: result.portalClaimUrl,
+          expiresAt: new Date(result.portalClaimExpiresAt),
+          publicRequestNumber: result.publicRequestNumber,
+          locale: result.locale,
+        });
+        activationInviteSent = delivery.sent;
+      } catch {
+        console.error('Telegram portal activation invite email failed:', {
+          caseId: result.caseId,
+          publicRequestNumber: result.publicRequestNumber,
+        });
+      }
+    }
 
     const keyboard = [
       [{ text: getStatusButtonLabel(result.locale), url: result.statusUrl }],
+      ...(result.portalClaimUrl
+        ? [[{ text: getPortalButtonLabel(result.locale, Boolean(submittedContact.customerEmail)), url: result.portalClaimUrl }]]
+        : []),
       ...(result.telegramReturnUrl
         ? [[{ text: getContinueButtonLabel(result.locale), url: result.telegramReturnUrl }]]
         : []),
@@ -221,6 +300,8 @@ export async function POST(request: NextRequest) {
       text: buildConfirmationText({
         locale: result.locale,
         publicRequestNumber: result.publicRequestNumber,
+        hasPortalClaim: Boolean(result.portalClaimUrl),
+        activationInviteSent,
       }),
       replyMarkup: { inline_keyboard: keyboard },
     }).catch((error) => {
@@ -239,7 +320,9 @@ export async function POST(request: NextRequest) {
       caseId: result.caseId,
       publicRequestNumber: result.publicRequestNumber,
       customerName: null,
-      contactLabel: 'Contact provided',
+      contactLabel: submittedContact.customerEmail || submittedContact.customerPhone
+        ? 'Contact provided'
+        : 'Telegram chat',
       originLabel: 'Telegram secure form',
       messagePreview: [
         redactPiiForAi(message),
@@ -256,6 +339,7 @@ export async function POST(request: NextRequest) {
       publicRequestNumber: result.publicRequestNumber,
       returnPath: buildLocalePath(result.locale, `/telegram/return?r=${encodeURIComponent(result.returnNonce)}`),
       telegramReturnUrl: result.telegramReturnUrl,
+      portalClaimUrl: result.portalClaimUrl,
     });
   } catch (error) {
     await Promise.allSettled(storedAttachments.map((attachment) => deleteAttachment(attachment)));

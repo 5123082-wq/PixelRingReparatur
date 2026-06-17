@@ -395,7 +395,9 @@
     "issue_installation": "Installation",
     "issue_maintenance": "Maintenance",
     "field_location": "Address or location (optional)",
-    "field_contact": "Phone or email",
+    "field_contact": "Email for the request",
+    "field_email": "Email for the request",
+    "field_phone": "Phone (optional)",
     "field_message": "Briefly describe the task. Examples: LED sign flickers, lightbox is dark, letters are damaged, film is peeling, dismantle the sign.",
     "field_photo": "📎 Attach a photo",
     "attach_photo_btn": "Attach photo (optional)",
@@ -405,7 +407,7 @@
     "success_number_label": "Your PR number",
     "success_message": "Use Status with this number to continue.",
     "open_status": "Open Status",
-    "error_invalid_contact": "Please enter a valid phone number or email address.",
+    "error_invalid_contact": "Please enter a valid email address so we can create the request and prepare customer portal access. Phone is optional.",
     "error_generic": "Unable to submit the request right now. Please try again."
   },
   "StatusPage": {
@@ -503,6 +505,13 @@
     "chat_gate_body": "To show messages, documents, and next steps safely, you need to register and verify access. After login, the chat and service history stay in one place.",
     "chat_gate_primary": "Go to portal",
     "chat_gate_secondary": "Later",
+    "portal_activation_title": "Activate customer portal",
+    "portal_activation_body": "Keep access to this request, history, and later documents. The link starts email-code verification and does not open private data by itself.",
+    "portal_activation_activate": "Activate portal",
+    "portal_activation_session_title": "Portal access is active",
+    "portal_activation_session_body": "This request is already connected to your portal session. Open the customer portal for secure long-term access.",
+    "portal_activation_open": "Go to portal",
+    "portal_activation_unavailable_body": "The activation link is no longer active. PixelRing can send a new secure link if needed.",
     "progress_steps": {
       "accepted": "Accepted",
       "diagnostics": "Diagnostics",

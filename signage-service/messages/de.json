@@ -316,7 +316,9 @@
     "issue_installation": "Montage",
     "issue_maintenance": "Wartung",
     "field_location": "Adresse oder Ort (optional)",
-    "field_contact": "Telefon oder E-Mail",
+    "field_contact": "E-Mail für die Anfrage",
+    "field_email": "E-Mail für die Anfrage",
+    "field_phone": "Telefon (optional)",
     "field_message": "Beschreiben Sie kurz die Aufgabe. Beispiele: LED-Schild flackert, Leuchtkasten dunkel, Buchstaben beschaedigt, Folie loest sich, Schild demontieren.",
     "field_photo": "📎 Foto anhängen",
     "attach_photo_btn": "Foto beifügen (optional)",
@@ -326,7 +328,7 @@
     "success_number_label": "Ihre PR-Nummer",
     "success_message": "Nutzen Sie Status mit dieser Nummer, um fortzufahren.",
     "open_status": "Status öffnen",
-    "error_invalid_contact": "Bitte geben Sie eine gültige Telefonnummer oder E-Mail-Adresse ein.",
+    "error_invalid_contact": "Bitte geben Sie eine gültige E-Mail-Adresse an, damit wir die Anfrage erstellen und den Zugang zum Kundenportal vorbereiten können. Telefon ist optional.",
     "error_generic": "Die Anfrage konnte gerade nicht gesendet werden. Bitte versuchen Sie es erneut."
   },
   "StatusPage": {
@@ -424,6 +426,13 @@
     "chat_gate_body": "Damit Korrespondenz, Dokumente und nächste Schritte sicher sichtbar werden, müssen Sie sich registrieren und den Zugriff verifizieren. Danach bleiben Chat und Serviceverlauf an einem Ort.",
     "chat_gate_primary": "Zum Portal",
     "chat_gate_secondary": "Später",
+    "portal_activation_title": "Kundenportal aktivieren",
+    "portal_activation_body": "Sichern Sie den Zugriff auf diese Anfrage, Verlauf und spaetere Dokumente. Der Link startet die E-Mail-Code-Bestaetigung und oeffnet allein keine privaten Daten.",
+    "portal_activation_activate": "Kundenportal aktivieren",
+    "portal_activation_session_title": "Kundenportal ist aktiv",
+    "portal_activation_session_body": "Diese Anfrage ist bereits mit Ihrer Portal-Sitzung verknuepft. Oeffnen Sie das Kundenportal fuer den sicheren Langzeitzugriff.",
+    "portal_activation_open": "Zum Portal",
+    "portal_activation_unavailable_body": "Der Aktivierungslink ist nicht mehr aktiv. PixelRing kann bei Bedarf einen neuen sicheren Link senden.",
     "progress_steps": {
       "accepted": "Angenommen",
       "diagnostics": "Diagnose",

@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIP, CONTACT_LIMIT } from '@/lib/rate-limit';
-import { createWebsiteRequest } from '@/lib/request-intake';
+import { createWebsiteRequest, resolveWebsiteRequestContact } from '@/lib/request-intake';
 import { CASE_SESSION_COOKIE_NAME } from '@/lib/case-session';
 import { sendAdminTelegramNotification } from '@/lib/admin-telegram-notifications';
 import { getSessionIntakeDraft } from '@/lib/ai/intake-draft';
 import { redactPiiForAi } from '@/lib/ai/pii-redaction';
+import { sendPortalActivationInviteEmail } from '@/lib/email/portal-claim-email';
 import { DEFAULT_SITE_LOCALE, SITE_LOCALES, type SiteLocale } from '@/lib/seo';
 import {
   AttachmentValidationError,
@@ -85,6 +86,8 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     let name = String(formData.get('name') ?? '').trim();
     let contact = String(formData.get('contact') ?? '').trim();
+    let email = String(formData.get('email') ?? '').trim();
+    let phone = String(formData.get('phone') ?? '').trim();
     const message = String(formData.get('message') ?? '').trim();
     const issueType = String(formData.get('issueType') ?? '').trim();
     let location = String(formData.get('location') ?? '').trim();
@@ -126,7 +129,9 @@ export async function POST(request: NextRequest) {
         if (isFromChat) {
           const draft = await getSessionIntakeDraft(prisma, resolved.session.id);
           name = name || draft?.customerName || '';
-          contact = contact || draft?.customerEmail || draft?.customerPhone || '';
+          email = email || draft?.customerEmail || '';
+          phone = phone || draft?.customerPhone || '';
+          contact = contact || draft?.customerEmail || '';
           if (!location) {
             location = draft?.serviceLocation || '';
             serviceLatitude = draft?.serviceLatitude ?? null;
@@ -139,10 +144,12 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (!contact || !message) {
+    const resolvedContact = resolveWebsiteRequestContact({ contact, email, phone });
+
+    if (!message) {
       return NextResponse.json(
         {
-          error: 'Please provide a valid email address or phone number and a message.',
+          error: 'Please provide a message.',
         },
         { status: 400 }
       );
@@ -168,7 +175,9 @@ export async function POST(request: NextRequest) {
 
     const result = await createWebsiteRequest(prisma, {
       name,
-      contact,
+      contact: resolvedContact.customerEmail,
+      email: resolvedContact.customerEmail,
+      phone: resolvedContact.customerPhone,
       serviceLocation: location,
       serviceLatitude,
       serviceLongitude,
@@ -185,12 +194,29 @@ export async function POST(request: NextRequest) {
       isFromChat,
     });
 
+    if (result.portalClaimUrl && result.portalClaimExpiresAt && resolvedContact.customerEmail) {
+      await sendPortalActivationInviteEmail({
+        to: resolvedContact.customerEmail,
+        claimUrl: result.portalClaimUrl,
+        expiresAt: new Date(result.portalClaimExpiresAt),
+        publicRequestNumber: result.publicRequestNumber,
+        locale,
+      }).catch(() => {
+        console.error('Portal activation invite email failed:', {
+          caseId: result.caseId,
+          publicRequestNumber: result.publicRequestNumber,
+        });
+      });
+    }
+
     await sendAdminTelegramNotification({
       kind: 'website_request_created',
       caseId: result.caseId,
       publicRequestNumber: result.publicRequestNumber,
       customerName: null,
-      contactLabel: contact || draftContactKnown ? 'Contact provided' : null,
+      contactLabel: resolvedContact.customerEmail || resolvedContact.customerPhone || draftContactKnown
+        ? 'Contact provided'
+        : null,
       originLabel: isFromChat ? 'Website chat' : 'Website form',
       messagePreview: [
         redactPiiForAi(finalMessage),

@@ -14,11 +14,17 @@ type PublicStatusCase = {
   verifiedVia: 'session' | 'contact';
 };
 
+type PortalActivation =
+  | { state: 'portal_session'; portalUrl: string }
+  | { state: 'active_claim'; claimUrl: string; expiresAt: string }
+  | { state: 'unavailable' };
+
 type StatusLookupResponse =
   | {
       verified: true;
       verifiedVia: 'session' | 'contact';
       case: PublicStatusCase;
+      portalActivation: PortalActivation;
     }
   | {
       verified: false;
@@ -97,6 +103,7 @@ export default function StatusLookup({
   const [requestNumber, setRequestNumber] = useState(initialRequestNumber);
   const [contact, setContact] = useState('');
   const [result, setResult] = useState<PublicStatusCase | null>(null);
+  const [portalActivation, setPortalActivation] = useState<PortalActivation | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [helperMessage, setHelperMessage] = useState('');
@@ -165,6 +172,7 @@ export default function StatusLookup({
 
       if (!response.ok || !data.verified) {
         setResult(null);
+        setPortalActivation(null);
         if (!options?.silent) {
           const failure = data as Extract<StatusLookupResponse, { verified: false }>;
           setErrorMessage(failure.message);
@@ -173,6 +181,7 @@ export default function StatusLookup({
       }
 
       setResult(data.case);
+      setPortalActivation(data.portalActivation);
       setHelperMessage(
         data.verifiedVia === 'session'
           ? t('access_restored')
@@ -330,6 +339,44 @@ export default function StatusLookup({
               <p className="mt-2 text-emerald-700 text-[12px] font-medium leading-tight">{helperMessage}</p>
             )}
           </div>
+
+          {result && portalActivation && (
+            <div className="rounded-[20px] border border-[#E5D8C9] bg-white p-4 shadow-sm">
+              <div className="mb-2 flex items-center gap-2">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#F7F1E8] text-[#C26E45]">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </div>
+                <h3 className="font-sans text-[17px] font-black leading-tight text-[#0A111F]">
+                  {portalActivation.state === 'portal_session'
+                    ? t('portal_activation_session_title')
+                    : t('portal_activation_title')}
+                </h3>
+              </div>
+              <p className="text-[13px] leading-relaxed text-[#64748B]">
+                {portalActivation.state === 'portal_session'
+                  ? t('portal_activation_session_body')
+                  : portalActivation.state === 'active_claim'
+                    ? t('portal_activation_body')
+                    : t('portal_activation_unavailable_body')}
+              </p>
+              {portalActivation.state === 'portal_session' && (
+                <Link
+                  href={portalActivation.portalUrl}
+                  className="mt-3 inline-flex min-h-10 items-center justify-center rounded-xl bg-[#0A111F] px-4 py-2 text-[13px] font-black text-white transition-colors hover:bg-[#1A2E47]"
+                >
+                  {t('portal_activation_open')}
+                </Link>
+              )}
+              {portalActivation.state === 'active_claim' && (
+                <a
+                  href={portalActivation.claimUrl}
+                  className="mt-3 inline-flex min-h-10 items-center justify-center rounded-xl bg-[#C26E45] px-4 py-2 text-[13px] font-black text-white transition-colors hover:bg-[#A65835]"
+                >
+                  {t('portal_activation_activate')}
+                </a>
+              )}
+            </div>
+          )}
 
           <header className="flex items-center justify-between mb-4">
             <h3 className="font-sans text-[20px] font-extrabold text-[#0A111F]">{t('chat_header')}</h3>

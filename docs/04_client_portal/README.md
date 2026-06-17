@@ -8,6 +8,7 @@ Current migrated documents:
 - `client_portal_implementation_plan.md`
 - `client_portal_prototype_functional_map.md`
 - `accounts_and_identity.md`
+- `telegram_email_portal_activation_plan.md`
 - `Маркетинговая стратегия и план развития платформы контроля объектов и рекламных активов.md`
 
 Planned base documents:

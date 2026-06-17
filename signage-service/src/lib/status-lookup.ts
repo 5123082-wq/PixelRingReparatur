@@ -6,8 +6,8 @@ import {
   getCaseSessionExpiryDate,
   hashCaseSessionToken,
 } from './case-session';
+import { parseContact } from './contact-policy';
 import { isPublicRequestNumberFormat } from './request-number';
-import { parseContact } from './request-intake';
 
 type PublicCaseStatus = {
   publicRequestNumber: string;
@@ -30,6 +30,7 @@ export type StatusLookupRequest = {
 
 export type StatusLookupSuccess = {
   verified: true;
+  caseId: string;
   cookieToken?: string;
   case: PublicCaseStatus;
 };
@@ -199,6 +200,7 @@ async function lookupBySessionToken(
     include: {
       case: {
         select: {
+          id: true,
           publicRequestNumber: true,
           status: true,
           createdAt: true,
@@ -224,6 +226,7 @@ async function lookupBySessionToken(
 
     return {
       verified: true,
+      caseId: sessionCase.id,
       cookieToken: input.token,
       case: buildPublicCaseStatus(sessionCase, 'session'),
     };
@@ -334,6 +337,7 @@ export async function lookupPublicCaseStatus(
 
   return {
     verified: true,
+    caseId: caseRecord.id,
     cookieToken: sessionToken,
     case: buildPublicCaseStatus(caseRecord, 'contact'),
   };

@@ -11,6 +11,8 @@ export type IntakePrefill = {
   issueType?: string;
   contact?: string;
   contactMode?: ContactMode;
+  email?: string;
+  phone?: string;
   name?: string;
   location?: string;
   summary?: string;
@@ -30,10 +32,10 @@ function getChatIntakeCopy(locale: string) {
       issueTypes: ['Repair', 'Installation', 'New signage', 'Branding', 'Illuminated advertising', 'Maintenance', 'Other'],
       successTitle: 'Request registered successfully',
       requestNumberLabel: 'Your request number',
-      successText: 'Save this number. A specialist will contact you shortly.',
-      trackStatus: 'Track status',
+      successText: 'Your PR number has been created. You can check the status by link; the portal link prepares long-term access if shown.',
+      trackStatus: 'Check status',
       portalSetup: 'Set up customer portal access',
-      missingContact: 'Please enter a contact method.',
+      missingEmail: 'Please enter an email address to create the request. Phone is optional for operational contact.',
       chatRequestTypeFallback: 'Not specified',
       chatRequestPrefix: 'Chat request. Type:',
       sendError: 'Error while sending.',
@@ -42,9 +44,10 @@ function getChatIntakeCopy(locale: string) {
       photoHint: 'A photo or short video is optional, but it helps with diagnostics.',
       issueTypeLabel: 'Request type',
       issueTypePlaceholder: 'Please choose…',
-      contactLabel: 'Contact *',
-      phoneLabel: 'Phone',
-      emailLabel: 'Email',
+      emailLabel: 'Email for the request *',
+      emailHelp: 'Used to create the PR request and prepare customer portal access.',
+      phoneLabel: 'Phone (optional)',
+      phoneHelp: 'Only for operational follow-up. It does not replace email for this request.',
       namePlaceholder: 'Your name (optional)',
       locationPlaceholder: 'Address / location (optional)',
       attachMedia: 'Attach photo/video',
@@ -52,14 +55,126 @@ function getChatIntakeCopy(locale: string) {
     };
   }
 
+  if (locale === 'ru') {
+    return {
+      issueTypes: ['Ремонт', 'Монтаж', 'Новая вывеска', 'Брендинг', 'Световая реклама', 'Обслуживание', 'Другое'],
+      successTitle: 'Заявка зарегистрирована',
+      requestNumberLabel: 'Номер заявки',
+      successText: 'PR-номер создан. Статус можно проверить по ссылке; ссылка кабинета подготовит долгосрочный доступ, если она показана.',
+      trackStatus: 'Проверить статус',
+      portalSetup: 'Подготовить личный кабинет',
+      missingEmail: 'Укажите email, чтобы создать заявку. Телефон можно оставить дополнительно для связи по работе.',
+      chatRequestTypeFallback: 'Не указано',
+      chatRequestPrefix: 'Заявка из чата. Тип:',
+      sendError: 'Ошибка при отправке.',
+      formTitle: 'Запустить сервис',
+      attachmentsHint: 'Файлы, уже отправленные в чат, будут прикреплены к этой заявке.',
+      photoHint: 'Фото или короткое видео необязательны, но помогают с диагностикой.',
+      issueTypeLabel: 'Тип заявки',
+      issueTypePlaceholder: 'Выберите…',
+      emailLabel: 'Email для заявки *',
+      emailHelp: 'Нужен для создания PR-заявки и подготовки доступа в личный кабинет.',
+      phoneLabel: 'Телефон (необязательно)',
+      phoneHelp: 'Только для оперативной связи. Телефон не заменяет email для этой заявки.',
+      namePlaceholder: 'Ваше имя (необязательно)',
+      locationPlaceholder: 'Адрес / место (необязательно)',
+      attachMedia: 'Прикрепить фото/видео',
+      submit: 'Отправить заявку →',
+    };
+  }
+
+  if (locale === 'tr') {
+    return {
+      issueTypes: ['Onarim', 'Montaj', 'Yeni tabela', 'Markalama', 'Isikli reklam', 'Bakim', 'Diger'],
+      successTitle: 'Talep kaydedildi',
+      requestNumberLabel: 'Talep numaraniz',
+      successText: 'PR numarasi olusturuldu. Durum baglantidan kontrol edilebilir; portal baglantisi varsa uzun sureli erisimi hazirlar.',
+      trackStatus: 'Durumu kontrol et',
+      portalSetup: 'Musteri portalini hazirla',
+      missingEmail: 'Talebi olusturmak icin e-posta girin. Telefon operasyonel iletisim icin istege baglidir.',
+      chatRequestTypeFallback: 'Belirtilmedi',
+      chatRequestPrefix: 'Sohbet talebi. Tur:',
+      sendError: 'Gonderirken hata olustu.',
+      formTitle: 'Servisi baslat',
+      attachmentsHint: 'Sohbette gonderilen dosyalar bu talebe eklenecek.',
+      photoHint: 'Foto veya kisa video istege baglidir, ancak ariza tespitine yardim eder.',
+      issueTypeLabel: 'Talep turu',
+      issueTypePlaceholder: 'Lutfen secin…',
+      emailLabel: 'Talep icin e-posta *',
+      emailHelp: 'PR talebini olusturmak ve musteri portali erisimini hazirlamak icin kullanilir.',
+      phoneLabel: 'Telefon (istege bagli)',
+      phoneHelp: 'Yalnizca operasyonel iletisim icindir. Bu talepte e-postanin yerine gecmez.',
+      namePlaceholder: 'Adiniz (istege bagli)',
+      locationPlaceholder: 'Adres / konum (istege bagli)',
+      attachMedia: 'Foto/video ekle',
+      submit: 'Talebi gonder →',
+    };
+  }
+
+  if (locale === 'pl') {
+    return {
+      issueTypes: ['Naprawa', 'Montaz', 'Nowy szyld', 'Branding', 'Reklama swietlna', 'Serwis', 'Inne'],
+      successTitle: 'Zgloszenie zarejestrowane',
+      requestNumberLabel: 'Numer zgloszenia',
+      successText: 'Numer PR zostal utworzony. Status mozna sprawdzic przez link; link portalu przygotuje dlugoterminowy dostep, jesli jest pokazany.',
+      trackStatus: 'Sprawdz status',
+      portalSetup: 'Przygotuj dostep do portalu',
+      missingEmail: 'Podaj e-mail, aby utworzyc zgloszenie. Telefon jest opcjonalny do kontaktu operacyjnego.',
+      chatRequestTypeFallback: 'Nie podano',
+      chatRequestPrefix: 'Zgloszenie z chatu. Typ:',
+      sendError: 'Blad podczas wysylania.',
+      formTitle: 'Rozpocznij serwis',
+      attachmentsHint: 'Pliki wyslane juz w chacie zostana dolaczone do tego zgloszenia.',
+      photoHint: 'Zdjecie lub krotkie wideo jest opcjonalne, ale pomaga w diagnostyce.',
+      issueTypeLabel: 'Typ zgloszenia',
+      issueTypePlaceholder: 'Wybierz…',
+      emailLabel: 'E-mail do zgloszenia *',
+      emailHelp: 'Sluzy do utworzenia zgloszenia PR i przygotowania dostepu do portalu klienta.',
+      phoneLabel: 'Telefon (opcjonalnie)',
+      phoneHelp: 'Tylko do kontaktu operacyjnego. Nie zastepuje e-maila w tym zgloszeniu.',
+      namePlaceholder: 'Imie (opcjonalnie)',
+      locationPlaceholder: 'Adres / lokalizacja (opcjonalnie)',
+      attachMedia: 'Dodaj foto/wideo',
+      submit: 'Wyslij zgloszenie →',
+    };
+  }
+
+  if (locale === 'ar') {
+    return {
+      issueTypes: ['إصلاح', 'تركيب', 'لافتة جديدة', 'هوية بصرية', 'إعلان مضيء', 'صيانة', 'أخرى'],
+      successTitle: 'تم تسجيل الطلب',
+      requestNumberLabel: 'رقم الطلب',
+      successText: 'تم إنشاء رقم PR. يمكن التحقق من الحالة عبر الرابط؛ ورابط البوابة يجهز الوصول طويل الأمد إذا ظهر.',
+      trackStatus: 'التحقق من الحالة',
+      portalSetup: 'تجهيز بوابة العميل',
+      missingEmail: 'يرجى إدخال بريد إلكتروني لإنشاء الطلب. الهاتف اختياري للتواصل التشغيلي.',
+      chatRequestTypeFallback: 'غير محدد',
+      chatRequestPrefix: 'طلب من الدردشة. النوع:',
+      sendError: 'حدث خطأ أثناء الإرسال.',
+      formTitle: 'بدء الخدمة',
+      attachmentsHint: 'سيتم ربط الملفات المرسلة في الدردشة بهذا الطلب.',
+      photoHint: 'الصورة أو الفيديو القصير اختياريان، لكنهما يساعدان في التشخيص.',
+      issueTypeLabel: 'نوع الطلب',
+      issueTypePlaceholder: 'يرجى الاختيار…',
+      emailLabel: 'البريد الإلكتروني للطلب *',
+      emailHelp: 'يستخدم لإنشاء طلب PR وتجهيز الوصول إلى بوابة العميل.',
+      phoneLabel: 'الهاتف (اختياري)',
+      phoneHelp: 'للتواصل التشغيلي فقط. لا يحل محل البريد الإلكتروني لهذا الطلب.',
+      namePlaceholder: 'اسمك (اختياري)',
+      locationPlaceholder: 'العنوان / الموقع (اختياري)',
+      attachMedia: 'إرفاق صورة/فيديو',
+      submit: 'إرسال الطلب ←',
+    };
+  }
+
   return {
     issueTypes: ['Reparatur', 'Montage', 'Neue Beschilderung', 'Branding', 'Lichterwerbung', 'Wartung', 'Sonstiges'],
     successTitle: 'Anfrage erfolgreich registriert',
     requestNumberLabel: 'Ihre Anfragenummer',
-    successText: 'Speichern Sie diese Nummer. Ein Spezialist wird sich in Kürze bei Ihnen melden.',
-    trackStatus: 'Status verfolgen',
+    successText: 'Ihre PR-Nummer wurde erstellt. Den Status koennen Sie per Link pruefen; der Portal-Link bereitet den langfristigen Zugang vor, falls er angezeigt wird.',
+    trackStatus: 'Status pruefen',
     portalSetup: 'Kundenportal vorbereiten',
-    missingContact: 'Bitte geben Sie eine Kontaktinformation an.',
+    missingEmail: 'Bitte geben Sie eine E-Mail-Adresse an, um die Anfrage zu erstellen. Telefon ist nur ein optionaler Kontakt fuer Rueckfragen.',
     chatRequestTypeFallback: 'Nicht angegeben',
     chatRequestPrefix: 'Chat-Anfrage. Typ:',
     sendError: 'Fehler beim Senden.',
@@ -68,9 +183,10 @@ function getChatIntakeCopy(locale: string) {
     photoHint: 'Ein Foto oder kurzes Video ist optional, hilft aber bei der Diagnose.',
     issueTypeLabel: 'Art der Anfrage',
     issueTypePlaceholder: 'Bitte wählen …',
-    contactLabel: 'Kontakt *',
-    phoneLabel: 'Telefon',
-    emailLabel: 'E-Mail',
+    emailLabel: 'E-Mail fuer die Anfrage *',
+    emailHelp: 'Wird fuer die PR-Anfrage und die Vorbereitung des Kundenportal-Zugangs verwendet.',
+    phoneLabel: 'Telefon (optional)',
+    phoneHelp: 'Nur fuer operative Rueckfragen. Telefon ersetzt die E-Mail fuer diese Anfrage nicht.',
     namePlaceholder: 'Ihr Name (optional)',
     locationPlaceholder: 'Adresse / Standort (optional)',
     attachMedia: 'Foto/Video anhängen',
@@ -78,11 +194,29 @@ function getChatIntakeCopy(locale: string) {
   };
 }
 
+function getPrefillEmail(prefill?: IntakePrefill): string {
+  if (prefill?.email?.trim()) return prefill.email;
+  if (prefill?.contactMode === 'email' || prefill?.contact?.includes('@')) {
+    return prefill.contact ?? '';
+  }
+
+  return '';
+}
+
+function getPrefillPhone(prefill?: IntakePrefill): string {
+  if (prefill?.phone?.trim()) return prefill.phone;
+  if (prefill?.contact && prefill.contactMode !== 'email' && !prefill.contact.includes('@')) {
+    return prefill.contact;
+  }
+
+  return '';
+}
+
 export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
   const locale = useLocale();
   const copy = getChatIntakeCopy(locale);
-  const [contactMode, setContactMode] = useState<ContactMode>(prefill?.contactMode ?? 'phone');
-  const [contact, setContact] = useState(prefill?.contact ?? '');
+  const [email, setEmail] = useState(getPrefillEmail(prefill));
+  const [phone, setPhone] = useState(getPrefillPhone(prefill));
   const [name, setName] = useState(prefill?.name ?? '');
   const [location, setLocation] = useState(prefill?.location ?? '');
   const [selectedLocation, setSelectedLocation] = useState<SelectedLocation | null>(null);
@@ -94,6 +228,29 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
   const [requestNumber, setRequestNumber] = useState('');
   const [portalClaimUrl, setPortalClaimUrl] = useState('');
   const fileRef = React.useRef<HTMLInputElement>(null);
+
+  const saveDraft = async () => {
+    const fd = new FormData();
+    fd.append('name', name);
+    fd.append('email', email);
+    fd.append('phone', phone);
+    fd.append('customerEmail', email);
+    fd.append('customerPhone', phone);
+    fd.append('location', location);
+    if (selectedLocation) {
+      fd.append('locationLatitude', String(selectedLocation.latitude));
+      fd.append('locationLongitude', String(selectedLocation.longitude));
+      fd.append('locationSource', selectedLocation.source);
+    }
+    fd.append('issueType', issueType);
+    fd.append('summary', prefill?.summary ?? '');
+    fd.append('locale', locale);
+
+    await fetch('/api/chat/intake-draft', {
+      method: 'POST',
+      body: fd,
+    }).catch(() => undefined);
+  };
 
   if (done) {
     return (
@@ -133,14 +290,19 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!contact.trim()) { setError(copy.missingContact); return; }
+    const cleanEmail = email.trim();
+    const cleanPhone = phone.trim();
+
+    if (!cleanEmail) { setError(copy.missingEmail); return; }
     setSubmitting(true);
     setError('');
 
     try {
       const fd = new FormData();
       fd.append('name', name);
-      fd.append('contact', contact);
+      fd.append('contact', cleanEmail);
+      fd.append('email', cleanEmail);
+      fd.append('phone', cleanPhone);
       fd.append('location', location);
       if (selectedLocation) {
         fd.append('locationLatitude', String(selectedLocation.latitude));
@@ -216,32 +378,34 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
         </select>
       </div>
 
-      {/* Contact toggle */}
-      <div>
-        <label className="text-[11px] font-semibold uppercase tracking-wide text-[#72665D] mb-1 block">{copy.contactLabel}</label>
-        <div className="flex gap-2 mb-2">
-          {(['phone', 'email'] as const).map(m => (
-            <button
-              key={m}
-              type="button"
-              onClick={() => setContactMode(m)}
-              className={`flex-1 py-1.5 rounded-[10px] text-[12px] font-semibold border transition-all ${
-                contactMode === m
-                  ? 'bg-[#0E1A2B] text-white border-[#0E1A2B]'
-                  : 'bg-white text-[#72665D] border-[#E7DDD3] hover:border-[#B8643E]'
-              }`}
-            >
-              {m === 'phone' ? `📱 ${copy.phoneLabel}` : `✉️ ${copy.emailLabel}`}
-            </button>
-          ))}
+      <div className="grid gap-2 sm:grid-cols-2">
+        <div>
+          <label className="text-[11px] font-semibold uppercase tracking-wide text-[#72665D] mb-1 block">{copy.emailLabel}</label>
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            onBlur={() => void saveDraft()}
+            placeholder="name@example.com"
+            dir="ltr"
+            className="w-full px-3 py-2 text-[13px] rounded-[12px] border border-[#E7DDD3] bg-white text-[#0E1A2B] focus:outline-none focus:border-[#B8643E] placeholder-[#72665D]/40"
+          />
+          <p className="mt-1 text-[10px] leading-4 text-[#72665D]">{copy.emailHelp}</p>
         </div>
-        <input
-          type={contactMode === 'email' ? 'email' : 'tel'}
-          value={contact}
-          onChange={e => setContact(e.target.value)}
-          placeholder={contactMode === 'phone' ? '+49 …' : 'name@example.com'}
-          className="w-full px-3 py-2 text-[13px] rounded-[12px] border border-[#E7DDD3] bg-white text-[#0E1A2B] focus:outline-none focus:border-[#B8643E] placeholder-[#72665D]/40"
-        />
+        <div>
+          <label className="text-[11px] font-semibold uppercase tracking-wide text-[#72665D] mb-1 block">{copy.phoneLabel}</label>
+          <input
+            type="tel"
+            value={phone}
+            onChange={e => setPhone(e.target.value)}
+            onBlur={() => void saveDraft()}
+            placeholder="+49 …"
+            dir="ltr"
+            className="w-full px-3 py-2 text-[13px] rounded-[12px] border border-[#E7DDD3] bg-white text-[#0E1A2B] focus:outline-none focus:border-[#B8643E] placeholder-[#72665D]/40"
+          />
+          <p className="mt-1 text-[10px] leading-4 text-[#72665D]">{copy.phoneHelp}</p>
+        </div>
       </div>
 
       {/* Name optional */}
@@ -249,6 +413,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
         type="text"
         value={name}
         onChange={e => setName(e.target.value)}
+        onBlur={() => void saveDraft()}
         placeholder={copy.namePlaceholder}
         className="w-full px-3 py-2 text-[13px] rounded-[12px] border border-[#E7DDD3] bg-white text-[#0E1A2B] focus:outline-none focus:border-[#B8643E] placeholder-[#72665D]/40"
       />
@@ -258,6 +423,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
         value={location}
         onChange={setLocation}
         onLocationSelect={setSelectedLocation}
+        onBlur={() => void saveDraft()}
         placeholder={copy.locationPlaceholder}
         className="w-full px-3 py-2 text-[13px] rounded-[12px] border border-[#E7DDD3] bg-white text-[#0E1A2B] focus:outline-none focus:border-[#B8643E] placeholder-[#72665D]/40"
       />

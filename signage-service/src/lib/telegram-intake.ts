@@ -12,7 +12,8 @@ import {
 import type { StoredAttachmentInput } from './attachments';
 import { createCaseSessionToken, hashCaseSessionToken } from './case-session';
 import { ensurePublicRequestNumberForCase } from './request-number';
-import { parseContact } from './request-intake';
+import { parseOptionalContactDetails } from './contact-policy';
+import { createPortalClaimLink } from './portal/claim';
 import { buildLocalePath, buildLocaleUrl, DEFAULT_SITE_LOCALE, SITE_LOCALES, type SiteLocale } from './seo';
 import { createCaseStatusAccessLink } from './status-access-link';
 import { isTelegramContactAllowed } from './telegram-contact-lock';
@@ -184,7 +185,9 @@ export async function submitTelegramIntake(
   input: {
     token: string;
     name?: string | null;
-    contact: string;
+    contact?: string | null;
+    email?: string | null;
+    phone?: string | null;
     serviceLocation?: string | null;
     serviceLatitude?: number | null;
     serviceLongitude?: number | null;
@@ -192,6 +195,7 @@ export async function submitTelegramIntake(
     issueType?: string | null;
     message: string;
     attachments?: StoredAttachmentInput[];
+    origin?: string | null;
     now?: Date;
   }
 ): Promise<{
@@ -202,11 +206,13 @@ export async function submitTelegramIntake(
   returnNonce: string;
   telegramReturnUrl: string | null;
   statusUrl: string;
+  portalClaimUrl: string | null;
+  portalClaimExpiresAt: string | null;
   photoReceived: boolean;
 }> {
   const now = input.now ?? new Date();
   const tokenHash = hashCaseSessionToken(input.token.trim());
-  const parsedContact = parseContact(input.contact);
+  const parsedContact = parseOptionalContactDetails(input);
   const attachments = input.attachments ?? [];
   const finalMessage = buildStoredMessage({
     issueType: input.issueType,
@@ -304,8 +310,8 @@ export async function submitTelegramIntake(
         customerName,
         customerEmail: parsedContact.customerEmail,
         customerPhone: parsedContact.customerPhone,
-        primaryContactMethod: parsedContact.method,
-        primaryContactValue: parsedContact.value,
+        primaryContactMethod: parsedContact.primaryContactMethod,
+        primaryContactValue: parsedContact.primaryContactValue,
         serviceLocation,
         serviceLatitude: input.serviceLatitude ?? null,
         serviceLongitude: input.serviceLongitude ?? null,
@@ -343,6 +349,29 @@ export async function submitTelegramIntake(
       locale,
       now,
     });
+    const portalClaimLink = await createPortalClaimLink(tx, {
+      caseId: link.caseId,
+      locale,
+      origin: input.origin,
+      now,
+    });
+
+    await tx.message.create({
+      data: {
+        caseId: link.caseId,
+        channel: CaseOriginChannel.TELEGRAM,
+        authorRole: MessageAuthorRole.SYSTEM,
+        authorName: 'Portal Access',
+        body: [
+          `Kundenportal-Link: ${portalClaimLink.url}`,
+          '',
+          'Dieser Link ist 24 Stunden gueltig und startet die E-Mail-Code-Bestaetigung fuer das Kundenportal.',
+        ].join('\n'),
+        externalChatId: link.telegramChatId,
+        isCustomerVisible: true,
+        sentAt: now,
+      },
+    });
 
     return {
       caseId: link.caseId,
@@ -352,6 +381,8 @@ export async function submitTelegramIntake(
       returnNonce: link.returnNonce,
       telegramReturnUrl: buildTelegramDialogUrl(link.returnNonce),
       statusUrl,
+      portalClaimUrl: portalClaimLink.url,
+      portalClaimExpiresAt: portalClaimLink.expiresAt.toISOString(),
       photoReceived: attachments.length > 0,
     };
   });

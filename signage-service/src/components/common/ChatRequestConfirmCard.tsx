@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useLocale } from 'next-intl';
 import type { IntakePrefill } from './ChatIntakeCard';
 import LocationPicker, { type SelectedLocation } from './LocationPicker';
+import { trackGoogleAdsLeadConversion } from '@/lib/google-ads';
 
 type Props = {
   prefill?: IntakePrefill;
@@ -10,12 +12,249 @@ type Props = {
   onEditContact?: () => void;
 };
 
+function getConfirmCopy(locale: string) {
+  if (locale === 'en') {
+    return {
+      title: 'Confirm new request',
+      successTitle: 'New request registered',
+      requestNumberLabel: 'Request number',
+      successText: 'Your PR number has been created. You can check the status by link; the portal link prepares long-term access if shown.',
+      emailStatus: 'Email',
+      phoneStatus: 'Phone',
+      nameStatus: 'Name',
+      locationStatus: 'Location',
+      summaryStatus: 'Request',
+      available: 'available',
+      missing: 'missing',
+      optional: 'optional',
+      captured: 'captured',
+      describeBriefly: 'briefly describe',
+      attachmentsHint: 'Chat files will be linked to this request.',
+      emailLabel: 'Email for the request *',
+      phoneLabel: 'Phone (optional)',
+      emailPlaceholder: 'name@example.com',
+      phonePlaceholder: '+49 ...',
+      missingEmail: 'Please enter an email address to create the request. Phone is optional for operational contact.',
+      namePlaceholder: 'Your name (optional)',
+      locationPlaceholder: 'Address / location (optional)',
+      helper: 'The PR number is created with email as the secure return channel. Phone is only a secondary operational contact.',
+      submit: 'Send request',
+      submitting: 'Sending ...',
+      edit: 'Edit details',
+      sendError: 'Error while sending.',
+      chatRequestTypeFallback: 'Not specified',
+      chatRequestPrefix: 'Chat request. Type:',
+      statusLink: 'Check status',
+      portalLink: 'Prepare customer portal',
+    };
+  }
+
+  if (locale === 'ru') {
+    return {
+      title: 'Подтвердить новую заявку',
+      successTitle: 'Новая заявка зарегистрирована',
+      requestNumberLabel: 'Номер заявки',
+      successText: 'PR-номер создан. Статус можно проверить по ссылке; ссылка кабинета подготовит долгосрочный доступ, если она показана.',
+      emailStatus: 'Email',
+      phoneStatus: 'Телефон',
+      nameStatus: 'Имя',
+      locationStatus: 'Адрес',
+      summaryStatus: 'Задача',
+      available: 'есть',
+      missing: 'нужен',
+      optional: 'необязательно',
+      captured: 'описана',
+      describeBriefly: 'кратко описать',
+      attachmentsHint: 'Файлы из чата будут связаны с этой заявкой.',
+      emailLabel: 'Email для заявки *',
+      phoneLabel: 'Телефон (необязательно)',
+      emailPlaceholder: 'name@example.com',
+      phonePlaceholder: '+49 ...',
+      missingEmail: 'Укажите email, чтобы создать заявку. Телефон можно оставить дополнительно для связи по работе.',
+      namePlaceholder: 'Ваше имя (необязательно)',
+      locationPlaceholder: 'Адрес / место (необязательно)',
+      helper: 'PR-номер создается с email как безопасным каналом возврата. Телефон остается только дополнительным рабочим контактом.',
+      submit: 'Отправить заявку',
+      submitting: 'Отправляем ...',
+      edit: 'Изменить детали',
+      sendError: 'Ошибка при отправке.',
+      chatRequestTypeFallback: 'Не указано',
+      chatRequestPrefix: 'Заявка из чата. Тип:',
+      statusLink: 'Проверить статус',
+      portalLink: 'Подготовить личный кабинет',
+    };
+  }
+
+  if (locale === 'tr') {
+    return {
+      title: 'Yeni talebi onayla',
+      successTitle: 'Yeni talep kaydedildi',
+      requestNumberLabel: 'Talep numarasi',
+      successText: 'PR numarasi olusturuldu. Durum baglantidan kontrol edilebilir; portal baglantisi varsa uzun sureli erisimi hazirlar.',
+      emailStatus: 'E-posta',
+      phoneStatus: 'Telefon',
+      nameStatus: 'Ad',
+      locationStatus: 'Konum',
+      summaryStatus: 'Talep',
+      available: 'var',
+      missing: 'eksik',
+      optional: 'istege bagli',
+      captured: 'kayitli',
+      describeBriefly: 'kisaca acikla',
+      attachmentsHint: 'Sohbet dosyalari bu talebe baglanacak.',
+      emailLabel: 'Talep icin e-posta *',
+      phoneLabel: 'Telefon (istege bagli)',
+      emailPlaceholder: 'name@example.com',
+      phonePlaceholder: '+49 ...',
+      missingEmail: 'Talebi olusturmak icin e-posta girin. Telefon operasyonel iletisim icin istege baglidir.',
+      namePlaceholder: 'Adiniz (istege bagli)',
+      locationPlaceholder: 'Adres / konum (istege bagli)',
+      helper: 'PR numarasi guvenli donus kanali olarak e-posta ile olusturulur. Telefon yalnizca ikincil operasyonel iletisimdir.',
+      submit: 'Talebi gonder',
+      submitting: 'Gonderiliyor ...',
+      edit: 'Detaylari duzenle',
+      sendError: 'Gonderirken hata olustu.',
+      chatRequestTypeFallback: 'Belirtilmedi',
+      chatRequestPrefix: 'Sohbet talebi. Tur:',
+      statusLink: 'Durumu kontrol et',
+      portalLink: 'Musteri portalini hazirla',
+    };
+  }
+
+  if (locale === 'pl') {
+    return {
+      title: 'Potwierdz nowe zgloszenie',
+      successTitle: 'Nowe zgloszenie zarejestrowane',
+      requestNumberLabel: 'Numer zgloszenia',
+      successText: 'Numer PR zostal utworzony. Status mozna sprawdzic przez link; link portalu przygotuje dlugoterminowy dostep, jesli jest pokazany.',
+      emailStatus: 'E-mail',
+      phoneStatus: 'Telefon',
+      nameStatus: 'Imie',
+      locationStatus: 'Lokalizacja',
+      summaryStatus: 'Zgloszenie',
+      available: 'jest',
+      missing: 'brak',
+      optional: 'opcjonalnie',
+      captured: 'opisane',
+      describeBriefly: 'krotko opisac',
+      attachmentsHint: 'Pliki z chatu zostana polaczone z tym zgloszeniem.',
+      emailLabel: 'E-mail do zgloszenia *',
+      phoneLabel: 'Telefon (opcjonalnie)',
+      emailPlaceholder: 'name@example.com',
+      phonePlaceholder: '+49 ...',
+      missingEmail: 'Podaj e-mail, aby utworzyc zgloszenie. Telefon jest opcjonalny do kontaktu operacyjnego.',
+      namePlaceholder: 'Imie (opcjonalnie)',
+      locationPlaceholder: 'Adres / lokalizacja (opcjonalnie)',
+      helper: 'Numer PR jest tworzony z e-mailem jako bezpiecznym kanalem powrotu. Telefon jest tylko dodatkowym kontaktem operacyjnym.',
+      submit: 'Wyslij zgloszenie',
+      submitting: 'Wysylanie ...',
+      edit: 'Edytuj szczegoly',
+      sendError: 'Blad podczas wysylania.',
+      chatRequestTypeFallback: 'Nie podano',
+      chatRequestPrefix: 'Zgloszenie z chatu. Typ:',
+      statusLink: 'Sprawdz status',
+      portalLink: 'Przygotuj portal klienta',
+    };
+  }
+
+  if (locale === 'ar') {
+    return {
+      title: 'تأكيد طلب جديد',
+      successTitle: 'تم تسجيل الطلب الجديد',
+      requestNumberLabel: 'رقم الطلب',
+      successText: 'تم إنشاء رقم PR. يمكن التحقق من الحالة عبر الرابط؛ ورابط البوابة يجهز الوصول طويل الأمد إذا ظهر.',
+      emailStatus: 'البريد الإلكتروني',
+      phoneStatus: 'الهاتف',
+      nameStatus: 'الاسم',
+      locationStatus: 'الموقع',
+      summaryStatus: 'الطلب',
+      available: 'موجود',
+      missing: 'ناقص',
+      optional: 'اختياري',
+      captured: 'مسجل',
+      describeBriefly: 'وصف قصير',
+      attachmentsHint: 'سيتم ربط ملفات الدردشة بهذا الطلب.',
+      emailLabel: 'البريد الإلكتروني للطلب *',
+      phoneLabel: 'الهاتف (اختياري)',
+      emailPlaceholder: 'name@example.com',
+      phonePlaceholder: '+49 ...',
+      missingEmail: 'يرجى إدخال بريد إلكتروني لإنشاء الطلب. الهاتف اختياري للتواصل التشغيلي.',
+      namePlaceholder: 'اسمك (اختياري)',
+      locationPlaceholder: 'العنوان / الموقع (اختياري)',
+      helper: 'يتم إنشاء رقم PR باستخدام البريد الإلكتروني كقناة عودة آمنة. الهاتف جهة اتصال تشغيلية إضافية فقط.',
+      submit: 'إرسال الطلب',
+      submitting: 'جار الإرسال ...',
+      edit: 'تعديل التفاصيل',
+      sendError: 'حدث خطأ أثناء الإرسال.',
+      chatRequestTypeFallback: 'غير محدد',
+      chatRequestPrefix: 'طلب من الدردشة. النوع:',
+      statusLink: 'التحقق من الحالة',
+      portalLink: 'تجهيز بوابة العميل',
+    };
+  }
+
+  return {
+    title: 'Neue Anfrage bestaetigen',
+    successTitle: 'Neue Anfrage registriert',
+    requestNumberLabel: 'Anfragenummer',
+    successText: 'Ihre PR-Nummer wurde erstellt. Den Status koennen Sie per Link pruefen; der Portal-Link bereitet den langfristigen Zugang vor, falls er angezeigt wird.',
+    emailStatus: 'E-Mail',
+    phoneStatus: 'Telefon',
+    nameStatus: 'Name',
+    locationStatus: 'Standort',
+    summaryStatus: 'Anliegen',
+    available: 'vorhanden',
+    missing: 'fehlt',
+    optional: 'optional',
+    captured: 'erfasst',
+    describeBriefly: 'kurz beschreiben',
+    attachmentsHint: 'Chat-Dateien werden mit dieser Anfrage verbunden.',
+    emailLabel: 'E-Mail fuer die Anfrage *',
+    phoneLabel: 'Telefon (optional)',
+    emailPlaceholder: 'name@example.com',
+    phonePlaceholder: '+49 ...',
+    missingEmail: 'Bitte geben Sie eine E-Mail-Adresse an, um die Anfrage zu erstellen. Telefon ist nur ein optionaler Kontakt fuer Rueckfragen.',
+    namePlaceholder: 'Ihr Name (optional)',
+    locationPlaceholder: 'Adresse / Standort (optional)',
+    helper: 'Die PR-Nummer wird mit E-Mail als sicherem Rueckkanal erstellt. Telefon bleibt nur ein zweiter operativer Kontakt.',
+    submit: 'Anfrage senden',
+    submitting: 'Wird gesendet ...',
+    edit: 'Details bearbeiten',
+    sendError: 'Fehler beim Senden.',
+    chatRequestTypeFallback: 'Nicht angegeben',
+    chatRequestPrefix: 'Chat-Anfrage. Typ:',
+    statusLink: 'Status pruefen',
+    portalLink: 'Kundenportal vorbereiten',
+  };
+}
+
+function getPrefillEmail(prefill?: IntakePrefill): string {
+  if (prefill?.email?.trim()) return prefill.email;
+  if (prefill?.contactMode === 'email' || prefill?.contact?.includes('@')) {
+    return prefill.contact ?? '';
+  }
+
+  return '';
+}
+
+function getPrefillPhone(prefill?: IntakePrefill): string {
+  if (prefill?.phone?.trim()) return prefill.phone;
+  if (prefill?.contact && prefill.contactMode !== 'email' && !prefill.contact.includes('@')) {
+    return prefill.contact;
+  }
+
+  return '';
+}
+
 export default function ChatRequestConfirmCard({
   prefill,
   onSuccess,
   onEditContact,
 }: Props) {
-  const [contact, setContact] = useState(prefill?.contact ?? '');
+  const locale = useLocale();
+  const copy = getConfirmCopy(locale);
+  const [email, setEmail] = useState(getPrefillEmail(prefill));
+  const [phone, setPhone] = useState(getPrefillPhone(prefill));
   const [name, setName] = useState(prefill?.name ?? '');
   const [location, setLocation] = useState(prefill?.location ?? '');
   const [selectedLocation, setSelectedLocation] = useState<SelectedLocation | null>(null);
@@ -25,18 +264,22 @@ export default function ChatRequestConfirmCard({
   const [requestNumber, setRequestNumber] = useState('');
   const [portalClaimUrl, setPortalClaimUrl] = useState('');
 
-  const hasContact = contact.trim().length > 0;
+  const hasEmail = email.trim().length > 0;
+  const hasPhone = phone.trim().length > 0;
   const hasName = name.trim().length > 0;
   const hasLocation = location.trim().length > 0;
   const hasSummary = Boolean(prefill?.summary?.trim());
-  const shouldShowContactInput = !prefill?.contact?.trim();
   const shouldShowNameInput = !prefill?.name?.trim();
   const shouldShowLocationInput = !prefill?.location?.trim();
 
   const saveDraft = async () => {
     const fd = new FormData();
     fd.append('name', name);
-    fd.append('contact', contact);
+    fd.append('contact', email);
+    fd.append('email', email);
+    fd.append('phone', phone);
+    fd.append('customerEmail', email);
+    fd.append('customerPhone', phone);
     fd.append('location', location);
     if (selectedLocation) {
       fd.append('locationLatitude', String(selectedLocation.latitude));
@@ -45,6 +288,7 @@ export default function ChatRequestConfirmCard({
     }
     fd.append('issueType', prefill?.issueType ?? '');
     fd.append('summary', prefill?.summary ?? '');
+    fd.append('locale', locale);
 
     await fetch('/api/chat/intake-draft', {
       method: 'POST',
@@ -53,8 +297,11 @@ export default function ChatRequestConfirmCard({
   };
 
   const handleConfirm = async () => {
-    if (!hasContact) {
-      setError('Bitte geben Sie eine Kontaktinformation an.');
+    const cleanEmail = email.trim();
+    const cleanPhone = phone.trim();
+
+    if (!cleanEmail) {
+      setError(copy.missingEmail);
       return;
     }
 
@@ -64,7 +311,9 @@ export default function ChatRequestConfirmCard({
     try {
       const fd = new FormData();
       fd.append('name', name);
-      fd.append('contact', contact);
+      fd.append('contact', cleanEmail);
+      fd.append('email', cleanEmail);
+      fd.append('phone', cleanPhone);
       fd.append('location', location);
       if (selectedLocation) {
         fd.append('locationLatitude', String(selectedLocation.latitude));
@@ -74,8 +323,8 @@ export default function ChatRequestConfirmCard({
       fd.append(
         'message',
         prefill?.summary
-          ? `Chat-Anfrage. Typ: ${prefill.issueType || 'Nicht angegeben'}\n\n${prefill.summary}`
-          : `Chat-Anfrage. Typ: ${prefill?.issueType || 'Nicht angegeben'}`
+          ? `${copy.chatRequestPrefix} ${prefill.issueType || copy.chatRequestTypeFallback}\n\n${prefill.summary}`
+          : `${copy.chatRequestPrefix} ${prefill?.issueType || copy.chatRequestTypeFallback}`
       );
       fd.append('issueType', prefill?.issueType ?? '');
       fd.append('isFromChat', 'true');
@@ -84,15 +333,16 @@ export default function ChatRequestConfirmCard({
       const data = await res.json() as { publicRequestNumber?: string; portalClaimUrl?: string; error?: string };
 
       if (!res.ok || !data.publicRequestNumber) {
-        throw new Error(data.error ?? 'Fehler beim Senden.');
+        throw new Error(data.error ?? copy.sendError);
       }
 
       setRequestNumber(data.publicRequestNumber);
       setPortalClaimUrl(data.portalClaimUrl ?? '');
       setDone(true);
+      trackGoogleAdsLeadConversion();
       onSuccess?.(data.publicRequestNumber);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Fehler beim Senden.');
+      setError(err instanceof Error ? err.message : copy.sendError);
     } finally {
       setSubmitting(false);
     }
@@ -101,20 +351,26 @@ export default function ChatRequestConfirmCard({
   if (done) {
     return (
       <div className="rounded-[20px] border border-[#B8643E]/30 bg-[#FDF7F0] p-4 shadow-sm animate-in fade-in duration-500">
-        <p className="text-[13px] font-bold text-[#0E1A2B]">Neue Anfrage registriert</p>
+        <p className="text-[13px] font-bold text-[#0E1A2B]">{copy.successTitle}</p>
         <div className="mt-3 rounded-[12px] border border-[#E7DDD3] bg-white px-4 py-3 text-center">
-          <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#72665D]">Anfragenummer</p>
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#72665D]">{copy.requestNumberLabel}</p>
           <p className="text-xl font-black tracking-widest text-[#0E1A2B]">{requestNumber}</p>
         </div>
         <p className="mt-3 text-[12px] leading-relaxed text-[#72665D]">
-          Sie koennen den Status verfolgen oder den Zugang zum Kundenportal ueber die Portal-Verknuepfung vorbereiten.
+          {copy.successText}
         </p>
+        <a
+          href={`/${locale}/status?request=${encodeURIComponent(requestNumber)}`}
+          className="mt-3 inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#B8643E] hover:underline"
+        >
+          {copy.statusLink} →
+        </a>
         {portalClaimUrl && (
           <a
             href={portalClaimUrl}
             className="mt-3 inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#0E1A2B] hover:underline"
           >
-            Kundenportal vorbereiten →
+            {copy.portalLink} →
           </a>
         )}
       </div>
@@ -129,42 +385,61 @@ export default function ChatRequestConfirmCard({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
         </div>
-        <p className="text-[13px] font-bold text-[#0E1A2B]">Neue Anfrage bestaetigen</p>
+        <p className="text-[13px] font-bold text-[#0E1A2B]">{copy.title}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-2 rounded-[12px] bg-white/75 px-3 py-3 text-[12px] text-[#72665D]">
         <p>
-          Kontakt: <span className="font-semibold text-[#0E1A2B]">{hasContact ? 'vorhanden' : 'fehlt'}</span>
+          {copy.emailStatus}: <span className="font-semibold text-[#0E1A2B]">{hasEmail ? copy.available : copy.missing}</span>
         </p>
         <p>
-          Name: <span className="font-semibold text-[#0E1A2B]">{hasName ? 'vorhanden' : 'optional'}</span>
+          {copy.phoneStatus}: <span className="font-semibold text-[#0E1A2B]">{hasPhone ? copy.available : copy.optional}</span>
         </p>
         <p>
-          Standort: <span className="font-semibold text-[#0E1A2B]">{hasLocation ? 'vorhanden' : 'optional'}</span>
+          {copy.nameStatus}: <span className="font-semibold text-[#0E1A2B]">{hasName ? copy.available : copy.optional}</span>
         </p>
         <p>
-          Anliegen: <span className="font-semibold text-[#0E1A2B]">{hasSummary ? 'erfasst' : 'kurz beschreiben'}</span>
+          {copy.locationStatus}: <span className="font-semibold text-[#0E1A2B]">{hasLocation ? copy.available : copy.optional}</span>
+        </p>
+        <p>
+          {copy.summaryStatus}: <span className="font-semibold text-[#0E1A2B]">{hasSummary ? copy.captured : copy.describeBriefly}</span>
         </p>
         {prefill?.hasSessionAttachments && (
-          <p className="col-span-2">Chat-Dateien werden mit dieser Anfrage verbunden.</p>
+          <p className="col-span-2">{copy.attachmentsHint}</p>
         )}
       </div>
 
-      {shouldShowContactInput && (
+      <div className="grid gap-2 sm:grid-cols-2">
         <div className="space-y-1.5">
           <label className="text-[11px] font-semibold uppercase tracking-wide text-[#72665D]">
-            Kontakt *
+            {copy.emailLabel}
           </label>
           <input
-            type="text"
-            value={contact}
-            onChange={(e) => setContact(e.target.value)}
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             onBlur={() => void saveDraft()}
-            placeholder="+49 ... oder name@example.com"
+            placeholder={copy.emailPlaceholder}
+            dir="ltr"
             className="w-full rounded-[12px] border border-[#E7DDD3] bg-white px-3 py-2 text-[13px] text-[#0E1A2B] placeholder-[#72665D]/40 focus:border-[#B8643E] focus:outline-none"
           />
         </div>
-      )}
+        <div className="space-y-1.5">
+          <label className="text-[11px] font-semibold uppercase tracking-wide text-[#72665D]">
+            {copy.phoneLabel}
+          </label>
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            onBlur={() => void saveDraft()}
+            placeholder={copy.phonePlaceholder}
+            dir="ltr"
+            className="w-full rounded-[12px] border border-[#E7DDD3] bg-white px-3 py-2 text-[13px] text-[#0E1A2B] placeholder-[#72665D]/40 focus:border-[#B8643E] focus:outline-none"
+          />
+        </div>
+      </div>
 
       {(shouldShowNameInput || shouldShowLocationInput) && (
         <div className="grid gap-2 sm:grid-cols-2">
@@ -174,7 +449,7 @@ export default function ChatRequestConfirmCard({
               value={name}
               onChange={(e) => setName(e.target.value)}
               onBlur={() => void saveDraft()}
-              placeholder="Ihr Name (optional)"
+              placeholder={copy.namePlaceholder}
               className="w-full rounded-[12px] border border-[#E7DDD3] bg-white px-3 py-2 text-[13px] text-[#0E1A2B] placeholder-[#72665D]/40 focus:border-[#B8643E] focus:outline-none"
             />
           )}
@@ -184,7 +459,7 @@ export default function ChatRequestConfirmCard({
               onChange={setLocation}
               onLocationSelect={setSelectedLocation}
               onBlur={() => void saveDraft()}
-              placeholder="Adresse / Standort (optional)"
+              placeholder={copy.locationPlaceholder}
               className="w-full rounded-[12px] border border-[#E7DDD3] bg-white px-3 py-2 text-[13px] text-[#0E1A2B] placeholder-[#72665D]/40 focus:border-[#B8643E] focus:outline-none"
             />
           )}
@@ -192,7 +467,7 @@ export default function ChatRequestConfirmCard({
       )}
 
       <p className="rounded-[10px] bg-white/70 px-3 py-2 text-[12px] leading-relaxed text-[#72665D]">
-        Fuer wiederkehrende Kunden ist ein persoenliches Konto geplant, damit alle Anfragen und Nachrichten an einem Ort sichtbar sind.
+        {copy.helper}
       </p>
 
       {error && <p className="rounded-[10px] bg-red-50 px-3 py-2 text-[12px] text-red-600">{error}</p>}
@@ -204,14 +479,14 @@ export default function ChatRequestConfirmCard({
           disabled={submitting}
           className="flex-1 rounded-[14px] bg-[#0E1A2B] py-2.5 text-[13px] font-bold text-white transition-all hover:bg-[#1a2e47] active:scale-[0.98] disabled:opacity-50"
         >
-          {submitting ? 'Wird gesendet ...' : 'Anfrage senden'}
+          {submitting ? copy.submitting : copy.submit}
         </button>
         <button
           type="button"
           onClick={onEditContact}
           className="rounded-[14px] border border-[#E7DDD3] bg-white px-4 py-2.5 text-[13px] font-semibold text-[#72665D] transition-colors hover:border-[#B8643E]"
         >
-          Details bearbeiten
+          {copy.edit}
         </button>
       </div>
     </div>

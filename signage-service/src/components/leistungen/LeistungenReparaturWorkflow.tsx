@@ -32,6 +32,9 @@ const WORKFLOW_LABELS: Record<
     selectCta: string;
     previous: string;
     next: string;
+    drawerServiceInfoLabel: string;
+    drawerReassuringLabel: string;
+    drawerFormIntro: string;
   }
 > = {
   de: {
@@ -43,6 +46,9 @@ const WORKFLOW_LABELS: Record<
     selectCta: 'Diesen Fall beschreiben',
     previous: 'Vorherige Fälle',
     next: 'Weitere Fälle',
+    drawerServiceInfoLabel: 'PixelRing Service-Info',
+    drawerReassuringLabel: 'Einschätzung & Lösung',
+    drawerFormIntro: 'Geben Sie Ihre Kontaktdaten an, damit PixelRing diese Reparaturanfrage mit dem ausgewählten Defekt vorbereiten kann.',
   },
   en: {
     eyebrow: 'Fast classification',
@@ -53,6 +59,9 @@ const WORKFLOW_LABELS: Record<
     selectCta: 'Describe this case',
     previous: 'Previous cases',
     next: 'More cases',
+    drawerServiceInfoLabel: 'PixelRing service info',
+    drawerReassuringLabel: 'Assessment & solution',
+    drawerFormIntro: 'Add your contact details so PixelRing can prepare this repair request with the selected defect.',
   },
   ru: {
     eyebrow: 'Быстрая ориентация',
@@ -63,6 +72,9 @@ const WORKFLOW_LABELS: Record<
     selectCta: 'Описать этот случай',
     previous: 'Предыдущие случаи',
     next: 'Еще случаи',
+    drawerServiceInfoLabel: 'Информация сервиса PixelRing',
+    drawerReassuringLabel: 'Оценка и решение',
+    drawerFormIntro: 'Укажите контакты, чтобы PixelRing подготовил заявку на ремонт по выбранной проблеме.',
   },
   tr: {
     eyebrow: 'Hızlı sınıflandırma',
@@ -73,6 +85,9 @@ const WORKFLOW_LABELS: Record<
     selectCta: 'Bu durumu açıkla',
     previous: 'Önceki durumlar',
     next: 'Daha fazla durum',
+    drawerServiceInfoLabel: 'PixelRing servis bilgisi',
+    drawerReassuringLabel: 'Değerlendirme ve çözüm',
+    drawerFormIntro: 'İletişim bilgilerinizi ekleyin; PixelRing seçilen arızayla ilgili onarım talebini hazırlayabilsin.',
   },
   pl: {
     eyebrow: 'Szybka klasyfikacja',
@@ -83,6 +98,9 @@ const WORKFLOW_LABELS: Record<
     selectCta: 'Opisz ten przypadek',
     previous: 'Poprzednie przypadki',
     next: 'Więcej przypadków',
+    drawerServiceInfoLabel: 'Informacja serwisowa PixelRing',
+    drawerReassuringLabel: 'Ocena i rozwiązanie',
+    drawerFormIntro: 'Podaj dane kontaktowe, aby PixelRing mógł przygotować zgłoszenie naprawy dla wybranej usterki.',
   },
   ar: {
     eyebrow: 'تصنيف سريع',
@@ -93,6 +111,9 @@ const WORKFLOW_LABELS: Record<
     selectCta: 'وصف هذه الحالة',
     previous: 'الحالات السابقة',
     next: 'حالات أخرى',
+    drawerServiceInfoLabel: 'معلومات خدمة PixelRing',
+    drawerReassuringLabel: 'التقييم والحل',
+    drawerFormIntro: 'أدخل بيانات التواصل ليتمكن PixelRing من تجهيز طلب الإصلاح للحالة المحددة.',
   },
 };
 
@@ -408,7 +429,10 @@ export default function LeistungenReparaturWorkflow({
         initialMessage={activeSymptom?.prefillMessage || ''}
         initialIssueType="Repair"
         closeLabel={closeLabel}
+        serviceInfoLabel={labels.drawerServiceInfoLabel}
         formTitle={formTitle}
+        reassuringLabel={labels.drawerReassuringLabel}
+        formIntro={labels.drawerFormIntro}
       />
     </section>
   );

@@ -9,6 +9,26 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 Latest checkpoint:
 
 - Date: 2026-06-17
+- Current stage: Implemented the post-PR portal activation handoff: website/browser-chat requests now trigger a non-blocking activation invitation email through the existing email infrastructure after claim-link creation, Telegram secure intake creates/returns portal claim links with status/portal/return buttons and optional email invite, and verified status lookup can show a safe portal activation prompt while CRM manual claim-link flow remains token-safe.
+- Next action: Manually QA website/chat email invite delivery, Telegram secure intake with email and without email, status-page active/expired activation states, and CRM manual claim-link issuance after deployment.
+
+- Date: 2026-06-17
+- Current stage: Restored the approved light repair-symptom request drawer design on `/[locale]/leistungen/werbeanlagen-reparatur` while preserving the current contact-form structure and contact-policy behavior: required email, optional phone, location, issue type, message, attachments, status link, and portal handoff remain intact.
+- Next action: Owner visually reviews the drawer on DE/RU desktop and mobile, especially the new contact-policy fields inside the restored light design.
+
+- Date: 2026-06-17
+- Current stage: Implemented browser-chat and Telegram secure-form UI/copy alignment for the new contact policy: browser chat now requires email and keeps phone optional/secondary, chat drafts store email and phone separately, Telegram secure form uses optional split email/phone fields, and Telegram confirmation wording points to status by link while keeping Telegram as the dialog channel.
+- Next action: Manually QA browser chat with email-only, email+phone, phone-only draft, and Telegram secure form with no contact, phone-only, and email+phone; continue later with activation email/buttons/status-page portal prompts.
+
+- Date: 2026-06-17
+- Current stage: Implemented Phase 1 backend contact-policy contracts for portal activation: website form and browser-chat PR creation require valid email before attachments/PR creation, optional phone is stored only as secondary contact, Telegram secure intake can create PRs with optional or absent email/phone, and verified portal request creation continues using the portal email without a new claim link.
+- Next action: Manually QA website form, browser chat, Telegram secure intake, and verified portal request creation after deployment; continue later with activation email/buttons/text work.
+
+- Date: 2026-06-17
+- Current stage: Documented the Telegram/email/client-portal activation plan: website and browser-chat PR creation should require email, Telegram remains the only email-optional PR path, post-PR Telegram messages should include both status and portal activation links without implying Telegram status tracking, and WhatsApp/email remain manual or secure-link handoff channels.
+- Next action: Owner reviews the plan in `docs/04_client_portal/telegram_email_portal_activation_plan.md`; after approval, implement backend channel policy before UI copy changes.
+
+- Date: 2026-06-17
 - Current stage: Reworked Telegram assistant routing toward a state-machine controller: explicit conversation states now route active PR status/follow-up/new-request turns before LLM, return commands read the active PR context, active cases keep their original summary instead of being overwritten by short chat replies, and controller tests cover the broken real Telegram phrases.
 - Next action: Deploy and retest the real Telegram flow end to end: fresh chat, secure form submit, PR confirmation, return to chat, `Ok`, `Что дальше?`, `Как дела с моей заявкой?`, `У меня нет заявки?`, and an explicit separate new-problem request.
 

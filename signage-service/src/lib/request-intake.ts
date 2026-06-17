@@ -15,19 +15,22 @@ import type { StoredAttachmentInput } from './attachments';
 import { ensurePublicRequestNumberForCase } from './request-number';
 import { createPortalClaimLink } from './portal/claim';
 import { syncCaseCustomerProfile } from './customer-profiles';
-
-export type IntakeContactMethod = 'EMAIL' | 'PHONE';
-
-export type ParsedContact = {
-  method: IntakeContactMethod;
-  value: string;
-  customerEmail: string | null;
-  customerPhone: string | null;
-};
+import { resolveWebsiteRequestContact } from './contact-policy';
+export {
+  parseContact,
+  parseOptionalContactDetails,
+  resolveWebsiteRequestContact,
+  type ContactDetailsInput,
+  type IntakeContactMethod,
+  type ParsedContact,
+  type ParsedContactDetails,
+} from './contact-policy';
 
 export type WebsiteRequestInput = {
   name?: string;
-  contact: string;
+  contact?: string | null;
+  email?: string | null;
+  phone?: string | null;
   serviceLocation?: string | null;
   serviceLatitude?: number | null;
   serviceLongitude?: number | null;
@@ -56,84 +59,17 @@ export type WebsiteRequestResult = {
   photoReceived: boolean;
 };
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const DIGITS_REGEX = /\d/;
-const MIN_PHONE_DIGITS = 7;
 function buildSummary(message: string): string {
   const clean = message.trim().replace(/\s+/g, ' ');
 
   return clean.length <= 180 ? clean : `${clean.slice(0, 177)}...`;
 }
 
-function normalizePhone(value: string): string {
-  const trimmed = value.trim();
-  const digitCount = trimmed.replace(/\D/g, '').length;
-
-  if (digitCount < MIN_PHONE_DIGITS) {
-    throw new Error(
-      'Please provide a valid email address or phone number to formalize the request.'
-    );
-  }
-
-  const hasLeadingPlus = trimmed.startsWith('+');
-  const digits = trimmed.replace(/\D/g, '');
-
-  return hasLeadingPlus ? `+${digits}` : digits;
-}
-
-function normalizeEmail(value: string): string {
-  const trimmed = value.trim().toLowerCase();
-
-  if (!EMAIL_REGEX.test(trimmed)) {
-    throw new Error(
-      'Please provide a valid email address or phone number to formalize the request.'
-    );
-  }
-
-  return trimmed;
-}
-
-export function parseContact(contact: string): ParsedContact {
-  const value = contact.trim();
-
-  if (!value) {
-    throw new Error(
-      'Please provide a valid email address or phone number to formalize the request.'
-    );
-  }
-
-  if (value.includes('@')) {
-    const customerEmail = normalizeEmail(value);
-
-    return {
-      method: 'EMAIL',
-      value: customerEmail,
-      customerEmail,
-      customerPhone: null,
-    };
-  }
-
-  if (!DIGITS_REGEX.test(value)) {
-    throw new Error(
-      'Please provide a valid email address or phone number to formalize the request.'
-    );
-  }
-
-  const customerPhone = normalizePhone(value);
-
-  return {
-    method: 'PHONE',
-    value: customerPhone,
-    customerEmail: null,
-    customerPhone,
-  };
-}
-
 export async function createWebsiteRequest(
   prisma: PrismaClient,
   input: WebsiteRequestInput
 ): Promise<WebsiteRequestResult> {
-  const parsedContact = parseContact(input.contact);
+  const parsedContact = resolveWebsiteRequestContact(input);
   const now = new Date();
   const sessionToken = createCaseSessionToken();
   const sessionTokenHash = hashCaseSessionToken(sessionToken);

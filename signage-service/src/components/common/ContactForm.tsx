@@ -31,7 +31,8 @@ const ContactForm = ({
   const [portalClaimUrl, setPortalClaimUrl] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [name, setName] = useState('');
-  const [contact, setContact] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [message, setMessage] = useState(initialMessage);
   const [issueType, setIssueType] = useState(initialIssueType);
 
@@ -51,7 +52,8 @@ const ContactForm = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const formId = useId();
   const nameInputId = `${formId}-contact-name-company`;
-  const contactInputId = `${formId}-contact-method`;
+  const emailInputId = `${formId}-contact-email`;
+  const phoneInputId = `${formId}-contact-phone`;
   const issueTypeInputId = `${formId}-contact-issue-type`;
   const locationInputId = `${formId}-contact-location`;
   const messageInputId = `${formId}-contact-message`;
@@ -84,7 +86,9 @@ const ContactForm = ({
     try {
       const formData = new FormData();
       formData.append('name', name);
-      formData.append('contact', contact);
+      formData.append('contact', email);
+      formData.append('email', email);
+      formData.append('phone', phone);
       formData.append('message', message);
       formData.append('issueType', issueType);
       formData.append('location', location);
@@ -128,7 +132,8 @@ const ContactForm = ({
       setPortalClaimUrl(data.portalClaimUrl ?? '');
       setIsSuccess(true);
       setName('');
-      setContact('');
+      setEmail('');
+      setPhone('');
       setMessage('');
       setIssueType('');
       setLocation('');
@@ -242,17 +247,17 @@ const ContactForm = ({
               </div>
 
               <div className="flex flex-col gap-1">
-                <label htmlFor={contactInputId} className="sr-only">
-                  {t('field_contact')}
+                <label htmlFor={emailInputId} className="sr-only">
+                  {t('field_email')}
                 </label>
                 <input
-                  id={contactInputId}
-                  type="text"
+                  id={emailInputId}
+                  type="email"
                   required
-                  value={contact}
-                  onChange={(e) => setContact(e.target.value)}
-                  autoComplete="off"
-                  placeholder={t('field_contact')}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  placeholder={t('field_email')}
                   className={`w-full px-5 sm:px-6 py-3 sm:py-3.5 border rounded-2xl outline-none focus:ring-1 transition-all duration-300 text-[14px] sm:text-[15px] ${
                     variant === 'dark'
                       ? 'bg-white/10 border-white/10 focus:border-[#B8643E] text-white placeholder-white/50 focus:ring-[#B8643E]/50 focus:bg-white/15'
@@ -263,6 +268,25 @@ const ContactForm = ({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1">
+                <label htmlFor={phoneInputId} className="sr-only">
+                  {t('field_phone')}
+                </label>
+                <input
+                  id={phoneInputId}
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  autoComplete="tel"
+                  placeholder={t('field_phone')}
+                  className={`w-full px-5 sm:px-6 py-3 sm:py-3.5 border rounded-2xl outline-none focus:ring-1 transition-all duration-300 text-[14px] sm:text-[15px] ${
+                    variant === 'dark'
+                      ? 'bg-white/10 border-white/10 focus:border-[#B8643E] text-white placeholder-white/50 focus:ring-[#B8643E]/50 focus:bg-white/15'
+                      : 'bg-[#F7F1E8]/60 border-[#E7DDD3] focus:border-[#B8643E] text-[#0E1A2B] placeholder-[#72665D]/40 focus:ring-[#B8643E]/30 focus:bg-white'
+                  }`}
+                />
+              </div>
+
               <div className="flex flex-col gap-1">
                 <label htmlFor={issueTypeInputId} className="sr-only">
                   {t('field_issue_type') || 'Typ der Anfrage (optional)'}
@@ -334,17 +358,36 @@ const ContactForm = ({
             </div>
 
             <div className="flex flex-col gap-1">
-              <label htmlFor={contactInputId} className="sr-only">
-                {t('field_contact')}
+              <label htmlFor={emailInputId} className="sr-only">
+                {t('field_email')}
               </label>
               <input
-                id={contactInputId}
-                type="text"
+                id={emailInputId}
+                type="email"
                 required
-                value={contact}
-                onChange={(e) => setContact(e.target.value)}
-                autoComplete="off"
-                placeholder={t('field_contact')}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                placeholder={t('field_email')}
+                className={`w-full px-5 sm:px-6 py-3 sm:py-3.5 border rounded-2xl outline-none focus:ring-1 transition-all duration-300 text-[14px] sm:text-[15px] ${
+                  variant === 'dark'
+                    ? 'bg-white/10 border-white/10 focus:border-[#B8643E] text-white placeholder-white/50 focus:ring-[#B8643E]/50 focus:bg-white/15'
+                    : 'bg-[#F7F1E8]/60 border-[#E7DDD3] focus:border-[#B8643E] text-[#0E1A2B] placeholder-[#72665D]/40 focus:ring-[#B8643E]/30 focus:bg-white'
+                }`}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label htmlFor={phoneInputId} className="sr-only">
+                {t('field_phone')}
+              </label>
+              <input
+                id={phoneInputId}
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                autoComplete="tel"
+                placeholder={t('field_phone')}
                 className={`w-full px-5 sm:px-6 py-3 sm:py-3.5 border rounded-2xl outline-none focus:ring-1 transition-all duration-300 text-[14px] sm:text-[15px] ${
                   variant === 'dark'
                     ? 'bg-white/10 border-white/10 focus:border-[#B8643E] text-white placeholder-white/50 focus:ring-[#B8643E]/50 focus:bg-white/15'
