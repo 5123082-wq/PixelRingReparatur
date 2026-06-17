@@ -316,7 +316,9 @@
     "issue_installation": "Montaj",
     "issue_maintenance": "Bakım",
     "field_location": "Adres veya konum (isteğe bağlı)",
-    "field_contact": "Telefon veya e-posta",
+    "field_contact": "Talep için e-posta",
+    "field_email": "Talep için e-posta",
+    "field_phone": "Telefon (isteğe bağlı)",
     "field_message": "Gorevi kisaca aciklayin. Ornekler: LED tabela titriyor, isikli kutu karanlik, harfler hasarli, folyo ayriliyor, tabela sokulecek.",
     "field_photo": "📎 Fotoğraf ekle",
     "attach_photo_btn": "Fotoğraf ekle (isteğe bağlı)",
@@ -326,7 +328,7 @@
     "success_number_label": "PR numaranız",
     "success_message": "Devam etmek için bu numarayla Status'u kullanın.",
     "open_status": "Status'u aç",
-    "error_invalid_contact": "Lütfen geçerli bir telefon numarası veya e-posta adresi girin.",
+    "error_invalid_contact": "Talebi oluşturmak ve müşteri portalı erişimini hazırlamak için geçerli bir e-posta adresi girin. Telefon isteğe bağlıdır.",
     "error_generic": "Talep şu anda gönderilemedi. Lütfen tekrar deneyin."
   },
   "StatusPage": {
@@ -424,6 +426,13 @@
     "chat_gate_body": "Mesajları, belgeleri ve sonraki adımları güvenli şekilde gösterebilmek için kayıt olmanız ve erişimi doğrulamanız gerekir. Girişten sonra sohbet ve servis geçmişi tek yerde kalır.",
     "chat_gate_primary": "Portala git",
     "chat_gate_secondary": "Daha sonra",
+    "portal_activation_title": "Musteri portalini etkinlestirin",
+    "portal_activation_body": "Bu talebe, gecmise ve sonraki belgelere erisimi saklayin. Baglanti e-posta kodu dogrulamasini baslatir ve tek basina ozel verileri acmaz.",
+    "portal_activation_activate": "Portali etkinlestir",
+    "portal_activation_session_title": "Portal erisimi aktif",
+    "portal_activation_session_body": "Bu talep zaten portal oturumunuza bagli. Guvenli uzun sureli erisim icin musteri portalini acin.",
+    "portal_activation_open": "Portala git",
+    "portal_activation_unavailable_body": "Aktivasyon baglantisi artik aktif degil. Gerekirse PixelRing yeni guvenli baglanti gonderebilir.",
     "progress_steps": {
       "accepted": "Kabul edildi",
       "diagnostics": "Teşhis",

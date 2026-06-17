@@ -120,6 +120,64 @@ export function buildPortalClaimMessage(input: {
   ].join('\n');
 }
 
+function extractPortalClaimUrls(value: string): string[] {
+  const matches = value.match(/https?:\/\/[^\s<>"']*\/portal\/claim\?token=[^\s<>"']+/gi);
+
+  return matches ?? [];
+}
+
+function extractClaimTokenFromUrl(value: string): string | null {
+  try {
+    const url = new URL(value);
+    const token = url.searchParams.get('token')?.trim();
+
+    return token || null;
+  } catch {
+    return null;
+  }
+}
+
+export async function getActivePortalClaimLinkForCase(
+  db: ClaimDb,
+  input: {
+    caseId: string;
+    now?: Date;
+  }
+): Promise<{ url: string; expiresAt: string } | null> {
+  const now = input.now ?? new Date();
+  const messages = await db.message.findMany({
+    where: {
+      caseId: input.caseId,
+      authorRole: 'SYSTEM',
+      body: { contains: '/portal/claim?token=' },
+    },
+    orderBy: { createdAt: 'desc' },
+    take: 10,
+    select: { body: true },
+  });
+
+  for (const message of messages) {
+    for (const url of extractPortalClaimUrls(message.body)) {
+      const token = extractClaimTokenFromUrl(url);
+
+      if (!token) {
+        continue;
+      }
+
+      const claim = await getPortalClaimContext(db, token, now);
+
+      if (claim.ok && claim.caseId === input.caseId) {
+        return {
+          url,
+          expiresAt: claim.expiresAt,
+        };
+      }
+    }
+  }
+
+  return null;
+}
+
 export async function createPortalClaimLink(
   db: ClaimDb,
   input: {

@@ -58,6 +58,8 @@ type ChatIntakePrefill = {
   issueType?: string;
   contact?: string;
   contactMode?: 'phone' | 'email';
+  email?: string;
+  phone?: string;
   name?: string;
   location?: string;
   summary?: string;
@@ -387,6 +389,12 @@ function buildIntakePrefill(
       draft?.customerPhone ||
       sessionContact?.contactValue ||
       undefined,
+    email:
+      draft?.customerEmail ||
+      (sessionContact?.contactMethod === 'EMAIL' ? sessionContact.contactValue ?? undefined : undefined),
+    phone:
+      draft?.customerPhone ||
+      (sessionContact?.contactMethod === 'PHONE' ? sessionContact.contactValue ?? undefined : undefined),
     contactMode:
       draft?.customerEmail
         ? 'email'

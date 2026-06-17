@@ -61,10 +61,12 @@ export async function POST(request: NextRequest) {
 
   try {
     const formData = await request.formData();
+    const email = String(formData.get('email') ?? '').trim();
+    const phone = String(formData.get('phone') ?? '').trim();
     const contact = firstNonEmpty(
       String(formData.get('contact') ?? ''),
-      String(formData.get('email') ?? ''),
-      String(formData.get('phone') ?? '')
+      email,
+      phone
     );
     const split = splitContact(contact);
     const token = request.cookies.get(CASE_SESSION_COOKIE_NAME)?.value ?? null;
@@ -83,8 +85,8 @@ export async function POST(request: NextRequest) {
 
     const draft = await upsertSessionIntakeDraft(prisma, resolved.session.id, {
       customerName: String(formData.get('name') ?? '').trim(),
-      customerEmail: firstNonEmpty(String(formData.get('customerEmail') ?? ''), split.customerEmail),
-      customerPhone: firstNonEmpty(String(formData.get('customerPhone') ?? ''), split.customerPhone),
+      customerEmail: firstNonEmpty(String(formData.get('customerEmail') ?? ''), email, split.customerEmail),
+      customerPhone: firstNonEmpty(String(formData.get('customerPhone') ?? ''), phone, split.customerPhone),
       serviceLocation: String(formData.get('location') ?? '').trim(),
       serviceLatitude: readCoordinate(formData.get('locationLatitude'), -90, 90),
       serviceLongitude: readCoordinate(formData.get('locationLongitude'), -180, 180),

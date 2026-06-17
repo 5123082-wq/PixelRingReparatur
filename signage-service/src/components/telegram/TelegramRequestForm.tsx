@@ -11,7 +11,10 @@ type TelegramRequestFormProps = {
 
 type Copy = {
   name: string;
-  contact: string;
+  email: string;
+  emailHelp: string;
+  phone: string;
+  phoneHelp: string;
   issueType: string;
   location: string;
   message: string;
@@ -27,7 +30,10 @@ type Copy = {
 const COPY: Record<string, Copy> = {
   de: {
     name: 'Name / Firma',
-    contact: 'E-Mail oder Telefon',
+    email: 'E-Mail (empfohlen)',
+    emailHelp: 'Wenn Sie eine E-Mail angeben, starten wir die Aktivierung des Kundenportals. Ohne E-Mail koennen Sie diese spaeter per Link ergaenzen.',
+    phone: 'Telefon (optional)',
+    phoneHelp: 'Telefon ist nur fuer operative Rueckfragen zur Anfrage. Der Kundenportal-Zugang laeuft ueber E-Mail.',
     issueType: 'Art der Anfrage',
     location: 'Adresse oder Ort',
     message: 'Was ist passiert?',
@@ -41,7 +47,10 @@ const COPY: Record<string, Copy> = {
   },
   en: {
     name: 'Name / company',
-    contact: 'Email or phone',
+    email: 'Email (recommended)',
+    emailHelp: 'If you add email, we start customer portal activation. Without email, you can add it later by link.',
+    phone: 'Phone (optional)',
+    phoneHelp: 'Phone is only for operational follow-up on the request. Customer portal access uses email.',
     issueType: 'Request type',
     location: 'Address or location',
     message: 'What happened?',
@@ -55,7 +64,10 @@ const COPY: Record<string, Copy> = {
   },
   ru: {
     name: 'Имя / компания',
-    contact: 'E-mail или телефон',
+    email: 'E-mail (рекомендуется)',
+    emailHelp: 'Если указать e-mail, мы запустим активацию личного кабинета. Без e-mail его можно будет добавить позже по ссылке.',
+    phone: 'Телефон (необязательно)',
+    phoneHelp: 'Телефон нужен только для оперативной связи по заявке. Доступ в личный кабинет идет через e-mail.',
     issueType: 'Тип заявки',
     location: 'Адрес или место',
     message: 'Что произошло?',
@@ -69,7 +81,10 @@ const COPY: Record<string, Copy> = {
   },
   tr: {
     name: 'Ad / sirket',
-    contact: 'E-posta veya telefon',
+    email: 'E-posta (onerilir)',
+    emailHelp: 'E-posta eklerseniz musteri portali aktivasyonunu baslatiriz. E-posta yoksa daha sonra baglantidan ekleyebilirsiniz.',
+    phone: 'Telefon (istege bagli)',
+    phoneHelp: 'Telefon yalnizca talep hakkinda operasyonel iletisim icindir. Musteri portali erisimi e-posta ile olur.',
     issueType: 'Talep turu',
     location: 'Adres veya konum',
     message: 'Ne oldu?',
@@ -83,7 +98,10 @@ const COPY: Record<string, Copy> = {
   },
   pl: {
     name: 'Imie / firma',
-    contact: 'E-mail lub telefon',
+    email: 'E-mail (zalecany)',
+    emailHelp: 'Jesli podasz e-mail, rozpoczniemy aktywacje portalu klienta. Bez e-maila bedzie mozna dodac go pozniej przez link.',
+    phone: 'Telefon (opcjonalnie)',
+    phoneHelp: 'Telefon sluzy tylko do kontaktu operacyjnego w sprawie zgloszenia. Dostep do portalu klienta dziala przez e-mail.',
     issueType: 'Typ zgloszenia',
     location: 'Adres lub lokalizacja',
     message: 'Co sie stalo?',
@@ -97,7 +115,10 @@ const COPY: Record<string, Copy> = {
   },
   ar: {
     name: 'الاسم / الشركة',
-    contact: 'البريد الإلكتروني أو الهاتف',
+    email: 'البريد الإلكتروني (موصى به)',
+    emailHelp: 'إذا أضفت البريد الإلكتروني نبدأ تفعيل بوابة العميل. ومن دونه يمكنك إضافته لاحقاً عبر الرابط.',
+    phone: 'الهاتف (اختياري)',
+    phoneHelp: 'الهاتف للتواصل التشغيلي حول الطلب فقط. الوصول إلى بوابة العميل يتم عبر البريد الإلكتروني.',
     issueType: 'نوع الطلب',
     location: 'العنوان أو الموقع',
     message: 'ماذا حدث؟',
@@ -118,7 +139,8 @@ function getCopy(locale: string): Copy {
 export default function TelegramRequestForm({ token, locale }: TelegramRequestFormProps) {
   const copy = getCopy(locale);
   const [name, setName] = useState('');
-  const [contact, setContact] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [issueType, setIssueType] = useState('');
   const [location, setLocation] = useState('');
   const [selectedLocation, setSelectedLocation] = useState<SelectedLocation | null>(null);
@@ -148,7 +170,11 @@ export default function TelegramRequestForm({ token, locale }: TelegramRequestFo
       const formData = new FormData();
       formData.set('token', token);
       formData.set('name', name);
-      formData.set('contact', contact);
+      formData.set('email', email);
+      formData.set('phone', phone);
+      if (email.trim() || phone.trim()) {
+        formData.set('contact', email.trim() || phone.trim());
+      }
       formData.set('issueType', issueType);
       formData.set('location', location);
       formData.set('message', message);
@@ -207,11 +233,21 @@ export default function TelegramRequestForm({ token, locale }: TelegramRequestFo
           className="min-h-12 rounded-2xl border border-[#E7DDD3] bg-[#F7F1E8]/60 px-4 text-[15px] text-[#0E1A2B] outline-none transition focus:border-[#B8643E] focus:bg-white"
         />
         <input
-          required
-          value={contact}
-          onChange={(event) => setContact(event.target.value)}
-          placeholder={copy.contact}
-          autoComplete="off"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          placeholder={copy.email}
+          autoComplete="email"
+          type="email"
+          dir="ltr"
+          className="min-h-12 rounded-2xl border border-[#E7DDD3] bg-[#F7F1E8]/60 px-4 text-[15px] text-[#0E1A2B] outline-none transition focus:border-[#B8643E] focus:bg-white"
+        />
+        <input
+          value={phone}
+          onChange={(event) => setPhone(event.target.value)}
+          placeholder={copy.phone}
+          autoComplete="tel"
+          type="tel"
+          dir="ltr"
           className="min-h-12 rounded-2xl border border-[#E7DDD3] bg-[#F7F1E8]/60 px-4 text-[15px] text-[#0E1A2B] outline-none transition focus:border-[#B8643E] focus:bg-white"
         />
         <select
@@ -236,6 +272,11 @@ export default function TelegramRequestForm({ token, locale }: TelegramRequestFo
             className="min-h-12 w-full rounded-2xl border border-[#E7DDD3] bg-[#F7F1E8]/60 px-4 text-[15px] text-[#0E1A2B] outline-none transition focus:border-[#B8643E] focus:bg-white"
           />
         </div>
+      </div>
+
+      <div className="mt-3 grid gap-2 rounded-2xl border border-[#E7DDD3] bg-[#FDF7F0] px-4 py-3 text-xs leading-5 text-[#72665D] sm:grid-cols-2">
+        <p>{copy.emailHelp}</p>
+        <p>{copy.phoneHelp}</p>
       </div>
 
       <textarea

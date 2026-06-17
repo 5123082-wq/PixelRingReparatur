@@ -48,6 +48,8 @@ export type IntakePrefill = {
   issueType?: string;
   contact?: string;
   contactMode?: 'phone' | 'email';
+  email?: string;
+  phone?: string;
   name?: string;
   location?: string;
   summary?: string;

@@ -2,8 +2,56 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { CASE_SESSION_COOKIE_NAME } from '@/lib/case-session';
 import { prisma } from '@/lib/prisma';
+import { PORTAL_SESSION_COOKIE_NAME, getPortalSessionContext } from '@/lib/portal/auth';
+import { getActivePortalClaimLinkForCase } from '@/lib/portal/claim';
 import { checkRateLimit, getClientIP, STATUS_LIMIT } from '@/lib/rate-limit';
 import { lookupPublicCaseStatus } from '@/lib/status-lookup';
+
+async function resolvePortalActivation(input: {
+  request: NextRequest;
+  caseId: string;
+}): Promise<
+  | { state: 'portal_session'; portalUrl: string }
+  | { state: 'active_claim'; claimUrl: string; expiresAt: string }
+  | { state: 'unavailable' }
+> {
+  const portalSession = await getPortalSessionContext(
+    prisma,
+    input.request.cookies.get(PORTAL_SESSION_COOKIE_NAME)?.value ?? null
+  );
+
+  if (portalSession) {
+    const access = await prisma.portalCaseAccess.findFirst({
+      where: {
+        portalUserId: portalSession.portalUserId,
+        caseId: input.caseId,
+        revokedAt: null,
+      },
+      select: { id: true },
+    });
+
+    if (access) {
+      return {
+        state: 'portal_session',
+        portalUrl: '/portal',
+      };
+    }
+  }
+
+  const claim = await getActivePortalClaimLinkForCase(prisma, {
+    caseId: input.caseId,
+  });
+
+  if (claim) {
+    return {
+      state: 'active_claim',
+      claimUrl: claim.url,
+      expiresAt: claim.expiresAt,
+    };
+  }
+
+  return { state: 'unavailable' };
+}
 
 export async function POST(request: NextRequest) {
   const ip = getClientIP(request);
@@ -50,6 +98,10 @@ export async function POST(request: NextRequest) {
       verified: true,
       verifiedVia: result.case.verifiedVia,
       case: result.case,
+      portalActivation: await resolvePortalActivation({
+        request,
+        caseId: result.caseId,
+      }),
     });
 
     if (result.cookieToken) {

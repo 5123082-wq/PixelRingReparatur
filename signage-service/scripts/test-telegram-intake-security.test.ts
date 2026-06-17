@@ -4,6 +4,7 @@ import { dirname, resolve } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
+import { parseOptionalContactDetails } from '../src/lib/contact-policy.ts';
 import { isTelegramContactAllowed } from '../src/lib/telegram-contact-lock.ts';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -78,6 +79,24 @@ test('telegram contact lock allows first contact when no contact is locked yet',
   );
 });
 
+test('telegram contact policy allows Telegram return channel without email or phone', () => {
+  assert.deepEqual(parseOptionalContactDetails({}), {
+    customerEmail: null,
+    customerPhone: null,
+    primaryContactMethod: null,
+    primaryContactValue: null,
+  });
+});
+
+test('telegram contact policy records optional email when provided', () => {
+  assert.deepEqual(parseOptionalContactDetails({ email: ' Owner@Example.COM ' }), {
+    customerEmail: 'owner@example.com',
+    customerPhone: null,
+    primaryContactMethod: 'EMAIL',
+    primaryContactValue: 'owner@example.com',
+  });
+});
+
 test('telegram intake does not sync unverified form contacts into customer profiles', () => {
   const source = readFileSync(
     resolve(__dirname, '../src/lib/telegram-intake.ts'),
@@ -85,6 +104,144 @@ test('telegram intake does not sync unverified form contacts into customer profi
   );
 
   assert.equal(source.includes('syncCaseCustomerProfile'), false);
+});
+
+test('telegram secure intake accepts optional contact before file storage', () => {
+  const routeSource = readFileSync(
+    resolve(__dirname, '../src/app/api/telegram/intake/submit/route.ts'),
+    'utf8'
+  );
+  const intakeSource = readFileSync(
+    resolve(__dirname, '../src/lib/telegram-intake.ts'),
+    'utf8'
+  );
+  const requiredFieldsIndex = routeSource.indexOf('if (!token || !message) {');
+  const oldRequiredContactIndex = routeSource.indexOf('if (!token || !contact || !message) {');
+  const contactPolicyIndex = routeSource.indexOf('const submittedContact = parseOptionalContactDetails({ contact, email, phone });');
+  const storeAttachmentIndex = routeSource.indexOf('storeAttachment(file)');
+  const submitIndex = routeSource.indexOf('const result = await submitTelegramIntake(prisma, {');
+
+  assert.notEqual(requiredFieldsIndex, -1);
+  assert.equal(oldRequiredContactIndex, -1);
+  assert.notEqual(contactPolicyIndex, -1);
+  assert.notEqual(storeAttachmentIndex, -1);
+  assert.notEqual(submitIndex, -1);
+  assert.ok(contactPolicyIndex < storeAttachmentIndex);
+  assert.ok(contactPolicyIndex < submitIndex);
+  assert.ok(routeSource.includes('email,'));
+  assert.ok(routeSource.includes('phone,'));
+  assert.ok(intakeSource.includes('const parsedContact = parseOptionalContactDetails(input);'));
+  assert.ok(intakeSource.includes('customerEmail: parsedContact.customerEmail'));
+  assert.ok(intakeSource.includes('customerPhone: parsedContact.customerPhone'));
+  assert.ok(intakeSource.includes('primaryContactMethod: parsedContact.primaryContactMethod'));
+  assert.ok(intakeSource.includes('primaryContactValue: parsedContact.primaryContactValue'));
+});
+
+test('telegram secure intake returns portal claim link without requiring email', () => {
+  const routeSource = readFileSync(
+    resolve(__dirname, '../src/app/api/telegram/intake/submit/route.ts'),
+    'utf8'
+  );
+  const intakeSource = readFileSync(
+    resolve(__dirname, '../src/lib/telegram-intake.ts'),
+    'utf8'
+  );
+
+  assert.ok(intakeSource.includes("import { createPortalClaimLink } from './portal/claim';"));
+  assert.ok(intakeSource.includes('const portalClaimLink = await createPortalClaimLink(tx, {'));
+  assert.ok(intakeSource.includes('origin: input.origin'));
+  assert.ok(intakeSource.includes('portalClaimUrl: portalClaimLink.url'));
+  assert.ok(intakeSource.includes('portalClaimExpiresAt: portalClaimLink.expiresAt.toISOString()'));
+  assert.ok(routeSource.includes("origin: request.headers.get('origin') || request.nextUrl.origin"));
+  assert.equal(routeSource.includes('if (!token || !email || !message) {'), false);
+});
+
+test('telegram secure intake sends activation invite only when optional email exists', () => {
+  const routeSource = readFileSync(
+    resolve(__dirname, '../src/app/api/telegram/intake/submit/route.ts'),
+    'utf8'
+  );
+  const submitIndex = routeSource.indexOf('const result = await submitTelegramIntake(prisma, {');
+  const emailGateIndex = routeSource.indexOf(
+    'if (submittedContact.customerEmail && result.portalClaimUrl && result.portalClaimExpiresAt) {'
+  );
+  const inviteIndex = routeSource.indexOf('sendPortalActivationInviteEmail({');
+  const keyboardIndex = routeSource.indexOf('const keyboard = [');
+
+  assert.notEqual(submitIndex, -1);
+  assert.notEqual(emailGateIndex, -1);
+  assert.notEqual(inviteIndex, -1);
+  assert.notEqual(keyboardIndex, -1);
+  assert.ok(submitIndex < emailGateIndex);
+  assert.ok(emailGateIndex < inviteIndex);
+  assert.ok(inviteIndex < keyboardIndex);
+  assert.ok(routeSource.includes('to: submittedContact.customerEmail'));
+  assert.ok(routeSource.includes('claimUrl: result.portalClaimUrl'));
+  assert.equal(routeSource.includes('to: submittedContact.customerPhone'), false);
+});
+
+test('telegram secure intake confirmation keyboard includes status portal and return buttons', () => {
+  const routeSource = readFileSync(
+    resolve(__dirname, '../src/app/api/telegram/intake/submit/route.ts'),
+    'utf8'
+  );
+  const statusButtonIndex = routeSource.indexOf('[{ text: getStatusButtonLabel(result.locale), url: result.statusUrl }]');
+  const portalButtonIndex = routeSource.indexOf('getPortalButtonLabel(result.locale, Boolean(submittedContact.customerEmail))', statusButtonIndex);
+  const returnButtonIndex = routeSource.indexOf('result.telegramReturnUrl', portalButtonIndex);
+
+  assert.notEqual(statusButtonIndex, -1);
+  assert.notEqual(portalButtonIndex, -1);
+  assert.notEqual(returnButtonIndex, -1);
+  assert.ok(statusButtonIndex < portalButtonIndex);
+  assert.ok(portalButtonIndex < returnButtonIndex);
+  assert.ok(routeSource.includes('function getPortalButtonLabel'));
+  assert.ok(routeSource.includes('getPortalButtonLabel(result.locale, Boolean(submittedContact.customerEmail))'));
+  assert.ok(routeSource.includes('url: result.portalClaimUrl'));
+});
+
+test('telegram secure form submits optional split email and phone fields', () => {
+  const formSource = readFileSync(
+    resolve(__dirname, '../src/components/telegram/TelegramRequestForm.tsx'),
+    'utf8'
+  );
+
+  assert.ok(formSource.includes("const [email, setEmail] = useState('');"));
+  assert.ok(formSource.includes("const [phone, setPhone] = useState('');"));
+  assert.ok(formSource.includes("formData.set('email', email);"));
+  assert.ok(formSource.includes("formData.set('phone', phone);"));
+  assert.ok(formSource.includes("if (email.trim() || phone.trim()) {"));
+  assert.equal(formSource.includes("const [contact, setContact] = useState('');"), false);
+  assert.equal(formSource.includes('placeholder={copy.contact}'), false);
+  assert.equal(formSource.includes('required\n          value={email}'), false);
+  assert.equal(formSource.includes('required\n          value={phone}'), false);
+});
+
+test('telegram secure form and confirmation copy avoid in-telegram tracking wording', () => {
+  const routeSource = readFileSync(
+    resolve(__dirname, '../src/app/api/telegram/intake/submit/route.ts'),
+    'utf8'
+  );
+  const formSource = readFileSync(
+    resolve(__dirname, '../src/components/telegram/TelegramRequestForm.tsx'),
+    'utf8'
+  );
+  const combined = `${routeSource}\n${formSource}`;
+  const forbiddenPatterns = [
+    /track(?:ing)?\s+(?:in|inside|here)\s+telegram/i,
+    /follow\s+(?:the\s+)?status\s+(?:in|inside|here)\s+telegram/i,
+    /status\s+in\s+telegram/i,
+    /отслеж\w*\s+[^.\n]*telegram/i,
+    /след\w*\s+[^.\n]*telegram/i,
+  ];
+
+  assert.ok(routeSource.includes('Status can be checked by the link below.'));
+  assert.ok(routeSource.includes('The conversation can continue here in Telegram.'));
+  assert.ok(routeSource.includes('For long-term access, activate the customer portal with the button below.'));
+  assert.ok(routeSource.includes('Для долгосрочного доступа активируйте личный кабинет'));
+
+  for (const pattern of forbiddenPatterns) {
+    assert.equal(pattern.test(combined), false);
+  }
 });
 
 test('known telegram contacts are routed to request confirmation before fallback form', () => {

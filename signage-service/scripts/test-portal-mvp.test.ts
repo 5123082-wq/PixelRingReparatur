@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 
 import { CaseOriginChannel, MessageAuthorRole } from '@prisma/client';
 
@@ -19,6 +22,12 @@ import {
   normalizePortalRequestInput,
   updatePortalRequestDetailsForUser,
 } from '../src/lib/portal/request-utils.ts';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+function readProjectFile(relativePath: string): string {
+  return readFileSync(resolve(__dirname, '..', relativePath), 'utf8');
+}
 
 function buildFakePortalMessageDb() {
   const messages: any[] = [];
@@ -247,6 +256,67 @@ test('portal request input is normalized before request creation', () => {
     buildPortalRequestMessage({ ...normalized, issueType: 'Ремонт' }, 'ru'),
     'Тип: Ремонт\nАдрес: Berlin Mitte\n\nLED Schrift flackert seit gestern'
   );
+});
+
+test('portal request creation uses verified portal email without a new claim link', () => {
+  const portalRequestSource = readProjectFile('src/lib/portal/requests.ts');
+  const intakeSource = readProjectFile('src/lib/request-intake.ts');
+  const portalAccessIndex = intakeSource.indexOf('await tx.portalCaseAccess.upsert({');
+  const portalReturnIndex = intakeSource.indexOf('return {', portalAccessIndex);
+  const claimLinkIndex = intakeSource.indexOf('const portalClaimLink = await createPortalClaimLink(tx, {');
+
+  assert.ok(portalRequestSource.includes('contact: input.email'));
+  assert.ok(portalRequestSource.includes('portalUser: {'));
+  assert.ok(portalRequestSource.includes('portalUserId: input.portalUserId'));
+  assert.ok(portalRequestSource.includes('portalSessionId: input.portalSessionId'));
+  assert.notEqual(portalAccessIndex, -1);
+  assert.notEqual(portalReturnIndex, -1);
+  assert.notEqual(claimLinkIndex, -1);
+  assert.ok(portalAccessIndex < portalReturnIndex);
+  assert.ok(portalReturnIndex < claimLinkIndex);
+  assert.equal(intakeSource.includes('sendPortalActivationInviteEmail'), false);
+});
+
+test('status lookup with request number alone does not query case or expose portal data', () => {
+  const source = readProjectFile('src/lib/status-lookup.ts');
+  const noContactIndex = source.indexOf('if (!hasContact) {');
+  const caseQueryIndex = source.indexOf('const caseRecord = await prisma.case.findUnique({');
+
+  assert.notEqual(noContactIndex, -1);
+  assert.notEqual(caseQueryIndex, -1);
+  assert.ok(noContactIndex < caseQueryIndex);
+  assert.ok(source.includes('Request number alone does not reveal private data.'));
+  assert.equal(source.includes('portalClaimUrl'), false);
+  assert.equal(source.includes('portalActivation'), false);
+});
+
+test('status API resolves portal activation only after verified status access', () => {
+  const source = readProjectFile('src/app/api/status/route.ts');
+  const unverifiedIndex = source.indexOf('if (!result.verified) {');
+  const verifiedResponseIndex = source.indexOf('const response = NextResponse.json({');
+  const activationIndex = source.indexOf('portalActivation: await resolvePortalActivation({');
+
+  assert.notEqual(unverifiedIndex, -1);
+  assert.notEqual(verifiedResponseIndex, -1);
+  assert.notEqual(activationIndex, -1);
+  assert.ok(unverifiedIndex < verifiedResponseIndex);
+  assert.ok(verifiedResponseIndex < activationIndex);
+  assert.equal(source.includes('createPortalClaimLink'), false);
+  assert.ok(source.includes('getActivePortalClaimLinkForCase'));
+  assert.ok(source.includes('getPortalSessionContext'));
+});
+
+test('admin manual portal claim action keeps audit details token-safe', () => {
+  const source = readProjectFile('src/app/api/admin/cases/[id]/portal-claim-link/route.ts');
+  const auditIndex = source.indexOf("action: 'CASE_PORTAL_CLAIM_LINK_CREATED'");
+  const detailsIndex = source.indexOf('details: {', auditIndex);
+  const detailsBlock = source.slice(detailsIndex, source.indexOf('},', detailsIndex) + 2);
+
+  assert.notEqual(auditIndex, -1);
+  assert.notEqual(detailsIndex, -1);
+  assert.ok(detailsBlock.includes('expiresAt: portalClaim.expiresAt.toISOString()'));
+  assert.equal(detailsBlock.includes('portalClaim.url'), false);
+  assert.equal(detailsBlock.includes('token'), false);
 });
 
 test('portal request detail input normalizes editable fields only', () => {
