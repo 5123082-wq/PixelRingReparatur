@@ -1,4 +1,4 @@
-
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const fs = require("fs");
 const raw = fs.readFileSync("scratch_ar_extracted_clean.txt", "utf8");
 // Wrap it in an assignment so we can eval it

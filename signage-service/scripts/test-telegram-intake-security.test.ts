@@ -160,13 +160,17 @@ test('known telegram status uses assistant action instead of asking for a reques
   assert.ok(orchestratorSource.includes("{ type: 'show_status' }"));
   assert.ok(chatEngineSource.includes('suggestStatus'));
   assert.ok(webhookSource.includes("action.type === 'show_status'"));
-  assert.ok(webhookSource.includes('publicRequestNumber: shouldAttachStatusAction(body)'));
+  assert.ok(webhookSource.includes('publicRequestNumber: result.activeTelegramRequest || shouldAttachStatusAction(body)'));
   assert.equal(webhookSource.includes('publicRequestNumber: result.hasStoredTelegramContact'), false);
 });
 
 test('active telegram request continues current case instead of creating a duplicate', () => {
   const webhookSource = readFileSync(
     resolve(__dirname, '../src/app/api/telegram/webhook/route.ts'),
+    'utf8'
+  );
+  const controllerSource = readFileSync(
+    resolve(__dirname, '../src/lib/telegram-conversation-controller.ts'),
     'utf8'
   );
   const promptSource = readFileSync(
@@ -182,10 +186,13 @@ test('active telegram request continues current case instead of creating a dupli
     'utf8'
   );
 
-  assert.ok(webhookSource.includes('function isActiveCustomerVisibleRequest'));
-  assert.ok(webhookSource.includes('input.status !== CaseStatus.COMPLETED'));
-  assert.ok(webhookSource.includes('input.status !== CaseStatus.CANCELLED'));
+  assert.ok(controllerSource.includes('function isCustomerVisibleActiveRequest'));
+  assert.ok(controllerSource.includes('TERMINAL_CASE_STATUSES'));
+  assert.ok(controllerSource.includes("'COMPLETED'"));
+  assert.ok(controllerSource.includes("'CANCELLED'"));
   assert.ok(webhookSource.includes('activeTelegramRequest'));
+  assert.ok(webhookSource.includes('conversationState'));
+  assert.ok(webhookSource.includes('classifyTelegramTurn'));
   assert.ok(webhookSource.includes('activeMessengerRequest: result.activeTelegramRequest'));
   assert.ok(webhookSource.includes('!result.activeTelegramRequest &&'));
   assert.ok(webhookSource.includes('buildActiveRequestPhotoReceivedText'));
@@ -197,6 +204,28 @@ test('active telegram request continues current case instead of creating a dupli
   assert.ok(promptSource.includes('Do not append <<SHOW_INTAKE:...>> while the customer is continuing the current request.'));
   assert.ok(orchestratorSource.includes('activeMessengerRequest?: boolean'));
   assert.ok(chatEngineSource.includes('activeMessengerRequest?: boolean'));
+});
+
+test('telegram controller handles active PR turns before the AI fallback', () => {
+  const webhookSource = readFileSync(
+    resolve(__dirname, '../src/app/api/telegram/webhook/route.ts'),
+    'utf8'
+  );
+  const controllerSource = readFileSync(
+    resolve(__dirname, '../src/lib/telegram-conversation-controller.ts'),
+    'utf8'
+  );
+
+  assert.ok(controllerSource.includes("'active_request_status'"));
+  assert.ok(controllerSource.includes("'active_request_continue'"));
+  assert.ok(controllerSource.includes("'separate_new_request'"));
+  assert.ok(controllerSource.includes('как\\s+дел[ао]\\s+с\\s+(?:моей\\s+)?заявк'));
+  assert.ok(controllerSource.includes('(?:у\\s+меня\\s+)?нет\\s+заявк'));
+  assert.ok(webhookSource.includes("turnDecision === 'active_request_status'"));
+  assert.ok(webhookSource.includes("turnDecision === 'active_request_continue'"));
+  assert.ok(webhookSource.includes("turnDecision === 'separate_new_request'"));
+  assert.ok(webhookSource.includes('buildActiveRequestStatusText'));
+  assert.ok(webhookSource.includes('buildSeparateNewRequestOfferText'));
 });
 
 test('active telegram request blocks assistant form reset text', () => {

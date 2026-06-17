@@ -17,6 +17,8 @@ type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
 
 type SectorKey = 'restaurants' | 'retail' | 'salons' | 'dealers' | 'clinics' | 'hotels' | 'offices';
 
+const SECTOR_KEYS: SectorKey[] = ['restaurants', 'retail', 'salons', 'dealers', 'clinics', 'hotels', 'offices'];
+
 interface HotspotData {
   id: string;
   label: string;
@@ -1282,7 +1284,6 @@ export default function BusinessShowcase({ locale }: BusinessShowcaseProps) {
   const t = SECTORS_LOCALES[currentLocale];
   const isRtl = currentLocale === 'ar';
 
-  const sectorKeys: SectorKey[] = ['restaurants', 'retail', 'salons', 'dealers', 'clinics', 'hotels', 'offices'];
   const [activeSector, setActiveSector] = useState<SectorKey>('restaurants');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -1291,11 +1292,11 @@ export default function BusinessShowcase({ locale }: BusinessShowcaseProps) {
       const handleHashOrQuery = () => {
         const params = new URLSearchParams(window.location.search);
         const sectorParam = params.get('sector') as SectorKey;
-        if (sectorParam && sectorKeys.includes(sectorParam)) {
+        if (sectorParam && SECTOR_KEYS.includes(sectorParam)) {
           setActiveSector(sectorParam);
         } else {
           const hash = window.location.hash.replace('#', '') as SectorKey;
-          if (hash && sectorKeys.includes(hash)) {
+          if (hash && SECTOR_KEYS.includes(hash)) {
             setActiveSector(hash);
           }
         }
@@ -1310,15 +1311,9 @@ export default function BusinessShowcase({ locale }: BusinessShowcaseProps) {
   const activeData = t[activeSector];
 
   const [activeHotspotId, setActiveHotspotId] = useState<string | null>(null);
-
-  // Set default hotspot on load for the sector
-  useEffect(() => {
-    if (activeData.hotspots && activeData.hotspots.length > 0) {
-      setActiveHotspotId(activeData.hotspots[0].id);
-    } else {
-      setActiveHotspotId(null);
-    }
-  }, [activeSector, activeData]);
+  const currentHotspotId = activeData.hotspots?.some((hotspot) => hotspot.id === activeHotspotId)
+    ? activeHotspotId
+    : activeData.hotspots?.[0]?.id ?? null;
 
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -1422,7 +1417,7 @@ export default function BusinessShowcase({ locale }: BusinessShowcaseProps) {
     const renderInteractivePhotoShowcase = () => {
     if (!activeData.hotspots) return null;
 
-    const currentHotspot = activeData.hotspots.find(h => h.id === activeHotspotId);
+    const currentHotspot = activeData.hotspots.find(h => h.id === currentHotspotId);
     
     // Localized services title
     const servicesTitle = {
@@ -1437,7 +1432,7 @@ export default function BusinessShowcase({ locale }: BusinessShowcaseProps) {
 
     const currentRatio = isDragging && dragSplitRatio !== null 
       ? dragSplitRatio 
-      : (activeHotspotId === 'exterior' ? 0.7 : 0.3);
+      : (currentHotspotId === 'exterior' ? 0.7 : 0.3);
 
     // Slant offset - 5% slant
     const slant = 0.05;
@@ -1491,7 +1486,7 @@ export default function BusinessShowcase({ locale }: BusinessShowcaseProps) {
             className={`absolute inset-0 group/panel-ext cursor-pointer ${transitionClass}`}
             style={{ 
               clipPath: `polygon(0 0, ${x1}% 0, ${x2}% 100%, 0 100%)`,
-              zIndex: activeHotspotId === 'exterior' ? 12 : 5
+              zIndex: currentHotspotId === 'exterior' ? 12 : 5
             }}
             onClick={() => {
               if (!isDragging) setActiveHotspotId('exterior');
@@ -1502,12 +1497,12 @@ export default function BusinessShowcase({ locale }: BusinessShowcaseProps) {
               alt={getSectorImages(activeSector).exteriorAlt}
               fill
               className={`object-cover transition-transform duration-700 ease-out select-none pointer-events-none ${
-                activeHotspotId === 'exterior' ? 'scale-105 opacity-100 brightness-110' : 'scale-100 opacity-75 brightness-[0.75] group-hover/panel-ext:brightness-95 group-hover/panel-ext:scale-[1.02]'
+                currentHotspotId === 'exterior' ? 'scale-105 opacity-100 brightness-110' : 'scale-100 opacity-75 brightness-[0.75] group-hover/panel-ext:brightness-95 group-hover/panel-ext:scale-[1.02]'
               }`}
               sizes="(max-width: 1024px) 100vw, 800px"
               priority
             />
-            <div className={`absolute inset-0 bg-[#B8643E]/10 transition-opacity duration-300 pointer-events-none ${activeHotspotId === 'exterior' ? 'opacity-100' : 'opacity-0'}`} />
+            <div className={`absolute inset-0 bg-[#B8643E]/10 transition-opacity duration-300 pointer-events-none ${currentHotspotId === 'exterior' ? 'opacity-100' : 'opacity-0'}`} />
           </div>
 
           {/* Panel 2: Right - Interior Lightbox */}
@@ -1515,7 +1510,7 @@ export default function BusinessShowcase({ locale }: BusinessShowcaseProps) {
             className={`absolute inset-0 group/panel-light cursor-pointer ${transitionClass}`}
             style={{ 
               clipPath: `polygon(${x1}% 0, 100% 0, 100% 100%, ${x2}% 100%)`,
-              zIndex: activeHotspotId === 'interior' ? 12 : 5
+              zIndex: currentHotspotId === 'interior' ? 12 : 5
             }}
             onClick={() => {
               if (!isDragging) setActiveHotspotId('interior');
@@ -1526,12 +1521,12 @@ export default function BusinessShowcase({ locale }: BusinessShowcaseProps) {
               alt={getSectorImages(activeSector).interiorAlt}
               fill
               className={`object-cover transition-transform duration-700 ease-out select-none pointer-events-none ${
-                activeHotspotId === 'interior' ? 'scale-105 opacity-100 brightness-110' : 'scale-100 opacity-75 brightness-[0.75] group-hover/panel-light:brightness-95 group-hover/panel-light:scale-[1.02]'
+                currentHotspotId === 'interior' ? 'scale-105 opacity-100 brightness-110' : 'scale-100 opacity-75 brightness-[0.75] group-hover/panel-light:brightness-95 group-hover/panel-light:scale-[1.02]'
               }`}
               sizes="(max-width: 1024px) 100vw, 800px"
               priority
             />
-            <div className={`absolute inset-0 bg-[#B8643E]/10 transition-opacity duration-300 pointer-events-none ${activeHotspotId === 'interior' ? 'opacity-100' : 'opacity-0'}`} />
+            <div className={`absolute inset-0 bg-[#B8643E]/10 transition-opacity duration-300 pointer-events-none ${currentHotspotId === 'interior' ? 'opacity-100' : 'opacity-0'}`} />
           </div>
 
           {/* Semi-transparent dark vignette overlay */}
@@ -1830,7 +1825,7 @@ export default function BusinessShowcase({ locale }: BusinessShowcaseProps) {
               />
               
               <div className="absolute top-[calc(100%+8px)] left-0 right-0 z-50 rounded-2xl bg-[#0D1B2A]/95 border border-slate-800/90 shadow-2xl backdrop-blur-xl overflow-hidden py-2 transition-all duration-200">
-                {sectorKeys.map((key) => {
+                {SECTOR_KEYS.map((key) => {
                   const isSelected = activeSector === key;
                   const sector = t[key];
                   return (
@@ -1862,7 +1857,7 @@ export default function BusinessShowcase({ locale }: BusinessShowcaseProps) {
 
         {/* DESKTOP: Sector Selector Tabs (visible on lg and above) */}
         <div className="hidden lg:flex lg:col-span-4 flex-col gap-2 xl:gap-3 min-h-0 h-full">
-          {sectorKeys.map((key) => {
+          {SECTOR_KEYS.map((key) => {
             const isActive = activeSector === key;
             const sector = t[key];
             return (

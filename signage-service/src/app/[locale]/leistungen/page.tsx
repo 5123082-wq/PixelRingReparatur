@@ -1593,6 +1593,7 @@ export default async function LeistungenPage({
                           src={card.image}
                           alt={card.imageAlt ?? card.title}
                           fill
+                          loading={index === 0 ? 'eager' : 'lazy'}
                           sizes="(min-width: 1280px) 560px, (min-width: 1024px) 45vw, 100vw"
                           className="object-cover object-center"
                         />

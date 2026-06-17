@@ -9,6 +9,10 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 Latest checkpoint:
 
 - Date: 2026-06-17
+- Current stage: Reworked Telegram assistant routing toward a state-machine controller: explicit conversation states now route active PR status/follow-up/new-request turns before LLM, return commands read the active PR context, active cases keep their original summary instead of being overwritten by short chat replies, and controller tests cover the broken real Telegram phrases.
+- Next action: Deploy and retest the real Telegram flow end to end: fresh chat, secure form submit, PR confirmation, return to chat, `Ok`, `Что дальше?`, `Как дела с моей заявкой?`, `У меня нет заявки?`, and an explicit separate new-problem request.
+
+- Date: 2026-06-17
 - Current stage: Added a Telegram active-request backend guard: after a PR is issued, AI replies that try to reopen or reprepare the secure form are replaced with a deterministic "request already received, continue here in Telegram" response.
 - Next action: Deploy and retest the real Telegram post-submit flow: submit the form, press "continue in chat", send `Ok` / `Что дальше?` / `Есть информация?`, and confirm no secure-form loop appears.
 
