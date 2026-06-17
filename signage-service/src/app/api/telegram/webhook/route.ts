@@ -9,6 +9,11 @@ import { prisma } from '@/lib/prisma';
 import { publishCaseRealtimeEvent } from '@/lib/realtime';
 import { createCaseStatusAccessLink } from '@/lib/status-access-link';
 import { ensurePublicRequestNumberForCase } from '@/lib/request-number';
+import {
+  classifyTelegramTurn,
+  isCustomerVisibleActiveRequest,
+  resolveTelegramConversationState,
+} from '@/lib/telegram-conversation-controller';
 import { createTelegramIntakeLink } from '@/lib/telegram-intake';
 import {
   answerTelegramCallbackQuery,
@@ -29,18 +34,6 @@ const SUPPORTED_LOCALES = new Set(['de', 'en', 'ru', 'tr', 'pl', 'ar']);
 const CONFIRM_NEW_REQUEST_CALLBACK = 'pr_new_request_confirm';
 const KNOWN_TELEGRAM_REQUEST_SUMMARY = 'Neue Telegram-Anfrage aus bekanntem Kontakt';
 const KNOWN_REQUEST_CALLBACK_DEDUP_MS = 10 * 60 * 1000;
-
-function isActiveCustomerVisibleRequest(input: {
-  publicRequestNumber?: string | null;
-  status?: CaseStatus | null;
-}): boolean {
-  return Boolean(
-    input.publicRequestNumber &&
-    input.status &&
-    input.status !== CaseStatus.COMPLETED &&
-    input.status !== CaseStatus.CANCELLED
-  );
-}
 
 function buildCaseSummary(body: string): string {
   const clean = body.trim().replace(/\s+/g, ' ');
@@ -298,6 +291,77 @@ function buildActiveRequestContinuationText(input: {
   }
 }
 
+function buildActiveRequestStatusText(input: {
+  locale?: string | null;
+  publicRequestNumber?: string | null;
+}): string {
+  const requestNumber = input.publicRequestNumber?.trim();
+
+  switch (input.locale) {
+    case 'ru':
+      return [
+        requestNumber
+          ? `Заявка ${requestNumber} уже есть в системе PixelRing.`
+          : 'Ваша заявка уже есть в системе PixelRing.',
+        'Текущий публичный статус можно открыть кнопкой ниже. Если нужно добавить фото, видео или детали, отправьте их прямо здесь — они попадут в эту же заявку.',
+      ].join('\n');
+    case 'en':
+      return [
+        requestNumber
+          ? `Request ${requestNumber} is already in the PixelRing system.`
+          : 'Your request is already in the PixelRing system.',
+        'You can open the current public status with the button below. If you need to add photos, videos, or details, send them here and they will stay with this request.',
+      ].join('\n');
+    case 'tr':
+      return [
+        requestNumber
+          ? `${requestNumber} numarali talep PixelRing sisteminde.`
+          : 'Talebiniz PixelRing sisteminde.',
+        'Guncel genel durumu asagidaki dugmeden acabilirsiniz. Fotograf, video veya ek detaylari buraya gonderebilirsiniz; bu talebe eklenecek.',
+      ].join('\n');
+    case 'pl':
+      return [
+        requestNumber
+          ? `Zgloszenie ${requestNumber} jest juz w systemie PixelRing.`
+          : 'Zgloszenie jest juz w systemie PixelRing.',
+        'Aktualny publiczny status mozna otworzyc przyciskiem ponizej. Zdjecia, wideo lub dodatkowe szczegoly mozesz wyslac tutaj; zostana przy tym zgloszeniu.',
+      ].join('\n');
+    case 'ar':
+      return [
+        requestNumber
+          ? `الطلب ${requestNumber} موجود بالفعل في نظام PixelRing.`
+          : 'طلبك موجود بالفعل في نظام PixelRing.',
+        'يمكنك فتح الحالة العامة الحالية من الزر أدناه. إذا أردت إضافة صور أو فيديو أو تفاصيل، أرسلها هنا وسيتم ربطها بهذا الطلب.',
+      ].join('\n');
+    case 'de':
+    default:
+      return [
+        requestNumber
+          ? `Anfrage ${requestNumber} ist bereits im PixelRing System.`
+          : 'Ihre Anfrage ist bereits im PixelRing System.',
+        'Den aktuellen oeffentlichen Status koennen Sie ueber die Taste unten oeffnen. Fotos, Videos oder weitere Details koennen Sie hier senden; sie bleiben bei dieser Anfrage.',
+      ].join('\n');
+  }
+}
+
+function buildSeparateNewRequestOfferText(locale?: string | null): string {
+  switch (locale) {
+    case 'ru':
+      return 'Похоже, это отдельная новая проблема. Создать новую заявку из уже сохранённого контакта?';
+    case 'en':
+      return 'This sounds like a separate new issue. Create a new request from the saved contact?';
+    case 'tr':
+      return 'Bu ayri yeni bir sorun gibi gorunuyor. Kayitli iletisimle yeni talep olusturulsun mu?';
+    case 'pl':
+      return 'Wyglada to na oddzielny nowy problem. Utworzyc nowe zgloszenie z zapisanym kontaktem?';
+    case 'ar':
+      return 'يبدو أن هذه مشكلة جديدة منفصلة. هل تريد إنشاء طلب جديد باستخدام بيانات الاتصال المحفوظة؟';
+    case 'de':
+    default:
+      return 'Das klingt nach einem separaten neuen Problem. Soll eine neue Anfrage mit dem gespeicherten Kontakt erstellt werden?';
+  }
+}
+
 function isActiveRequestFormResetText(text: string): boolean {
   const normalized = text.trim().toLowerCase();
 
@@ -384,6 +448,27 @@ async function createTelegramIntakeButtonUrl(input: {
   });
 
   return intakeLink?.url ?? null;
+}
+
+async function createTelegramStatusButtonUrl(input: {
+  caseId: string;
+  publicRequestNumber: string | null;
+  locale: string | null;
+  now: Date;
+}): Promise<string | null> {
+  if (!input.publicRequestNumber) {
+    return null;
+  }
+
+  return createCaseStatusAccessLink(prisma, {
+    caseId: input.caseId,
+    publicRequestNumber: input.publicRequestNumber,
+    locale: input.locale,
+    now: input.now,
+  }).catch((error) => {
+    console.error('Telegram status link creation failed:', error);
+    return null;
+  });
 }
 
 function normalizeTelegramLocale(languageCode?: string | null): string {
@@ -705,6 +790,72 @@ function buildCallbackMetadata(query: NonNullable<TelegramUpdate['callback_query
   };
 }
 
+async function sendTelegramReturnCommandReply(input: {
+  meta: TelegramMessageMeta;
+  now: Date;
+}): Promise<void> {
+  const conversation = await prisma.externalConversation.findUnique({
+    where: {
+      channel_externalChatId: {
+        channel: CaseOriginChannel.TELEGRAM,
+        externalChatId: input.meta.chatId,
+      },
+    },
+    select: {
+      case: {
+        select: {
+          id: true,
+          locale: true,
+          status: true,
+          publicRequestNumber: true,
+        },
+      },
+    },
+  });
+  const activeRequest = conversation?.case && isCustomerVisibleActiveRequest({
+    publicRequestNumber: conversation.case.publicRequestNumber,
+    status: conversation.case.status,
+  });
+
+  if (activeRequest && conversation.case.publicRequestNumber) {
+    const locale = conversation.case.locale ?? input.meta.locale;
+    const statusUrl = await createCaseStatusAccessLink(prisma, {
+      caseId: conversation.case.id,
+      publicRequestNumber: conversation.case.publicRequestNumber,
+      locale,
+      now: input.now,
+    }).catch((error) => {
+      console.error('Telegram return status link creation failed:', error);
+      return null;
+    });
+
+    await sendTelegramMessage({
+      chatId: input.meta.chatId,
+      text: buildActiveRequestContinuationText({
+        locale,
+        publicRequestNumber: conversation.case.publicRequestNumber,
+      }),
+      replyMarkup: statusUrl
+        ? {
+            inline_keyboard: [[
+              {
+                text: getStatusButtonLabel(locale),
+                url: statusUrl,
+              },
+            ]],
+          }
+        : undefined,
+    });
+
+    return;
+  }
+
+  await sendTelegramMessage({
+    chatId: input.meta.chatId,
+    text: buildReturnCommandText(input.meta.locale),
+  });
+}
+
 export async function POST(request: NextRequest) {
   const secretHeader = request.headers.get(TELEGRAM_SECRET_HEADER);
 
@@ -828,9 +979,9 @@ export async function POST(request: NextRequest) {
   const meta = buildMessageMetadata(telegramMessage);
 
   if (isReturnCommand(telegramMessage)) {
-    await sendTelegramMessage({
-      chatId: meta.chatId,
-      text: buildReturnCommandText(meta.locale),
+    await sendTelegramReturnCommandReply({
+      meta,
+      now: new Date(),
     }).catch((error) => {
       console.error('Telegram return command reply failed:', error);
     });
@@ -873,6 +1024,8 @@ export async function POST(request: NextRequest) {
           externalUserId: true,
           case: {
             select: {
+              status: true,
+              publicRequestNumber: true,
               customerEmail: true,
               customerPhone: true,
               primaryContactMethod: true,
@@ -883,6 +1036,15 @@ export async function POST(request: NextRequest) {
                   phone: true,
                   emailNormalized: true,
                   phoneNormalized: true,
+                },
+              },
+              telegramIntakeLinks: {
+                orderBy: { createdAt: 'desc' },
+                take: 1,
+                select: {
+                  submittedAt: true,
+                  revokedAt: true,
+                  expiresAt: true,
                 },
               },
             },
@@ -925,6 +1087,8 @@ export async function POST(request: NextRequest) {
             externalUserId: true,
             case: {
               select: {
+                status: true,
+                publicRequestNumber: true,
                 customerEmail: true,
                 customerPhone: true,
                 primaryContactMethod: true,
@@ -935,6 +1099,15 @@ export async function POST(request: NextRequest) {
                     phone: true,
                     emailNormalized: true,
                     phoneNormalized: true,
+                  },
+                },
+                telegramIntakeLinks: {
+                  orderBy: { createdAt: 'desc' },
+                  take: 1,
+                  select: {
+                    submittedAt: true,
+                    revokedAt: true,
+                    expiresAt: true,
                   },
                 },
               },
@@ -972,13 +1145,14 @@ export async function POST(request: NextRequest) {
           id: true,
         },
       });
+      const shouldRefreshCaseSummary = !conversation.case.publicRequestNumber;
 
       const caseRecord = await tx.case.update({
         where: { id: conversation.caseId },
         data: {
           updatedAt: now,
-          summary: buildCaseSummary(body),
           locale: meta.locale,
+          ...(shouldRefreshCaseSummary ? { summary: buildCaseSummary(body) } : {}),
         },
         select: {
           id: true,
@@ -988,11 +1162,29 @@ export async function POST(request: NextRequest) {
           locale: true,
           status: true,
           publicRequestNumber: true,
+          telegramIntakeLinks: {
+            orderBy: { createdAt: 'desc' },
+            take: 1,
+            select: {
+              submittedAt: true,
+              revokedAt: true,
+              expiresAt: true,
+            },
+          },
         },
       });
-      const activeTelegramRequest = isActiveCustomerVisibleRequest({
+      const hasStoredTelegramContact = hasStoredContact(conversation.case);
+      const activeTelegramRequest = isCustomerVisibleActiveRequest({
         publicRequestNumber: caseRecord.publicRequestNumber,
         status: caseRecord.status,
+      });
+      const conversationState = resolveTelegramConversationState({
+        hasConversation: true,
+        publicRequestNumber: caseRecord.publicRequestNumber,
+        status: caseRecord.status,
+        hasStoredContact: hasStoredTelegramContact,
+        latestIntakeLink: caseRecord.telegramIntakeLinks[0] ?? null,
+        now,
       });
 
       return {
@@ -1007,7 +1199,8 @@ export async function POST(request: NextRequest) {
         externalConversationId: conversation.id,
         externalUserId: meta.externalUserId,
         createdNewConversation,
-        hasStoredTelegramContact: hasStoredContact(conversation.case),
+        hasStoredTelegramContact,
+        conversationState,
       };
     });
 
@@ -1037,10 +1230,15 @@ export async function POST(request: NextRequest) {
     }
 
     let assistantReplyText: string | null = null;
+    const turnDecision = classifyTelegramTurn({
+      state: result.conversationState,
+      text: body,
+      hasPhoto: Boolean(telegramPhoto),
+    });
     const shouldSendIntakeForm =
-      canRunAssistant &&
+      (turnDecision === 'request_intake_form' || turnDecision === 'intake_form_reminder') &&
       !result.hasStoredTelegramContact &&
-      shouldOfferTelegramIntakeForm(body);
+      (turnDecision === 'intake_form_reminder' || shouldOfferTelegramIntakeForm(body));
     const aiPauseExpired = isAutoResumableAiPause({
       aiEnabled: result.aiEnabled,
       aiPausedAt: result.aiPausedAt,
@@ -1060,6 +1258,66 @@ export async function POST(request: NextRequest) {
       }).catch((error) => {
         console.error('Telegram AI auto-resume failed:', error);
       });
+    }
+
+    if (!assistantReplyText && canAnswerWithAssistant) {
+      if (turnDecision === 'active_request_status' || turnDecision === 'active_request_continue') {
+        const statusUrl = await createTelegramStatusButtonUrl({
+          caseId: result.caseId,
+          publicRequestNumber: result.publicRequestNumber,
+          locale: result.locale,
+          now,
+        });
+        assistantReplyText = turnDecision === 'active_request_status'
+          ? buildActiveRequestStatusText({
+              locale: result.locale,
+              publicRequestNumber: result.publicRequestNumber,
+            })
+          : telegramPhoto
+            ? buildActiveRequestPhotoReceivedText(result.locale)
+            : buildActiveRequestContinuationText({
+                locale: result.locale,
+                publicRequestNumber: result.publicRequestNumber,
+              });
+
+        await sendTelegramMessage({
+          chatId: meta.chatId,
+          text: assistantReplyText,
+          replyMarkup: statusUrl
+            ? {
+                inline_keyboard: [[
+                  {
+                    text: getStatusButtonLabel(result.locale),
+                    url: statusUrl,
+                  },
+                ]],
+              }
+            : undefined,
+        }).catch((error) => {
+          console.error('Telegram controller active-request reply failed:', error);
+        });
+      } else if (turnDecision === 'separate_new_request') {
+        assistantReplyText = result.hasStoredTelegramContact
+          ? buildSeparateNewRequestOfferText(result.locale)
+          : buildKnownContactFallbackText(result.locale);
+
+        await sendTelegramMessage({
+          chatId: meta.chatId,
+          text: assistantReplyText,
+          replyMarkup: result.hasStoredTelegramContact
+            ? {
+                inline_keyboard: [[
+                  {
+                    text: getConfirmNewRequestButtonLabel(result.locale),
+                    callback_data: CONFIRM_NEW_REQUEST_CALLBACK,
+                  },
+                ]],
+              }
+            : undefined,
+        }).catch((error) => {
+          console.error('Telegram controller separate-request reply failed:', error);
+        });
+      }
     }
 
     if (!assistantReplyText && shouldSendIntakeForm) {
@@ -1100,10 +1358,10 @@ export async function POST(request: NextRequest) {
         latestMessageId: result.customerMessageId,
         latestCustomerMessage: buildTelegramAssistantMessage({
           body,
-          hasPhoto: Boolean(telegramPhoto),
-          activeTelegramRequest: result.activeTelegramRequest,
-        }),
-        publicRequestNumber: shouldAttachStatusAction(body)
+        hasPhoto: Boolean(telegramPhoto),
+        activeTelegramRequest: result.activeTelegramRequest,
+      }),
+        publicRequestNumber: result.activeTelegramRequest || shouldAttachStatusAction(body)
           ? result.publicRequestNumber
           : null,
         messengerKnownContact: result.hasStoredTelegramContact,
@@ -1152,14 +1410,11 @@ export async function POST(request: NextRequest) {
             })
           : null;
         const statusUrl = shouldShowStatusButton
-          ? await createCaseStatusAccessLink(prisma, {
+          ? await createTelegramStatusButtonUrl({
               caseId: result.caseId,
-              publicRequestNumber: result.publicRequestNumber!,
+              publicRequestNumber: result.publicRequestNumber,
               locale: result.locale,
               now,
-            }).catch((error) => {
-              console.error('Telegram status link creation failed:', error);
-              return null;
             })
           : null;
 

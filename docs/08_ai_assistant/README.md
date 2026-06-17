@@ -29,6 +29,24 @@ Planned improvement options:
 ## Progress Log
 
 ### 2026-06-17
+**Telegram Conversation Controller Refactor**
+- **Status**: Implemented.
+- **Done**:
+  - Added an explicit Telegram conversation controller with state resolution for new chat, intake pending, form link sent, active request, known contact without active request, and completed/cancelled request.
+  - Routed active PR status/follow-up turns before the LLM for phrases such as `Как дела с моей заявкой?`, `У меня нет заявки?`, `Что дальше?`, and short acknowledgements.
+  - Updated `/start return_...` handling so it reads the active Telegram case and returns PR-aware continuation copy with a status button instead of a generic return message.
+  - Kept ordinary active-request details available for AI wording, but always provides the active public PR to the assistant in active-request mode.
+  - Stopped overwriting the case summary with every Telegram message after a public PR has been issued.
+  - Added controller tests for real post-submit Telegram phrases and separate-new-request detection.
+- **In Progress**:
+  - Live Telegram QA after deployment.
+- **Next Action**:
+  - Retest the full Telegram flow with a real chat: new problem, form submit, PR confirmation, return, `Ok`, `Что дальше?`, `Как дела с моей заявкой?`, `У меня нет заявки?`, ordinary detail update, photo upload, and explicit separate new-problem request.
+- **Blockers/Risks**:
+  - This gives Telegram a proper controller layer for the current MVP. A future richer client/account model should still split Telegram identity from per-case routing more explicitly.
+- **Updated Documents**: `docs/08_ai_assistant/README.md`, `PROGRESS.md`
+
+### 2026-06-17
 **Telegram Active-Request Form Loop Guard**
 - **Status**: Implemented.
 - **Done**:

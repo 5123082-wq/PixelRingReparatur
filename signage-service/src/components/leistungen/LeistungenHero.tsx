@@ -72,6 +72,7 @@ export default function LeistungenHero({ slides, breadcrumbs = [] }: LeistungenH
               alt={slides[currentIndex].imageAlt || slides[currentIndex].title}
               fill
               priority
+              loading="eager"
               className="object-cover opacity-85"
               sizes="100vw"
             />
