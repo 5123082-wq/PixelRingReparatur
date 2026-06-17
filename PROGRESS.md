@@ -8,6 +8,10 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 
 Latest checkpoint:
 
+- Date: 2026-06-17
+- Current stage: Fixed Telegram unknown-contact AI intake handoff: when the assistant emits the intake action after natural consent, Telegram now creates the one-time secure intake link and attaches the real form button instead of sending only a text promise.
+- Next action: Deploy and retest the real Telegram flow from a fresh chat: `/start`, describe broken sign, agree to create the request, confirm the secure form button appears and submits back into the Telegram case.
+
 - Date: 2026-06-16
 - Current stage: Hardened AI assistant rules and Telegram active-request handling: the prompt now separates hard rules, reference knowledge, channel modes, and action markers; runtime guards cover prompt injection, PII, status intent, and active Telegram PR chats now continue the current request without reopening the secure form or duplicating the create-request button.
 - Next action: Deploy and retest representative website and Telegram conversations: greeting, small talk, new signage problem, natural intake consent, status question, manager callback, prompt-injection attempt, and Telegram post-PR photo/detail follow-up.

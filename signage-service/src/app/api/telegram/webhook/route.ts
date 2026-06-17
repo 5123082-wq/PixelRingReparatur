@@ -285,6 +285,31 @@ function shouldOfferTelegramIntakeForm(body: string): boolean {
   return normalized === '/request' || normalized.startsWith('/request@');
 }
 
+async function createTelegramIntakeButtonUrl(input: {
+  caseId: string;
+  externalConversationId: string;
+  telegramChatId: string;
+  telegramUserId: string | null;
+  locale: string | null;
+  origin: string;
+  now: Date;
+}): Promise<string | null> {
+  const intakeLink = await createTelegramIntakeLink(prisma, {
+    caseId: input.caseId,
+    externalConversationId: input.externalConversationId,
+    telegramChatId: input.telegramChatId,
+    telegramUserId: input.telegramUserId,
+    locale: input.locale,
+    origin: input.origin,
+    now: input.now,
+  }).catch((error) => {
+    console.error('Telegram intake link creation failed:', error);
+    return null;
+  });
+
+  return intakeLink?.url ?? null;
+}
+
 function normalizeTelegramLocale(languageCode?: string | null): string {
   const normalized = languageCode?.trim().toLowerCase().split(/[-_]/)[0] ?? '';
 
@@ -962,7 +987,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!assistantReplyText && shouldSendIntakeForm) {
-      const intakeLink = await createTelegramIntakeLink(prisma, {
+      const intakeUrl = await createTelegramIntakeButtonUrl({
         caseId: result.caseId,
         externalConversationId: result.externalConversationId,
         telegramChatId: meta.chatId,
@@ -970,12 +995,9 @@ export async function POST(request: NextRequest) {
         locale: result.locale,
         origin: request.nextUrl.origin,
         now,
-      }).catch((error) => {
-        console.error('Telegram intake link creation failed:', error);
-        return null;
       });
 
-      if (intakeLink) {
+      if (intakeUrl) {
         assistantReplyText = buildIntakeOfferText(result.locale);
         await sendTelegramMessage({
           chatId: meta.chatId,
@@ -984,7 +1006,7 @@ export async function POST(request: NextRequest) {
             inline_keyboard: [[
               {
                 text: getIntakeButtonLabel(result.locale),
-                url: intakeLink.url,
+                url: intakeUrl,
               },
             ]],
           },
@@ -1018,16 +1040,32 @@ export async function POST(request: NextRequest) {
 
       if (assistantReply?.text) {
         assistantReplyText = assistantReply.text;
-        const shouldShowCreateRequestButton =
+        const shouldShowIntakeAction =
           !result.activeTelegramRequest &&
-          result.hasStoredTelegramContact &&
           assistantReply.actions.some((action) => action.type === 'show_intake');
+        const shouldShowCreateRequestButton =
+          result.hasStoredTelegramContact &&
+          shouldShowIntakeAction;
+        const shouldShowIntakeFormButton =
+          !result.hasStoredTelegramContact &&
+          shouldShowIntakeAction;
         const shouldShowAssistantStatusButton =
           assistantReply.actions.some((action) => action.type === 'show_status');
         const shouldShowStatusButton =
-          !shouldShowCreateRequestButton &&
+          !shouldShowIntakeAction &&
           Boolean(result.publicRequestNumber) &&
           (shouldShowAssistantStatusButton || shouldAttachStatusAction(body));
+        const intakeUrl = shouldShowIntakeFormButton
+          ? await createTelegramIntakeButtonUrl({
+              caseId: result.caseId,
+              externalConversationId: result.externalConversationId,
+              telegramChatId: meta.chatId,
+              telegramUserId: result.externalUserId,
+              locale: result.locale,
+              origin: request.nextUrl.origin,
+              now,
+            })
+          : null;
         const statusUrl = shouldShowStatusButton
           ? await createCaseStatusAccessLink(prisma, {
               caseId: result.caseId,
@@ -1052,6 +1090,15 @@ export async function POST(request: NextRequest) {
                   },
                 ]],
               }
+            : intakeUrl
+              ? {
+                  inline_keyboard: [[
+                    {
+                      text: getIntakeButtonLabel(result.locale),
+                      url: intakeUrl,
+                    },
+                  ]],
+                }
             : statusUrl
               ? {
                   inline_keyboard: [[

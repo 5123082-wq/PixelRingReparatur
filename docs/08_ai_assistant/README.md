@@ -28,6 +28,21 @@ Planned improvement options:
 
 ## Progress Log
 
+### 2026-06-17
+**Telegram Unknown-Contact Intake Button Fix**
+- **Status**: Implemented.
+- **Done**:
+  - Fixed Telegram AI intake handoff for unknown contacts: when the assistant action is `show_intake`, the webhook now creates a one-time secure intake link and attaches a real Telegram inline form button.
+  - Kept known-contact behavior separate: saved Telegram contacts still receive the confirmation callback button that creates a new PR from stored verified contact data.
+  - Added a regression test so unknown Telegram contacts cannot regress to a text-only "opening the form" promise after natural consent.
+- **In Progress**:
+  - Live Telegram QA after deployment.
+- **Next Action**:
+  - Test a fresh Telegram chat: describe a broken sign, agree to create the request, verify the secure form button appears, submit the form, and confirm the CRM case receives the PR/status handoff.
+- **Blockers/Risks**:
+  - Button delivery still depends on Telegram API success and correct bot/site environment variables in deployment.
+- **Updated Documents**: `docs/08_ai_assistant/README.md`, `PROGRESS.md`
+
 ### 2026-06-16
 **Assistant Rule Hardening And Runtime Guardrails**
 - **Status**: Implemented.

@@ -105,6 +105,22 @@ test('known telegram contacts are routed to request confirmation before fallback
   assert.equal(source.includes('/заявк/i'), false);
 });
 
+test('unknown telegram contacts receive secure form button from assistant intake action', () => {
+  const source = readFileSync(
+    resolve(__dirname, '../src/app/api/telegram/webhook/route.ts'),
+    'utf8'
+  );
+
+  assert.ok(source.includes('function createTelegramIntakeButtonUrl'));
+  assert.ok(source.includes('const shouldShowIntakeAction ='));
+  assert.ok(source.includes('const shouldShowIntakeFormButton ='));
+  assert.ok(source.includes('!result.hasStoredTelegramContact &&'));
+  assert.ok(source.includes('const intakeUrl = shouldShowIntakeFormButton'));
+  assert.ok(source.includes('text: getIntakeButtonLabel(result.locale)'));
+  assert.ok(source.includes('url: intakeUrl'));
+  assert.ok(source.includes('!shouldShowIntakeAction &&'));
+});
+
 test('telegram assistant receives known-contact state without direct contact values', () => {
   const source = readFileSync(
     resolve(__dirname, '../src/app/api/telegram/webhook/route.ts'),
