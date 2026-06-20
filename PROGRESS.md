@@ -8,6 +8,10 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 
 Latest checkpoint:
 
+- Date: 2026-06-20
+- Current stage: Restored approved German CMS legal source text for `privacy/de` and `impressum/de` from CMS revisions after the May baseline seed overwrite; legal routes now render dynamically from CMS, reject placeholder/stale legal CMS text, and the CMS baseline seed skips legal pages so it cannot overwrite them again.
+- Next action: Deploy/push the fix to `main`, then verify `/ru/privacy`, `/ru/impressum`, `/de/privacy`, and `/de/impressum` no longer show seed placeholders.
+
 - Date: 2026-06-18
 - Current stage: Added compact external-entry navigation and localized portal UI copy for DE/EN/RU/TR/PL/AR on active/expired portal claim pages, legacy claim/login verify fallbacks, unauthenticated portal/access-required/demo gates, request detail/chat UI, Telegram request form, and Telegram return page without changing token, verification, or claim-link behavior.
 - Next action: Owner visually reviews `/ar/portal`, `/ar/portal/claim?token=expired`, `/ar/portal/claim/verify`, `/ar/portal/requests/PR-DEMO-4821` with demo access, and `/ru/telegram/request?t=expired` on desktop/mobile, then continues the activation-link and Telegram QA after deployment.

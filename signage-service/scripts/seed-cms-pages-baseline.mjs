@@ -39,6 +39,7 @@ const GLOBAL_SOCIAL_LINKS = [
 ];
 const SUPPORT_TECHNICIAN_PHONE = 'tel:+491234567890';
 const REVISION_REASON = 'Baseline page backfill from existing public content';
+const LEGAL_PAGE_KEYS = new Set(['impressum', 'privacy']);
 
 function deepClone(value) {
   return value === undefined ? undefined : JSON.parse(JSON.stringify(value));
@@ -654,6 +655,10 @@ async function insertRevision(client, row, sourceAction) {
 
 async function upsertBaselinePage(client, page) {
   const existing = await fetchExistingPage(client, page.pageKey, page.locale);
+
+  if (LEGAL_PAGE_KEYS.has(page.pageKey)) {
+    return { action: 'skipped', row: existing };
+  }
 
   if (!existing) {
     const created = await client.query(

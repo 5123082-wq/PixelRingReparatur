@@ -92,7 +92,17 @@ Wir behalten uns vor, diese Datenschutzerklärung zu aktualisieren, wenn technis
   },
 };
 
+function containsLegalPlaceholderContent(value: string): boolean {
+  return /\[[^\]]+\]|\bStrasse und Hausnummer\b|\bStraße und Hausnummer\b|\bPLZ Ort\b|\bRegistergericht\b|\bRegisternummer\b|\bUSt-IdNr\.?\b|\bTelefonnummer\b|\bMusterstra(?:ss|ß)e\b|Hier den Inhalt für (?:privacy|impressum) einfügen/i.test(
+    value
+  );
+}
+
 export function containsStaleLegalContent(pageKey: LegalPageKey, value: string): boolean {
+  if (containsLegalPlaceholderContent(value)) {
+    return true;
+  }
+
   if (pageKey === 'privacy') {
     return /\bTMG\b/i.test(value);
   }

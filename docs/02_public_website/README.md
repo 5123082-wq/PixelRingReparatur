@@ -19,6 +19,21 @@ Planned base documents:
 
 ## Progress Log
 
+* **Date:** 2026-06-20
+* **Current sprint/block:** Legal CMS Restoration
+* **Done:**
+  - Restored the approved German `privacy/de` CMS text from revision `a86d4fe0-2eef-40a0-b0d2-0dfdd15d159b`.
+  - Restored the approved German `impressum/de` CMS text from revision `e4165d3d-9299-47d8-b399-781b15707f39`.
+  - Added new `RESTORE` revisions for both legal pages after the 2026-05-25 baseline seed overwrite.
+  - Made `/[locale]/privacy` and `/[locale]/impressum` render dynamically so they read the current German legal CMS source instead of stale build output.
+  - Extended legal stale-content validation to reject placeholder seed text and changed the CMS baseline seed to skip legal pages.
+* **In progress:** Push/deploy and external verification of public legal pages.
+* **Next action:** Verify `/ru/privacy`, `/ru/impressum`, `/de/privacy`, and `/de/impressum` after deployment.
+* **Blockers/risks:** Legal text still needs owner/legal review whenever business identity, processors, tracking, messenger usage, uploads, or analytics change.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/02_public_website/README.md`
+
 * **Date:** 2026-06-14
 * **Current sprint/block:** Home Work Carousel Card Order
 * **Done:**
