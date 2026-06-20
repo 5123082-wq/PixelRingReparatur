@@ -21,9 +21,11 @@ import PortalRequestDetail, { PortalRequestNotFound, type PortalRequestDetailPre
 
 export default async function PortalRequestDetailRoute({
   publicRequestNumber,
+  locale,
   presentation = 'page',
 }: {
   publicRequestNumber: string;
+  locale?: string | null;
   presentation?: PortalRequestDetailPresentation;
 }) {
   const cookieStore = await cookies();
@@ -61,7 +63,7 @@ export default async function PortalRequestDetailRoute({
   }
 
   if (!hasDemoAccess) {
-    return <PortalAccessRequired />;
+    return <PortalAccessRequired locale={locale} />;
   }
 
   const detail = getPortalDemoRequestDetail(publicRequestNumber);

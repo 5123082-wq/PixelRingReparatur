@@ -329,6 +329,7 @@
     "success_message": "Devam etmek için bu numarayla Status'u kullanın.",
     "open_status": "Status'u aç",
     "error_invalid_contact": "Talebi oluşturmak ve müşteri portalı erişimini hazırlamak için geçerli bir e-posta adresi girin. Telefon isteğe bağlıdır.",
+    "error_required_message": "Ne oldugunu kisaca aciklayin.",
     "error_generic": "Talep şu anda gönderilemedi. Lütfen tekrar deneyin."
   },
   "StatusPage": {

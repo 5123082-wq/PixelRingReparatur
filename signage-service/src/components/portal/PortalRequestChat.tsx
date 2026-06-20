@@ -5,9 +5,10 @@ import { Link, useRouter } from '@/i18n/routing';
 import { useLocale } from 'next-intl';
 import Logo from '@/components/common/Logo';
 import type { PortalDemoOrganization, PortalRequest } from '@/lib/portal/types';
+import { getPortalRequestDetailCopy, type PortalChatAuthorRole, type PortalRequestDetailCopy } from './portal-request-detail-copy';
 
 type PortalRequestDetailPresentation = 'page' | 'modal';
-type ChatAuthorRole = 'CUSTOMER' | 'SYSTEM' | 'OPERATOR';
+type ChatAuthorRole = PortalChatAuthorRole;
 
 type PortalChatMessage = {
   id: string;
@@ -23,26 +24,14 @@ type AttachmentPreview = {
   previewUrl: string | null;
 };
 
-function formatTimestamp(value: string): string {
+function formatTimestamp(value: string, locale: string): string {
   const date = new Date(value);
 
   if (!Number.isNaN(date.getTime())) {
-    return new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit' }).format(date);
+    return new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit' }).format(date);
   }
 
   return value.match(/\b\d{1,2}:\d{2}\b/)?.[0] ?? value;
-}
-
-function getRoleLabel(role: ChatAuthorRole, locale: string): string {
-  if (locale === 'ru') {
-    if (role === 'CUSTOMER') return 'Вы';
-    if (role === 'OPERATOR') return 'PixelRing';
-    return 'Ассистент';
-  }
-
-  if (role === 'CUSTOMER') return 'Sie';
-  if (role === 'OPERATOR') return 'PixelRing';
-  return 'Assistent';
 }
 
 function getRolePalette(role: ChatAuthorRole) {
@@ -107,8 +96,10 @@ function mapInitialMessages(messages: PortalDemoOrganization['messages']): Porta
 
 function ChatAttachmentList({
   attachments,
+  copy,
 }: {
   attachments: NonNullable<PortalChatMessage['attachments']>;
+  copy: PortalRequestDetailCopy;
 }) {
   return (
     <div className="mt-3 flex flex-wrap gap-2">
@@ -118,7 +109,7 @@ function ChatAttachmentList({
             {/* eslint-disable-next-line @next/next/no-img-element -- Local object URLs are only used for immediate unsaved previews. */}
             <img
               src={att.storageKey}
-              alt={att.originalFilename || 'Attachment'}
+              alt={att.originalFilename || copy.chat.attachmentFallback}
               className="h-full w-full object-cover"
             />
           </div>
@@ -130,9 +121,9 @@ function ChatAttachmentList({
               </svg>
             </div>
             <div className="min-w-0">
-              <p className="truncate text-[12px] font-black">{att.originalFilename || 'Attachment'}</p>
+              <p className="truncate text-[12px] font-black">{att.originalFilename || copy.chat.attachmentFallback}</p>
               <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#72665D]">
-                Datei empfangen
+                {copy.chat.attachmentReceived}
               </p>
             </div>
           </div>
@@ -206,6 +197,7 @@ export default function PortalRequestChat({
   presentation?: PortalRequestDetailPresentation;
 }) {
   const locale = useLocale();
+  const copy = getPortalRequestDetailCopy(locale);
   const router = useRouter();
   const [chatMessages, setChatMessages] = useState<PortalChatMessage[]>(() => mapInitialMessages(messages));
   const [inputText, setInputText] = useState('');
@@ -274,7 +266,7 @@ export default function PortalRequestChat({
     if ((!messageToSubmit && pendingFiles.length === 0) || isSending || !canPostMessages) return;
 
     const currentFiles = [...pendingFiles];
-    const messageText = messageToSubmit || 'Foto';
+    const messageText = messageToSubmit || copy.chat.photoFallback;
     const optimistic: PortalChatMessage = {
       id: `temp-${Date.now()}`,
       authorRole: 'CUSTOMER',
@@ -323,7 +315,7 @@ export default function PortalRequestChat({
       } | null;
 
       if (!response.ok || !data?.success) {
-        throw new Error(typeof data?.message === 'string' ? data.message : 'Chat ist derzeit nicht verfügbar.');
+        throw new Error(copy.chat.unavailable);
       }
 
       const assistantMessage = data.assistantMessage;
@@ -353,7 +345,7 @@ export default function PortalRequestChat({
       setChatMessages((current) => current.filter((message) => message.id !== optimistic.id));
       setInputText(messageToSubmit);
       setPendingFiles(currentFiles);
-      setErrorMessage(error instanceof Error ? error.message : 'Chat ist derzeit nicht verfügbar.');
+      setErrorMessage(error instanceof Error ? error.message : copy.chat.unavailable);
     } finally {
       setIsSending(false);
     }
@@ -368,10 +360,10 @@ export default function PortalRequestChat({
           <Logo className="origin-left scale-75 shrink-0" />
           <div className="hidden h-6 w-px shrink-0 bg-black/10 sm:block" />
           <div className="min-w-0">
-            <h3 className="truncate text-[15px] font-black text-[#0E1A2B]">Technischer Support</h3>
+            <h3 className="truncate text-[15px] font-black text-[#0E1A2B]">{copy.chat.supportTitle}</h3>
             <div className="flex items-center gap-1.5">
               <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-green-500" />
-              <span className="text-[9px] font-bold uppercase tracking-wider text-[#72665D]">Online</span>
+              <span className="text-[9px] font-bold uppercase tracking-wider text-[#72665D]">{copy.chat.online}</span>
             </div>
           </div>
         </div>
@@ -383,7 +375,7 @@ export default function PortalRequestChat({
             href="/portal#new-request"
             className="inline-flex h-9 shrink-0 items-center justify-center rounded-[14px] bg-[#B8643E] px-3 text-[12px] font-black text-white transition hover:bg-[#A65835]"
           >
-            Neue Anfrage
+            {copy.chat.newRequest}
           </Link>
         )}
       </div>
@@ -391,7 +383,7 @@ export default function PortalRequestChat({
       <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto overscroll-contain p-4 sm:p-5">
         {chatMessages.length === 0 && (
           <div className="rounded-[20px] border border-dashed border-black/10 bg-white/45 px-4 py-4 text-[13px] text-[#72665D]">
-            Beschreiben Sie Ihr Anliegen oder senden Sie ein Foto.
+            {copy.chat.empty}
           </div>
         )}
 
@@ -402,16 +394,16 @@ export default function PortalRequestChat({
             <div key={message.id}>
               <div className={`flex flex-col ${palette.container} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
                 <span className={`mb-1 text-[10px] font-bold uppercase tracking-[0.18em] ${palette.label}`}>
-                  {getRoleLabel(message.authorRole, locale)}
+                  {copy.chat.authors[message.authorRole]}
                 </span>
                 <div className={`max-w-[80%] rounded-[24px] px-5 py-3 text-[14px] shadow-sm whitespace-pre-wrap ${palette.bubble}`}>
                   {renderMessageBody(message.body)}
                   {message.attachments && message.attachments.length > 0 && (
-                    <ChatAttachmentList attachments={message.attachments} />
+                    <ChatAttachmentList attachments={message.attachments} copy={copy} />
                   )}
                 </div>
                 <span className={`mx-2 mt-1.5 text-[9px] font-bold uppercase tracking-widest ${palette.meta}`}>
-                  {formatTimestamp(message.createdAt)}
+                  {formatTimestamp(message.createdAt, locale)}
                 </span>
               </div>
             </div>
@@ -421,7 +413,7 @@ export default function PortalRequestChat({
         {isSending && (
           <div className="flex flex-col items-start animate-in fade-in duration-300">
             <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-[#72665D]">
-              Laden …
+              {copy.chat.loading}
             </div>
             <div className="flex gap-1 rounded-[20px] rounded-tl-[4px] border border-black/5 bg-white/40 px-4 py-3">
               <div className="h-1 w-1 animate-bounce rounded-full bg-[#B8643E] [animation-delay:-0.3s]" />
@@ -470,7 +462,7 @@ export default function PortalRequestChat({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[16px] text-[#72665D] transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-30"
-            title="Foto/Video anhängen"
+            title={copy.chat.attachTitle}
             disabled={!canPostMessages || isSending}
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -491,7 +483,7 @@ export default function PortalRequestChat({
 
           <button
             type="button"
-            title="Sprachnachricht (demnächst)"
+            title={copy.chat.voiceTitle}
             className="hidden h-9 w-9 shrink-0 cursor-not-allowed items-center justify-center rounded-[16px] text-[#72665D]/40 sm:flex"
             disabled
           >
@@ -511,7 +503,7 @@ export default function PortalRequestChat({
                 void handleSend();
               }
             }}
-            placeholder="Ihre Nachricht …"
+            placeholder={copy.chat.placeholder}
             className="max-h-24 min-w-0 flex-1 resize-none border-none bg-transparent py-2 text-[16px] text-[#0E1A2B] placeholder-[#72665D]/40 focus:ring-0"
             disabled={!canPostMessages || isSending}
           />

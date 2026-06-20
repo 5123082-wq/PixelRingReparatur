@@ -329,6 +329,7 @@
     "success_message": "Użyj Status z tym numerem, aby kontynuować.",
     "open_status": "Otwórz Status",
     "error_invalid_contact": "Podaj poprawny adres e-mail, aby utworzyć zgłoszenie i przygotować dostęp do portalu klienta. Telefon jest opcjonalny.",
+    "error_required_message": "Krotko opisz, co sie stalo.",
     "error_generic": "Nie udało się wysłać zgłoszenia. Spróbuj ponownie."
   },
   "StatusPage": {

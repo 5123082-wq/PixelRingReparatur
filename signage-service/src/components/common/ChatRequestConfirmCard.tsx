@@ -6,6 +6,8 @@ import type { IntakePrefill } from './ChatIntakeCard';
 import LocationPicker, { type SelectedLocation } from './LocationPicker';
 import { trackGoogleAdsLeadConversion } from '@/lib/google-ads';
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 type Props = {
   prefill?: IntakePrefill;
   onSuccess?: (requestNumber: string) => void;
@@ -35,6 +37,7 @@ function getConfirmCopy(locale: string) {
       emailPlaceholder: 'name@example.com',
       phonePlaceholder: '+49 ...',
       missingEmail: 'Please enter an email address to create the request. Phone is optional for operational contact.',
+      invalidEmail: 'Please enter a valid email address. Phone is optional for operational contact.',
       namePlaceholder: 'Your name (optional)',
       locationPlaceholder: 'Address / location (optional)',
       helper: 'The PR number is created with email as the secure return channel. Phone is only a secondary operational contact.',
@@ -71,6 +74,7 @@ function getConfirmCopy(locale: string) {
       emailPlaceholder: 'name@example.com',
       phonePlaceholder: '+49 ...',
       missingEmail: 'Укажите email, чтобы создать заявку. Телефон можно оставить дополнительно для связи по работе.',
+      invalidEmail: 'Укажите корректный email. Телефон можно оставить дополнительно для связи по работе.',
       namePlaceholder: 'Ваше имя (необязательно)',
       locationPlaceholder: 'Адрес / место (необязательно)',
       helper: 'PR-номер создается с email как безопасным каналом возврата. Телефон остается только дополнительным рабочим контактом.',
@@ -107,6 +111,7 @@ function getConfirmCopy(locale: string) {
       emailPlaceholder: 'name@example.com',
       phonePlaceholder: '+49 ...',
       missingEmail: 'Talebi olusturmak icin e-posta girin. Telefon operasyonel iletisim icin istege baglidir.',
+      invalidEmail: 'Gecerli bir e-posta girin. Telefon operasyonel iletisim icin istege baglidir.',
       namePlaceholder: 'Adiniz (istege bagli)',
       locationPlaceholder: 'Adres / konum (istege bagli)',
       helper: 'PR numarasi guvenli donus kanali olarak e-posta ile olusturulur. Telefon yalnizca ikincil operasyonel iletisimdir.',
@@ -143,6 +148,7 @@ function getConfirmCopy(locale: string) {
       emailPlaceholder: 'name@example.com',
       phonePlaceholder: '+49 ...',
       missingEmail: 'Podaj e-mail, aby utworzyc zgloszenie. Telefon jest opcjonalny do kontaktu operacyjnego.',
+      invalidEmail: 'Podaj poprawny e-mail. Telefon jest opcjonalny do kontaktu operacyjnego.',
       namePlaceholder: 'Imie (opcjonalnie)',
       locationPlaceholder: 'Adres / lokalizacja (opcjonalnie)',
       helper: 'Numer PR jest tworzony z e-mailem jako bezpiecznym kanalem powrotu. Telefon jest tylko dodatkowym kontaktem operacyjnym.',
@@ -179,6 +185,7 @@ function getConfirmCopy(locale: string) {
       emailPlaceholder: 'name@example.com',
       phonePlaceholder: '+49 ...',
       missingEmail: 'يرجى إدخال بريد إلكتروني لإنشاء الطلب. الهاتف اختياري للتواصل التشغيلي.',
+      invalidEmail: 'يرجى إدخال بريد إلكتروني صالح. الهاتف اختياري للتواصل التشغيلي.',
       namePlaceholder: 'اسمك (اختياري)',
       locationPlaceholder: 'العنوان / الموقع (اختياري)',
       helper: 'يتم إنشاء رقم PR باستخدام البريد الإلكتروني كقناة عودة آمنة. الهاتف جهة اتصال تشغيلية إضافية فقط.',
@@ -214,6 +221,7 @@ function getConfirmCopy(locale: string) {
     emailPlaceholder: 'name@example.com',
     phonePlaceholder: '+49 ...',
     missingEmail: 'Bitte geben Sie eine E-Mail-Adresse an, um die Anfrage zu erstellen. Telefon ist nur ein optionaler Kontakt fuer Rueckfragen.',
+    invalidEmail: 'Bitte geben Sie eine gueltige E-Mail-Adresse an. Telefon ist nur ein optionaler Kontakt fuer Rueckfragen.',
     namePlaceholder: 'Ihr Name (optional)',
     locationPlaceholder: 'Adresse / Standort (optional)',
     helper: 'Die PR-Nummer wird mit E-Mail als sicherem Rueckkanal erstellt. Telefon bleibt nur ein zweiter operativer Kontakt.',
@@ -305,6 +313,11 @@ export default function ChatRequestConfirmCard({
       return;
     }
 
+    if (!EMAIL_REGEX.test(cleanEmail)) {
+      setError(copy.invalidEmail);
+      return;
+    }
+
     setSubmitting(true);
     setError('');
 
@@ -330,10 +343,18 @@ export default function ChatRequestConfirmCard({
       fd.append('isFromChat', 'true');
 
       const res = await fetch('/api/contact', { method: 'POST', body: fd });
-      const data = await res.json() as { publicRequestNumber?: string; portalClaimUrl?: string; error?: string };
+      const data = await res.json() as { publicRequestNumber?: string; portalClaimUrl?: string; error?: string; code?: string };
 
       if (!res.ok || !data.publicRequestNumber) {
-        throw new Error(data.error ?? copy.sendError);
+        if (data.code === 'verification_required' && data.error) {
+          throw new Error(data.error);
+        }
+
+        if (res.status === 400) {
+          throw new Error(copy.invalidEmail);
+        }
+
+        throw new Error(copy.sendError);
       }
 
       setRequestNumber(data.publicRequestNumber);
@@ -416,7 +437,7 @@ export default function ChatRequestConfirmCard({
           </label>
           <input
             type="email"
-            required
+            aria-required="true"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             onBlur={() => void saveDraft()}

@@ -16,6 +16,7 @@ import type {
 import PortalRequestChat from './PortalRequestChat';
 import PortalRequestDetailsEditor from './PortalRequestDetailsEditor';
 import PortalRequestModalShell from './PortalRequestModalShell';
+import { getPortalRequestDetailCopy, type PortalRequestDetailCopy } from './portal-request-detail-copy';
 
 export type PortalRequestDetailPresentation = 'page' | 'modal';
 
@@ -38,79 +39,6 @@ const documentTone = {
   planned: 'bg-amber-50 text-amber-800',
   locked: 'bg-slate-50 text-slate-700',
 };
-
-const detailCopy = {
-  de: {
-    back: 'Zurueck zum Portal',
-    task: 'Anfrage',
-    details: 'Details',
-    description: 'Urspruengliche Beschreibung',
-    address: 'Adresse / Objekt',
-    requestContactPerson: 'Kontaktperson zur Anfrage',
-    requestContactDetails: 'Kontaktdaten zur Anfrage',
-    portalAccountOwner: 'Portal-Konto / Inhaber',
-    pixelringResponsible: 'PixelRing Ansprechpartner',
-    created: 'Erstellt',
-    updated: 'Aktualisiert',
-    result: 'Ergebnis der Arbeiten',
-    noResult: 'Noch kein Ergebnis freigegeben. PixelRing ergaenzt diesen Bereich nach Abschluss oder Zwischenstand.',
-    files: 'Ihre Fotos und Dateien',
-    noFiles: 'Noch keine Fotos oder Dateien fuer diese Anfrage.',
-    nextStep: 'Naechster Schritt',
-    photoReport: 'Fotobericht PixelRing',
-    customerData: 'Ihre Angaben',
-    timeline: 'Statusverlauf',
-    notSpecified: 'Noch nicht angegeben',
-    serviceTeam: 'PixelRing Service-Team',
-    close: 'Zum Portal',
-    edit: 'Bearbeiten',
-    cancel: 'Abbrechen',
-    save: 'Speichern',
-    saving: 'Speichert ...',
-    saved: 'Daten wurden gespeichert.',
-    unchanged: 'Keine Aenderung erkannt.',
-    name: 'Kontaktperson',
-    email: 'E-Mail',
-    phone: 'Telefon',
-  },
-  ru: {
-    back: 'Назад в кабинет',
-    task: 'Заявка',
-    details: 'Данные заявки',
-    description: 'Первоначальное описание',
-    address: 'Адрес / объект',
-    requestContactPerson: 'Контакт по заявке',
-    requestContactDetails: 'Контакты по заявке',
-    portalAccountOwner: 'Владелец портала / аккаунт',
-    pixelringResponsible: 'Ответственный PixelRing',
-    created: 'Создана',
-    updated: 'Обновлена',
-    result: 'Результат работ',
-    noResult: 'Результат пока не добавлен. PixelRing заполнит этот блок после выполнения работ или промежуточного отчета.',
-    files: 'Ваши фото и файлы',
-    noFiles: 'По этой заявке пока нет фото или файлов.',
-    nextStep: 'Следующий шаг',
-    photoReport: 'Фотоотчет PixelRing',
-    customerData: 'Ваши данные',
-    timeline: 'История статусов',
-    notSpecified: 'Пока не указано',
-    serviceTeam: 'PixelRing Service-Team',
-    close: 'В портал',
-    edit: 'Редактировать',
-    cancel: 'Отмена',
-    save: 'Сохранить',
-    saving: 'Сохранение ...',
-    saved: 'Данные сохранены.',
-    unchanged: 'Изменений нет.',
-    name: 'Контактное лицо',
-    email: 'E-Mail',
-    phone: 'Телефон',
-  },
-};
-
-function copyForLocale(locale: string) {
-  return locale === 'ru' ? detailCopy.ru : detailCopy.de;
-}
 
 function nonEmpty(value: string | null | undefined): string | null {
   return value?.trim() || null;
@@ -139,13 +67,13 @@ function joinValues(values: Array<string | null | undefined>, fallback: string):
   return clean.length > 0 ? clean.join(' · ') : fallback;
 }
 
-function safeRequestTitle(title: string, publicRequestNumber: string): string {
+function safeRequestTitle(title: string, publicRequestNumber: string, fallbackLabel: string): string {
   const cleanTitle = title.trim();
   const lower = cleanTitle.toLowerCase();
   const unsafeMarkers = ['[silent]', 'please communicate', 'ignore previous', 'system prompt', 'developer message'];
 
   if (!cleanTitle || unsafeMarkers.some((marker) => lower.includes(marker))) {
-    return `Anfrage ${publicRequestNumber}`;
+    return `${fallbackLabel} ${publicRequestNumber}`;
   }
 
   return cleanTitle.length > 110 ? `${cleanTitle.slice(0, 107)}...` : cleanTitle;
@@ -163,7 +91,7 @@ async function RequestWorkspaceFrame({
   children: ReactNode;
 }) {
   const locale = await getLocale();
-  const copy = copyForLocale(locale);
+  const copy = getPortalRequestDetailCopy(locale);
   const isModal = presentation === 'modal';
 
   const frame = (
@@ -226,9 +154,11 @@ export async function PortalRequestNotFound({
   presentation?: PortalRequestDetailPresentation;
 }) {
   const t = await getTranslations('Portal');
+  const locale = await getLocale();
+  const copy = getPortalRequestDetailCopy(locale);
 
   return (
-    <RequestWorkspaceFrame title={t('detail.unknownTitle')} subtitle="Kundenportal" presentation={presentation}>
+    <RequestWorkspaceFrame title={t('detail.unknownTitle')} subtitle={copy.portalSubtitle} presentation={presentation}>
       <div className="grid flex-1 place-items-center bg-[#F5F7FA] p-6">
         <section className="w-full max-w-2xl rounded-[22px] border border-[#E5EAF0] bg-white p-6 shadow-sm">
           <p className="text-[14px] leading-7 text-[#667085]">{t('detail.unknownSafeCopy')}</p>
@@ -270,7 +200,7 @@ export default async function PortalRequestDetail({
 }) {
   const t = await getTranslations('Portal');
   const locale = await getLocale();
-  const copy = copyForLocale(locale);
+  const copy = getPortalRequestDetailCopy(locale);
   const statusLabel = t(`requestStatus.${request.status}`);
   const address = nonEmpty(request.serviceLocation) || nonEmpty(object.address) || copy.notSpecified;
   const addressHref = address !== copy.notSpecified
@@ -282,7 +212,7 @@ export default async function PortalRequestDetail({
     : null;
   const requestContactPerson = nonEmpty(request.customerName) || copy.notSpecified;
   const requestContactDetails = joinValues([request.contactPhone, request.contactEmail], copy.notSpecified);
-  const safeTitle = safeRequestTitle(request.title, request.publicRequestNumber);
+  const safeTitle = safeRequestTitle(request.title, request.publicRequestNumber, copy.requestFallback);
   const publishedReports = documents.filter((document) => document.type === 'REPORT' && document.status === 'available');
   const otherDocuments = documents.filter((document) => document.type !== 'REPORT');
 
@@ -350,6 +280,7 @@ export default async function PortalRequestDetail({
                     saving: copy.saving,
                     saved: copy.saved,
                     unchanged: copy.unchanged,
+                    saveError: copy.saveError,
                     name: copy.name,
                     email: copy.email,
                     phone: copy.phone,
@@ -374,7 +305,7 @@ export default async function PortalRequestDetail({
               {publishedReports.length > 0 ? (
                 <div className="mt-4 grid gap-3">
                   {publishedReports.map((document) => (
-                    <DocumentRow key={document.id} document={document} />
+                    <DocumentRow key={document.id} document={document} copy={copy} />
                   ))}
                 </div>
               ) : (
@@ -392,10 +323,10 @@ export default async function PortalRequestDetail({
               {customerAttachments.length > 0 || otherDocuments.length > 0 ? (
                 <div className="mt-4 grid gap-3">
                   {customerAttachments.map((attachment) => (
-                    <AttachmentRow key={attachment.id} attachment={attachment} />
+                    <AttachmentRow key={attachment.id} attachment={attachment} copy={copy} />
                   ))}
                   {otherDocuments.map((document) => (
-                    <DocumentRow key={document.id} document={document} />
+                    <DocumentRow key={document.id} document={document} copy={copy} />
                   ))}
                 </div>
               ) : (
@@ -452,7 +383,7 @@ function FactRow({ label, value, href }: { label: string; value: string; href?: 
   );
 }
 
-function AttachmentRow({ attachment }: { attachment: PortalCustomerAttachment }) {
+function AttachmentRow({ attachment, copy }: { attachment: PortalCustomerAttachment; copy: PortalRequestDetailCopy }) {
   return (
     <article className="grid gap-3 rounded-2xl border border-[#E5EAF0] bg-[#FBFCFE] p-4 sm:grid-cols-[1fr_auto] sm:items-center">
       <div className="min-w-0">
@@ -460,22 +391,22 @@ function AttachmentRow({ attachment }: { attachment: PortalCustomerAttachment })
         <p className="mt-1 text-[12px] text-[#667085]">{attachment.fileType} · {attachment.uploadedAt}</p>
       </div>
       <span className={`w-fit rounded-full px-3 py-1 text-[11px] font-black ${attachmentTone[attachment.status]}`}>
-        {attachment.status}
+        {copy.attachmentStatuses[attachment.status]}
       </span>
     </article>
   );
 }
 
-function DocumentRow({ document }: { document: PortalDocument }) {
+function DocumentRow({ document, copy }: { document: PortalDocument; copy: PortalRequestDetailCopy }) {
   return (
     <article className="rounded-2xl border border-[#E5EAF0] bg-[#FBFCFE] p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[#B8643E]">{document.type}</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[#B8643E]">{copy.documentTypes[document.type]}</p>
           <h3 className="mt-1 text-[14px] font-black text-[#27364A]">{document.title}</h3>
         </div>
         <span className={`w-fit rounded-full px-3 py-1 text-[11px] font-black ${documentTone[document.status]}`}>
-          {document.status}
+          {copy.documentStatuses[document.status]}
         </span>
       </div>
       {document.description && <p className="mt-2 text-[13px] leading-6 text-[#667085]">{document.description}</p>}

@@ -3,12 +3,13 @@ import PortalRequestDetailRoute from '@/components/portal/PortalRequestDetailRou
 export default async function PortalRequestDetailModalPage({
   params,
 }: {
-  params: Promise<{ publicRequestNumber: string }>;
+  params: Promise<{ locale: string; publicRequestNumber: string }>;
 }) {
-  const { publicRequestNumber } = await params;
+  const { locale, publicRequestNumber } = await params;
 
   return (
     <PortalRequestDetailRoute
+      locale={locale}
       publicRequestNumber={publicRequestNumber}
       presentation="modal"
     />

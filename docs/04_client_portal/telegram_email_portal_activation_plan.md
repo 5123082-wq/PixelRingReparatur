@@ -650,6 +650,15 @@ Inline-форма заявки в браузерном чате должна с�
 
 ## Progress Log
 
+### 2026-06-18 — навигация внешних входных страниц
+
+- Current sprint/block: устранение тупиков на external-entry pages (внешних входных страницах), куда клиент попадает из e-mail (электронной почты), Telegram (мессенджера Telegram) или сохраненной ссылки.
+- Done: добавлен `CustomerStandaloneNav` (компактная навигация внешних входных страниц) для активной и истекшей страницы `claim link` (ссылки привязки заявки), legacy verify fallback (устаревших резервных экранов подтверждения), unauthenticated portal entry (входа в личный кабинет без активной сессии), access-required gate (экрана требования доступа), demo gate (демо-входа), Telegram secure form (защищенной Telegram-формы) и Telegram return page (страницы возврата в Telegram); на этих экранах появились локализованные выходы `Zur Website` (на сайт), `Status pruefen` (проверить статус) и `Kundenportal` (клиентский кабинет), где это применимо; standalone portal copy (тексты самостоятельных экранов кабинета) для entry/login/register (входа/регистрации), claim flow (привязки заявки), expired-link fallbacks (резервных экранов истекших ссылок) и access-required gate (экрана требования доступа) теперь локализован для DE/EN/RU/TR/PL/AR; request detail/chat UI (интерфейс экрана заявки и чата) также получил локализованные системные подписи, кнопки и ошибки, при этом demo fixture content (демо-контент заявки) не переводился как пользовательские данные.
+- In progress: ручная визуальная QA (проверка качества) новых выходов и request detail/chat UI (интерфейса экрана заявки и чата) на desktop/mobile (настольных и мобильных экранах), включая Arabic RTL (арабскую правостороннюю верстку).
+- Next action: проверить `/ar/portal`, `/ar/portal/claim?token=expired`, `/ar/portal/claim/verify`, `/ar/portal/requests/PR-DEMO-4821` с demo access (демо-доступом) и `/ru/telegram/request?t=expired`; затем продолжить QA (проверку качества) activation links (ссылок активации), Telegram buttons (кнопок Telegram) и status-page (страницы статуса) после выкладки.
+- Blockers/risks: автоматическая повторная выдача истекших `claim link` (ссылок привязки заявки) не добавлялась; это остается отдельным безопасным сценарием, чтобы не раскрывать наличие заявки, e-mail (электронной почты) или аккаунта.
+- Updated documents: `PROGRESS.md`, `docs/04_client_portal/telegram_email_portal_activation_plan.md`.
+
 ### 2026-06-17 — активация личного кабинета после `PR` (публичного номера заявки)
 
 - Current sprint/block: завершение end-to-end (сквозного) этапа `PR -> personal cabinet activation` (активации личного кабинета после выдачи публичного номера заявки).

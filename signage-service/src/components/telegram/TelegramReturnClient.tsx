@@ -24,7 +24,7 @@ export default function TelegramReturnClient({ telegramUrl, copy }: TelegramRetu
   }, [telegramUrl]);
 
   return (
-    <div className="mx-auto flex min-h-[100svh] w-full max-w-xl items-center justify-center px-4 py-10">
+    <div className="mx-auto flex min-h-[calc(100svh-104px)] w-full max-w-xl items-center justify-center py-10">
       <div className="w-full rounded-[28px] border border-[#E7DDD3] bg-white p-8 text-center shadow-[0_24px_70px_rgba(14,26,43,0.12)]">
         <div className="mx-auto mb-5 h-12 w-12 rounded-full border-4 border-[#B8643E]/20 border-t-[#B8643E] animate-spin" />
         <h1 className="text-2xl font-black text-[#0E1A2B]">{copy.title}</h1>

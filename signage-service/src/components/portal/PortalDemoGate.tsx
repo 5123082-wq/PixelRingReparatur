@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from '@/i18n/routing';
+import CustomerStandaloneNav from '@/components/common/CustomerStandaloneNav';
 import { useTranslations } from 'next-intl';
 import type { FormEvent } from 'react';
 import { useState } from 'react';
@@ -44,8 +45,9 @@ export default function PortalDemoGate({
   }
 
   return (
-    <main className="min-h-screen bg-[#F4EEE5] px-4 py-6 text-[#121826] sm:px-6 lg:px-8">
-      <div className="mx-auto flex min-h-[calc(100vh-48px)] max-w-6xl items-center justify-center">
+    <main className="min-h-screen bg-[#F4EEE5] px-4 py-4 text-[#121826] sm:px-6 lg:px-8">
+      <CustomerStandaloneNav />
+      <div className="mx-auto flex min-h-[calc(100vh-104px)] max-w-6xl items-center justify-center py-6">
         <section className="grid w-full overflow-hidden rounded-[28px] border border-[#E4D8CA] bg-white shadow-2xl shadow-[#3E2715]/10 lg:grid-cols-[0.95fr_1.05fr]">
           <div className="bg-[#0A111F] p-7 text-white sm:p-10">
             <div className="mb-8 inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.22em] text-white/65">

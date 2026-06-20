@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import CustomerStandaloneNav from '@/components/common/CustomerStandaloneNav';
 import TelegramReturnClient from '@/components/telegram/TelegramReturnClient';
 import { prisma } from '@/lib/prisma';
 import { getTelegramReturnTarget } from '@/lib/telegram-intake';
@@ -73,7 +74,8 @@ export default async function TelegramReturnPage({ params, searchParams }: PageP
   const target = await getTelegramReturnTarget(prisma, returnNonce);
 
   return (
-    <main className="min-h-[100svh] bg-[#F7F1E8] text-[#0E1A2B]">
+    <main className="min-h-[100svh] bg-[#F7F1E8] px-4 py-4 text-[#0E1A2B] sm:px-6 lg:px-8">
+      <CustomerStandaloneNav />
       <TelegramReturnClient telegramUrl={target.telegramReturnUrl} copy={getCopy(locale)} />
     </main>
   );

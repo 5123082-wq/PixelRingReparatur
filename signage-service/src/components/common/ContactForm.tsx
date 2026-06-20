@@ -6,6 +6,8 @@ import { Link } from '@/i18n/routing';
 import { trackGoogleAdsLeadConversion } from '@/lib/google-ads';
 import LocationPicker, { type SelectedLocation } from './LocationPicker';
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 interface ContactFormProps {
   onSuccess?: (publicRequestNumber: string) => void;
   variant?: 'light' | 'dark';
@@ -80,18 +82,36 @@ const ContactForm = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
     setErrorMessage('');
+
+    const cleanName = name.trim();
+    const cleanEmail = email.trim();
+    const cleanPhone = phone.trim();
+    const cleanMessage = message.trim();
+    const cleanIssueType = issueType.trim();
+    const cleanLocation = location.trim();
+
+    if (!cleanEmail || !EMAIL_REGEX.test(cleanEmail)) {
+      setErrorMessage(t('error_invalid_contact'));
+      return;
+    }
+
+    if (!cleanMessage) {
+      setErrorMessage(t('error_required_message'));
+      return;
+    }
+
+    setIsSubmitting(true);
 
     try {
       const formData = new FormData();
-      formData.append('name', name);
-      formData.append('contact', email);
-      formData.append('email', email);
-      formData.append('phone', phone);
-      formData.append('message', message);
-      formData.append('issueType', issueType);
-      formData.append('location', location);
+      formData.append('name', cleanName);
+      formData.append('contact', cleanEmail);
+      formData.append('email', cleanEmail);
+      formData.append('phone', cleanPhone);
+      formData.append('message', cleanMessage);
+      formData.append('issueType', cleanIssueType);
+      formData.append('location', cleanLocation);
       if (selectedLocation) {
         formData.append('locationLatitude', String(selectedLocation.latitude));
         formData.append('locationLongitude', String(selectedLocation.longitude));
@@ -220,6 +240,7 @@ const ContactForm = ({
 
   return (
     <form
+      noValidate
       onSubmit={handleSubmit}
       className="flex flex-col flex-1 gap-3 sm:gap-4 overflow-visible"
     >
@@ -253,7 +274,7 @@ const ContactForm = ({
                 <input
                   id={emailInputId}
                   type="email"
-                  required
+                  aria-required="true"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
@@ -364,7 +385,7 @@ const ContactForm = ({
               <input
                 id={emailInputId}
                 type="email"
-                required
+                aria-required="true"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
@@ -454,7 +475,7 @@ const ContactForm = ({
             id={messageInputId}
             ref={textareaRef}
             rows={2}
-            required
+            aria-required="true"
             value={message}
             onChange={handleTextChange}
             placeholder={t('field_message')}

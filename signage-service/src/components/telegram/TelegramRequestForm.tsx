@@ -4,6 +4,9 @@ import { useRef, useState, type FormEvent } from 'react';
 
 import LocationPicker, { type SelectedLocation } from '@/components/common/LocationPicker';
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MIN_PHONE_DIGITS = 7;
+
 type TelegramRequestFormProps = {
   token: string;
   locale: string;
@@ -24,6 +27,10 @@ type Copy = {
   successTitle: string;
   successText: string;
   errorGeneric: string;
+  errorLinkInvalid: string;
+  errorMessageRequired: string;
+  errorInvalidEmail: string;
+  errorInvalidPhone: string;
   issues: string[];
 };
 
@@ -43,6 +50,10 @@ const COPY: Record<string, Copy> = {
     successTitle: 'Anfrage gesendet',
     successText: 'Wir leiten Sie zurueck zu Telegram.',
     errorGeneric: 'Die Anfrage konnte nicht gesendet werden. Bitte pruefen Sie die Eingaben.',
+    errorLinkInvalid: 'Dieser Formular-Link ist nicht mehr gueltig. Bitte kehren Sie zu Telegram zurueck und fordern Sie einen neuen Link an.',
+    errorMessageRequired: 'Bitte beschreiben Sie kurz, was passiert ist.',
+    errorInvalidEmail: 'Bitte geben Sie eine gueltige E-Mail-Adresse an oder lassen Sie das Feld leer.',
+    errorInvalidPhone: 'Bitte geben Sie eine gueltige Telefonnummer an oder lassen Sie das Feld leer.',
     issues: ['Reparatur', 'Montage', 'Wartung', 'Lichtwerbung', 'Branding', 'Sonstiges'],
   },
   en: {
@@ -60,6 +71,10 @@ const COPY: Record<string, Copy> = {
     successTitle: 'Request sent',
     successText: 'We are taking you back to Telegram.',
     errorGeneric: 'The request could not be sent. Please check the form.',
+    errorLinkInvalid: 'This form link is no longer valid. Please return to Telegram and request a new link.',
+    errorMessageRequired: 'Please briefly describe what happened.',
+    errorInvalidEmail: 'Please enter a valid email address or leave the field empty.',
+    errorInvalidPhone: 'Please enter a valid phone number or leave the field empty.',
     issues: ['Repair', 'Installation', 'Maintenance', 'Illuminated advertising', 'Branding', 'Other'],
   },
   ru: {
@@ -77,6 +92,10 @@ const COPY: Record<string, Copy> = {
     successTitle: 'Заявка отправлена',
     successText: 'Возвращаем вас в Telegram.',
     errorGeneric: 'Не удалось отправить заявку. Проверьте поля формы.',
+    errorLinkInvalid: 'Эта ссылка на форму больше не действует. Вернитесь в Telegram и запросите новую ссылку.',
+    errorMessageRequired: 'Коротко опишите, что произошло.',
+    errorInvalidEmail: 'Укажите корректный e-mail или оставьте поле пустым.',
+    errorInvalidPhone: 'Укажите корректный телефон или оставьте поле пустым.',
     issues: ['Ремонт', 'Монтаж', 'Обслуживание', 'Световая реклама', 'Брендинг', 'Другое'],
   },
   tr: {
@@ -94,6 +113,10 @@ const COPY: Record<string, Copy> = {
     successTitle: 'Talep gonderildi',
     successText: 'Sizi Telegrama geri yonlendiriyoruz.',
     errorGeneric: 'Talep gonderilemedi. Lutfen formu kontrol edin.',
+    errorLinkInvalid: 'Bu form baglantisi artik gecerli degil. Lutfen Telegrama donup yeni baglanti isteyin.',
+    errorMessageRequired: 'Lutfen ne oldugunu kisaca aciklayin.',
+    errorInvalidEmail: 'Lutfen gecerli bir e-posta girin veya alani bos birakin.',
+    errorInvalidPhone: 'Lutfen gecerli bir telefon numarasi girin veya alani bos birakin.',
     issues: ['Onarim', 'Montaj', 'Bakim', 'Isikli reklam', 'Markalama', 'Diger'],
   },
   pl: {
@@ -111,6 +134,10 @@ const COPY: Record<string, Copy> = {
     successTitle: 'Zgloszenie wyslane',
     successText: 'Przekierowujemy Cie z powrotem do Telegrama.',
     errorGeneric: 'Nie udalo sie wyslac zgloszenia. Sprawdz formularz.',
+    errorLinkInvalid: 'Ten link do formularza nie jest juz wazny. Wroc do Telegrama i popros o nowy link.',
+    errorMessageRequired: 'Krotko opisz, co sie stalo.',
+    errorInvalidEmail: 'Podaj poprawny e-mail albo zostaw pole puste.',
+    errorInvalidPhone: 'Podaj poprawny numer telefonu albo zostaw pole puste.',
     issues: ['Naprawa', 'Montaz', 'Serwis', 'Reklama swietlna', 'Branding', 'Inne'],
   },
   ar: {
@@ -128,6 +155,10 @@ const COPY: Record<string, Copy> = {
     successTitle: 'تم إرسال الطلب',
     successText: 'نعيدك إلى Telegram.',
     errorGeneric: 'تعذر إرسال الطلب. يرجى التحقق من النموذج.',
+    errorLinkInvalid: 'لم يعد رابط النموذج صالحاً. يرجى العودة إلى Telegram وطلب رابط جديد.',
+    errorMessageRequired: 'يرجى وصف ما حدث باختصار.',
+    errorInvalidEmail: 'يرجى إدخال بريد إلكتروني صالح أو ترك الحقل فارغاً.',
+    errorInvalidPhone: 'يرجى إدخال رقم هاتف صالح أو ترك الحقل فارغاً.',
     issues: ['إصلاح', 'تركيب', 'صيانة', 'إعلان مضيء', 'هوية بصرية', 'أخرى'],
   },
 };
@@ -163,21 +194,44 @@ export default function TelegramRequestForm({ token, locale }: TelegramRequestFo
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setIsSubmitting(true);
     setErrorMessage('');
+
+    const cleanName = name.trim();
+    const cleanEmail = email.trim();
+    const cleanPhone = phone.trim();
+    const cleanIssueType = issueType.trim();
+    const cleanLocation = location.trim();
+    const cleanMessage = message.trim();
+
+    if (cleanEmail && !EMAIL_REGEX.test(cleanEmail)) {
+      setErrorMessage(copy.errorInvalidEmail);
+      return;
+    }
+
+    if (cleanPhone && cleanPhone.replace(/\D/g, '').length < MIN_PHONE_DIGITS) {
+      setErrorMessage(copy.errorInvalidPhone);
+      return;
+    }
+
+    if (!cleanMessage) {
+      setErrorMessage(copy.errorMessageRequired);
+      return;
+    }
+
+    setIsSubmitting(true);
 
     try {
       const formData = new FormData();
       formData.set('token', token);
-      formData.set('name', name);
-      formData.set('email', email);
-      formData.set('phone', phone);
-      if (email.trim() || phone.trim()) {
-        formData.set('contact', email.trim() || phone.trim());
+      formData.set('name', cleanName);
+      formData.set('email', cleanEmail);
+      formData.set('phone', cleanPhone);
+      if (cleanEmail || cleanPhone) {
+        formData.set('contact', cleanEmail || cleanPhone);
       }
-      formData.set('issueType', issueType);
-      formData.set('location', location);
-      formData.set('message', message);
+      formData.set('issueType', cleanIssueType);
+      formData.set('location', cleanLocation);
+      formData.set('message', cleanMessage);
       if (selectedLocation) {
         formData.set('locationLatitude', String(selectedLocation.latitude));
         formData.set('locationLongitude', String(selectedLocation.longitude));
@@ -196,7 +250,11 @@ export default function TelegramRequestForm({ token, locale }: TelegramRequestFo
       } | null;
 
       if (!response.ok) {
-        throw new Error(data?.error || copy.errorGeneric);
+        if (data?.error && data.error.toLowerCase().includes('link')) {
+          throw new Error(copy.errorLinkInvalid);
+        }
+
+        throw new Error(copy.errorGeneric);
       }
 
       setIsSuccess(true);
@@ -223,7 +281,7 @@ export default function TelegramRequestForm({ token, locale }: TelegramRequestFo
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-[28px] border border-[#E7DDD3] bg-white p-4 shadow-[0_24px_70px_rgba(14,26,43,0.12)] sm:p-6">
+    <form noValidate onSubmit={handleSubmit} className="rounded-[28px] border border-[#E7DDD3] bg-white p-4 shadow-[0_24px_70px_rgba(14,26,43,0.12)] sm:p-6">
       <div className="grid gap-3 sm:grid-cols-2">
         <input
           value={name}
@@ -280,7 +338,7 @@ export default function TelegramRequestForm({ token, locale }: TelegramRequestFo
       </div>
 
       <textarea
-        required
+        aria-required="true"
         value={message}
         onChange={(event) => setMessage(event.target.value)}
         placeholder={copy.message}
