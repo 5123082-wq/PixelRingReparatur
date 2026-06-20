@@ -12,6 +12,7 @@ type EditorCopy = {
   saving: string;
   saved: string;
   unchanged: string;
+  saveError: string;
   name: string;
   email: string;
   phone: string;
@@ -67,14 +68,14 @@ export default function PortalRequestDetailsEditor({
       } | null;
 
       if (!response.ok || !data?.success) {
-        throw new Error(data?.message || 'Die Daten konnten nicht gespeichert werden.');
+        throw new Error(copy.saveError);
       }
 
       setFeedback(data.changed ? copy.saved : copy.unchanged);
       setIsEditing(false);
       router.refresh();
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Die Daten konnten nicht gespeichert werden.');
+      setError(error instanceof Error ? error.message : copy.saveError);
     } finally {
       setIsSubmitting(false);
     }

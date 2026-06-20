@@ -408,6 +408,7 @@
     "success_message": "Use Status with this number to continue.",
     "open_status": "Open Status",
     "error_invalid_contact": "Please enter a valid email address so we can create the request and prepare customer portal access. Phone is optional.",
+    "error_required_message": "Please briefly describe what happened.",
     "error_generic": "Unable to submit the request right now. Please try again."
   },
   "StatusPage": {

@@ -8,6 +8,10 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 
 Latest checkpoint:
 
+- Date: 2026-06-18
+- Current stage: Added compact external-entry navigation and localized portal UI copy for DE/EN/RU/TR/PL/AR on active/expired portal claim pages, legacy claim/login verify fallbacks, unauthenticated portal/access-required/demo gates, request detail/chat UI, Telegram request form, and Telegram return page without changing token, verification, or claim-link behavior.
+- Next action: Owner visually reviews `/ar/portal`, `/ar/portal/claim?token=expired`, `/ar/portal/claim/verify`, `/ar/portal/requests/PR-DEMO-4821` with demo access, and `/ru/telegram/request?t=expired` on desktop/mobile, then continues the activation-link and Telegram QA after deployment.
+
 - Date: 2026-06-17
 - Current stage: Implemented the post-PR portal activation handoff: website/browser-chat requests now trigger a non-blocking activation invitation email through the existing email infrastructure after claim-link creation, Telegram secure intake creates/returns portal claim links with status/portal/return buttons and optional email invite, and verified status lookup can show a safe portal activation prompt while CRM manual claim-link flow remains token-safe.
 - Next action: Manually QA website/chat email invite delivery, Telegram secure intake with email and without email, status-page active/expired activation states, and CRM manual claim-link issuance after deployment.

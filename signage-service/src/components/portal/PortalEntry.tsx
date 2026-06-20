@@ -1,7 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { useLocale } from 'next-intl';
 import { Link, useRouter } from '@/i18n/routing';
+import CustomerStandaloneNav from '@/components/common/CustomerStandaloneNav';
+import { getPortalStandaloneCopy } from './portal-standalone-copy';
 
 type AuthMode = 'login' | 'register' | 'reset';
 type CodeStep = 'email' | 'code' | 'password';
@@ -23,6 +26,7 @@ export default function PortalEntry({
   demoEmail?: string;
 }) {
   const router = useRouter();
+  const copy = getPortalStandaloneCopy(useLocale());
   const [mode, setMode] = useState<AuthMode>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -49,11 +53,11 @@ export default function PortalEntry({
     setDevCode('');
   }
 
-  async function readApiResponse(response: Response): Promise<ApiResponse> {
+  async function readApiResponse(response: Response, fallback: string): Promise<ApiResponse> {
     const data = (await response.json().catch(() => null)) as ApiResponse | null;
 
     if (!response.ok || !data?.success) {
-      throw new Error(data?.message || 'Die Aktion konnte nicht abgeschlossen werden.');
+      throw new Error(fallback);
     }
 
     return data;
@@ -71,12 +75,12 @@ export default function PortalEntry({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-      const data = await readApiResponse(response);
+      const data = await readApiResponse(response, copy.entry.loginError);
 
       router.push(data.redirectTo || '/portal');
       router.refresh();
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'E-Mail oder Passwort ist nicht korrekt.');
+      setError(error instanceof Error ? error.message : copy.entry.loginError);
     } finally {
       setIsSubmitting(false);
     }
@@ -100,13 +104,13 @@ export default function PortalEntry({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
-      const data = await readApiResponse(response);
+      const data = await readApiResponse(response, copy.entry.codeSendError);
 
       setCodeStep('code');
-      setMessage('Wenn die E-Mail verwendet werden kann, senden wir einen Code an diese Adresse.');
+      setMessage(copy.entry.codeSent);
       setDevCode(data.devCode || '');
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Der Code konnte nicht gesendet werden.');
+      setError(error instanceof Error ? error.message : copy.entry.codeSendError);
     } finally {
       setIsSubmitting(false);
     }
@@ -129,13 +133,13 @@ export default function PortalEntry({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code }),
       });
-      const data = await readApiResponse(response);
+      const data = await readApiResponse(response, copy.entry.invalidCode);
 
       setVerificationToken(data.verificationToken || '');
       setCodeStep('password');
-      setMessage('E-Mail bestaetigt. Legen Sie jetzt Ihr Passwort fest.');
+      setMessage(copy.entry.emailConfirmed);
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Der Code ist ungueltig oder abgelaufen.');
+      setError(error instanceof Error ? error.message : copy.entry.invalidCode);
     } finally {
       setIsSubmitting(false);
     }
@@ -158,12 +162,12 @@ export default function PortalEntry({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ verificationToken, password, passwordRepeat }),
       });
-      const data = await readApiResponse(response);
+      const data = await readApiResponse(response, copy.entry.passwordError);
 
       router.push(data.redirectTo || '/portal');
       router.refresh();
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Das Passwort konnte nicht gespeichert werden.');
+      setError(error instanceof Error ? error.message : copy.entry.passwordError);
     } finally {
       setIsSubmitting(false);
     }
@@ -182,74 +186,79 @@ export default function PortalEntry({
       });
 
       if (!response.ok) {
-        throw new Error('Demo-Zugang konnte nicht geoeffnet werden.');
+        throw new Error(copy.entry.demoError);
       }
 
       router.refresh();
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Demo-Zugang konnte nicht geoeffnet werden.');
+      setError(error instanceof Error ? error.message : copy.entry.demoError);
     } finally {
       setIsDemoSubmitting(false);
     }
   }
 
   return (
-    <main className="min-h-screen bg-[#F4EEE5] px-4 py-6 text-[#121826] sm:px-6 lg:px-8">
-      <section className="mx-auto grid min-h-[calc(100vh-48px)] w-full max-w-6xl content-center gap-6">
+    <main className="min-h-screen bg-[#F4EEE5] px-4 py-4 text-[#121826] sm:px-6 lg:px-8">
+      <CustomerStandaloneNav showPortal={false} />
+      <section className="mx-auto grid min-h-[calc(100vh-104px)] w-full max-w-6xl content-center gap-6 py-6">
         <div className="rounded-[28px] border border-[#E4D8CA] bg-white p-6 shadow-2xl shadow-[#3E2715]/10 sm:p-8 lg:p-10">
           <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
             <div>
               <p className="text-[12px] font-black uppercase tracking-[0.22em] text-[#B8643E]">
-                Kundenportal
+                {copy.common.portal}
               </p>
               <h1 className="mt-4 max-w-3xl text-[34px] font-black leading-tight text-[#121826] sm:text-[44px]">
-                Einloggen oder Kundenkonto erstellen
+                {copy.entry.title}
               </h1>
               <p className="mt-4 max-w-2xl text-[15px] leading-7 text-[#667085]">
-                Registrieren Sie sich mit E-Mail-Code und eigenem Passwort. Bestehende Anfragen werden erst nach sicherer Kontaktpruefung verbunden.
+                {copy.entry.body}
               </p>
 
               <div className="mt-7 grid gap-3 sm:grid-cols-3">
-                <EntryStep title="E-Mail-Code" text="Kein Login-Link im Postfach. Sie geben den Code hier auf der Website ein." />
-                <EntryStep title="Eigenes Passwort" text="Das Passwort wird nie per E-Mail versendet und nur als Hash gespeichert." />
-                <EntryStep title="Sicher verbunden" text="PR-Nummern oeffnen keine privaten Portal-Daten ohne zusaetzliche Pruefung." />
+                {copy.entry.steps.map((step) => (
+                  <EntryStep key={step.title} title={step.title} text={step.text} />
+                ))}
               </div>
             </div>
 
             <section className="rounded-3xl border border-[#E9DED2] bg-[#FBF8F3] p-5 sm:p-6">
               <div className="grid grid-cols-2 gap-2 rounded-2xl bg-white p-1">
                 <ModeButton active={mode === 'login'} onClick={() => resetFlow('login')}>
-                  Einloggen
+                  {copy.entry.login}
                 </ModeButton>
                 <ModeButton active={mode === 'register'} onClick={() => resetFlow('register')}>
-                  Registrieren
+                  {copy.entry.register}
                 </ModeButton>
               </div>
 
               {mode === 'login' && (
                 <form onSubmit={login} className="mt-5 grid gap-3">
-                  <EmailInput email={email} setEmail={setEmail} disabled={isSubmitting} />
+                  <EmailInput label={copy.common.email} email={email} setEmail={setEmail} disabled={isSubmitting} />
                   <PasswordInput
                     id="portal-login-password"
-                    label="Passwort"
+                    label={copy.common.password}
                     value={password}
                     onChange={setPassword}
                     disabled={isSubmitting}
                     autoComplete="current-password"
+                    showLabel={copy.common.showPassword}
+                    hideLabel={copy.common.hidePassword}
+                    showAriaLabel={copy.common.showPasswordAria}
+                    hideAriaLabel={copy.common.hidePasswordAria}
                   />
                   <button
                     type="submit"
                     disabled={isSubmitting}
                     className="mt-2 h-12 w-full rounded-2xl bg-[#B8643E] px-5 text-[15px] font-black text-white shadow-lg shadow-[#B8643E]/20 transition hover:bg-[#A65835] disabled:opacity-60"
                   >
-                    {isSubmitting ? 'Wird geprueft ...' : 'Einloggen'}
+                    {isSubmitting ? copy.entry.loginLoading : copy.entry.login}
                   </button>
                   <button
                     type="button"
                     onClick={() => resetFlow('reset')}
-                    className="text-left text-[13px] font-black text-[#B8643E] underline"
+                    className="text-start text-[13px] font-black text-[#B8643E] underline"
                   >
-                    Passwort vergessen?
+                    {copy.entry.forgotPassword}
                   </button>
                 </form>
               )}
@@ -257,17 +266,17 @@ export default function PortalEntry({
               {(mode === 'register' || mode === 'reset') && (
                 <div className="mt-5">
                   <p className="text-[13px] font-black text-[#344054]">
-                    {mode === 'reset' ? 'Passwort zuruecksetzen' : 'Konto erstellen'}
+                    {mode === 'reset' ? copy.entry.resetTitle : copy.entry.registerTitle}
                   </p>
                   {codeStep === 'email' && (
                     <form onSubmit={startCodeFlow} className="mt-3 grid gap-3">
-                      <EmailInput email={email} setEmail={setEmail} disabled={isSubmitting} />
+                      <EmailInput label={copy.common.email} email={email} setEmail={setEmail} disabled={isSubmitting} />
                       <button
                         type="submit"
                         disabled={isSubmitting}
                         className="mt-2 h-12 w-full rounded-2xl bg-[#B8643E] px-5 text-[15px] font-black text-white shadow-lg shadow-[#B8643E]/20 transition hover:bg-[#A65835] disabled:opacity-60"
                       >
-                        {isSubmitting ? 'Code wird gesendet ...' : 'Code senden'}
+                        {isSubmitting ? copy.entry.sendCodeLoading : copy.entry.sendCode}
                       </button>
                     </form>
                   )}
@@ -275,7 +284,7 @@ export default function PortalEntry({
                   {codeStep === 'code' && (
                     <form onSubmit={verifyCode} className="mt-3 grid gap-3">
                       <label className="block text-[13px] font-black text-[#344054]" htmlFor="portal-code">
-                        Code aus der E-Mail
+                        {copy.common.codeFromEmail}
                       </label>
                       <input
                         id="portal-code"
@@ -293,14 +302,14 @@ export default function PortalEntry({
                         disabled={isSubmitting}
                         className="mt-2 h-12 w-full rounded-2xl bg-[#B8643E] px-5 text-[15px] font-black text-white shadow-lg shadow-[#B8643E]/20 transition hover:bg-[#A65835] disabled:opacity-60"
                       >
-                        {isSubmitting ? 'Code wird geprueft ...' : 'Code bestaetigen'}
+                        {isSubmitting ? copy.entry.verifyCodeLoading : copy.entry.verifyCode}
                       </button>
                       <button
                         type="button"
                         onClick={() => setCodeStep('email')}
-                        className="text-left text-[13px] font-black text-[#B8643E] underline"
+                        className="text-start text-[13px] font-black text-[#B8643E] underline"
                       >
-                        Code erneut senden
+                        {copy.entry.resendCode}
                       </button>
                     </form>
                   )}
@@ -309,26 +318,34 @@ export default function PortalEntry({
                     <form onSubmit={setAccountPassword} className="mt-3 grid gap-3">
                       <PasswordInput
                         id="portal-new-password"
-                        label={mode === 'reset' ? 'Neues Passwort' : 'Passwort'}
+                        label={mode === 'reset' ? copy.common.newPassword : copy.common.password}
                         value={password}
                         onChange={setPassword}
                         disabled={isSubmitting}
                         autoComplete="new-password"
+                        showLabel={copy.common.showPassword}
+                        hideLabel={copy.common.hidePassword}
+                        showAriaLabel={copy.common.showPasswordAria}
+                        hideAriaLabel={copy.common.hidePasswordAria}
                       />
                       <PasswordInput
                         id="portal-new-password-repeat"
-                        label="Passwort wiederholen"
+                        label={copy.common.passwordRepeat}
                         value={passwordRepeat}
                         onChange={setPasswordRepeat}
                         disabled={isSubmitting}
                         autoComplete="new-password"
+                        showLabel={copy.common.showPassword}
+                        hideLabel={copy.common.hidePassword}
+                        showAriaLabel={copy.common.showPasswordAria}
+                        hideAriaLabel={copy.common.hidePasswordAria}
                       />
                       <button
                         type="submit"
                         disabled={isSubmitting}
                         className="mt-2 h-12 w-full rounded-2xl bg-[#B8643E] px-5 text-[15px] font-black text-white shadow-lg shadow-[#B8643E]/20 transition hover:bg-[#A65835] disabled:opacity-60"
                       >
-                        {isSubmitting ? 'Wird gespeichert ...' : mode === 'reset' ? 'Passwort speichern' : 'Konto erstellen'}
+                        {isSubmitting ? copy.entry.saveLoading : mode === 'reset' ? copy.entry.savePassword : copy.entry.createAccount}
                       </button>
                     </form>
                   )}
@@ -342,7 +359,7 @@ export default function PortalEntry({
               )}
               {devCode && (
                 <p className="mt-3 rounded-2xl border border-[#E9DED2] bg-white px-4 py-3 text-[13px] font-black text-[#121826]">
-                  Lokaler Code: <span className="tracking-[0.16em]">{devCode}</span>
+                  {copy.common.localCode} <span className="tracking-[0.16em]">{devCode}</span>
                 </p>
               )}
               {error && (
@@ -356,16 +373,16 @@ export default function PortalEntry({
 
         <div className="grid gap-4 md:grid-cols-2">
           <ActionCard
-            title="Bestehende Anfrage pruefen"
-            text="Wenn Sie schon eine PR-Nummer haben, pruefen Sie den Status mit der Telefonnummer oder E-Mail aus der Anfrage."
+            title={copy.entry.existingTitle}
+            text={copy.entry.existingText}
             href="/status"
-            label="Anfrage-Status pruefen"
+            label={copy.entry.existingLabel}
           />
           <ActionCard
-            title="Neue Anfrage starten"
-            text="Sie koennen den Service direkt starten. Die Anfrage bekommt erst nach Kontaktangabe eine PR-Nummer."
+            title={copy.entry.newTitle}
+            text={copy.entry.newText}
             href="/#kontakt"
-            label="Service starten"
+            label={copy.entry.newLabel}
           />
         </div>
 
@@ -373,8 +390,8 @@ export default function PortalEntry({
           <form onSubmit={openDemo} className="rounded-3xl border border-dashed border-[#D8C7B7] bg-white/70 p-5">
             <div className="grid gap-3 md:grid-cols-[1fr_260px_auto] md:items-end">
               <div>
-                <p className="text-[12px] font-black uppercase tracking-[0.18em] text-[#B8643E]">Lokaler Demo-Zugang</p>
-                <p className="mt-1 text-[13px] text-[#667085]">Nur fuer lokale Tests. Demo-E-Mail: {demoEmail}</p>
+                <p className="text-[12px] font-black uppercase tracking-[0.18em] text-[#B8643E]">{copy.entry.demoEyebrow}</p>
+                <p className="mt-1 text-[13px] text-[#667085]">{copy.entry.demoHint.replace('{email}', demoEmail)}</p>
               </div>
               <input
                 type="email"
@@ -388,7 +405,7 @@ export default function PortalEntry({
                 disabled={isDemoSubmitting}
                 className="h-11 rounded-2xl border border-[#D9CCBD] bg-white px-4 text-[13px] font-black text-[#121826] transition hover:border-[#B8643E] disabled:opacity-60"
               >
-                Demo oeffnen
+                {copy.entry.demoSubmit}
               </button>
             </div>
           </form>
@@ -421,10 +438,12 @@ function ModeButton({
 }
 
 function EmailInput({
+  label,
   email,
   setEmail,
   disabled,
 }: {
+  label: string;
   email: string;
   setEmail: (value: string) => void;
   disabled: boolean;
@@ -432,7 +451,7 @@ function EmailInput({
   return (
     <>
       <label className="block text-[13px] font-black text-[#344054]" htmlFor="portal-login-email">
-        E-Mail-Adresse
+        {label}
       </label>
       <input
         id="portal-login-email"
@@ -456,6 +475,10 @@ function PasswordInput({
   onChange,
   disabled,
   autoComplete,
+  showLabel,
+  hideLabel,
+  showAriaLabel,
+  hideAriaLabel,
 }: {
   id: string;
   label: string;
@@ -463,6 +486,10 @@ function PasswordInput({
   onChange: (value: string) => void;
   disabled: boolean;
   autoComplete: string;
+  showLabel: string;
+  hideLabel: string;
+  showAriaLabel: string;
+  hideAriaLabel: string;
 }) {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -481,16 +508,16 @@ function PasswordInput({
           required
           disabled={disabled}
           minLength={10}
-          className="h-12 w-full rounded-2xl border border-[#D9CCBD] bg-white px-4 pr-28 text-[15px] font-semibold text-[#121826] outline-none transition focus:border-[#B8643E] focus:ring-4 focus:ring-[#B8643E]/10 disabled:opacity-60"
+          className="h-12 w-full rounded-2xl border border-[#D9CCBD] bg-white px-4 pe-28 text-[15px] font-semibold text-[#121826] outline-none transition focus:border-[#B8643E] focus:ring-4 focus:ring-[#B8643E]/10 disabled:opacity-60"
         />
         <button
           type="button"
           onClick={() => setIsVisible((current) => !current)}
           disabled={disabled}
-          aria-label={isVisible ? 'Passwort ausblenden' : 'Passwort anzeigen'}
-          className="absolute right-2 top-1/2 h-8 -translate-y-1/2 rounded-xl px-3 text-[12px] font-black text-[#B8643E] transition hover:bg-[#F4EEE5] disabled:opacity-60"
+          aria-label={isVisible ? hideAriaLabel : showAriaLabel}
+          className="absolute end-2 top-1/2 h-8 -translate-y-1/2 rounded-xl px-3 text-[12px] font-black text-[#B8643E] transition hover:bg-[#F4EEE5] disabled:opacity-60"
         >
-          {isVisible ? 'Ausblenden' : 'Anzeigen'}
+          {isVisible ? hideLabel : showLabel}
         </button>
       </div>
     </>

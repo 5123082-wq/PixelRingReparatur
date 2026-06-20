@@ -67,8 +67,10 @@ type PortalCopy = {
   reportsIntro: string;
   requestFallbackTitle: string;
   futureHiddenNote: string;
+  verifiedEmail: string;
   siteLink: string;
   howItWorks: string;
+  portalAccountLabel: string;
   requestCreated: string;
   requestConnected: string;
   requestProcessing: string;
@@ -155,8 +157,10 @@ const PORTAL_COPY: Record<PortalLocale, PortalCopy> = {
     reportsIntro: 'Fotoberichte erscheinen hier, sobald PixelRing sie fuer eine Anfrage freigibt.',
     requestFallbackTitle: 'Anfrage wird geprueft',
     futureHiddenNote: 'Objekte, Mitarbeiter, Rechnungen und weitere B2B-Funktionen sind fuer spaetere Ausbaustufen ausgeblendet.',
+    verifiedEmail: 'Verified E-Mail aktiv',
     siteLink: 'Zur Website',
     howItWorks: 'So laeuft es',
+    portalAccountLabel: 'Portal-Konto',
     requestCreated: 'Sie beschreiben den Bedarf und erhalten eine PR-Nummer.',
     requestConnected: 'Die Anfrage bleibt mit diesem verifizierten Portal-Konto verbunden.',
     requestProcessing: 'PixelRing prueft die Details und aktualisiert Status, Dateien und Nachrichten im Anfrageverlauf.',
@@ -250,8 +254,10 @@ const PORTAL_COPY: Record<PortalLocale, PortalCopy> = {
     reportsIntro: 'Photo reports appear here once PixelRing releases them for a request.',
     requestFallbackTitle: 'Request is being reviewed',
     futureHiddenNote: 'Objects, employees, invoices, and extended B2B functions are hidden until later stages.',
+    verifiedEmail: 'Verified email active',
     siteLink: 'Website',
     howItWorks: 'How it works',
+    portalAccountLabel: 'Portal account',
     requestCreated: 'You describe the task and receive a PR number.',
     requestConnected: 'The request stays linked to this verified portal account.',
     requestProcessing: 'PixelRing checks the details and updates status, files, and messages in the request history.',
@@ -345,8 +351,10 @@ const PORTAL_COPY: Record<PortalLocale, PortalCopy> = {
     reportsIntro: 'Фотоотчеты появятся здесь, когда PixelRing опубликует их по заявке.',
     requestFallbackTitle: 'Заявка проверяется',
     futureHiddenNote: 'Объекты, сотрудники, счета и расширенные B2B-функции скрыты до следующих этапов.',
+    verifiedEmail: 'Подтвержденный email активен',
     siteLink: 'На сайт',
     howItWorks: 'Как это работает',
+    portalAccountLabel: 'Аккаунт портала',
     requestCreated: 'Вы описываете задачу и получаете PR-номер.',
     requestConnected: 'Заявка остается привязанной к этому подтвержденному аккаунту.',
     requestProcessing: 'PixelRing проверяет детали и обновляет статус, файлы и сообщения в истории заявки.',
@@ -440,8 +448,10 @@ const PORTAL_COPY: Record<PortalLocale, PortalCopy> = {
     reportsIntro: 'PixelRing bir talep için rapor yayınladığında foto raporları burada görünür.',
     requestFallbackTitle: 'Talep inceleniyor',
     futureHiddenNote: 'Objeler, çalışanlar, faturalar ve gelişmiş B2B işlevleri sonraki aşamalara kadar gizlidir.',
+    verifiedEmail: 'Doğrulanmış e-posta aktif',
     siteLink: 'Web sitesi',
     howItWorks: 'Nasıl çalışır',
+    portalAccountLabel: 'Portal hesabı',
     requestCreated: 'Görevi açıklarsınız ve PR numarası alırsınız.',
     requestConnected: 'Talep bu doğrulanmış portal hesabına bağlı kalır.',
     requestProcessing: 'PixelRing detayları kontrol eder ve talep geçmişinde durum, dosyalar ve mesajları günceller.',
@@ -535,8 +545,10 @@ const PORTAL_COPY: Record<PortalLocale, PortalCopy> = {
     reportsIntro: 'Raporty foto pojawią się tutaj, gdy PixelRing opublikuje je dla zgłoszenia.',
     requestFallbackTitle: 'Zgłoszenie jest sprawdzane',
     futureHiddenNote: 'Obiekty, pracownicy, faktury i rozszerzone funkcje B2B są ukryte do kolejnych etapów.',
+    verifiedEmail: 'Zweryfikowany email aktywny',
     siteLink: 'Strona',
     howItWorks: 'Jak to działa',
+    portalAccountLabel: 'Konto portalu',
     requestCreated: 'Opisujesz zadanie i otrzymujesz numer PR.',
     requestConnected: 'Zgłoszenie pozostaje połączone z tym zweryfikowanym kontem.',
     requestProcessing: 'PixelRing sprawdza szczegóły i aktualizuje status, pliki oraz wiadomości w historii zgłoszenia.',
@@ -630,8 +642,10 @@ const PORTAL_COPY: Record<PortalLocale, PortalCopy> = {
     reportsIntro: 'تظهر تقارير الصور هنا عندما ينشرها PixelRing لطلب معين.',
     requestFallbackTitle: 'الطلب قيد المراجعة',
     futureHiddenNote: 'المواقع والموظفون والفواتير ووظائف B2B الموسعة مخفية حتى المراحل التالية.',
+    verifiedEmail: 'البريد الإلكتروني المؤكد نشط',
     siteLink: 'الموقع',
     howItWorks: 'كيف يعمل',
+    portalAccountLabel: 'حساب البوابة',
     requestCreated: 'تصف المهمة وتحصل على رقم PR.',
     requestConnected: 'يبقى الطلب مرتبطا بهذا الحساب المؤكد.',
     requestProcessing: 'يفحص PixelRing التفاصيل ويحدث الحالة والملفات والرسائل في سجل الطلب.',
@@ -760,7 +774,7 @@ export default function PortalDashboard({
 
             <div className="rounded-xl border border-white/10 bg-white/[0.055] p-3">
               <strong className="block text-[13px]">{organization.name}</strong>
-              <span className="mt-1 block text-[11px] leading-4 text-white/55">{t('planLabel', { plan: organization.plan })} · verified email</span>
+              <span className="mt-1 block text-[11px] leading-4 text-white/55">{t('planLabel', { plan: organization.plan })} · {copy.verifiedEmail}</span>
             </div>
 
             <nav className="mt-4 grid gap-1" aria-label={copy.navLabel}>
@@ -974,7 +988,7 @@ function EmptyPortalOverview({ copy, onTabChange }: { copy: PortalCopy; onTabCha
           <button
             type="button"
             onClick={() => onTabChange('new-request')}
-            className="rounded-2xl border border-[#EFE6DC] bg-[#FFFDFC] p-4 text-left transition hover:border-[#C46E43]/60"
+            className="rounded-2xl border border-[#EFE6DC] bg-[#FFFDFC] p-4 text-start transition hover:border-[#C46E43]/60"
           >
             <strong className="block text-[16px]">{copy.emptyState.startNewTitle}</strong>
             <span className="mt-1 block text-[13px] leading-5 text-[#7B7168]">
@@ -983,7 +997,7 @@ function EmptyPortalOverview({ copy, onTabChange }: { copy: PortalCopy; onTabCha
           </button>
           <Link
             href="/status"
-            className="rounded-2xl border border-[#EFE6DC] bg-[#FFFDFC] p-4 text-left transition hover:border-[#C46E43]/60"
+            className="rounded-2xl border border-[#EFE6DC] bg-[#FFFDFC] p-4 text-start transition hover:border-[#C46E43]/60"
           >
             <strong className="block text-[16px]">{copy.emptyState.findExistingTitle}</strong>
             <span className="mt-1 block text-[13px] leading-5 text-[#7B7168]">
@@ -1090,7 +1104,7 @@ function RequestsTable({
         )}
       </div>
       <div className="min-w-0 overflow-x-auto">
-        <table className="min-w-[760px] w-full border-collapse text-left text-[12px]">
+        <table className="min-w-[760px] w-full border-collapse text-start text-[12px]">
           <thead>
             <tr className="border-b border-[#E5EAF0] text-[10px] font-black uppercase tracking-[0.14em] text-[#7B7168]">
               <th className="py-2 pe-3">{copy.requestNumber}</th>
@@ -1184,7 +1198,7 @@ function NewRequestForm({
       } | null;
 
       if (!response.ok || !data?.success) {
-        throw new Error(data?.message || formCopy.genericError);
+        throw new Error(formCopy.genericError);
       }
 
       setFeedback(formCopy.createdFeedback(data.publicRequestNumber || ''));
@@ -1207,7 +1221,7 @@ function NewRequestForm({
               key={category.title}
               type="button"
               onClick={() => setIssueType(category.title)}
-              className={`rounded-2xl border p-4 text-left transition ${
+              className={`rounded-2xl border p-4 text-start transition ${
                 issueType === category.title
                   ? 'border-[#C46E43] bg-[#FFF3E8]'
                   : 'border-[#EFE6DC] bg-[#FFFDFC] hover:border-[#C46E43]/60'
@@ -1285,8 +1299,8 @@ function NewRequestForm({
       <TimelineCard
         title={copy.howItWorks}
         items={[
-          ['PR-Nummer', copy.requestCreated],
-          ['Portal-Konto', copy.requestConnected],
+          [copy.requestNumber, copy.requestCreated],
+          [copy.portalAccountLabel, copy.requestConnected],
           ['PixelRing', copy.requestProcessing],
         ]}
       />
@@ -1340,7 +1354,7 @@ function ObjectsWorkspace({
                 key={object.id}
                 type="button"
                 onClick={() => onSelectObject(object.id)}
-                className={`rounded-2xl border bg-white p-4 text-left shadow-sm transition ${
+                className={`rounded-2xl border bg-white p-4 text-start shadow-sm transition ${
                   selectedObject.id === object.id ? 'border-[#C46E43]' : 'border-[#E3D8CA] hover:border-[#C46E43]/60'
                 }`}
               >
@@ -1488,7 +1502,7 @@ function AssetInventory({
       </div>
       <section className="rounded-2xl border border-[#E3D8CA] bg-white p-5 shadow-sm">
         <div className="overflow-x-auto">
-          <table className="min-w-[980px] w-full text-left text-[14px]">
+          <table className="min-w-[980px] w-full text-start text-[14px]">
             <thead>
               <tr className="border-b border-[#EFE6DC] text-[11px] font-black uppercase tracking-[0.14em] text-[#7B7168]">
                 <th className="py-3 pe-4">Актив</th>
@@ -1552,7 +1566,7 @@ function WarrantyPanel({
   return (
     <section className="rounded-2xl border border-[#E3D8CA] bg-white p-5 shadow-sm">
       <div className="overflow-x-auto">
-        <table className="min-w-[760px] w-full text-left text-[14px]">
+        <table className="min-w-[760px] w-full text-start text-[14px]">
           <thead>
             <tr className="border-b border-[#EFE6DC] text-[11px] font-black uppercase tracking-[0.14em] text-[#7B7168]">
               <th className="py-3 pe-4">Объект</th>
@@ -1586,7 +1600,7 @@ function OffersPanel({ documents }: { documents: PortalDocument[] }) {
   return (
     <section className="rounded-2xl border border-[#E3D8CA] bg-white p-5 shadow-sm">
       <div className="overflow-x-auto">
-        <table className="min-w-[760px] w-full text-left text-[14px]">
+        <table className="min-w-[760px] w-full text-start text-[14px]">
           <thead>
             <tr className="border-b border-[#EFE6DC] text-[11px] font-black uppercase tracking-[0.14em] text-[#7B7168]">
               <th className="py-3 pe-4">Документ</th>
@@ -1632,7 +1646,7 @@ function DocumentsTable({ documents }: { documents: PortalDocument[] }) {
   return (
     <section className="rounded-2xl border border-[#E3D8CA] bg-white p-5 shadow-sm">
       <div className="overflow-x-auto">
-        <table className="min-w-[800px] w-full text-left text-[14px]">
+        <table className="min-w-[800px] w-full text-start text-[14px]">
           <thead>
             <tr className="border-b border-[#EFE6DC] text-[11px] font-black uppercase tracking-[0.14em] text-[#7B7168]">
               <th className="py-3 pe-4">Название</th>
@@ -1666,7 +1680,7 @@ function TeamPreview({ organization }: { organization: PortalDemoOrganization })
         <button type="button" className="rounded-xl bg-[#C46E43] px-4 py-2.5 text-[13px] font-black text-white">Пригласить</button>
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-[760px] w-full text-left text-[14px]">
+        <table className="min-w-[760px] w-full text-start text-[14px]">
           <thead>
             <tr className="border-b border-[#EFE6DC] text-[11px] font-black uppercase tracking-[0.14em] text-[#7B7168]">
               <th className="py-3 pe-4">Пользователь</th>
@@ -1707,7 +1721,7 @@ function SettingsPreview({ organization }: { organization: PortalDemoOrganizatio
         <h2 className="text-[20px] font-black">Privacy</h2>
         <div className="mt-4 grid gap-2">
           {['Запросить экспорт данных', 'Исправить контактные данные', 'Запросить удаление данных'].map((label) => (
-            <button key={label} type="button" className="rounded-xl border border-[#E3D8CA] px-4 py-3 text-left text-[14px] font-black">
+            <button key={label} type="button" className="rounded-xl border border-[#E3D8CA] px-4 py-3 text-start text-[14px] font-black">
               {label}
             </button>
           ))}
@@ -1848,7 +1862,7 @@ function InfoList({ title, rows }: { title: string; rows: readonly (readonly [st
         {rows.map(([label, value]) => (
           <div key={`${label}-${value}`} className="flex items-start justify-between gap-4 border-b border-[#F1E9DF] pb-3 last:border-0 last:pb-0">
             <span className="text-[13px] text-[#7B7168]">{label}</span>
-            <strong className="max-w-[65%] text-right text-[13px]">{value}</strong>
+            <strong className="max-w-[65%] text-end text-[13px]">{value}</strong>
           </div>
         ))}
       </div>

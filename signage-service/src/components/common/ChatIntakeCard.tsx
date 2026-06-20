@@ -7,6 +7,8 @@ import LocationPicker, { type SelectedLocation } from './LocationPicker';
 
 type ContactMode = 'phone' | 'email';
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export type IntakePrefill = {
   issueType?: string;
   contact?: string;
@@ -36,6 +38,7 @@ function getChatIntakeCopy(locale: string) {
       trackStatus: 'Check status',
       portalSetup: 'Set up customer portal access',
       missingEmail: 'Please enter an email address to create the request. Phone is optional for operational contact.',
+      invalidEmail: 'Please enter a valid email address. Phone is optional for operational contact.',
       chatRequestTypeFallback: 'Not specified',
       chatRequestPrefix: 'Chat request. Type:',
       sendError: 'Error while sending.',
@@ -64,6 +67,7 @@ function getChatIntakeCopy(locale: string) {
       trackStatus: 'Проверить статус',
       portalSetup: 'Подготовить личный кабинет',
       missingEmail: 'Укажите email, чтобы создать заявку. Телефон можно оставить дополнительно для связи по работе.',
+      invalidEmail: 'Укажите корректный email. Телефон можно оставить дополнительно для связи по работе.',
       chatRequestTypeFallback: 'Не указано',
       chatRequestPrefix: 'Заявка из чата. Тип:',
       sendError: 'Ошибка при отправке.',
@@ -92,6 +96,7 @@ function getChatIntakeCopy(locale: string) {
       trackStatus: 'Durumu kontrol et',
       portalSetup: 'Musteri portalini hazirla',
       missingEmail: 'Talebi olusturmak icin e-posta girin. Telefon operasyonel iletisim icin istege baglidir.',
+      invalidEmail: 'Gecerli bir e-posta girin. Telefon operasyonel iletisim icin istege baglidir.',
       chatRequestTypeFallback: 'Belirtilmedi',
       chatRequestPrefix: 'Sohbet talebi. Tur:',
       sendError: 'Gonderirken hata olustu.',
@@ -120,6 +125,7 @@ function getChatIntakeCopy(locale: string) {
       trackStatus: 'Sprawdz status',
       portalSetup: 'Przygotuj dostep do portalu',
       missingEmail: 'Podaj e-mail, aby utworzyc zgloszenie. Telefon jest opcjonalny do kontaktu operacyjnego.',
+      invalidEmail: 'Podaj poprawny e-mail. Telefon jest opcjonalny do kontaktu operacyjnego.',
       chatRequestTypeFallback: 'Nie podano',
       chatRequestPrefix: 'Zgloszenie z chatu. Typ:',
       sendError: 'Blad podczas wysylania.',
@@ -148,6 +154,7 @@ function getChatIntakeCopy(locale: string) {
       trackStatus: 'التحقق من الحالة',
       portalSetup: 'تجهيز بوابة العميل',
       missingEmail: 'يرجى إدخال بريد إلكتروني لإنشاء الطلب. الهاتف اختياري للتواصل التشغيلي.',
+      invalidEmail: 'يرجى إدخال بريد إلكتروني صالح. الهاتف اختياري للتواصل التشغيلي.',
       chatRequestTypeFallback: 'غير محدد',
       chatRequestPrefix: 'طلب من الدردشة. النوع:',
       sendError: 'حدث خطأ أثناء الإرسال.',
@@ -175,6 +182,7 @@ function getChatIntakeCopy(locale: string) {
     trackStatus: 'Status pruefen',
     portalSetup: 'Kundenportal vorbereiten',
     missingEmail: 'Bitte geben Sie eine E-Mail-Adresse an, um die Anfrage zu erstellen. Telefon ist nur ein optionaler Kontakt fuer Rueckfragen.',
+    invalidEmail: 'Bitte geben Sie eine gueltige E-Mail-Adresse an. Telefon ist nur ein optionaler Kontakt fuer Rueckfragen.',
     chatRequestTypeFallback: 'Nicht angegeben',
     chatRequestPrefix: 'Chat-Anfrage. Typ:',
     sendError: 'Fehler beim Senden.',
@@ -294,6 +302,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
     const cleanPhone = phone.trim();
 
     if (!cleanEmail) { setError(copy.missingEmail); return; }
+    if (!EMAIL_REGEX.test(cleanEmail)) { setError(copy.invalidEmail); return; }
     setSubmitting(true);
     setError('');
 
@@ -320,10 +329,18 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
       files.forEach(f => fd.append('files', f));
 
       const res = await fetch('/api/contact', { method: 'POST', body: fd });
-      const data = await res.json() as { publicRequestNumber?: string; portalClaimUrl?: string; error?: string };
+      const data = await res.json() as { publicRequestNumber?: string; portalClaimUrl?: string; error?: string; code?: string };
 
       if (!res.ok || !data.publicRequestNumber) {
-        throw new Error(data.error ?? copy.sendError);
+        if (data.code === 'verification_required' && data.error) {
+          throw new Error(data.error);
+        }
+
+        if (res.status === 400) {
+          throw new Error(copy.invalidEmail);
+        }
+
+        throw new Error(copy.sendError);
       }
 
       setRequestNumber(data.publicRequestNumber);
@@ -340,6 +357,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
 
   return (
     <form
+      noValidate
       onSubmit={handleSubmit}
       className="rounded-[20px] border border-[#B8643E]/20 bg-[#FDF7F0] p-3.5 shadow-sm space-y-2.5 animate-in fade-in slide-in-from-bottom-2 duration-400"
     >
@@ -383,7 +401,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
           <label className="text-[11px] font-semibold uppercase tracking-wide text-[#72665D] mb-1 block">{copy.emailLabel}</label>
           <input
             type="email"
-            required
+            aria-required="true"
             value={email}
             onChange={e => setEmail(e.target.value)}
             onBlur={() => void saveDraft()}

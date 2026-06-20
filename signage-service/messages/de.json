@@ -329,6 +329,7 @@
     "success_message": "Nutzen Sie Status mit dieser Nummer, um fortzufahren.",
     "open_status": "Status öffnen",
     "error_invalid_contact": "Bitte geben Sie eine gültige E-Mail-Adresse an, damit wir die Anfrage erstellen und den Zugang zum Kundenportal vorbereiten können. Telefon ist optional.",
+    "error_required_message": "Bitte beschreiben Sie kurz, was passiert ist.",
     "error_generic": "Die Anfrage konnte gerade nicht gesendet werden. Bitte versuchen Sie es erneut."
   },
   "StatusPage": {
