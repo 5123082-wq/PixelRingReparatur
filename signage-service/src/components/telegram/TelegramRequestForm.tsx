@@ -3,6 +3,7 @@
 import { useRef, useState, type FormEvent } from 'react';
 
 import LocationPicker, { type SelectedLocation } from '@/components/common/LocationPicker';
+import { trackGoogleAdsLeadConversion } from '@/lib/google-ads';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PHONE_DIGITS = 7;
@@ -257,6 +258,7 @@ export default function TelegramRequestForm({ token, locale }: TelegramRequestFo
         throw new Error(copy.errorGeneric);
       }
 
+      trackGoogleAdsLeadConversion();
       setIsSuccess(true);
       window.setTimeout(() => {
         window.location.assign(data?.returnPath || data?.telegramReturnUrl || '/');

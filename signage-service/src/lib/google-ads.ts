@@ -1,8 +1,9 @@
 'use client';
 
-const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || 'AW-18220277188';
+const GOOGLE_ADS_ENABLED = process.env.NEXT_PUBLIC_GOOGLE_ADS_ENABLED === 'true';
+const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
 const LEAD_CONVERSION_LABEL =
-  process.env.NEXT_PUBLIC_GOOGLE_ADS_LEAD_CONVERSION_LABEL || 'NDbWCL3P5LocEMS7jfBD';
+  process.env.NEXT_PUBLIC_GOOGLE_ADS_LEAD_CONVERSION_LABEL;
 
 type ConsentState = 'granted' | 'denied';
 
@@ -30,6 +31,7 @@ export function trackGoogleAdsLeadConversion() {
   if (
     typeof window === 'undefined' ||
     typeof window.gtag !== 'function' ||
+    !GOOGLE_ADS_ENABLED ||
     !GOOGLE_ADS_ID ||
     !LEAD_CONVERSION_LABEL
   ) {

@@ -1,10 +1,11 @@
 import Script from 'next/script';
 import GoogleAdsConsentBanner from './GoogleAdsConsentBanner';
 
-const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || 'AW-18220277188';
+const GOOGLE_ADS_ENABLED = process.env.NEXT_PUBLIC_GOOGLE_ADS_ENABLED === 'true';
+const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
 
 export default function GoogleAdsTracking({ locale }: { locale: string }) {
-  if (!GOOGLE_ADS_ID) {
+  if (!GOOGLE_ADS_ENABLED || !GOOGLE_ADS_ID) {
     return null;
   }
 

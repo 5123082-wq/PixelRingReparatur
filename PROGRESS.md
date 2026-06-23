@@ -8,6 +8,10 @@ Purpose: fast global orientation before work. Read this beacon first; read the h
 
 Latest checkpoint:
 
+- Date: 2026-06-23
+- Current stage: Tightened Google Ads conversion tracking: Ads tag loading now requires explicit public env enablement, website/chat/Telegram request forms report the Google Ads lead conversion only after successful request creation, and the existing `/business` service-audit CTA now routes into the tracked request form instead of a direct mailto link.
+- Next action: Set `NEXT_PUBLIC_GOOGLE_ADS_ENABLED=true` in the production build environment, redeploy, then verify `AW-18220277188/NDbWCL3P5LocEMS7jfBD` with Google Tag Assistant and Google Ads diagnostics.
+
 - Date: 2026-06-20
 - Current stage: Restored approved German CMS legal source text for `privacy/de` and `impressum/de` from CMS revisions after the May baseline seed overwrite; legal routes now render dynamically from CMS, reject placeholder/stale legal CMS text, and the CMS baseline seed skips legal pages so it cannot overwrite them again.
 - Next action: Deploy/push the fix to `main`, then verify `/ru/privacy`, `/ru/impressum`, `/de/privacy`, and `/de/impressum` no longer show seed placeholders.

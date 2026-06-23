@@ -669,7 +669,26 @@ The following text must be used in the "Details" or "Settings" section of the ba
 - **Privacy-First:** No analytics scripts (`gtag.js`, `fbevents.js`) should load until `consent=granted`.
 - **Granular Choices:** The banner must offer distinct toggles for Statistics, Marketing, and Functional cookies.
 
+## 30. Progress Log
+
+* **Date:** 2026-06-23
+* **Current sprint/block:** Google Ads (рекламная система Google) lead conversion (конверсия заявки)
+* **Done:**
+  - Google Ads (рекламная система Google) tag loading now requires explicit `NEXT_PUBLIC_GOOGLE_ADS_ENABLED=true` (публичный флаг окружения для включения).
+  - Website form (форма сайта), website chat (чат сайта), and Telegram secure intake (безопасная Telegram-форма) send the lead conversion (конверсию заявки) only after a request is successfully created.
+  - Existing `/business` service-audit CTA (призыв к действию сервисного аудита) now opens the tracked request form instead of direct `mailto` (ссылка на email-клиент).
+* **In progress:** Production environment (production-окружение) configuration and external Google Ads (рекламная система Google) verification.
+* **Next action:** Set `NEXT_PUBLIC_GOOGLE_ADS_ENABLED=true` (включить публичный флаг окружения) for production build, redeploy, and verify `AW-18220277188/NDbWCL3P5LocEMS7jfBD` with Google Tag Assistant (помощник проверки тегов Google) and Google Ads diagnostics (диагностика Google Ads).
+* **Blockers/risks:** Local production build currently reaches TypeScript (проверка TypeScript) successfully but fails during static page generation because Prisma (клиент базы данных Prisma) times out while reading CMS fallback data (резервные данные CMS).
+* **Updated documents/files:**
+  - `PROGRESS.md`
+  - `docs/11_operations/marketing_analytics.md`
+  - `signage-service/.env.example`
+  - `signage-service/src/components/analytics/GoogleAdsTracking.tsx`
+  - `signage-service/src/lib/google-ads.ts`
+  - `signage-service/src/components/telegram/TelegramRequestForm.tsx`
+  - `signage-service/src/app/[locale]/business/page.tsx`
+
 ---
 
 Конец документа 10.
-

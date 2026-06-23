@@ -721,12 +721,11 @@ export default async function BusinessPage({
 
                   {/* CTAs */}
                   <div className="mt-8 flex flex-wrap gap-3">
-                    <a
-                      href={`mailto:info@pixel-ring.com?subject=Service-Audit%20anfragen`}
-                      className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#081827] px-6 text-[15px] font-black text-white shadow-[0_18px_36px_rgba(8,24,39,0.20)] transition-transform duration-200 hover:-translate-y-0.5"
-                    >
-                      {content.auditCta}
-                    </a>
+                    <LeistungenRequestButton
+                      label={content.auditCta}
+                      serviceIntent="service-audit"
+                      className="min-h-[52px] !bg-[#081827] px-6 text-[15px] font-black shadow-[0_18px_36px_rgba(8,24,39,0.20)] transition-transform duration-200 hover:-translate-y-0.5 hover:!bg-[#10243A]"
+                    />
                     <a
                       href={BUSINESS_PRESENTATION_HREF}
                       download
