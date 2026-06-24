@@ -42,6 +42,20 @@ Use this folder for:
 
 ## Progress Log
 
+* **Date:** 2026-06-24
+* **Current sprint/block:** Leistungen Final CTA Standardization
+* **Done:**
+  - Converted the shared `LeistungenFooterCTA` component to the approved compact dark image CTA format from `/de/leistungen/werbeanlagen-reparatur`.
+  - Reused the shared component on `/[locale]/leistungen`, `/[locale]/leistungen/werbeanlagen-reparatur`, and all shared `/[locale]/leistungen/[slug]` service detail pages.
+  - Kept page-specific final headlines, CTA labels, request intent values, and service imagery for the overview and detail pages.
+  - Verified the six DE `leistungen` routes render the new CTA at the expected desktop height without horizontal overflow.
+* **In progress:** Owner visual review of the standardized final CTA across the Leistungen section.
+* **Next action:** Review `/de/leistungen`, `/de/leistungen/werbeanlagen-reparatur`, `/de/leistungen/lichtwerbung-led-modernisierung`, `/de/leistungen/werbeanlagen-audit-diagnose`, `/de/leistungen/montage-demontage-werbeanlagen`, and `/de/leistungen/druckprodukte-branding-werbematerialien`.
+* **Blockers/risks:** Browser console still shows existing Next image LCP warnings on some hero images; no runtime errors were observed for the new CTA component.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/02_public_website/README.md`
+
 * **Date:** 2026-06-20
 * **Current sprint/block:** Legal CMS Restoration
 * **Done:**

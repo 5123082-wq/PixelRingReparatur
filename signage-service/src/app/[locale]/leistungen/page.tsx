@@ -2179,6 +2179,8 @@ export default async function LeistungenPage({
             locale={locale}
             finalHeadline={content.finalHeadline}
             finalText={content.finalText}
+            serviceIntent="leistungen-overview-request"
+            imageAlt={content.finalHeadline}
           />
         )}
       </main>

@@ -1,45 +1,44 @@
 'use client';
 
-import React, { useState } from 'react';
-import SectionEyebrow from '../common/SectionEyebrow';
-import ContactModal from '../common/ContactModal';
-import ChatModal from '../common/ChatModal';
+import Image from 'next/image';
+
+import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestButton';
 
 interface LeistungenFooterCTAProps {
   locale: string;
   finalHeadline: string;
   finalText: string;
+  requestTitle?: string;
+  requestText?: string;
+  requestCta?: string;
+  serviceIntent?: string;
+  imageSrc?: string;
+  imageAlt?: string;
 }
 
-const LOCALIZED_TEXTS: Record<string, { eyebrow: string; trustIntro: string; ctaLabel: string }> = {
+const DEFAULT_TEXTS: Record<string, { requestTitle: string; ctaLabel: string }> = {
   de: {
-    eyebrow: 'NEXT STEP',
-    trustIntro: 'Geben Sie die Verantwortung für Ihre sichtbare Marke in die Hände von Spezialisten.',
+    requestTitle: 'Starten Sie mit Foto oder Beschreibung',
     ctaLabel: 'Anfrage starten',
   },
   en: {
-    eyebrow: 'NEXT STEP',
-    trustIntro: 'Place the responsibility for your visible brand in the hands of specialists.',
+    requestTitle: 'Start with a photo or description',
     ctaLabel: 'Start request',
   },
   ru: {
-    eyebrow: 'СЛЕДУЮЩИЙ ШАГ',
-    trustIntro: 'Передайте ответственность за ваш визуальный бренд в руки специалистов.',
+    requestTitle: 'Начните с фото или описания',
     ctaLabel: 'Начать заявку',
   },
   tr: {
-    eyebrow: 'SONRAKİ ADIM',
-    trustIntro: 'Görünür markanızın sorumluluğunu uzmanların ellerine bırakın.',
+    requestTitle: 'Fotoğraf veya açıklama ile başlayın',
     ctaLabel: 'Talebi başlat',
   },
   pl: {
-    eyebrow: 'NASTĘPNY KROK',
-    trustIntro: 'Powierz odpowiedzialność za swoją widoczną markę w ręce specjalistów.',
+    requestTitle: 'Zacznij od zdjęcia albo opisu',
     ctaLabel: 'Rozpocznij zapytanie',
   },
   ar: {
-    eyebrow: 'الخطوة التالية',
-    trustIntro: 'ضع مسؤولية علامتك التجارية المرئية بين أيدي المتخصصين.',
+    requestTitle: 'ابدأ بصورة أو وصف',
     ctaLabel: 'بدء الطلب',
   },
 };
@@ -48,57 +47,55 @@ export default function LeistungenFooterCTA({
   locale,
   finalHeadline,
   finalText,
+  requestTitle,
+  requestText,
+  requestCta,
+  serviceIntent = 'leistungen-footer-request',
+  imageSrc = '/images/leistungen/repair-hero/hero-sign-repair-01.jpg',
+  imageAlt,
 }: LeistungenFooterCTAProps) {
-  const [isContactOpen, setIsContactOpen] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false);
-
-  const texts = LOCALIZED_TEXTS[locale] || LOCALIZED_TEXTS.de;
+  const texts = DEFAULT_TEXTS[locale] || DEFAULT_TEXTS.de;
+  const resolvedRequestTitle = requestTitle ?? texts.requestTitle;
+  const resolvedRequestText = requestText ?? finalText;
+  const resolvedRequestCta = requestCta ?? texts.ctaLabel;
 
   return (
-    <>
-      <section className="bg-white px-6 py-14 sm:py-18">
-        <div className="mx-auto max-w-7xl">
-          <div
-            className="grid gap-8 overflow-hidden rounded-[28px] border border-[#d3b2a2]/50 px-6 py-7 shadow-[0_18px_50px_rgba(8,24,39,0.08)] sm:px-8 sm:py-9 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-12"
-            style={{
-              background:
-                'radial-gradient(circle at 88% 18%, rgba(184,100,62,0.16) 0%, transparent 30%), linear-gradient(135deg, #F3E7DE 0%, #EEF3F8 100%)',
-            }}
-          >
-            {/* Left Column: Text Content */}
-            <div className="min-w-0 flex flex-col items-start text-start">
-              <SectionEyebrow className="mb-5">{texts.eyebrow}</SectionEyebrow>
-              <h2 className="max-w-3xl text-[28px] font-extrabold leading-[1.12] tracking-[0] text-[#081827] sm:text-[34px] lg:text-[38px]">
-                {finalHeadline}
-              </h2>
-              <p className="mt-4 max-w-2xl text-[16px] leading-[1.65] text-[#526174] sm:text-[17px]">
-                {finalText}
+    <section className="bg-white px-4 py-12 sm:px-6 sm:py-16">
+      <div className="mx-auto max-w-7xl">
+        <h2 className="max-w-4xl text-3xl font-extrabold leading-[1.08] tracking-[0] text-[#0E1A2B] sm:text-5xl">
+          {finalHeadline}
+        </h2>
+
+        <div className="mt-8 overflow-hidden rounded-[30px] bg-[#101112] shadow-[0_24px_70px_rgba(8,24,39,0.18)] sm:rounded-[36px]">
+          <div className="grid min-h-[476px] lg:grid-cols-[0.45fr_0.55fr]">
+            <div className="relative z-10 flex min-w-0 flex-col justify-center px-6 py-8 text-start text-white sm:px-10 lg:px-16 lg:py-12">
+              <h3 className="max-w-xl text-[30px] font-extrabold leading-[1.08] tracking-[0] sm:text-[44px]">
+                {resolvedRequestTitle}
+              </h3>
+              <p className="mt-5 max-w-md text-[16px] font-semibold leading-8 text-white/72">
+                {resolvedRequestText}
               </p>
-              <p className="mt-4 max-w-2xl border-l-2 border-[#B8643E] pl-4 text-[14px] font-semibold leading-6 text-[#526174] rtl:border-l-0 rtl:border-r-2 rtl:pl-0 rtl:pr-4">
-                {texts.trustIntro}
-              </p>
+              <div className="mt-7">
+                <LeistungenRequestButton
+                  label={resolvedRequestCta}
+                  serviceIntent={serviceIntent}
+                />
+              </div>
             </div>
 
-            {/* Right Column: Single CTA Button */}
-            <div className="flex flex-wrap items-center gap-3 lg:justify-end shrink-0">
-              <button
-                type="button"
-                onClick={() => setIsContactOpen(true)}
-                className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#B8643E] px-7 py-3 text-[15px] font-black text-white shadow-[0_16px_34px_rgba(184,100,62,0.22)] transition-all duration-300 hover:bg-[#A65835] active:scale-[0.98] cursor-pointer"
-              >
-                {texts.ctaLabel}
-              </button>
+            <div className="relative min-h-[272px] overflow-hidden lg:min-h-full">
+              <Image
+                src={imageSrc}
+                alt={imageAlt ?? resolvedRequestTitle}
+                fill
+                sizes="(min-width: 1024px) 55vw, 100vw"
+                className="object-cover object-[58%_50%]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#101112] via-transparent to-transparent lg:bg-gradient-to-r lg:from-[#101112] lg:via-[#101112]/20 lg:to-transparent" />
             </div>
           </div>
         </div>
-      </section>
-
-      <ContactModal
-        isOpen={isContactOpen}
-        onClose={() => setIsContactOpen(false)}
-        onOpenChat={() => setIsChatOpen(true)}
-      />
-      <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
-    </>
+      </div>
+    </section>
   );
 }

@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import { Link } from '@/i18n/routing';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -11,6 +10,7 @@ import LeistungenDiagnosticPrototype from '@/components/leistungen/LeistungenDia
 import LeistungenRepairProofStrip from '@/components/leistungen/LeistungenRepairProofStrip';
 import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestButton';
 import FAQSection from '@/components/sections/FAQSection';
+import LeistungenFooterCTA from '@/components/sections/LeistungenFooterCTA';
 import { SITE_CONFIG } from '@/lib/site-config';
 import { SITE_BASE_URL, buildLanguageAlternates, buildLocaleUrl, buildSiteUrl } from '@/lib/seo';
 
@@ -1811,48 +1811,6 @@ function RepairServiceScopeSection({ content }: { content: RepairScopeContent })
   );
 }
 
-function RepairNextStepSection({ content }: { content: RepairNextStepContent }) {
-  return (
-    <section className="bg-white px-4 py-14 sm:px-6 sm:py-20">
-      <div className="mx-auto max-w-7xl">
-        <h2 className="max-w-4xl text-3xl font-extrabold leading-[1.08] tracking-[0] text-[#0E1A2B] sm:text-5xl">
-          {content.title}
-        </h2>
-
-        <div className="mt-10 overflow-hidden rounded-[30px] bg-[#101112] shadow-[0_24px_70px_rgba(8,24,39,0.18)] sm:rounded-[36px]">
-          <div className="grid min-h-[560px] lg:grid-cols-[0.45fr_0.55fr]">
-            <div className="relative z-10 flex min-w-0 flex-col justify-center px-6 py-10 text-start text-white sm:px-10 lg:px-16 lg:py-16">
-              <h3 className="max-w-xl text-[30px] font-extrabold leading-[1.08] tracking-[0] sm:text-[44px]">
-                {content.requestTitle}
-              </h3>
-              <p className="mt-5 max-w-md text-[16px] font-semibold leading-8 text-white/72">
-                {content.requestText}
-              </p>
-              <div className="mt-8">
-                <LeistungenRequestButton
-                  label={content.requestCta}
-                  serviceIntent="repair-final-next-step"
-                />
-              </div>
-            </div>
-
-            <div className="relative min-h-[320px] overflow-hidden lg:min-h-full">
-              <Image
-                src="/images/leistungen/repair-hero/hero-sign-repair-01.jpg"
-                alt={content.requestTitle}
-                fill
-                sizes="(min-width: 1024px) 55vw, 100vw"
-                className="object-cover object-[58%_50%]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#101112] via-transparent to-transparent lg:bg-gradient-to-r lg:from-[#101112] lg:via-[#101112]/20 lg:to-transparent" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 export default async function WerbeanlagenReparaturPage({
   params,
 }: {
@@ -1911,7 +1869,15 @@ export default async function WerbeanlagenReparaturPage({
           titleClassName="text-3xl font-extrabold leading-[1.08] tracking-[0] text-[#0E1A2B] sm:text-5xl"
         />
 
-        <RepairNextStepSection content={nextStepContent} />
+        <LeistungenFooterCTA
+          locale={safeLocale}
+          finalHeadline={nextStepContent.title}
+          finalText={nextStepContent.requestText}
+          requestTitle={nextStepContent.requestTitle}
+          requestCta={nextStepContent.requestCta}
+          serviceIntent="repair-final-next-step"
+          imageAlt={nextStepContent.requestTitle}
+        />
       </main>
       <Footer content={globalCms?.footer} />
     </div>

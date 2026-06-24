@@ -328,7 +328,7 @@ const Header = ({
   const requestHref = content?.requestHref || '';
 
   useEffect(() => {
-    if (isMenuOpen) {
+    if (isMenuOpen || isModalOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
@@ -336,7 +336,7 @@ const Header = ({
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [isMenuOpen]);
+  }, [isMenuOpen, isModalOpen]);
 
   useEffect(() => {
     const handleResize = () => {
