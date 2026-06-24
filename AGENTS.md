@@ -16,9 +16,10 @@ The repository is intentionally split:
 Use staged context loading before broad product, documentation, CRM, CMS, AI assistant, client portal, or security work:
 
 1. Read the `Context Beacon` sections in `PROGRESS.md`, `docs/README.md`, and `docs/00_project_overview/project_state_and_roadmap.md`.
-2. Read the full current-state, roadmap, or domain document only when the task touches that domain, the beacon explicitly points there, or shallow context leaves material uncertainty.
-3. Read the domain-specific folder README for the area you are touching, starting with its top-level orientation and then going deeper only as needed.
-4. Treat `docs/13_references_archive/` as historical reference only unless a current document explicitly marks a specific part as active.
+2. For `PROGRESS.md`, read only the `Context Beacon` and the latest 2-3 log entries at startup. Read older entries in small 2-3 entry batches only when continuing an older track, answering history questions, or following a specific date/domain pointer.
+3. Read the full current-state, roadmap, or domain document only when the task touches that domain, the beacon explicitly points there, or shallow context leaves material uncertainty.
+4. Read the domain-specific folder README for the area you are touching, starting with its top-level orientation and then going deeper only as needed.
+5. Treat `docs/13_references_archive/` as historical reference only unless a current document explicitly marks a specific part as active.
 
 For application code work:
 
@@ -135,7 +136,7 @@ If a useful rule should become active, propose extracting it into `docs/12_agent
 - When moving or splitting docs, update links and the migration matrix.
 - After documentation changes, check markdown links.
 - Keep a root-level `PROGRESS.md` as the global short development journal.
-- Agent must read `PROGRESS.md` before starting work.
+- Agent must read the `PROGRESS.md` `Context Beacon` before starting work; do not read the full file by default.
 - Agent must update `PROGRESS.md` after changes.
 - `PROGRESS.md` should stay short: module + current stage/status only. It is strictly for tracking important high-level changes to understand where the project stands.
 - Do NOT log minor bug fixes, minor refactoring, or routine git commits in `PROGRESS.md`.

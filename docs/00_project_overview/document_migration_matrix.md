@@ -27,6 +27,7 @@ All current Markdown documents are assigned to the new folder structure. Use thi
 | `docs/01_strategy/mvp_roadmap.md` | `01_strategy/` | keep | Existing | MVP scope, launch roadmap, and backlog logic. |
 | `docs/02_public_website/README.md` | `02_public_website/` | keep | New | Public website folder index. |
 | `docs/02_public_website/information_architecture.md` | `02_public_website/` | keep | Done | Moved from `docs/02_ux_ui/information_architecture.md`. Public website IA, page map, CTA logic, multilingual website requirements. |
+| `docs/02_public_website/public_website_progress_log.md` | `02_public_website/` | keep | New 2026-06-20 | Detailed public website progress history split out of the folder README to keep startup context light. |
 | `docs/02_public_website/user_journey_flows.md` | `02_public_website/` | keep | Done | Moved from `docs/02_ux_ui/user_journey_flows.md`. Public visitor flows and request journeys. |
 | `docs/03_design_system/design_prompts_stitch.md` | `03_design_system/` | keep | Done | Moved from `docs/02_ux_ui/design_prompts_stitch.md`. Design-generation prompts belong with design system. |
 | `docs/03_design_system/README.md` | `03_design_system/` | keep | New | Design system folder index. |
@@ -49,6 +50,7 @@ All current Markdown documents are assigned to the new folder structure. Use thi
 | `docs/07_content_ai_seo/troubleshooting_content_plan.md` | `07_content_ai_seo/` | delete | Removed 2026-06-13 | Moved from `docs/04_content_and_ai/troubleshooting_content_plan.md`, then deleted as superseded by `docs/07_content_ai_seo/problem_article_rules.md`, `docs/07_content_ai_seo/problem_article_content_model.md`, and `docs/07_content_ai_seo/probleme_loesungen_cluster_modernization_plan.md`. |
 | `docs/07_content_ai_seo/troubleshooting_page_template.md` | `07_content_ai_seo/` | delete | Removed 2026-06-13 | Moved from `docs/04_content_and_ai/troubleshooting_page_template.md`, then deleted as superseded by `docs/07_content_ai_seo/problem_article_rules.md` and `docs/07_content_ai_seo/problem_article_content_model.md`. |
 | `docs/05_admin_platform/README.md` | `05_admin_platform/` | keep | New | Admin platform target folder index. |
+| `docs/05_admin_platform/admin_platform_progress_log.md` | `05_admin_platform/` | keep | New 2026-06-20 | Detailed admin/CMS progress history split out of `admin_rollout_execution_plan.md` to keep rollout startup context light. |
 | `docs/10_security_privacy/privacy_consent.md` | `10_security_privacy/` | keep | Done | Moved from `docs/05_security_and_privacy/privacy_consent.md`. Privacy and consent. |
 | `docs/10_security_privacy/security_checklist.md` | `10_security_privacy/` | keep | Done | Moved from `docs/05_security_and_privacy/security_checklist.md`. Security checklist. |
 | `docs/10_security_privacy/security_guardrails.md` | `10_security_privacy/` | keep | Done | Moved from `docs/05_security_and_privacy/security_guardrails.md`. Security guardrails. |
@@ -66,6 +68,8 @@ All current Markdown documents are assigned to the new folder structure. Use thi
 | `docs/12_agent_rules/cms_blueprint_protocol_ru.md` | `12_agent_rules/` | keep | Done | Moved from `docs/07_admin_platform/master_document_cms_blueprint_ru.md`. CMS discovery protocol for AI agents. |
 | `docs/07_content_ai_seo/README.md` | `07_content_ai_seo/` | keep | New | Content, SEO, GEO, and AI visibility folder index. |
 | `docs/08_ai_assistant/README.md` | `08_ai_assistant/` | keep | New | AI assistant folder index. |
+| `docs/07_content_ai_seo/content_ai_seo_progress_log.md` | `07_content_ai_seo/` | keep | New 2026-06-20 | Detailed content/SEO/GEO progress history split out of the folder README to keep startup context light. |
+| `docs/08_ai_assistant/ai_assistant_progress_log.md` | `08_ai_assistant/` | keep | New 2026-06-20 | Detailed AI assistant progress history split out of the folder README to keep startup context light. |
 | `docs/09_engineering/README.md` | `09_engineering/` | keep | New | Engineering folder index. |
 | `docs/10_security_privacy/README.md` | `10_security_privacy/` | keep | New | Security and privacy folder index. |
 | `docs/11_operations/README.md` | `11_operations/` | keep | New | Operations folder index. |

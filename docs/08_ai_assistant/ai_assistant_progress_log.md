@@ -1,0 +1,152 @@
+# AI Assistant Progress Log
+
+Full historical progress log for `docs/08_ai_assistant/`.
+
+Do not read full progress log at startup. Start with [README.md](README.md), then read this file only in small date-based batches when continuing an older assistant track or touching Telegram/chat/safety/retrieval work.
+
+## Progress Log
+
+### 2026-06-17
+**Telegram Conversation Controller Refactor**
+- **Status**: Implemented.
+- **Done**:
+  - Added an explicit Telegram conversation controller with state resolution for new chat, intake pending, form link sent, active request, known contact without active request, and completed/cancelled request.
+  - Routed active PR status/follow-up turns before the LLM for phrases such as `Как дела с моей заявкой?`, `У меня нет заявки?`, `Что дальше?`, and short acknowledgements.
+  - Updated `/start return_...` handling so it reads the active Telegram case and returns PR-aware continuation copy with a status button instead of a generic return message.
+  - Kept ordinary active-request details available for AI wording, but always provides the active public PR to the assistant in active-request mode.
+  - Stopped overwriting the case summary with every Telegram message after a public PR has been issued.
+  - Added controller tests for real post-submit Telegram phrases and separate-new-request detection.
+- **In Progress**:
+  - Live Telegram QA after deployment.
+- **Next Action**:
+  - Retest the full Telegram flow with a real chat: new problem, form submit, PR confirmation, return, `Ok`, `Что дальше?`, `Как дела с моей заявкой?`, `У меня нет заявки?`, ordinary detail update, photo upload, and explicit separate new-problem request.
+- **Blockers/Risks**:
+  - This gives Telegram a proper controller layer for the current MVP. A future richer client/account model should still split Telegram identity from per-case routing more explicitly.
+- **Updated Documents**: `docs/08_ai_assistant/README.md`, `PROGRESS.md`
+
+### 2026-06-17
+**Telegram Active-Request Form Loop Guard**
+- **Status**: Implemented.
+- **Done**:
+  - Added a backend guard for active Telegram requests so AI text that tries to reopen, prepare, or refill the secure form after a PR has already been issued is replaced before delivery.
+  - Added localized deterministic continuation copy that tells the customer the request is already received and that photos, videos, and details can be sent directly in Telegram.
+  - Added a regression test covering the active-request form-reset failure mode.
+- **In Progress**:
+  - Live Telegram QA after deployment.
+- **Next Action**:
+  - Retest the post-submit Telegram flow with short follow-ups such as `Ok`, `Что дальше?`, and `Есть информация?`; verify the bot keeps the active PR context and does not offer the secure form again.
+- **Blockers/Risks**:
+  - This guard blocks the worst loop, but richer "living conversation" still depends on future state-aware response templates and manager/AI handoff policy.
+- **Updated Documents**: `docs/08_ai_assistant/README.md`, `PROGRESS.md`
+
+### 2026-06-17
+**Telegram Unknown-Contact Intake Button Fix**
+- **Status**: Implemented.
+- **Done**:
+  - Fixed Telegram AI intake handoff for unknown contacts: when the assistant action is `show_intake`, the webhook now creates a one-time secure intake link and attaches a real Telegram inline form button.
+  - Kept known-contact behavior separate: saved Telegram contacts still receive the confirmation callback button that creates a new PR from stored verified contact data.
+  - Added a regression test so unknown Telegram contacts cannot regress to a text-only "opening the form" promise after natural consent.
+- **In Progress**:
+  - Live Telegram QA after deployment.
+- **Next Action**:
+  - Test a fresh Telegram chat: describe a broken sign, agree to create the request, verify the secure form button appears, submit the form, and confirm the CRM case receives the PR/status handoff.
+- **Blockers/Risks**:
+  - Button delivery still depends on Telegram API success and correct bot/site environment variables in deployment.
+- **Updated Documents**: `docs/08_ai_assistant/README.md`, `PROGRESS.md`
+
+### 2026-06-16
+**Assistant Rule Hardening And Runtime Guardrails**
+- **Status**: Implemented.
+- **Done**:
+  - Reorganized the main assistant system prompt into explicit identity, hard-rule, service-scope, privacy/status, knowledge-context, channel-mode, and action-marker sections.
+  - Marked Markdown knowledge, problem knowledge, live CMS retrieval, and owner-configured assistant notes as reference data that cannot override hard rules, privacy rules, safety rules, channel mode, or action marker behavior.
+  - Tightened runtime handling for prompt-injection attempts, reserved action markers, public status questions, Telegram known-contact status exposure, portal-token leakage, and PII redaction.
+  - Added active Telegram request mode so an open PR-bound Telegram conversation continues collecting details and photos in the same chat instead of reopening the secure form or creating a duplicate request button.
+  - Updated baseline knowledge and intake guidance away from stale device/ring-light wording toward signage, illuminated advertising, storefront, installation, modernization, film/print, and branding service context.
+  - Added targeted AI assistant rule tests covering prompt injection, status/request intent separation, PII redaction, action marker stripping, Telegram public request number minimization, and active Telegram request duplicate prevention.
+- **In Progress**:
+  - Live website and Telegram conversation QA after deployment.
+- **Next Action**:
+  - Retest representative DE/RU website chat and Telegram flows: greeting, small talk, new signage problem, natural intake consent, status question, manager callback, prompt-injection attempt, and post-PR photo/detail follow-up in Telegram.
+- **Blockers/Risks**:
+  - The assistant still depends on provider output quality; backend marker parsing, PII redaction, privacy context, and channel-specific gating remain the enforceable boundaries.
+- **Updated Documents**: `docs/08_ai_assistant/README.md`, `PROGRESS.md`
+
+### 2026-06-16
+**Telegram Known-Contact Intent Hotfix**
+- **Status**: Hotfix implemented.
+- **Done**:
+  - Removed broad pre-AI keyword matching for known Telegram repeat-request creation so words such as "заявка" no longer create a new PR path by themselves.
+  - Kept `/request` as the deterministic fallback command for unknown-contact secure form routing.
+  - Let the shared assistant decide when a known Telegram customer needs the create-request confirmation button by emitting the existing action marker through the `inline_buttons` capability.
+  - Added a status action marker so known Telegram status questions can use the active public PR and attach a status button instead of asking the customer to provide the number again.
+  - Tightened prompt guidance so greetings stay neutral, status questions stay status-oriented, and known-contact request creation is not treated as a website form handoff.
+- **In Progress**:
+  - Live Telegram QA after deployment.
+- **Next Action**:
+  - Retest `Привет`, `Что с моей заявкой?`, `/request`, and one clear new-problem request in the real Telegram bot.
+- **Blockers/Risks**:
+  - The final decision still depends on the configured AI provider; backend remains responsible for the actual PR creation confirmation.
+- **Updated Documents**: `docs/08_ai_assistant/README.md`, `PROGRESS.md`
+
+### 2026-06-16
+**Telegram Known-Contact Assistant Context**
+- **Status**: Implementation baseline updated.
+- **Done**:
+  - Added a privacy-safe known-contact state for Telegram assistant turns so the assistant can behave naturally with returning Telegram customers without receiving full email, phone, Telegram chat id, or CRM identifiers.
+  - Updated assistant prompt behavior for known messenger contacts: do not announce recognition, do not ask for email/phone again, do not reveal saved contact data, and do not route ordinary new-request creation to a contact form.
+  - Connected the Telegram webhook so known contacts can confirm a new request through Telegram while the shared assistant still handles normal follow-up conversation.
+- **In Progress**:
+  - Runtime QA of natural Telegram conversations after a known contact creates a second PR.
+- **Next Action**:
+  - Test a returning Telegram user asking a question, asking for a new request, and attempting to change contact data; confirm the assistant stays natural and the backend keeps contact changes out of normal chat.
+- **Blockers/Risks**:
+  - The prompt is guidance only; backend enforcement remains the safety boundary for contact changes and PR creation.
+- **Updated Documents**: `docs/08_ai_assistant/README.md`, `docs/06_crm/README.md`, `PROGRESS.md`
+
+### 2026-06-13
+**Baseline Markdown Knowledge Refresh**
+- **Status**: Implemented
+- **Done**:
+  - Rewrote the baseline assistant Markdown knowledge files under `signage-service/knowledge_base/` away from the obsolete LED ring-light and Dusseldorf repair-shop context.
+  - Updated service scope, FAQ, intake flow, and assistant boundaries for signage repair, light advertising, installation/dismantling, modernization, film/print/branding, request status, and safety handling.
+  - Reinforced that published CMS retrieval is the freshest problem-specific source and that the Markdown files are only baseline orientation/fallback context.
+- **In Progress**:
+  - Runtime chat QA remains pending.
+- **Next Action**:
+  - Test representative prompts where no CMS article is retrieved and confirm the assistant still stays in the signage-service domain.
+- **Blockers/Risks**:
+  - The Markdown baseline is intentionally compact; detailed problem answers should continue to come from published CMS retrieval.
+- **Updated Documents**: `docs/08_ai_assistant/README.md`, `PROGRESS.md`
+
+### 2026-06-13
+**Live CMS Knowledge Retrieval MVP**
+- **Status**: Implemented as a temporary working retrieval layer
+- **Done**:
+  - Replaced broad CMS article prompt injection with runtime relevance retrieval over published CMS articles.
+  - The assistant now receives compact article knowledge blocks based on the latest user message instead of full articles loaded in sort order.
+  - Structured CMS fields such as short answer, causes, safe checks, urgent warnings, service process, and work-scope factors are prioritized before full-text excerpts.
+  - Added a roadmap note for future automatic chunk indexing, embedding/vector retrieval, OpenAI File Search evaluation, and draft preview mode.
+- **In Progress**:
+  - Runtime QA against real published problem articles and service questions.
+- **Next Action**:
+  - Test representative DE/RU chat prompts for common signage problems and tune lexical scoring or token limits if the wrong article is retrieved.
+- **Blockers/Risks**:
+  - Current retrieval is lexical, not semantic; it is a pragmatic MVP until automatic chunk/embedding retrieval is added.
+  - Public chat still excludes drafts and in-review content by design.
+- **Updated Documents**: `docs/08_ai_assistant/README.md`, `PROGRESS.md`
+
+### 2026-05-06
+**Shared Assistant Orchestrator**
+- **Status**: In progress (Telegram CRM integration baseline)
+- **Done**:
+  - Added a shared assistant turn layer that reuses the existing chat reply engine, system prompt, safety filter, and history mapping.
+  - Connected Telegram CRM messages to the shared assistant layer without creating a separate Telegram AI.
+  - Added structured assistant action output for future channel-specific rendering.
+- **In Progress**:
+  - Runtime validation of Telegram channel behavior after deployment.
+- **Next Action**:
+  - Validate live Telegram AI replies and confirm website chat behavior remains unchanged.
+- **Blockers/Risks**:
+  - Website chat still has route-local UI handling for intake cards and language selector; it can be migrated to the shared layer later.
+- **Updated Documents**: `docs/08_ai_assistant/README.md`, `docs/06_crm/README.md`, `PROGRESS.md`

@@ -1,5 +1,47 @@
 # Client Portal Implementation Plan
 
+## Read Depth / Current Checkpoint
+
+Purpose: reduce startup context load while keeping the client-portal product and security boundaries intact.
+
+Startup rule:
+
+- Read this block first.
+- For current MVP work, then read `Current Boundary`, `Product Rules To Preserve`, `Portal Entry And Authentication`, `Portal Security Baseline`, and the latest `Progress Log` entry only.
+- Do not read the full document at startup unless the task touches future portal platform planning, object/asset modules, reports, warranties, billing, deletion/export, or detailed stage sequencing.
+
+Current checkpoint:
+
+- The project has a first request-bound portal identity foundation, not a full future portal.
+- Implemented/current work includes claim links, verified e-mail, HTTP-only portal sessions, request-scoped access, account registration/login/password reset, request detail/chat, portal-created requests, and a simplified customer-facing MVP navigation.
+- Active MVP navigation is intentionally focused on overview, requests, request-linked photo reports/customer files where safely exposed, new request, request detail, customer-visible status history, and chat.
+- Future B2B-suite surfaces such as organizations, employees, objects, assets, suppliers, maintenance, standalone warranties, billing, document archive, team settings, full RBAC, deletion/export workflows, and Bitrix24 sync remain future/deferred unless verified in code and explicitly approved.
+
+Read-depth router:
+
+- Current MVP portal implementation or QA: read through `Stage 1 Scope Choice`, then jump to `Portal Security Baseline`, `Stage Plan`, `First Coding Task Recommendation` only if implementation sequencing matters, and the latest `Progress Log` entry.
+- Portal auth, claim links, e-mail verification, sessions, login, registration, and password reset: read `Portal Entry And Authentication` here plus `accounts_and_identity.md`.
+- Customer-safe request tracking and request detail/chat: read `Product Rules To Preserve`, `Portal Security Baseline`, `Request Data`, `Requests`, and the latest `Progress Log` entry.
+- Future platform planning: read from `Market Positioning And Target Segments` onward as needed, especially `Portal Feature Boundaries`, `Admin Modules To Reserve`, `Data Retention And Export Boundaries`, `Future Platform Risks And Guardrails`, and the relevant stage sections.
+
+Future-only boundary:
+
+- Sections from `Subscription And Plan Control` through `Data Retention And Export Boundaries` are planning/deep-reference material unless the task explicitly touches those domains.
+- Sections from `Future Platform Risks And Guardrails` through future map/supplier/location-intelligence blocks describe future platform direction and must not be treated as implemented current state.
+- Stage sections after the current request-bound MVP are implementation planning, not proof that a module exists.
+
+Progress Log:
+
+- The `Progress Log` is at the end of this file.
+- Do not read it at startup except for the latest entry.
+- Read older entries only when continuing that dated checkpoint or investigating prior implementation decisions.
+
+Non-negotiable boundaries:
+
+- Public request number alone never exposes private request data and is never a login method.
+- Customer-facing tracking must not expose raw CRM internals, internal notes, internal IDs, audit logs, assignment data, or operator-only metadata.
+- Portal identity foundation is not full portal/accounts/organizations/billing.
+
 ## Purpose
 
 This document turns the approved client-portal prototype into a staged implementation plan for the Next.js application.

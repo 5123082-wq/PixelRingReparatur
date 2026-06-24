@@ -4,6 +4,35 @@
 
 ---
 
+## Context Beacon
+
+Purpose: heavy IA (информационная архитектура) and page spec (спецификация страниц) source for public website tasks. Do not read the full file during ordinary startup.
+
+Read this file when the task touches:
+- sitemap (карта сайта), navigation, header, footer, or multilingual routing;
+- public page specs (спецификации публичных страниц) and conversion goals;
+- CTA architecture (архитектура призывов к действию), including `Service starten` (запустить сервис), `Service anfragen` (запросить сервис), and `Status prüfen` (проверить статус);
+- mobile-first (сначала мобильный интерфейс) or SEO/GEO (поисковая и AI-видимость) structure for public website pages.
+
+Do not read during ordinary startup:
+- full page-by-page body below the relevant heading;
+- historical rollout entries;
+- archived prompt packs or old phase documents.
+
+Progress/history boundaries:
+- current folder status starts in [README.md](README.md) under `Progress Log`;
+- older folder history is in [public_website_progress_log.md](public_website_progress_log.md);
+- this file has inline historical sections marked `Detailed Log / History`; open them only when following a dated checkpoint.
+
+## Read Depth
+
+- IA/navigation task: read sections 2-7 and the relevant `Detailed Log / History` entry only if the task references that rollout.
+- Page spec task: read the target page section only, for example section 8 for home or section 21 for intake.
+- SEO/GEO structure task: read sections 28 and 31 plus any directly linked page section.
+- Implementation handoff task: read sections 25-27 and the relevant page section.
+
+---
+
 ## 1. Назначение документа
 Этот документ описывает:
 - карту сайта;
@@ -259,7 +288,7 @@ Mobile menu должно быть коротким.
 ### 8.2. Conversion goal
 Primary: start lead intake
 
-## Progress Log
+## Detailed Log / History: Header IA Rollout
 
 ### 2026-04-23 — Header IA To Delivery Bridge
 
@@ -867,7 +896,7 @@ SEO-страницы не должны ломать trust-first UX.
 
 ---
 
-## Progress Log
+## Detailed Log / History: Public Website Implementation Checkpoints
 
 ### 2026-05-18 — Photon Address Autocomplete For Intake
 

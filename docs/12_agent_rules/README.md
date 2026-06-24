@@ -13,6 +13,24 @@ Planned base documents:
 
 ## Progress Log
 
+### 2026-06-20
+
+- Current sprint/block: domain documentation startup context reduction
+- Done: added or coordinated domain `Context Beacon` / `Read Depth` rules for public website, client portal, admin/CMS, content/SEO/GEO, and AI assistant docs; split long progress history out of heavy README/rollout files where useful
+- In progress: verifying that domain README files behave as routers rather than default historical logs
+- Next action: keep future README updates short and move older detailed entries into the domain progress-log file instead of expanding startup context
+- Blockers/risks: large planning/spec documents still exist and remain valid; agents must follow read-depth rules instead of loading them wholesale
+- Updated documents: `PROGRESS.md`, `docs/00_project_overview/document_migration_matrix.md`, `docs/02_public_website/README.md`, `docs/02_public_website/information_architecture.md`, `docs/02_public_website/public_website_progress_log.md`, `docs/04_client_portal/README.md`, `docs/04_client_portal/client_portal_implementation_plan.md`, `docs/04_client_portal/telegram_email_portal_activation_plan.md`, `docs/05_admin_platform/README.md`, `docs/05_admin_platform/admin_rollout_execution_plan.md`, `docs/05_admin_platform/admin_platform_progress_log.md`, `docs/07_content_ai_seo/README.md`, `docs/07_content_ai_seo/content_ai_seo_progress_log.md`, `docs/08_ai_assistant/README.md`, `docs/08_ai_assistant/ai_assistant_progress_log.md`
+
+### 2026-06-20
+
+- Current sprint/block: startup context token reduction
+- Done: tightened the startup reading rule so agents read `PROGRESS.md` as a short `Context Beacon` plus only the latest 2-3 entries, and added a `Detailed Log` boundary for older history
+- In progress: keeping `PROGRESS.md` useful as a global status map without letting it become the default detailed session archive
+- Next action: monitor future sessions and move long-running details into domain `Progress Log` sections when they start bloating the global file
+- Blockers/risks: over-compression could hide active deployment or owner-review follow-ups if future entries become too terse
+- Updated documents: `AGENTS.md`, `PROGRESS.md`, `docs/12_agent_rules/README.md`
+
 ### 2026-05-16
 
 - Current sprint/block: staged context loading

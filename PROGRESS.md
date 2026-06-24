@@ -4,13 +4,39 @@ Short global status only. Detailed session notes belong to folder-level `Progres
 
 ## Context Beacon
 
-Purpose: fast global orientation before work. Read this beacon first; read the historical entries below only when continuing an older track or when the current task depends on those details.
+Purpose: fast global orientation before work. Read this beacon first and do not read the full file by default.
+
+Startup reading rule:
+
+- Read this `Context Beacon` and the latest 2-3 log entries only.
+- If the user asks what happened earlier or a task continues an older checkpoint, read older entries in small 2-3 entry batches by date or domain.
+- Prefer the linked domain `Progress Log` for detailed history; keep this file as a short global status map.
 
 Latest checkpoint:
+
+- Date: 2026-06-24
+- Current stage: Applied approved CorelDRAW SVG logos to the public website header: full `/brand/logo-full-light.svg` for tablet/desktop and compact `/brand/logo-compact-light.svg` for mobile, both cropped to web-ready viewBoxes; logo rendering now uses stable height-based sizing instead of width scaling, and the separate `SERVICE` header badge was removed because the logo includes `TECHNICAL SERVICE`.
+- Next action: Owner visually reviews `/de` desktop, tablet, and mobile header sizing after the fixed-height responsive logo swap.
 
 - Date: 2026-06-23
 - Current stage: Tightened Google Ads conversion tracking: Ads tag loading now requires explicit public env enablement, website/chat/Telegram request forms report the Google Ads lead conversion only after successful request creation, and the existing `/business` service-audit CTA now routes into the tracked request form instead of a direct mailto link.
 - Next action: Set `NEXT_PUBLIC_GOOGLE_ADS_ENABLED=true` in the production build environment, redeploy, then verify `AW-18220277188/NDbWCL3P5LocEMS7jfBD` with Google Tag Assistant and Google Ads diagnostics.
+
+- Date: 2026-06-23
+- Current stage: Created a temporary 4-page German PDF and PowerPoint presentation prototype for the `/business` partner-service offer, including a customer-portal control slide, and saved it under `DesignPrototip/pixelring-partner-service-presentation/` for design/content approval.
+- Next action: Owner reviews the PDF prototype and decides whether it should replace the current downloadable business presentation on the website.
+
+- Date: 2026-06-23
+- Current stage: Added a localized `/business` partner-service block for Facility Management, Ladenbau, Projektmanagement, and Werbetechnik companies that manage customer objects and need technical support for Werbeanlagen/Lichtwerbung diagnostics and repair.
+- Next action: Owner visually reviews the new `/de/business` block on desktop/mobile and decides whether the offer should later become a dedicated SEO landing page.
+
+- Date: 2026-06-20
+- Current stage: Reduced domain startup context for public website, admin/CMS, content/SEO/GEO, AI assistant, and client portal docs by adding domain `Context Beacon` / `Read Depth` blocks and moving long README or rollout progress history into dedicated progress-log files where useful.
+- Next action: Keep future domain README files as routers only; when detailed history grows, append it to the dedicated domain progress log instead of the README.
+
+- Date: 2026-06-20
+- Current stage: Optimized agent startup context rules so `PROGRESS.md` is read as a short beacon plus the latest 2-3 entries instead of as a full historical log; older entries now belong behind an explicit detailed-log boundary.
+- Next action: Keep future `PROGRESS.md` updates short and move detailed session notes into the relevant domain `Progress Log`.
 
 - Date: 2026-06-20
 - Current stage: Restored approved German CMS legal source text for `privacy/de` and `impressum/de` from CMS revisions after the May baseline seed overwrite; legal routes now render dynamically from CMS, reject placeholder/stale legal CMS text, and the CMS baseline seed skips legal pages so it cannot overwrite them again.
@@ -19,6 +45,17 @@ Latest checkpoint:
 - Date: 2026-06-18
 - Current stage: Added compact external-entry navigation and localized portal UI copy for DE/EN/RU/TR/PL/AR on active/expired portal claim pages, legacy claim/login verify fallbacks, unauthenticated portal/access-required/demo gates, request detail/chat UI, Telegram request form, and Telegram return page without changing token, verification, or claim-link behavior.
 - Next action: Owner visually reviews `/ar/portal`, `/ar/portal/claim?token=expired`, `/ar/portal/claim/verify`, `/ar/portal/requests/PR-DEMO-4821` with demo access, and `/ru/telegram/request?t=expired` on desktop/mobile, then continues the activation-link and Telegram QA after deployment.
+
+Read deeper only when:
+
+- continuing a specific older checkpoint from the detailed log below;
+- updating a module's current status;
+- checking what changed on a date;
+- preparing deployment, migration, or owner-review follow-up from a prior entry.
+
+## Detailed Log
+
+Historical working log. Do not read this section at startup. Read it only in small batches when a task needs older context.
 
 - Date: 2026-06-17
 - Current stage: Implemented the post-PR portal activation handoff: website/browser-chat requests now trigger a non-blocking activation invitation email through the existing email infrastructure after claim-link creation, Telegram secure intake creates/returns portal claim links with status/portal/return buttons and optional email invite, and verified status lookup can show a safe portal activation prompt while CRM manual claim-link flow remains token-safe.
