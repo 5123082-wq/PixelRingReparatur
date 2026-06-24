@@ -15,6 +15,10 @@ Startup reading rule:
 Latest checkpoint:
 
 - Date: 2026-06-24
+- Current stage: Hardened Google Ads cookie consent for Safari/iPhone and EU-style privacy behavior: optional Google Ads tags now load only after `Accept all`, consent/refusal is persisted in a first-party cookie with localStorage fallback, and consent changes are managed from the privacy page instead of a footer cookie link.
+- Next action: Deploy and verify production Safari/iPhone behavior on `https://www.pixel-ring.com/ru`, especially repeated reload after `Only necessary` and the `/ru/privacy#cookie-settings` consent panel.
+
+- Date: 2026-06-24
 - Current stage: Standardized the final CTA format across `/[locale]/leistungen`, `/[locale]/leistungen/werbeanlagen-reparatur`, and the shared `/[locale]/leistungen/[slug]` service pages, using the approved compact dark image CTA layout with localized page-specific copy and request intents.
 - Next action: Owner visually reviews the final CTA block on the main Leistungen overview and the four detail pages in DE, then spot-checks RU/AR copy and RTL behavior if needed.
 

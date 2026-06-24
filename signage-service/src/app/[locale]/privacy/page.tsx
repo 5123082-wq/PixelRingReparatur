@@ -1,5 +1,6 @@
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import CookieConsentSettings from '@/components/analytics/CookieConsentSettings';
 import TextSection from '@/components/sections/TextSection';
 import { getGlobalPageCmsContent, getPublishedCmsPage } from '@/lib/cms/pages';
 import {
@@ -65,6 +66,7 @@ export default async function PrivacyPage({
         ) : (
           <TextSection content={fallbackContent} />
         )}
+        <CookieConsentSettings locale={locale} />
       </main>
       <Footer content={globalCms?.footer} />
     </div>

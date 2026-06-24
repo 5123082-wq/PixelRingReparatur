@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { updateGoogleAdsConsent } from '@/lib/google-ads';
-
-const STORAGE_KEY = 'pixelring_google_ads_consent';
-
-type ConsentChoice = 'granted' | 'denied';
+import {
+  persistGoogleAdsConsent,
+  readGoogleAdsConsent,
+  type GoogleAdsConsentChoice,
+} from '@/lib/google-ads-consent';
 
 const copyByLocale: Record<string, {
   title: string;
@@ -67,21 +67,20 @@ export default function GoogleAdsConsentBanner({ locale }: { locale: string }) {
   const copy = getCopy(locale);
 
   useEffect(() => {
-    const stored = window.localStorage.getItem(STORAGE_KEY) as ConsentChoice | null;
+    const stored = readGoogleAdsConsent();
 
-    if (stored === 'granted' || stored === 'denied') {
-      updateGoogleAdsConsent(stored);
+    if (stored) {
+      persistGoogleAdsConsent(stored);
       return;
     }
 
-    // The banner depends on browser-only localStorage, so it becomes visible after mount.
+    // The banner depends on browser-only consent storage, so it becomes visible after mount.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsVisible(true);
   }, []);
 
-  const chooseConsent = (choice: ConsentChoice) => {
-    window.localStorage.setItem(STORAGE_KEY, choice);
-    updateGoogleAdsConsent(choice);
+  const chooseConsent = (choice: GoogleAdsConsentChoice) => {
+    persistGoogleAdsConsent(choice);
     setIsVisible(false);
   };
 
@@ -100,7 +99,7 @@ export default function GoogleAdsConsentBanner({ locale }: { locale: string }) {
           <h2 className="text-[15px] font-bold">{copy.title}</h2>
           <p className="text-[13px] leading-5 text-[#5E554E]">{copy.text}</p>
           <a
-            href={`/${locale}/privacy`}
+            href={`/${locale}/privacy#cookie-settings`}
             className="inline-flex text-[12px] font-semibold text-[#B8643E] underline-offset-4 hover:underline"
           >
             {copy.privacy}
@@ -109,14 +108,14 @@ export default function GoogleAdsConsentBanner({ locale }: { locale: string }) {
         <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
           <button
             type="button"
-            onClick={() => chooseConsent('denied')}
+            onClick={() => chooseConsent('necessary')}
             className="rounded-full border border-[#D8CCC0] px-4 py-2 text-[13px] font-semibold text-[#5E554E] transition-colors hover:bg-[#F7F1E8]"
           >
             {copy.decline}
           </button>
           <button
             type="button"
-            onClick={() => chooseConsent('granted')}
+            onClick={() => chooseConsent('all')}
             className="rounded-full bg-[#B8643E] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#A65835]"
           >
             {copy.accept}
