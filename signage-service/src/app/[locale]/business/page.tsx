@@ -74,6 +74,12 @@ type BusinessContent = {
   targetTitle: string;
   targetIntro: string;
   targetGroups: TargetGroup[];
+  partnerTitle: string;
+  partnerIntro: string;
+  partnerBenefits: Benefit[];
+  partnerNoteLead: string;
+  partnerNoteText: string;
+  partnerCta: string;
   auditTitle: string;
   auditIntro: string;
   auditBenefits: Benefit[];
@@ -100,6 +106,9 @@ type BusinessContent = {
 
 type BusinessMockupContent = {
   targetEyebrow: string;
+  partnerEyebrow: string;
+  partnerDeskLabel: string;
+  partnerImageAlt: string;
   auditEyebrow: string;
   platformEyebrow: string;
   finalEyebrow: string;
@@ -133,6 +142,17 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'dealers', title: 'Autohäuser', description: 'Wartung von großen Pylonen, Fassadenschildern und Signaletik auf dem Gelände.' },
       { id: 'retail', title: 'Filialisten & Retail', description: 'Standardisierte Prozesse und SLAs für ein konsistentes Markenbild an allen Standorten.' }
     ],
+    partnerTitle: 'Technischer Servicepartner für betreute Kundenobjekte',
+    partnerIntro: 'Für Facility Management, Ladenbau, Projektmanagement und Werbetechnik-Unternehmen übernimmt PixelRing die spezialisierte Prüfung und Instandsetzung von Werbeanlagen, Store-Logos und Lichtwerbung an betreuten Standorten.',
+    partnerBenefits: [
+      { id: 'pb1', title: 'Störung im Kundenobjekt', description: 'Sie melden uns Standort, sichtbares Problem, Zugangssituation und Priorität. Wir strukturieren die technische Anfrage für den nächsten Schritt.' },
+      { id: 'pb2', title: 'Diagnose vor Ort', description: 'Je nach Auftrag prüfen wir Zuleitung, Trafo, LED-System, Befestigung, Feuchtigkeitsspuren und erkennbare Zugangspunkte.' },
+      { id: 'pb3', title: 'Reparatur oder klare Empfehlung', description: 'Wenn eine Instandsetzung sinnvoll ist, koordinieren wir sie. Wenn nicht, erhalten Sie eine nachvollziehbare Einschätzung für Ersatz oder weitere Abstimmung.' },
+      { id: 'pb4', title: 'Dokumentation für Ihr Team', description: 'Fotos, Ursache, erledigte Arbeiten und offene Punkte können für Ihr Projektmanagement oder Ihren Endkunden sauber zusammengefasst werden.' }
+    ],
+    partnerNoteLead: 'Diskrete Unterstützung im Auftrag:',
+    partnerNoteText: 'PixelRing bleibt technischer Servicepartner für Werbeanlagen und Lichtwerbung, ohne den betreuten Kundenprozess zu einem Marktplatz zu machen.',
+    partnerCta: 'Partner-Service anfragen',
     auditTitle: 'Audit & Betreuung',
     auditIntro: 'Im Rahmen des Servicevertrags erhalten Sie vollständige Betreuung und Kontrolle über Ihre Verkaufsstandorte.',
     auditBenefits: [
@@ -173,6 +193,17 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'dealers', title: 'Car Dealerships', description: 'Maintenance of large pylons, facade signs, and site signage.' },
       { id: 'retail', title: 'Chains & Retail', description: 'Standardized processes and SLAs for a consistent brand image across all locations.' }
     ],
+    partnerTitle: 'Technical service partner for managed customer sites',
+    partnerIntro: 'For facility management, shopfitting, project management, and signage companies, PixelRing handles specialized diagnostics and repair support for signs, store logos, and illuminated advertising at managed locations.',
+    partnerBenefits: [
+      { id: 'pb1', title: 'Fault at a customer site', description: 'You send us the location, visible issue, access situation, and priority. We structure the technical request for the next step.' },
+      { id: 'pb2', title: 'On-site diagnostics', description: 'Depending on the task, we check supply lines, transformers, LED systems, mounting, moisture traces, and visible access points.' },
+      { id: 'pb3', title: 'Repair or clear recommendation', description: 'If repair is sensible, we coordinate it. If not, you receive a clear assessment for replacement or further alignment.' },
+      { id: 'pb4', title: 'Documentation for your team', description: 'Photos, cause, completed work, and open points can be summarized for your project management or end customer.' }
+    ],
+    partnerNoteLead: 'Discreet support on assignment:',
+    partnerNoteText: 'PixelRing stays the technical service partner for signage and illuminated advertising without turning your customer process into a marketplace.',
+    partnerCta: 'Request partner service',
     auditTitle: 'Audit & Maintenance',
     auditIntro: 'Under the service contract, you receive full support and oversight for your retail locations.',
     auditBenefits: [
@@ -213,6 +244,17 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'dealers', title: 'Автосалоны', description: 'Обслуживание крупных стел, фасадных вывесок и указателей на территории.' },
       { id: 'retail', title: 'Сетевой ритейл', description: 'Единые стандарты SLA для поддержания бренда во всех точках сети.' }
     ],
+    partnerTitle: 'Технический сервис-партнер для клиентских объектов',
+    partnerIntro: 'Для управляющих объектами, команд по строительству магазинов, проектных менеджеров и рекламно-технических компаний PixelRing берет на себя профильную диагностику и ремонт вывесок, логотипов магазинов и световой рекламы на обслуживаемых объектах.',
+    partnerBenefits: [
+      { id: 'pb1', title: 'Неисправность на объекте клиента', description: 'Вы передаете адрес, видимую проблему, ситуацию с доступом и приоритет. Мы структурируем техническую заявку для следующего шага.' },
+      { id: 'pb2', title: 'Диагностика на месте', description: 'В зависимости от задачи проверяем питание, трансформатор, LED-систему, крепления, следы влаги и видимые точки доступа.' },
+      { id: 'pb3', title: 'Ремонт или понятная рекомендация', description: 'Если восстановление имеет смысл, мы его координируем. Если нет, вы получаете понятную оценку для замены или дальнейшего согласования.' },
+      { id: 'pb4', title: 'Документация для вашей команды', description: 'Фото, причина, выполненные работы и открытые пункты можно аккуратно собрать для вашего проектного менеджмента или конечного клиента.' }
+    ],
+    partnerNoteLead: 'Аккуратная поддержка по поручению:',
+    partnerNoteText: 'PixelRing остается техническим сервис-партнером по вывескам и световой рекламе, не превращая процесс вашего клиента в площадку подрядчиков.',
+    partnerCta: 'Запросить партнерский сервис',
     auditTitle: 'Аудит и обслуживание',
     auditIntro: 'В рамках договора обслуживания Вы получаете полное сопровождение и контроль своих торговых точек.',
     auditBenefits: [
@@ -253,6 +295,17 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'dealers', title: 'Oto Galerileri', description: 'Büyük pilonların ve cephe tabelalarının bakımı.' },
       { id: 'retail', title: 'Zincir Mağazalar', description: 'Tüm lokasyonlarda tutarlı bir marka imajı için standart süreçler.' }
     ],
+    partnerTitle: 'Yönetilen müşteri lokasyonları için teknik servis partneri',
+    partnerIntro: 'Tesis yönetimi, mağaza kurulum, proje yönetimi ve reklam teknolojisi şirketleri için PixelRing, yönetilen lokasyonlardaki tabelalar, mağaza logoları ve ışıklı reklamlar için uzman teşhis ve onarım desteği sağlar.',
+    partnerBenefits: [
+      { id: 'pb1', title: 'Müşteri lokasyonunda arıza', description: 'Bize adresi, görünen sorunu, erişim durumunu ve önceliği iletirsiniz. Teknik talebi sonraki adım için yapılandırırız.' },
+      { id: 'pb2', title: 'Yerinde teşhis', description: 'Göreve göre besleme hattı, trafo, LED sistemi, bağlantılar, nem izleri ve görünen erişim noktaları kontrol edilir.' },
+      { id: 'pb3', title: 'Onarım veya net öneri', description: 'Onarım mantıklıysa koordine ederiz. Değilse değişim veya ek değerlendirme için anlaşılır bir görüş sunarız.' },
+      { id: 'pb4', title: 'Ekibiniz için dokümantasyon', description: 'Fotoğraflar, neden, yapılan işler ve açık noktalar proje yönetiminiz veya son müşteriniz için düzenli biçimde özetlenebilir.' }
+    ],
+    partnerNoteLead: 'Görev bazlı gizli destek:',
+    partnerNoteText: 'PixelRing, müşteri sürecinizi bir pazar yerine dönüştürmeden tabela ve ışıklı reklamlar için teknik servis partneri olarak kalır.',
+    partnerCta: 'Partner servisi talep et',
     auditTitle: 'Denetim ve bakım',
     auditIntro: 'Servis sözleşmesi kapsamında satış noktalarınız için tam destek ve kontrol elde edersiniz.',
     auditBenefits: [
@@ -293,6 +346,17 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'dealers', title: 'Salony Samochodowe', description: 'Obsługa dużych pylonów i szyldów elewacyjnych.' },
       { id: 'retail', title: 'Sieci Handlowe', description: 'Standardowe procesy i SLA dla spójnego wizerunku we wszystkich lokalizacjach.' }
     ],
+    partnerTitle: 'Techniczny partner serwisowy dla obsługiwanych obiektów klientów',
+    partnerIntro: 'Dla firm zarządzających obiektami, wykonawców zabudowy sklepów, zespołów projektowych i firm reklamy zewnętrznej PixelRing prowadzi specjalistyczną diagnostykę i naprawy szyldów, logo sklepów oraz reklam świetlnych.',
+    partnerBenefits: [
+      { id: 'pb1', title: 'Awaria w obiekcie klienta', description: 'Przekazujesz adres, widoczny problem, sytuację dostępu i priorytet. Porządkujemy zgłoszenie techniczne przed kolejnym krokiem.' },
+      { id: 'pb2', title: 'Diagnostyka na miejscu', description: 'W zależności od zadania sprawdzamy zasilanie, transformator, system LED, mocowanie, ślady wilgoci i widoczne punkty dostępu.' },
+      { id: 'pb3', title: 'Naprawa albo jasna rekomendacja', description: 'Jeśli naprawa ma sens, koordynujemy ją. Jeśli nie, otrzymujesz zrozumiałą ocenę do wymiany lub dalszych ustaleń.' },
+      { id: 'pb4', title: 'Dokumentacja dla zespołu', description: 'Zdjęcia, przyczyna, wykonane prace i otwarte punkty mogą zostać zebrane dla projekt managera lub klienta końcowego.' }
+    ],
+    partnerNoteLead: 'Dyskretne wsparcie na zlecenie:',
+    partnerNoteText: 'PixelRing pozostaje technicznym partnerem od szyldów i reklamy świetlnej, bez zmieniania procesu klienta w platformę wykonawców.',
+    partnerCta: 'Zapytaj o serwis partnerski',
     auditTitle: 'Audyt i obsługa',
     auditIntro: 'W ramach umowy serwisowej otrzymujesz pełne wsparcie i kontrolę nad swoimi punktami sprzedaży.',
     auditBenefits: [
@@ -333,6 +397,17 @@ const CONTENT: Record<Locale, BusinessContent> = {
       { id: 'dealers', title: 'معارض السيارات', description: 'صيانة اللوحات الإعلانية الكبيرة ولوحات الواجهات.' },
       { id: 'retail', title: 'شبكات التجزئة', description: 'عمليات موحدة لضمان صورة متسقة للعلامة التجارية في جميع المواقع.' }
     ],
+    partnerTitle: 'شريك خدمة تقني للمواقع التي تديرها لصالح عملائك',
+    partnerIntro: 'بالنسبة لشركات إدارة المرافق وتجهيز المتاجر وإدارة المشاريع وشركات تقنيات الإعلان، تتولى PixelRing الفحص المتخصص ودعم إصلاح اللوحات، شعارات المتاجر والإعلانات المضيئة في المواقع المدارة.',
+    partnerBenefits: [
+      { id: 'pb1', title: 'عطل في موقع العميل', description: 'ترسل لنا العنوان والمشكلة الظاهرة وحالة الوصول والأولوية. نقوم بتنظيم الطلب الفني للخطوة التالية.' },
+      { id: 'pb2', title: 'تشخيص في الموقع', description: 'بحسب المهمة، نفحص خط التغذية، المحول، نظام LED، التثبيت، آثار الرطوبة ونقاط الوصول الظاهرة.' },
+      { id: 'pb3', title: 'إصلاح أو توصية واضحة', description: 'إذا كان الإصلاح مناسباً نقوم بتنسيقه. وإذا لم يكن كذلك، تحصل على تقييم واضح للاستبدال أو التنسيق التالي.' },
+      { id: 'pb4', title: 'توثيق لفريقك', description: 'يمكن تلخيص الصور والسبب والأعمال المنجزة والنقاط المفتوحة لفريق إدارة المشروع أو للعميل النهائي.' }
+    ],
+    partnerNoteLead: 'دعم هادئ حسب التكليف:',
+    partnerNoteText: 'تبقى PixelRing شريك الخدمة التقني للوحات والإعلانات المضيئة من دون تحويل عملية عميلك إلى منصة مقاولين.',
+    partnerCta: 'طلب خدمة شريك',
     auditTitle: 'التدقيق والصيانة',
     auditIntro: 'ضمن عقد الخدمة، تحصل على متابعة كاملة ورقابة على نقاط البيع الخاصة بك.',
     auditBenefits: [
@@ -363,6 +438,9 @@ const CONTENT: Record<Locale, BusinessContent> = {
 const MOCKUP_CONTENT: Record<Locale, BusinessMockupContent> = {
   de: {
     targetEyebrow: 'BRANCHEN',
+    partnerEyebrow: 'PARTNER-SERVICE',
+    partnerDeskLabel: 'PixelRing Service-Desk',
+    partnerImageAlt: 'PixelRing Techniker prueft eine geoeffnete Lichtwerbung an einem Kundenobjekt',
     auditEyebrow: 'Service-Abo',
     platformEyebrow: 'Kundenportal & Reports',
     finalEyebrow: 'NÄCHSTER SCHRITT',
@@ -389,6 +467,9 @@ const MOCKUP_CONTENT: Record<Locale, BusinessMockupContent> = {
   },
   en: {
     targetEyebrow: 'SECTORS',
+    partnerEyebrow: 'PARTNER SERVICE',
+    partnerDeskLabel: 'PixelRing service desk',
+    partnerImageAlt: 'PixelRing technician checks an opened illuminated sign at a customer site',
     auditEyebrow: 'Service plan',
     platformEyebrow: 'Customer portal & reports',
     finalEyebrow: 'NEXT STEP',
@@ -415,6 +496,9 @@ const MOCKUP_CONTENT: Record<Locale, BusinessMockupContent> = {
   },
   ru: {
     targetEyebrow: 'СЕГМЕНТЫ',
+    partnerEyebrow: 'ПАРТНЕРСКИЙ СЕРВИС',
+    partnerDeskLabel: 'Рабочая заявка PixelRing',
+    partnerImageAlt: 'Техник PixelRing проверяет открытую световую вывеску на объекте клиента',
     auditEyebrow: 'Сервисное сопровождение',
     platformEyebrow: 'Кабинет и отчеты',
     finalEyebrow: 'СЛЕДУЮЩИЙ ШАГ',
@@ -441,6 +525,9 @@ const MOCKUP_CONTENT: Record<Locale, BusinessMockupContent> = {
   },
   tr: {
     targetEyebrow: 'SEKTÖRLER',
+    partnerEyebrow: 'PARTNER SERVİSİ',
+    partnerDeskLabel: 'PixelRing servis masası',
+    partnerImageAlt: 'PixelRing teknisyeni müşteri lokasyonunda açılmış ışıklı tabelayı kontrol ediyor',
     auditEyebrow: 'Servis paketi',
     platformEyebrow: 'Müşteri portalı ve raporlar',
     finalEyebrow: 'SONRAKİ ADIM',
@@ -467,6 +554,9 @@ const MOCKUP_CONTENT: Record<Locale, BusinessMockupContent> = {
   },
   pl: {
     targetEyebrow: 'SEKTORY',
+    partnerEyebrow: 'SERWIS PARTNERSKI',
+    partnerDeskLabel: 'Panel serwisowy PixelRing',
+    partnerImageAlt: 'Technik PixelRing sprawdza otwarty szyld świetlny w obiekcie klienta',
     auditEyebrow: 'Pakiet serwisowy',
     platformEyebrow: 'Portal klienta i raporty',
     finalEyebrow: 'NASTĘPNY KROK',
@@ -493,6 +583,9 @@ const MOCKUP_CONTENT: Record<Locale, BusinessMockupContent> = {
   },
   ar: {
     targetEyebrow: 'القطاعات',
+    partnerEyebrow: 'خدمة الشركاء',
+    partnerDeskLabel: 'مكتب خدمة PixelRing',
+    partnerImageAlt: 'فني من PixelRing يفحص لوحة مضيئة مفتوحة في موقع عميل',
     auditEyebrow: 'باقة الخدمة',
     platformEyebrow: 'بوابة العميل والتقارير',
     finalEyebrow: 'الخطوة التالية',
@@ -677,6 +770,100 @@ export default async function BusinessPage({
           </section>
         )}
 
+        {/* PARTNER SERVICE */}
+        <section
+          className="relative overflow-hidden pb-[40px] pt-[24px]"
+          style={{
+            background:
+              'radial-gradient(circle at 14% 18%, rgba(184,100,62,0.10) 0%, transparent 30%), linear-gradient(180deg, #ffffff 0%, #f3f8fd 100%)',
+          }}
+        >
+          <div className="mx-auto max-w-7xl px-6">
+            <SectionEyebrow className="mb-[22px]">
+              {mockup.partnerEyebrow}
+            </SectionEyebrow>
+
+            <div className="grid items-center gap-10 lg:grid-cols-[minmax(540px,1fr)_minmax(0,0.88fr)] lg:gap-16 lg:[direction:ltr]">
+              <div className="relative lg:[direction:ltr]">
+                <div className="relative aspect-[5/4] overflow-hidden rounded-[34px] shadow-[0_28px_80px_rgba(8,24,39,0.18)] lg:h-[560px] lg:aspect-auto">
+                  <Image
+                    src="/images/business/partner-service-signage-diagnostics.webp"
+                    alt={mockup.partnerImageAlt}
+                    fill
+                    className="object-cover"
+                    sizes="(min-width: 1024px) 48vw, 100vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#081827]/74 via-[#081827]/10 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#081827]/62 via-transparent to-transparent" />
+
+                  <div className="absolute left-5 top-5 w-[270px] rounded-2xl border border-white/18 bg-white/14 p-4 shadow-[0_18px_46px_rgba(8,24,39,0.24)] backdrop-blur-md sm:left-6 sm:top-6">
+                    <p className="text-[11px] font-semibold uppercase tracking-widest text-white/58">{mockup.partnerDeskLabel}</p>
+                    <p className="mt-2 text-[24px] font-black leading-none text-white">PR-B2B-078</p>
+                    <div className="mt-4 space-y-2">
+                      {content.partnerBenefits.slice(0, 3).map((benefit, index) => (
+                        <div key={benefit.id} className="flex items-center justify-between gap-3 rounded-xl bg-white/10 px-3 py-2">
+                          <span className="min-w-0 truncate text-[12px] font-bold text-white/82">{benefit.title}</span>
+                          <span className={`h-2 w-2 shrink-0 rounded-full ${index === 0 ? 'bg-[#d99a35]' : 'bg-[#35b47a]'}`} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="absolute bottom-5 left-5 right-5 rounded-2xl border border-white/16 bg-white/12 p-4 shadow-[0_18px_48px_rgba(8,24,39,0.22)] backdrop-blur-md sm:bottom-6 sm:left-6 sm:right-6">
+                    <div className="mb-3 flex items-center justify-between gap-4">
+                      <p className="text-[14px] font-black text-white">{content.partnerBenefits[3]?.title}</p>
+                      <span className="rounded-full bg-[#35b47a]/18 px-3 py-1 text-[11px] font-black text-[#8ff0bd]">Berlin / Brandenburg</span>
+                    </div>
+                    <p className="line-clamp-2 text-[13px] leading-[1.5] text-white/68">
+                      {content.partnerBenefits[3]?.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div dir={isRtl ? 'rtl' : 'ltr'}>
+                <h2 className="text-[32px] font-extrabold leading-[38px] tracking-[0] text-[#081827] sm:text-[36px] sm:leading-[42px] lg:text-[38px] lg:leading-[44px]">
+                  {content.partnerTitle}
+                </h2>
+                <p className="mt-5 line-clamp-3 max-w-[660px] border-l-2 border-[#B8643E] pl-4 text-[16px] font-normal leading-[1.5] tracking-[0] text-[#526174] rtl:border-l-0 rtl:border-r-2 rtl:pl-0 rtl:pr-4">
+                  {content.partnerIntro}
+                </p>
+
+                <div className="mt-7 space-y-4">
+                  {content.partnerBenefits.slice(0, 3).map((benefit, index) => (
+                    <div key={benefit.id} className="flex gap-4">
+                      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#B8643E]/12 text-[13px] font-black text-[#B8643E]">
+                        {String(index + 1).padStart(2, '0')}
+                      </div>
+                      <div>
+                        <h3 className={BUSINESS_CARD_TITLE_CLASS}>
+                          {benefit.title}
+                        </h3>
+                        <p className="mt-1.5 line-clamp-2 text-[15px] font-normal leading-[1.48] tracking-[0] text-[#526174]">{benefit.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-7 flex flex-wrap gap-3">
+                  <LeistungenRequestButton
+                    label={content.partnerCta}
+                    serviceIntent="partner-service-werbeanlagen"
+                    className="min-h-[52px] !bg-[#081827] px-6 text-[15px] font-black shadow-[0_18px_36px_rgba(8,24,39,0.20)] transition-transform duration-200 hover:-translate-y-0.5 hover:!bg-[#10243A]"
+                  />
+                  <a
+                    href={BUSINESS_PRESENTATION_HREF}
+                    download
+                    className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-[#dce7f1] bg-white px-6 text-[15px] font-black text-[#081827] shadow-[0_10px_24px_rgba(8,24,39,0.08)] transition-transform duration-200 hover:-translate-y-0.5"
+                  >
+                    {content.portalDemoCta}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* AUDIT & SUBSCRIPTION */}
         {content.auditEnabled !== false && (
           <section
@@ -745,6 +932,7 @@ export default async function BusinessPage({
                       alt={mockup.auditImageAlt}
                       fill
                       className="object-cover"
+                      sizes="(min-width: 1024px) 50vw, 100vw"
                     />
                     <div
                       className="absolute inset-0"

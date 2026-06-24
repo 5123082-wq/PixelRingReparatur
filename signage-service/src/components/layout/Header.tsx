@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/i18n/routing';
-import Logo from '../common/Logo';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 import ContactModal from '../common/ContactModal';
 import ChatModal from '../common/ChatModal';
@@ -311,7 +311,6 @@ const Header = ({
     { label: getNavLabel('services_installation'), href: '/leistungen/montage-demontage-werbeanlagen' },
     { label: getNavLabel('services_branding'), href: '/leistungen/druckprodukte-branding-werbematerialien' },
   ];
-  const servicePill = content?.servicePill || '';
   const hasCmsAccountStatusLabel =
     content?.accountStatusLabel && !content.accountStatusLabel.startsWith('Nav.');
   const accountStatusLabel = portalAccess?.isActive
@@ -378,14 +377,24 @@ const Header = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex min-h-[72px] items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-              <Link href="/" className="shrink-0">
-                <Logo className="scale-[0.85] sm:scale-100 rtl:origin-right ltr:origin-left" />
+              <Link href="/" className="flex min-w-0 shrink items-center">
+                <Image
+                  src="/brand/logo-full-light.svg"
+                  alt="PixelRing Technical Service"
+                  width={794}
+                  height={132}
+                  priority
+                  className="hidden w-auto sm:block sm:h-[52px]"
+                />
+                <Image
+                  src="/brand/logo-compact-light.svg"
+                  alt="PixelRing Technical Service"
+                  width={520}
+                  height={132}
+                  priority
+                  className="block h-[48px] w-auto [@media(min-width:390px)]:h-[52px] sm:hidden"
+                />
               </Link>
-              <div className="hidden shrink-0 sm:flex px-3 py-1 bg-[#EEF3FB] border border-[#E7DDD3] rounded-full">
-                <span className="text-[12px] font-bold text-[#B8643E] tracking-[1.4px] whitespace-nowrap">
-                  {servicePill}
-                </span>
-              </div>
             </div>
 
             <div className="flex shrink-0 items-center gap-2 sm:gap-3">
