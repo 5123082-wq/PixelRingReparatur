@@ -43,6 +43,20 @@ Use this folder for:
 ## Progress Log
 
 * **Date:** 2026-06-24
+* **Current sprint/block:** Google Ads Consent Hardening
+* **Done:**
+  - Changed Google Ads tracking to a basic consent-mode pattern: the Google tag is rendered only after the visitor chooses `Accept all`.
+  - Persisted both acceptance and refusal in a first-party consent cookie with a versioned localStorage fallback and migration from the old localStorage-only key.
+  - Added a localized `/[locale]/privacy#cookie-settings` panel for changing the consent choice without adding a cookie control to the footer.
+  - Verified mobile `/ru` first-visit, `Only necessary`, reload persistence, privacy-page consent change, consent revocation, lint, TypeScript, and production build.
+* **In progress:** Production deployment and Safari/iPhone verification.
+* **Next action:** After deployment, test `https://www.pixel-ring.com/ru` in iPhone Safari: accept/refuse, reload, and change consent from `/ru/privacy#cookie-settings`.
+* **Blockers/risks:** Safari's own privacy warning may still appear after a user explicitly accepts Google Ads cookies because Google tag loading is then intentional.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/02_public_website/README.md`
+
+* **Date:** 2026-06-24
 * **Current sprint/block:** Leistungen Final CTA Standardization
 * **Done:**
   - Converted the shared `LeistungenFooterCTA` component to the approved compact dark image CTA format from `/de/leistungen/werbeanlagen-reparatur`.
