@@ -15,6 +15,7 @@ interface ContactFormProps {
   dropdownPosition?: 'top' | 'bottom';
   initialIssueType?: string;
   initialMessage?: string;
+  containedScroll?: boolean;
 }
 
 const ContactForm = ({
@@ -24,6 +25,7 @@ const ContactForm = ({
   dropdownPosition = 'bottom',
   initialIssueType = '',
   initialMessage = '',
+  containedScroll = false,
 }: ContactFormProps) => {
   const t = useTranslations('ContactModal');
   const locale = useLocale();
@@ -242,9 +244,19 @@ const ContactForm = ({
     <form
       noValidate
       onSubmit={handleSubmit}
-      className="flex flex-col flex-1 gap-3 sm:gap-4 overflow-visible"
+      className={
+        containedScroll
+          ? 'flex min-h-0 flex-1 flex-col gap-3 overflow-hidden sm:gap-4'
+          : 'flex flex-col flex-1 gap-3 sm:gap-4 overflow-visible'
+      }
     >
-      <div className="flex flex-col gap-3 sm:gap-4 pr-1 -mr-1 pb-4 overflow-visible">
+      <div
+        className={
+          containedScroll
+            ? 'flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overscroll-contain pr-1 -mr-1 pb-4 sm:gap-4'
+            : 'flex flex-col gap-3 sm:gap-4 pr-1 -mr-1 pb-4 overflow-visible'
+        }
+      >
         {layout === 'two-column' ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -508,7 +520,15 @@ const ContactForm = ({
         )}
       </div>
 
-      <div className="mt-auto pt-2 border-t border-t-white/5">
+      <div
+        className={
+          containedScroll
+            ? `shrink-0 border-t pt-2 pb-[calc(0.25rem+env(safe-area-inset-bottom))] ${
+                variant === 'dark' ? 'border-t-white/10 bg-[#0E1A2B]' : 'border-t-black/5 bg-white'
+              }`
+            : 'mt-auto pt-2 border-t border-t-white/5'
+        }
+      >
         <div className="flex items-center gap-2 sm:gap-3 mb-3">
           <div
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}

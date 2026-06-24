@@ -2249,6 +2249,12 @@ export default async function ServiceDetailPage({ params }: PageProps) {
           locale={safeLocale}
           finalHeadline={content.finalHeadline}
           finalText={content.finalText}
+          requestTitle={content.nextStep?.requestTitle}
+          requestText={content.nextStep?.requestText ?? content.finalText}
+          requestCta={content.nextStep?.requestCta ?? content.primaryCta}
+          serviceIntent={content.intent}
+          imageSrc={content.image}
+          imageAlt={content.imageAlt}
         />
       </main>
       <Footer content={globalCms?.footer} />

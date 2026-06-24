@@ -15,6 +15,10 @@ Startup reading rule:
 Latest checkpoint:
 
 - Date: 2026-06-24
+- Current stage: Standardized the final CTA format across `/[locale]/leistungen`, `/[locale]/leistungen/werbeanlagen-reparatur`, and the shared `/[locale]/leistungen/[slug]` service pages, using the approved compact dark image CTA layout with localized page-specific copy and request intents.
+- Next action: Owner visually reviews the final CTA block on the main Leistungen overview and the four detail pages in DE, then spot-checks RU/AR copy and RTL behavior if needed.
+
+- Date: 2026-06-24
 - Current stage: Applied approved CorelDRAW SVG logos to the public website header: full `/brand/logo-full-light.svg` for tablet/desktop and compact `/brand/logo-compact-light.svg` for mobile, both cropped to web-ready viewBoxes; logo rendering now uses stable height-based sizing instead of width scaling, and the separate `SERVICE` header badge was removed because the logo includes `TECHNICAL SERVICE`.
 - Next action: Owner visually reviews `/de` desktop, tablet, and mobile header sizing after the fixed-height responsive logo swap.
 

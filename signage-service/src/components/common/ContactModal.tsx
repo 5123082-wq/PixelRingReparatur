@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslations } from 'next-intl';
 import ContactForm from './ContactForm';
 import Logo from '../common/Logo';
@@ -15,18 +16,29 @@ interface ContactModalProps {
 const ContactModal = ({ isOpen, onClose, onOpenChat }: ContactModalProps) => {
   const t = useTranslations('ContactModal');
   const [isRendered, setIsRendered] = useState(false);
+  const [viewportFrame, setViewportFrame] = useState({ height: '100svh', offsetTop: '0px' });
+  const previousBodyOverflowRef = useRef<string | null>(null);
 
   useEffect(() => {
     let renderTimer: ReturnType<typeof setTimeout> | null = null;
+    let closeTimer: ReturnType<typeof setTimeout> | null = null;
 
     if (isOpen) {
       renderTimer = setTimeout(() => setIsRendered(true), 0);
+      if (previousBodyOverflowRef.current === null) {
+        previousBodyOverflowRef.current = document.body.style.overflow;
+      }
       document.body.style.overflow = 'hidden';
     } else {
-      const timer = setTimeout(() => setIsRendered(false), 300);
-      document.body.style.overflow = '';
+      closeTimer = setTimeout(() => setIsRendered(false), 300);
+      if (previousBodyOverflowRef.current !== null) {
+        document.body.style.overflow = previousBodyOverflowRef.current;
+        previousBodyOverflowRef.current = null;
+      }
       return () => {
-        clearTimeout(timer);
+        if (closeTimer) {
+          clearTimeout(closeTimer);
+        }
         if (renderTimer) {
           clearTimeout(renderTimer);
         }
@@ -39,13 +51,50 @@ const ContactModal = ({ isOpen, onClose, onOpenChat }: ContactModalProps) => {
     };
   }, [isOpen]);
 
-  if (!isRendered && !isOpen) return null;
+  useEffect(() => {
+    return () => {
+      if (previousBodyOverflowRef.current !== null) {
+        document.body.style.overflow = previousBodyOverflowRef.current;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const updateViewportFrame = () => {
+      const viewport = window.visualViewport;
+      setViewportFrame({
+        height: `${Math.round(viewport?.height ?? window.innerHeight)}px`,
+        offsetTop: `${Math.round(viewport?.offsetTop ?? 0)}px`,
+      });
+    };
+
+    updateViewportFrame();
+    window.visualViewport?.addEventListener('resize', updateViewportFrame);
+    window.visualViewport?.addEventListener('scroll', updateViewportFrame);
+    window.addEventListener('resize', updateViewportFrame);
+
+    return () => {
+      window.visualViewport?.removeEventListener('resize', updateViewportFrame);
+      window.visualViewport?.removeEventListener('scroll', updateViewportFrame);
+      window.removeEventListener('resize', updateViewportFrame);
+      setViewportFrame({ height: '100svh', offsetTop: '0px' });
+    };
+  }, [isOpen]);
+
+  const portalRoot = typeof document === 'undefined' ? null : document.body;
+
+  if ((!isRendered && !isOpen) || !portalRoot) return null;
 
   const whatsappUrl = SITE_CONFIG.messengers.whatsapp;
   const telegramUrl = SITE_CONFIG.messengers.telegram;
 
-  return (
-    <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+  return createPortal(
+    <div
+      className={`fixed inset-x-0 z-[10000] flex items-end justify-center overflow-hidden p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] transition-opacity duration-300 sm:items-center sm:p-6 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+      style={{ top: viewportFrame.offsetTop, height: viewportFrame.height }}
+    >
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-[#0E1A2B]/40 backdrop-blur-md"
@@ -54,10 +103,13 @@ const ContactModal = ({ isOpen, onClose, onOpenChat }: ContactModalProps) => {
 
       {/* Modal Container: Two-Column Layout */}
       <div 
-        className={`relative w-full max-w-4xl h-auto max-h-[96vh] sm:h-[638px] bg-white/10 backdrop-blur-3xl border border-white/20 rounded-[32px] sm:rounded-[40px] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.25)] overflow-y-auto sm:overflow-hidden transition-all duration-500 ease-out transform flex flex-col sm:flex-row ${isOpen ? 'translate-y-0 scale-100' : 'translate-y-8 scale-95'}`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="contact-modal-title"
+        className={`relative flex h-full min-h-0 w-full max-w-4xl flex-col overflow-hidden rounded-[28px] border border-white/60 bg-[#F7F1E8] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.25)] transition-all duration-500 ease-out sm:h-[638px] sm:max-h-[calc(100dvh-3rem)] sm:flex-row sm:rounded-[40px] ${isOpen ? 'translate-y-0 scale-100' : 'translate-y-8 scale-95'}`}
       >
         {/* Left Column: Sidebar */}
-        <div className="w-full sm:w-[320px] bg-[#F7F1E8]/30 backdrop-blur-xl border-b sm:border-b-0 sm:border-r border-black/5 p-4 sm:p-6 flex flex-col gap-4 sm:gap-6 rounded-t-[32px] rounded-b-none sm:rounded-l-[40px] sm:rounded-r-none">
+        <div className="flex w-full shrink-0 flex-col gap-3 rounded-t-[28px] rounded-b-none border-b border-black/5 bg-[#EDE3D8] p-3 sm:w-[320px] sm:gap-6 sm:rounded-l-[40px] sm:rounded-r-none sm:border-b-0 sm:border-r sm:p-6">
           {/* Logo & Brand + Service Pill (Hidden on mobile) */}
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-3">
@@ -84,7 +136,7 @@ const ContactModal = ({ isOpen, onClose, onOpenChat }: ContactModalProps) => {
                   onOpenChat();
                   onClose();
                 }}
-                className="w-full h-12 sm:h-auto px-5 py-3 sm:py-3.5 bg-[#0E1A2B] hover:bg-[#1a2e47] text-white rounded-2xl font-bold flex items-center justify-center sm:justify-start gap-3 transition-all active:scale-[0.98]"
+                className="flex h-11 w-full items-center justify-center gap-3 rounded-2xl bg-[#0E1A2B] px-5 py-3 font-bold text-white transition-all hover:bg-[#1a2e47] active:scale-[0.98] sm:h-auto sm:justify-start sm:py-3.5"
               >
                 <div className="w-6 h-6 flex items-center justify-center bg-white/10 rounded-lg">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,7 +154,7 @@ const ContactModal = ({ isOpen, onClose, onOpenChat }: ContactModalProps) => {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 sm:w-full h-12 sm:h-auto px-2 sm:px-5 py-3 bg-white/40 hover:bg-white/60 text-[#0E1A2B] border border-black/5 rounded-2xl font-bold flex items-center justify-center sm:justify-start gap-3 transition-all active:scale-[0.98]"
+                className="flex h-11 flex-1 items-center justify-center gap-3 rounded-2xl border border-black/5 bg-white/40 px-2 py-3 font-bold text-[#0E1A2B] transition-all hover:bg-white/60 active:scale-[0.98] sm:h-auto sm:w-full sm:justify-start sm:px-5"
               >
                 <div className="w-6 h-6 flex items-center justify-center bg-[#25D366]/10 text-[#25D366] rounded-lg">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -117,7 +169,7 @@ const ContactModal = ({ isOpen, onClose, onOpenChat }: ContactModalProps) => {
                 href={telegramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 sm:w-full h-12 sm:h-auto px-2 sm:px-5 py-3 bg-white/40 hover:bg-white/60 text-[#0E1A2B] border border-black/5 rounded-2xl font-bold flex items-center justify-center sm:justify-start gap-3 transition-all active:scale-[0.98]"
+                className="flex h-11 flex-1 items-center justify-center gap-3 rounded-2xl border border-black/5 bg-white/40 px-2 py-3 font-bold text-[#0E1A2B] transition-all hover:bg-white/60 active:scale-[0.98] sm:h-auto sm:w-full sm:justify-start sm:px-5"
               >
                 <div className="w-6 h-6 flex items-center justify-center bg-[#0088cc]/10 text-[#0088cc] rounded-lg">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -130,7 +182,7 @@ const ContactModal = ({ isOpen, onClose, onOpenChat }: ContactModalProps) => {
               {/* Email */}
               <a
                 href={`mailto:${SITE_CONFIG.company.email}`}
-                className="flex-1 sm:w-full h-12 sm:h-auto px-2 sm:px-5 py-3 bg-white/40 hover:bg-white/60 text-[#0E1A2B] border border-black/5 rounded-2xl font-bold flex items-center justify-center sm:justify-start gap-3 transition-all active:scale-[0.98]"
+                className="flex h-11 flex-1 items-center justify-center gap-3 rounded-2xl border border-black/5 bg-white/40 px-2 py-3 font-bold text-[#0E1A2B] transition-all hover:bg-white/60 active:scale-[0.98] sm:h-auto sm:w-full sm:justify-start sm:px-5"
               >
                 <div className="w-6 h-6 flex items-center justify-center bg-black/5 text-[#72665D] rounded-lg">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -144,14 +196,14 @@ const ContactModal = ({ isOpen, onClose, onOpenChat }: ContactModalProps) => {
         </div>
 
         {/* Right Column: Form Area */}
-        <div className="flex-1 p-4 sm:p-8 bg-white/95 flex flex-col gap-3 sm:gap-4 rounded-b-[32px] rounded-t-none sm:rounded-r-[40px] sm:rounded-l-none">
-          <div className="flex flex-col gap-1">
-            <h2 className="text-[22px] sm:text-[26px] font-bold text-[#0E1A2B] tracking-tight leading-none">
+        <div className="flex min-h-0 flex-1 flex-col gap-3 rounded-b-[28px] rounded-t-none bg-white p-4 sm:gap-4 sm:rounded-r-[40px] sm:rounded-l-none sm:p-8">
+          <div className="flex shrink-0 flex-col gap-1">
+            <h2 id="contact-modal-title" className="text-[22px] sm:text-[26px] font-bold text-[#0E1A2B] tracking-tight leading-none">
               {t('form_title')}
             </h2>
           </div>
 
-          <ContactForm dropdownPosition="bottom" />
+          <ContactForm dropdownPosition="bottom" containedScroll />
         </div>
 
         {/* Close button */}
@@ -165,7 +217,8 @@ const ContactModal = ({ isOpen, onClose, onOpenChat }: ContactModalProps) => {
           </svg>
         </button>
       </div>
-    </div>
+    </div>,
+    portalRoot
   );
 };
 
