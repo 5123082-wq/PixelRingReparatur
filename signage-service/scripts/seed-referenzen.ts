@@ -18,6 +18,8 @@ const IMAGE_SET = {
   process: 'https://images.unsplash.com/photo-1534073828943-f801091bb18c?auto=format&fit=crop&q=80',
   design: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&q=80',
   dismantling: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&q=80',
+  ledLettersFacadeBefore: '/generated/referenzen/local-main/led-leuchtbuchstaben-fassade-vorher-teilweise-dunkel.webp',
+  ledLettersFacadeAfter: '/generated/referenzen/local-main/led-leuchtbuchstaben-fassade-nachher-gleichmaessig-beleuchtet.webp',
   beforeGeneral: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&q=80',
   generatedLedDetail: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&q=80',
   generatedLightboxLift: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&q=80',
@@ -47,6 +49,9 @@ type ReferenceCaseCopy = {
   result: string;
   defaultText: string;
   beforeText: string;
+  beforeAlt?: string;
+  afterAlt?: string;
+  galleryAlts?: string[];
 };
 
 type ReferenceCase = BaseReferenceCase & ReferenceCaseCopy;
@@ -60,9 +65,9 @@ const BASE_CASES: BaseReferenceCase[] = [
   },
   {
     id: 'led-letters',
-    beforeImage: IMAGE_SET.dismantling,
-    afterImage: IMAGE_SET.led,
-    gallery: [IMAGE_SET.dismantling, IMAGE_SET.led, IMAGE_SET.ledNatural],
+    beforeImage: IMAGE_SET.ledLettersFacadeBefore,
+    afterImage: IMAGE_SET.ledLettersFacadeAfter,
+    gallery: [IMAGE_SET.ledLettersFacadeBefore, IMAGE_SET.ledLettersFacadeAfter],
   },
   {
     id: 'neon-contour',
@@ -93,7 +98,7 @@ const BASE_CASES: BaseReferenceCase[] = [
 const CASE_COPY: Record<Locale, ReferenceCaseCopy[]> = {
   de: [
     { id: 'lightbox-facade', title: 'LED-Lightbox an der Fassade', category: 'Leuchtkasten', problem: 'Ein Teil des Lichtfelds blieb dunkel, der Eingang wirkte abends vernachlässigt.', work: 'Stromversorgung geprüft, beschädigte LED-Elemente ersetzt, Innenfläche gereinigt und Helligkeit angeglichen.', result: 'Die Fassade wirkt abends wieder aktiv und gut sichtbar.', defaultText: 'Gleichmäßige Ausleuchtung für bessere Abendwirkung.', beforeText: 'Vorher: dunkle Bereiche und ein sichtbar gealterter Kasten.' },
-    { id: 'led-letters', title: 'LED-Buchstaben eines Shops', category: 'LED-Buchstaben', problem: 'Mehrere Buchstaben waren ausgefallen, die Beschriftung wurde falsch gelesen.', work: 'Verbindungen geprüft, defekte Module ersetzt und die Helligkeit mit den Nachbarelementen abgestimmt.', result: 'Der Name ist wieder vollständig lesbar.', defaultText: 'Buchstaben lesen sich wieder als saubere Wortmarke.', beforeText: 'Vorher: einzelne Buchstaben fehlten im Lichtbild.' },
+    { id: 'led-letters', title: 'LED-Buchstaben an der Shop-Fassade', category: 'LED-Buchstaben', problem: 'Die Hauptbeschriftung an der Fassade blieb dunkel: Das Signetelement war sichtbar, die Buchstaben aber nicht.', work: 'Stromversorgung und Verbindungen geprüft, LED-Module wieder in Betrieb genommen und die sichtbare Helligkeit abgestimmt.', result: 'Die Fassadenbeschriftung ist abends wieder vollständig lesbar.', defaultText: 'Die Fassadenbeschriftung ist abends wieder klar sichtbar.', beforeText: 'Vorher: die Hauptbeschriftung an der Fassade leuchtete nicht.', beforeAlt: 'Vor der Reparatur: Shop-Fassade mit LED-Buchstaben, deren Hauptbeschriftung nicht leuchtet', afterAlt: 'Nach der Reparatur: Shop-Fassade mit wiederhergestellter Beleuchtung der LED-Buchstaben am Abend', galleryAlts: ['Vor der Reparatur: Shop-Fassade mit dunkler Hauptbeschriftung', 'Nach der Reparatur: Shop-Fassade mit hell leuchtenden LED-Buchstaben'] },
     { id: 'neon-contour', title: 'Neon-Kontur an Bar-Fassade', category: 'Neon', problem: 'Ein Riss im Glas führte zum Ausfall eines gesamten Segments der Kontur.', work: 'Das defekte Rohrstück vermessen, in gleicher Farbe neu geblasen und vor Ort mit neuem Trafo installiert.', result: 'Die durchgehende Linie der Bar ist wiederhergestellt.', defaultText: 'Leuchtende Farben und fließende Linien ohne Unterbrechung.', beforeText: 'Vorher: defektes Rohrstück unterbrach die Kontur.' },
     { id: 'window-film', title: 'Schaufenster-Folierung', category: 'Folierung', problem: 'Die alte Folie blätterte ab, das Logo war verblasst und unansehnlich.', work: 'Alte Folie rückstandslos entfernt, Scheiben gereinigt und neue UV-beständige Folie blasenfrei appliziert.', result: 'Das Schaufenster wirkt wieder einladend und repräsentativ.', defaultText: 'Scharfe Konturen und frische Farben an der Scheibe.', beforeText: 'Vorher: abgelöste und verblichene Folienteile.' },
     { id: 'branch-service', title: 'Filial-Wartung', category: 'Service', problem: 'Mehrere Filialen meldeten Ausfälle bei der Außenbeleuchtung nach einem Unwetter.', work: 'Priorisierte Routenplanung, Fehlerdiagnose vor Ort, Austausch von Netzteilen und Leuchtmitteln.', result: 'Alle Filialen sind wieder CI-konform beleuchtet.', defaultText: 'Einheitlicher Markenauftritt an allen Standorten.', beforeText: 'Vorher: unterschiedliche Lichtbilder durch defekte Anlagen.' },
@@ -101,7 +106,7 @@ const CASE_COPY: Record<Locale, ReferenceCaseCopy[]> = {
   ],
   en: [
     { id: 'lightbox-facade', title: 'Facade LED Lightbox', category: 'Lightbox', problem: 'Part of the light field was dark, making the entrance look neglected at night.', work: 'Checked power supply, replaced damaged LED elements, cleaned interior, and balanced brightness.', result: 'The facade looks active and highly visible again.', defaultText: 'Even illumination for better evening impact.', beforeText: 'Before: dark areas and a visibly aged box.' },
-    { id: 'led-letters', title: 'Shop LED Letters', category: 'LED Letters', problem: 'Several letters had failed, causing the sign to be misread.', work: 'Checked connections, replaced defective modules, and matched brightness with adjacent elements.', result: 'The name is fully readable again.', defaultText: 'Letters read as a clean wordmark once more.', beforeText: 'Before: individual letters were missing in the light pattern.' },
+    { id: 'led-letters', title: 'LED letters on a shop facade', category: 'LED letters', problem: 'The main facade lettering stayed dark: the symbol was visible, but the letters were not illuminated.', work: 'Power supply and connections were checked, LED modules were restored, and the visible brightness was matched.', result: 'The facade lettering is fully readable again in the evening.', defaultText: 'The facade lettering is clearly visible again after dark.', beforeText: 'Before: the main facade lettering did not light up.', beforeAlt: 'Before repair: shop facade with LED letters where the main lettering is not illuminated', afterAlt: 'After repair: shop facade with restored illumination of LED letters in the evening', galleryAlts: ['Before repair: shop facade with dark main lettering', 'After repair: shop facade with brightly illuminated LED letters'] },
     { id: 'neon-contour', title: 'Bar Facade Neon Contour', category: 'Neon', problem: 'A crack in the glass caused an entire segment of the contour to fail.', work: 'Measured the defective tube, blew a new one in the same color, and installed it on-site with a new transformer.', result: 'The continuous line of the bar is restored.', defaultText: 'Bright colors and flowing lines without interruption.', beforeText: 'Before: defective tube piece interrupted the contour.' },
     { id: 'window-film', title: 'Storefront Window Film', category: 'Window Film', problem: 'The old film was peeling, and the logo was faded and unsightly.', work: 'Removed old film without residue, cleaned windows, and applied new UV-resistant film without bubbles.', result: 'The storefront looks inviting and representative again.', defaultText: 'Sharp contours and fresh colors on the window.', beforeText: 'Before: peeling and faded film sections.' },
     { id: 'branch-service', title: 'Branch Service & Maintenance', category: 'Service', problem: 'Several branches reported exterior lighting failures after a storm.', work: 'Prioritized route planning, on-site diagnostics, replacement of power supplies and lamps.', result: 'All branches are illuminated in compliance with CI again.', defaultText: 'Consistent brand image across all locations.', beforeText: 'Before: inconsistent lighting due to defective systems.' },
@@ -109,7 +114,7 @@ const CASE_COPY: Record<Locale, ReferenceCaseCopy[]> = {
   ],
   ru: [
     { id: 'lightbox-facade', title: 'Световой короб на фасаде', category: 'Лайтбокс', problem: 'Часть светового поля не горела, из-за чего вход вечером выглядел заброшенным.', work: 'Проверили питание, заменили поврежденные LED-модули, очистили внутреннюю часть и выровняли яркость.', result: 'Фасад снова выглядит активным и хорошо заметным вечером.', defaultText: 'Равномерное освещение для лучшего эффекта в темное время суток.', beforeText: 'До: темные участки и заметно постаревший короб.' },
-    { id: 'led-letters', title: 'LED-буквы для магазина', category: 'Объемные буквы', problem: 'Несколько букв погасли, вывеска читалась неправильно.', work: 'Проверили контакты, заменили неисправные модули и настроили яркость под соседние элементы.', result: 'Название снова полностью читается.', defaultText: 'Буквы снова складываются в аккуратный логотип.', beforeText: 'До: в вывеске не хватало отдельных букв.' },
+    { id: 'led-letters', title: 'LED-буквы на фасаде магазина', category: 'Объемные буквы', problem: 'На фасаде не светилась основная надпись: знак был виден, но буквы оставались темными и вывеска теряла читаемость вечером.', work: 'Проверили питание и соединения, восстановили работу LED-модулей и выровняли визуальную яркость элементов.', result: 'Фасадная надпись снова читается целиком, а вход выглядит активным и заметным в темное время.', defaultText: 'Фасадная надпись снова ярко читается вечером.', beforeText: 'До: часть фасадной надписи не светилась.', beforeAlt: 'До ремонта: фасад магазина с объемными LED-буквами, где основная надпись не светится', afterAlt: 'После ремонта: фасад магазина с восстановленной подсветкой объемных LED-букв вечером', galleryAlts: ['До ремонта: фасад магазина с темной основной надписью', 'После ремонта: фасад магазина с ярко подсвеченными объемными LED-буквами'] },
     { id: 'neon-contour', title: 'Неоновый контур на фасаде бара', category: 'Неон', problem: 'Трещина в стекле привела к выходу из строя целого сегмента контура.', work: 'Сделали замеры поврежденной трубки, изготовили новую того же цвета и установили на месте с новым трансформатором.', result: 'Непрерывная линия бара восстановлена.', defaultText: 'Яркие цвета и плавные линии без прерываний.', beforeText: 'До: разбитая трубка разрывала контур.' },
     { id: 'window-film', title: 'Оклейка витрин пленкой', category: 'Оклейка', problem: 'Старая пленка начала отслаиваться, логотип выцвел и потерял вид.', work: 'Удалили старую пленку без следов, очистили стекла и наклеили новую УФ-стойкую пленку без пузырей.', result: 'Витрина снова выглядит привлекательно и представительно.', defaultText: 'Четкие контуры и свежие цвета на стекле.', beforeText: 'До: отслоившиеся и выцветшие участки пленки.' },
     { id: 'branch-service', title: 'Обслуживание сети филиалов', category: 'Сервис', problem: 'Несколько филиалов сообщили о проблемах с наружным освещением после грозы.', work: 'Спланировали приоритетные маршруты, провели диагностику на местах, заменили блоки питания и лампы.', result: 'Все филиалы снова освещены в соответствии с фирменным стилем.', defaultText: 'Единый имидж бренда на всех локациях.', beforeText: 'До: разное освещение из-за неисправных систем.' },
@@ -117,7 +122,7 @@ const CASE_COPY: Record<Locale, ReferenceCaseCopy[]> = {
   ],
   tr: [
     { id: 'lightbox-facade', title: 'Cephe LED Işıklı Kutu', category: 'Işıklı Kutu', problem: 'Işık alanının bir kısmı karanlıktı, bu da girişin akşamları bakımsız görünmesine neden oluyordu.', work: 'Güç kaynağı kontrol edildi, hasarlı LED elemanları değiştirildi, iç kısım temizlendi ve parlaklık dengelendi.', result: 'Cephe akşamları tekrar canlı ve iyi görünür durumda.', defaultText: 'Daha iyi akşam etkisi için eşit aydınlatma.', beforeText: 'Öncesi: karanlık alanlar ve gözle görülür şekilde eskimiş bir kutu.' },
-    { id: 'led-letters', title: 'Mağaza LED Harfleri', category: 'LED Harfler', problem: 'Birkaç harf sönmüştü, bu da yazının yanlış okunmasına neden oluyordu.', work: 'Bağlantılar kontrol edildi, arızalı modüller değiştirildi ve parlaklık komşu elemanlarla uyumlu hale getirildi.', result: 'İsim tekrar tamamen okunabilir durumda.', defaultText: 'Harfler tekrar temiz bir kelime markası olarak okunuyor.', beforeText: 'Öncesi: ışık deseninde eksik harfler vardı.' },
+    { id: 'led-letters', title: 'Mağaza cephesinde LED harfler', category: 'LED harfler', problem: 'Cephedeki ana yazı karanlık kaldı: sembol görünüyordu, ancak harfler aydınlanmıyordu.', work: 'Güç beslemesi ve bağlantılar kontrol edildi, LED modülleri yeniden çalıştırıldı ve görünen parlaklık dengelendi.', result: 'Cephe yazısı akşam saatlerinde yeniden tamamen okunabilir hale geldi.', defaultText: 'Cephe yazısı akşam yeniden net görünüyor.', beforeText: 'Öncesi: cephedeki ana yazı yanmıyordu.', beforeAlt: 'Onarım öncesi: ana yazısı yanmayan LED harfli mağaza cephesi', afterAlt: 'Onarım sonrası: akşam LED harf aydınlatması geri gelen mağaza cephesi', galleryAlts: ['Onarım öncesi: ana yazısı karanlık mağaza cephesi', 'Onarım sonrası: parlak LED harflerle aydınlanan mağaza cephesi'] },
     { id: 'neon-contour', title: 'Bar Cephesi Neon Kontur', category: 'Neon', problem: 'Camdaki bir çatlak, konturun bir segmentinin tamamen bozulmasına neden oldu.', work: 'Arızalı tüp ölçüldü, aynı renkte yenisi üretildi ve yeni bir transformatörle yerinde monte edildi.', result: 'Barın kesintisiz çizgisi geri getirildi.', defaultText: 'Kesintisiz parlak renkler ve akıcı çizgiler.', beforeText: 'Öncesi: arızalı tüp parçası konturu kesintiye uğratmıştı.' },
     { id: 'window-film', title: 'Vitrin Folyo Kaplama', category: 'Folyo Kaplama', problem: 'Eski folyo dökülüyordu, logo solmuş ve çirkin görünüyordu.', work: 'Eski folyo kalıntı bırakmadan söküldü, camlar temizlendi ve yeni UV ışınlarına dayanıklı folyo kabarcıksız olarak uygulandı.', result: 'Vitrin tekrar davetkar ve kurumsal görünüyor.', defaultText: 'Camda keskin hatlar ve taze renkler.', beforeText: 'Öncesi: dökülen ve solmuş folyo parçaları.' },
     { id: 'branch-service', title: 'Şube Bakım ve Servis', category: 'Servis', problem: 'Bir fırtınadan sonra birkaç şube dış aydınlatma arızası bildirdi.', work: 'Öncelikli rota planlaması yapıldı, yerinde arıza tespiti gerçekleştirildi, güç kaynakları ve ampuller değiştirildi.', result: 'Tüm şubeler kurumsal kimliğe uygun olarak tekrar aydınlatıldı.', defaultText: 'Tüm konumlarda tutarlı marka imajı.', beforeText: 'Öncesi: arızalı sistemler nedeniyle farklı aydınlatma görüntüleri.' },
@@ -125,7 +130,7 @@ const CASE_COPY: Record<Locale, ReferenceCaseCopy[]> = {
   ],
   pl: [
     { id: 'lightbox-facade', title: 'Kaseton LED na elewacji', category: 'Kaseton', problem: 'Część pola świetlnego była ciemna, przez co wejście wieczorem wyglądało na zaniedbane.', work: 'Sprawdzono zasilanie, wymieniono uszkodzone elementy LED, wyczyszczono wnętrze i wyrównano jasność.', result: 'Elewacja znów wygląda aktywnie i jest dobrze widoczna wieczorem.', defaultText: 'Równomierne oświetlenie dla lepszego efektu wieczornego.', beforeText: 'Przed: ciemne obszary i widocznie zestarzały kaseton.' },
-    { id: 'led-letters', title: 'Litery LED dla sklepu', category: 'Litery LED', problem: 'Kilka liter zgasło, co powodowało błędne odczytywanie napisu.', work: 'Sprawdzono połączenia, wymieniono uszkodzone moduły i dostosowano jasność do sąsiednich elementów.', result: 'Nazwa jest znów w pełni czytelna.', defaultText: 'Litery znów układają się w czysty logotyp.', beforeText: 'Przed: brakowało pojedynczych liter w oświetleniu.' },
+    { id: 'led-letters', title: 'Litery LED na fasadzie sklepu', category: 'Litery LED', problem: 'Główny napis na fasadzie pozostawał ciemny: znak był widoczny, ale litery nie świeciły.', work: 'Sprawdzono zasilanie i połączenia, przywrócono pracę modułów LED i wyrównano widoczną jasność.', result: 'Napis na fasadzie jest znów w pełni czytelny wieczorem.', defaultText: 'Napis na fasadzie jest znów dobrze widoczny wieczorem.', beforeText: 'Przed: główny napis na fasadzie nie świecił.', beforeAlt: 'Przed naprawą: fasada sklepu z literami LED, których główny napis nie świeci', afterAlt: 'Po naprawie: fasada sklepu z przywróconym podświetleniem liter LED wieczorem', galleryAlts: ['Przed naprawą: fasada sklepu z ciemnym głównym napisem', 'Po naprawie: fasada sklepu z jasno świecącymi literami LED'] },
     { id: 'neon-contour', title: 'Kontur neonowy na elewacji baru', category: 'Neon', problem: 'Pęknięcie szkła spowodowało awarię całego segmentu konturu.', work: 'Zmierzono uszkodzoną rurkę, wydmuchano nową w tym samym kolorze i zamontowano na miejscu z nowym transformatorem.', result: 'Ciągła linia baru została przywrócona.', defaultText: 'Jasne kolory i płynne linie bez przerw.', beforeText: 'Przed: uszkodzona rurka przerywała kontur.' },
     { id: 'window-film', title: 'Oklejanie witryn folią', category: 'Oklejanie', problem: 'Stara folia łuszczyła się, a logo wyblakło i wyglądało nieestetycznie.', work: 'Usunięto starą folię bez śladów, wyczyszczono szyby i nałożono nową folię odporną na promieniowanie UV bez pęcherzyków powietrza.', result: 'Witryna znów wygląda zachęcająco i reprezentacyjnie.', defaultText: 'Ostre kontury i świeże kolory na szybie.', beforeText: 'Przed: łuszczące się i wyblakłe fragmenty folii.' },
     { id: 'branch-service', title: 'Obsługa serwisowa oddziałów', category: 'Serwis', problem: 'Kilka oddziałów zgłosiło awarie oświetlenia zewnętrznego po burzy.', work: 'Zaplanowano priorytetowe trasy, przeprowadzono diagnostykę na miejscu, wymieniono zasilacze i źródła światła.', result: 'Wszystkie oddziały są znów oświetlone zgodnie z identyfikacją wizualną.', defaultText: 'Spójny wizerunek marki we wszystkich lokalizacjach.', beforeText: 'Przed: różne oświetlenie z powodu niesprawnych systemów.' },
@@ -133,7 +138,7 @@ const CASE_COPY: Record<Locale, ReferenceCaseCopy[]> = {
   ],
   ar: [
     { id: 'lightbox-facade', title: 'صندوق إضاءة LED للواجهة', category: 'صندوق إضاءة', problem: 'كان جزء من مساحة الإضاءة معتماً، مما جعل المدخل يبدو مهملاً في المساء.', work: 'تم فحص مصدر الطاقة، واستبدال عناصر LED التالفة، وتنظيف الجزء الداخلي وموازنة السطوع.', result: 'عادت الواجهة لتبدو نشطة ومرئية بوضوح في المساء.', defaultText: 'إضاءة متساوية لتأثير مسائي أفضل.', beforeText: 'قبل: مناطق مظلمة وصندوق يبدو عليه القدم بوضوح.' },
-    { id: 'led-letters', title: 'حروف LED للمتجر', category: 'حروف LED', problem: 'تعطلت عدة حروف، مما أدى إلى قراءة اللافتة بشكل خاطئ.', work: 'تم فحص التوصيلات، واستبدال الوحدات المعيبة، وضبط السطوع ليتناسب مع العناصر المجاورة.', result: 'عاد الاسم مقروءاً بالكامل.', defaultText: 'تُقرأ الحروف كعلامة نصية نظيفة مرة أخرى.', beforeText: 'قبل: كانت هناك حروف مفقودة في نمط الإضاءة.' },
+    { id: 'led-letters', title: 'حروف LED على واجهة متجر', category: 'حروف LED', problem: 'بقي النص الرئيسي على الواجهة غير مضاء: كان الرمز ظاهراً، لكن الحروف لم تكن مضاءة.', work: 'تم فحص التغذية والتوصيلات، إعادة تشغيل وحدات LED، وتوحيد السطوع المرئي.', result: 'أصبح نص الواجهة مقروءاً بالكامل مرة أخرى في المساء.', defaultText: 'نص الواجهة واضح مرة أخرى في المساء.', beforeText: 'قبل: النص الرئيسي على الواجهة لم يكن مضاءً.', beforeAlt: 'قبل الإصلاح: واجهة متجر بحروف LED لا يضيء نصها الرئيسي', afterAlt: 'بعد الإصلاح: واجهة متجر مع استعادة إضاءة حروف LED في المساء', galleryAlts: ['قبل الإصلاح: واجهة متجر بنص رئيسي مظلم', 'بعد الإصلاح: واجهة متجر بحروف LED مضاءة بوضوح'] },
     { id: 'neon-contour', title: 'محيط نيون لواجهة حانة', category: 'نيون', problem: 'أدى صدع في الزجاج إلى تعطل جزء كامل من المحيط.', work: 'تم قياس الأنبوب المعيب، وتشكيل أنبوب جديد بنفس اللون، وتركيبه في الموقع مع محول جديد.', result: 'تمت استعادة الخط المستمر للحانة.', defaultText: 'ألوان زاهية وخطوط انسيابية بدون انقطاع.', beforeText: 'قبل: قطعة أنبوب معيبة قطعت المحيط.' },
     { id: 'window-film', title: 'تغليف واجهات العرض', category: 'تغليف بالفويل', problem: 'كان الفويل القديم يتقشر، وكان الشعار باهتاً وغير جذاب.', work: 'تمت إزالة الفويل القديم دون ترك أثر، وتنظيف الزجاج، ووضع فويل جديد مقاوم للأشعة فوق البنفسجية بدون فقاعات.', result: 'عادت واجهة العرض لتبدو جذابة وتمثيلية مرة أخرى.', defaultText: 'حواف حادة وألوان منعشة على الزجاج.', beforeText: 'قبل: أجزاء فويل متقشرة وباهتة.' },
     { id: 'branch-service', title: 'صيانة الفروع', category: 'خدمة', problem: 'أبلغت عدة فروع عن أعطال في الإضاءة الخارجية بعد عاصفة.', work: 'تم تخطيط مسارات ذات أولوية، وإجراء تشخيص للأعطال في الموقع، واستبدال مصادر الطاقة والمصابيح.', result: 'عادت الإضاءة لجميع الفروع بما يتوافق مع الهوية المؤسسية.', defaultText: 'صورة موحدة للعلامة التجارية في جميع المواقع.', beforeText: 'قبل: إضاءة غير متناسقة بسبب الأنظمة المعيبة.' },
@@ -509,6 +514,9 @@ async function seed() {
         galleryImage1: gallery[0] || '',
         galleryImage2: gallery[1] || '',
         galleryImage3: gallery[2] || '',
+        galleryAlt1: c.galleryAlts?.[0] || '',
+        galleryAlt2: c.galleryAlts?.[1] || '',
+        galleryAlt3: c.galleryAlts?.[2] || '',
       };
     });
 
@@ -589,6 +597,7 @@ async function seed() {
           title: c.title,
           category: c.category,
           image: c.gallery[0],
+          imageAlt: c.galleryAlts?.[0] || c.afterAlt || c.title,
           description: c.result
         })),
       },
@@ -617,9 +626,9 @@ async function seed() {
         enabled: true,
         sortOrder: 10,
         items: [
-          { title: cases[0].title, text: cases[0].problem, image: cases[0].afterImage, filter: 'filter-lightbox' },
-          { title: cases[1].title, text: cases[1].problem, image: cases[1].afterImage, filter: 'filter-led' },
-          { title: cases[2].title, text: cases[2].problem, image: cases[2].afterImage, filter: 'filter-neon' },
+          { title: cases[0].title, text: cases[0].problem, image: cases[0].afterImage, imageAlt: cases[0].afterAlt || cases[0].title, filter: 'filter-lightbox' },
+          { title: cases[1].title, text: cases[1].problem, image: cases[1].afterImage, imageAlt: cases[1].afterAlt || cases[1].title, filter: 'filter-led' },
+          { title: cases[2].title, text: cases[2].problem, image: cases[2].afterImage, imageAlt: cases[2].afterAlt || cases[2].title, filter: 'filter-neon' },
         ],
       },
       {

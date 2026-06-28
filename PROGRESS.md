@@ -14,6 +14,14 @@ Startup reading rule:
 
 Latest checkpoint:
 
+- Date: 2026-06-28
+- Current stage: Updated the `/[locale]/referenzen` (страница примеров работ) `led-letters` reference card with approved before/after WebP photos for `LED-Buchstaben` (объемные LED-буквы), localized DE/EN/RU/TR/PL/AR case copy, image alt text, and a CMS image-field guard so ASCII asset URLs are not normalized into German display text.
+- Next action: Owner visually reviews `/ru/referenzen` (страница примеров работ), especially the selected `ОБЪЕМНЫЕ БУКВЫ` card hover state, modal gallery, and full-gallery thumbnail.
+
+- Date: 2026-06-28
+- Current stage: Created and expanded the planning source for `Reinigung & Pflege von Werbeanlagen, Markisen und Außenwerbung` (очистка и уход за рекламными конструкциями, маркизами и наружной рекламой), covering owner decisions, positioning, page structure, calculator spec, generated-image prompts, SEO/GEO clusters, safety boundaries, `/leistungen` (страница услуг) module, staged development strategy, and implementation alignment with the existing `werbeanlagen-reparatur` (ремонт рекламных конструкций) and shared service-page templates.
+- Next action: Prepare the code-level implementation brief: exact files, component strategy, service-card placement, structured data, localization scope, and verification checklist before application edits.
+
 - Date: 2026-06-24
 - Current stage: Hardened Google Ads cookie consent for Safari/iPhone and EU-style privacy behavior: optional Google Ads tags now load only after `Accept all`, consent/refusal is persisted in a first-party cookie with localStorage fallback, and consent changes are managed from the privacy page instead of a footer cookie link.
 - Next action: Deploy and verify production Safari/iPhone behavior on `https://www.pixel-ring.com/ru`, especially repeated reload after `Only necessary` and the `/ru/privacy#cookie-settings` consent panel.

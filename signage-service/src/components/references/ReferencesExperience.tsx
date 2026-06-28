@@ -20,9 +20,12 @@ export type ReferenceCase = {
   result: string;
   beforeImage: string;
   afterImage: string;
+  beforeAlt?: string;
+  afterAlt?: string;
   defaultText: string;
   beforeText: string;
   gallery: string[];
+  galleryAlts?: string[];
 };
 
 export type GalleryItem = {
@@ -30,6 +33,7 @@ export type GalleryItem = {
   title: string;
   category: string;
   image: string;
+  imageAlt?: string;
   description: string;
 };
 
@@ -38,6 +42,7 @@ export type CategoryItem = {
   title: string;
   text: string;
   image: string;
+  imageAlt?: string;
   filter: string;
 };
 
@@ -472,8 +477,8 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
       onClick={() => openCase(item.id)}
       className={`${getRecentCardClass(index)} group relative shrink-0 overflow-hidden rounded-[24px] bg-[#101418] text-left shadow-xl outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B8643E]`}
     >
-      <Image src={item.afterImage} alt="" fill sizes="(min-width: 1024px) 420px, 78vw" className="object-cover transition-all duration-500 group-hover:scale-105 group-hover:opacity-0 group-focus-visible:scale-105 group-focus-visible:opacity-0" />
-      <Image src={item.beforeImage} alt="" fill sizes="(min-width: 1024px) 420px, 78vw" className="object-cover opacity-0 grayscale transition-all duration-500 group-hover:scale-105 group-hover:opacity-80 group-focus-visible:scale-105 group-focus-visible:opacity-80" />
+      <Image src={item.afterImage} alt={item.afterAlt ?? item.title} fill sizes="(min-width: 1024px) 420px, 78vw" className="object-cover transition-all duration-500 group-hover:scale-105 group-hover:opacity-0 group-focus-visible:scale-105 group-focus-visible:opacity-0" />
+      <Image src={item.beforeImage} alt={item.beforeAlt ?? item.beforeText} fill sizes="(min-width: 1024px) 420px, 78vw" className="object-cover opacity-0 grayscale transition-all duration-500 group-hover:scale-105 group-hover:opacity-80 group-focus-visible:scale-105 group-focus-visible:opacity-80" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/82 via-black/18 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 p-6 text-white">
         <p className="text-[12px] font-black uppercase tracking-[0.16em] text-white/70">{item.category}</p>
@@ -524,7 +529,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
         }}
         className={`${getGalleryCardClass(variant)} group relative shrink-0 overflow-hidden rounded-[22px] bg-[#101418] text-left shadow-lg outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B8643E]`}
       >
-        <Image src={item.image} alt="" fill sizes={variant === 'wide' ? '692px' : isSmall ? '212px' : '440px'} className="object-cover transition-transform duration-700 group-hover:scale-105 group-focus-visible:scale-105" />
+        <Image src={item.image} alt={item.imageAlt ?? item.title} fill sizes={variant === 'wide' ? '692px' : isSmall ? '212px' : '440px'} className="object-cover transition-transform duration-700 group-hover:scale-105 group-focus-visible:scale-105" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/78 via-black/12 to-black/10" />
         <div className={`${isSmall ? 'p-4' : 'p-5'} absolute inset-x-0 bottom-0 text-white`}>
           <p className={`${isSmall ? 'text-[10px]' : 'text-[11px]'} font-black uppercase tracking-[0.16em] text-white/70`}>{item.category}</p>
@@ -767,7 +772,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
                 className="group overflow-hidden rounded-[22px] border border-white bg-white text-left shadow-sm outline-none transition-all hover:-translate-y-1 hover:shadow-xl focus-visible:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B8643E]"
               >
                 <div className="relative h-48 overflow-hidden">
-                  <Image src={item.image} alt="" fill sizes="(min-width: 1024px) 33vw, 50vw" className="object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <Image src={item.image} alt={item.imageAlt ?? item.title} fill sizes="(min-width: 1024px) 33vw, 50vw" className="object-cover transition-transform duration-500 group-hover:scale-105" />
                 </div>
                 <div className="p-6">
                   <h3 className="text-xl font-black leading-tight text-[#0E1A2B]">{item.title}</h3>
@@ -825,7 +830,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
         }}>
           <div className="grid max-h-[92vh] w-full max-w-6xl overflow-hidden rounded-[28px] bg-white shadow-2xl lg:grid-cols-[1.1fr_0.9fr]">
             <div className="relative min-h-[320px] bg-[#101418] lg:min-h-[620px]">
-              <Image src={activeCase.gallery[activeCaseImage] ?? activeCase.afterImage} alt="" fill sizes="60vw" className="object-cover" />
+              <Image src={activeCase.gallery[activeCaseImage] ?? activeCase.afterImage} alt={activeCase.galleryAlts?.[activeCaseImage] ?? activeCase.afterAlt ?? activeCase.title} fill sizes="60vw" className="object-cover" />
               <div className="absolute bottom-4 left-4 right-4 flex gap-2 overflow-x-auto rounded-2xl bg-black/36 p-2 backdrop-blur">
                 {activeCase.gallery.map((src, index) => (
                   <button
@@ -835,7 +840,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
                     className={`relative h-16 w-24 shrink-0 overflow-hidden rounded-xl border ${index === activeCaseImage ? 'border-white' : 'border-white/20'}`}
                     aria-label={`Image ${index + 1}`}
                   >
-                    <Image src={src} alt="" fill sizes="96px" className="object-cover" />
+                    <Image src={src} alt={activeCase.galleryAlts?.[index] ?? `${activeCase.title} ${index + 1}`} fill sizes="96px" className="object-cover" />
                   </button>
                 ))}
               </div>
@@ -887,7 +892,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
             </div>
             <div className="relative min-h-0 flex-1">
               <div className="relative h-[min(58vh,620px)] bg-black">
-                <Image src={activePhoto.image} alt="" fill sizes="100vw" className="object-contain" />
+                <Image src={activePhoto.image} alt={activePhoto.imageAlt ?? activePhoto.title} fill sizes="100vw" className="object-contain" />
                 <button type="button" onClick={() => movePhoto(isRtl ? 1 : -1)} className="absolute left-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/14 text-2xl backdrop-blur hover:bg-white/22" aria-label="Previous photo">
                   ‹
                 </button>
@@ -920,7 +925,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
                       className={`relative h-16 w-24 shrink-0 overflow-hidden rounded-xl border ${item.id === activePhoto.id ? 'border-white' : 'border-white/18'}`}
                       aria-label={item.title}
                     >
-                      <Image src={item.image} alt="" fill sizes="96px" className="object-cover" />
+                      <Image src={item.image} alt={item.imageAlt ?? item.title} fill sizes="96px" className="object-cover" />
                     </button>
                   ))}
                 </div>

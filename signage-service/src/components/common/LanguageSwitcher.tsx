@@ -40,7 +40,7 @@ const LanguageSwitcher = () => {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 px-3 py-1.5 bg-white/50 border border-[#E7DDD3] rounded-full text-[14px] font-bold text-[#72665D] hover:border-[#B8643E] hover:text-[#B8643E] transition-all"
+        className="pr-nav-glass-accent flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[14px] font-bold text-[#72665D] transition-all hover:border-[#B8643E] hover:text-[#B8643E]"
         aria-haspopup="true"
         aria-expanded={isOpen}
       >
@@ -56,7 +56,7 @@ const LanguageSwitcher = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute ltr:right-0 rtl:left-0 mt-2 w-24 bg-white border border-[#E7DDD3] rounded-2xl shadow-xl shadow-[#0E1A2B10] py-2 z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="pr-nav-glass pr-nav-glass-floating absolute z-[60] mt-2 w-24 rounded-2xl border py-2 ltr:right-0 rtl:left-0 animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="flex flex-col">
             {languages.map((lang) => (
               <button
@@ -64,8 +64,8 @@ const LanguageSwitcher = () => {
                 onClick={() => handleLocaleChange(lang.code)}
                 className={`px-4 py-2 text-start text-[14px] font-medium transition-colors ${
                   locale === lang.code
-                    ? 'text-[#B8643E] bg-[#F7F1E8]'
-                    : 'text-[#72665D] hover:bg-[#F7F1E850] hover:text-[#B8643E]'
+                    ? 'text-[#B8643E]'
+                    : 'text-[#72665D] hover:text-[#B8643E]'
                 }`}
               >
                 {lang.name}

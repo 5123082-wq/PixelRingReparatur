@@ -133,6 +133,8 @@ export type GlobalFooterCmsContent = {
   email?: string;
 };
 
+const ACTIVE_FOOTER_LEGAL_HREFS = new Set(['/impressum', '/privacy']);
+
 export type FooterCtaCmsContent = {
   title?: string;
   subtitle?: string;
@@ -817,7 +819,7 @@ export function getBlockText(block: CmsPageBlock, field: string): string | undef
     return undefined;
   }
 
-  if (/href|url|asset/i.test(field) || /^image$/i.test(field)) {
+  if (/href|url|asset|image/i.test(field)) {
     return value.trim();
   }
 
@@ -1179,7 +1181,11 @@ export async function getGlobalPageCmsContent(
             serviceLinks: footerServices ? getLinkItems(footerServices, 'items') : undefined,
             supportLinks: footerSupport ? getLinkItems(footerSupport, 'items')?.map(l => l.href === '/support' || l.href === '/support#symptoms' ? { ...l, href: '/probleme-loesungen' } : l) : undefined,
             socialLinks: footerSocial ? getLinkItems(footerSocial, 'items') : undefined,
-            legalLinks: footerLegal ? getLinkItems(footerLegal, 'items') : undefined,
+            legalLinks: footerLegal
+              ? getLinkItems(footerLegal, 'items')?.filter((link) =>
+                  ACTIVE_FOOTER_LEGAL_HREFS.has(link.href)
+                )
+              : undefined,
             companyLines: footerCompany ? getBlockTextList(footerCompany, 'lines') : undefined,
             hours: footerCompany ? getBlockText(footerCompany, 'hours') : undefined,
             email: footerCompany ? getBlockText(footerCompany, 'email') : undefined,

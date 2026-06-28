@@ -9,6 +9,7 @@ type LegalContent = {
 
 const company = SITE_CONFIG.company;
 const address = `${company.address.street}\n${company.address.city}\n${company.address.country}`;
+const phoneLines = company.phone.join('\n');
 
 export const LEGAL_NOTICE_BY_LOCALE: Record<string, string> = {
   de: 'Dieses Dokument ist rechtlich bindend in seiner deutschen Fassung.',
@@ -28,19 +29,25 @@ Anbieter
 ${company.legalName}
 ${address}
 
+Markenauftritt
+${company.name}
+
 Kontakt
+Telefon:
+${phoneLines}
+E-Mail: ${company.legalEmail}
 E-Mail: ${company.email}
+
+Umsatzsteuer-ID
+Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz:
+${company.vatId}
 
 Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV
 ${company.legalName}
 ${address}
 
-Online-Streitbeilegung
-Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung bereit:
-https://ec.europa.eu/consumers/odr
-
-Hinweis nach § 36 VSBG
-Wir sind nicht verpflichtet und nicht bereit, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.
+Verbraucherstreitbeilegung
+Wir sind nicht bereit, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.
 
 Haftung für Inhalte
 Die Inhalte dieser Website wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte übernehmen wir jedoch keine Gewähr.

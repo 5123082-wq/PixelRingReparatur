@@ -67,6 +67,12 @@ Archive/history rule:
 
 Do not read full progress log at startup. Read only when continuing this track.
 
+### 2026-06-28 - `Reinigung & Pflege` Service Strategy
+
+Done: created and expanded [service_page_reinigung_werbeanlagen_markisen_plan.md](service_page_reinigung_werbeanlagen_markisen_plan.md) as the planning source for `Reinigung & Pflege von Werbeanlagen, Markisen und Außenwerbung` (очистка и уход за рекламными конструкциями, маркизами и наружной рекламой), including competitor/context research, owner decisions, positioning, page shape, `/leistungen` (страница услуг) module, keyword clusters, calculator specification, generated-image prompts, safety boundaries, internal links, and staged development.
+
+Next action: in the next implementation chat, start with Stage A (этап A) from the plan: confirm final route, H1 (главный заголовок), overview module format, and image direction before any application code, CMS records, or public copy implementation.
+
 ### 2026-06-13 - `Probleme & Lösungen` P1.1 `urgent-repair` Rewrite
 
 Done: rewrote the published DE/EN/RU `CmsArticle` records (CMS-статьи) for `urgent-repair` / `dringende-reparatur-werbeanlage` (срочный ремонт рекламной конструкции), added safety-bounded `selfRepairTips` (советы по самостоятельному ремонту с границами безопасности), updated code-backed cards, and verified lint, production build, rendered HTML, JSON-LD (структурированные данные), urgent CTA (срочный призыв к действию), and absence of unsafe emergency wording.

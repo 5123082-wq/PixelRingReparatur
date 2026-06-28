@@ -41,6 +41,20 @@ const ASSETS = [
     usageType: 'HERO',
   },
   {
+    key: 'ledLettersFacadeBefore',
+    file: 'public/generated/referenzen/local-main/led-leuchtbuchstaben-fassade-vorher-teilweise-dunkel.webp',
+    title: 'Referenzen - LED letters facade before repair',
+    altText: 'Shop facade with LED letters where the main lettering is not illuminated',
+    usageType: 'CASE',
+  },
+  {
+    key: 'ledLettersFacadeAfter',
+    file: 'public/generated/referenzen/local-main/led-leuchtbuchstaben-fassade-nachher-gleichmaessig-beleuchtet.webp',
+    title: 'Referenzen - LED letters facade after repair',
+    altText: 'Shop facade with restored illumination of LED letters in the evening',
+    usageType: 'HERO',
+  },
+  {
     key: 'ledModuleRepair',
     file: 'public/generated/referenzen/local-main/led-module-repair.png',
     title: 'Referenzen generated - LED module repair detail',
@@ -199,6 +213,59 @@ function detectPngDimensions(buffer) {
   };
 }
 
+function detectWebpDimensions(buffer) {
+  if (
+    buffer.length < 30 ||
+    buffer.toString('ascii', 0, 4) !== 'RIFF' ||
+    buffer.toString('ascii', 8, 12) !== 'WEBP'
+  ) {
+    return { width: null, height: null };
+  }
+
+  const chunkType = buffer.toString('ascii', 12, 16);
+
+  if (chunkType === 'VP8 ' && buffer.length >= 30) {
+    return {
+      width: buffer.readUInt16LE(26) & 0x3fff,
+      height: buffer.readUInt16LE(28) & 0x3fff,
+    };
+  }
+
+  if (chunkType === 'VP8X' && buffer.length >= 30) {
+    return {
+      width: 1 + buffer.readUIntLE(24, 3),
+      height: 1 + buffer.readUIntLE(27, 3),
+    };
+  }
+
+  if (chunkType === 'VP8L' && buffer.length >= 25) {
+    const bits = buffer.readUInt32LE(21);
+    return {
+      width: 1 + (bits & 0x3fff),
+      height: 1 + ((bits >> 14) & 0x3fff),
+    };
+  }
+
+  return { width: null, height: null };
+}
+
+function detectImageDimensions(buffer, filename) {
+  const ext = path.extname(filename).toLowerCase();
+  if (ext === '.webp') {
+    return detectWebpDimensions(buffer);
+  }
+
+  return detectPngDimensions(buffer);
+}
+
+function getAssetMimeType(filename) {
+  return path.extname(filename).toLowerCase() === '.webp' ? 'image/webp' : 'image/png';
+}
+
+function getStorageExtension(filename) {
+  return path.extname(filename).toLowerCase() === '.webp' ? '.webp' : '.png';
+}
+
 function sanitizeBaseName(filename) {
   const ext = path.extname(filename);
   const raw = ext ? filename.slice(0, -ext.length) : filename;
@@ -246,7 +313,8 @@ async function persistAsset(asset, prisma, apply) {
 
   const token = getBlobToken();
   const suffix = crypto.randomBytes(6).toString('hex');
-  const storageFile = `${Date.now()}-${suffix}-${sanitizeBaseName(originalFilename)}.png`;
+  const mimeType = getAssetMimeType(originalFilename);
+  const storageFile = `${Date.now()}-${suffix}-${sanitizeBaseName(originalFilename)}${getStorageExtension(originalFilename)}`;
   const localStorageKey = storageFile;
   const localFile = path.join(PUBLIC_UPLOAD_DIR, localStorageKey);
   await mkdir(PUBLIC_UPLOAD_DIR, { recursive: true });
@@ -262,7 +330,7 @@ async function persistAsset(asset, prisma, apply) {
     const blobKey = `cms-media/${storageFile}`;
     const blob = await put(blobKey, buffer, {
       access: 'public',
-      contentType: 'image/png',
+      contentType: mimeType,
       token,
     });
     storageProvider = 'VERCEL_BLOB';
@@ -272,7 +340,7 @@ async function persistAsset(asset, prisma, apply) {
     fallbackUrl = `${PUBLIC_UPLOAD_URL_PREFIX}/${localStorageKey}`;
   }
 
-  const dimensions = detectPngDimensions(buffer);
+  const dimensions = detectImageDimensions(buffer, originalFilename);
   const created = await prisma.cmsMedia.create({
     data: {
       locale: 'de',
@@ -285,7 +353,7 @@ async function persistAsset(asset, prisma, apply) {
       originalFilename,
       title: asset.title,
       altText: asset.altText,
-      mimeType: 'image/png',
+      mimeType,
       byteSize: buffer.length,
       checksumSha256,
       width: dimensions.width,
@@ -326,9 +394,9 @@ function setCaseImages(cases, urls) {
       gallery: [urls.agentBeforeUnevenSign, urls.agentOpenedLightboxInterior, urls.agentFacadeLightboxAfter],
     },
     {
-      beforeImage: urls.agentLedModuleRepair,
-      afterImage: urls.agentLedLettersAfter,
-      gallery: [urls.agentLedModuleRepair, urls.agentLedLettersAfter, urls.agentPowerSupplyDiagnostics],
+      beforeImage: urls.ledLettersFacadeBefore,
+      afterImage: urls.ledLettersFacadeAfter,
+      gallery: [urls.ledLettersFacadeBefore, urls.ledLettersFacadeAfter],
     },
     {
       beforeImage: urls.agentNeonBenchRepair,
@@ -375,12 +443,13 @@ function setGalleryImages(items, urls) {
     urls.agentFacadeMountingLift,
     urls.agentBeforeUnevenSign,
     urls.agentOpenedLightboxInterior,
-    urls.agentLedModuleRepair,
+    urls.ledLettersFacadeBefore,
+    urls.ledLettersFacadeAfter,
     urls.agentNeonBenchRepair,
     urls.agentPowerSupplyDiagnostics,
     urls.agentWideHeroServiceResult,
     urls.lightboxAfter,
-    urls.ledLettersAfter,
+    urls.ledLettersFacadeAfter,
     urls.windowFilmAfter,
     urls.lightboxInteriorService,
   ];
@@ -393,7 +462,7 @@ function setGalleryImages(items, urls) {
 
 function setProductCategoryImages(items, urls) {
   const productImages = [
-    urls.agentLedLettersAfter,
+    urls.ledLettersFacadeAfter,
     urls.agentFacadeLightboxAfter,
     urls.neonContourAfter,
     urls.agentStorefrontFilmApplication,

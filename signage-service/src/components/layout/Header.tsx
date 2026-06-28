@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocale, useTranslations } from 'next-intl';
@@ -130,6 +130,31 @@ function DesktopNavLink({
 }) {
   const hasMenu = Boolean(menuLinks?.length);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const closeMenuTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const clearCloseMenuTimeout = () => {
+    if (closeMenuTimeoutRef.current) {
+      clearTimeout(closeMenuTimeoutRef.current);
+      closeMenuTimeoutRef.current = null;
+    }
+  };
+  const openMenu = () => {
+    clearCloseMenuTimeout();
+    setIsMenuOpen(true);
+  };
+  const closeMenu = () => {
+    clearCloseMenuTimeout();
+    setIsMenuOpen(false);
+  };
+  const scheduleCloseMenu = () => {
+    clearCloseMenuTimeout();
+    closeMenuTimeoutRef.current = setTimeout(() => {
+      setIsMenuOpen(false);
+      closeMenuTimeoutRef.current = null;
+    }, 140);
+  };
+
+  useEffect(() => clearCloseMenuTimeout, []);
+
   const triggerClassName = `relative inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[15px] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]/40 ${
     isActive
       ? 'font-semibold text-[#0E1A2B]'
@@ -140,7 +165,7 @@ function DesktopNavLink({
       {isActive && (
         <motion.span
           layoutId="active-nav-pill"
-          className="absolute inset-0 rounded-full border border-[#E7DDD3] bg-white/80 shadow-[0_4px_12px_rgba(14,26,43,0.05)] backdrop-blur-md"
+          className="pr-nav-glass-accent absolute inset-0 rounded-full border"
           transition={{ type: 'spring', stiffness: 380, damping: 30 }}
         />
       )}
@@ -165,15 +190,15 @@ function DesktopNavLink({
   return (
     <div
       className="relative"
-      onMouseEnter={() => setIsMenuOpen(true)}
+      onMouseEnter={openMenu}
       onMouseLeave={(event) => {
         if (!event.currentTarget.contains(document.activeElement)) {
-          setIsMenuOpen(false);
+          scheduleCloseMenu();
         }
       }}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) {
-          setIsMenuOpen(false);
+          closeMenu();
         }
       }}
     >
@@ -182,7 +207,7 @@ function DesktopNavLink({
           href={link.href}
           aria-current={isActive ? 'page' : undefined}
           aria-haspopup="menu"
-          onFocus={() => setIsMenuOpen(true)}
+          onFocus={openMenu}
           className={triggerClassName}
         >
           {triggerContent}
@@ -201,7 +226,7 @@ function DesktopNavLink({
         <div
           role="menu"
           aria-label={link.name}
-          className={`absolute left-1/2 top-full z-[70] mt-3 w-[330px] -translate-x-1/2 rounded-[18px] border border-[#E7DDD3] bg-[#FFFDF9]/95 p-2 shadow-[0_18px_44px_rgba(14,26,43,0.14)] backdrop-blur-xl transition-all duration-200 ${
+          className={`pr-nav-glass pr-nav-glass-floating absolute left-1/2 top-full z-[70] mt-3 w-[330px] -translate-x-1/2 rounded-[18px] border p-2 transition-all duration-200 ${
             isMenuOpen
               ? 'visible translate-y-0 opacity-100'
               : 'invisible translate-y-2 opacity-0 pointer-events-none'
@@ -219,8 +244,8 @@ function DesktopNavLink({
                 aria-current={isMenuItemActive ? 'page' : undefined}
                 className={`flex items-center justify-between gap-3 rounded-[12px] px-3.5 py-3 text-[14px] font-semibold transition-colors ${
                   isMenuItemActive
-                    ? 'bg-[#F3E9DF] text-[#0E1A2B]'
-                    : 'text-[#6F625A] hover:bg-[#EEF3FB] hover:text-[#B8643E] focus-visible:bg-[#EEF3FB] focus-visible:text-[#B8643E] focus-visible:outline-none'
+                    ? 'text-[#0E1A2B]'
+                    : 'text-[#6F625A] hover:text-[#B8643E] focus-visible:text-[#B8643E] focus-visible:outline-none'
                 }`}
               >
                 <span>{item.label}</span>
@@ -259,7 +284,19 @@ const Header = ({
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDesktopNavOpen, setIsDesktopNavOpen] = useState(false);
   const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
+  const desktopNavHoverAreaRef = useRef<HTMLDivElement>(null);
+  const desktopNavCloseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const clearDesktopNavCloseTimeout = () => {
+    if (desktopNavCloseTimeoutRef.current) {
+      clearTimeout(desktopNavCloseTimeoutRef.current);
+      desktopNavCloseTimeoutRef.current = null;
+    }
+  };
+  const openDesktopNav = () => {
+    clearDesktopNavCloseTimeout();
+    setIsDesktopNavOpen(true);
+  };
   const fallbackNavLinks = [
     { name: t('services'), href: '/leistungen' },
     { name: t('solutions'), href: '/probleme-loesungen' },
@@ -339,6 +376,62 @@ const Header = ({
   }, [isMenuOpen, isModalOpen]);
 
   useEffect(() => {
+    return () => {
+      clearDesktopNavCloseTimeout();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isDesktopNavOpen) {
+      return;
+    }
+
+    const containsPoint = (rect: DOMRect, x: number, y: number) =>
+      x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+    const clearCloseTimeout = () => {
+      if (desktopNavCloseTimeoutRef.current) {
+        clearTimeout(desktopNavCloseTimeoutRef.current);
+        desktopNavCloseTimeoutRef.current = null;
+      }
+    };
+    const scheduleClose = () => {
+      clearCloseTimeout();
+      desktopNavCloseTimeoutRef.current = setTimeout(() => {
+        setIsDesktopNavOpen(false);
+        desktopNavCloseTimeoutRef.current = null;
+      }, 160);
+    };
+
+    const handlePointerMove = (event: PointerEvent) => {
+      const hoverArea = desktopNavHoverAreaRef.current;
+      const isInsideHoverArea = hoverArea
+        ? containsPoint(hoverArea.getBoundingClientRect(), event.clientX, event.clientY)
+        : false;
+      const isInsideVisibleMenu = Array.from(document.querySelectorAll('header [role="menu"]')).some(
+        (menu) => {
+          const menuStyles = window.getComputedStyle(menu);
+
+          return (
+            menuStyles.visibility !== 'hidden' &&
+            menuStyles.opacity !== '0' &&
+            containsPoint(menu.getBoundingClientRect(), event.clientX, event.clientY)
+          );
+        }
+      );
+
+      if (isInsideHoverArea || isInsideVisibleMenu) {
+        clearCloseTimeout();
+        return;
+      }
+
+      scheduleClose();
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    return () => window.removeEventListener('pointermove', handlePointerMove);
+  }, [isDesktopNavOpen]);
+
+  useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
         setIsMenuOpen(false);
@@ -360,6 +453,7 @@ const Header = ({
       const shouldCollapse = window.scrollY > 24;
       setIsScrolled(shouldCollapse);
       if (!shouldCollapse) {
+        clearDesktopNavCloseTimeout();
         setIsDesktopNavOpen(false);
       }
     };
@@ -373,7 +467,7 @@ const Header = ({
     <>
       {/* Placeholder to prevent layout shift when header becomes fixed */}
       <div className="h-[72px] lg:h-[120px] w-full shrink-0" />
-      <header className="fixed top-0 z-50 w-full bg-[#EEF3FBA3] backdrop-blur-[10.5px] border-b border-[#E7DDD3]">
+      <header className="pr-nav-glass fixed top-0 z-50 w-full border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex min-h-[72px] items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-2 sm:gap-3">
@@ -443,7 +537,6 @@ const Header = ({
               </button>
             </div>
           </div>
-
           {/* Navigation - Desktop Container with Animated Height */}
           <div className="hidden lg:block relative">
             {/* 1. Static Nav row that shrinks and disappears */}
@@ -454,7 +547,7 @@ const Header = ({
                 opacity: isScrolled ? 0 : 1
               }}
               transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className={`relative z-30 ${isScrolled ? 'pointer-events-none overflow-hidden' : 'overflow-visible'}`}
+              className={`relative z-30 ${isScrolled ? 'pointer-events-none overflow-hidden' : 'pr-nav-glass overflow-visible rounded-b-[20px] border-x border-b'}`}
             >
               <nav className="flex items-center justify-center gap-5 border-t border-[#E7DDD3]/70 py-1.5">
                 {navLinks.map((link) => (
@@ -474,26 +567,28 @@ const Header = ({
               {isScrolled && (
                 <div className="absolute inset-x-0 top-0 flex justify-center pointer-events-none">
                   <motion.div
+                    ref={desktopNavHoverAreaRef}
                     key="scrolled-notch"
                     initial={{ y: -40, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: -40, opacity: 0 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                    onMouseEnter={() => setIsDesktopNavOpen(true)}
-                    onMouseLeave={() => setIsDesktopNavOpen(false)}
-                    className="pointer-events-auto"
+                    onMouseMove={isDesktopNavOpen ? openDesktopNav : undefined}
+                    className={`pointer-events-auto ${isDesktopNavOpen ? 'w-[920px]' : 'w-[192px]'} flex h-[86px] justify-center`}
                   >
                     <motion.div
+                      onMouseEnter={openDesktopNav}
+                      onMouseMove={openDesktopNav}
                       initial={false}
                       animate={{
-                        width: isDesktopNavOpen ? 760 : 192,
+                        width: isDesktopNavOpen ? 880 : 192,
                         height: isDesktopNavOpen ? 56 : 24,
                       }}
                       transition={{ type: 'spring', stiffness: 400, damping: 35 }}
-                      className={`relative flex items-center justify-center overflow-visible border border-t-0 rounded-b-[20px] outline-none backdrop-blur-md transition-[background-color,border-color,box-shadow] duration-200 group ${
+                      className={`pr-nav-glass relative flex items-center justify-center border border-t-0 rounded-b-[20px] outline-none transition-[background-color,border-color,box-shadow] duration-200 group ${
                         isDesktopNavOpen
-                          ? 'border-[#D9C7BA] bg-[#FFFDF9]/95 shadow-xl'
-                          : 'border-[#D9C7BA]/60 bg-white/75 shadow-md'
+                          ? 'overflow-visible pr-nav-glass-floating'
+                          : 'overflow-hidden'
                       }`}
                     >
                       {!isDesktopNavOpen && (
@@ -521,9 +616,8 @@ const Header = ({
                           <motion.nav
                             key="expanded-links"
                             initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.15, delay: 0.1 }}
+                            animate={{ opacity: 1, transition: { duration: 0.15, delay: 0.1 } }}
+                            exit={{ opacity: 0, transition: { duration: 0.06 } }}
                             className="flex items-center justify-center gap-5 px-8"
                           >
                             {navLinks.map((link) => (
@@ -603,7 +697,7 @@ const Header = ({
                             transition={{ duration: 0.2, ease: 'easeInOut' }}
                             className="overflow-hidden"
                           >
-                            <div className="mt-2 grid gap-1 rounded-2xl border border-[#E7DDD3]/80 bg-[#FFFDF9] p-2">
+                            <div className="pr-nav-glass pr-nav-glass-floating mt-2 grid gap-1 rounded-2xl border p-2">
                               {servicesMenuLinks.map((item) => {
                                 const isMenuItemActive = isExactNavPath(pathname, item.href);
 
@@ -615,8 +709,8 @@ const Header = ({
                                     onClick={() => setIsMenuOpen(false)}
                                     className={`flex items-center justify-between rounded-xl px-3.5 py-3 text-[16px] font-semibold transition-colors ${
                                       isMenuItemActive
-                                        ? 'bg-[#F3E9DF] text-[#0E1A2B]'
-                                        : 'text-[#6F625A] hover:bg-[#EEF3FB] hover:text-[#B8643E]'
+                                        ? 'text-[#0E1A2B]'
+                                        : 'text-[#6F625A] hover:text-[#B8643E]'
                                     }`}
                                   >
                                     <span>{item.label}</span>

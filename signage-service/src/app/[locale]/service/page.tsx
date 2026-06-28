@@ -5,7 +5,6 @@ import { notFound } from 'next/navigation';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
 import ServiceLandingPage from '@/components/service/ServiceLandingPage';
-import ServiceTeaser from '@/components/service/ServiceTeaser';
 import { CMS_SESSION_COOKIE_NAME, requireAdminSession } from '@/lib/admin-auth';
 import { getGlobalPageCmsContent, getServicePageCmsContent } from '@/lib/cms/pages';
 import { prisma } from '@/lib/prisma';
@@ -21,7 +20,7 @@ const SERVICE_PAGE_CMS_PREVIEW_ENABLED = process.env.SERVICE_PAGE_CMS_PREVIEW_EN
 function isCmsPreview(value: string | string[] | undefined): boolean {
   if (!value) return false;
   const values = Array.isArray(value) ? value : [value];
-  return values.includes('1') || values.includes('2026');
+  return values.includes('1');
 }
 
 async function hasOwnerCmsSession(): Promise<boolean> {
@@ -60,24 +59,13 @@ export default async function ServicePage({ params, searchParams }: ServicePageP
   const query = await searchParams;
   const previewRequested = isCmsPreview(query.cmsPreview);
   const publicEnabled = SERVICE_PAGE_PUBLIC_ENABLED;
-  const hasSecretAccess = Array.isArray(query.cmsPreview)
-    ? query.cmsPreview.includes('2026')
-    : query.cmsPreview === '2026';
   const previewAllowed =
     SERVICE_PAGE_CMS_PREVIEW_ENABLED &&
     previewRequested &&
-    (hasSecretAccess || (await hasOwnerCmsSession()));
+    (await hasOwnerCmsSession());
 
   if (!publicEnabled && !previewAllowed) {
-    const globalCms = await getGlobalPageCmsContent(locale);
-
-    return (
-      <div className="min-h-screen bg-[#F7F1E8] text-[#0D1B2A] flex flex-col">
-        <Header content={globalCms?.header} />
-        <ServiceTeaser locale={locale} />
-        <Footer content={globalCms?.footer} />
-      </div>
-    );
+    notFound();
   }
 
   const content = await getServicePageCmsContent(locale, { includeDraft: previewAllowed });

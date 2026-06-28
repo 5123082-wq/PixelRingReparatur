@@ -10,9 +10,12 @@
 
 export const SITE_CONFIG = {
   company: {
-    name: 'PixelRing Technical Atelier',
-    legalName: 'PixelRing Technical Atelier',
+    name: 'PixelRing Technical Service',
+    legalName: 'NVKV Werbeagentur Inh. Ivan Novikov',
+    legalEmail: 'info@nvkv.de',
     email: 'info@pixel-ring.com',
+    phone: ['01605911284', '03043202390'],
+    vatId: 'DE367887602',
     hours: 'Mo–Fr 09:00–18:00',
     address: {
       street: 'Dannenwalder Weg 110',
