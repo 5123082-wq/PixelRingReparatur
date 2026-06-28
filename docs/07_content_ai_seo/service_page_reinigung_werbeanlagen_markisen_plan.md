@@ -681,6 +681,112 @@ Stage F (этап F): Verification
 - verify calculator request summary;
 - verify all new internal links return 200.
 
+### 17.1 Implementation Alignment Brief (бриф выравнивания с существующими страницами услуг)
+
+Use this brief before code work so the new cleaning service page fits the current `Leistungen` (страница услуг) system instead of becoming a visually special one-off page.
+
+#### Current service-page architecture
+
+There are three relevant implementation surfaces:
+
+1. `signage-service/src/app/[locale]/leistungen/page.tsx` (главная страница услуг)
+   - This is the services overview.
+   - It already includes the service intent `reinigung-pflege` (очистка и уход) as part of the broader service taxonomy.
+   - The new cleaning page should be added here as a normal service card/module, not as a separate oversized campaign band for the first MVP.
+
+2. `signage-service/src/app/[locale]/leistungen/werbeanlagen-reparatur/page.tsx` (страница ремонта рекламных конструкций)
+   - This is the richest current service page and should be treated as the pattern source for high-intent interactive service pages.
+   - It uses a dedicated route, `LeistungenRepairHeroSlider`, interactive task/symptom cards, a drawer request flow, problem links, proof/diagnostic blocks, scope sections, FAQ, JSON-LD, and `LeistungenFooterCTA`.
+   - Do not copy its repair-specific content, calculator logic, proof strip, or diagnostic prototype blindly.
+
+3. `signage-service/src/app/[locale]/leistungen/[slug]/page.tsx` (общий шаблон соседних страниц услуг)
+   - This is the shared template for neighboring service pages.
+   - It provides the standard rhythm: hero, optional decision tool, problem links, task cards, checks, process, boundaries, FAQ, related services, and footer CTA.
+   - The cleaning page should visually align with this section rhythm and spacing unless there is a clear conversion reason to reuse a richer repair-page component.
+
+#### Recommended implementation approach
+
+Create `/[locale]/leistungen/werbeanlagen-reinigung` (страница очистки рекламных конструкций) as a dedicated service page, but reuse existing service-page design language.
+
+Preferred approach:
+
+- Use `LeistungenRepairHeroSlider` for the hero so the new page visually matches current service-detail pages.
+- Reuse the repair page's interactive-card idea for cleaning task recognition, but create a cleaning-specific component or generalized workflow. Do not rename the repair workflow internally if it stays repair-specific.
+- Use a drawer request flow based on `LeistungenProblemDrawer` so task cards can open a request form with a prefilled cleaning summary.
+- Add a cleaning-specific estimator that outputs effort/routing categories, not prices.
+- Use `LeistungenFooterCTA` for the final CTA with a cleaning-specific image once approved.
+- Keep section colors and card styles close to current pages: `#F7F1E8`, `#FFFDF9`, `#F8FAFC`, `#0E1A2B`, and the existing accent `#B8643E`.
+
+#### What to reuse
+
+- Header/Footer CMS loading pattern from service pages.
+- `LeistungenRepairHeroSlider` for hero consistency.
+- `LeistungenProblemDrawer` for request intake drawer.
+- `LeistungenFooterCTA` for the final compact dark image CTA.
+- JSON-LD patterns from repair and generic service pages: `Service`, `LocalBusiness` / `ProfessionalService`, `BreadcrumbList`, `FAQPage`, and `hasOfferCatalog`.
+- Internal-link card styling from repair problem links and `[slug]` pages.
+
+#### What not to reuse blindly
+
+- Do not copy `LeistungenRepairCostEstimator`; it is repair-oriented, price-oriented, and currently only DE/RU.
+- Do not use repair defect labels such as `Trafo`, `Kurzschluss`, `LED-Modul-Tausch`, or `Neon-Reparatur` as cleaning task categories.
+- Do not reuse the repair proof strip until real cleaning before/after photos exist.
+- Do not present generated images as customer proof.
+- Do not add a separate large `/leistungen` overview band in the first pass; start with a normal service card/module.
+- Do not expose internal execution details such as partner use, equipment rental, or specialist sourcing in public copy.
+
+#### Cleaning-specific interactive scope
+
+The cleaning task cards should be request starters, not SEO links. Suggested cards:
+
+1. `Markise verschmutzt oder fleckig` (маркиза загрязнена или в пятнах)
+2. `Leuchtkasten wirkt matt oder grau` (световой короб выглядит матовым или серым)
+3. `Profilbuchstaben außen verschmutzt` (объемные буквы загрязнены снаружи)
+4. `Schmutz sitzt innen in Buchstaben oder Kasten` (грязь внутри букв или короба)
+5. `Schild, Paneel oder Pylon braucht Pflege` (вывеска, панель или пилон требует ухода)
+6. `Fassade rund um die Werbung ist verschmutzt` (фасад вокруг рекламы загрязнен)
+7. Fallback: `Nicht sicher? Fotos senden` (не уверены? отправьте фото)
+
+Each card should prefill the request drawer with a short cleaning-oriented summary, for example:
+
+`Aufgabe: Reinigung / Pflege. Objekt: beschriftete Markise. Sichtbares Problem: Flecken, Schmutz oder Verfärbung. Fotos vorhanden.` (задача: очистка/уход; объект: маркиза с надписью; видимая проблема: пятна, грязь или изменение цвета; фото есть.)
+
+#### Cleaning estimator scope
+
+Build a new estimator with non-binding categories only.
+
+Inputs:
+
+- object type: awning, sign/panel/pylon, exterior lightbox, exterior channel letters, interior lightbox/letters, facade-adjacent area;
+- size/scope: small, medium, large, multi-location;
+- dirt level: light dust/rain streaks, visible traffic dirt/bird droppings, algae/mold-like stains/old deposits, unknown with photos;
+- access: ground, ladder/low access, lift/platform likely, unclear;
+- technical complexity: exterior only, sensitive textile/film/acrylic, electrical/light advertising nearby, opening/dismantling likely;
+- timing: normal appointment, before opening, outside business hours, seasonal deadline.
+
+Outputs:
+
+- `Einfach` (простая)
+- `Materialsensibel` (требует учета материала)
+- `Mit Zugangstechnik` (с техникой доступа)
+- `Technisch prüfen` (нужна техническая проверка)
+
+The estimator must not show fixed prices or imply guaranteed stain removal.
+
+#### First implementation order
+
+1. Add the cleaning page content in DE first.
+2. Add EN/RU/TR/PL/AR localizations after DE copy is approved.
+3. Add generated hero/footer images only after owner review.
+4. Add the route to SEO/sitemap route lists.
+5. Add the service card/module to `/leistungen`.
+6. Add JSON-LD and verify rendered schema.
+7. Verify mobile layout and Arabic RTL.
+
+#### Current local preview caveat
+
+During the planning review on 2026-06-28, the already running local dev server on port `3000` returned a `404` with stale `SayLeed` metadata even for `/de` and `/de/leistungen/werbeanlagen-reparatur`. The code files for the PixelRing service pages exist and were reviewed directly, but visual browser verification of the current page state was not reliable in that session. Before final implementation QA, restart or correct the local dev server and verify the actual rendered pages.
+
 ## 18. Source Notes (источники)
 
 - [Berlin.de, `Werbeanlagen` (рекламные конструкции)](https://www.berlin.de/ba-marzahn-hellersdorf/politik-und-verwaltung/aemter/stadtentwicklungsamt/bauaufsicht-wohnungsaufsicht-denkmalschutz/artikel.187791.php): broad definition of outdoor advertising visible from public traffic areas and procedural notes for Berlin advertising structures.
@@ -706,8 +812,9 @@ Stage F (этап F): Verification
   - Proposed future route, page structure, `/leistungen` (страница услуг) overview module, keyword clusters, internal linking, and staged service development.
   - Added owner decisions: one accountable PixelRing service company, broad `Markisenreinigung` (очистка маркиз) SEO capture, no private-awning focus, no headline `Imprägnierung` (пропитка) offer, Berlin & Brandenburg SEO anchor, generated image plan, and calculator requirement.
   - Added detailed page structure, calculator specification, image prompts, and next-chat staged execution plan.
-* **In progress:** Owner review of final route, H1 (главный заголовок), and generated-image direction before implementation begins.
-* **Next action:** In the next chat, start with Stage A (этап A): confirm final route/H1/module format, then produce DE canonical copy and image-generation prompts for review.
+  - Added implementation alignment brief after reviewing the existing `werbeanlagen-reparatur` (ремонт рекламных конструкций) dedicated page, `/leistungen` (страница услуг) overview, and shared `[slug]` service-detail template.
+* **In progress:** Implementation brief and owner review before code work.
+* **Next action:** Prepare the code-level implementation brief: exact files, component strategy, data model additions, service-card placement, structured data, and verification checklist.
 * **Blockers/risks:** Real proof photos are not yet available; cleaning method, equipment ownership/rental, access model, wastewater handling, pricing, and complex-case execution should stay operationally flexible in public copy.
 * **Updated documents:**
   - `docs/07_content_ai_seo/service_page_reinigung_werbeanlagen_markisen_plan.md`

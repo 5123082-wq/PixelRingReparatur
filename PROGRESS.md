@@ -19,8 +19,8 @@ Latest checkpoint:
 - Next action: Owner visually reviews `/ru/referenzen` (страница примеров работ), especially the selected `ОБЪЕМНЫЕ БУКВЫ` card hover state, modal gallery, and full-gallery thumbnail.
 
 - Date: 2026-06-28
-- Current stage: Created and expanded the planning source for `Reinigung & Pflege von Werbeanlagen, Markisen und Außenwerbung` (очистка и уход за рекламными конструкциями, маркизами и наружной рекламой), covering owner decisions, combined signage-cleaning and branded-awning positioning, page structure, calculator spec, generated-image prompts, SEO/GEO keyword clusters, safety boundaries, `/leistungen` (страница услуг) module, and staged development strategy.
-- Next action: In the next implementation chat, start with Stage A (этап A): confirm final route, H1 (главный заголовок), overview module format, and image direction before code or CMS work.
+- Current stage: Created and expanded the planning source for `Reinigung & Pflege von Werbeanlagen, Markisen und Außenwerbung` (очистка и уход за рекламными конструкциями, маркизами и наружной рекламой), covering owner decisions, positioning, page structure, calculator spec, generated-image prompts, SEO/GEO clusters, safety boundaries, `/leistungen` (страница услуг) module, staged development strategy, and implementation alignment with the existing `werbeanlagen-reparatur` (ремонт рекламных конструкций) and shared service-page templates.
+- Next action: Prepare the code-level implementation brief: exact files, component strategy, service-card placement, structured data, localization scope, and verification checklist before application edits.
 
 - Date: 2026-06-24
 - Current stage: Hardened Google Ads cookie consent for Safari/iPhone and EU-style privacy behavior: optional Google Ads tags now load only after `Accept all`, consent/refusal is persisted in a first-party cookie with localStorage fallback, and consent changes are managed from the privacy page instead of a footer cookie link.
