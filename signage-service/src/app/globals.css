@@ -18,6 +18,30 @@ body {
   font-family: var(--font-inter, 'Inter', sans-serif);
 }
 
+.pr-nav-glass {
+  background: #eef3fb;
+  border-color: rgba(231, 221, 211, 0.84);
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.pr-nav-glass-accent {
+  background: #eef3fb;
+  border-color: rgba(231, 221, 211, 0.78);
+  box-shadow: none;
+}
+
+.pr-nav-glass-floating {
+  box-shadow: none;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .pr-nav-glass {
+    background: #eef3fb;
+  }
+}
+
 @keyframes metric-fill {
   from {
     width: 0;

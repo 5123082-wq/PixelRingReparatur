@@ -42,6 +42,21 @@ Use this folder for:
 
 ## Progress Log
 
+* **Date:** 2026-06-28
+* **Current sprint/block:** References `LED-Buchstaben` (объемные LED-буквы) card photo replacement
+* **Done:**
+  - Replaced the `led-letters` before/after imagery on `/[locale]/referenzen` (страница примеров работ) with two owner-provided facade photos stored as WebP files under the existing references asset folder.
+  - Rewrote the selected card case copy for DE, EN, RU, TR, PL, and AR without naming the visible brand from the photos.
+  - Added localized image alt text fields for the card, modal gallery, full gallery, and product category surfaces.
+  - Updated the CMS media replacement script for the new WebP assets and fixed CMS image-field normalization so ASCII file paths such as `gleichmaessig` are not converted into display text.
+  - Updated the published local CMS `referenzen` (примеры работ) records for all six MVP locales.
+* **In progress:** Owner visual review of the selected card on the local `/ru/referenzen` (страница примеров работ) page.
+* **Next action:** Check the card in the carousel, hover/focus before-state, case modal, and gallery thumbnail in the browser.
+* **Blockers/risks:** The photo itself contains a visible third-party brand; public copy and alt text intentionally describe the object generically.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/02_public_website/README.md`
+
 * **Date:** 2026-06-24
 * **Current sprint/block:** Google Ads Consent Hardening
 * **Done:**
