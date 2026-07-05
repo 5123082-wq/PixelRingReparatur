@@ -22,7 +22,7 @@ function stripLocale(pathname: string) {
 }
 
 function buildLocalePath(locale: string, path: string) {
-  return `/${locale}${path}`;
+  return path === '/' ? `/${locale}` : `/${locale}${path}`;
 }
 
 function isProblemArticlePath(path: string) {
