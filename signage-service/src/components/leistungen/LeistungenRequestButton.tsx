@@ -10,6 +10,8 @@ type LeistungenRequestButtonProps = {
   serviceIntent: string;
   variant?: 'primary' | 'secondary' | 'ghost' | 'dark-ghost';
   className?: string;
+  initialIssueType?: string;
+  initialMessage?: string;
   onClick?: () => void;
 };
 
@@ -18,6 +20,8 @@ export default function LeistungenRequestButton({
   serviceIntent,
   variant = 'primary',
   className = '',
+  initialIssueType,
+  initialMessage,
   onClick,
 }: LeistungenRequestButtonProps) {
   const [isContactOpen, setIsContactOpen] = useState(false);
@@ -56,6 +60,8 @@ export default function LeistungenRequestButton({
             isOpen={isContactOpen}
             onClose={() => setIsContactOpen(false)}
             onOpenChat={() => setIsChatOpen(true)}
+            initialIssueType={initialIssueType}
+            initialMessage={initialMessage}
           />
           <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
         </>

@@ -20,6 +20,24 @@
 
 ## Progress Log
 
+### 2026-07-03 - RU/EN localized review drafts
+
+- Current sprint/block: `faded-film` / `Folie ist ausgeblichen` (пленка выцвела) RU/EN localized markdown adaptation.
+- Done: created `пленка выцвела – 08/problem_article_folie-ist-ausgeblichen_ru.md` and `пленка выцвела – 08/problem_article_folie-ist-ausgeblichen_en.md` as owner-review drafts; adapted SEO/CMS fields (поисковые и CMS-поля), small card, modal, full article, FAQ, safety-bounded `selfRepairTips` (структурированные советы по самостоятельным действиям), and internal AI notes for each locale; after owner feedback, shortened and cleaned the RU draft and applied the same public-readiness pass to the EN draft by separating non-public service blocks, reducing repetition, localizing headings/tone, and strengthening Berlin/Brandenburg B2B context; no CMS/database (CMS/база данных), seed scripts (скрипты загрузки), routes (маршруты), sitemap (карта сайта), slug maps (карты slug), or `signage-service/package.json` changes were made.
+- In progress: owner review of the RU/EN markdown drafts.
+- Next action: after owner approval, handle the separate CMS publication phase: extend or add seed script(s), load RU/EN records into CMS/database, and verify `/ru/probleme-loesungen/folie-ist-ausgeblichen`, `/en/probleme-loesungen/folie-ist-ausgeblichen`, plus the RU/EN hub modals.
+- Blockers/risks: partial replacement must not promise exact colour match; photo-based review must remain an initial assessment, not a fixed price; self-help guidance must remain limited to photos, measurements, surface notes, old references, and safe access information.
+- Updated documents/files: `пленка выцвела – 08/problem_article_folie-ist-ausgeblichen_ru.md`, `пленка выцвела – 08/problem_article_folie-ist-ausgeblichen_en.md`, `README.md`, root `PROGRESS.md`.
+
+### 2026-07-03
+
+- Current sprint/block: `faded-film` / `Folie ist ausgeblichen` (пленка выцвела) DE problem article (немецкая статья о проблеме) markdown-to-CMS publication.
+- Done: created `пленка выцвела – 08/` and saved the owner-provided DE draft as `problem_article_folie-ist-ausgeblichen_de.md`; added repeatable `db:seed:article-faded-film` (повторяемый seed-скрипт загрузки CMS-статьи) for DE only; mapped the public full article into `content` (публичное тело статьи), SEO fields (поисковые поля), structured CMS fields (структурированные поля CMS), and `selfRepairTips` (структурированные советы по самостоятельным действиям); added `--dry-run` (проверка без записи в БД) validation; ran `npm run db:seed:article-faded-film` against the local CMS database and verified `/de/probleme-loesungen/folie-ist-ausgeblichen` (страница проблемы) renders the full DE article.
+- In progress: owner visual review of the DE article page and the `Folie ist ausgeblichen` (пленка выцвела) modal on `/de/probleme-loesungen` (раздел проблем и решений).
+- Next action: decide the RU/EN article quality workflow and whether TR/PL/AR should receive full localized articles in this phase.
+- Blockers/risks: this pass updates only DE; existing EN/RU thin records and missing TR/PL/AR records for `faded-film` (служебный slug статьи) remain out of scope until the next approved localization phase.
+- Updated documents/files: `пленка выцвела – 08/problem_article_folie-ist-ausgeblichen_de.md`, `signage-service/scripts/seed-article-faded-film-de.mjs`, `signage-service/package.json`, `README.md`, root `PROGRESS.md`.
+
 ### 2026-06-05
 
 - Current sprint/block: `Leuchtstoffröhren in der Werbeanlage ersetzen oder auf LED umrüsten?` problem article RU draft.

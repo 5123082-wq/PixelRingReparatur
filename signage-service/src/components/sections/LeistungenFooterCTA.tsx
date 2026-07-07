@@ -12,6 +12,8 @@ interface LeistungenFooterCTAProps {
   requestText?: string;
   requestCta?: string;
   serviceIntent?: string;
+  initialIssueType?: string;
+  initialMessage?: string;
   imageSrc?: string;
   imageAlt?: string;
 }
@@ -51,6 +53,8 @@ export default function LeistungenFooterCTA({
   requestText,
   requestCta,
   serviceIntent = 'leistungen-footer-request',
+  initialIssueType,
+  initialMessage,
   imageSrc = '/images/leistungen/repair-hero/hero-sign-repair-01.jpg',
   imageAlt,
 }: LeistungenFooterCTAProps) {
@@ -79,6 +83,8 @@ export default function LeistungenFooterCTA({
                 <LeistungenRequestButton
                   label={resolvedRequestCta}
                   serviceIntent={serviceIntent}
+                  initialIssueType={initialIssueType}
+                  initialMessage={initialMessage}
                 />
               </div>
             </div>

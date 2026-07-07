@@ -182,11 +182,11 @@ const CONTENT = {
     galleryTitle: 'Ein kompakter Viewer für Details',
     galleryIntro:
       'Die Galerie ist bewusst kleiner als der Hauptcarousel. Ein Klick oeffnet alle Fotos in einem Viewer mit Kategorien und Thumbnails.',
-    galleryPromoEyebrow: 'Video / Seite',
-    galleryPromoTitle: 'Reparaturprozess ansehen',
+    galleryPromoEyebrow: 'Projektvideos',
+    galleryPromoTitle: 'Einblicke aus der Arbeit',
     galleryPromoText:
-      'Dieser Bereich kann zu einem Video, einer Detailseite oder einem erklaerenden Servicebereich fuehren.',
-    galleryPromoCta: 'Oeffnen',
+      'Kurze Clips zeigen, wie Lichtwerbung, Folien und Fassadenelemente nach Service, Montage oder Reparatur am Standort wirken.',
+    galleryPromoCta: 'Videos ansehen',
     galleryPromoHref: '/leistungen',
     categoriesTitle: 'Produktbereiche, in denen Referenzen entstehen',
     categoriesIntro:
@@ -239,11 +239,11 @@ const CONTENT = {
     galleryTitle: 'A compact viewer for details',
     galleryIntro:
       'The gallery is intentionally smaller than the main carousel. Click opens all photos in one viewer with categories and thumbnails.',
-    galleryPromoEyebrow: 'Video / page',
-    galleryPromoTitle: 'Watch the repair process',
+    galleryPromoEyebrow: 'Project videos',
+    galleryPromoTitle: 'Work in motion',
     galleryPromoText:
-      'This area can link to a video, a detail page, or a service explanation elsewhere on the site.',
-    galleryPromoCta: 'Open',
+      'Short clips show how illuminated signage, window film, and facade elements look after service, mounting, or repair.',
+    galleryPromoCta: 'View videos',
     galleryPromoHref: '/leistungen',
     categoriesTitle: 'Product areas where references are created',
     categoriesIntro:
@@ -296,11 +296,11 @@ const CONTENT = {
     galleryTitle: 'Компактный просмотр деталей',
     galleryIntro:
       'Галерея отделена от выбранных работ. По клику открывается общий просмотр со всеми фотографиями, категориями и миниатюрами.',
-    galleryPromoEyebrow: 'Видео / страница',
-    galleryPromoTitle: 'Посмотреть процесс ремонта',
+    galleryPromoEyebrow: 'Видео проектов',
+    galleryPromoTitle: 'Работы в движении',
     galleryPromoText:
-      'Этот широкий блок может вести на видео, отдельную страницу кейса или сервисный раздел сайта.',
-    galleryPromoCta: 'Открыть',
+      'Короткие ролики показывают, как световая реклама, пленка и фасадные элементы выглядят после сервиса, монтажа или ремонта.',
+    galleryPromoCta: 'Смотреть видео',
     galleryPromoHref: '/leistungen',
     categoriesTitle: 'Направления, где появляются такие работы',
     categoriesIntro:
@@ -353,11 +353,11 @@ const CONTENT = {
     galleryTitle: 'Detaylar için kompakt görüntüleyici',
     galleryIntro:
       'Galeri ana carousel’den daha küçüktür. Tıklama tüm fotoğrafları kategori ve küçük resimlerle tek viewer içinde açar.',
-    galleryPromoEyebrow: 'Video / sayfa',
-    galleryPromoTitle: 'Onarım sürecini izle',
+    galleryPromoEyebrow: 'Proje videoları',
+    galleryPromoTitle: 'İşlerden hareketli kesitler',
     galleryPromoText:
-      'Bu geniş alan bir videoya, detay sayfasına veya sitedeki servis açıklamasına bağlanabilir.',
-    galleryPromoCta: 'Aç',
+      'Kısa videolar ışıklı reklamların, vitrin filmlerinin ve cephe elemanlarının servis, montaj veya onarım sonrası etkisini gösterir.',
+    galleryPromoCta: 'Videoları izle',
     galleryPromoHref: '/leistungen',
     categoriesTitle: 'Referansların oluştuğu ürün alanları',
     categoriesIntro:
@@ -410,11 +410,11 @@ const CONTENT = {
     galleryTitle: 'Kompaktowy viewer do szczegółów',
     galleryIntro:
       'Galeria jest celowo mniejsza niż główny carousel. Kliknięcie otwiera wszystkie zdjęcia z kategoriami i miniaturami.',
-    galleryPromoEyebrow: 'Wideo / strona',
-    galleryPromoTitle: 'Zobacz proces naprawy',
+    galleryPromoEyebrow: 'Wideo projektów',
+    galleryPromoTitle: 'Realizacje w ruchu',
     galleryPromoText:
-      'Ten szeroki blok może prowadzić do wideo, strony szczegółowej albo opisu usługi w serwisie.',
-    galleryPromoCta: 'Otwórz',
+      'Krótkie klipy pokazują, jak reklamy świetlne, folie i elementy fasad wyglądają po serwisie, montażu lub naprawie.',
+    galleryPromoCta: 'Zobacz wideo',
     galleryPromoHref: '/leistungen',
     categoriesTitle: 'Obszary produktowe, z których powstają realizacje',
     categoriesIntro:
@@ -467,11 +467,11 @@ const CONTENT = {
     galleryTitle: 'عارض مدمج للتفاصيل',
     galleryIntro:
       'المعرض أصغر عمداً من carousel الرئيسي. النقر يفتح كل الصور في عارض واحد مع الفئات والصور المصغرة.',
-    galleryPromoEyebrow: 'فيديو / صفحة',
-    galleryPromoTitle: 'شاهد مسار الإصلاح',
+    galleryPromoEyebrow: 'فيديوهات المشاريع',
+    galleryPromoTitle: 'لقطات من العمل',
     galleryPromoText:
-      'يمكن لهذا الشريط أن يفتح فيديو أو صفحة تفاصيل أو شرح خدمة داخل الموقع.',
-    galleryPromoCta: 'فتح',
+      'مقاطع قصيرة تعرض كيف تبدو الإعلانات الضوئية والأفلام وعناصر الواجهات بعد الخدمة أو التركيب أو الإصلاح.',
+    galleryPromoCta: 'مشاهدة الفيديوهات',
     galleryPromoHref: '/leistungen',
     categoriesTitle: 'مجالات المنتج التي تظهر فيها المراجع',
     categoriesIntro:

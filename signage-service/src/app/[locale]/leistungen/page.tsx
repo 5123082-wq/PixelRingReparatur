@@ -117,6 +117,7 @@ type HeroSlide = {
 const SERVICE_DETAIL_PATH_BY_CARD_ID: Partial<Record<string, string>> = {
   'led-modernisierung': '/leistungen/lichtwerbung-led-modernisierung',
   'audit-diagnose': '/leistungen/werbeanlagen-audit-diagnose',
+  'werbeanlagen-reinigung': '/leistungen/werbeanlagen-reinigung',
   'montage-demontage': '/leistungen/montage-demontage-werbeanlagen',
   'druck-branding': '/leistungen/druckprodukte-branding-werbematerialien',
 };
@@ -213,6 +214,21 @@ const CONTENT: Record<Locale, LeistungenContent> = {
           { label: 'Konstruktion', value: 'Rahmen, Unterkonstruktionen und Befestigungspunkte' },
           { label: 'Pflege', value: 'Reinigung, Wartung und optische Instandsetzung' },
           { label: 'Ziel', value: 'Bestehende Anlagen sinnvoll erhalten' },
+        ],
+      },
+      {
+        id: 'werbeanlagen-reinigung',
+        intent: 'reinigung-pflege',
+        title: 'Werbeanlagen-Reinigung',
+        description:
+          'PixelRing koordiniert Reinigung und Pflege von Werbeanlagen, Markisen und Außenwerbung in Berlin & Brandenburg - mit einem verantwortlichen Ansprechpartner für den gesamten Ablauf.',
+        image: '/images/leistungen/werbeanlagen-reinigung/werbeanlagen-reinigung-markise-service.webp',
+        imageAlt: 'Beispielhafte Darstellung eines PixelRing Teams bei der Reinigung einer blauen Markise an einer Geschäftsfront',
+        cta: 'Reinigung ansehen',
+        details: [
+          { label: 'Region', value: 'Berlin & Brandenburg als Kerngebiet' },
+          { label: 'Objekte', value: 'Werbeanlagen, Markisen, Fassadenelemente und Außenwerbung' },
+          { label: 'Fokus', value: 'Reinigung, Pflege und optische Auffrischung bestehender Anlagen' },
         ],
       },
       {
@@ -470,6 +486,21 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         ],
       },
       {
+        id: 'werbeanlagen-reinigung',
+        intent: 'reinigung-pflege',
+        title: 'Signage Cleaning',
+        description:
+          'PixelRing coordinates cleaning and care for signage, awnings and outdoor advertising in Berlin & Brandenburg, with one accountable PixelRing contact for the full process.',
+        image: '/images/leistungen/werbeanlagen-reinigung/werbeanlagen-reinigung-markise-service.webp',
+        imageAlt: 'Illustrative visual of a PixelRing team cleaning a blue awning on a business facade',
+        cta: 'Cleaning details',
+        details: [
+          { label: 'Region', value: 'Berlin & Brandenburg as the core service area' },
+          { label: 'Objects', value: 'Signage, awnings, facade elements and outdoor advertising' },
+          { label: 'Focus', value: 'Cleaning, care and visual refresh of existing installations' },
+        ],
+      },
+      {
         id: 'led-modernisierung',
         intent: 'lichtwerbung-led',
         title: 'Illuminated signage modernization & LED systems',
@@ -657,6 +688,22 @@ const CONTENT: Record<Locale, LeistungenContent> = {
           { label: 'Что ремонтируем', value: 'Вывески, световые короба, объемные буквы и наружные рекламные конструкции' },
           { label: 'Что проверяем', value: 'Крепления, корпус, подсветку, проводку, пленки и видимые повреждения' },
           { label: 'Цель', value: 'Восстановить работу и внешний вид без лишней замены всей конструкции' },
+        ],
+      },
+      {
+        id: 'werbeanlagen-reinigung',
+        intent: 'reinigung-pflege',
+        title: 'Мойка вывесок',
+        description:
+          'PixelRing координирует очистку и уход за вывесками, маркизами и наружной рекламой в Берлине и Бранденбурге через один ответственный сервисный процесс.',
+        image: '/images/leistungen/werbeanlagen-reinigung/werbeanlagen-reinigung-markise-service.webp',
+        imageAlt: 'Иллюстративное изображение команды PixelRing при очистке синей маркизы на фасаде магазина',
+        eyebrow: 'Очистка и уход',
+        cta: 'Подробнее об очистке',
+        details: [
+          { label: 'Регион', value: 'Берлин и Бранденбург как основная зона обслуживания' },
+          { label: 'Объекты', value: 'Вывески, маркизы, элементы фасада и наружная реклама' },
+          { label: 'Фокус', value: 'Очистка, уход и визуальное обновление существующих конструкций' },
         ],
       },
       {
@@ -854,6 +901,21 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         ],
       },
       {
+        id: 'werbeanlagen-reinigung',
+        intent: 'reinigung-pflege',
+        title: 'Tabela Temizliği',
+        description:
+          'PixelRing, Berlin & Brandenburg bölgesinde tabela, tente ve dış reklam temizliği ile bakımını tek sorumlu servis süreci içinde koordine eder.',
+        image: '/images/leistungen/werbeanlagen-reinigung/werbeanlagen-reinigung-markise-service.webp',
+        imageAlt: 'Bir iş yeri cephesinde mavi tenteyi temizleyen PixelRing ekibinin örnek görseli',
+        cta: 'Temizlik detayları',
+        details: [
+          { label: 'Bölge', value: 'Ana hizmet alanı Berlin & Brandenburg' },
+          { label: 'Objeler', value: 'Tabelalar, tenteler, cephe elemanları ve dış reklam' },
+          { label: 'Odak', value: 'Mevcut sistemlerin temizliği, bakımı ve görsel yenilenmesi' },
+        ],
+      },
+      {
         id: 'led-modernisierung',
         intent: 'lichtwerbung-led',
         title: 'Işıklı reklam ve LED sistem modernizasyonu',
@@ -1044,6 +1106,21 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         ],
       },
       {
+        id: 'werbeanlagen-reinigung',
+        intent: 'reinigung-pflege',
+        title: 'Czyszczenie reklam',
+        description:
+          'PixelRing koordynuje czyszczenie i pielęgnację reklam, markiz i reklamy zewnętrznej w Berlinie i Brandenburgii w jednym odpowiedzialnym procesie serwisowym.',
+        image: '/images/leistungen/werbeanlagen-reinigung/werbeanlagen-reinigung-markise-service.webp',
+        imageAlt: 'Przykładowa wizualizacja zespołu PixelRing czyszczącego niebieską markizę na fasadzie lokalu',
+        cta: 'Szczegóły czyszczenia',
+        details: [
+          { label: 'Region', value: 'Berlin i Brandenburgia jako główny obszar obsługi' },
+          { label: 'Obiekty', value: 'Reklamy, markizy, elementy fasady i reklama zewnętrzna' },
+          { label: 'Cel', value: 'Czyszczenie, pielęgnacja i odświeżenie wizualne istniejących instalacji' },
+        ],
+      },
+      {
         id: 'led-modernisierung',
         intent: 'lichtwerbung-led',
         title: 'Modernizacja reklamy świetlnej i systemów LED',
@@ -1231,6 +1308,21 @@ const CONTENT: Record<Locale, LeistungenContent> = {
           { label: 'الهيكل', value: 'الإطارات والهياكل الفرعية ونقاط التثبيت' },
           { label: 'العناية', value: 'التنظيف والصيانة والترميم البصري' },
           { label: 'الهدف', value: 'الحفاظ المنطقي على المنشآت القائمة' },
+        ],
+      },
+      {
+        id: 'werbeanlagen-reinigung',
+        intent: 'reinigung-pflege',
+        title: 'تنظيف اللوحات الإعلانية',
+        description:
+          'تنسق PixelRing تنظيف ورعاية اللافتات والمظلات والإعلانات الخارجية في برلين وبراندنبورغ ضمن مسار خدمة واحد بمسؤولية واضحة.',
+        image: '/images/leistungen/werbeanlagen-reinigung/werbeanlagen-reinigung-markise-service.webp',
+        imageAlt: 'تصور توضيحي لفريق PixelRing أثناء تنظيف مظلة زرقاء على واجهة متجر',
+        cta: 'تفاصيل التنظيف',
+        details: [
+          { label: 'المنطقة', value: 'برلين وبراندنبورغ كمنطقة خدمة أساسية' },
+          { label: 'العناصر', value: 'لافتات ومظلات وعناصر واجهات وإعلانات خارجية' },
+          { label: 'التركيز', value: 'تنظيف ورعاية وتجديد بصري للمنشآت القائمة' },
         ],
       },
       {
@@ -1488,8 +1580,7 @@ export default async function LeistungenPage({
   const content = mergeCmsContent(getContent(locale), cmsContent);
   const safeLocale = getLocale(locale);
   const globalCms = await getGlobalPageCmsContent(locale);
-  const showDraftServiceAbo =
-    process.env.NODE_ENV === 'development' || process.env.SHOW_DRAFT_SERVICE_ABO === '1';
+  const showDraftServiceAbo = process.env.SHOW_DRAFT_SERVICE_ABO === '1';
   const renderServiceShowcaseCta = (card: ServiceShowcaseCard) => {
     const detailHref = card.href ?? SERVICE_DETAIL_PATH_BY_CARD_ID[card.id];
 

@@ -82,6 +82,10 @@ Wenn Sie uns kontaktieren oder eine Anfrage senden, verarbeiten wir die von Ihne
 7. Empfänger und Auftragsverarbeitung
 Wir können technische Dienstleister einsetzen, zum Beispiel für Hosting, Infrastruktur, Kommunikation oder Support. Diese verarbeiten Daten nur auf Grundlage geeigneter vertraglicher und datenschutzrechtlicher Vereinbarungen.
 
+Für unseren automatisierten Chat-Assistenten auf der Website setzen wir als Auftragsverarbeiter OpenAI Ireland Limited (Irland) bzw. OpenAI, Inc. (USA) ein. Die von Ihnen direkt im Chat-Fenster eingegebenen Freitext-Nachrichten werden zur Generierung der Antworten an OpenAI übermittelt. Wir haben mit OpenAI ein Data Processing Agreement (DPA) auf Basis von Standardvertragsklauseln abgeschlossen. Bitte geben Sie keine sensiblen personenbezogenen Daten (wie z. B. Bankverbindungen, Passdaten oder Gesundheitsdaten) im Freitext des Chats ein.
+
+Kontakt- und Anfragedaten sowie Dateien, die Sie in die strukturierten Formulare (z. B. Anfrage- oder Kontaktaufnahmekarten) innerhalb des Chats eingeben, werden direkt an unsere eigenen Server übertragen, dort zur Auftragsabwicklung gespeichert und nicht an OpenAI übermittelt.
+
 8. Speicherdauer
 Wir speichern personenbezogene Daten nur so lange, wie es für die jeweiligen Zwecke erforderlich ist oder gesetzliche Aufbewahrungspflichten bestehen.
 

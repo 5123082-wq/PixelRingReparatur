@@ -11,9 +11,17 @@ interface ContactModalProps {
   isOpen: boolean;
   onClose: () => void;
   onOpenChat: () => void;
+  initialIssueType?: string;
+  initialMessage?: string;
 }
 
-const ContactModal = ({ isOpen, onClose, onOpenChat }: ContactModalProps) => {
+const ContactModal = ({
+  isOpen,
+  onClose,
+  onOpenChat,
+  initialIssueType,
+  initialMessage,
+}: ContactModalProps) => {
   const t = useTranslations('ContactModal');
   const [isRendered, setIsRendered] = useState(false);
   const [viewportFrame, setViewportFrame] = useState({ height: '100svh', offsetTop: '0px' });
@@ -203,7 +211,12 @@ const ContactModal = ({ isOpen, onClose, onOpenChat }: ContactModalProps) => {
             </h2>
           </div>
 
-          <ContactForm dropdownPosition="bottom" containedScroll />
+          <ContactForm
+            dropdownPosition="bottom"
+            containedScroll
+            initialIssueType={initialIssueType}
+            initialMessage={initialMessage}
+          />
         </div>
 
         {/* Close button */}

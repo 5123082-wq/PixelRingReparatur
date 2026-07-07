@@ -344,6 +344,7 @@ const ContactForm = ({
                   <option value="Repair" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_repair') || 'Reparatur'}</option>
                   <option value="Installation" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_installation') || 'Montage'}</option>
                   <option value="Maintenance" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_maintenance') || 'Wartung'}</option>
+                  <option value="Cleaning" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_cleaning') || 'Reinigung / Pflege'}</option>
                 </select>
               </div>
 
@@ -453,6 +454,7 @@ const ContactForm = ({
                 <option value="Repair" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_repair') || 'Reparatur'}</option>
                 <option value="Installation" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_installation') || 'Montage'}</option>
                 <option value="Maintenance" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_maintenance') || 'Wartung'}</option>
+                <option value="Cleaning" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_cleaning') || 'Reinigung / Pflege'}</option>
               </select>
             </div>
 

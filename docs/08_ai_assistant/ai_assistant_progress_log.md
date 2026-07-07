@@ -6,6 +6,18 @@ Do not read full progress log at startup. Start with [README.md](README.md), the
 
 ## Progress Log
 
+### 2026-07-05
+**AI Assistant Legal & UI Improvements (GDPR & Data Notice Banner)**
+- **Status**: Implemented.
+- **Done**:
+  - Added a dismissible privacy banner in `ChatModal` with multi-language warnings (DE, EN, RU, TR, PL, AR with RTL support) requesting users not to input sensitive personal data.
+  - Clarified in `Datenschutzerklärung` (Privacy Policy) that free-text chat processing uses OpenAI (gated by DPA), while formal intake forms are processed strictly on local PixelRing servers.
+  - Added `AI_ENDPOINT` environment variable support to `config.ts` to allow switching OpenAI endpoints (e.g. to Azure or EU proxies).
+  - Validated via successful build and linting checks.
+- **In Progress**: None.
+- **Next Action**: Owner reviews the layout and behavior of the new notice banner in the chat window.
+- **Updated Documents**: `signage-service/src/components/common/ChatModal.tsx`, `signage-service/src/lib/legal-content.ts`, `signage-service/src/lib/ai/config.ts`, `PROGRESS.md`
+
 ### 2026-06-17
 **Telegram Conversation Controller Refactor**
 - **Status**: Implemented.

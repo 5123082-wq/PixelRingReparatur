@@ -12,6 +12,7 @@ export const PUBLIC_SITEMAP_PATHS = [
   '',
   '/leistungen',
   '/leistungen/werbeanlagen-reparatur',
+  '/leistungen/werbeanlagen-reinigung',
   '/leistungen/lichtwerbung-led-modernisierung',
   '/leistungen/werbeanlagen-audit-diagnose',
   '/leistungen/montage-demontage-werbeanlagen',

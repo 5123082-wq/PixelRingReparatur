@@ -14,6 +14,52 @@ Startup reading rule:
 
 Latest checkpoint:
 
+- Date: 2026-07-06
+- Current stage: Converted the `/[locale]/leistungen/werbeanlagen-reinigung` (страница очистки рекламных конструкций) post-hero visual strip from a cautious before/after-style proof note into a finished service examples block across DE, EN, RU, TR, PL, and AR; all cards and the CTA now link to `/referenzen#gallery` (галерея примеров работ).
+- Next action: Owner visually verifies the updated block on `/de/leistungen/werbeanlagen-reinigung` and decides whether reference-page URL filters should be added later.
+
+- Date: 2026-07-05
+- Current stage: Replaced before/after images for the "Leuchtkasten matt oder vergraut" card on the cleaning page with matching illuminated tooth sign assets on a modern glass facade (the "before" state realistically shows dirty water and condensation trapped inside).
+- Next action: Owner visually reviews the interactive hover comparison on the local dev server.
+
+- Date: 2026-07-05
+- Current stage: Shortened and simplified the display titles, navigation labels, breadcrumbs, card titles, and hero copy (titles and sublines) for the cleaning service page (/[locale]/leistungen/werbeanlagen-reinigung) across all 6 languages (DE, EN, RU, TR, PL, AR) to focus on 'Signage Cleaning' (Variant B). Verified the Next.js compilation successfully.
+- Next action: Owner visually verifies the updated signage cleaning page and menu item names in the browser.
+
+- Date: 2026-07-05
+- Current stage: Implemented legal and UI enhancements for the AI assistant. Added a dismissible privacy banner in `ChatModal` with multi-language warnings (DE, EN, RU, TR, PL, AR with RTL support) requesting users not to input sensitive personal data. Clarified in `Datenschutzerklärung` (Privacy Policy) that free-text chat processing uses OpenAI (gated by DPA), while formal intake forms are processed strictly on local PixelRing servers. Added `AI_ENDPOINT` environment variable support to `config.ts`.
+- Next action: Owner reviews the layout and behavior of the new notice banner in the chat window.
+
+
+- Date: 2026-07-05
+- Current stage: Integrated real storefront cleaning photos and adjusted the hero image vertical alignment (to 'center 15%') on the `werbeanlagen-reinigung` route to show the workers' heads and the cleaning action while keeping container height intact. Replaced awning card placeholders with high-quality 'before' and 'after' images. Removed redundant cards across all locales.
+- Next action: Owner visually reviews the updated clean-up layout and hero image alignment on the local dev server.
+
+
+- Date: 2026-07-03
+- Current stage: Prepared and refined RU/EN localized markdown review drafts for `Folie ist ausgeblichen` (пленка выцвела) under `docs/07_content_ai_seo/problem_articles/пленка выцвела – 08/`; the drafts now keep service SEO/CMS fields (служебные поисковые и CMS-поля) and internal AI notes separate from cleaner public article sections, with safety-bounded `selfRepairTips` (структурированные советы по самостоятельным действиям).
+- Next action: Owner reviews the revised RU/EN markdown drafts; after approval, a separate phase can extend/create seed scripts and publish RU/EN into the local CMS database.
+
+- Date: 2026-07-03
+- Current stage: Published the DE `Folie ist ausgeblichen` (пленка выцвела) problem article (статья о проблеме) into the local CMS database via `db:seed:article-faded-film` (seed-скрипт загрузки CMS-статьи); the route `/de/probleme-loesungen/folie-ist-ausgeblichen` (страница проблемы) now renders the full article, metadata, CTA, related link, and `selfRepairTips` (структурированные советы по самостоятельным действиям) source fields.
+- Next action: Owner visually verifies the DE article and modal, then decide the RU/EN article quality workflow and whether TR/PL/AR should receive full localized articles in this phase.
+
+- Date: 2026-07-03
+- Current stage: Implemented custom before/after images for `/[locale]/leistungen/werbeanlagen-reinigung` (страница очистки рекламных конструкций) using generated brand assets containing the PixelRing logo and name, and wired hover toggle effects in the workflow cards.
+- Next action: User visually verifies the hover changes on the local cleaning routes.
+
+- Date: 2026-06-29
+- Current stage: Fixed header navigation borders, resolved scrolled notch stacking context to restore glass blur, and updated drop-down menus (`pr-nav-glass-floating`) to match header opacity (94% opacity + soft shadow) for excellent readability and premium feel.
+- Next action: Owner visually reviews the updated header, scrolled notch, and dropdown menus in the browser.
+
+- Date: 2026-06-29
+- Current stage: Completed the approved 2-pass `/[locale]/leistungen/werbeanlagen-reinigung` (страница очистки рекламных конструкций) plan: added `Cleaning` (`Reinigung / Pflege`, очистка / уход) intake type and CTA prefill, connected localized workflow/proof/photo/internal-link blocks across DE/EN/RU/TR/PL/AR, and verified AR RTL (арабское направление справа налево) without horizontal overflow.
+- Next action: Owner visually reviews the localized cleaning pages and decides whether to start the separate estimator (калькулятор/оценщик) phase.
+
+- Date: 2026-06-29
+- Current stage: Documented the structural SEO/sales audit for `/[locale]/leistungen/werbeanlagen-reinigung` (страница очистки рекламных конструкций), comparing it with `werbeanlagen-reparatur` (ремонт рекламных конструкций), defining the first post-hero block role, revised block order, and next-agent implementation prompt.
+- Next action: Owner reviews the recommended DE-first structure, then approves the hero and first-block rewrite before application code changes.
+
 - Date: 2026-06-28
 - Current stage: Updated the `/[locale]/referenzen` (страница примеров работ) `led-letters` reference card with approved before/after WebP photos for `LED-Buchstaben` (объемные LED-буквы), localized DE/EN/RU/TR/PL/AR case copy, image alt text, and a CMS image-field guard so ASCII asset URLs are not normalized into German display text.
 - Next action: Owner visually reviews `/ru/referenzen` (страница примеров работ), especially the selected `ОБЪЕМНЫЕ БУКВЫ` card hover state, modal gallery, and full-gallery thumbnail.
