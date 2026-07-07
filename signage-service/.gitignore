@@ -46,3 +46,9 @@ next-env.d.ts
 
 # local temporary artifacts
 /tmp/
+
+# local scratch & backup files
+/scratch_*
+*.corrupted
+*.original
+*.first

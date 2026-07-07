@@ -22,11 +22,24 @@ function stripLocale(pathname: string) {
 }
 
 function buildLocalePath(locale: string, path: string) {
-  return `/${locale}${path}`;
+  return path === '/' ? `/${locale}` : `/${locale}${path}`;
 }
 
 function isProblemArticlePath(path: string) {
   return /^\/probleme-loesungen\/[^/]+\/?$/.test(path);
+}
+
+function isRetiredGonePath(path: string) {
+  return (
+    path === '/contact' ||
+    path === '/hilfe' ||
+    path === '/support' ||
+    path.startsWith('/services/')
+  );
+}
+
+function isRetiredPublicPath(path: string) {
+  return path === '/service' || isRetiredGonePath(path);
 }
 
 function normalizeXDefaultLinkHeader(response: NextResponse, request: NextRequest, locale: string | null, stripped: string) {
@@ -51,6 +64,11 @@ function normalizeXDefaultLinkHeader(response: NextResponse, request: NextReques
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const { locale, stripped } = stripLocale(pathname);
+  const isServicePreview = request.nextUrl.searchParams.get('cmsPreview') === '1';
+
+  if (isRetiredGonePath(stripped) || (!locale && stripped === '/service' && !isServicePreview)) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  }
 
   if (stripped === `/${OLD_ADMIN_PATH}` || stripped.startsWith(`/${OLD_ADMIN_PATH}/`)) {
     const newStripped = stripped.replace(`/${OLD_ADMIN_PATH}`, `/${CRM_PATH}`);
@@ -99,7 +117,7 @@ export default async function proxy(request: NextRequest) {
 
   const response = intlMiddleware(request);
 
-  if (isProblemArticlePath(stripped)) {
+  if (isProblemArticlePath(stripped) || isRetiredPublicPath(stripped)) {
     response.headers.delete('Link');
   }
 

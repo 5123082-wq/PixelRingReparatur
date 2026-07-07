@@ -84,6 +84,11 @@ function getChatUiCopy(locale: string) {
       messagePlaceholder: 'Your message…',
       createRequestNow: 'Create request now →',
       optimisticPhoto: 'Photo',
+      aiBannerTitle: 'AI Assistant',
+      aiBannerTextPrefix: 'You are chatting with our automated AI Assistant. Please do not share sensitive personal data (e.g. passport or bank details) directly in chat messages. Free-text messages are processed by OpenAI. Details are available in our ',
+      privacyLinkText: 'Privacy Policy',
+      aiBannerTextSuffix: '.',
+      aiBannerFormNotice: 'Contact and project details entered in intake forms are processed directly and securely on our own servers and are not shared with OpenAI.',
     };
   }
 
@@ -117,6 +122,125 @@ function getChatUiCopy(locale: string) {
       messagePlaceholder: 'Ваше сообщение…',
       createRequestNow: 'Создать заявку сейчас →',
       optimisticPhoto: 'Фото',
+      aiBannerTitle: 'ИИ-ассистент',
+      aiBannerTextPrefix: 'Вы общаетесь с автоматическим ИИ-ассистентом. Пожалуйста, не вводите чувствительные персональные данные (например, паспортные или банковские данные) напрямую в сообщения чата. Текстовые сообщения обрабатываются OpenAI. Подробности в нашей ',
+      privacyLinkText: 'Политике конфиденциальности',
+      aiBannerTextSuffix: '.',
+      aiBannerFormNotice: 'Контактные данные и сведения об объекте, введенные в формы заявок, передаются напрямую на наши серверы и не отправляются в OpenAI.',
+    };
+  }
+
+  if (locale === 'tr') {
+    return {
+      unavailable: 'Sohbet şu anda kullanılamıyor.',
+      customer: 'Müşteri',
+      operator: 'Uzman',
+      assistant: 'Asistan',
+      system: 'Sistem',
+      ai: 'Yapay Zekâ',
+      requestRegistered: 'Talep kaydedildi',
+      requestNumber: 'Talep numarası',
+      checkStatus: 'Durumu kontrol et',
+      activatePortal: 'Müşteri portalını etkinleştir',
+      requestPrivacy:
+        'PR numarası yalnızca durumu gösterir. Özel veriler ancak e-posta kodu ve şifre doğrulamasından sonra açılır.',
+      portalMissing:
+        'Portal bağlantısı artık etkin değil. Gerekirse PixelRing yeni bir bağlantı gönderebilir.',
+      validUntil: 'Bağlantı geçerlilik süresi',
+      attachmentReceived: 'Dosya alındı',
+      supportTitle: 'Teknik destek',
+      online: 'Çevrimiçi',
+      operatorTakeover: 'Bir ekip üyesi sohbeti devraldı.',
+      loadingConversation: 'Sohbet yükleniyor…',
+      emptyState: 'Talebinizi açıklayın veya bir fotoğraf gönderin.',
+      typing: 'Yapay Zekâ yazıyor…',
+      loading: 'Yükleniyor…',
+      attachMedia: 'Fotoğraf/Video ekle',
+      voiceSoon: 'Sesli mesaj (yakında)',
+      messagePlaceholder: 'Mesajınız…',
+      createRequestNow: 'Talebi şimdi oluştur →',
+      optimisticPhoto: 'Fotoğraf',
+      aiBannerTitle: 'Yapay Zekâ Asistanı',
+      aiBannerTextPrefix: 'Otomatik Yapay Zekâ Asistanımızla sohbet ediyorsunuz. Lütfen kimlik veya banka bilgileri gibi hassas kişisel verileri doğrudan sohbet mesajlarında paylaşmayın. Serbest metin mesajları OpenAI tarafından işlenir. Ayrıntılar için ',
+      privacyLinkText: 'Gizlilik Politikamıza',
+      aiBannerTextSuffix: ' göz atabilirsiniz.',
+      aiBannerFormNotice: 'Talep formlarına girilen iletişim ve proje bilgileri doğrudan ve güvenli bir şekilde kendi sunucularımızda işlenir ve OpenAI ile paylaşılmaz.',
+    };
+  }
+
+  if (locale === 'pl') {
+    return {
+      unavailable: 'Czat jest obecnie niedostępny.',
+      customer: 'Klient',
+      operator: 'Specjalista',
+      assistant: 'Asystent',
+      system: 'System',
+      ai: 'AI',
+      requestRegistered: 'Zgłoszenie zarejestrowane',
+      requestNumber: 'Numer zgłoszenia',
+      checkStatus: 'Sprawdź status',
+      activatePortal: 'Aktywuj portal klienta',
+      requestPrivacy:
+        'Numer PR pokazuje tylko status. Dane prywatne zostaną odblokowane dopiero po weryfikacji kodu e-mail i hasła.',
+      portalMissing:
+        'Link do portalu nie jest już aktywny. W razie potrzeby PixelRing może wysłać nowy.',
+      validUntil: 'Link ważny do',
+      attachmentReceived: 'Otrzymano plik',
+      supportTitle: 'Wsparcie techniczne',
+      online: 'Online',
+      operatorTakeover: 'Członek zespołu przejął rozmowę.',
+      loadingConversation: 'Ładowanie rozmowy…',
+      emptyState: 'Opisz swoje zgłoszenie lub wyślij zdjęcie.',
+      typing: 'AI pisze…',
+      loading: 'Ładowanie…',
+      attachMedia: 'Załącz zdjęcie/wideo',
+      voiceSoon: 'Wiadomość głosowa (wkrótce)',
+      messagePlaceholder: 'Twoja wiadomość…',
+      createRequestNow: 'Utwórz zgłoszenie teraz →',
+      optimisticPhoto: 'Zdjęcie',
+      aiBannerTitle: 'Asystent AI',
+      aiBannerTextPrefix: 'Rozmawiasz z naszym zautomatyzowanym Asystentem AI. Prosimy nie podawać wrażliwych danych osobowych (np. danych bankowych lub dokumentów tożsamości) bezpośrednio w wiadomościach czatu. Wiadomości tekstowe są przetwarzane przez OpenAI. Szczegóły znajdują się w naszej ',
+      privacyLinkText: 'Polityce prywatności',
+      aiBannerTextSuffix: '.',
+      aiBannerFormNotice: 'Dane kontaktowe i dane projektu wprowadzane w formularzach zgłoszeniowych są przetwarzane bezpośrednio i bezpiecznie na naszych własnych serwerach i nie są udostępniane OpenAI.',
+    };
+  }
+
+  if (locale === 'ar') {
+    return {
+      unavailable: 'الدردشة غير متاحة حالياً.',
+      customer: 'العميل',
+      operator: 'المتخصص',
+      assistant: 'المساعد',
+      system: 'النظام',
+      ai: 'الذكاء الاصطناعي',
+      requestRegistered: 'تم تسجيل الطلب',
+      requestNumber: 'رقم الطلب',
+      checkStatus: 'التحقق من الحالة',
+      activatePortal: 'تفعيل بوابة العملاء',
+      requestPrivacy:
+        'يظهر رقم PR الحالة فقط. لا يتم فتح البيانات الخاصة إلا بعد التحقق من رمز البريد الإلكتروني وكلمة المرور.',
+      portalMissing:
+        'رابط البوابة لم يعد نشطاً. يمكن لـ PixelRing إرسال رابط جديد إذا لزم الأمر.',
+      validUntil: 'الرابط صالح حتى',
+      attachmentReceived: 'تم استلام الملف',
+      supportTitle: 'الدعم الفني',
+      online: 'نشط الآن',
+      operatorTakeover: 'انضم أحد أعضاء الفريق إلى المحادثة.',
+      loadingConversation: 'جاري تحميل المحادثة…',
+      emptyState: 'صف طلبك أو أرسل صورة.',
+      typing: 'الذكاء الاصطناعي يكتب…',
+      loading: 'جاري التحميل…',
+      attachMedia: 'إرفاق صورة/فيديو',
+      voiceSoon: 'رسالة صوتية (قريباً)',
+      messagePlaceholder: 'رسالتك…',
+      createRequestNow: 'إنشاء طلب الآن ←',
+      optimisticPhoto: 'صورة',
+      aiBannerTitle: 'مساعد الذكاء الاصطناعي',
+      aiBannerTextPrefix: 'أنت تتحدث مع مساعد الذكاء الاصطناعي المؤتمت الخاص بنا. يرجى عدم مشاركة البيانات الشخصية الحساسة (مثل تفاصيل جواز السفر أو الحساب البنكي) مباشرة في رسائل الدردشة. تتم معالجة الرسائل النصية بواسطة OpenAI. التفاصيل متوفرة في ',
+      privacyLinkText: 'سياسة الخصوصية',
+      aiBannerTextSuffix: ' الخاصة بنا.',
+      aiBannerFormNotice: 'يتم معالجة بيانات الاتصال والمشروع المدخلة في نماذج الطلبات مباشرة وبشكل آمن على خوادمنا الخاصة ولا يتم مشاركتها مع OpenAI.',
     };
   }
 
@@ -149,6 +273,11 @@ function getChatUiCopy(locale: string) {
     messagePlaceholder: 'Ihre Nachricht …',
     createRequestNow: 'Anfrage jetzt erstellen →',
     optimisticPhoto: 'Foto',
+    aiBannerTitle: 'KI-Assistent',
+    aiBannerTextPrefix: 'Sie chatten mit unserem automatisierten KI-Assistenten. Bitte geben Sie keine sensiblen personenbezogenen Daten (z. B. Ausweis- oder Bankdaten) direkt in die Chat-Nachrichten ein. Freitext-Nachrichten werden von OpenAI verarbeitet. Details finden Sie in unserer ',
+    privacyLinkText: 'Datenschutzerklärung',
+    aiBannerTextSuffix: '.',
+    aiBannerFormNotice: 'Ihre in Anfrageformularen eingetragenen Kontakt- und Objektdaten werden direkt und sicher auf unseren eigenen Servern verarbeitet und nicht an OpenAI übermittelt.',
   };
 }
 
@@ -386,9 +515,24 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
   const [hasChosenLanguage, setHasChosenLanguage] = useState(false);
   const [pendingFiles, setPendingFiles] = useState<AttachmentPreview[]>([]);
   const [viewportFrame, setViewportFrame] = useState({ height: '100dvh', offsetTop: '0px' });
+  const [showBanner, setShowBanner] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const hasLoadedRef = useRef(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      const dismissed = sessionStorage.getItem('pixelring_ai_banner_dismissed');
+      if (!dismissed) {
+        setShowBanner(true);
+      }
+    }
+  }, [isOpen]);
+
+  const handleDismissBanner = () => {
+    sessionStorage.setItem('pixelring_ai_banner_dismissed', 'true');
+    setShowBanner(false);
+  };
 
   const renderMessageBody = (text: string) => {
     const tokenRegex = /(https?:\/\/[^\s]+|[A-Z]{2,8}-[A-Z0-9]{4}-[A-Z0-9]{4})/g;
@@ -657,6 +801,42 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
             </svg>
           </button>
         </div>
+
+        {/* AI Notice Banner */}
+        {showBanner && (
+          <div className="flex items-start justify-between gap-3 border-b border-[#E7DDD3] bg-[#FDFBF7] px-4 py-3 sm:px-5 sm:py-3.5 transition-all text-[#72665D]" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+            <div className="flex gap-2.5 min-w-0">
+              <span className="mt-0.5 text-[#B8643E] shrink-0">
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </span>
+              <div className="text-[12px] leading-5 font-medium">
+                <p className="font-bold text-[#0E1A2B] mb-0.5">{copy.aiBannerTitle}</p>
+                <p>
+                  {copy.aiBannerTextPrefix}
+                  <Link href="/privacy" onClick={onClose} className="underline font-bold text-[#B8643E] hover:opacity-80">
+                    {copy.privacyLinkText}
+                  </Link>
+                  {copy.aiBannerTextSuffix}
+                </p>
+                <p className="mt-1 text-[11px] leading-4 text-[#72665D]/80 italic">
+                  {copy.aiBannerFormNotice}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={handleDismissBanner}
+              className="rounded-full p-1 text-[#72665D]/60 hover:bg-black/5 hover:text-[#0E1A2B] transition-all shrink-0"
+              type="button"
+              aria-label="Dismiss"
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        )}
 
         {/* Messages */}
         <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto overscroll-contain p-4 sm:p-5">

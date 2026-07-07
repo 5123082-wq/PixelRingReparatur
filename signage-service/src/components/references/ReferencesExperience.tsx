@@ -115,6 +115,7 @@ const SECTION_INTRO_CLASS = 'mt-6 max-w-[580px] text-[18px] font-normal leading-
 const SECTION_INTRO_ACCENT_CLASS =
   `${SECTION_INTRO_CLASS} border-l-2 border-[#B8643E] pl-4 rtl:border-l-0 rtl:border-r-2 rtl:pl-0 rtl:pr-4`;
 const HERO_FALLBACK_IMAGE = '/images/hero-neon.jpg';
+const REFERENCE_PROMO_VIDEO_SRC = '/videos/libitina-bestattungen-projekt.mp4';
 
 const HOME_BREADCRUMB_LABELS: Record<Locale, string> = {
   de: 'Home',
@@ -574,9 +575,10 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
               setActivePhotoId(null);
               setIsPromoModalOpen(true);
             }}
-            className="group relative grid h-[172px] w-[566px] shrink-0 grid-cols-[0.72fr_1fr] items-center gap-5 overflow-hidden rounded-[22px] border border-[#E3DDD4] bg-[#F7F1E8] px-6 text-left shadow-sm outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B8643E] sm:h-[212px] sm:w-[692px]"
+            className="group relative grid h-[172px] w-[calc(100vw-2rem)] shrink-0 grid-cols-1 items-center gap-2 overflow-hidden rounded-[22px] border border-[#E3DDD4] bg-[#F7F1E8] px-6 text-left shadow-sm outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B8643E] sm:h-[212px] sm:w-[692px] sm:grid-cols-[0.72fr_1fr] sm:gap-5"
           >
-            <Image src="/images/hero-neon.jpg" alt="" fill sizes="692px" className="object-cover opacity-20 transition-transform duration-700 group-hover:scale-105 group-focus-visible:scale-105" />
+            <Image src="/images/ex-repair.png" alt="" fill sizes="692px" className="object-cover opacity-20 transition-transform duration-700 group-hover:scale-105 group-focus-visible:scale-105" />
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(247,241,232,0.95)_0%,rgba(247,241,232,0.82)_45%,rgba(247,241,232,0.56)_100%)]" />
             <div className="relative z-10 min-w-0">
               <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[#B8643E]">{content.galleryPromoEyebrow}</p>
               <div className="mt-2 text-[24px] font-black leading-none text-[#0E1A2B] sm:text-[30px]">{content.galleryPromoTitle}</div>
@@ -952,14 +954,16 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
               </button>
             </div>
             <div className="p-5 sm:p-6">
-              <div className="relative aspect-video overflow-hidden rounded-[22px] bg-black">
-                <Image src="/images/hero-neon.jpg" alt="" fill sizes="896px" className="object-cover opacity-38" />
-                <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(16,152,207,0.55),rgba(36,89,77,0.72))]" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="flex h-20 w-20 items-center justify-center rounded-full border border-white/30 bg-white/16 text-4xl shadow-2xl backdrop-blur">
-                    ▶
-                  </div>
-                </div>
+              <div className="relative mx-auto aspect-[9/16] h-[min(72vh,720px)] max-w-full overflow-hidden rounded-[22px] bg-black shadow-[0_22px_60px_rgba(0,0,0,0.32)]">
+                <video
+                  className="h-full w-full object-contain"
+                  src={REFERENCE_PROMO_VIDEO_SRC}
+                  poster="/images/ex-repair-libitina-leuchtkasten-fassade.webp"
+                  controls
+                  autoPlay
+                  playsInline
+                  preload="metadata"
+                />
               </div>
               <p className="mt-5 max-w-3xl text-[15px] font-medium leading-7 text-white/70">{content.galleryPromoText}</p>
             </div>

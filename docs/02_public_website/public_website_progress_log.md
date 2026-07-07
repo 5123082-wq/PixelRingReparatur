@@ -10,6 +10,72 @@ Purpose: detailed public website history. Do not read this file during ordinary 
 
 ## Detailed Log / History
 
+* **Date:** 2026-07-06
+* **Current sprint/block:** Cleaning Page Finished Examples Strip
+* **Done:**
+  - Reworked the `LeistungenCleaningProofStrip` (визуальный блок страницы очистки) on `/[locale]/leistungen/werbeanlagen-reinigung` (страница очистки рекламных конструкций) so it no longer reads as a temporary before/after disclaimer.
+  - Replaced the selected badge text with a normal CTA (призыв к действию) to `/referenzen#gallery` (галерея примеров работ).
+  - Converted the three visual cards into clickable links to `/referenzen#gallery` (галерея примеров работ) across DE, EN, RU, TR, PL, and AR.
+  - Reframed the copy as finished service examples (`Fertige Servicebilder`, готовые сервисные виды) instead of before/after proof.
+* **In progress:** Owner visual review on the local `/de/leistungen/werbeanlagen-reinigung` page.
+* **Next action:** Decide whether `/referenzen` (страница примеров работ) should later support category filters in the URL, for example a direct link to `Leuchtkasten` (световой короб) examples.
+* **Blockers/risks:** Current links intentionally target the gallery anchor only; exact category preselection would require a separate change to the references client state.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/02_public_website/public_website_progress_log.md`
+  - `signage-service/src/components/leistungen/LeistungenCleaningProofStrip.tsx`
+
+* **Date:** 2026-07-05
+* **Current sprint/block:** Storefront Awning Cleaning Photo Integration & Case Refining
+* **Done:**
+  - Replaced the placeholder image for the `Werbeanlagen- und Markisenreinigung` (awning and signage cleaning) card with owner-provided photos.
+  - Processed the photos using AI image editing to remove parked cars, make the background generic/unrecognizable, and replace the restaurant name with clean 'PixelRing' branding on the green awnings.
+  - Generated both 'before' (dirty with green algae/moss) and 'after' (clean green fabric) states to support the interactive hover before/after transition effect.
+  - Saved the final WebP/PNG assets at `public/images/leistungen/werbeanlagen-reinigung/pixelring-cleaning-awning-before.png` and `public/images/leistungen/werbeanlagen-reinigung/pixelring-cleaning-awning-after.png`.
+  - Removed the redundant 'sign' and 'facade' cards from the cases arrays across all 6 locales (DE, EN, RU, TR, PL, AR) in [page.tsx](file:///Users/macbookaleks/Documents/GitHub/PixelRingReparature/signage-service/src/app/%5Blocale%5D/leistungen/werbeanlagen-reinigung/page.tsx) and updated [LeistungenCleaningWorkflow.tsx](file:///Users/macbookaleks/Documents/GitHub/PixelRingReparature/signage-service/src/components/leistungen/LeistungenCleaningWorkflow.tsx).
+  - Deleted the physical image assets for the removed cards: `pixelring-cleaning-sign-before.png`, `pixelring-cleaning-sign-after.png`, `pixelring-cleaning-facade-before.png`, `pixelring-cleaning-facade-after.png`.
+* **In progress:** None.
+* **Next action:** Verify rendering of the interactive before/after transition and the updated cases rail on the local dev server.
+* **Blockers/risks:** None.
+* **Updated documents:**
+  - [page.tsx](file:///Users/macbookaleks/Documents/GitHub/PixelRingReparature/signage-service/src/app/%5Blocale%5D/leistungen/werbeanlagen-reinigung/page.tsx)
+  - [LeistungenCleaningWorkflow.tsx](file:///Users/macbookaleks/Documents/GitHub/PixelRingReparature/signage-service/src/components/leistungen/LeistungenCleaningWorkflow.tsx)
+  - `signage-service/public/images/leistungen/werbeanlagen-reinigung/pixelring-cleaning-awning-before.png`
+  - `signage-service/public/images/leistungen/werbeanlagen-reinigung/pixelring-cleaning-awning-after.png`
+  - `docs/02_public_website/public_website_progress_log.md`
+
+
+* **Date:** 2026-07-04
+* **Current sprint/block:** Brand Logo Integration & Asset Optimization
+* **Done:**
+  - Integrated new design logos from `DesignPrototip/` into `signage-service/public/brand/`.
+  - Cropped SVG files to tight bounding boxes (custom viewBox calculated via coordinates parsing) to eliminate excess CorelDRAW export margins.
+  - Cleaned SVG code by removing unused offboard groups and setting proper aspect ratios.
+  - Successfully verified Next.js app builds with zero errors.
+* **In progress:** None.
+* **Next action:** Verify rendering in header layout.
+* **Blockers/risks:** None.
+* **Updated documents:**
+  - `signage-service/public/brand/logo-full-light.svg`
+  - `signage-service/public/brand/logo-compact-light.svg`
+  - `docs/02_public_website/public_website_progress_log.md`
+
+* **Date:** 2026-07-03
+* **Current sprint/block:** Header Style, Glassmorphism Blur & Transparency Alignment
+* **Done:**
+  - Removed separate backgrounds, borders, and rounded corners from the static desktop navigation row when not scrolled in [Header.tsx](file:///Users/macbookaleks/Documents/GitHub/PixelRingReparature/signage-service/src/components/layout/Header.tsx), allowing it to blend seamlessly into the main header block.
+  - Restored premium glassmorphism transparency and a strong `blur(20px)` backdrop filter on `.pr-nav-glass` and `.pr-nav-glass-accent` in [globals.css](file:///Users/macbookaleks/Documents/GitHub/PixelRingReparature/signage-service/src/app/globals.css).
+  - Resolved the scrolled notch stacking context rendering bug in Chrome/Safari by moving entrance/exit animations (`y`, `opacity`) from the parent `motion.div` to the child glass element in [Header.tsx](file:///Users/macbookaleks/Documents/GitHub/PixelRingReparature/signage-service/src/components/layout/Header.tsx). This successfully restores the backdrop blur on the scrolled notch (Menu #2).
+  - Aligned dropdown and mobile sub-menu styling by updating `.pr-nav-glass-floating` in [globals.css](file:///Users/macbookaleks/Documents/GitHub/PixelRingReparature/signage-service/src/app/globals.css) to use 94% opacity and a soft premium drop shadow. This ensures a clean frosted look that matches the header's color while providing excellent text contrast and readability.
+  - Verified codebase linting and TypeScript compilation (all checks successfully completed with 0 errors).
+* **In progress:** Owner visual review.
+* **Next action:** Owner verifies the look of the header, scrolled notch, and dropdown menus on the live website.
+* **Blockers/risks:** None.
+* **Updated documents:**
+  - `signage-service/src/components/layout/Header.tsx`
+  - `signage-service/src/app/globals.css`
+  - `docs/02_public_website/public_website_progress_log.md`
+
 * **Date:** 2026-06-14
 * **Current sprint/block:** Home Work Carousel Repair Visual Update
 * **Done:**

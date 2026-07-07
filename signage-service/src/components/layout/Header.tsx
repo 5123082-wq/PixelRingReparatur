@@ -47,6 +47,7 @@ const LOCALE_PREFIX_REGEX = /^\/(de|en|ru|tr|pl|ar)(?=\/|$)/;
 const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
   de: {
     services_repair: 'Werbeanlagen-Reparatur',
+    services_cleaning: 'Werbeanlagen-Reinigung',
     services_led: 'Lichtwerbung & LED-Modernisierung',
     services_audit: 'Audit & Diagnose',
     services_installation: 'Montage & Demontage',
@@ -54,6 +55,7 @@ const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
   },
   en: {
     services_repair: 'Signage repair',
+    services_cleaning: 'Signage Cleaning',
     services_led: 'Illuminated signage & LED modernization',
     services_audit: 'Audit & diagnostics',
     services_installation: 'Installation & dismantling',
@@ -61,6 +63,7 @@ const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
   },
   ru: {
     services_repair: 'Ремонт рекламных конструкций',
+    services_cleaning: 'Мойка вывесок',
     services_led: 'Световая реклама и LED-модернизация',
     services_audit: 'Аудит и диагностика',
     services_installation: 'Монтаж и демонтаж',
@@ -68,6 +71,7 @@ const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
   },
   tr: {
     services_repair: 'Reklam sistemi onarımı',
+    services_cleaning: 'Tabela Temizliği',
     services_led: 'Işıklı reklam ve LED modernizasyonu',
     services_audit: 'Denetim ve teşhis',
     services_installation: 'Montaj ve demontaj',
@@ -75,6 +79,7 @@ const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
   },
   pl: {
     services_repair: 'Naprawa reklam',
+    services_cleaning: 'Czyszczenie reklam',
     services_led: 'Reklama świetlna i modernizacja LED',
     services_audit: 'Audyt i diagnostyka',
     services_installation: 'Montaż i demontaż',
@@ -82,6 +87,7 @@ const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
   },
   ar: {
     services_repair: 'إصلاح اللوحات الإعلانية',
+    services_cleaning: 'تنظيف اللوحات الإعلانية',
     services_led: 'الإعلانات المضيئة وتحديث LED',
     services_audit: 'التدقيق والتشخيص',
     services_installation: 'التركيب والفك',
@@ -164,7 +170,6 @@ function DesktopNavLink({
     <>
       {isActive && (
         <motion.span
-          layoutId="active-nav-pill"
           className="pr-nav-glass-accent absolute inset-0 rounded-full border"
           transition={{ type: 'spring', stiffness: 380, damping: 30 }}
         />
@@ -343,6 +348,7 @@ const Header = ({
   const getNavLabel = (key: string) => (t.has(key) ? t(key) : fallbackServiceMenuLabels[key]);
   const servicesMenuLinks: NavMenuLink[] = [
     { label: getNavLabel('services_repair'), href: '/leistungen/werbeanlagen-reparatur' },
+    { label: getNavLabel('services_cleaning'), href: '/leistungen/werbeanlagen-reinigung' },
     { label: getNavLabel('services_led'), href: '/leistungen/lichtwerbung-led-modernisierung' },
     { label: getNavLabel('services_audit'), href: '/leistungen/werbeanlagen-audit-diagnose' },
     { label: getNavLabel('services_installation'), href: '/leistungen/montage-demontage-werbeanlagen' },
@@ -547,7 +553,7 @@ const Header = ({
                 opacity: isScrolled ? 0 : 1
               }}
               transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className={`relative z-30 ${isScrolled ? 'pointer-events-none overflow-hidden' : 'pr-nav-glass overflow-visible rounded-b-[20px] border-x border-b'}`}
+              className={`relative z-30 ${isScrolled ? 'pointer-events-none overflow-hidden' : 'overflow-visible'}`}
             >
               <nav className="flex items-center justify-center gap-5 border-t border-[#E7DDD3]/70 py-1.5">
                 {navLinks.map((link) => (
@@ -569,21 +575,20 @@ const Header = ({
                   <motion.div
                     ref={desktopNavHoverAreaRef}
                     key="scrolled-notch"
-                    initial={{ y: -40, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: -40, opacity: 0 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                     onMouseMove={isDesktopNavOpen ? openDesktopNav : undefined}
                     className={`pointer-events-auto ${isDesktopNavOpen ? 'w-[920px]' : 'w-[192px]'} flex h-[86px] justify-center`}
                   >
                     <motion.div
                       onMouseEnter={openDesktopNav}
                       onMouseMove={openDesktopNav}
-                      initial={false}
+                      initial={{ y: -40, opacity: 0 }}
                       animate={{
+                        y: 0,
+                        opacity: 1,
                         width: isDesktopNavOpen ? 880 : 192,
                         height: isDesktopNavOpen ? 56 : 24,
                       }}
+                      exit={{ y: -40, opacity: 0 }}
                       transition={{ type: 'spring', stiffness: 400, damping: 35 }}
                       className={`pr-nav-glass relative flex items-center justify-center border border-t-0 rounded-b-[20px] outline-none transition-[background-color,border-color,box-shadow] duration-200 group ${
                         isDesktopNavOpen

@@ -787,6 +787,187 @@ The estimator must not show fixed prices or imply guaranteed stain removal.
 
 During the planning review on 2026-06-28, the already running local dev server on port `3000` returned a `404` with stale `SayLeed` metadata even for `/de` and `/de/leistungen/werbeanlagen-reparatur`. The code files for the PixelRing service pages exist and were reviewed directly, but visual browser verification of the current page state was not reliable in that session. Before final implementation QA, restart or correct the local dev server and verify the actual rendered pages.
 
+### 17.2 Landing-Page Structural Audit (структурный аудит посадочной страницы) - 2026-06-29
+
+This section records the SEO/sales review (SEO-аудит и анализ продаж) after the first implementation pass for `/[locale]/leistungen/werbeanlagen-reinigung` (страница очистки рекламных конструкций) and the comparison with the stronger existing `/[locale]/leistungen/werbeanlagen-reparatur` (страница ремонта рекламных конструкций).
+
+#### 17.2.1 Reviewed Examples (просмотренные примеры)
+
+Reviewed code examples:
+
+- [`signage-service/src/app/[locale]/leistungen/werbeanlagen-reparatur/page.tsx`](../../signage-service/src/app/%5Blocale%5D/leistungen/werbeanlagen-reparatur/page.tsx) - current reference page for `Werbeanlagen-Reparatur` (ремонт рекламных конструкций).
+- [`signage-service/src/components/leistungen/LeistungenReparaturWorkflow.tsx`](../../signage-service/src/components/leistungen/LeistungenReparaturWorkflow.tsx) - current `Welcher Fall passt zu Ihrer Werbeanlage?` (какой случай подходит к вашей рекламной конструкции?) interaction pattern.
+- [`signage-service/src/app/[locale]/leistungen/werbeanlagen-reinigung/page.tsx`](../../signage-service/src/app/%5Blocale%5D/leistungen/werbeanlagen-reinigung/page.tsx) - first implementation pass for `Werbeanlagen-Reinigung` (очистка рекламных конструкций).
+- [`signage-service/src/components/leistungen/LeistungenRepairHeroSlider.tsx`](../../signage-service/src/components/leistungen/LeistungenRepairHeroSlider.tsx) - shared hero component (общий hero-компонент первого экрана) used by both pages.
+- [`signage-service/src/components/sections/LeistungenFooterCTA.tsx`](../../signage-service/src/components/sections/LeistungenFooterCTA.tsx) - shared final CTA (финальный призыв к действию) component.
+
+Reviewed local preview URLs:
+
+- `http://localhost:3000/de/leistungen/werbeanlagen-reparatur` (`Werbeanlagen-Reparatur` / ремонт рекламных конструкций) for page rhythm and block order.
+- `http://localhost:3000/de/leistungen/werbeanlagen-reinigung` (`Werbeanlagen-Reinigung` / очистка рекламных конструкций) for current first implementation.
+- `http://localhost:3000/ru/leistungen/werbeanlagen-reinigung` (`Werbeanlagen-Reinigung` / очистка рекламных конструкций) for localized RU review.
+
+#### 17.2.2 Professional Diagnosis (профессиональный вывод)
+
+The existing `Werbeanlagen-Reparatur` (ремонт рекламных конструкций) page is structurally stronger because it answers the visitor's first operational question immediately after the hero:
+
+`Welcher Fall passt zu Ihrer Werbeanlage?` (какой случай подходит к вашей рекламной конструкции?)
+
+That block works because a repair visitor usually does not know the technical defect. The page lets them recognize a symptom, choose a similar case, and start a request. It is not only SEO content (SEO-контент); it is also a sales intake bridge (мост к заявке).
+
+The first implementation of `Werbeanlagen-Reinigung` (очистка рекламных конструкций) currently has this order:
+
+1. Hero (первый экран)
+2. `Welche Aufgaben die Reinigung abdecken kann` (какие задачи может покрывать очистка)
+3. `Reinigung ersetzt keine Reparatur` (очистка не заменяет ремонт)
+4. `Wenn beim Reinigen mehr sichtbar wird` (если при очистке становится видно больше)
+5. FAQ (частые вопросы)
+6. Final CTA (финальный призыв к действию)
+
+This order is too documentation-like. It explains the page, then moves into boundaries too early. It does not first help the visitor recognize their own situation.
+
+#### 17.2.3 What The First Block Must Answer (на какой вопрос должен отвечать первый блок)
+
+After the hero, the first block should answer:
+
+`Reinigt PixelRing genau meinen Fall?` (очищает ли PixelRing именно мой случай?)
+
+For search and conversion, the visitor's mental model is usually not "service scope" (объем услуги). It is a visible problem:
+
+- `Markise verschmutzt oder fleckig` (маркиза загрязнена или в пятнах)
+- `Markisenreinigung Berlin` (очистка маркиз в Берлине)
+- `Leuchtkasten wirkt matt oder grau` (световой короб выглядит матовым или серым)
+- `Profilbuchstaben außen verschmutzt` (объемные буквы загрязнены снаружи)
+- `Schmutz sitzt innen in Buchstaben oder Kasten` (грязь внутри букв или светового короба)
+- `Schild, Paneel oder Pylon braucht Pflege` (вывеска, панель или пилон требует ухода)
+- `Fassade rund um die Werbung ist verschmutzt` (фасад вокруг рекламы загрязнен)
+
+Therefore the first post-hero block should be a problem-recognition block (блок узнавания проблемы), not a general scope block (общий блок объема услуги).
+
+Recommended first post-hero H2 (заголовок второго уровня):
+
+`Welcher Reinigungsfall passt zu Ihrem Standort?` (какой случай очистки подходит вашему объекту?)
+
+Recommended purpose:
+
+- confirm that the page covers `Markisenreinigung` (очистка маркиз), `Werbeanlagen-Reinigung` (очистка рекламных конструкций), `Leuchtkasten-Reinigung` (очистка световых коробов), and cleaning around visible storefront advertising;
+- show that this is a commercial storefront service (сервис для коммерческих фасадов), not a household cleaning lead page;
+- create request starters for the future drawer flow (сценарий заявки через выезжающую форму), similar in spirit to `LeistungenReparaturWorkflow` (workflow ремонта), but cleaning-specific.
+
+#### 17.2.4 Recommended Revised Block Order (рекомендуемый порядок блоков)
+
+Recommended page order:
+
+1. Hero (первый экран)
+   - H1 (главный заголовок): `Werbeanlagen- & Markisenreinigung in Berlin & Brandenburg` (очистка рекламных конструкций и маркиз в Берлине и Бранденбурге)
+   - Purpose: confirm service, region, and request path immediately.
+
+2. Problem Recognition Cards (карточки узнавания проблемы)
+   - H2 (заголовок второго уровня): `Welcher Reinigungsfall passt zu Ihrem Standort?` (какой случай очистки подходит вашему объекту?)
+   - Purpose: match the visitor's visible problem and create a request starter.
+   - Cards:
+     - `Markise verschmutzt oder fleckig` (маркиза загрязнена или в пятнах)
+     - `Leuchtkasten wirkt matt oder grau` (световой короб выглядит матовым или серым)
+     - `Profilbuchstaben außen verschmutzt` (объемные буквы загрязнены снаружи)
+     - `Schmutz sitzt innen in Buchstaben oder Kasten` (грязь внутри букв или светового короба)
+     - `Schild, Paneel oder Pylon braucht Pflege` (вывеска, панель или пилон требует ухода)
+     - `Fassade rund um die Werbung ist verschmutzt` (фасад вокруг рекламы загрязнен)
+
+3. Service Scope (объем услуги)
+   - H2 (заголовок второго уровня): `Was PixelRing reinigen und prüfen kann` (что PixelRing может очистить и проверить)
+   - Purpose: list objects and service boundaries after the visitor has recognized their case.
+
+4. Photo Assessment / Request Prep (оценка по фото / подготовка заявки)
+   - H2 (заголовок второго уровня): `Fotos reichen oft für die erste Einschätzung` (для первой оценки часто достаточно фото)
+   - Purpose: explain what to send: photo, address, approximate size, access, material, timing.
+   - This block is currently missing and should be added before limitations.
+
+5. Method And Boundaries (метод и границы)
+   - H2 (заголовок второго уровня): `Was Reinigung leisten kann - und was nicht` (что может очистка и чего она не может)
+   - Purpose: prevent unsafe claims and wrong expectations.
+   - This should not be the first explanatory block.
+
+6. After-Cleaning Routing (маршрутизация после очистки)
+   - H2 (заголовок второго уровня): `Wenn Reinigung nicht reicht` (если очистки недостаточно)
+   - Purpose: route to `Werbeanlagen-Reparatur` (ремонт рекламных конструкций), `Druckprodukte & Branding` (печать и брендинг), `Lichtwerbung & LED-Modernisierung` (световая реклама и LED-модернизация), and `Montage & Demontage` (монтаж и демонтаж).
+
+7. FAQ (частые вопросы)
+   - Purpose: answer SEO/GEO (поисковая оптимизация и оптимизация для AI-ответов) questions about `Markisenreinigung` (очистка маркиз), light advertising cleaning, photos, access, and when repair is needed.
+
+8. Final CTA (финальный призыв к действию)
+   - Purpose: repeat the photo-based request path.
+
+#### 17.2.5 Specific Problems In The Current Implementation (конкретные проблемы текущей реализации)
+
+- Current H1 (главный заголовок) `Werbeanlagen-Reinigung für sichtbare Außenwerbung` (очистка рекламных конструкций для видимой наружной рекламы) is broad but misses `Markisenreinigung` (очистка маркиз) and `Berlin & Brandenburg` (Берлин и Бранденбург), both of which are important for intent and SEO.
+- Current first block title `Welche Aufgaben die Reinigung abdecken kann` (какие задачи может покрывать очистка) sounds like an internal planning label, not a customer-facing landing-page promise.
+- Current first block intro `Die Seite ist als erste Orientierung gedacht...` (страница задумана как первая ориентация...) is too meta; public copy should describe what PixelRing does and what the customer can send.
+- `Reinigung ersetzt keine Reparatur` (очистка не заменяет ремонт) appears too early. It is correct and needed, but it should come after service-fit and photo-assessment blocks.
+- There is no dedicated `Fotos reichen oft für die erste Einschätzung` (для первой оценки часто достаточно фото) block, even though photo intake is the conversion path and aligns with the existing `Werbeanlagen-Reparatur` (ремонт рекламных конструкций) page.
+- The page currently has no cleaning-specific workflow (workflow для очистки) or drawer request starters (карточки, открывающие форму заявки). This can be a later implementation step, but the content structure should already prepare for it.
+
+#### 17.2.6 Recommended Execution Order (рекомендуемый порядок выполнения)
+
+**Status update 2026-06-29:** The DE copy (немецкий текст), cleaning workflow (интерактивный workflow очистки), cautious proof strip (иллюстративный блок визуального подтверждения), and final CTA image correction (исправление изображения финального призыва к действию) are now implemented for `/de/leistungen/werbeanlagen-reinigung` (немецкая страница очистки рекламных конструкций). The remaining active steps are owner visual review, EN/RU/TR/PL/AR localization (локализация на английский, русский, турецкий, польский, арабский), AR RTL QA (проверка арабского направления справа налево), and the later estimator (калькулятор/оценщик).
+
+1. Revise DE copy first (сначала немецкий канонический текст):
+   - H1 (главный заголовок)
+   - hero subline (подзаголовок первого экрана)
+   - first post-hero problem-recognition block (блок узнавания проблемы)
+   - photo-assessment block (блок оценки по фото)
+   - reordered section titles
+
+2. Then localize EN/RU/TR/PL/AR (английский, русский, турецкий, польский, арабский):
+   - Keep Arabic RTL (арабское направление справа налево) QA separate.
+   - Preserve `Markisenreinigung` (очистка маркиз) concept in all languages even where the German keyword remains the SEO anchor.
+
+3. Only then implement interactive workflow (интерактивный workflow):
+   - Use the repair page's `LeistungenReparaturWorkflow` (workflow ремонта) as behavior inspiration.
+   - Create `LeistungenCleaningWorkflow` (workflow очистки) or a generalized workflow component.
+   - Use `LeistungenProblemDrawer` (выезжающая форма проблемы) with `initialIssueType="Maintenance"` (тип заявки "обслуживание") until the intake contract is intentionally expanded.
+
+4. Add the estimator (калькулятор/оценщик) after the page's block order is stable:
+   - It should output non-binding effort categories (необязательные категории сложности), not prices.
+
+#### 17.2.7 Historical Prompt For The Next Agent (исторический промпт для следующего агента)
+
+This prompt is kept only as history of the 2026-06-29 planning state. Do not reuse it as active implementation guidance because the DE restructure (немецкая реструктуризация), `LeistungenCleaningWorkflow` (интерактивный workflow очистки), and H1 correction (исправление главного заголовка) have since been implemented.
+
+```text
+You are working in /Users/macbookaleks/Documents/GitHub/PixelRingReparature.
+
+Follow AGENTS.md. For application code, read signage-service/AGENTS.md and signage-service/package.json before editing. Do not make broad refactors. Work step by step and wait for owner confirmation before each substantial code edit.
+
+Task: continue /[locale]/leistungen/werbeanlagen-reinigung (страница очистки рекламных конструкций) after the 2026-06-29 structural audit.
+
+Read first:
+- PROGRESS.md Context Beacon and latest checkpoint only.
+- docs/07_content_ai_seo/README.md Context Beacon.
+- docs/07_content_ai_seo/service_page_reinigung_werbeanlagen_markisen_plan.md sections 17.1 and 17.2.
+- signage-service/src/app/[locale]/leistungen/werbeanlagen-reparatur/page.tsx, especially block order in <main>.
+- signage-service/src/components/leistungen/LeistungenReparaturWorkflow.tsx for the "Welcher Fall passt zu Ihrer Werbeanlage?" pattern.
+- signage-service/src/app/[locale]/leistungen/werbeanlagen-reinigung/page.tsx current implementation.
+
+Goal for the next step:
+Prepare and, after owner confirmation, implement a DE-first restructure of the cleaning page:
+1. Change H1 to "Werbeanlagen- & Markisenreinigung in Berlin & Brandenburg" (очистка рекламных конструкций и маркиз в Берлине и Бранденбурге).
+2. Shorten hero subline so it clearly says PixelRing cleans signs, lightboxes, channel letters, branded awnings, and visible outdoor advertising with attention to material, access, and possible damage.
+3. Replace the current first post-hero block with "Welcher Reinigungsfall passt zu Ihrem Standort?" (какой случай очистки подходит вашему объекту?) and six recognition cards:
+   - Markise verschmutzt oder fleckig
+   - Leuchtkasten wirkt matt oder grau
+   - Profilbuchstaben außen verschmutzt
+   - Schmutz sitzt innen in Buchstaben oder Kasten
+   - Schild, Paneel oder Pylon braucht Pflege
+   - Fassade rund um die Werbung ist verschmutzt
+4. Move the general service-scope explanation after the recognition cards under "Was PixelRing reinigen und prüfen kann" (что PixelRing может очистить и проверить).
+5. Add a "Fotos reichen oft für die erste Einschätzung" (для первой оценки часто достаточно фото) block before boundaries.
+6. Move/retitle boundaries to "Was Reinigung leisten kann - und was nicht" (что может очистка и чего она не может).
+7. Keep no pricing, no real-proof claims, no fake before/after, no internal execution details.
+8. Keep the existing image asset and final CTA unless owner asks otherwise.
+
+Do not yet implement the full estimator or workflow drawer unless separately confirmed. After DE copy is accepted, localize EN/RU/TR/PL/AR and verify one H1, mobile overflow, AR RTL, JSON-LD, internal links, lint, and TypeScript.
+```
+
 ## 18. Source Notes (источники)
 
 - [Berlin.de, `Werbeanlagen` (рекламные конструкции)](https://www.berlin.de/ba-marzahn-hellersdorf/politik-und-verwaltung/aemter/stadtentwicklungsamt/bauaufsicht-wohnungsaufsicht-denkmalschutz/artikel.187791.php): broad definition of outdoor advertising visible from public traffic areas and procedural notes for Berlin advertising structures.
@@ -803,6 +984,109 @@ During the planning review on 2026-06-28, the already running local dev server o
 - [DGUV Information 208-019 (информация DGUV по безопасной работе с мобильными подъемными платформами)](https://www.bghm.de/fileadmin/user_upload/Arbeitsschuetzer/Gesetze_Vorschriften/Informationen/208-019.pdf): safety context for access planning and work at height.
 
 ## 19. Progress Log (журнал прогресса)
+
+* **Date:** 2026-07-03
+* **Current sprint/block:** `Reinigung & Pflege` (очистка и уход) before/after image implementation.
+* **Done:**
+  - Generated 12 high-quality, branded before/after image assets for the 6 cleaning cases (`awning` (маркиза), `lightbox` (световой короб), `letters` (объемные буквы), `inside` (внутренность короба), `sign` (вывеска/панель), `facade` (фасад вокруг вывески)) using `generate_image`, integrating the PixelRing logo and brand name into the physical signs and awnings.
+  - Copied and renamed the generated images to the `signage-service/public/images/leistungen/werbeanlagen-reinigung/` directory.
+  - Modified the component `LeistungenCleaningWorkflow.tsx` (компонент сценария очистки) to map the new before/after images (`CLEANING_VISUALS` (карта визуальных случаев очистки)) and implemented hover/pointer state tracking (`previewedCaseId` (идентификатор предпросматриваемого случая)) to toggle between "before" (до очистки) and "after" (после очистки) states, mirroring the repair workflow.
+  - Verified `npm run lint` (линтинг) and `npm run build` (сборка проекта) completed successfully without any compilation errors.
+* **In progress:** Visual verification in the local browser.
+* **Next action:** User reviews the visual before/after changes.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/07_content_ai_seo/service_page_reinigung_werbeanlagen_markisen_plan.md`
+  - `signage-service/src/components/leistungen/LeistungenCleaningWorkflow.tsx`
+
+* **Date:** 2026-06-29
+* **Current sprint/block:** `Reinigung & Pflege` (очистка и уход) approved two-pass implementation.
+* **Done:**
+  - Added `Cleaning` / `Reinigung / Pflege` (очистка / уход) as a public contact-form issue type without a database migration.
+  - Extended `ContactModal` (контактное модальное окно), `LeistungenRequestButton` (кнопка заявки на странице услуг), and `LeistungenFooterCTA` (финальный призыв к действию) so hero/final CTA (первый и финальный призывы к действию) open the request form with cleaning-specific `initialIssueType="Cleaning"` (тип заявки "очистка") and prefilled cleaning context.
+  - Changed `LeistungenCleaningWorkflow` (интерактивный workflow очистки) drawer requests from `Maintenance` (обслуживание) to `Cleaning` (очистка).
+  - Strengthened the German hero copy with explicit `Berlin und Brandenburg` (Берлин и Бранденбург) while keeping the shorter H1 (главный заголовок) for visual stability.
+  - Renamed the German secondary hero CTA to `Welche Fotos helfen?` (какие фото помогут?) because it scrolls to the photo checklist instead of opening an upload flow.
+  - Added `Was hinter Verschmutzung sichtbar werden kann` (что может стать видно за загрязнением), a compact internal-link block to existing `Probleme & Lösungen` (проблемы и решения) pages.
+  - Added the German FAQ (частые вопросы) entry for `Imprägnierung` (пропитка) without promising it as a standard service.
+  - Localized workflow labels, recognition cases, drawer copy, proof-strip cases, internal-link copy, photo-checklist copy, and the `Cleaning` (очистка) contact-form label across EN/RU/TR/PL/AR (английский, русский, турецкий, польский, арабский).
+  - Kept the current cleaning image asset only; no new visuals, generated assets, estimator (калькулятор/оценщик), prices, packages, guaranteed stain removal, all-heights, same-day, or marketplace claims were added.
+  - Verified `npm run lint` (линтинг), `npm run build` (production build / производственная сборка), one H1 (один главный заголовок), canonical (каноническая ссылка), JSON-LD (структурированные данные), localized workflow/proof/internal-link/photo blocks, DE form prefill, and AR RTL (арабское направление справа налево) without horizontal overflow.
+* **In progress:** Owner visual review of localized `/[locale]/leistungen/werbeanlagen-reinigung` (страница очистки рекламных конструкций).
+* **Next action:** Decide whether to start the separate estimator (калькулятор/оценщик) phase after page review.
+* **Blockers/risks:** The page still reuses one approved cleaning image across multiple visual contexts; this is intentional per owner decision, but real case-specific photos would improve credibility later.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/07_content_ai_seo/service_page_reinigung_werbeanlagen_markisen_plan.md`
+  - `signage-service/src/app/[locale]/leistungen/werbeanlagen-reinigung/page.tsx`
+  - `signage-service/src/components/common/ContactForm.tsx`
+  - `signage-service/src/components/common/ContactModal.tsx`
+  - `signage-service/src/components/leistungen/LeistungenCleaningWorkflow.tsx`
+  - `signage-service/src/components/leistungen/LeistungenCleaningProofStrip.tsx`
+  - `signage-service/src/components/leistungen/LeistungenRepairHeroSlider.tsx`
+  - `signage-service/src/components/leistungen/LeistungenRequestButton.tsx`
+  - `signage-service/src/components/sections/LeistungenFooterCTA.tsx`
+  - `signage-service/messages/de.json`
+  - `signage-service/messages/en.json`
+  - `signage-service/messages/ru.json`
+  - `signage-service/messages/tr.json`
+  - `signage-service/messages/pl.json`
+  - `signage-service/messages/ar.json`
+
+* **Date:** 2026-06-29
+* **Current sprint/block:** `Reinigung & Pflege` (очистка и уход) visual workflow correction after owner review.
+* **Done:**
+  - Replaced the static first-block recognition cards with `LeistungenCleaningWorkflow` (интерактивный workflow очистки) for the German `/de/leistungen/werbeanlagen-reinigung` (немецкая страница очистки рекламных конструкций) route.
+  - Wired `LeistungenCleaningWorkflow` (интерактивный workflow очистки) into `LeistungenProblemDrawer` (выезжающая форма проблемы) with `initialIssueType="Maintenance"` (тип заявки "обслуживание") and cleaning-specific drawer copy.
+  - Added `LeistungenCleaningProofStrip` (иллюстративный proof-strip / блок визуального подтверждения) after the workflow, with explicit service-scenario wording and no fake before/after claims.
+  - Corrected the German `metaTitle` (SEO title / SEO-заголовок) to `Werbeanlagen- und Markisenreinigung Berlin-Brandenburg | PixelRing` (очистка рекламных конструкций и маркиз в Берлине-Бранденбурге) instead of the previous ampersand variant.
+  - Changed the German H1 (главный заголовок) to `Werbeanlagen und Markisen reinigen lassen` (заказать очистку рекламных конструкций и маркиз), while keeping the Berlin-Brandenburg (Берлин-Бранденбург) location anchor in the SEO title (SEO-заголовок), metadata, and hero copy.
+  - Updated the final CTA (финальный призыв к действию) to use the cleaning image asset instead of the repair image.
+  - Verified `npm run lint` (линтинг), `npm run build` (production build / производственная сборка), rendered metadata, one H1 (один главный заголовок), no horizontal overflow (нет горизонтального переполнения), drawer opening, mobile layout, and desktop/mobile screenshots.
+* **In progress:** Owner visual review of the German route after the workflow/proof correction.
+* **Next action:** Review `/de/leistungen/werbeanlagen-reinigung` (немецкая страница очистки рекламных конструкций) in the browser; then decide whether to localize the new workflow/proof structure to EN/RU/TR/PL/AR (английский, русский, турецкий, польский, арабский) before adding the estimator (калькулятор/оценщик).
+* **Blockers/risks:** Only one approved cleaning image asset exists, so the workflow uses differentiated crops rather than real case-specific photos; do not claim real proof, before/after, guaranteed stain removal, prices, all-heights capability, same-day service, or unverified eco claims.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/07_content_ai_seo/service_page_reinigung_werbeanlagen_markisen_plan.md`
+  - `signage-service/src/app/[locale]/leistungen/werbeanlagen-reinigung/page.tsx`
+  - `signage-service/src/components/leistungen/LeistungenCleaningWorkflow.tsx`
+  - `signage-service/src/components/leistungen/LeistungenCleaningProofStrip.tsx`
+
+* **Date:** 2026-06-29
+* **Current sprint/block:** `Reinigung & Pflege` (очистка и уход) first implementation pass after owner confirmation.
+* **Done:**
+  - Implemented the approved DE-first (сначала немецкая версия) restructure for `/[locale]/leistungen/werbeanlagen-reinigung` (страница очистки рекламных конструкций).
+  - Updated the German H1 (главный заголовок) to `Werbeanlagen- & Markisenreinigung in Berlin & Brandenburg` (очистка рекламных конструкций и маркиз в Берлине и Бранденбурге).
+  - Added the first post-hero (первый блок после hero) problem-recognition section `Welcher Reinigungsfall passt zu Ihrem Standort?` (какой случай очистки подходит вашему объекту?) with six static cards.
+  - Moved the general service-scope explanation after the recognition cards under `Was PixelRing reinigen und prüfen kann` (что PixelRing может очистить и проверить).
+  - Added `Fotos reichen oft für die erste Einschätzung` (для первой оценки часто достаточно фото) before the boundaries section.
+  - Retitled boundaries to `Was Reinigung leisten kann - und was nicht` (что может очистка и чего она не может) and routing to `Wenn Reinigung nicht reicht` (если очистки недостаточно).
+  - Expanded the German FAQ (частые вопросы) around `Markisenreinigung` (очистка маркиз), Berlin & Brandenburg (Берлин и Бранденбург), light advertising safety, internal dirt, photo intake, and expectation boundaries.
+  - Added `/leistungen/werbeanlagen-reinigung` (страница очистки рекламных конструкций) to the sitemap source list.
+  - Verified `npm run lint` (линтинг) and `npm run build` (production build / производственная сборка).
+* **In progress:** Owner visual review of the updated German route before EN/RU/TR/PL/AR (английский, русский, турецкий, польский, арабский) localization.
+* **Next action:** Review `/de/leistungen/werbeanlagen-reinigung` (немецкая страница очистки рекламных конструкций) on desktop/mobile; then localize the new structure to EN/RU/TR/PL/AR (английский, русский, турецкий, польский, арабский), including AR RTL (арабское направление справа налево) QA.
+* **Blockers/risks:** Do not add the workflow drawer (выезжающая форма) or estimator (калькулятор/оценщик) until separately approved; no prices, fake proof, guaranteed stain removal, same-day/all-heights promises, or unverified eco claims.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/07_content_ai_seo/service_page_reinigung_werbeanlagen_markisen_plan.md`
+  - `signage-service/src/app/[locale]/leistungen/werbeanlagen-reinigung/page.tsx`
+  - `signage-service/src/lib/seo.ts`
+
+* **Date:** 2026-06-29
+* **Current sprint/block:** `Reinigung & Pflege` (очистка и уход) landing-page structure and SEO/sales audit.
+* **Done:**
+  - Documented the post-implementation structural audit for `/[locale]/leistungen/werbeanlagen-reinigung` (страница очистки рекламных конструкций).
+  - Linked the reviewed examples: `werbeanlagen-reparatur` (ремонт рекламных конструкций), `LeistungenReparaturWorkflow` (workflow ремонта), current cleaning page, shared hero, and final CTA.
+  - Defined the professional first-block role: answer `Reinigt PixelRing genau meinen Fall?` (очищает ли PixelRing именно мой случай?) before broad service scope or limitations.
+  - Recommended a revised block order: hero, problem-recognition cards, service scope, photo assessment, method/boundaries, after-cleaning routing, FAQ, final CTA.
+  - Added a ready prompt for the next implementation agent.
+* **In progress:** Owner review of the recommended DE-first restructure before application code changes.
+* **Next action:** After confirmation, implement the DE-first rewrite of hero copy and the first post-hero blocks, then localize EN/RU/TR/PL/AR (английский, русский, турецкий, польский, арабский).
+* **Blockers/risks:** Do not over-copy repair-specific logic; do not add prices; do not claim real proof without real cleaning photos; generated images must stay illustrative; boundaries should not appear before service-fit and photo-assessment.
+* **Updated documents:**
+  - `docs/07_content_ai_seo/service_page_reinigung_werbeanlagen_markisen_plan.md`
 
 * **Date:** 2026-06-28
 * **Current sprint/block:** `Reinigung & Pflege` (очистка и уход) service strategy.

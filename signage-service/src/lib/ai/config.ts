@@ -190,7 +190,7 @@ export async function getAiRuntimeConfig(): Promise<AiRuntimeConfig> {
       min: 1000,
       max: 120_000,
     }),
-    endpoint: OPENAI_CHAT_COMPLETIONS_URL,
+    endpoint: process.env.AI_ENDPOINT?.trim() || OPENAI_CHAT_COMPLETIONS_URL,
     cmsSystemPrompt,
     issues,
   };
