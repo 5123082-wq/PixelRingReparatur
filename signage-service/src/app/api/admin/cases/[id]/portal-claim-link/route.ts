@@ -74,7 +74,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       const portalClaim = await createPortalClaimLink(tx, {
         caseId: id,
         locale: caseRecord.locale,
-        origin: request.nextUrl.origin,
         createdByAdminSessionId: actor.sessionId,
       });
 

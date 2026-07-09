@@ -9,6 +9,7 @@ import LeistungenHero from '@/components/leistungen/LeistungenHero';
 import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestButton';
 import LeistungenFooterCTA from '@/components/sections/LeistungenFooterCTA';
 import { getGlobalPageCmsContent, getLeistungenPageCmsContent } from '@/lib/cms/pages';
+import { buildPublicPageMetadata } from '@/lib/seo';
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
 
@@ -121,6 +122,8 @@ const SERVICE_DETAIL_PATH_BY_CARD_ID: Partial<Record<string, string>> = {
   'montage-demontage': '/leistungen/montage-demontage-werbeanlagen',
   'druck-branding': '/leistungen/druckprodukte-branding-werbematerialien',
 };
+
+const LEISTUNGEN_PAGE_PATH = '/leistungen';
 
 const BREADCRUMB_LABELS_BY_LOCALE: Record<Locale, { home: string; services: string }> = {
   de: {
@@ -1560,14 +1563,16 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const content = getContent(locale);
+  const heroImage = content.heroSlides[0];
 
-  return {
+  return buildPublicPageMetadata({
+    locale,
+    path: LEISTUNGEN_PAGE_PATH,
     title: content.metaTitle,
     description: content.metaDescription,
-    alternates: {
-      canonical: `/${locale}/leistungen`,
-    },
-  };
+    image: heroImage?.image,
+    imageAlt: heroImage?.imageAlt ?? heroImage?.title,
+  });
 }
 
 export default async function LeistungenPage({

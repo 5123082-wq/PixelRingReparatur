@@ -555,7 +555,7 @@ export default function HomeBeforeAfterSection({ locale }: { locale: string }) {
                 <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/45" />
               </div>
               <div className="absolute -inset-x-px -bottom-px flex flex-col justify-end px-5 pb-5 pt-14 sm:px-6 sm:pb-6 sm:pt-16 lg:px-7 lg:pb-7 lg:pt-20">
-                <div className="absolute inset-0 bg-gradient-to-t from-white/76 via-white/48 to-transparent backdrop-blur-md [mask-image:linear-gradient(to_top,#000_0%,#000_58%,rgba(0,0,0,0)_100%)]" />
+                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(245,245,247,0.94)_0%,rgba(245,245,247,0.84)_44%,rgba(245,245,247,0.38)_76%,rgba(245,245,247,0)_100%)]" />
                 <div className="relative z-10 flex flex-col gap-3">
                   <span className="w-fit rounded-full bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-[#8F4C2F] shadow-sm">
                     {copy.featuredTag}
@@ -566,7 +566,7 @@ export default function HomeBeforeAfterSection({ locale }: { locale: string }) {
                   <p className="text-[13px] font-semibold leading-[1.42] text-[#536072] md:text-[14px]">
                     {copy.featuredProblem}
                   </p>
-                  <p className="border-t border-[#0E1A2B]/12 pt-2 text-[13px] font-black leading-[1.38] text-[#0E1A2B] md:text-[14px]">
+                  <p className="text-[13px] font-black leading-[1.38] text-[#0E1A2B] md:text-[14px]">
                     {copy.featuredResult}
                   </p>
                 </div>
@@ -596,7 +596,7 @@ export default function HomeBeforeAfterSection({ locale }: { locale: string }) {
                       {item.tag}
                     </span>
                     <div className="absolute -inset-x-px -bottom-px flex flex-col gap-1.5 px-5 pb-5 pt-9">
-                      <div className="absolute inset-0 bg-gradient-to-t from-white/82 via-white/54 to-transparent backdrop-blur-md [mask-image:linear-gradient(to_top,#000_0%,#000_68%,rgba(0,0,0,0)_100%)]" />
+                      <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(245,245,247,0.95)_0%,rgba(245,245,247,0.84)_48%,rgba(245,245,247,0.36)_78%,rgba(245,245,247,0)_100%)]" />
                       <div className="relative z-10 flex flex-col gap-1.5">
                       <h3 className="text-[20px] font-black leading-[1.08] tracking-[0] text-[#0E1A2B]">
                         {item.title}
@@ -625,7 +625,7 @@ export default function HomeBeforeAfterSection({ locale }: { locale: string }) {
                 {copy.closing.tag}
               </span>
               <div className="absolute -inset-x-px -bottom-px flex flex-col gap-2 px-5 pb-5 pt-14 sm:px-6 sm:pb-6 sm:pt-16 lg:px-7 lg:pb-7 lg:pt-20">
-                <div className="absolute inset-0 bg-gradient-to-t from-white/76 via-white/48 to-transparent backdrop-blur-md [mask-image:linear-gradient(to_top,#000_0%,#000_58%,rgba(0,0,0,0)_100%)]" />
+                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(245,245,247,0.94)_0%,rgba(245,245,247,0.84)_44%,rgba(245,245,247,0.38)_76%,rgba(245,245,247,0)_100%)]" />
                 <div className="relative z-10 flex flex-col gap-2">
                   <h3 className="text-[23px] font-black leading-[1.08] tracking-[0] text-[#0E1A2B] md:text-[28px]">
                     {copy.closing.title}

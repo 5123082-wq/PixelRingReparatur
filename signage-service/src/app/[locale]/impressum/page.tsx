@@ -7,6 +7,7 @@ import {
   LEGAL_NOTICE_BY_LOCALE,
   containsStaleLegalContent,
 } from '@/lib/legal-content';
+import { buildLocaleUrl } from '@/lib/seo';
 import { getTranslations } from 'next-intl/server';
 
 export const dynamic = 'force-dynamic';
@@ -17,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     title: `${t('impressum')} | PixelRing`,
     alternates: {
-      canonical: `/${locale}/impressum`,
+      canonical: buildLocaleUrl(locale, '/impressum'),
     },
   };
 }

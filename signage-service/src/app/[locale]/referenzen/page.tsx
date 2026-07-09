@@ -18,13 +18,17 @@ import {
   getBlockText,
   getBlockObjectList,
 } from '@/lib/cms/pages';
+import { buildLocaleUrl, buildPublicPageMetadata, buildSiteUrl } from '@/lib/seo';
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
+type JsonLdObject = Record<string, unknown>;
 
 type LocalizedPageContent = Omit<ReferencesContent, 'locale' | 'cases' | 'galleryItems' | 'productCategories'> & {
   metaTitle: string;
   metaDescription: string;
 };
+
+const REFERENCES_PAGE_PATH = '/referenzen';
 
 export const IMAGE_SET = {
   lightbox: '/images/ex-lightbox.png',
@@ -51,6 +55,8 @@ export const IMAGE_SET = {
   generatedStorefrontRow: '/images/references/storefront-row.webp',
   generatedCircuitRepair: '/images/references/circuit-repair.webp',
 };
+
+const REFERENCES_OG_IMAGE = IMAGE_SET.generatedStorefrontRow;
 
 export const BASE_CASES: Array<Pick<ReferenceCase, 'id' | 'beforeImage' | 'afterImage' | 'gallery'>> = [
   {
@@ -555,6 +561,50 @@ function ignoreLegacyRecentText(value: string | undefined, legacyValues: Set<str
   return value && !legacyValues.has(value) ? value : undefined;
 }
 
+function buildReferencesPageJsonLd(content: ReferencesContent & { metaTitle: string; metaDescription: string }): JsonLdObject {
+  const canonicalUrl = buildLocaleUrl(content.locale, REFERENCES_PAGE_PATH);
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    '@id': `${canonicalUrl}#webpage`,
+    url: canonicalUrl,
+    inLanguage: content.locale,
+    name: content.metaTitle,
+    description: content.metaDescription,
+    isPartOf: {
+      '@type': 'WebSite',
+      '@id': `${buildSiteUrl('/')}#website`,
+      name: 'PixelRing Reparatur',
+      url: buildSiteUrl('/'),
+    },
+    about: {
+      '@type': 'Organization',
+      '@id': `${buildSiteUrl('/')}#organization`,
+      name: 'PixelRing Reparatur',
+      url: buildSiteUrl('/'),
+    },
+    primaryImageOfPage: {
+      '@type': 'ImageObject',
+      url: buildSiteUrl(REFERENCES_OG_IMAGE),
+    },
+    mainEntity: {
+      '@type': 'ItemList',
+      name: content.categoriesTitle,
+      itemListElement: content.productCategories.map((category, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+          '@type': 'CreativeWork',
+          name: category.title,
+          description: category.text,
+          image: buildSiteUrl(category.image),
+        },
+      })),
+    },
+  };
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -563,14 +613,17 @@ export async function generateMetadata({
   const { locale } = await params;
   const page = await getPublishedCmsPage('referenzen', locale);
   const staticContent = getContent(locale);
+  const title = page?.seoTitle || staticContent.metaTitle;
+  const description = page?.seoDescription || staticContent.metaDescription;
 
-  return {
-    title: page?.seoTitle || staticContent.metaTitle,
-    description: page?.seoDescription || staticContent.metaDescription,
-    alternates: {
-      canonical: `/${locale}/referenzen`,
-    },
-  };
+  return buildPublicPageMetadata({
+    locale,
+    path: REFERENCES_PAGE_PATH,
+    title,
+    description,
+    image: REFERENCES_OG_IMAGE,
+    imageAlt: staticContent.heroTitle,
+  });
 }
 
 export default async function ReferenzenPage({
@@ -676,9 +729,14 @@ export default async function ReferenzenPage({
       })) as ReferenceCase[];
     }
   }
+  const jsonLd = buildReferencesPageJsonLd(content);
 
   return (
     <div className={`min-h-screen bg-white ${content.locale === 'ar' ? 'rtl' : 'ltr'}`} dir={content.locale === 'ar' ? 'rtl' : 'ltr'}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+      />
       <Header content={globalCms?.header} />
       <ReferencesExperience content={content} />
       <Footer content={globalCms?.footer} />

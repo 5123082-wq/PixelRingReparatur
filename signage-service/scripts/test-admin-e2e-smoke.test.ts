@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
 
 import { hashAdminPassword } from '../src/lib/admin-password.ts';
+import { assertDbTestAllowed } from './db-test-guard.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,6 +18,7 @@ const projectRoot = path.resolve(__dirname, '..');
 
 dotenv.config({ path: path.join(projectRoot, '.env.local'), quiet: true });
 dotenv.config({ path: path.join(projectRoot, '.env'), quiet: true });
+assertDbTestAllowed({ scriptName: 'test-admin-e2e-smoke' });
 
 const PORT = Number(process.env.ADMIN_E2E_SMOKE_PORT ?? 3212);
 const BASE_URL = `http://127.0.0.1:${PORT}`;

@@ -277,6 +277,75 @@ test('portal request creation uses verified portal email without a new claim lin
   assert.equal(intakeSource.includes('sendPortalActivationInviteEmail'), false);
 });
 
+test('portal claim and verification URLs ignore request origin', () => {
+  const claimSource = readProjectFile('src/lib/portal/claim.ts');
+  const claimBuilderIndex = claimSource.indexOf('function buildClaimUrl(input: {');
+  const verificationBuilderIndex = claimSource.indexOf('export function buildPortalVerificationUrl(input: {');
+  const createClaimIndex = claimSource.indexOf('export async function createPortalClaimLink(');
+  const createVerificationIndex = claimSource.indexOf('export async function createPortalEmailVerification(');
+  const claimBuilderBlock = claimSource.slice(claimBuilderIndex, claimSource.indexOf('}', claimBuilderIndex) + 1);
+  const verificationBuilderBlock = claimSource.slice(
+    verificationBuilderIndex,
+    claimSource.indexOf('}', verificationBuilderIndex) + 1
+  );
+  const createClaimInputBlock = claimSource.slice(createClaimIndex, claimSource.indexOf('): Promise<PortalClaimLinkResult>', createClaimIndex));
+  const createVerificationInputBlock = claimSource.slice(
+    createVerificationIndex,
+    claimSource.indexOf('): Promise<{', createVerificationIndex)
+  );
+
+  assert.notEqual(claimBuilderIndex, -1);
+  assert.notEqual(verificationBuilderIndex, -1);
+  assert.notEqual(createClaimIndex, -1);
+  assert.notEqual(createVerificationIndex, -1);
+  assert.equal(claimBuilderBlock.includes('origin'), false);
+  assert.equal(verificationBuilderBlock.includes('origin'), false);
+  assert.equal(createClaimInputBlock.includes('origin'), false);
+  assert.equal(createVerificationInputBlock.includes('origin'), false);
+  assert.ok(claimSource.includes("return buildLocaleUrl(locale, `/portal/claim?token=${encodeURIComponent(input.token)}`);"));
+  assert.ok(claimSource.includes("return buildLocaleUrl(locale, `/portal/claim/verify?token=${encodeURIComponent(input.token)}`);"));
+});
+
+test('portal claim access is bound to the existing customer email when present', () => {
+  const claimSource = readProjectFile('src/lib/portal/claim.ts');
+  const loginSource = readProjectFile('src/lib/portal/login.ts');
+  const createCodeIndex = loginSource.indexOf('async function createCodeForEligibleEmail(');
+  const createCodeEmailCheckIndex = loginSource.indexOf('!isPortalClaimEmailAllowed({', createCodeIndex);
+  const emailCodeCreateIndex = loginSource.indexOf('await db.portalEmailCode.create({', createCodeIndex);
+  const completeCodeIndex = loginSource.indexOf('export async function completePortalPasswordCode(');
+  const completeCodeEmailCheckIndex = loginSource.indexOf('!isPortalClaimEmailAllowed({', completeCodeIndex);
+  const upsertUserIndex = loginSource.indexOf('const portalUserId = await upsertPortalUserWithVerifiedEmail(tx, {', completeCodeIndex);
+  const grantSessionIndex = loginSource.indexOf('export async function grantPortalClaimAccessToSessionUser(');
+  const grantSessionEmailCheckIndex = loginSource.indexOf('!isPortalClaimEmailAllowed({', grantSessionIndex);
+  const grantSessionConsumeIndex = loginSource.indexOf('await tx.portalClaimLink.update({', grantSessionIndex);
+
+  assert.ok(claimSource.includes('customerEmail: string | null;'));
+  assert.ok(claimSource.includes('customerEmail: claim.case.customerEmail'));
+  assert.ok(loginSource.includes('function getPortalClaimBoundEmail(input: {'));
+  assert.ok(loginSource.includes('function isPortalClaimEmailAllowed(input: {'));
+  assert.ok(loginSource.includes('const candidates = [input.prefillEmail, input.customerEmail]'));
+  assert.ok(loginSource.includes('const validEmail = candidates.find(isLikelyPortalEmail);'));
+  assert.ok(loginSource.includes('hasInvalidEmailBoundary: candidates.length > 0 && !validEmail'));
+  assert.ok(loginSource.includes('if (boundEmail.hasInvalidEmailBoundary) {'));
+  assert.notEqual(createCodeIndex, -1);
+  assert.notEqual(createCodeEmailCheckIndex, -1);
+  assert.notEqual(emailCodeCreateIndex, -1);
+  assert.ok(createCodeEmailCheckIndex < emailCodeCreateIndex);
+  assert.ok(loginSource.includes("return { ok: false, reason: 'not_eligible', email };"));
+  assert.notEqual(completeCodeIndex, -1);
+  assert.notEqual(completeCodeEmailCheckIndex, -1);
+  assert.notEqual(upsertUserIndex, -1);
+  assert.ok(completeCodeEmailCheckIndex < upsertUserIndex);
+  assert.ok(loginSource.includes('prefillEmail: codeRecord.claimLink.prefillEmail'));
+  assert.ok(loginSource.includes('customerEmail: codeRecord.case?.customerEmail'));
+  assert.notEqual(grantSessionIndex, -1);
+  assert.notEqual(grantSessionEmailCheckIndex, -1);
+  assert.notEqual(grantSessionConsumeIndex, -1);
+  assert.ok(grantSessionEmailCheckIndex < grantSessionConsumeIndex);
+  assert.ok(loginSource.includes('prefillEmail: claim.prefillEmail'));
+  assert.ok(loginSource.includes('customerEmail: claim.customerEmail'));
+});
+
 test('status lookup with request number alone does not query case or expose portal data', () => {
   const source = readProjectFile('src/lib/status-lookup.ts');
   const noContactIndex = source.indexOf('if (!hasContact) {');

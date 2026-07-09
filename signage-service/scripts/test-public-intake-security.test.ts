@@ -129,10 +129,13 @@ test('browser chat draft stores email and phone as separate fields', () => {
 test('website request with email still creates PR and portal claim link', () => {
   const intakeSource = readProjectFile('src/lib/request-intake.ts');
   const contactRouteSource = readProjectFile('src/app/api/contact/route.ts');
+  const claimLinkIndex = intakeSource.indexOf('const portalClaimLink = await createPortalClaimLink(tx, {');
+  const claimLinkBlock = intakeSource.slice(claimLinkIndex, intakeSource.indexOf('});', claimLinkIndex) + 3);
 
   assert.ok(intakeSource.includes('const parsedContact = resolveWebsiteRequestContact(input);'));
   assert.ok(intakeSource.includes('const publicRequestNumber = await ensurePublicRequestNumberForCase('));
-  assert.ok(intakeSource.includes('const portalClaimLink = await createPortalClaimLink(tx, {'));
+  assert.notEqual(claimLinkIndex, -1);
+  assert.equal(claimLinkBlock.includes('origin'), false);
   assert.ok(intakeSource.includes('portalClaimUrl: portalClaimLink.url'));
   assert.ok(contactRouteSource.includes('email: resolvedContact.customerEmail'));
   assert.ok(contactRouteSource.includes('phone: resolvedContact.customerPhone'));

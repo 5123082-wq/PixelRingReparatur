@@ -8,6 +8,7 @@ import HeroBreadcrumbs from '@/components/common/HeroBreadcrumbs';
 import SectionEyebrow from '@/components/common/SectionEyebrow';
 import ServiceSimulator from '@/components/sections/ServiceSimulator';
 import AboutVideoPlayer from '@/components/sections/AboutVideoPlayer';
+import { buildLocaleUrl, buildPublicPageMetadata, buildSiteUrl } from '@/lib/seo';
 
 import {
   ABOUT_CONTENT,
@@ -19,6 +20,10 @@ import {
 
 type AboutCmsContent = Awaited<ReturnType<typeof getAboutPageCmsContent>>;
 type AboutPageLabels = (typeof ABOUT_PAGE_LABELS)[Locale];
+type JsonLdObject = Record<string, unknown>;
+
+const ABOUT_PAGE_PATH = '/ueber-uns';
+const ABOUT_OG_IMAGE = '/images/about/pixelring-service-team-fahrzeug-werbeanlagen-reparatur-berlin.png';
 
 const ABOUT_BREADCRUMB_LABELS: Record<Locale, { home: string; page: string }> = {
   de: {
@@ -141,6 +146,37 @@ function mergeAboutPageLabels(fallback: AboutPageLabels, cms: AboutCmsContent): 
   };
 }
 
+function buildAboutPageJsonLd(locale: Locale, content: AboutContent): JsonLdObject {
+  const canonicalUrl = buildLocaleUrl(locale, ABOUT_PAGE_PATH);
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    '@id': `${canonicalUrl}#webpage`,
+    url: canonicalUrl,
+    inLanguage: locale,
+    name: content.metaTitle,
+    description: content.metaDescription,
+    isPartOf: {
+      '@type': 'WebSite',
+      '@id': `${buildSiteUrl('/')}#website`,
+      name: 'PixelRing Reparatur',
+      url: buildSiteUrl('/'),
+    },
+    about: {
+      '@type': 'Organization',
+      '@id': `${buildSiteUrl('/')}#organization`,
+      name: 'PixelRing Reparatur',
+      url: buildSiteUrl('/'),
+      logo: buildSiteUrl('/icon.png'),
+    },
+    primaryImageOfPage: {
+      '@type': 'ImageObject',
+      url: buildSiteUrl(ABOUT_OG_IMAGE),
+    },
+  };
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -151,13 +187,15 @@ export async function generateMetadata({
   const fallbackContent = ABOUT_CONTENT[locale] || ABOUT_CONTENT.de;
   const cmsContent = await getAboutPageCmsContent(locale);
   const tContent = mergeAboutContent(fallbackContent, cmsContent);
-  return {
+
+  return buildPublicPageMetadata({
+    locale,
+    path: ABOUT_PAGE_PATH,
     title: tContent.metaTitle,
     description: tContent.metaDescription,
-    alternates: {
-      canonical: `/${locale}/ueber-uns`,
-    },
-  };
+    image: ABOUT_OG_IMAGE,
+    imageAlt: tContent.hero.titlePrefix,
+  });
 }
 
 export default async function AboutPage({
@@ -179,9 +217,14 @@ export default async function AboutPage({
   const tContent = mergeAboutContent(fallbackContent, aboutCms);
   const pageLabels = mergeAboutPageLabels(fallbackLabels, aboutCms);
   const structureLabels = ABOUT_STRUCTURE_LABELS[locale] ?? ABOUT_STRUCTURE_LABELS.de;
+  const jsonLd = buildAboutPageJsonLd(locale, tContent);
 
   return (
     <div className={`flex min-h-screen flex-col bg-[#F7F1E8] ${isRtl ? 'rtl' : 'ltr'}`} dir={isRtl ? 'rtl' : 'ltr'}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+      />
       <Header content={globalCms?.header} />
 
       <main className="flex-grow pt-0">
