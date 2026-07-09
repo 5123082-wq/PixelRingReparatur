@@ -14,6 +14,14 @@ Startup reading rule:
 
 Latest checkpoint:
 
+- Date: 2026-07-09
+- Current stage: Public SEO metadata merge (объединение SEO-метаданных) implemented from the developer patch without overwriting current sitemap state: canonical URLs (канонические URL), hreflang alternates (языковые альтернативы), OpenGraph/Twitter previews (превью ссылок), and safe JSON-LD structured data (структурированные данные) were added to key public pages while `/impressum` (обязательные сведения о компании) and `/privacy` (политика конфиденциальности) stayed in `sitemap.xml` (карта сайта).
+- Next action: Deploy and verify production Search Console / rendered HTML (проверка HTML как видит Google) for `/de/ueber-uns`, `/ru/referenzen`, `/de/leistungen`, `/de/business`, and `/de/probleme-loesungen`.
+
+- Date: 2026-07-07
+- Current stage: Completed the first staged security refactor: portal claim links (ссылки активации портала) ignore request `Origin` header (заголовок источника запроса), claim access (доступ по ссылке активации) is bound to an existing valid customer e-mail when present, and DB-backed tests (тесты, работающие с базой данных) now require explicit disposable-test-DB guards.
+- Next action: Continue the staged refactoring/security audit with the next approved item, likely attachment upload hardening (усиление загрузки файлов) or cleanup of existing lint warnings (предупреждения линтера).
+
 - Date: 2026-07-06
 - Current stage: Converted the `/[locale]/leistungen/werbeanlagen-reinigung` (страница очистки рекламных конструкций) post-hero visual strip from a cautious before/after-style proof note into a finished service examples block across DE, EN, RU, TR, PL, and AR; all cards and the CTA now link to `/referenzen#gallery` (галерея примеров работ).
 - Next action: Owner visually verifies the updated block on `/de/leistungen/werbeanlagen-reinigung` and decides whether reference-page URL filters should be added later.

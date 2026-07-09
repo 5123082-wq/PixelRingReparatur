@@ -27,6 +27,7 @@ export type PortalClaimContext =
       locale: string;
       publicRequestNumber: string;
       prefillEmail: string | null;
+      customerEmail: string | null;
       customerPhone: string | null;
       expiresAt: string;
     }
@@ -68,39 +69,19 @@ function addMinutes(now: Date, minutes: number): Date {
 }
 
 function buildClaimUrl(input: {
-  origin?: string | null;
   locale?: string | null;
   token: string;
 }): string {
   const locale = normalizePortalLocale(input.locale);
-  const path = `/${locale}/portal/claim?token=${encodeURIComponent(input.token)}`;
-
-  if (input.origin) {
-    try {
-      return new URL(path, input.origin).toString();
-    } catch {
-      // Fall through to configured site URL.
-    }
-  }
 
   return buildLocaleUrl(locale, `/portal/claim?token=${encodeURIComponent(input.token)}`);
 }
 
 export function buildPortalVerificationUrl(input: {
-  origin?: string | null;
   locale?: string | null;
   token: string;
 }): string {
   const locale = normalizePortalLocale(input.locale);
-  const path = `/${locale}/portal/claim/verify?token=${encodeURIComponent(input.token)}`;
-
-  if (input.origin) {
-    try {
-      return new URL(path, input.origin).toString();
-    } catch {
-      // Fall through to configured site URL.
-    }
-  }
 
   return buildLocaleUrl(locale, `/portal/claim/verify?token=${encodeURIComponent(input.token)}`);
 }
@@ -183,7 +164,6 @@ export async function createPortalClaimLink(
   input: {
     caseId: string;
     locale?: string | null;
-    origin?: string | null;
     createdByAdminSessionId?: string | null;
     now?: Date;
   }
@@ -236,7 +216,7 @@ export async function createPortalClaimLink(
   });
 
   return {
-    url: buildClaimUrl({ origin: input.origin, locale, token }),
+    url: buildClaimUrl({ locale, token }),
     expiresAt,
     publicRequestNumber: caseRecord.publicRequestNumber,
   };
@@ -266,6 +246,7 @@ export async function getPortalClaimContext(
         select: {
           id: true,
           publicRequestNumber: true,
+          customerEmail: true,
           customerPhone: true,
         },
       },
@@ -296,6 +277,7 @@ export async function getPortalClaimContext(
     locale: normalizePortalLocale(claim.locale),
     publicRequestNumber: claim.case.publicRequestNumber,
     prefillEmail: claim.prefillEmail,
+    customerEmail: claim.case.customerEmail,
     customerPhone: claim.case.customerPhone,
     expiresAt: claim.expiresAt.toISOString(),
   };
@@ -306,7 +288,6 @@ export async function createPortalEmailVerification(
   input: {
     claimToken: string;
     email: string;
-    origin?: string | null;
     now?: Date;
   }
 ): Promise<{
@@ -365,7 +346,6 @@ export async function createPortalEmailVerification(
   return {
     email,
     verificationUrl: buildPortalVerificationUrl({
-      origin: input.origin,
       locale: claim.locale,
       token,
     }),

@@ -10,9 +10,11 @@ import HeroBreadcrumbs from '@/components/common/HeroBreadcrumbs';
 import SectionEyebrow from '@/components/common/SectionEyebrow';
 import BusinessShowcase from '@/components/sections/BusinessShowcase';
 import BusinessReportDemoButton from '@/components/business/BusinessReportDemoButton';
+import { buildPublicPageMetadata } from '@/lib/seo';
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
 const BUSINESS_PRESENTATION_HREF = '/downloads/pixelring-business-presentation.pdf';
+const BUSINESS_PAGE_PATH = '/business';
 const BUSINESS_BREADCRUMB_LABELS: Record<Locale, { home: string; page: string }> = {
   de: {
     home: 'Home',
@@ -636,14 +638,17 @@ export async function generateMetadata({
   const tContent = CONTENT[locale] || CONTENT.de;
 
   const cms = await getBusinessPageCmsContent(locale);
+  const title = cms?.hero?.title || tContent.metaTitle;
+  const description = cms?.hero?.description || tContent.metaDescription;
   
-  return {
-    title: cms?.hero?.title || tContent.metaTitle,
-    description: cms?.hero?.description || tContent.metaDescription,
-    alternates: {
-      canonical: `/${locale}/business`,
-    },
-  };
+  return buildPublicPageMetadata({
+    locale,
+    path: BUSINESS_PAGE_PATH,
+    title,
+    description,
+    image: cms?.hero?.image || tContent.heroImage,
+    imageAlt: cms?.hero?.imageAlt || cms?.hero?.title || tContent.heroTitle,
+  });
 }
 
 export default async function BusinessPage({

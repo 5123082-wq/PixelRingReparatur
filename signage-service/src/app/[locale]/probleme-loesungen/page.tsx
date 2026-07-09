@@ -18,6 +18,7 @@ import {
   getPublishedSymptomArticles,
 } from "@/lib/cms/articles";
 import { flattenArticleSelfRepairTips } from "@/lib/cms/article-self-repair";
+import { buildPublicPageMetadata } from "@/lib/seo";
 
 /**
  * Maps CmsArticle.slug (set in the DB / Admin) to the card `id` used in this page.
@@ -38,6 +39,9 @@ const SLUG_TO_PROBLEM_ID: Record<string, string> = {
   "shaky-sign": "loose-sign",
   "urgent-repair": "urgent",
 };
+
+const PROBLEME_LOESUNGEN_PAGE_PATH = "/probleme-loesungen";
+const PROBLEME_LOESUNGEN_OG_IMAGE = "/images/references/circuit-repair.webp";
 
 const CARD_CAUSE_TEXT_BY_LOCALE_AND_SLUG: Record<string, string> = {
   "ru:flicking":
@@ -1178,13 +1182,14 @@ export async function generateMetadata({
   const { locale } = await params;
   const content = getContent(locale);
 
-  return {
+  return buildPublicPageMetadata({
+    locale,
+    path: PROBLEME_LOESUNGEN_PAGE_PATH,
     title: content.metaTitle,
     description: content.metaDescription,
-    alternates: {
-      canonical: `/${locale}/probleme-loesungen`,
-    },
-  };
+    image: PROBLEME_LOESUNGEN_OG_IMAGE,
+    imageAlt: content.heroTitle,
+  });
 }
 
 export default async function ProblemeLoesungenPage({

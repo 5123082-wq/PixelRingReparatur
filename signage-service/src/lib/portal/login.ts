@@ -94,6 +94,35 @@ function normalizeEmailCode(value: string): string {
   return value.replace(/[\s-]+/g, '').trim();
 }
 
+function getPortalClaimBoundEmail(input: {
+  prefillEmail?: string | null;
+  customerEmail?: string | null;
+}): { email: string | null; hasInvalidEmailBoundary: boolean } {
+  const candidates = [input.prefillEmail, input.customerEmail]
+    .map((value) => (value ? normalizePortalEmail(value) : ''))
+    .filter(Boolean);
+  const validEmail = candidates.find(isLikelyPortalEmail);
+
+  return {
+    email: validEmail ?? null,
+    hasInvalidEmailBoundary: candidates.length > 0 && !validEmail,
+  };
+}
+
+function isPortalClaimEmailAllowed(input: {
+  email: string;
+  prefillEmail?: string | null;
+  customerEmail?: string | null;
+}): boolean {
+  const boundEmail = getPortalClaimBoundEmail(input);
+
+  if (boundEmail.hasInvalidEmailBoundary) {
+    return false;
+  }
+
+  return !boundEmail.email || normalizePortalEmail(input.email) === boundEmail.email;
+}
+
 function hashEmailCode(input: {
   code: string;
   emailNormalized: string;
@@ -312,6 +341,16 @@ async function createCodeForEligibleEmail(
       return { ok: false, reason: 'invalid_claim', email };
     }
 
+    if (
+      !isPortalClaimEmailAllowed({
+        email,
+        prefillEmail: claim.prefillEmail,
+        customerEmail: claim.customerEmail,
+      })
+    ) {
+      return { ok: false, reason: 'not_eligible', email };
+    }
+
     claimData = {
       claimLinkId: claim.claimLinkId,
       caseId: claim.caseId,
@@ -523,6 +562,7 @@ export async function completePortalPasswordCode(
           select: {
             id: true,
             locale: true,
+            prefillEmail: true,
             consumedAt: true,
             revokedAt: true,
             expiresAt: true,
@@ -562,6 +602,18 @@ export async function completePortalPasswordCode(
         codeRecord.claimLink.revokedAt ||
         codeRecord.claimLink.expiresAt <= now
       )
+    ) {
+      return;
+    }
+
+    if (
+      input.purpose === 'CLAIM_ACCESS' &&
+      codeRecord.claimLink &&
+      !isPortalClaimEmailAllowed({
+        email: codeRecord.emailNormalized,
+        prefillEmail: codeRecord.claimLink.prefillEmail,
+        customerEmail: codeRecord.case?.customerEmail,
+      })
     ) {
       return;
     }
@@ -734,12 +786,24 @@ export async function grantPortalClaimAccessToSessionUser(
     return { ok: false, reason: 'invalid_or_expired' };
   }
 
+  const email = normalizePortalEmail(input.email);
+
+  if (
+    !isPortalClaimEmailAllowed({
+      email,
+      prefillEmail: claim.prefillEmail,
+      customerEmail: claim.customerEmail,
+    })
+  ) {
+    return { ok: false, reason: 'invalid_or_expired' };
+  }
+
   await db.$transaction(async (tx) => {
     await tx.portalClaimLink.update({
       where: { id: claim.claimLinkId },
       data: {
         consumedAt: now,
-        requestedEmail: normalizePortalEmail(input.email),
+        requestedEmail: email,
       },
       select: { id: true },
     });

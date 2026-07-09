@@ -281,7 +281,6 @@ export async function createWebsiteRequest(
     const portalClaimLink = await createPortalClaimLink(tx, {
       caseId: createdCase.id,
       locale: input.locale,
-      origin: input.origin,
       now,
     });
 

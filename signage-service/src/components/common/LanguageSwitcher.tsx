@@ -2,11 +2,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocale } from 'next-intl';
-import { useRouter, usePathname } from '@/i18n/routing';
+import { Link, usePathname } from '@/i18n/routing';
 
 const LanguageSwitcher = () => {
   const locale = useLocale();
-  const router = useRouter();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -19,11 +18,6 @@ const LanguageSwitcher = () => {
     { code: 'pl', name: 'PL' },
     { code: 'ar', name: 'AR' },
   ] as const;
-
-  const handleLocaleChange = (nextLocale: (typeof languages)[number]['code']) => {
-    router.replace(pathname, { locale: nextLocale });
-    setIsOpen(false);
-  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -59,9 +53,13 @@ const LanguageSwitcher = () => {
         <div className="pr-nav-glass pr-nav-glass-floating absolute z-[60] mt-2 w-24 rounded-2xl border py-2 ltr:right-0 rtl:left-0 animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="flex flex-col">
             {languages.map((lang) => (
-              <button
+              <Link
                 key={lang.code}
-                onClick={() => handleLocaleChange(lang.code)}
+                href={pathname}
+                locale={lang.code}
+                hrefLang={lang.code}
+                onClick={() => setIsOpen(false)}
+                aria-current={locale === lang.code ? 'true' : undefined}
                 className={`px-4 py-2 text-start text-[14px] font-medium transition-colors ${
                   locale === lang.code
                     ? 'text-[#B8643E]'
@@ -69,7 +67,7 @@ const LanguageSwitcher = () => {
                 }`}
               >
                 {lang.name}
-              </button>
+              </Link>
             ))}
           </div>
         </div>

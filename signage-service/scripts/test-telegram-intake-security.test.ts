@@ -146,13 +146,14 @@ test('telegram secure intake returns portal claim link without requiring email',
     resolve(__dirname, '../src/lib/telegram-intake.ts'),
     'utf8'
   );
+  const claimLinkIndex = intakeSource.indexOf('const portalClaimLink = await createPortalClaimLink(tx, {');
+  const claimLinkBlock = intakeSource.slice(claimLinkIndex, intakeSource.indexOf('});', claimLinkIndex) + 3);
 
   assert.ok(intakeSource.includes("import { createPortalClaimLink } from './portal/claim';"));
-  assert.ok(intakeSource.includes('const portalClaimLink = await createPortalClaimLink(tx, {'));
-  assert.ok(intakeSource.includes('origin: input.origin'));
+  assert.notEqual(claimLinkIndex, -1);
+  assert.equal(claimLinkBlock.includes('origin'), false);
   assert.ok(intakeSource.includes('portalClaimUrl: portalClaimLink.url'));
   assert.ok(intakeSource.includes('portalClaimExpiresAt: portalClaimLink.expiresAt.toISOString()'));
-  assert.ok(routeSource.includes("origin: request.headers.get('origin') || request.nextUrl.origin"));
   assert.equal(routeSource.includes('if (!token || !email || !message) {'), false);
 });
 
@@ -207,9 +208,11 @@ test('telegram secure form submits optional split email and phone fields', () =>
 
   assert.ok(formSource.includes("const [email, setEmail] = useState('');"));
   assert.ok(formSource.includes("const [phone, setPhone] = useState('');"));
-  assert.ok(formSource.includes("formData.set('email', email);"));
-  assert.ok(formSource.includes("formData.set('phone', phone);"));
-  assert.ok(formSource.includes("if (email.trim() || phone.trim()) {"));
+  assert.ok(formSource.includes("const cleanEmail = email.trim();"));
+  assert.ok(formSource.includes("const cleanPhone = phone.trim();"));
+  assert.ok(formSource.includes("formData.set('email', cleanEmail);"));
+  assert.ok(formSource.includes("formData.set('phone', cleanPhone);"));
+  assert.ok(formSource.includes("if (cleanEmail || cleanPhone) {"));
   assert.equal(formSource.includes("const [contact, setContact] = useState('');"), false);
   assert.equal(formSource.includes('placeholder={copy.contact}'), false);
   assert.equal(formSource.includes('required\n          value={email}'), false);

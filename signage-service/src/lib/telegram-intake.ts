@@ -352,7 +352,6 @@ export async function submitTelegramIntake(
     const portalClaimLink = await createPortalClaimLink(tx, {
       caseId: link.caseId,
       locale,
-      origin: input.origin,
       now,
     });
 
