@@ -1,6 +1,6 @@
 'use client';
 
-import { Link } from '@/i18n/routing';
+import { Link, usePathname } from '@/i18n/routing';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 import ServiceActionButton from '../common/ServiceActionButton';
 
@@ -25,13 +25,20 @@ export default function HeaderActions({
   onOpenChat: () => void;
   onToggleMenu: (openServices: boolean) => void;
 }) {
+  const pathname = usePathname();
+  const isAccountStatusActive =
+    pathname === accountStatusHref || pathname.startsWith(`${accountStatusHref}/`);
+
   return (
     <div className="flex shrink-0 items-center gap-2 sm:gap-3">
       <LanguageSwitcher />
 
       <Link
         href={accountStatusHref}
-        className="hidden shrink-0 lg:inline-flex whitespace-nowrap px-4 py-2.5 border border-[#D9C7BA] text-[#6C5B50] hover:text-[#B8643E] hover:border-[#B8643E] text-[15px] font-medium rounded-full transition-colors"
+        aria-current={isAccountStatusActive ? 'page' : undefined}
+        className={`pr-header-control hidden shrink-0 whitespace-nowrap rounded-full border px-4 py-2.5 text-[15px] font-medium text-[#414B59] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]/35 lg:inline-flex ${
+          isAccountStatusActive ? 'pr-header-control-active' : ''
+        }`}
       >
         {accountStatusLabel}
       </Link>

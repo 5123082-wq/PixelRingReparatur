@@ -39,8 +39,8 @@ export default function MobileNav({
   }
 
   return (
-    <div className="lg:hidden fixed inset-x-0 bottom-0 top-[80px] bg-white z-[9999] overflow-y-auto flex flex-col">
-      <nav className="flex flex-col p-8 gap-8 min-h-full bg-white">
+    <div className="fixed inset-x-0 bottom-0 top-[80px] z-[9999] flex flex-col overflow-y-auto bg-[#F8F6F2] lg:hidden">
+      <nav className="flex min-h-full flex-col gap-8 bg-[#F8F6F2] p-8">
         <div className="flex flex-col gap-2">
           {navLinks.map((link) => {
             const isActive = activeNavHref === link.href;
@@ -94,7 +94,7 @@ export default function MobileNav({
                         transition={{ duration: 0.2, ease: 'easeInOut' }}
                         className="overflow-hidden"
                       >
-                        <div className="pr-nav-glass pr-nav-glass-floating mt-2 grid gap-1 rounded-2xl border p-2">
+                        <div className="pr-nav-panel-surface mt-2 grid gap-1 rounded-2xl border p-2">
                           {servicesMenuLinks.map((item) => {
                             const isMenuItemActive = isExactNavPath(pathname, item.href);
 

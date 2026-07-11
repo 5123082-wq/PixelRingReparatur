@@ -18,30 +18,157 @@ body {
   font-family: var(--font-inter, 'Inter', sans-serif);
 }
 
-.pr-nav-glass {
-  background: rgba(238, 243, 251, 0.65);
-  border-color: rgba(231, 221, 211, 0.84);
+.pr-header-surface,
+.pr-nav-panel-surface {
+  background: linear-gradient(
+    180deg,
+    rgba(248, 250, 255, 0.78) 0%,
+    rgba(238, 243, 251, 0.7) 100%
+  );
+  border-color: rgba(185, 194, 207, 0.46);
+  -webkit-backdrop-filter: blur(22px) saturate(138%) brightness(1.03);
+  backdrop-filter: blur(22px) saturate(138%) brightness(1.03);
+  color: #132033;
+}
+
+.pr-header-surface {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.64),
+    0 14px 32px -24px rgba(14, 26, 43, 0.38);
+}
+
+.pr-header-control {
+  background: rgba(255, 255, 255, 0.58);
+  border-color: rgba(19, 32, 51, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 4px 16px -12px rgba(14, 26, 43, 0.28);
+}
+
+.pr-header-control:hover,
+.pr-header-control:focus-visible,
+.pr-header-control-open {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(184, 100, 62, 0.72);
+  color: #91492f;
+}
+
+.pr-header-control-active {
+  background: rgba(241, 225, 215, 0.76);
+  border-color: rgba(19, 32, 51, 0.1);
   box-shadow: none;
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
+  color: #132033;
 }
 
-.pr-nav-glass-accent {
-  background: rgba(238, 243, 251, 0.65);
-  border-color: rgba(231, 221, 211, 0.78);
+.pr-header-control-active:hover,
+.pr-header-control-active:focus-visible {
+  background: rgba(241, 225, 215, 0.86);
+  border-color: rgba(184, 100, 62, 0.72);
+  color: #91492f;
+}
+
+.pr-nav-panel-surface {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.64),
+    0 18px 42px -24px rgba(14, 26, 43, 0.3);
+}
+
+.pr-header-separator {
+  border-color: rgba(84, 96, 114, 0.2);
+}
+
+.pr-header-nav-item {
+  background: rgba(255, 255, 255, 0.26);
+  box-shadow: inset 0 0 0 1px rgba(19, 32, 51, 0.07);
+  color: #263446;
+}
+
+.pr-header-nav-item:hover,
+.pr-header-nav-item:focus-visible,
+.pr-header-nav-item-open {
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: inset 0 0 0 1px rgba(184, 100, 62, 0.72);
+  color: #91492f;
+}
+
+.pr-header-nav-item-active {
+  background: rgba(241, 225, 215, 0.76);
+  box-shadow: inset 0 0 0 1px rgba(19, 32, 51, 0.07);
+  color: #132033;
+}
+
+.pr-header-nav-item-active:hover,
+.pr-header-nav-item-active:focus-visible {
+  background: rgba(241, 225, 215, 0.86);
+  box-shadow: inset 0 0 0 1px rgba(184, 100, 62, 0.72);
+  color: #91492f;
+}
+
+.pr-header-glass-item {
+  background: rgba(255, 255, 255, 0.56);
+  border-color: rgba(19, 32, 51, 0.1);
+  color: #2f3b4b;
+}
+
+.pr-header-glass-item:hover,
+.pr-header-glass-item:focus-visible {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(184, 100, 62, 0.72);
+  color: #91492f;
+}
+
+.pr-header-glass-item-active {
+  background: rgba(241, 225, 215, 0.82);
+  border-color: rgba(19, 32, 51, 0.1);
   box-shadow: none;
+  color: #132033;
 }
 
-.pr-nav-glass-floating {
-  background: #f4f6fc !important;
-  box-shadow: 0 10px 30px -10px rgba(14, 26, 43, 0.18), 0 1px 3px rgba(14, 26, 43, 0.06) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+.pr-header-glass-item-active:hover,
+.pr-header-glass-item-active:focus-visible {
+  background: rgba(241, 225, 215, 0.9);
+  border-color: rgba(184, 100, 62, 0.72);
+  color: #91492f;
 }
 
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .pr-nav-glass {
-    background: #eef3fb;
+.pr-header-dropdown-item {
+  box-shadow: inset 0 0 0 1px transparent;
+  color: #4b5563;
+}
+
+.pr-header-dropdown-item:hover,
+.pr-header-dropdown-item:focus-visible {
+  background: rgba(255, 255, 255, 0.64);
+  box-shadow: inset 0 0 0 1px rgba(184, 100, 62, 0.72);
+  color: #91492f;
+}
+
+.pr-header-dropdown-item-active {
+  background: rgba(241, 225, 215, 0.76);
+  box-shadow: none;
+  color: #132033;
+}
+
+.pr-header-dropdown-item-active:hover,
+.pr-header-dropdown-item-active:focus-visible {
+  background: rgba(241, 225, 215, 0.86);
+  box-shadow: inset 0 0 0 1px rgba(184, 100, 62, 0.72);
+  color: #91492f;
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .pr-header-surface,
+  .pr-nav-panel-surface {
+    background: rgba(244, 247, 252, 0.98);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .pr-header-surface,
+  .pr-nav-panel-surface {
+    background: rgba(244, 247, 252, 0.97);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
 
@@ -167,6 +294,15 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .pr-header-surface *,
+  .pr-header-surface *::before,
+  .pr-header-surface *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+
   .metric-fill,
   .references-marquee,
   .references-type-line,

@@ -57,8 +57,8 @@ const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
     <section className="relative w-full bg-[#0E1A2B] py-16 md:py-18 overflow-hidden">
       {/* Background decorations */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] right-[-10%] h-[min(520px,80vw)] w-[min(520px,80vw)] rounded-full bg-[#B8643E]/10 blur-[120px]" />
-        <div className="absolute bottom-[-10%] left-[-10%] h-[min(460px,72vw)] w-[min(460px,72vw)] rounded-full bg-white/5 blur-[100px]" />
+        <div className="absolute top-[-10%] right-[-10%] h-[min(520px,80vw)] w-[min(520px,80vw)] rounded-full bg-[radial-gradient(circle,rgba(184,100,62,0.12)_0%,rgba(184,100,62,0.055)_42%,transparent_74%)]" />
+        <div className="absolute bottom-[-10%] left-[-10%] h-[min(460px,72vw)] w-[min(460px,72vw)] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0.025)_44%,transparent_76%)]" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
@@ -87,7 +87,7 @@ const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
               </p>
             </div>
 
-            <div className="min-w-0 rounded-[24px] border border-white/14 bg-white/[0.075] p-2.5 shadow-2xl shadow-black/15 backdrop-blur-md">
+            <div className="min-w-0 rounded-[24px] border border-white/14 bg-[#253142]/90 p-2.5 shadow-2xl shadow-black/15">
               <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[20px] lg:aspect-[21/9]">
                 <CmsImage
                   src={TRUST_VISUAL_SRC}
@@ -117,10 +117,10 @@ const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
             {stats.map((stat, idx) => (
               <div
                 key={idx}
-                className={`group relative min-h-[190px] overflow-hidden rounded-[22px] border p-4 shadow-[0_18px_44px_rgba(0,0,0,0.12)] backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-white/22 hover:bg-white/[0.105] hover:shadow-xl
+                className={`group relative min-h-[190px] overflow-hidden rounded-[22px] border p-4 shadow-[0_18px_44px_rgba(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-0.5 hover:border-white/22 hover:bg-[#2A3545] hover:shadow-xl
                   ${idx === 0
-                    ? 'border-[#B8643E]/34 bg-white/[0.09] ring-1 ring-[#B8643E]/18'
-                    : 'border-white/12 bg-white/[0.07]'}`}
+                    ? 'border-[#B8643E]/34 bg-[#293442] ring-1 ring-[#B8643E]/18'
+                    : 'border-white/12 bg-[#222E3E]'}`}
               >
                 <div className="relative z-10 flex h-full min-w-0 flex-col justify-between gap-4">
                   <div className="flex min-w-0 flex-col gap-2.5">
@@ -153,7 +153,7 @@ const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
             ))}
           </div>
 
-          <div className="grid gap-3 rounded-[24px] border border-white/[0.14] bg-white/[0.075] p-5 shadow-[0_18px_44px_rgba(0,0,0,0.12)] backdrop-blur-md md:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] md:items-center md:gap-7 md:p-6">
+          <div className="grid gap-3 rounded-[24px] border border-white/[0.14] bg-[#222E3E] p-5 shadow-[0_18px_44px_rgba(0,0,0,0.12)] md:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] md:items-center md:gap-7 md:p-6">
             <h3 className="min-w-0 text-[22px] font-black leading-[1.12] tracking-[0] text-white md:text-[25px]">
               {antiTitle}
             </h3>

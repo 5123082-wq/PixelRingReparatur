@@ -1,372 +1,259 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Link } from '@/i18n/routing';
-import type { NavLink, NavMenuLink } from './Header.types';
+import type { HeaderLocale, NavLink, NavMenuLink } from './Header.types';
 import { isExactNavPath } from './headerNavUtils';
 
-type DesktopNavMode = 'full' | 'floating';
+const NAV_EASE = [0.22, 1, 0.36, 1] as const;
 
-function DesktopNavLink({
-  link,
-  isActive,
-  pathname,
-  menuLinks,
-  isMenuOpen = false,
-  onMenuOpen,
-  onMenuClose,
-  mode = 'full',
-}: {
-  link: NavLink;
-  isActive: boolean;
-  pathname: string;
-  menuLinks?: NavMenuLink[];
-  isMenuOpen?: boolean;
-  onMenuOpen?: () => void;
-  onMenuClose?: () => void;
-  mode?: DesktopNavMode;
-}) {
-  const hasMenu = Boolean(menuLinks?.length);
-  const triggerClassName = `relative inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[15px] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]/40 ${
-    isActive
-      ? 'font-semibold text-[#0E1A2B]'
-      : 'font-medium text-[#72665D] hover:bg-white/24 hover:text-[#B8643E] focus-visible:bg-white/24'
-  }`;
+const ALL_SERVICES_LABELS: Record<string, string> = {
+  de: 'Alle Leistungen ansehen',
+  en: 'View all services',
+  ru: 'Все услуги',
+  tr: 'Tüm hizmetleri gör',
+  pl: 'Wszystkie usługi',
+  ar: 'عرض كل الخدمات',
+};
 
-  const triggerContent = (
-    <>
-      {isActive && (
-        <motion.span
-          className="pr-nav-glass-accent absolute inset-0 rounded-full border"
-          transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-        />
-      )}
-      <span className="relative z-10">{link.name}</span>
-      {hasMenu && (
-        <svg
-          className={`relative z-10 h-3.5 w-3.5 text-[#8C7A6E] transition-transform duration-200 ${
-            isMenuOpen ? 'rotate-180' : ''
-          }`}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.3"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-        </svg>
-      )}
-    </>
-  );
+const NAVIGATION_LABELS: Record<string, string> = {
+  de: 'Navigation',
+  en: 'Navigation',
+  ru: 'Навигация',
+  tr: 'Gezinme',
+  pl: 'Nawigacja',
+  ar: 'التنقل',
+};
 
-  return (
-    <div
-      className="relative"
-      onPointerEnter={() => {
-        if (hasMenu) {
-          onMenuOpen?.();
-        }
-      }}
-      onPointerLeave={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
-          onMenuClose?.();
-        }
-      }}
-      onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) {
-          onMenuClose?.();
-        }
-      }}
-    >
-      {hasMenu ? (
-        <Link
-          href={link.href}
-          aria-current={isActive ? 'page' : undefined}
-          aria-haspopup="menu"
-          aria-expanded={isMenuOpen}
-          onFocus={onMenuOpen}
-          className={triggerClassName}
-        >
-          {triggerContent}
-        </Link>
-      ) : (
-        <Link
-          href={link.href}
-          aria-current={isActive ? 'page' : undefined}
-          className={triggerClassName}
-        >
-          {triggerContent}
-        </Link>
-      )}
-
-      {hasMenu && isMenuOpen && (
-        <div
-          role="menu"
-          aria-label={link.name}
-          className={`pr-nav-glass pr-nav-glass-floating absolute left-1/2 top-full z-[70] w-[330px] -translate-x-1/2 rounded-[18px] border p-2 ${
-            mode === 'floating' ? 'mt-4' : 'mt-3'
-          }`}
-        >
-          <div className="absolute -top-5 left-0 h-5 w-full" />
-          {menuLinks!.map((item) => {
-            const isMenuItemActive = isExactNavPath(pathname, item.href);
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                role="menuitem"
-                aria-current={isMenuItemActive ? 'page' : undefined}
-                className={`flex items-center justify-between gap-3 rounded-[12px] px-3.5 py-3 text-[14px] font-semibold transition-colors ${
-                  isMenuItemActive
-                    ? 'text-[#0E1A2B]'
-                    : 'text-[#6F625A] hover:text-[#B8643E] focus-visible:text-[#B8643E] focus-visible:outline-none'
-                }`}
-              >
-                <span>{item.label}</span>
-                <svg
-                  className="h-3.5 w-3.5 shrink-0 text-[#B8643E]"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
+function getAllServicesLabel(locale: HeaderLocale) {
+  return ALL_SERVICES_LABELS[locale] ?? ALL_SERVICES_LABELS.de;
 }
 
-function DesktopNavItems({
-  navLinks,
-  activeNavHref,
-  pathname,
-  servicesMenuLinks,
-  mode,
-}: {
-  navLinks: NavLink[];
-  activeNavHref: string | null;
-  pathname: string;
-  servicesMenuLinks: NavMenuLink[];
-  mode: DesktopNavMode;
-}) {
-  const [openMenuHref, setOpenMenuHref] = useState<string | null>(null);
-
-  return (
-    <>
-      {navLinks.map((link) => {
-        const menuLinks = link.href === '/leistungen' ? servicesMenuLinks : undefined;
-
-        return (
-          <DesktopNavLink
-            key={`${mode}-${link.name}`}
-            link={link}
-            isActive={activeNavHref === link.href}
-            pathname={pathname}
-            menuLinks={menuLinks}
-            isMenuOpen={openMenuHref === link.href}
-            onMenuOpen={menuLinks ? () => setOpenMenuHref(link.href) : undefined}
-            onMenuClose={menuLinks ? () => setOpenMenuHref(null) : undefined}
-            mode={mode}
-          />
-        );
-      })}
-    </>
-  );
+function getNavigationLabel(locale: HeaderLocale) {
+  return NAVIGATION_LABELS[locale] ?? NAVIGATION_LABELS.de;
 }
 
 export default function DesktopNav({
-  isScrolled,
+  isVisible,
+  locale,
   navLinks,
   activeNavHref,
   pathname,
   servicesMenuLinks,
 }: {
-  isScrolled: boolean;
+  isVisible: boolean;
+  locale: HeaderLocale;
   navLinks: NavLink[];
   activeNavHref: string | null;
   pathname: string;
   servicesMenuLinks: NavMenuLink[];
 }) {
-  const [isDesktopNavOpen, setIsDesktopNavOpen] = useState(false);
-  const desktopNavAreaRef = useRef<HTMLDivElement>(null);
-  const desktopNavCloseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isFloatingNavOpen = isScrolled && isDesktopNavOpen;
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const servicesCloseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const shouldReduceMotion = useReducedMotion();
+  const navigationLabel = getNavigationLabel(locale);
+  const allServicesLabel = getAllServicesLabel(locale);
 
-  const clearDesktopNavCloseTimeout = useCallback(() => {
-    if (desktopNavCloseTimeoutRef.current) {
-      clearTimeout(desktopNavCloseTimeoutRef.current);
-      desktopNavCloseTimeoutRef.current = null;
+  const clearServicesCloseTimeout = useCallback(() => {
+    if (servicesCloseTimeoutRef.current) {
+      clearTimeout(servicesCloseTimeoutRef.current);
+      servicesCloseTimeoutRef.current = null;
     }
   }, []);
 
-  const openDesktopNav = useCallback(() => {
-    clearDesktopNavCloseTimeout();
-    setIsDesktopNavOpen(true);
-  }, [clearDesktopNavCloseTimeout]);
+  const openServices = useCallback(() => {
+    clearServicesCloseTimeout();
+    setIsServicesOpen(true);
+  }, [clearServicesCloseTimeout]);
 
-  const scheduleDesktopNavClose = useCallback(() => {
-    clearDesktopNavCloseTimeout();
-    desktopNavCloseTimeoutRef.current = setTimeout(() => {
-      setIsDesktopNavOpen(false);
-      desktopNavCloseTimeoutRef.current = null;
-    }, 160);
-  }, [clearDesktopNavCloseTimeout]);
+  const closeServices = useCallback(() => {
+    clearServicesCloseTimeout();
+    setIsServicesOpen(false);
+  }, [clearServicesCloseTimeout]);
 
-  useEffect(() => {
-    return () => {
-      clearDesktopNavCloseTimeout();
-    };
-  }, [clearDesktopNavCloseTimeout]);
-
-  useEffect(() => {
-    if (!isScrolled) {
-      clearDesktopNavCloseTimeout();
-    }
-  }, [clearDesktopNavCloseTimeout, isScrolled]);
+  const scheduleServicesClose = useCallback(() => {
+    clearServicesCloseTimeout();
+    servicesCloseTimeoutRef.current = setTimeout(() => {
+      setIsServicesOpen(false);
+      servicesCloseTimeoutRef.current = null;
+    }, 180);
+  }, [clearServicesCloseTimeout]);
 
   useEffect(() => {
-    if (!isFloatingNavOpen) {
+    return clearServicesCloseTimeout;
+  }, [clearServicesCloseTimeout]);
+
+  useEffect(() => {
+    if (!isServicesOpen) {
       return;
     }
 
-    const containsPoint = (element: Element, x: number, y: number) => {
-      const rect = element.getBoundingClientRect();
-      return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        closeServices();
+      }
     };
 
-    const handlePointerMove = (event: PointerEvent) => {
-      const navArea = desktopNavAreaRef.current;
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [closeServices, isServicesOpen]);
 
-      if (!navArea) {
-        scheduleDesktopNavClose();
-        return;
-      }
-
-      const isInsideNavArea = containsPoint(navArea, event.clientX, event.clientY);
-      const isInsideLocalMenu = Array.from(navArea.querySelectorAll('[role="menu"]')).some((menu) =>
-        containsPoint(menu, event.clientX, event.clientY)
-      );
-
-      if (isInsideNavArea || isInsideLocalMenu) {
-        clearDesktopNavCloseTimeout();
-        return;
-      }
-
-      scheduleDesktopNavClose();
-    };
-
-    window.addEventListener('pointermove', handlePointerMove);
-    return () => window.removeEventListener('pointermove', handlePointerMove);
-  }, [clearDesktopNavCloseTimeout, isFloatingNavOpen, scheduleDesktopNavClose]);
+  const secondaryTransition = shouldReduceMotion
+    ? { duration: 0 }
+    : { duration: 0.22, ease: NAV_EASE };
+  const servicesTransition = shouldReduceMotion
+    ? { duration: 0 }
+    : { duration: 0.2, ease: NAV_EASE };
 
   return (
-    <div className="hidden lg:block relative">
-      <AnimatePresence initial={false}>
-        {!isScrolled && (
-          <motion.nav
-            key="desktop-nav-row"
-            initial={false}
-            animate={{ height: 48, opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.24, ease: 'easeInOut' }}
-            className="relative z-30 flex items-center justify-center gap-5 overflow-visible border-t border-[#E7DDD3]/70 py-1.5"
+    <div
+      className="relative hidden lg:block"
+      onPointerEnter={clearServicesCloseTimeout}
+      onPointerLeave={scheduleServicesClose}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          scheduleServicesClose();
+        }
+      }}
+    >
+      <AnimatePresence initial={false} onExitComplete={closeServices}>
+        {isVisible && (
+          <motion.div
+            key="desktop-secondary-navigation"
+            initial={shouldReduceMotion ? false : { height: 0, y: -48 }}
+            animate={{ height: 'auto', y: 0 }}
+            exit={shouldReduceMotion ? { height: 0 } : { height: 0, y: -48 }}
+            transition={secondaryTransition}
+            className="overflow-hidden"
           >
-            <DesktopNavItems
-              navLinks={navLinks}
-              activeNavHref={activeNavHref}
-              pathname={pathname}
-              servicesMenuLinks={servicesMenuLinks}
-              mode="full"
-            />
-          </motion.nav>
-        )}
-      </AnimatePresence>
+            <nav aria-label={navigationLabel} className="pr-header-separator border-t">
+              <ul className="flex h-12 items-center justify-center gap-x-2 xl:gap-x-5">
+                {navLinks.map((link) => {
+                  const isActive = activeNavHref === link.href;
+                  const isServices = link.href === '/leistungen';
+                  const itemStateClassName = isActive
+                    ? 'pr-header-nav-item-active font-semibold'
+                    : isServices && isServicesOpen
+                      ? 'pr-header-nav-item-open font-semibold'
+                      : 'font-medium';
+                  const itemClassName = `pr-header-nav-item relative inline-flex min-h-9 min-w-0 items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-center text-[14px] leading-tight transition-colors duration-200 xl:px-3.5 xl:text-[15px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]/45 ${itemStateClassName}`;
 
-      <AnimatePresence>
-        {isScrolled && (
-          <div className="absolute inset-x-0 top-0 flex justify-center pointer-events-none">
-            <motion.div
-              key="scrolled-notch"
-              ref={desktopNavAreaRef}
-              onMouseEnter={openDesktopNav}
-              onMouseLeave={(event) => {
-                if (!event.currentTarget.contains(document.activeElement)) {
-                  scheduleDesktopNavClose();
-                }
-              }}
-              onBlur={(event) => {
-                if (!event.currentTarget.contains(event.relatedTarget)) {
-                  scheduleDesktopNavClose();
-                }
-              }}
-              className={`pointer-events-auto ${isFloatingNavOpen ? 'w-[920px]' : 'w-[192px]'} flex h-[86px] justify-center`}
-            >
-              <motion.div
-                onMouseEnter={openDesktopNav}
-                onMouseMove={openDesktopNav}
-                initial={{ y: -40, opacity: 0 }}
-                animate={{
-                  y: 0,
-                  opacity: 1,
-                  width: isFloatingNavOpen ? 880 : 192,
-                  height: isFloatingNavOpen ? 56 : 24,
-                }}
-                exit={{ y: -40, opacity: 0 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 35 }}
-                className={`pr-nav-glass relative flex items-center justify-center border border-t-0 rounded-b-[20px] outline-none transition-[background-color,border-color,box-shadow] duration-200 group ${
-                  isFloatingNavOpen ? 'overflow-visible pr-nav-glass-floating' : 'overflow-hidden'
-                }`}
-              >
-                {!isFloatingNavOpen && (
-                  <motion.div
-                    key="chevron"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="flex items-center justify-center"
-                  >
-                    <svg
-                      className="h-4 w-4 text-[#72665D] transition-transform duration-300 group-hover:translate-y-0.5"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                    </svg>
-                  </motion.div>
-                )}
+                  return (
+                    <li key={link.href} className="flex min-w-0">
+                      {isServices ? (
+                        <button
+                          type="button"
+                          aria-expanded={isServicesOpen}
+                          aria-controls="desktop-services-navigation"
+                          onPointerEnter={openServices}
+                          onFocus={openServices}
+                          onClick={openServices}
+                          className={itemClassName}
+                        >
+                          <span className="min-w-0">{link.name}</span>
+                          <svg
+                            className={`h-3.5 w-3.5 shrink-0 text-[#8C7A6E] transition-transform duration-200 ${
+                              isServicesOpen ? 'rotate-180' : ''
+                            }`}
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.3"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                          </svg>
+                        </button>
+                      ) : (
+                        <Link
+                          href={link.href}
+                          aria-current={isActive ? 'page' : undefined}
+                          onPointerEnter={closeServices}
+                          onFocus={closeServices}
+                          className={itemClassName}
+                        >
+                          <span className="min-w-0">{link.name}</span>
+                        </Link>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
 
-                <AnimatePresence mode="wait">
-                  {isFloatingNavOpen && (
-                    <motion.nav
-                      key="expanded-links"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1, transition: { duration: 0.15, delay: 0.1 } }}
-                      exit={{ opacity: 0, transition: { duration: 0.06 } }}
-                      className="flex items-center justify-center gap-5 px-8"
-                    >
-                      <DesktopNavItems
-                        navLinks={navLinks}
-                        activeNavHref={activeNavHref}
-                        pathname={pathname}
-                        servicesMenuLinks={servicesMenuLinks}
-                        mode="floating"
-                      />
-                    </motion.nav>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            </motion.div>
-          </div>
+            <AnimatePresence initial={false}>
+              {isServicesOpen && (
+                <motion.nav
+                  id="desktop-services-navigation"
+                  key="desktop-services-navigation"
+                  aria-label={navLinks.find((link) => link.href === '/leistungen')?.name ?? 'Leistungen'}
+                  initial={shouldReduceMotion ? false : { height: 0, y: -12 }}
+                  animate={{ height: 'auto', y: 0 }}
+                  exit={shouldReduceMotion ? { height: 0 } : { height: 0, y: -12 }}
+                  transition={servicesTransition}
+                  className="pr-header-separator overflow-hidden border-t"
+                >
+                  <ul className="mx-auto grid max-w-[1040px] grid-cols-2 gap-2 px-4 pb-4 pt-3 xl:grid-cols-3">
+                    {servicesMenuLinks.map((item) => {
+                      const isMenuItemActive = isExactNavPath(pathname, item.href);
+
+                      return (
+                        <li key={item.href} className="min-w-0">
+                          <Link
+                            href={item.href}
+                            aria-current={isMenuItemActive ? 'page' : undefined}
+                            onClick={closeServices}
+                            className={`pr-header-glass-item flex min-h-12 items-center justify-between gap-3 rounded-[12px] border px-3.5 py-2.5 text-[14px] font-semibold leading-snug transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]/40 ${
+                              isMenuItemActive
+                                ? 'pr-header-glass-item-active'
+                                : ''
+                            }`}
+                          >
+                            <span className="min-w-0 flex-1">{item.label}</span>
+                            <svg
+                              className="h-3.5 w-3.5 shrink-0 text-[#B8643E] rtl:rotate-180"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.2"
+                              viewBox="0 0 24 24"
+                              aria-hidden="true"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                    <li className="pr-header-separator col-span-2 mt-1 border-t pt-2 xl:col-span-3">
+                      <Link
+                        href="/leistungen"
+                        onClick={closeServices}
+                        aria-current={isExactNavPath(pathname, '/leistungen') ? 'page' : undefined}
+                        className={`pr-header-nav-item flex min-h-10 items-center justify-center gap-2 rounded-[12px] px-3.5 py-2 text-[14px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]/40 ${
+                          isExactNavPath(pathname, '/leistungen')
+                            ? 'pr-header-nav-item-active'
+                            : ''
+                        }`}
+                      >
+                        <span>{allServicesLabel}</span>
+                        <svg
+                          className="h-3.5 w-3.5 shrink-0 rtl:rotate-180"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.2"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </Link>
+                    </li>
+                  </ul>
+                </motion.nav>
+              )}
+            </AnimatePresence>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

@@ -360,7 +360,7 @@ export default function ChatRequestConfirmCard({
       setRequestNumber(data.publicRequestNumber);
       setPortalClaimUrl(data.portalClaimUrl ?? '');
       setDone(true);
-      trackGoogleAdsLeadConversion();
+      trackGoogleAdsLeadConversion(data.publicRequestNumber);
       onSuccess?.(data.publicRequestNumber);
     } catch (err) {
       setError(err instanceof Error ? err.message : copy.sendError);

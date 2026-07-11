@@ -122,7 +122,7 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
     height: number;
     paths: Record<string, string>;
   }>({ width: 0, height: 0, paths: {} });
-  const isInView = useInView(containerRef, { once: true, amount: 0.1 });
+  const isInView = useInView(containerRef, { once: false, amount: 0.1 });
   // Static isometric angle (final settled pose from previous scroll-based motion)
   const rotateX = 64;
   const mapRotateZ = -18;
@@ -243,7 +243,7 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
       style={{ perspective: "2500px" }}
     >
       {/* Background Ambience */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1500px] h-[1500px] bg-[#C86E4A05] rounded-full blur-[180px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 h-[1500px] w-[1500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(200,110,74,0.035)_0%,rgba(200,110,74,0.016)_38%,transparent_72%)] pointer-events-none" />
 
       {/* OVERLAY: Floating Title Card (Top Left) */}
       <motion.div 
@@ -312,7 +312,7 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
                     strokeLinecap="round"
                     strokeOpacity={0.34}
                     initial={{ pathLength: 0, opacity: 0 }}
-                    animate={isInView ? { pathLength: 1, opacity: 1 } : {}}
+                    animate={isInView ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 }}
                     transition={{
                       duration: 0.8,
                       delay: route.delay,
@@ -330,12 +330,12 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
               rotateX,
               rotateZ: mapRotateZ,
               transformStyle: "preserve-3d",
-              willChange: "transform"
+              willChange: isInView ? "transform" : "auto"
             }}
             className="absolute inset-0 z-10 flex items-center justify-center"
           >
             {/* Floor Shadow */}
-            <div className="absolute inset-x-0 bottom-0 top-1/2 bg-[#0E1A2B03] blur-[100px] translate-y-24 -translate-z-[100px] scale-x-[1.3] scale-y-[0.7] rounded-full pointer-events-none" />
+            <div className="absolute inset-x-0 bottom-0 top-1/2 translate-y-24 -translate-z-[100px] scale-x-[1.3] scale-y-[0.7] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(14,26,43,0.025)_0%,rgba(14,26,43,0.012)_42%,transparent_76%)] pointer-events-none" />
 
             <div className="relative h-full w-full" style={{ transformStyle: "preserve-3d" }}>
               {/* Main Matrix Surface */}
@@ -362,7 +362,7 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
               rotateX,
               rotateZ: cityRotateZ,
               transformStyle: "preserve-3d",
-              willChange: "transform"
+              willChange: isInView ? "transform" : "auto"
             }}
             className="absolute inset-0 z-30 flex items-center justify-center"
           >
@@ -378,7 +378,7 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
                   <motion.g
                     key={`node-perf-${city.id}`}
                     initial={{ opacity: 0, scale: 0 }}
-                    animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                    animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0 }}
                     transition={{ delay: 1.2 + idx * 0.08, duration: 0.6 }}
                   >
                     {city.isHQ ? (
@@ -400,7 +400,7 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
                           stroke="#C86E4A"
                           strokeWidth="0.22"
                           initial={{ opacity: 0, r: CITY_NODE_RADIUS }}
-                          animate={isInView ? { opacity: 1, r: CITY_NODE_RING_RADIUS } : {}}
+                          animate={isInView ? { opacity: 1, r: CITY_NODE_RING_RADIUS } : { opacity: 0, r: CITY_NODE_RADIUS }}
                           transition={{
                             delay: getRouteArrivalDelay(cities.filter(c => !c.isHQ).findIndex(c => c.id === city.id)),
                             duration: 0.45,
@@ -416,8 +416,8 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
                         r="4"
                         fill="#C86E4A"
                         fillOpacity="0.15"
-                        animate={{ r: [3, 5, 3], opacity: [0.1, 0.2, 0.1] }}
-                        transition={{ duration: 3, repeat: Infinity }}
+                        animate={isInView ? { r: [3, 5, 3], opacity: [0.1, 0.2, 0.1] } : { r: 3, opacity: 0.1 }}
+                        transition={isInView ? { duration: 3, repeat: Infinity } : { duration: 0.2 }}
                       />
                     )}
                   </motion.g>
@@ -440,7 +440,7 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
                       x: city.labelOffsetX || "-50%",
                       y: city.labelOffsetY || "-180%",
                       transformStyle: "preserve-3d",
-                      willChange: "transform"
+                      willChange: isInView ? "transform" : "auto"
                     }}
                   >
                     <div className="flex flex-col items-center gap-0.5 whitespace-nowrap">
@@ -448,10 +448,9 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
                         className={`text-[7px] sm:text-[8px] md:text-[12px] font-bold drop-shadow-sm ${city.isHQ ? 'text-[#0E1A2B]' : 'text-[#0E1A2BB0]'}`}
                         style={{
                           fontFamily: 'Inter, sans-serif',
-                          background: 'rgba(255, 255, 255, 0.35)',
+                          background: 'rgba(255, 255, 255, 0.72)',
                           padding: '1px 4px',
                           borderRadius: '4px',
-                          backdropFilter: 'blur(3px)',
                           border: '1px solid rgba(255, 255, 255, 0.2)'
                         }}
                       >

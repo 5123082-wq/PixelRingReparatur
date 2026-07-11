@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
@@ -24,6 +24,89 @@ type WorkCardConfig = {
   videoLabel?: string;
   serviceHref: string;
 };
+
+function ViewportVideo({
+  src,
+  poster,
+  label,
+  className,
+}: {
+  src: string;
+  poster: string;
+  label: string;
+  className: string;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
+  const [shouldPlay, setShouldPlay] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (typeof IntersectionObserver === 'undefined') {
+      const fallbackTimer = window.setTimeout(() => {
+        setShouldLoad(true);
+        setShouldPlay(true);
+      }, 0);
+      return () => window.clearTimeout(fallbackTimer);
+    }
+
+    const loadObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setShouldLoad(true);
+          loadObserver.disconnect();
+        }
+      },
+      { rootMargin: '400px 0px', threshold: 0 }
+    );
+    const playbackObserver = new IntersectionObserver(
+      ([entry]) => setShouldPlay(Boolean(entry?.isIntersecting && entry.intersectionRatio >= 0.2)),
+      { threshold: [0, 0.2, 0.6] }
+    );
+
+    loadObserver.observe(video);
+    playbackObserver.observe(video);
+
+    return () => {
+      loadObserver.disconnect();
+      playbackObserver.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (shouldLoad) {
+      videoRef.current?.load();
+    }
+  }, [shouldLoad]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !shouldLoad) return;
+
+    if (shouldPlay) {
+      void video.play().catch(() => undefined);
+    } else {
+      video.pause();
+    }
+  }, [shouldLoad, shouldPlay]);
+
+  return (
+    <video
+      ref={videoRef}
+      aria-label={label}
+      loop
+      muted
+      playsInline
+      poster={poster}
+      preload={shouldLoad ? 'metadata' : 'none'}
+      className={className}
+    >
+      <source src={shouldLoad ? src : undefined} type="video/mp4" />
+    </video>
+  );
+}
 
 const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
   de: [
@@ -71,12 +154,15 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       serviceHref: '/leistungen/lichtwerbung-led-modernisierung',
     },
     {
-      title: 'Demontage & Rückbau',
-      tag: 'Demontage',
-      description: 'Koordinierter Rückbau, Entfernung und Vorbereitung alter Werbeanlagen.',
-      image: '/images/ex-dismantling.png',
-      imageAlt: 'Sicherer Rückbau einer alten Fassadenwerbung mit Kran und Arbeitsbühne',
-      serviceHref: '/leistungen/montage-demontage-werbeanlagen',
+      title: 'Markisenreinigung & Aufarbeitung',
+      tag: 'Sichtbarer Werbeauftritt',
+      description: 'Reinigung, Pflege und Aufarbeitung von Markisen an Cafés, Restaurants und Geschäftsfassaden – für einen gepflegten, sichtbaren Auftritt.',
+      image: '/images/ex-awning-cleaning-poster.jpg',
+      imageAlt: 'Fachkraft reinigt eine Markise vor einem Café an einer Geschäftsstraße',
+      video: '/videos/ex-awning-cleaning.mp4',
+      poster: '/images/ex-awning-cleaning-poster.jpg',
+      videoLabel: 'Video einer fachgerechten Markisenreinigung vor einem Café',
+      serviceHref: '/leistungen/werbeanlagen-reinigung',
     },
   ],
   en: [
@@ -124,12 +210,15 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       serviceHref: '/leistungen/lichtwerbung-led-modernisierung',
     },
     {
-      title: 'Dismantling & Removal',
-      tag: 'Dismantling',
-      description: 'Coordinated removal, dismantling, and preparation of old signage structures.',
-      image: '/images/ex-dismantling.png',
-      imageAlt: 'Safe removal of an old facade sign with crane and work platform',
-      serviceHref: '/leistungen/montage-demontage-werbeanlagen',
+      title: 'Awning Cleaning & Restoration',
+      tag: 'Visible Brand Presence',
+      description: 'Cleaning, care, and restoration of awnings at cafés, restaurants, and business facades—for a well-kept, visible presence.',
+      image: '/images/ex-awning-cleaning-poster.jpg',
+      imageAlt: 'Specialist cleaning an awning in front of a café on a business street',
+      video: '/videos/ex-awning-cleaning.mp4',
+      poster: '/images/ex-awning-cleaning-poster.jpg',
+      videoLabel: 'Video of professional awning cleaning in front of a café',
+      serviceHref: '/leistungen/werbeanlagen-reinigung',
     },
   ],
   ru: [
@@ -177,12 +266,15 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       serviceHref: '/leistungen/lichtwerbung-led-modernisierung',
     },
     {
-      title: 'Демонтаж и вывоз',
-      tag: 'Демонтаж',
-      description: 'Организованный демонтаж, удаление и подготовка места после старых вывесок.',
-      image: '/images/ex-dismantling.png',
-      imageAlt: 'Безопасный демонтаж старой фасадной вывески с краном и рабочей платформой',
-      serviceHref: '/leistungen/montage-demontage-werbeanlagen',
+      title: 'Чистка и восстановление маркиз',
+      tag: 'Видимый рекламный облик',
+      description: 'Чистка, уход и восстановление маркиз для кафе, ресторанов и коммерческих фасадов — чтобы объект выглядел ухоженно и заметно.',
+      image: '/images/ex-awning-cleaning-poster.jpg',
+      imageAlt: 'Специалист очищает маркизу перед кафе на городской улице',
+      video: '/videos/ex-awning-cleaning.mp4',
+      poster: '/images/ex-awning-cleaning-poster.jpg',
+      videoLabel: 'Видео профессиональной чистки маркизы перед кафе',
+      serviceHref: '/leistungen/werbeanlagen-reinigung',
     },
   ],
   tr: [
@@ -230,12 +322,15 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       serviceHref: '/leistungen/lichtwerbung-led-modernisierung',
     },
     {
-      title: 'Söküm ve Kaldırma',
-      tag: 'Söküm',
-      description: 'Eski tabela yapılarının koordineli sökümü, kaldırılması ve alanın hazırlanması.',
-      image: '/images/ex-dismantling.png',
-      imageAlt: 'Vinç ve çalışma platformuyla eski cephe tabelasının güvenli sökümü',
-      serviceHref: '/leistungen/montage-demontage-werbeanlagen',
+      title: 'Tente Temizliği ve Yenileme',
+      tag: 'Görünür Marka İmajı',
+      description: 'Kafe, restoran ve iş yeri cephelerindeki tentelerin temizliği, bakımı ve yenilenmesi — bakımlı ve görünür bir marka imajı için.',
+      image: '/images/ex-awning-cleaning-poster.jpg',
+      imageAlt: 'Uzman, şehir caddesindeki bir kafenin önünde tente temizliği yapıyor',
+      video: '/videos/ex-awning-cleaning.mp4',
+      poster: '/images/ex-awning-cleaning-poster.jpg',
+      videoLabel: 'Bir kafenin önünde profesyonel tente temizliği videosu',
+      serviceHref: '/leistungen/werbeanlagen-reinigung',
     },
   ],
   pl: [
@@ -283,12 +378,15 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       serviceHref: '/leistungen/lichtwerbung-led-modernisierung',
     },
     {
-      title: 'Demontaż i usunięcie',
-      tag: 'Demontaż',
-      description: 'Koordynowany demontaż, usunięcie i przygotowanie miejsca po starych szyldach.',
-      image: '/images/ex-dismantling.png',
-      imageAlt: 'Bezpieczny demontaż starego szyldu fasadowego przy użyciu dźwigu i platformy',
-      serviceHref: '/leistungen/montage-demontage-werbeanlagen',
+      title: 'Czyszczenie i renowacja markiz',
+      tag: 'Widoczny wizerunek marki',
+      description: 'Czyszczenie, pielęgnacja i renowacja markiz przy kawiarniach, restauracjach i fasadach firmowych — dla zadbanego, widocznego wizerunku.',
+      image: '/images/ex-awning-cleaning-poster.jpg',
+      imageAlt: 'Specjalista czyści markizę przed kawiarnią przy miejskiej ulicy',
+      video: '/videos/ex-awning-cleaning.mp4',
+      poster: '/images/ex-awning-cleaning-poster.jpg',
+      videoLabel: 'Film z profesjonalnego czyszczenia markizy przed kawiarnią',
+      serviceHref: '/leistungen/werbeanlagen-reinigung',
     },
   ],
   ar: [
@@ -336,12 +434,15 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       serviceHref: '/leistungen/lichtwerbung-led-modernisierung',
     },
     {
-      title: 'التفكيك والإزالة',
-      tag: 'تفكيك',
-      description: 'تنسيق تفكيك وإزالة وتجهيز الموقع بعد اللوحات الإعلانية القديمة.',
-      image: '/images/ex-dismantling.png',
-      imageAlt: 'تفكيك آمن للوحة واجهة قديمة باستخدام رافعة ومنصة عمل',
-      serviceHref: '/leistungen/montage-demontage-werbeanlagen',
+      title: 'تنظيف وتجديد المظلات',
+      tag: 'حضور بصري واضح للعلامة التجارية',
+      description: 'تنظيف وصيانة وتجديد المظلات للمقاهي والمطاعم وواجهات الأعمال — لمظهر مهني واضح وجذاب.',
+      image: '/images/ex-awning-cleaning-poster.jpg',
+      imageAlt: 'مختص ينظف مظلة أمام مقهى في شارع تجاري',
+      video: '/videos/ex-awning-cleaning.mp4',
+      poster: '/images/ex-awning-cleaning-poster.jpg',
+      videoLabel: 'فيديو لتنظيف احترافي لمظلة أمام مقهى',
+      serviceHref: '/leistungen/werbeanlagen-reinigung',
     },
   ],
 };
@@ -359,24 +460,29 @@ const LEGACY_WORK_TITLES = new Set([
   'Signage Design',
   'Lightbox Installation',
   'Safe Dismantling',
+  'Demontage & Rückbau',
+  'Dismantling & Removal',
   'Монтаж LED',
   'Ремонт неона',
   'Высотный сервис',
   'Дизайн вывесок',
   'Световые короба',
   'Безопасный демонтаж',
+  'Демонтаж и вывоз',
   'LED Montajı',
   'Neon Onarımı',
   'Yüksek Bakım',
   'Tabela Tasarımı',
   'Işıklı Kutu Montajı',
   'Güvenli Söküm',
+  'Söküm ve Kaldırma',
   'Montaż LED',
   'Naprawa neonów',
   'Konserwacja wysokościowa',
   'Projektowanie szyldów',
   'Montaż kasetonu',
   'Bezpieczny demontaż',
+  'Demontaż i usunięcie',
   'Bezpieчный demontaż',
   'تركيب LED',
   'إصلاح النيون',
@@ -384,6 +490,7 @@ const LEGACY_WORK_TITLES = new Set([
   'تصميم اللافتات',
   'تركيب صناديق مضيئة',
   'تفكيك آمن',
+  'التفكيك والإزالة',
 ]);
 
 function isLocale(value: string): value is Locale {
@@ -573,18 +680,12 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
                 className="group relative h-[520px] w-full overflow-hidden rounded-[28px] bg-white shadow-[0_18px_44px_rgba(15,23,42,0.08)] ring-1 ring-black/[0.04] transition duration-500 hover:-translate-y-0.5 hover:shadow-[0_22px_56px_rgba(15,23,42,0.12)] sm:h-[560px] lg:h-[590px]"
               >
                 {item.video ? (
-                  <video
-                    aria-label={item.videoLabel || item.imageAlt}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
+                  <ViewportVideo
+                    src={item.video}
+                    label={item.videoLabel || item.imageAlt}
                     poster={item.poster || item.image}
-                    preload="metadata"
                     className="pointer-events-none absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  >
-                    <source src={item.video} type="video/mp4" />
-                  </video>
+                  />
                 ) : (
                   <Image
                     src={item.image}
