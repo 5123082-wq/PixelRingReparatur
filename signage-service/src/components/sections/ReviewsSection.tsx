@@ -146,19 +146,25 @@ const TypewriterQuote = ({ content, shouldAnimate }: { content: string; shouldAn
     
     if (isInView) {
       // Add a slight delay before typing starts for better effect
+      let interval: ReturnType<typeof setInterval> | null = null;
       const timeout = setTimeout(() => {
         let currentLength = 0;
-        const interval = setInterval(() => {
+        interval = setInterval(() => {
           currentLength++;
           setTypedChars(lastPart.slice(0, currentLength));
           if (currentLength >= lastPart.length) {
-            clearInterval(interval);
+            if (interval) {
+              clearInterval(interval);
+              interval = null;
+            }
             setIsFinished(true);
           }
         }, 40); // typing speed
-        return () => clearInterval(interval);
       }, 400);
-      return () => clearTimeout(timeout);
+      return () => {
+        clearTimeout(timeout);
+        if (interval) clearInterval(interval);
+      };
     }
   }, [isInView, lastPart, shouldAnimate]);
 

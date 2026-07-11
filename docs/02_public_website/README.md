@@ -42,6 +42,41 @@ Use this folder for:
 
 ## Progress Log
 
+* **Date:** 2026-07-10
+* **Current sprint/block:** Homepage Awning Service Card (карточка услуг по маркизам на главной странице)
+* **Done:** Replaced the former dismantling card with `Markisenreinigung & Aufarbeitung` (чистка и восстановление маркиз) across DE/EN/RU/TR/PL/AR, using owner-provided footage of a specialist cleaning a café awning. The card now links directly to `/leistungen/werbeanlagen-reinigung` (страница очистки рекламных конструкций).
+* **Performance:** Converted the 19 MB source `.MOV` file to an audio-free 1.1 MB web video and added a 206 KB `poster` (статичный кадр до запуска видео). The existing `IntersectionObserver` (контроль видимости браузером) workflow defers loading until the card approaches the viewport (видимая область экрана), plays only while visible, and pauses it outside the viewport.
+* **In progress:** Owner visual review of the crop, title wrapping, and playback on `/ru` (русская главная страница) and `/de` (немецкая главная страница).
+* **Next action:** Deploy after visual approval.
+* **Blockers/risks:** Browser automation was unavailable in the local environment; targeted ESLint (проверка кода), `git diff --check` (проверка формата изменений), production Next.js build (промышленная сборка Next.js), and an isolated production-server check of the new public media and RU/AR card markup passed.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/02_public_website/README.md`
+  - `signage-service/src/components/sections/ExcellenceCarousel.tsx`
+
+* **Date:** 2026-07-10
+* **Current sprint/block:** Unified Safari-Style Header Navigation (единая навигация шапки в стиле Safari)
+* **Done:** Replaced the morphing/floating desktop navigation (анимируемая/плавающая десктопная навигация) with one attached two-level header and integrated services grid (встроенная сетка услуг), applied one readable translucent material to all levels, and standardized every active/current navigation element (каждый активный элемент навигации) to a soft fill with the same neutral gray outline as inactive controls (мягкая заливка с такой же нейтральной серой окантовкой, как у неактивных), while the brand-colored outline appears only on hover/focus (фирменная рамка появляется только при наведении/фокусе).
+* **In progress:** Owner review in real Safari on iPhone and lower-power Mac hardware.
+* **Next action:** Confirm material density, scroll reveal/hide timing, and GPU smoothness (плавность графического процессора), then deploy after visual approval.
+* **Blockers/risks:** Local production checks passed; remaining risk is device-specific Safari compositing (сведение графических слоёв), while `prefers-reduced-transparency` (предпочтение уменьшенной прозрачности) and no-blur fallback (резерв без размытия) remain available.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `design-qa.md`
+  - `docs/02_public_website/README.md`
+  - `docs/02_public_website/public_website_progress_log.md`
+
+* **Date:** 2026-07-10
+* **Current sprint/block:** Homepage Scroll Performance (производительность прокрутки главной страницы)
+* **Done:** Removed expensive `backdrop-filter` (размытие фона) from the scrolled header/notch, replaced large decorative blur filters (фильтры размытия) with visually equivalent radial gradients (радиальные градиенты), stopped map animation outside the viewport (видимая область экрана), and made the work-card video load/play only near or inside the viewport (видимая область экрана).
+* **In progress:** Owner visual review on Safari/iPhone and lower-power hardware.
+* **Next action:** Compare the updated local homepage with production, then deploy after visual approval.
+* **Blockers/risks:** Main-thread timing is clean in the local desktop/mobile scroll tests; remaining device-specific risk is GPU compositing (сведение графических слоёв) behavior in Safari.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/02_public_website/README.md`
+  - `docs/02_public_website/public_website_progress_log.md`
+
 * **Date:** 2026-06-28
 * **Current sprint/block:** References `LED-Buchstaben` (объемные LED-буквы) card photo replacement
 * **Done:**

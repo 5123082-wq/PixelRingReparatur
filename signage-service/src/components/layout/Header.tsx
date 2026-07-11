@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/i18n/routing';
@@ -63,6 +63,9 @@ const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
   },
 };
 
+const DESKTOP_NAV_TOP_THRESHOLD = 24;
+const DESKTOP_NAV_DIRECTION_DELTA = 8;
+
 const Header = ({
   content,
   portalAccess,
@@ -77,7 +80,8 @@ const Header = ({
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isDesktopNavVisible, setIsDesktopNavVisible] = useState(true);
+  const scrollAnchorRef = useRef(0);
 
   const fallbackNavLinks = [
     { name: t('services'), href: '/leistungen' },
@@ -176,9 +180,27 @@ const Header = ({
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 24);
+    const handleScroll = () => {
+      const currentScrollY = Math.max(window.scrollY, 0);
 
-    handleScroll();
+      if (currentScrollY <= DESKTOP_NAV_TOP_THRESHOLD) {
+        scrollAnchorRef.current = currentScrollY;
+        setIsDesktopNavVisible(true);
+        return;
+      }
+
+      const scrollDelta = currentScrollY - scrollAnchorRef.current;
+
+      if (Math.abs(scrollDelta) < DESKTOP_NAV_DIRECTION_DELTA) {
+        return;
+      }
+
+      setIsDesktopNavVisible(scrollDelta < 0);
+      scrollAnchorRef.current = currentScrollY;
+    };
+
+    scrollAnchorRef.current = Math.max(window.scrollY, 0);
+    setIsDesktopNavVisible(scrollAnchorRef.current <= DESKTOP_NAV_TOP_THRESHOLD);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -186,9 +208,17 @@ const Header = ({
   return (
     <>
       <div className="h-[72px] lg:h-[120px] w-full shrink-0" />
-      <header className="pr-nav-glass fixed top-0 z-50 w-full border-b">
+      <header
+        className="pr-header-surface fixed top-0 z-50 w-full border-b"
+        data-secondary-nav-visible={isDesktopNavVisible}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex min-h-[72px] items-center justify-between gap-3">
+          <div
+            className="flex min-h-[72px] items-center justify-between gap-3"
+            onPointerEnter={() => setIsDesktopNavVisible(true)}
+            onMouseEnter={() => setIsDesktopNavVisible(true)}
+            onFocusCapture={() => setIsDesktopNavVisible(true)}
+          >
             <div className="flex min-w-0 items-center gap-2 sm:gap-3">
               <Link href="/" className="flex min-w-0 shrink items-center">
                 <Image
@@ -227,7 +257,9 @@ const Header = ({
           </div>
 
           <DesktopNav
-            isScrolled={isScrolled}
+            key={pathname}
+            isVisible={isDesktopNavVisible}
+            locale={locale as HeaderLocale}
             navLinks={navLinks}
             activeNavHref={activeNavHref}
             pathname={pathname}

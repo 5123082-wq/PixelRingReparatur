@@ -27,7 +27,7 @@ export function updateGoogleAdsConsent(consent: ConsentState) {
   });
 }
 
-export function trackGoogleAdsLeadConversion() {
+export function trackGoogleAdsLeadConversion(transactionId?: string) {
   if (
     typeof window === 'undefined' ||
     typeof window.gtag !== 'function' ||
@@ -42,5 +42,6 @@ export function trackGoogleAdsLeadConversion() {
     send_to: `${GOOGLE_ADS_ID}/${LEAD_CONVERSION_LABEL}`,
     value: 1.0,
     currency: 'EUR',
+    ...(transactionId?.trim() ? { transaction_id: transactionId.trim() } : {}),
   });
 }

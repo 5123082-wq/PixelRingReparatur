@@ -31,8 +31,8 @@ const FooterCTA = ({ content }: { content?: FooterCtaContent | null }) => {
       />
       
       {/* Decorative glows */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#B8643E]/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/4 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/4 pointer-events-none" />
+      <div className="absolute top-0 right-0 h-[500px] w-[500px] -translate-y-1/2 translate-x-1/4 rounded-full bg-[radial-gradient(circle,rgba(184,100,62,0.12)_0%,rgba(184,100,62,0.05)_42%,transparent_74%)] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 h-[400px] w-[400px] -translate-x-1/4 translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.07)_0%,rgba(59,130,246,0.025)_44%,transparent_76%)] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10 w-full">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center lg:items-stretch">
@@ -102,10 +102,10 @@ const FooterCTA = ({ content }: { content?: FooterCtaContent | null }) => {
           </div>
 
           {/* Right Column: Form Card */}
-          <div className="lg:col-span-8 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[40px] p-8 md:p-12 shadow-2xl relative overflow-hidden group/card">
+          <div className="lg:col-span-8 bg-[#182635] border border-white/10 rounded-[40px] p-8 md:p-12 shadow-2xl relative overflow-hidden group/card">
             {/* Glossy accent decoration */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-[#B8643E]/15 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none transition-all duration-500 group-hover/card:bg-[#B8643E]/20" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/10 rounded-full blur-[60px] translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+            <div className="absolute top-0 right-0 h-64 w-64 -translate-y-1/2 translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(184,100,62,0.18)_0%,rgba(184,100,62,0.07)_44%,transparent_74%)] pointer-events-none transition-opacity duration-500 group-hover/card:opacity-90" />
+            <div className="absolute bottom-0 left-0 h-48 w-48 -translate-x-1/2 translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.12)_0%,rgba(59,130,246,0.04)_44%,transparent_76%)] pointer-events-none" />
             
             <div className="flex flex-col gap-8 relative z-10">
               <div className="flex flex-col gap-3 ltr:text-left rtl:text-right">

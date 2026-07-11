@@ -14,6 +14,26 @@ Startup reading rule:
 
 Latest checkpoint:
 
+- Date: 2026-07-10
+- Current stage: Homepage card `Markisenreinigung & Aufarbeitung` (чистка и восстановление маркиз) now replaces the former dismantling card across DE/EN/RU/TR/PL/AR, uses an owner-provided, muted 12.5-second awning-service video, and routes to `/leistungen/werbeanlagen-reinigung` (страница очистки рекламных конструкций).
+- Next action: Owner visually verifies video framing, title wrapping, and playback on `/ru` (русская главная страница) and `/de` (немецкая главная страница) before deployment; targeted lint (проверка кода) and production build (промышленная сборка) passed.
+
+- Date: 2026-07-10
+- Current stage: Desktop header navigation (десктопная навигация шапки) is now one unified Safari-style translucent material (единый полупрозрачный материал в стиле Safari) across the 72 px top row, 48 px direction-aware navigation row, and integrated services grid (встроенная сетка услуг). Navigation controls have stronger contrast, all active/current navigation elements combine a soft fill with the same neutral gray outline as inactive controls (все активные элементы навигации сочетают мягкую заливку с такой же нейтральной серой окантовкой, как у неактивных), and the brand-colored outline appears only on hover/focus (фирменная рамка появляется только при наведении/фокусе), without width/scale morphing (изменение ширины/масштаба) or detached floating panels (отдельные плавающие панели).
+- Next action: Owner verifies the final material, scroll behavior, and GPU smoothness (плавность графического процессора) in real Safari on iPhone and a lower-power Mac before deployment; local production rendering, DE/RU/AR navigation, RTL (направление справа налево), active states, lint (проверка кода), and production build (промышленная сборка) are verified.
+
+- Date: 2026-07-10
+- Current stage: Homepage scroll performance (плавность прокрутки главной страницы) was optimized without changing the page structure: the scrolled header and attached navigation notch now use matte solid surfaces without `backdrop-filter` (размытие фона), large map/trust/footer blur layers were replaced with radial gradients (радиальные градиенты), and map/video activity is limited to the visible viewport (видимая область экрана).
+- Next action: Owner visually verifies the updated homepage on Safari/iPhone and a lower-power desktop before deployment; local desktop/mobile scrolling, navigation geometry, map composition, and production build are verified.
+
+- Date: 2026-07-10
+- Current stage: Desktop scrolled header navigation (свёрнутая навигация десктопной шапки) now uses one attached morphing glass notch (единая расширяющаяся стеклянная вкладка). `Leistungen` (услуги) expands as a 2x3 grid inside the same matte surface instead of a detached dropdown (отдельный выпадающий блок); the pointer path and a real click-through to `/de/leistungen/werbeanlagen-reparatur` (страница ремонта рекламных конструкций) were verified end to end.
+- Next action: Owner visually verifies motion and long-label locales RU/TR/PL/AR; the German open-menu, pointer-transfer, and service-selection flow is complete.
+
+- Date: 2026-07-09
+- Current stage: Desktop scrolled header menu (свёрнутое меню десктопной шапки) was reworked from a morphing glass notch (анимируемая glass-вкладка) into a solid popover/tray pattern (непрозрачная выезжающая панель): floating navigation (плавающая навигация), services dropdown (выпадающее меню услуг), language dropdown (переключатель языков), and mobile services submenu (мобильное подменю услуг) no longer use animated `backdrop-filter` (размытие фона).
+- Next action: Owner visually verifies the header menu behavior (поведение меню шапки) on local public pages, especially `/de`, `/de/status`, and long-label locales such as RU/TR/PL/AR.
+
 - Date: 2026-07-09
 - Current stage: Public SEO metadata merge (объединение SEO-метаданных) implemented from the developer patch without overwriting current sitemap state: canonical URLs (канонические URL), hreflang alternates (языковые альтернативы), OpenGraph/Twitter previews (превью ссылок), and safe JSON-LD structured data (структурированные данные) were added to key public pages while `/impressum` (обязательные сведения о компании) and `/privacy` (политика конфиденциальности) stayed in `sitemap.xml` (карта сайта).
 - Next action: Deploy and verify production Search Console / rendered HTML (проверка HTML как видит Google) for `/de/ueber-uns`, `/ru/referenzen`, `/de/leistungen`, `/de/business`, and `/de/probleme-loesungen`.

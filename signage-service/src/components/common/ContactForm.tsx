@@ -164,7 +164,7 @@ const ContactForm = ({
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
-      trackGoogleAdsLeadConversion();
+      trackGoogleAdsLeadConversion(data.publicRequestNumber);
 
       if (onSuccess) {
         setTimeout(() => {

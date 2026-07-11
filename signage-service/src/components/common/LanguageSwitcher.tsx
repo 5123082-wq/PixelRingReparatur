@@ -34,7 +34,9 @@ const LanguageSwitcher = () => {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="pr-nav-glass-accent flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[14px] font-bold text-[#72665D] transition-all hover:border-[#B8643E] hover:text-[#B8643E]"
+        className={`pr-header-control flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[14px] font-bold text-[#414B59] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]/35 ${
+          isOpen ? 'pr-header-control-open' : ''
+        }`}
         aria-haspopup="true"
         aria-expanded={isOpen}
       >
@@ -50,7 +52,7 @@ const LanguageSwitcher = () => {
       </button>
 
       {isOpen && (
-        <div className="pr-nav-glass pr-nav-glass-floating absolute z-[60] mt-2 w-24 rounded-2xl border py-2 ltr:right-0 rtl:left-0 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="pr-nav-panel-surface absolute z-[60] mt-2 w-24 rounded-2xl border p-2 ltr:right-0 rtl:left-0 animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="flex flex-col">
             {languages.map((lang) => (
               <Link
@@ -60,10 +62,10 @@ const LanguageSwitcher = () => {
                 hrefLang={lang.code}
                 onClick={() => setIsOpen(false)}
                 aria-current={locale === lang.code ? 'true' : undefined}
-                className={`px-4 py-2 text-start text-[14px] font-medium transition-colors ${
+                className={`pr-header-dropdown-item rounded-lg px-3 py-2 text-start text-[14px] font-medium transition-colors focus-visible:outline-none ${
                   locale === lang.code
-                    ? 'text-[#B8643E]'
-                    : 'text-[#72665D] hover:text-[#B8643E]'
+                    ? 'pr-header-dropdown-item-active font-semibold'
+                    : ''
                 }`}
               >
                 {lang.name}
