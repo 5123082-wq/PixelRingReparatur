@@ -2061,8 +2061,8 @@ export default async function ServiceDetailPage({ params }: PageProps) {
         ) : null}
 
         {content.problemLinks ? (
-          <section className="border-t border-[#E7DDD3] bg-[#FFFDF9] px-4 py-12 sm:px-6 sm:py-16">
-            <div className="mx-auto max-w-7xl">
+          <section className="border-t border-[#E7DDD3] bg-[#FFFDF9] py-12 sm:py-16">
+            <div className="pr-site-container">
               <div className="grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
                 <div className="text-start">
                   <SectionEyebrow className="mb-3">{content.problemLinks.eyebrow}</SectionEyebrow>
@@ -2099,8 +2099,8 @@ export default async function ServiceDetailPage({ params }: PageProps) {
           </section>
         ) : null}
 
-        <section className="border-t border-[#E7DDD3] bg-[#F7F1E8] px-4 py-14 sm:px-6 sm:py-20">
-          <div className="mx-auto max-w-7xl">
+        <section className="border-t border-[#E7DDD3] bg-[#F7F1E8] py-14 sm:py-20">
+          <div className="pr-site-container">
             <div className="grid gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(360px,0.88fr)] lg:items-end">
               <div className="max-w-4xl text-start">
                 <SectionEyebrow className="mb-3">{relatedLabels.next}</SectionEyebrow>
@@ -2129,8 +2129,8 @@ export default async function ServiceDetailPage({ params }: PageProps) {
           </div>
         </section>
 
-        <section className="bg-[#F8FAFC] px-4 py-14 sm:px-6 sm:py-20">
-          <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1fr)] lg:items-start">
+        <section className="bg-[#F8FAFC] py-14 sm:py-20">
+          <div className="pr-site-container grid gap-10 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1fr)] lg:items-start">
             <div>
               <h2 className="text-[32px] font-black leading-[1.1] tracking-[0] text-[#0E1A2B] sm:text-[44px]">
                 {content.checksTitle}
@@ -2150,8 +2150,8 @@ export default async function ServiceDetailPage({ params }: PageProps) {
           </div>
         </section>
 
-        <section className="bg-[#F7F1E8] px-4 py-14 sm:px-6 sm:py-20">
-          <div className="mx-auto max-w-7xl">
+        <section className="bg-[#F7F1E8] py-14 sm:py-20">
+          <div className="pr-site-container">
             <h2 className="text-[32px] font-black leading-[1.1] tracking-[0] text-[#0E1A2B] sm:text-[44px]">
               {content.processTitle}
             </h2>
@@ -2174,8 +2174,8 @@ export default async function ServiceDetailPage({ params }: PageProps) {
           </div>
         </section>
 
-        <section className="bg-white px-4 py-14 sm:px-6 sm:py-20">
-          <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)]">
+        <section className="bg-white py-14 sm:py-20">
+          <div className="pr-site-container grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)]">
             <div className="rounded-[26px] border border-[#D9C7BA] bg-[#F7F1E8] p-7">
               <h2 className="text-[30px] font-black leading-tight text-[#0E1A2B]">
                 {content.boundaryTitle}
@@ -2195,8 +2195,8 @@ export default async function ServiceDetailPage({ params }: PageProps) {
           </div>
         </section>
 
-        <section className="bg-[#F8FAFC] px-4 py-14 sm:px-6 sm:py-20">
-          <div className="mx-auto max-w-7xl">
+        <section className="bg-[#F8FAFC] py-14 sm:py-20">
+          <div className="pr-site-container">
             <h2 className="text-[32px] font-black leading-tight text-[#0E1A2B]">
               {content.faqTitle}
             </h2>
@@ -2214,8 +2214,8 @@ export default async function ServiceDetailPage({ params }: PageProps) {
         </section>
 
         {!content.nextStep ? (
-          <section className="bg-white px-4 py-14 sm:px-6 sm:py-20">
-            <div className="mx-auto max-w-7xl">
+          <section className="bg-white py-14 sm:py-20">
+            <div className="pr-site-container">
               <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <SectionEyebrow className="mb-5">{relatedLabels.title}</SectionEyebrow>

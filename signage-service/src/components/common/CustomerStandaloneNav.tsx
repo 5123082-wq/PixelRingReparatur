@@ -70,7 +70,7 @@ export default function CustomerStandaloneNav({
   return (
     <nav
       aria-label={copy.aria}
-      className={`mx-auto flex w-full max-w-6xl flex-col gap-3 border-b border-[#E2D6C8] pb-4 sm:flex-row sm:items-center sm:justify-between ${className}`}
+      className={`flex w-full flex-col gap-3 border-b border-[#E2D6C8] pb-4 sm:flex-row sm:items-center sm:justify-between ${className}`}
     >
       <Link
         href="/"

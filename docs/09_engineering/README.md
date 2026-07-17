@@ -5,6 +5,7 @@ Purpose: technical architecture, stack decisions, database, APIs, code rules, mi
 Current migrated documents:
 - `architecture_and_integrations.md`
 - `cms_public_content_audit_2026-05-21.md`
+- `dead_code_cleanup_audit_2026-07-14.md`
 
 Planned base documents:
 - `architecture_overview.md`

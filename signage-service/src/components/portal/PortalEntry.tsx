@@ -198,7 +198,8 @@ export default function PortalEntry({
   }
 
   return (
-    <main className="min-h-screen bg-[#F4EEE5] px-4 py-4 text-[#121826] sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-[#F4EEE5] text-[#121826]">
+      <div className="pr-site-container py-4">
       <CustomerStandaloneNav showPortal={false} />
       <section className="mx-auto grid min-h-[calc(100vh-104px)] w-full max-w-6xl content-center gap-6 py-6">
         <div className="rounded-[28px] border border-[#E4D8CA] bg-white p-6 shadow-2xl shadow-[#3E2715]/10 sm:p-8 lg:p-10">
@@ -411,6 +412,7 @@ export default function PortalEntry({
           </form>
         )}
       </section>
+      </div>
     </main>
   );
 }

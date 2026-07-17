@@ -29,7 +29,8 @@
     "services_led": "Illuminated signage & LED modernization",
     "services_audit": "Audit & diagnostics",
     "services_installation": "Installation & dismantling",
-    "services_branding": "Print products & branding"
+    "services_branding": "Print products & branding",
+    "services_illuminated_valance": "Illuminated awning valances"
   },
   "Footer": {
     "copyright": "© 2024 PixelRing Technical Atelier. All rights reserved.",
@@ -388,9 +389,10 @@
     "field_name_company": "Name and company (optional)",
     "field_issue_type": "Issue type (optional)",
     "issue_repair": "Repair",
-  "issue_installation": "Installation",
-  "issue_maintenance": "Maintenance",
-  "issue_cleaning": "Cleaning / care",
+    "issue_installation": "Installation",
+    "issue_maintenance": "Maintenance",
+    "issue_cleaning": "Cleaning / care",
+    "issue_illuminated_valance": "Illuminated awning valances",
     "field_location": "Address or location (optional)",
     "field_contact": "Email for the request",
     "field_email": "Email for the request",

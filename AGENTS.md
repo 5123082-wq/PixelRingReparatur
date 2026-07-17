@@ -53,6 +53,18 @@ Use concise, high-signal execution rules derived from Andrej Karpathy's guidance
 
 These rules must not override the collaboration rule, product guardrails, security constraints, or documentation process in this repository.
 
+## Exploration And Discovery
+
+For an explicit ideation, strategy, audit, or discovery request, the agent may perform read-only research beyond the immediate implementation scope and present non-binding alternatives.
+
+The agent must distinguish verified current state, hypotheses, and future proposals. Product, privacy, security, public-claim, and current-state boundaries still apply.
+
+Confirmation is required before mutations to code, documents, configuration, migrations, commits, deployments, or external actions — not before analysis, research, comparisons, or non-binding recommendations.
+
+The simplicity and surgical-change rules apply after an implementation option is selected. They do not suppress research, hypothesis generation, or materially adjacent opportunities.
+
+Discovery work does not create a development track or require a `PROGRESS.md` entry until the owner chooses an initiative or a repository change is made.
+
 ## Skill Reference
 
 For detailed operating guidance, use the shared skill document on demand:

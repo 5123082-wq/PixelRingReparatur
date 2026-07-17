@@ -19,8 +19,9 @@ const FAQSection = ({ content, titleClassName }: FAQSectionProps) => {
   }));
 
   return (
-    <section className="w-full bg-[#F9F6F2] py-24 px-6">
-      <div className="max-w-3xl mx-auto flex flex-col gap-12">
+    <section className="w-full bg-[#F9F6F2] py-24">
+      <div className="pr-site-container">
+        <div className="max-w-3xl mx-auto flex flex-col gap-12">
         <div className="flex flex-col items-center gap-4 text-center">
           <SectionEyebrow>FAQ</SectionEyebrow>
           <h2 className={headingClassName}>
@@ -66,6 +67,7 @@ const FAQSection = ({ content, titleClassName }: FAQSectionProps) => {
             </div>
             );
           })}
+        </div>
         </div>
       </div>
     </section>

@@ -29,7 +29,8 @@
     "services_led": "Reklama świetlna i modernizacja LED",
     "services_audit": "Audyt i diagnostyka",
     "services_installation": "Montaż i demontaż",
-    "services_branding": "Druk i branding"
+    "services_branding": "Druk i branding",
+    "services_illuminated_valance": "Podświetlane lambrekiny markiz"
   },
   "Footer": {
     "copyright": "© 2024 PixelRing Technical Atelier. Wszelkie prawa zastrzeżone.",
@@ -309,9 +310,10 @@
     "field_name_company": "Imię oraz firma (opcjonalnie)",
     "field_issue_type": "Typ problemu (opcjonalnie)",
     "issue_repair": "Naprawa",
-  "issue_installation": "Montaż",
-  "issue_maintenance": "Konserwacja",
-  "issue_cleaning": "Czyszczenie / pielęgnacja",
+    "issue_installation": "Montaż",
+    "issue_maintenance": "Konserwacja",
+    "issue_cleaning": "Czyszczenie / pielęgnacja",
+    "issue_illuminated_valance": "Podświetlane lambrekiny markiz",
     "field_location": "Adres lub lokalizacja (opcjonalnie)",
     "field_contact": "E-mail do zgłoszenia",
     "field_email": "E-mail do zgłoszenia",

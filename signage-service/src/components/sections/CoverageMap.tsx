@@ -250,13 +250,17 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
         initial={{ opacity: 0, x: -30 }}
         whileInView={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8, delay: 0.2 }}
-        className="absolute top-8 left-6 md:top-12 md:left-14 z-20 w-[calc(100%-48px)] md:w-auto md:max-w-[380px]"
+        className="pointer-events-none absolute inset-x-0 top-8 z-20 md:top-12"
       >
-        <div className="p-6 md:p-9 bg-gradient-to-br from-white/30 via-[#F7F1E8]/44 to-[#F7F1E8]/58 rounded-[28px] md:rounded-[44px] shadow-[inset_0_1px_0_rgba(255,255,255,0.38),0_16px_32px_rgba(0,0,0,0.02)] flex flex-col gap-4 md:gap-5">
-          <div className="flex flex-col gap-1.5">
-            <h2 className="text-[32px] font-extrabold leading-[1.1] tracking-[0] text-[#0E1A2B] md:text-[42px]">
-              {content?.title || ''}
-            </h2>
+        <div className="pr-site-container">
+          <div className="pointer-events-auto w-full md:max-w-[380px]">
+            <div className="p-6 md:p-9 bg-gradient-to-br from-white/30 via-[#F7F1E8]/44 to-[#F7F1E8]/58 rounded-[28px] md:rounded-[44px] shadow-[inset_0_1px_0_rgba(255,255,255,0.38),0_16px_32px_rgba(0,0,0,0.02)] flex flex-col gap-4 md:gap-5">
+              <div className="flex flex-col gap-1.5">
+                <h2 className="text-[32px] font-extrabold leading-[1.1] tracking-[0] text-[#0E1A2B] md:text-[42px]">
+                  {content?.title || ''}
+                </h2>
+              </div>
+            </div>
           </div>
         </div>
       </motion.div>
@@ -266,24 +270,28 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.4 }}
-        className="absolute bottom-6 left-6 right-6 md:bottom-10 md:left-14 md:right-14 z-20"
+        className="pointer-events-none absolute inset-x-0 bottom-6 z-20 md:bottom-10"
       >
-        <div className="flex flex-wrap lg:flex-nowrap items-center justify-between gap-4 md:gap-6 p-5 md:p-6 bg-gradient-to-br from-white/30 via-[#F7F1E8]/44 to-[#F7F1E8]/58 rounded-[32px] md:rounded-[40px] shadow-[inset_0_1px_0_rgba(255,255,255,0.38),0_12px_24px_rgba(0,0,0,0.02)]">
-          {[
-            { key: 'nationwide' },
-            { key: 'express' },
-            { key: 'guaranteed' },
-            { key: 'experts' }
-          ].map((item) => (
-            <div key={item.key} className="flex items-center gap-3 md:gap-4 flex-1 min-w-[150px] group">
-              <div className="w-10 h-10 md:w-11 md:h-11 rounded-[14px] bg-white/[0.15] shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform duration-500 border border-white/20">
-                {featureIcons[item.key]}
-              </div>
-              <span className="text-[12px] md:text-[14px] font-bold text-[#0E1A2B] leading-tight flex-1 opacity-80">
-                {t(`features.${item.key}`)}
-              </span>
+        <div className="pr-site-container">
+          <div className="pointer-events-auto w-full">
+            <div className="flex flex-wrap lg:flex-nowrap items-center justify-between gap-4 md:gap-6 p-5 md:p-6 bg-gradient-to-br from-white/30 via-[#F7F1E8]/44 to-[#F7F1E8]/58 rounded-[32px] md:rounded-[40px] shadow-[inset_0_1px_0_rgba(255,255,255,0.38),0_12px_24px_rgba(0,0,0,0.02)]">
+              {[
+                { key: 'nationwide' },
+                { key: 'express' },
+                { key: 'guaranteed' },
+                { key: 'experts' }
+              ].map((item) => (
+                <div key={item.key} className="flex items-center gap-3 md:gap-4 flex-1 min-w-[150px] group">
+                  <div className="w-10 h-10 md:w-11 md:h-11 rounded-[14px] bg-white/[0.15] shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform duration-500 border border-white/20">
+                    {featureIcons[item.key]}
+                  </div>
+                  <span className="text-[12px] md:text-[14px] font-bold text-[#0E1A2B] leading-tight flex-1 opacity-80">
+                    {t(`features.${item.key}`)}
+                  </span>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </motion.div>
 
@@ -416,6 +424,7 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
                         r="4"
                         fill="#C86E4A"
                         fillOpacity="0.15"
+                        initial={{ r: 3, opacity: 0.1 }}
                         animate={isInView ? { r: [3, 5, 3], opacity: [0.1, 0.2, 0.1] } : { r: 3, opacity: 0.1 }}
                         transition={isInView ? { duration: 3, repeat: Infinity } : { duration: 0.2 }}
                       />

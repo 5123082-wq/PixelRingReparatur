@@ -81,7 +81,7 @@ export default function LeistungenHero({ slides, breadcrumbs = [] }: LeistungenH
 
             <HeroBreadcrumbs items={breadcrumbs} />
 
-            <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-4 pb-12 sm:px-6 sm:pb-14 min-[1328px]:px-0 lg:pb-16">
+            <div className="pr-site-container relative flex h-full flex-col justify-end pb-12 sm:pb-14 lg:pb-16">
               <motion.div
                 initial={{ y: 14, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}

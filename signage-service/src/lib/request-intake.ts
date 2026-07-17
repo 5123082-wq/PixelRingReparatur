@@ -16,6 +16,7 @@ import { ensurePublicRequestNumberForCase } from './request-number';
 import { createPortalClaimLink } from './portal/claim';
 import { syncCaseCustomerProfile } from './customer-profiles';
 import { resolveWebsiteRequestContact } from './contact-policy';
+import type { CalculationSnapshot } from './calculation-snapshot';
 export {
   parseContact,
   parseOptionalContactDetails,
@@ -48,6 +49,7 @@ export type WebsiteRequestInput = {
     portalUserId: string;
     portalSessionId: string;
   } | null;
+  calculationSnapshot?: CalculationSnapshot | null;
 };
 
 export type WebsiteRequestResult = {
@@ -92,6 +94,7 @@ export async function createWebsiteRequest(
         locale: input.locale?.trim() || null,
         summary: buildSummary(input.message),
         description: input.message.trim(),
+        calculationSnapshot: input.calculationSnapshot ?? undefined,
         formalizedAt: now,
         statusUpdatedAt: now,
       },

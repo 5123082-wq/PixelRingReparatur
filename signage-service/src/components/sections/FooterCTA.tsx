@@ -20,7 +20,7 @@ const FooterCTA = ({ content }: { content?: FooterCtaContent | null }) => {
   const telegramUrl = SITE_CONFIG.messengers.telegram;
 
   return (
-    <section id="kontakt" className="w-full bg-[#0D1B2A] py-24 px-6 relative overflow-hidden scroll-mt-24">
+    <section id="kontakt" className="w-full bg-[#0D1B2A] py-24 relative overflow-hidden scroll-mt-24">
       {/* Technical Grid Pattern */}
       <div 
         className="absolute inset-0 opacity-[0.03] pointer-events-none" 
@@ -34,7 +34,7 @@ const FooterCTA = ({ content }: { content?: FooterCtaContent | null }) => {
       <div className="absolute top-0 right-0 h-[500px] w-[500px] -translate-y-1/2 translate-x-1/4 rounded-full bg-[radial-gradient(circle,rgba(184,100,62,0.12)_0%,rgba(184,100,62,0.05)_42%,transparent_74%)] pointer-events-none" />
       <div className="absolute bottom-0 left-0 h-[400px] w-[400px] -translate-x-1/4 translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.07)_0%,rgba(59,130,246,0.025)_44%,transparent_76%)] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto relative z-10 w-full">
+      <div className="pr-site-container relative z-10">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center lg:items-stretch">
           
           {/* Left Column: Text & Messengers */}

@@ -28,7 +28,9 @@ When confusion remains material, stop and ask instead of guessing.
 
 ### 2. Simplicity First
 
-Use the minimum solution that satisfies the actual request.
+Use the minimum implementation solution after an implementation direction is chosen.
+
+For an explicit ideation, strategy, audit, or discovery request, first consider material alternatives and trade-offs. Then recommend a preferred option without implementing it until required confirmation.
 
 Avoid:
 

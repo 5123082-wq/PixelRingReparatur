@@ -1646,8 +1646,8 @@ export async function generateMetadata({
 
 function RepairProblemLinksSection({ content }: { content: RepairProblemLinksContent }) {
   return (
-    <section className="border-t border-[#E7DDD3] bg-[#F7F1E8] px-4 py-10 sm:px-6 sm:py-12">
-      <div className="mx-auto max-w-7xl">
+    <section className="border-t border-[#E7DDD3] bg-[#F7F1E8] py-10 sm:py-12">
+      <div className="pr-site-container">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(360px,0.88fr)] lg:items-end">
           <div className="max-w-4xl text-start">
             <SectionEyebrow className="mb-3">{content.eyebrow}</SectionEyebrow>
@@ -1690,8 +1690,8 @@ function RepairCoverageSection({ content }: { content: RepairScopeContent }) {
   const visibleCoverageCards = content.coverageCards.filter((_, index) => index !== 4);
 
   return (
-    <section className="border-t border-[#E7DDD3] bg-[#FFFDF9] px-4 py-12 sm:px-6 sm:py-16">
-      <div className="mx-auto max-w-7xl">
+    <section className="border-t border-[#E7DDD3] bg-[#FFFDF9] py-12 sm:py-16">
+      <div className="pr-site-container">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(360px,0.88fr)] lg:items-end">
           <div className="max-w-4xl text-start">
             <SectionEyebrow className="mb-3">{content.coverageEyebrow}</SectionEyebrow>
@@ -1754,8 +1754,8 @@ function RepairServiceScopeSection({ content }: { content: RepairScopeContent })
   const visibleServiceCards = content.serviceCards.slice(0, 4);
 
   return (
-    <section className="border-t border-[#E7DDD3] bg-[#F7F1E8] px-4 py-12 sm:px-6 sm:py-16">
-      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.18fr_0.82fr] lg:items-start">
+    <section className="border-t border-[#E7DDD3] bg-[#F7F1E8] py-12 sm:py-16">
+      <div className="pr-site-container grid gap-10 lg:grid-cols-[1.18fr_0.82fr] lg:items-start">
         <div>
           <div className="max-w-4xl text-start">
             <SectionEyebrow className="mb-3">{content.serviceEyebrow}</SectionEyebrow>

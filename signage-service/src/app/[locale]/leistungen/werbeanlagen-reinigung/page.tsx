@@ -1737,8 +1737,8 @@ export async function generateMetadata({
 
 function ScopeCardsSection({ content }: { content: CleaningPageContent }) {
   return (
-    <section id="cleaning-scope" className="border-t border-[#E7DDD3] bg-[#F7F1E8] px-4 py-14 sm:px-6 sm:py-20">
-      <div className="mx-auto max-w-7xl">
+    <section id="cleaning-scope" className="border-t border-[#E7DDD3] bg-[#F7F1E8] py-14 sm:py-20">
+      <div className="pr-site-container">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:items-end">
           <div className="text-start">
             <SectionEyebrow className="mb-3">{content.scopeEyebrow}</SectionEyebrow>
@@ -1785,8 +1785,8 @@ function PhotoAssessmentSection({
   }
 
   return (
-    <section id="cleaning-photos" className="bg-[#0E1A2B] px-4 py-14 text-white sm:px-6 sm:py-20">
-      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] lg:items-start">
+    <section id="cleaning-photos" className="bg-[#0E1A2B] py-14 text-white sm:py-20">
+      <div className="pr-site-container grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] lg:items-start">
         <div className="text-start">
           <SectionEyebrow className="mb-3 text-[#F2C6A3]">{content.photoEyebrow ?? copy.eyebrow}</SectionEyebrow>
           <h2 className="text-[32px] font-black leading-[1.1] tracking-[0] sm:text-[44px]">
@@ -1827,8 +1827,8 @@ function CleaningIssueLinksSection({
   }
 
   return (
-    <section className="border-y border-[#E7DDD3] bg-[#FFFDF9] px-4 py-10 sm:px-6 sm:py-12">
-      <div className="mx-auto max-w-7xl">
+    <section className="border-y border-[#E7DDD3] bg-[#FFFDF9] py-10 sm:py-12">
+      <div className="pr-site-container">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
           <div className="text-start">
             <SectionEyebrow className="mb-3">{content.issueLinksEyebrow ?? copy.eyebrow}</SectionEyebrow>
@@ -1869,8 +1869,8 @@ function CleaningIssueLinksSection({
 
 function MaterialBoundarySection({ content }: { content: CleaningPageContent }) {
   return (
-    <section className="bg-white px-4 py-14 sm:px-6 sm:py-20">
-      <div className="mx-auto max-w-7xl">
+    <section className="bg-white py-14 sm:py-20">
+      <div className="pr-site-container">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] lg:items-start">
           <div className="text-start">
             <SectionEyebrow className="mb-3">{content.materialEyebrow}</SectionEyebrow>
@@ -1916,8 +1916,8 @@ function MaterialBoundarySection({ content }: { content: CleaningPageContent }) 
 
 function RoutingLinksSection({ content }: { content: CleaningPageContent }) {
   return (
-    <section className="border-y border-[#E7DDD3] bg-[#FFFDF9] px-4 py-14 sm:px-6 sm:py-20">
-      <div className="mx-auto max-w-7xl">
+    <section className="border-y border-[#E7DDD3] bg-[#FFFDF9] py-14 sm:py-20">
+      <div className="pr-site-container">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end">
           <div className="text-start">
             <SectionEyebrow className="mb-3">{content.routingEyebrow}</SectionEyebrow>

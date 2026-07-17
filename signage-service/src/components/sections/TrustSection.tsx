@@ -61,7 +61,7 @@ const TrustSection = ({ content }: { content?: TrustCmsContent }) => {
         <div className="absolute bottom-[-10%] left-[-10%] h-[min(460px,72vw)] w-[min(460px,72vw)] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0.025)_44%,transparent_76%)]" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6">
+      <div className="relative z-10 pr-site-container">
         <div className="flex flex-col gap-9 md:gap-10">
           
           {/* HEADER */}

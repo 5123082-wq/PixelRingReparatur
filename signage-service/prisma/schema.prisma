@@ -153,6 +153,7 @@ model Case {
   serviceLocationSource    String?
   summary                  String?                   @db.Text
   description              String?                   @db.Text
+  calculationSnapshot      Json?                     @map("calculation_snapshot")
   locale                   String?
   aiEnabled                Boolean                   @default(true)
   aiPausedAt               DateTime?

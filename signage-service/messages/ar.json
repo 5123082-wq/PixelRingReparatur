@@ -29,7 +29,8 @@
     "services_led": "الإعلانات المضيئة وتحديث LED",
     "services_audit": "التدقيق والتشخيص",
     "services_installation": "التركيب والفك",
-    "services_branding": "الطباعة والهوية"
+    "services_branding": "الطباعة والهوية",
+    "services_illuminated_valance": "دلايات المظلات المضيئة"
   },
   "Footer": {
     "copyright": "© 2024 PixelRing Technical Atelier. جميع الحقوق محفوظة.",
@@ -309,9 +310,10 @@
     "field_name_company": "الاسم والشركة (اختياري)",
     "field_issue_type": "نوع المشكلة (اختياري)",
     "issue_repair": "إصلاح",
-  "issue_installation": "تركيب",
-  "issue_maintenance": "صيانة",
-  "issue_cleaning": "تنظيف / عناية",
+    "issue_installation": "تركيب",
+    "issue_maintenance": "صيانة",
+    "issue_cleaning": "تنظيف / عناية",
+    "issue_illuminated_valance": "دلايات المظلات المضيئة",
     "field_location": "الموقع أو العنوان (اختياري)",
     "field_contact": "البريد الإلكتروني للطلب",
     "field_email": "البريد الإلكتروني للطلب",

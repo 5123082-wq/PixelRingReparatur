@@ -152,7 +152,8 @@ export default function PortalClaimForm({
   }
 
   return (
-    <main className="min-h-screen bg-[#F4EEE5] px-4 py-4 text-[#121826] sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-[#F4EEE5] text-[#121826]">
+      <div className="pr-site-container py-4">
       <CustomerStandaloneNav />
       <div className="mx-auto flex min-h-[calc(100vh-104px)] max-w-4xl items-center justify-center py-6">
         <section className="w-full overflow-hidden rounded-[28px] border border-[#E4D8CA] bg-white shadow-2xl shadow-[#3E2715]/10">
@@ -331,6 +332,7 @@ export default function PortalClaimForm({
             </div>
           </div>
         </section>
+      </div>
       </div>
     </main>
   );

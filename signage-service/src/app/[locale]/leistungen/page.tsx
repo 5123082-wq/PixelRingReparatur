@@ -21,7 +21,8 @@ type ServiceIntent =
   | 'montage-demontage'
   | 'druckprodukte-branding'
   | 'folierung-beschriftung'
-  | 'wartung-servicevertrag';
+  | 'wartung-servicevertrag'
+  | 'illuminated-valance';
 
 type RepairCard = {
   id: string;
@@ -121,6 +122,23 @@ const SERVICE_DETAIL_PATH_BY_CARD_ID: Partial<Record<string, string>> = {
   'werbeanlagen-reinigung': '/leistungen/werbeanlagen-reinigung',
   'montage-demontage': '/leistungen/montage-demontage-werbeanlagen',
   'druck-branding': '/leistungen/druckprodukte-branding-werbematerialien',
+};
+
+const ILLUMINATED_VALANCE_SERVICE_CARD: ServiceShowcaseCard = {
+  id: 'beleuchtete-markisenvolants',
+  intent: 'illuminated-valance',
+  title: 'Beleuchtete Markisen-Volants',
+  description:
+    'Bestehende Markise prüfen und den vorderen Volant als beleuchtete Markenfläche neu planen.',
+  image: '/images/leistungen/beleuchtete-markisenvolants/hero-cafe-day.png',
+  imageAlt: 'Tagansicht eines Café-Volants mit beleuchteter Markenfläche',
+  cta: 'Leuchtvolants ansehen',
+  href: '/leistungen/beleuchtete-markisenvolants',
+  details: [
+    { label: 'Ausgangspunkt', value: 'Bestehende Markise mit vorderem Volant' },
+    { label: 'Prüfung', value: 'Fotos, Befestigung und sichtbare Ausgangslage' },
+    { label: 'Nächster Schritt', value: 'Individuelle Einschätzung vor Produkt oder Montage' },
+  ],
 };
 
 const LEISTUNGEN_PAGE_PATH = '/leistungen';
@@ -1455,7 +1473,12 @@ const CONTENT: Record<Locale, LeistungenContent> = {
 };
 
 function getContent(locale: string): LeistungenContent {
-  return CONTENT[(locale as Locale) in CONTENT ? (locale as Locale) : 'de'];
+  const content = CONTENT[(locale as Locale) in CONTENT ? (locale as Locale) : 'de'];
+
+  return {
+    ...content,
+    serviceShowcaseCards: [...content.serviceShowcaseCards, ILLUMINATED_VALANCE_SERVICE_CARD],
+  };
 }
 
 function getLocale(locale: string): Locale {
@@ -1615,8 +1638,8 @@ export default async function LeistungenPage({
         />
 
         {(content.repairEnabled !== false || content.brandingEnabled !== false) && (
-          <section id="servicebereiche" className="bg-[#F8FAFC] px-4 py-14 sm:px-6 sm:py-20">
-            <div className="mx-auto max-w-7xl">
+          <section id="servicebereiche" className="bg-[#F8FAFC] py-14 sm:py-20">
+            <div className="pr-site-container">
               <div className="max-w-4xl">
                 <h2 className="text-3xl font-extrabold leading-[1.08] text-[#0E1A2B] sm:text-5xl">
                   {content.serviceShowcaseTitle}
@@ -1708,7 +1731,7 @@ export default async function LeistungenPage({
 
         {content.maintenanceEnabled !== false && showDraftServiceAbo && (
           <section id="wartung-servicevertraege" className="scroll-mt-28 bg-[#F8FAFC] py-14 sm:py-20">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="pr-site-container">
               <style dangerouslySetInnerHTML={{ __html: `
                 .pr-abo-mini {
                   --pr-card: rgba(255, 255, 255, 0.075);
@@ -2255,7 +2278,7 @@ export default async function LeistungenPage({
 
         {content.trustEnabled !== false && (
           <section id="rahmenbedingungen" className="bg-[#F7F1E8] py-14 sm:py-20">
-            <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr]">
+            <div className="pr-site-container grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
               <div>
                 <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">{content.frameTitle}</h2>
               </div>

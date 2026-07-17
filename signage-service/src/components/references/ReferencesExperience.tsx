@@ -647,7 +647,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
               <div className="absolute inset-0 bg-gradient-to-t from-[#0E1A2B]/80 via-[#0E1A2B]/25 to-transparent" />
               <div className="absolute inset-0 bg-gradient-to-r from-[#0E1A2B]/45 via-[#0E1A2B]/10 to-transparent rtl:bg-gradient-to-l" />
 
-              <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-4 pb-12 sm:px-6 sm:pb-14 lg:pb-16">
+              <div className="pr-site-container relative flex h-full flex-col justify-end pb-12 sm:pb-14 lg:pb-16">
                 <motion.div
                   initial={{ y: 14, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -669,7 +669,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
       </section>
 
       <section id="recent-work" className="scroll-mt-32 overflow-hidden bg-white pb-[100px] pt-[44px]">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="pr-site-container">
           <SectionEyebrow className="mb-[43px]">
             {content.recentEyebrow}
           </SectionEyebrow>
@@ -715,7 +715,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
       </section>
 
       <section className="bg-[#F7F1E8] py-10 sm:py-14">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="pr-site-container">
           <h2 className={SECTION_HEADING_CLASS}>{content.reportTitle}</h2>
           <p className={SECTION_INTRO_CLASS}>{content.reportIntro}</p>
           <div className="mt-8 grid gap-5 md:grid-cols-2">
@@ -730,7 +730,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
       </section>
 
       <section id="gallery" className="scroll-mt-32 overflow-hidden bg-white pb-[100px] pt-[44px]">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="pr-site-container">
           <SectionEyebrow className="mb-[43px]">
             {content.galleryEyebrow}
           </SectionEyebrow>
@@ -756,7 +756,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
       </section>
 
       <section className="bg-white pb-[100px] pt-[44px]">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="pr-site-container">
           <SectionEyebrow className="mb-[43px]">
             {CATEGORY_SECTION_EYEBROWS[content.locale]}
           </SectionEyebrow>
@@ -795,8 +795,8 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
         </div>
       </section>
 
-      <section className="bg-white px-6 py-14 sm:py-18">
-        <div className="mx-auto max-w-7xl">
+      <section className="bg-white py-14 sm:py-18">
+        <div className="pr-site-container">
           <div
             className="grid gap-8 overflow-hidden rounded-[28px] border border-[#d3b2a2]/50 px-6 py-7 shadow-[0_18px_50px_rgba(8,24,39,0.08)] sm:px-8 sm:py-9 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-12"
             style={{

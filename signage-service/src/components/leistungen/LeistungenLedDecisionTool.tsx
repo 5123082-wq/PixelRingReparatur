@@ -64,8 +64,8 @@ export default function LeistungenLedDecisionTool({
   const checklistPreview = useMemo(() => requestChecklist.items.slice(0, 5), [requestChecklist.items]);
 
   return (
-    <section className="border-t border-[#E7DDD3] bg-[#FFFDF9] px-4 py-14 sm:px-6 sm:py-20">
-      <div className="mx-auto max-w-7xl">
+    <section className="border-t border-[#E7DDD3] bg-[#FFFDF9] py-14 sm:py-20">
+      <div className="pr-site-container">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:items-end">
           <div className="text-start">
             <SectionEyebrow className="mb-3">{decisionGuide.eyebrow}</SectionEyebrow>

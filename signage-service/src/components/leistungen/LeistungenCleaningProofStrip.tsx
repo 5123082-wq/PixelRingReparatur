@@ -200,8 +200,8 @@ export default function LeistungenCleaningProofStrip({ locale }: { locale: strin
   }
 
   return (
-    <section className="border-y border-[#E7DDD3] bg-[#FFFDF9] px-4 py-10 sm:px-6 sm:py-12">
-      <div className="mx-auto max-w-7xl">
+    <section className="border-y border-[#E7DDD3] bg-[#FFFDF9] py-10 sm:py-12">
+      <div className="pr-site-container">
         <div className="flex flex-col gap-5 text-start lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <SectionEyebrow className="mb-3">{content.eyebrow}</SectionEyebrow>

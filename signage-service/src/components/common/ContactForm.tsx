@@ -4,6 +4,11 @@ import React, { useId, useRef, useState, useEffect } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { trackGoogleAdsLeadConversion } from '@/lib/google-ads';
+import {
+  CALCULATION_SNAPSHOT_FORM_FIELD,
+  serializeCalculationSnapshot,
+  type CalculationSnapshot,
+} from '@/lib/calculation-snapshot';
 import LocationPicker, { type SelectedLocation } from './LocationPicker';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -15,6 +20,7 @@ interface ContactFormProps {
   dropdownPosition?: 'top' | 'bottom';
   initialIssueType?: string;
   initialMessage?: string;
+  calculationSnapshot?: CalculationSnapshot | null;
   containedScroll?: boolean;
 }
 
@@ -25,6 +31,7 @@ const ContactForm = ({
   dropdownPosition = 'bottom',
   initialIssueType = '',
   initialMessage = '',
+  calculationSnapshot = null,
   containedScroll = false,
 }: ContactFormProps) => {
   const t = useTranslations('ContactModal');
@@ -114,6 +121,12 @@ const ContactForm = ({
       formData.append('message', cleanMessage);
       formData.append('issueType', cleanIssueType);
       formData.append('location', cleanLocation);
+      if (calculationSnapshot) {
+        formData.append(
+          CALCULATION_SNAPSHOT_FORM_FIELD,
+          serializeCalculationSnapshot(calculationSnapshot)
+        );
+      }
       if (selectedLocation) {
         formData.append('locationLatitude', String(selectedLocation.latitude));
         formData.append('locationLongitude', String(selectedLocation.longitude));
@@ -345,6 +358,7 @@ const ContactForm = ({
                   <option value="Installation" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_installation') || 'Montage'}</option>
                   <option value="Maintenance" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_maintenance') || 'Wartung'}</option>
                   <option value="Cleaning" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_cleaning') || 'Reinigung / Pflege'}</option>
+                  <option value="IlluminatedValance" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_illuminated_valance') || 'Beleuchtete Markisen-Volants'}</option>
                 </select>
               </div>
 
@@ -455,6 +469,7 @@ const ContactForm = ({
                 <option value="Installation" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_installation') || 'Montage'}</option>
                 <option value="Maintenance" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_maintenance') || 'Wartung'}</option>
                 <option value="Cleaning" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_cleaning') || 'Reinigung / Pflege'}</option>
+                <option value="IlluminatedValance" className={variant === 'dark' ? 'text-black' : ''}>{t('issue_illuminated_valance') || 'Beleuchtete Markisen-Volants'}</option>
               </select>
             </div>
 

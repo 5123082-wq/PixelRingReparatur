@@ -55,8 +55,8 @@ const IntakeSection = ({ content }: { content?: IntakeSectionContent | null }) =
           }
         `}
       </style>
-      <section className="w-full border-y border-[#E7DDD3] bg-white px-6 py-16 md:py-20">
-        <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
+      <section className="w-full border-y border-[#E7DDD3] bg-white py-16 md:py-20">
+        <div className="pr-site-container flex flex-col gap-8">
           <div className="flex max-w-2xl flex-col gap-4 text-start">
             <SectionEyebrow>{t('eyebrow')}</SectionEyebrow>
             <h2 className="text-[32px] font-extrabold leading-[1.1] tracking-[0] text-[#0E1A2B] md:text-[42px]">

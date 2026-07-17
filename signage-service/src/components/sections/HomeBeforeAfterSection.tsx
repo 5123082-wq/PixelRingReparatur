@@ -467,7 +467,7 @@ export default function HomeBeforeAfterSection({ locale }: { locale: string }) {
 
   return (
     <section className="w-full overflow-hidden bg-[#F5F5F7] py-16 md:py-20">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 md:flex-row md:items-end md:justify-between">
+      <div className="pr-site-container flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div className="flex max-w-3xl flex-col gap-4 text-start">
           <SectionEyebrow>{copy.eyebrow}</SectionEyebrow>
           <h2 className="text-[32px] font-extrabold leading-[1.1] tracking-[0] text-[#0E1A2B] md:text-[42px]">
@@ -518,11 +518,7 @@ export default function HomeBeforeAfterSection({ locale }: { locale: string }) {
 
         <div
           ref={railRef}
-          className="mt-9 w-screen overflow-x-auto pb-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          style={{
-            paddingInlineEnd: '1.5rem',
-            paddingInlineStart: 'max(1.5rem, calc((100vw - 80rem) / 2 + 1.5rem))',
-          }}
+          className="pr-carousel-rail mt-9 overflow-x-auto pb-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           <div className="flex w-max snap-x snap-mandatory gap-4 md:gap-5">
             <article className="relative h-[584px] w-[320px] shrink-0 snap-start overflow-hidden rounded-[28px] border border-white/35 bg-[#101827] shadow-[0_10px_26px_rgba(0,0,0,0.055)] sm:h-[620px] sm:w-[430px] lg:h-[660px] lg:w-[560px]">
