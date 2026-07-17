@@ -34,7 +34,6 @@ type CalculatorContent = {
   logoOptions: Record<IlluminatedValanceLogoPlacement, string>;
   quantityLabel: string;
   previewTitle: string;
-  previewDescription: string;
   previewAriaLabel: string;
   logoMark: string;
   totalLengthLabel: string;
@@ -43,7 +42,6 @@ type CalculatorContent = {
   freeLengthLabel: string;
   measuringText: string;
   layoutReadyText: string;
-  priceReadyText: string;
   pricingTitle: string;
   priceDisclaimer: string;
   excludedCostsNote: string;
@@ -371,14 +369,14 @@ export default function LeistungenIlluminatedValanceCalculator({
 
   const numberFormatter = useMemo(
     () =>
-      new Intl.NumberFormat(locale === 'ru' ? 'ru-RU' : 'de-DE', {
+      new Intl.NumberFormat(locale, {
         maximumFractionDigits: 0,
       }),
     [locale]
   );
   const moneyFormatter = useMemo(
     () =>
-      new Intl.NumberFormat(locale === 'ru' ? 'ru-RU' : 'de-DE', {
+      new Intl.NumberFormat(locale, {
         style: 'currency',
         currency: 'EUR',
         minimumFractionDigits: 2,
@@ -421,9 +419,6 @@ export default function LeistungenIlluminatedValanceCalculator({
     if (lettersTooTall) return content.errors.lettersTooTall;
     if (compositionTooWide) return content.errors.compositionTooWide;
     if (zoneTooLong) return content.errors.zoneTooLong;
-    if (pricing) {
-      return content.priceReadyText;
-    }
     if (calculationResult?.status === 'individual-review') {
       return content.individualReviewText;
     }
@@ -582,9 +577,6 @@ export default function LeistungenIlluminatedValanceCalculator({
             <div className="flex flex-col gap-2 text-start sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <h3 className="text-[20px] font-black">{content.previewTitle}</h3>
-                <p className="mt-1 text-[14px] font-semibold leading-6 text-white/62">
-                  {content.previewDescription}
-                </p>
               </div>
               {measurementState.status === 'loading' ? (
                 <span className="text-[12px] font-bold text-[#F2C6A3]">{content.measuringText}</span>
@@ -698,11 +690,13 @@ export default function LeistungenIlluminatedValanceCalculator({
               </dl>
             ) : null}
 
-            <div aria-live="polite" aria-atomic="true" className="mt-4 min-h-6 text-start">
-              <p className={`text-[14px] font-bold leading-6 ${hasLayoutError || measurementState.status === 'error' ? 'text-[#FFAA98]' : 'text-[#BBD8CB]'}`}>
-                {liveMessage}
-              </p>
-            </div>
+            {liveMessage ? (
+              <div aria-live="polite" aria-atomic="true" className="mt-4 text-start">
+                <p className={`text-[14px] font-bold leading-6 ${hasLayoutError || measurementState.status === 'error' ? 'text-[#FFAA98]' : 'text-[#BBD8CB]'}`}>
+                  {liveMessage}
+                </p>
+              </div>
+            ) : null}
 
             {pricing ? (
               <div
@@ -715,6 +709,8 @@ export default function LeistungenIlluminatedValanceCalculator({
                 <p
                   className="mt-3 text-[32px] font-black leading-none tracking-[-0.02em] text-white sm:text-[38px]"
                   data-valance-net-total
+                  aria-live="polite"
+                  aria-atomic="true"
                 >
                   {formatMoney(pricing.netSubtotalForQuantity)}
                 </p>

@@ -10,6 +10,7 @@ import LeistungenIlluminatedValanceCalculator from '@/components/leistungen/Leis
 import LeistungenIlluminatedValanceHero from '@/components/leistungen/LeistungenIlluminatedValanceHero';
 import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestButton';
 import FAQSection from '@/components/sections/FAQSection';
+import LeistungenFooterCTA from '@/components/sections/LeistungenFooterCTA';
 import { getGlobalPageCmsContent } from '@/lib/cms/pages';
 import { routing } from '@/i18n/routing';
 import { buildLocaleUrl } from '@/lib/seo';
@@ -33,7 +34,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale: requestedLocale } = await params;
-  const locale = requestedLocale === 'ru' ? 'ru' : 'de';
+  const locale = isSupportedLocale(requestedLocale) ? requestedLocale : 'de';
   const copy = getIlluminatedValanceCopy(locale);
   const pageUrl = buildLocaleUrl(locale, VALANCE_PAGE_PATH);
 
@@ -235,35 +236,19 @@ export default async function BeleuchteteMarkisenVolantsPage({
           titleClassName="text-3xl font-extrabold leading-[1.08] tracking-[0] text-[#0E1A2B] sm:text-5xl"
         />
 
-        <section className="bg-[#0E1A2B] py-14 text-white sm:py-20">
-          <div className="pr-site-container">
-            <div className="grid gap-8 rounded-[32px] border border-white/10 bg-white/[0.06] p-6 sm:p-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.76fr)] lg:items-end">
-              <div className="text-start">
-                <SectionEyebrow className="mb-3 text-[#F2C6A3]">{copy.finalCta.eyebrow}</SectionEyebrow>
-                <h2 className="max-w-3xl text-3xl font-extrabold leading-[1.08] tracking-[0] sm:text-5xl">
-                  {copy.finalCta.title}
-                </h2>
-                <p className="mt-5 max-w-3xl text-[16px] leading-8 text-white/75">
-                  {copy.finalCta.intro}
-                </p>
-              </div>
-              <div className="rounded-[24px] border border-white/12 bg-[#0B1520]/70 p-5 text-start sm:p-6">
-                <h3 className="text-[18px] font-black leading-tight">{copy.finalCta.cardTitle}</h3>
-                <p className="mt-4 text-[15px] font-semibold leading-7 text-white/78">
-                  {copy.finalCta.cardText}
-                </p>
-                <div className="mt-7">
-                  <LeistungenRequestButton
-                    label={copy.finalCta.button}
-                    serviceIntent="illuminated-valance-final-request"
-                    initialIssueType={ISSUE_TYPE}
-                    initialMessage={copy.hero.primaryPrefill}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        <LeistungenFooterCTA
+          locale={locale}
+          finalHeadline={copy.finalCta.title}
+          finalText={copy.finalCta.intro}
+          requestTitle={copy.finalCta.cardTitle}
+          requestText={copy.finalCta.cardText}
+          requestCta={copy.finalCta.button}
+          serviceIntent="illuminated-valance-final-request"
+          initialIssueType={ISSUE_TYPE}
+          initialMessage={copy.hero.primaryPrefill}
+          imageSrc="/images/leistungen/beleuchtete-markisenvolants/hero-cafe-night.png"
+          imageAlt={copy.brand.visuals[0].alt}
+        />
       </main>
       <Footer content={globalCms?.footer} />
     </div>

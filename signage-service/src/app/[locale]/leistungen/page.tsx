@@ -124,21 +124,103 @@ const SERVICE_DETAIL_PATH_BY_CARD_ID: Partial<Record<string, string>> = {
   'druck-branding': '/leistungen/druckprodukte-branding-werbematerialien',
 };
 
-const ILLUMINATED_VALANCE_SERVICE_CARD: ServiceShowcaseCard = {
-  id: 'beleuchtete-markisenvolants',
-  intent: 'illuminated-valance',
-  title: 'Beleuchtete Markisen-Volants',
-  description:
-    'Bestehende Markise prüfen und den vorderen Volant als beleuchtete Markenfläche neu planen.',
-  image: '/images/leistungen/beleuchtete-markisenvolants/hero-cafe-day.png',
-  imageAlt: 'Tagansicht eines Café-Volants mit beleuchteter Markenfläche',
-  cta: 'Leuchtvolants ansehen',
-  href: '/leistungen/beleuchtete-markisenvolants',
-  details: [
-    { label: 'Ausgangspunkt', value: 'Bestehende Markise mit vorderem Volant' },
-    { label: 'Prüfung', value: 'Fotos, Befestigung und sichtbare Ausgangslage' },
-    { label: 'Nächster Schritt', value: 'Individuelle Einschätzung vor Produkt oder Montage' },
-  ],
+const ILLUMINATED_VALANCE_SERVICE_CARD_BY_LOCALE: Record<Locale, ServiceShowcaseCard> = {
+  de: {
+    id: 'beleuchtete-markisenvolants',
+    intent: 'illuminated-valance',
+    title: 'Beleuchtete Markisen-Volants',
+    description:
+      'Bestehende Markise prüfen und den vorderen Volant als beleuchtete Markenfläche neu planen.',
+    image: '/images/leistungen/beleuchtete-markisenvolants/hero-cafe-day.png',
+    imageAlt: 'Tagansicht eines Café-Volants mit beleuchteter Markenfläche',
+    cta: 'Leuchtvolants ansehen',
+    href: '/leistungen/beleuchtete-markisenvolants',
+    details: [
+      { label: 'Ausgangspunkt', value: 'Bestehende Markise mit vorderem Volant' },
+      { label: 'Prüfung', value: 'Fotos, Befestigung und Zustand der vorhandenen Markise' },
+      { label: 'Nächster Schritt', value: 'Individuelle Einschätzung vor Fertigung oder Montage' },
+    ],
+  },
+  en: {
+    id: 'beleuchtete-markisenvolants',
+    intent: 'illuminated-valance',
+    title: 'Illuminated awning valances',
+    description:
+      'We assess the existing awning and design a new illuminated front valance for your lettering or logo.',
+    image: '/images/leistungen/beleuchtete-markisenvolants/hero-cafe-day.png',
+    imageAlt: 'Daytime view of a café awning valance with an illuminated brand surface',
+    cta: 'View illuminated valances',
+    href: '/leistungen/beleuchtete-markisenvolants',
+    details: [
+      { label: 'Starting point', value: 'Existing awning with a front valance' },
+      { label: 'Assessment', value: 'Photos, fixing method and condition of the existing awning' },
+      { label: 'Next step', value: 'Individual review before production or installation' },
+    ],
+  },
+  ru: {
+    id: 'beleuchtete-markisenvolants',
+    intent: 'illuminated-valance',
+    title: 'Воланы с подсветкой для маркиз',
+    description:
+      'Проверим существующую маркизу и спроектируем новый передний волан с подсвечиваемой надписью или логотипом.',
+    image: '/images/leistungen/beleuchtete-markisenvolants/hero-cafe-day.png',
+    imageAlt: 'Дневной вид волана маркизы у кафе со световой поверхностью для бренда',
+    cta: 'Посмотреть воланы с подсветкой',
+    href: '/leistungen/beleuchtete-markisenvolants',
+    details: [
+      { label: 'Что уже есть', value: 'Существующая маркиза с передним воланом' },
+      { label: 'Проверка', value: 'Фотографии, тип крепления и состояние маркизы' },
+      { label: 'Следующий шаг', value: 'Индивидуальная оценка до изготовления или монтажа' },
+    ],
+  },
+  tr: {
+    id: 'beleuchtete-markisenvolants',
+    intent: 'illuminated-valance',
+    title: 'Işıklı tente etekleri',
+    description:
+      'Mevcut tenteyi inceliyor, ön eteği markanızı taşıyan ışıklı bir yüzey olarak yeniden planlıyoruz.',
+    image: '/images/leistungen/beleuchtete-markisenvolants/hero-cafe-day.png',
+    imageAlt: 'Işıklı ön eteğe sahip bir kafe tentesinin gündüz görünümü',
+    cta: 'Işıklı tente eteklerini inceleyin',
+    href: '/leistungen/beleuchtete-markisenvolants',
+    details: [
+      { label: 'Başlangıç noktası', value: 'Ön eteği bulunan mevcut tente' },
+      { label: 'İnceleme', value: 'Fotoğraflar, bağlantı biçimi ve mevcut tentenin durumu' },
+      { label: 'Sonraki adım', value: 'Üretim veya montaj öncesinde projeye özel değerlendirme' },
+    ],
+  },
+  pl: {
+    id: 'beleuchtete-markisenvolants',
+    intent: 'illuminated-valance',
+    title: 'Podświetlane falbany markizowe',
+    description:
+      'Sprawdzimy istniejącą markizę i zaprojektujemy nową podświetlaną falbanę z napisem lub logo.',
+    image: '/images/leistungen/beleuchtete-markisenvolants/hero-cafe-day.png',
+    imageAlt: 'Widok dzienny falbany markizy przy kawiarni z podświetlaną powierzchnią dla marki',
+    cta: 'Zobacz podświetlane falbany',
+    href: '/leistungen/beleuchtete-markisenvolants',
+    details: [
+      { label: 'Punkt wyjścia', value: 'Istniejąca markiza z falbaną przednią' },
+      { label: 'Ocena', value: 'Zdjęcia, sposób mocowania i stan istniejącej markizy' },
+      { label: 'Następny krok', value: 'Indywidualna ocena przed produkcją lub montażem' },
+    ],
+  },
+  ar: {
+    id: 'beleuchtete-markisenvolants',
+    intent: 'illuminated-valance',
+    title: 'الحواف الأمامية المضيئة للمظلات',
+    description:
+      'نفحص المظلة القائمة ونخطط لاستبدال حافتها الأمامية بحافة مضيئة تحمل اسم العلامة أو شعارها.',
+    image: '/images/leistungen/beleuchtete-markisenvolants/hero-cafe-day.png',
+    imageAlt: 'منظر نهاري لمظلة مقهى ذات حافة أمامية مضيئة تحمل اسم العلامة',
+    cta: 'استعرض الحواف الأمامية المضيئة',
+    href: '/leistungen/beleuchtete-markisenvolants',
+    details: [
+      { label: 'الوضع الحالي', value: 'مظلة قائمة بحافة أمامية' },
+      { label: 'الفحص', value: 'الصور وطريقة التثبيت والحالة الظاهرة' },
+      { label: 'الخطوة التالية', value: 'تقييم كل حالة قبل التصنيع أو التركيب' },
+    ],
+  },
 };
 
 const LEISTUNGEN_PAGE_PATH = '/leistungen';
@@ -1473,11 +1555,15 @@ const CONTENT: Record<Locale, LeistungenContent> = {
 };
 
 function getContent(locale: string): LeistungenContent {
-  const content = CONTENT[(locale as Locale) in CONTENT ? (locale as Locale) : 'de'];
+  const safeLocale = ((locale as Locale) in CONTENT ? locale : 'de') as Locale;
+  const content = CONTENT[safeLocale];
 
   return {
     ...content,
-    serviceShowcaseCards: [...content.serviceShowcaseCards, ILLUMINATED_VALANCE_SERVICE_CARD],
+    serviceShowcaseCards: [
+      ...content.serviceShowcaseCards,
+      ILLUMINATED_VALANCE_SERVICE_CARD_BY_LOCALE[safeLocale],
+    ],
   };
 }
 
