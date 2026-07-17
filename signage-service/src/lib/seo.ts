@@ -24,6 +24,7 @@ export const PUBLIC_SITEMAP_PATHS = [
   '/leistungen',
   '/leistungen/werbeanlagen-reparatur',
   '/leistungen/werbeanlagen-reinigung',
+  '/leistungen/beleuchtete-markisenvolants',
   '/leistungen/lichtwerbung-led-modernisierung',
   '/leistungen/werbeanlagen-audit-diagnose',
   '/leistungen/montage-demontage-werbeanlagen',
@@ -35,6 +36,12 @@ export const PUBLIC_SITEMAP_PATHS = [
   '/impressum',
   '/privacy',
 ] as const;
+
+export const PUBLIC_SITEMAP_LAST_MODIFIED_BY_PATH: Partial<
+  Record<(typeof PUBLIC_SITEMAP_PATHS)[number], string>
+> = {
+  '/leistungen/beleuchtete-markisenvolants': '2026-07-17',
+};
 
 export const PROBLEM_ARTICLE_PUBLIC_SLUGS = [
   'werbeanlage-leuchtet-nicht',

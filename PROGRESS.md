@@ -15,6 +15,42 @@ Startup reading rule:
 Latest checkpoint:
 
 - Date: 2026-07-17
+- Current stage: Owner-approved Google indexing release (утверждённая подготовка к индексации Google) is implemented for `/[locale]/leistungen/beleuchtete-markisenvolants` (локализованной страницы воланов для маркиз с подсветкой). All six DE/EN/RU/TR/PL/AR routes now use self-canonical metadata (канонический URL на саму языковую страницу), reciprocal `hreflang` (взаимные языковые альтернативы) plus `x-default` (резервную немецкую версию), and `index, follow` (разрешение индексации и перехода по ссылкам). The six canonical URLs are included in `sitemap.xml` (карте сайта) with the accurate significant-update date `2026-07-17`; unverified static-page dates remain omitted, while CMS article dates continue to come from their stored update timestamps.
+- Next action: Deploy the verified build, resubmit `https://www.pixel-ring.com/sitemap.xml` (карту сайта) in Google Search Console (панели Google для владельцев сайта), and request indexing for the priority German URL.
+
+- Date: 2026-07-17
+- Current stage: Cache-busting asset rename (обновление имени файла для сброса кэша) is complete for the third visual on `/[locale]/leistungen/beleuchtete-markisenvolants` (локализованной странице воланов для маркиз с подсветкой). All six locale copies now reference `beleuchteter-markisenvolant-detail-am-abend-cropped.png` (новое имя обрезанного изображения), preventing the stale Next.js optimized image from being reused.
+- Next action: Owner reloads the route and reviews the newly named asset.
+
+- Date: 2026-07-17
+- Current stage: Owner-supplied cropped detail visual (обрезанная владельцем детальная фотография) now replaces the third visual asset on `/[locale]/leistungen/beleuchtete-markisenvolants` (локализованной странице воланов для маркиз с подсветкой). The file now has a 1407×847 canvas without the previous empty margins; no additional object-position adjustment (дополнительное позиционирование) is applied.
+- Next action: Owner reviews the final crop in the local browser.
+
+- Date: 2026-07-17
+- Current stage: Owner-supplied final crop (финальное кадрирование, подготовленное владельцем) now replaces the illuminated valance detail asset (изображение детального подсвеченного волана) on `/[locale]/leistungen/beleuchtete-markisenvolants` (локализованной странице воланов для маркиз с подсветкой). The earlier CSS object-position adjustment (дополнительное CSS-позиционирование) was removed so the supplied crop renders without a second crop; card layout, text and Alt texts remain unchanged.
+- Next action: Owner reviews the final supplied crop in the local browser; no further positioning changes are planned without separate confirmation.
+
+- Date: 2026-07-17
+- Current stage: Owner-approved framing adjustment (утверждённая корректировка кадрирования) is complete for the third visual on `/[locale]/leistungen/beleuchtete-markisenvolants` (локализованной странице воланов для маркиз с подсветкой). Only the illuminated valance detail image now uses a localized object position (позиционирование изображения) equivalent to approximately 10% left and 5% upward; card dimensions, overlay and copy remain unchanged.
+- Next action: Owner reviews the adjusted crop in the local browser; no further visual positioning changes are planned without separate confirmation.
+
+- Date: 2026-07-17
+- Current stage: Owner-approved replacement of the illuminated valance detail visual (утверждённая замена детальной фотографии подсвеченного волана) on `/[locale]/leistungen/beleuchtete-markisenvolants` (локализованной странице воланов для маркиз с подсветкой) is complete. The shared image now uses `beleuchteter-markisenvolant-detail-am-abend.png` (SEO-имя изображения), with localized Alt texts (альтернативные описания) describing the evening close-up and glowing lettering. The card title, explanatory copy and neighboring visuals were not changed.
+- Next action: Owner reviews the replaced visual in the local browser; no further image cleanup or deletion is planned without separate confirmation.
+
+- Date: 2026-07-17
+- Current stage: Brand logo replacement is complete. Copied the new `logo-full-light.svg` and `logo-compact-light.svg` (новые файлы логотипов) into `public/brand/` for the main site header, and cropped their viewBox (настроена область просмотра) to remove CorelDRAW A4 margin offsets. Reduced the mobile version logo size in `Header.tsx` by 10% (уменьшен размер мобильного логотипа на 10%) and reduced the mobile header height and placeholder spacer from 72px to 64px (высота шапки уменьшена с 72px до 64px) to preserve vertical layout proportions. Updated `Logo.tsx` (общий компонент логотипа) to render the new logo mark (новый знак логотипа) and gradients inline instead of manually drawing the old circular/node CSS layout. This automatically updates separate pages like portal login (страница входа в кабинет), claim/registration (страница привязки/регистрации), Telegram flows, and public modals.
+- Next action: Owner reviews the updated logos on the local server.
+
+- Date: 2026-07-17
+- Current stage: Owner-approved replacement of the daytime atelier visual (утверждённая замена дневной фотографии ателье) on `/[locale]/leistungen/beleuchtete-markisenvolants` (локализованной странице воланов для маркиз с подсветкой) is complete. The shared image now uses `atelier-mit-dunkelblauer-markise-am-tag.png` (SEO-имя изображения), with localized Alt texts (альтернативные описания) describing the dark-blue awning and lettered valance. The card title, explanatory copy and neighboring visuals were not changed.
+- Next action: Owner reviews the replaced visual in the local browser; no further image cleanup or deletion is planned without separate confirmation.
+
+- Date: 2026-07-17
+- Current stage: Owner-approved replacement of the evening café visual (утверждённая замена вечерней фотографии кафе) on `/[locale]/leistungen/beleuchtete-markisenvolants` (локализованной странице воланов для маркиз с подсветкой) is complete. The shared image now uses the SEO filename `cafe-mit-beleuchtetem-markisenvolant-am-abend.png` (SEO-имя файла), and the existing localized Alt texts (альтернативные описания) remain aligned with the card and its visualization status. The page copy and neighboring visuals were not changed.
+- Next action: Owner reviews the replaced visual in the local browser; no further image cleanup or deletion is planned without separate confirmation.
+
+- Date: 2026-07-17
 - Current stage: The owner-approved six-language translation pass (утверждённый владельцем проход переводов на шесть языков) for `/[locale]/leistungen/beleuchtete-markisenvolants` (локализованной страницы воланов с подсветкой для маркиз) is complete. DE/RU copy (немецкий/русский текст) was audited and refined; EN/PL/TR/AR copy (английский/польский/турецкий/арабский текст) was translated and independently re-read for natural, customer-facing language. Page metadata (метаданные), calculator and drawer copy (тексты калькулятора и выдвижной панели), service card, header, homepage card and request issue labels now use the matching locale; number and EUR formatting also follow the current locale. Six-language desktop checks, PL/TR/AR mobile checks at 390 px, AR RTL (арабское направление справа налево), 44 focused Node tests (44 точечных теста Node), targeted lint (точечная проверка кода), production build and format check pass. Arabic page copy is complete, while automatic motif measurement still accepts only Latin/Cyrillic text (латиницу/кириллицу) and now explains that limitation directly instead of showing an unreliable calculation. The route remains `noindex` (запрещённым для индексации), outside `sitemap.xml` (карты сайта) and without `hreflang` (языковых альтернатив).
 - Next action: Owner reviews the six localized routes (шесть локализованных страниц); enabling indexability (индексации), `sitemap.xml` (карты сайта) and `hreflang` (языковых альтернатив) remains one separate release action after approval.
 

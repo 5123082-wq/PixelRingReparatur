@@ -5,6 +5,18 @@ Purpose: detailed domain history for Content/AI/SEO work. Do not read this full 
 ## Progress Log
 
 * **Date:** 2026-07-17
+* **Current sprint/block:** `Beleuchtete Markisen-Volants` (воланы с подсветкой для маркиз) — owner-approved Google indexing release (утверждённый выпуск для индексации Google).
+* **Done:**
+  - Enabled `index, follow` (индексацию и переход по ссылкам) on all DE/EN/RU/TR/PL/AR routes while preserving a self-canonical URL (канонический URL на саму языковую версию) for every locale.
+  - Added the identical reciprocal `hreflang` set (взаимный набор языковых альтернатив) to each route: DE, EN, RU, TR, PL, AR, and `x-default` (резервная немецкая версия).
+  - Added all six canonical URLs to `sitemap.xml` (карту сайта). Each new entry uses `<lastmod>2026-07-17</lastmod>` (дату последнего существенного обновления), matching the completed localization and release-day content changes rather than the sitemap generation time.
+  - Kept unreliable static-page dates omitted and preserved CMS article `updatedAt` timestamps (время обновления статей из базы данных). Removed `changefreq` and `priority` (частоту изменений и приоритет), which Google does not use.
+* **In progress:** None for the local release package. Production build, generated XML, and rendered metadata checks (проверки промышленной сборки, XML и отображаемых метаданных) passed for all six locales.
+* **Next action:** Deploy the verified result, resubmit `https://www.pixel-ring.com/sitemap.xml` (карту сайта) in Google Search Console (панели Google для владельцев сайта), and request indexing for `/de/leistungen/beleuchtete-markisenvolants` (немецкой страницы воланов для маркиз с подсветкой).
+* **Blockers/risks:** Google treats sitemap submission as a hint (сигнал), not a guarantee of indexing. Automatic Arabic motif measurement (автоматическое измерение арабской надписи) remains a separate documented manual-review limitation and does not block page crawling or indexing.
+* **Updated documents and code:** Page metadata and sitemap sources (метаданные страницы и исходники карты сайта), implementation plan (план внедрения), domain README (доменный файл-ориентир), this progress log (доменный журнал) and `PROGRESS.md` (краткий глобальный журнал).
+
+* **Date:** 2026-07-17
 * **Current sprint/block:** `Beleuchtete Markisen-Volants` (воланы с подсветкой для маркиз) — owner-approved six-language translation and DE/RU copy audit (утверждённый владельцем перевод на шесть языков и аудит немецкого/русского текста).
 * **Done:**
   - Implemented complete DE/EN/RU/TR/PL/AR page copy (тексты страницы на немецком, английском, русском, турецком, польском и арабском), localized metadata (локализованные метаданные), calculator/drawer UI (интерфейс калькулятора/выдвижной панели), navigation labels (подписи навигации), homepage and `/leistungen` cards (карточки на главной и странице услуг), and request issue labels (типы обращения).

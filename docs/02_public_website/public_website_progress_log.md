@@ -10,6 +10,22 @@ Purpose: detailed public website history. Do not read this file during ordinary 
 
 ## Detailed Log / History
 
+* **Date:** 2026-07-17
+* **Current sprint/block:** Brand Logo Integration & Asset Optimization (интеграция логотипов бренда и оптимизация ресурсов)
+* **Done:**
+  - Copied new design logos `logo-full-light.svg` and `logo-compact-light.svg` from `DesignPrototip/` into `signage-service/public/brand/` and cropped their viewBoxes (настроены viewBox и размеры) to remove CorelDRAW A4 margin offsets. Reduced the mobile version logo size in `Header.tsx` by 10% (уменьшен размер мобильного логотипа на 10%) and reduced the mobile header height and placeholder spacer from 72px to 64px (высота шапки уменьшена с 72px до 64px) to preserve vertical layout proportions.
+  - Updated the shared `Logo` component in `src/components/common/Logo.tsx` to render the new logo mark as inline SVG paths and gradients rather than the old CSS layout.
+  - Integrated `useId` to generate unique gradient IDs for multiple instances of `Logo` on a single page, avoiding collision.
+  - Verified a clean production build of the Next.js application.
+* **In progress:** None.
+* **Next action:** Owner reviews the updated logos on the local server.
+* **Blockers/risks:** None.
+* **Updated documents:**
+  - `signage-service/public/brand/logo-full-light.svg`
+  - `signage-service/public/brand/logo-compact-light.svg`
+  - `signage-service/src/components/common/Logo.tsx`
+  - `docs/02_public_website/public_website_progress_log.md`
+
 * **Date:** 2026-07-10
 * **Current sprint/block:** Unified Safari-Style Desktop Header (единая десктопная шапка в стиле Safari)
 * **Done:**

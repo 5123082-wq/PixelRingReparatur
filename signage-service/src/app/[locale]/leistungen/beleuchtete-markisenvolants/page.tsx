@@ -13,7 +13,7 @@ import FAQSection from '@/components/sections/FAQSection';
 import LeistungenFooterCTA from '@/components/sections/LeistungenFooterCTA';
 import { getGlobalPageCmsContent } from '@/lib/cms/pages';
 import { routing } from '@/i18n/routing';
-import { buildLocaleUrl } from '@/lib/seo';
+import { buildLanguageAlternates, buildLocaleUrl } from '@/lib/seo';
 
 import { getIlluminatedValanceCopy } from './copy';
 
@@ -43,10 +43,11 @@ export async function generateMetadata({
     description: copy.metadata.description,
     alternates: {
       canonical: pageUrl,
+      languages: buildLanguageAlternates(VALANCE_PAGE_PATH),
     },
     robots: {
-      index: false,
-      follow: false,
+      index: true,
+      follow: true,
     },
     openGraph: {
       title: copy.metadata.socialTitle,
@@ -117,14 +118,6 @@ export default async function BeleuchteteMarkisenVolantsPage({
           title={copy.hero.title}
           subline={copy.hero.subline}
           breadcrumbs={copy.hero.breadcrumbs}
-          primaryCta={copy.hero.primaryCta}
-          primaryServiceIntent="illuminated-valance-feasibility"
-          primaryInitialIssueType={ISSUE_TYPE}
-          primaryInitialMessage={copy.hero.primaryPrefill}
-          secondaryCta={copy.hero.secondaryCta}
-          secondaryServiceIntent="illuminated-valance-product-montage"
-          secondaryInitialIssueType={ISSUE_TYPE}
-          secondaryInitialMessage={copy.hero.secondaryPrefill}
           dayViewLabel={copy.hero.dayViewLabel}
           nightViewLabel={copy.hero.nightViewLabel}
         />

@@ -1981,12 +1981,6 @@ export default async function WerbeanlagenReinigungPage({
           subline={content.heroSubline}
           slides={[{ src: CLEANING_HERO_IMAGE, alt: content.heroImageAlt, objectPosition: 'center 15%' }]}
           breadcrumbs={getCleaningBreadcrumbs(safeLocale, content.serviceName)}
-          primaryCta={content.heroPrimaryCta}
-          primaryServiceIntent="cleaning-hero-photo-request"
-          primaryInitialIssueType="Cleaning"
-          primaryInitialMessage={requestPrefillMessage}
-          secondaryCta={content.heroSecondaryCta}
-          secondaryHref={content.heroSecondaryHref ?? '#cleaning-scope'}
         />
 
         <LeistungenCleaningWorkflow
