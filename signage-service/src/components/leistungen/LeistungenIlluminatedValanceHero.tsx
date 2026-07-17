@@ -5,7 +5,6 @@ import { MoonIcon, SunIcon } from '@heroicons/react/24/solid';
 import { useEffect, useState } from 'react';
 
 import HeroBreadcrumbs from '@/components/common/HeroBreadcrumbs';
-import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestButton';
 
 type BreadcrumbItem = {
   label: string;
@@ -16,14 +15,6 @@ type LeistungenIlluminatedValanceHeroProps = {
   title: string;
   subline: string;
   breadcrumbs: BreadcrumbItem[];
-  primaryCta: string;
-  primaryServiceIntent: string;
-  primaryInitialIssueType: string;
-  primaryInitialMessage: string;
-  secondaryCta: string;
-  secondaryServiceIntent: string;
-  secondaryInitialIssueType: string;
-  secondaryInitialMessage: string;
   dayViewLabel: string;
   nightViewLabel: string;
 };
@@ -32,14 +23,6 @@ export default function LeistungenIlluminatedValanceHero({
   title,
   subline,
   breadcrumbs,
-  primaryCta,
-  primaryServiceIntent,
-  primaryInitialIssueType,
-  primaryInitialMessage,
-  secondaryCta,
-  secondaryServiceIntent,
-  secondaryInitialIssueType,
-  secondaryInitialMessage,
   dayViewLabel,
   nightViewLabel,
 }: LeistungenIlluminatedValanceHeroProps) {
@@ -99,8 +82,9 @@ export default function LeistungenIlluminatedValanceHero({
 
       <HeroBreadcrumbs items={breadcrumbs} />
 
-      <div className="pr-site-container relative flex h-full flex-col justify-end pb-10 sm:pb-12 lg:pb-14">
+      <div className="pr-site-container relative flex h-full flex-col justify-end pb-6 sm:pb-8 lg:pb-10">
         <div className="max-w-[960px] ltr:text-left rtl:text-right">
+          <div className="mb-4 h-1 w-20 bg-[#B8643E]" />
           <h1 className="max-w-full break-words text-[34px] font-extrabold leading-[1.05] tracking-tight text-white [overflow-wrap:anywhere] sm:text-[48px] lg:text-[54px]">
             {title}
           </h1>
@@ -108,22 +92,7 @@ export default function LeistungenIlluminatedValanceHero({
             {subline}
           </p>
         </div>
-        <div className="mt-7 flex flex-wrap items-center gap-3 sm:flex-nowrap">
-          <div className="flex flex-wrap gap-3">
-            <LeistungenRequestButton
-              label={primaryCta}
-              serviceIntent={primaryServiceIntent}
-              initialIssueType={primaryInitialIssueType}
-              initialMessage={primaryInitialMessage}
-            />
-            <LeistungenRequestButton
-              label={secondaryCta}
-              serviceIntent={secondaryServiceIntent}
-              variant="dark-ghost"
-              initialIssueType={secondaryInitialIssueType}
-              initialMessage={secondaryInitialMessage}
-            />
-          </div>
+        <div className="mt-7 flex justify-end">
           <button
             type="button"
             onClick={handleToggle}

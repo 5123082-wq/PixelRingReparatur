@@ -1841,8 +1841,6 @@ export default async function WerbeanlagenReparaturPage({
           subline={content.heroSubline}
           slides={getHeroSlides(locale)}
           breadcrumbs={getRepairBreadcrumbs(safeLocale)}
-          primaryCta={content.heroPrimaryCta}
-          secondaryCta={content.heroSecondaryCta}
         />
 
         {/* Symptoms Grid & Interactive workflow (Client Component) */}

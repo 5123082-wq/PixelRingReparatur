@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 
 import {
   DEFAULT_SITE_LOCALE,
+  PUBLIC_SITEMAP_LAST_MODIFIED_BY_PATH,
   PUBLIC_SITEMAP_PATHS,
   PROBLEM_ARTICLE_PUBLIC_SLUGS,
   SITE_LOCALES,
@@ -82,7 +83,7 @@ function buildEntry(
   locale: string,
   path: string,
   options: {
-    lastModified?: Date;
+    lastModified?: SitemapEntry['lastModified'];
     languages?: Record<string, string>;
   } = {}
 ): SitemapEntry {
@@ -92,8 +93,6 @@ function buildEntry(
   return {
     url,
     ...(options.lastModified ? { lastModified: options.lastModified } : {}),
-    changeFrequency: canonicalPath === '' ? 'weekly' : 'monthly',
-    priority: canonicalPath === '' ? 1 : canonicalPath === '/probleme-loesungen' ? 0.9 : 0.7,
     alternates: {
       languages: options.languages ?? buildLanguageAlternates(canonicalPath),
     },
@@ -105,7 +104,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   for (const locale of SITE_LOCALES) {
     for (const path of PUBLIC_SITEMAP_PATHS) {
-      entries.push(buildEntry(locale, path));
+      entries.push(
+        buildEntry(locale, path, {
+          lastModified: PUBLIC_SITEMAP_LAST_MODIFIED_BY_PATH[path],
+        })
+      );
     }
   }
 
@@ -116,8 +119,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         lastModified: article.lastModified,
         languages: article.alternates,
       }),
-      changeFrequency: 'monthly',
-      priority: 0.75,
     });
   }
 

@@ -214,14 +214,14 @@ const Header = ({
 
   return (
     <>
-      <div className="h-[72px] lg:h-[120px] w-full shrink-0" />
+      <div className="h-[64px] lg:h-[120px] w-full shrink-0" />
       <header
         className="pr-header-surface fixed top-0 z-50 w-full border-b"
         data-secondary-nav-visible={isDesktopNavVisible}
       >
         <div className="pr-site-container">
           <div
-            className="flex min-h-[72px] items-center justify-between gap-3"
+            className="flex min-h-[64px] items-center justify-between gap-3"
             onPointerEnter={() => setIsDesktopNavVisible(true)}
             onMouseEnter={() => setIsDesktopNavVisible(true)}
             onFocusCapture={() => setIsDesktopNavVisible(true)}
@@ -242,7 +242,7 @@ const Header = ({
                   width={520}
                   height={132}
                   priority
-                  className="block h-[48px] w-auto [@media(min-width:390px)]:h-[52px] sm:hidden"
+                  className="block h-[43px] w-auto [@media(min-width:390px)]:h-[47px] sm:hidden"
                 />
               </Link>
             </div>
