@@ -30,7 +30,7 @@
     "services_audit": "Denetim ve teşhis",
     "services_installation": "Montaj ve demontaj",
     "services_branding": "Baskı ürünleri ve markalama",
-    "services_illuminated_valance": "Işıklı tente valansları"
+    "services_illuminated_valance": "Işıklı tente etekleri"
   },
   "Footer": {
     "copyright": "© 2024 PixelRing Technical Atelier. Tüm hakları saklıdır.",
@@ -313,7 +313,7 @@
     "issue_installation": "Montaj",
     "issue_maintenance": "Bakım",
     "issue_cleaning": "Temizlik / bakım",
-    "issue_illuminated_valance": "Işıklı tente valansları",
+    "issue_illuminated_valance": "Işıklı tente etekleri",
     "field_location": "Adres veya konum (isteğe bağlı)",
     "field_contact": "Talep için e-posta",
     "field_email": "Talep için e-posta",

@@ -156,7 +156,7 @@ const HOME_SERVICES_COPY: Record<Locale, HomeServicesCopy> = {
     eyebrow: 'Услуги',
     title: 'Быстрый вход в нужное сервисное направление',
     intro:
-      'Ремонт, очистка, LED-сервис, диагностика, монтаж, брендинг и световые ламбрекены — сразу к нужному направлению.',
+      'Ремонт, очистка, LED-сервис, диагностика, монтаж, брендинг и воланы с подсветкой — сразу к нужному направлению.',
     overviewEyebrow: 'Услуги PixelRing',
     overviewTitle: 'Всё — в одних ответственных руках.',
     overviewMeta: '7 направлений услуг',
@@ -188,7 +188,7 @@ const HOME_SERVICES_COPY: Record<Locale, HomeServicesCopy> = {
       },
       {
         id: 'illuminatedValance',
-        title: 'Световые ламбрекены для маркиз',
+        title: 'Воланы с подсветкой для маркиз',
       },
     ],
   },
@@ -196,7 +196,7 @@ const HOME_SERVICES_COPY: Record<Locale, HomeServicesCopy> = {
     eyebrow: 'Hizmetler',
     title: 'Doğru hizmet alanına hızlı giriş',
     intro:
-      'Onarım, temizlik, LED servisi, teşhis, montaj, markalama ve ışıklı tente volanları — doğrudan ilgili hizmet alanına.',
+      'Onarım, temizlik, LED servisi, teşhis, montaj, markalama ve ışıklı tente etekleri — doğrudan ilgili hizmet alanına.',
     overviewEyebrow: 'PixelRing hizmetleri',
     overviewTitle: 'Her şey tek bir sorumlu elden.',
     overviewMeta: '7 hizmet alanına genel bakış',
@@ -216,7 +216,7 @@ const HOME_SERVICES_COPY: Record<Locale, HomeServicesCopy> = {
       },
       {
         id: 'audit',
-        title: 'Audit ve teşhis',
+        title: 'Denetim ve teşhis',
       },
       {
         id: 'installation',
@@ -228,7 +228,7 @@ const HOME_SERVICES_COPY: Record<Locale, HomeServicesCopy> = {
       },
       {
         id: 'illuminatedValance',
-        title: 'Işıklı tente volanları',
+        title: 'Işıklı tente etekleri',
       },
     ],
   },
@@ -236,7 +236,7 @@ const HOME_SERVICES_COPY: Record<Locale, HomeServicesCopy> = {
     eyebrow: 'Usługi',
     title: 'Szybkie przejście do właściwego obszaru serwisu',
     intro:
-      'Naprawa, czyszczenie, serwis LED, diagnostyka, montaż, branding i podświetlane lambrekiny markiz — prosto do właściwej usługi.',
+      'Naprawa, czyszczenie, serwis LED, diagnostyka, montaż, branding i podświetlane falbany markizowe — prosto do właściwej usługi.',
     overviewEyebrow: 'Usługi PixelRing',
     overviewTitle: 'Wszystko u jednego odpowiedzialnego partnera.',
     overviewMeta: '7 obszarów usług w skrócie',
@@ -268,7 +268,7 @@ const HOME_SERVICES_COPY: Record<Locale, HomeServicesCopy> = {
       },
       {
         id: 'illuminatedValance',
-        title: 'Podświetlane lambrekiny markiz',
+        title: 'Podświetlane falbany markizowe',
       },
     ],
   },
@@ -276,7 +276,7 @@ const HOME_SERVICES_COPY: Record<Locale, HomeServicesCopy> = {
     eyebrow: 'الخدمات',
     title: 'مدخل مباشر إلى مجال الخدمة المناسب',
     intro:
-      'الإصلاح والتنظيف وخدمة LED والتشخيص والتركيب والهوية البصرية والحواف المضيئة للمظلات — مباشرة إلى مجال الخدمة المناسب.',
+      'اختر بين الإصلاح والتنظيف وخدمة LED والتشخيص والتركيب والهوية البصرية والحواف الأمامية المضيئة للمظلات.',
     overviewEyebrow: 'خدمات PixelRing',
     overviewTitle: 'كل شيء عبر جهة واحدة مسؤولة.',
     overviewMeta: 'نظرة عامة على 7 مجالات خدمة',
@@ -308,7 +308,7 @@ const HOME_SERVICES_COPY: Record<Locale, HomeServicesCopy> = {
       },
       {
         id: 'illuminatedValance',
-        title: 'حواف مضيئة للمظلات',
+        title: 'حواف أمامية مضيئة للمظلات',
       },
     ],
   },

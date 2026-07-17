@@ -38,7 +38,7 @@ const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
     services_audit: 'Аудит и диагностика',
     services_installation: 'Монтаж и демонтаж',
     services_branding: 'Печать и брендинг',
-    services_illuminated_valance: 'Световые ламбрекены маркиз',
+    services_illuminated_valance: 'Воланы с подсветкой',
   },
   tr: {
     services_repair: 'Reklam sistemi onarımı',
@@ -47,7 +47,7 @@ const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
     services_audit: 'Denetim ve teşhis',
     services_installation: 'Montaj ve demontaj',
     services_branding: 'Baskı ürünleri ve markalama',
-    services_illuminated_valance: 'Işıklı tente valansları',
+    services_illuminated_valance: 'Işıklı tente etekleri',
   },
   pl: {
     services_repair: 'Naprawa reklam',
@@ -56,7 +56,7 @@ const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
     services_audit: 'Audyt i diagnostyka',
     services_installation: 'Montaż i demontaż',
     services_branding: 'Druk i branding',
-    services_illuminated_valance: 'Podświetlane lambrekiny markiz',
+    services_illuminated_valance: 'Podświetlane falbany markizowe',
   },
   ar: {
     services_repair: 'إصلاح اللوحات الإعلانية',
@@ -65,7 +65,7 @@ const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
     services_audit: 'التدقيق والتشخيص',
     services_installation: 'التركيب والفك',
     services_branding: 'الطباعة والهوية',
-    services_illuminated_valance: 'دلايات المظلات المضيئة',
+    services_illuminated_valance: 'الحواف الأمامية المضيئة للمظلات',
   },
 };
 
