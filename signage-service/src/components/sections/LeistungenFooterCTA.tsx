@@ -64,8 +64,8 @@ export default function LeistungenFooterCTA({
   const resolvedRequestCta = requestCta ?? texts.ctaLabel;
 
   return (
-    <section className="bg-white px-4 py-12 sm:px-6 sm:py-16">
-      <div className="mx-auto max-w-7xl">
+    <section className="bg-white py-12 sm:py-16">
+      <div className="pr-site-container">
         <h2 className="max-w-4xl text-3xl font-extrabold leading-[1.08] tracking-[0] text-[#0E1A2B] sm:text-5xl">
           {finalHeadline}
         </h2>

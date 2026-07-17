@@ -86,7 +86,7 @@ export default function LeistungenRepairHeroSlider({
 
       <HeroBreadcrumbs items={breadcrumbs} />
 
-      <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-4 pb-10 sm:px-6 sm:pb-12 min-[1328px]:px-0 lg:pb-14">
+      <div className="pr-site-container relative flex h-full flex-col justify-end pb-10 sm:pb-12 lg:pb-14">
         <div className="max-w-[960px] ltr:text-left rtl:text-right">
           <div className="mb-4 h-1 w-20 bg-[#B8643E]" />
           <h1 className="animate-in fade-in slide-in-from-bottom-3 max-w-full break-words text-[34px] font-extrabold leading-[1.05] tracking-tight text-white duration-500 [overflow-wrap:anywhere] sm:text-[48px] lg:text-[54px]">

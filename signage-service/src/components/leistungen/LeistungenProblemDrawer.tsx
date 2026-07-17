@@ -3,6 +3,7 @@
 import React, { useEffect, useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ContactForm from '../common/ContactForm';
+import type { CalculationSnapshot } from '@/lib/calculation-snapshot';
 
 interface LeistungenProblemDrawerProps {
   isOpen: boolean;
@@ -16,6 +17,7 @@ interface LeistungenProblemDrawerProps {
   formTitle?: string;
   reassuringLabel?: string;
   formIntro?: string;
+  calculationSnapshot?: CalculationSnapshot | null;
 }
 
 export default function LeistungenProblemDrawer({
@@ -30,6 +32,7 @@ export default function LeistungenProblemDrawer({
   formTitle = 'Instandsetzung anfragen',
   reassuringLabel = 'Einschätzung & Lösung',
   formIntro = 'Geben Sie Ihre Kontaktdaten an, um das Ticket für diesen Defekt direkt in unser System einzustellen.',
+  calculationSnapshot = null,
 }: LeistungenProblemDrawerProps) {
   const titleId = useId();
 
@@ -140,6 +143,7 @@ export default function LeistungenProblemDrawer({
                     dropdownPosition="bottom"
                     initialIssueType={initialIssueType}
                     initialMessage={initialMessage}
+                    calculationSnapshot={calculationSnapshot}
                     onSuccess={() => {
                       setTimeout(() => {
                         onClose();

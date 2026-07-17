@@ -12,6 +12,12 @@ import { withLocalePath } from '../../../admin-route';
 import { Button } from '@/components/admin/ui/Button';
 import { Input, Textarea, Select } from '@/components/admin/ui/Input';
 import { Badge } from '@/components/admin/ui/Badge';
+import type { CalculationSnapshot } from '@/lib/calculation-snapshot';
+import {
+  formatCalculationSnapshotNetTotal,
+  formatCalculationSnapshotRows,
+  formatCalculationSnapshotStatus,
+} from '@/lib/calculation-snapshot-crm';
 
 type CaseDetail = {
   id: string;
@@ -31,6 +37,7 @@ type CaseDetail = {
   serviceLocationSource: string | null;
   summary: string | null;
   description: string | null;
+  calculationSnapshot: CalculationSnapshot | null;
   createdAt: string;
   updatedAt: string;
   messages: {
@@ -478,6 +485,12 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
         longitude: caseData.serviceLongitude,
       })
     : null;
+  const calculationRows = caseData.calculationSnapshot
+    ? formatCalculationSnapshotRows(caseData.calculationSnapshot)
+    : [];
+  const calculationNetTotal = caseData.calculationSnapshot
+    ? formatCalculationSnapshotNetTotal(caseData.calculationSnapshot)
+    : null;
 
   return (
     <div className="flex min-h-[calc(100vh-96px)] flex-col overflow-hidden rounded-xl border border-white/[0.03] bg-zinc-950 font-sans selection:bg-indigo-500/30 md:h-[calc(100vh-64px)] md:rounded-none md:border-0">
@@ -634,6 +647,62 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                   })}
                </div>
              </section>
+          )}
+
+          {caseData.calculationSnapshot && (
+            <section className="space-y-4" data-calculation-snapshot-card>
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-[10px] font-black text-[#E2A07C] uppercase tracking-widest">
+                  Website-Kalkulation
+                </h3>
+                <span className="rounded border border-[#E2A07C]/20 bg-[#E2A07C]/10 px-2 py-1 text-[8px] font-black uppercase tracking-widest text-[#E2A07C]">
+                  {formatCalculationSnapshotStatus(caseData.calculationSnapshot.resultStatus)}
+                </span>
+              </div>
+
+              <div className="overflow-hidden rounded-xl border border-white/[0.05] bg-white/[0.02]">
+                <div className="space-y-1 border-b border-white/[0.05] px-3 py-3 text-[9px] font-semibold text-zinc-500">
+                  <p>Quelle: Website · Sprache: {caseData.calculationSnapshot.sourceLocale}</p>
+                  <p className="break-all font-mono">Konfiguration: {caseData.calculationSnapshot.configVersion}</p>
+                  <p>Schema: v{caseData.calculationSnapshot.schemaVersion}</p>
+                </div>
+
+                <dl className="divide-y divide-white/[0.04]">
+                  {calculationRows.map((row) => (
+                    <div key={row.key} className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 px-3 py-2.5">
+                      <dt className="min-w-0 break-words text-[10px] font-semibold text-zinc-500">
+                        {row.label}
+                      </dt>
+                      <dd className="max-w-[150px] break-words text-right text-[11px] font-bold text-zinc-200">
+                        {row.value}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+
+                {calculationNetTotal && (
+                  <div className="border-t border-[#E2A07C]/20 bg-[#E2A07C]/[0.06] px-3 py-3">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500">Netto gesamt</span>
+                      <span className="text-lg font-black text-white">{calculationNetTotal}</span>
+                    </div>
+                  </div>
+                )}
+
+                {caseData.calculationSnapshot.reviewReasons?.length ? (
+                  <div className="border-t border-white/[0.05] px-3 py-3">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500">Prüfgründe</p>
+                    <p className="mt-1 break-words font-mono text-[9px] leading-4 text-amber-300">
+                      {caseData.calculationSnapshot.reviewReasons.join(', ')}
+                    </p>
+                  </div>
+                ) : null}
+              </div>
+
+              <p className="rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2.5 text-[10px] font-semibold leading-4 text-amber-200">
+                Vorläufige Website-Kalkulation – Werte und Preis vor dem Angebot erneut prüfen.
+              </p>
+            </section>
           )}
 
           <section className="space-y-4">

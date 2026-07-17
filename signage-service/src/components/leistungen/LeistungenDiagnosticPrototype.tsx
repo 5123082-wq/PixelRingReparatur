@@ -1266,8 +1266,8 @@ export default function LeistungenDiagnosticPrototype({ locale }: LeistungenDiag
 
   return (
     <>
-      <section id="diagnose-variante" className="border-t border-[#E7DDD3] bg-[#F7F1E8] px-4 py-16 sm:px-6 sm:py-24">
-        <div className="mx-auto max-w-7xl">
+      <section id="diagnose-variante" className="border-t border-[#E7DDD3] bg-[#F7F1E8] py-16 sm:py-24">
+        <div className="pr-site-container">
           <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(320px,0.62fr)] lg:items-end">
             <div className="text-start">
               <SectionEyebrow className="mb-3">{content.eyebrow}</SectionEyebrow>

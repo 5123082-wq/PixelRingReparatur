@@ -13,6 +13,7 @@ Current active tracks:
 - `Probleme & Lösungen` (проблемы и решения): modernization of the problem-content cluster, including weak article rewrites, structured sections, CTA safety, and CMS article handling.
 - Service pages (страницы услуг): reusable service-page pattern from `Werbeanlagen-Reparatur` (ремонт рекламных конструкций) and follow-up work for neighboring service pages.
 - `LED-Modernisierung` (LED-модернизация): service page strengthening is active; future problem articles remain deferred until explicit owner approval.
+- `Beleuchtete Markisen-Volants` (воланы для маркиз с подсветкой): the approved German canonical copy and natural Russian adaptation (канонический немецкий текст и естественная русская адаптация) are implemented with owner-provided day/night hero media (пара визуалов первого экрана день/ночь), an accessible `Tag/Nacht` (день/ночь) control, and the `IlluminatedValance` (волан с подсветкой) intake type. The compatibility block (блок проверки совместимости) is compressed into one explanation, two short checklists, one CTA (призыв к действию), and one fallback note. Calculator Blocks 2A/2B (блоки 2A/2B калькулятора) provide seven customer inputs, exact self-hosted font measurement (измерение по точным локальным файлам шрифтов), a live proportional SVG preview (живое пропорциональное схематичное превью), fit validation (проверку размещения), and one provisional PixelRing-owned net total (одну предварительную сумму без НДС по собственным тарифам PixelRing) in DE/RU (немецкой и русской версиях). The approved request handoff (передача расчёта в заявку) now sends one validated, versioned, language-independent JSON snapshot (структурированный снимок JSON, не зависящий от языка) through the existing form, stores it only on `Case` (заявке), and renders it in the internal CRM (системе работы с заявками); the reviewed Prisma migration `20260717113000_add_case_calculation_snapshot` (проверенная миграция Prisma для снимка расчёта) was applied to the configured database on 2026-07-17. Tariffs remain a temporary typed code configuration (временной типизированной конфигурацией в коде), and CMS tariff management (управление тарифами через систему управления контентом) is not connected. Ten Latin/Cyrillic fonts (десять шрифтов с латиницей и кириллицей) and their SIL OFL licenses (открытые лицензии на шрифты) are retained locally. Local pre-publication integration (локальная подготовка к публикации) resolves all six locale routes and retains `noindex` (запрет индексации), no `sitemap.xml` (карту сайта), and no `hreflang` (языковые альтернативы). EN/TR/PL/AR page copy and public SEO/GEO (поисковая и AI-видимость) remain deferred to the final translation/release pass (проход переводов и публикации).
 - SEO/GEO hygiene (поисковая и AI-видимость): structured data, metadata, internal linking, and content quality improvements with current-state vs planned-state separation.
 
 Read-first rules:
@@ -49,6 +50,11 @@ Archive/history rule:
 - [service_page_pattern_werbeanlagen_reparatur.md](service_page_pattern_werbeanlagen_reparatur.md) - reusable service page pattern (повторяемый шаблон страницы услуги) based on `/leistungen/werbeanlagen-reparatur` (страница ремонта рекламных конструкций).
 - [service_page_neighbor_handoff.md](service_page_neighbor_handoff.md) - next-agent handoff (передача следующему агенту) for neighboring service pages (соседние страницы услуг).
 - [service_page_led_modernisierung_plan.md](service_page_led_modernisierung_plan.md) - active implementation plan (активный план внедрения) for `/leistungen/lichtwerbung-led-modernisierung` (страница LED-модернизации).
+- [service_page_beleuchtete_markisenvolants_product_brief.md](service_page_beleuchtete_markisenvolants_product_brief.md) - product brief and page foundation (продуктовый бриф и основа будущей страницы) for `Beleuchtete Markisen-Volants` (световые ламбрекены маркиз).
+- [service_page_beleuchtete_markisenvolants_implementation_plan.md](service_page_beleuchtete_markisenvolants_implementation_plan.md) - approved staged implementation plan (утверждённый поэтапный план внедрения) covering the page, day/night hero (первый экран день/ночь), navigation, homepage service grid (сетка услуг на главной), intake, localization, QA (проверка качества), and deferred calculator (отложенный калькулятор).
+- [service_page_beleuchtete_markisenvolants_calculator_plan.md](service_page_beleuchtete_markisenvolants_calculator_plan.md) - owner-approved minimal calculator specification (утверждённая владельцем минимальная спецификация калькулятора) covering font-based text measurement (измерение текста по метрикам шрифта), valance geometry (геометрию волана), logo placement (размещение логотипа), PixelRing-owned tariffs (собственные тарифы PixelRing), CMS management (управление через систему управления контентом), request handoff (передачу в обращение), tests, and staged orchestration (поэтапную оркестрацию).
+- [service_page_beleuchtete_markisenvolants_de_canonical_copy_draft.md](service_page_beleuchtete_markisenvolants_de_canonical_copy_draft.md) - owner-review German canonical copy draft (черновик канонического немецкого текста для проверки владельцем) for the first page version, including metadata, CTA (призывы к действию), FAQ (частые вопросы), cards, and form prefill (предзаполнение формы).
+- [service_page_beleuchtete_markisenvolants_evidence_matrix.md](service_page_beleuchtete_markisenvolants_evidence_matrix.md) - source, claim, legal-risk, and supplier-validation matrix (матрица источников, публичных утверждений, правовых рисков и проверки поставщика) for the same category.
 - [copy_system.md](copy_system.md) - copy system (система текстов) for public content.
 - [cta_labels_master.md](cta_labels_master.md) - CTA label library (библиотека призывов к действию).
 
@@ -66,6 +72,97 @@ Archive/history rule:
 ## Latest Checkpoints
 
 Do not read full progress log at startup. Read only when continuing this track.
+
+### 2026-07-16 - Illuminated-Valance Calculator Plan (план калькулятора волана с подсветкой)
+
+* **Current sprint/block:** Owner-approved minimal calculation and orchestration specification (утверждённая владельцем минимальная спецификация расчёта и оркестрации).
+* **Done:** Created a dedicated [calculator plan](service_page_beleuchtete_markisenvolants_calculator_plan.md) (план калькулятора) that removes supplier prices, procurement matrices, font-complexity pricing, mounting, electrical work, and permit logic from the automatic estimate. The approved customer inputs are valance length/height, full text, one curated font, letter height, logo placement, and item quantity. The system measures actual text length from the selected font file, validates fit, renders a schematic preview (схематичное превью), calculates from PixelRing-owned rates, and hands the snapshot to the existing protected request form.
+* **In progress:** Preparation for Block 1 (подготовка блока 1): typed calculation contract (типизированный расчётный контракт) and boundary tests (граничные тесты) without a visible page change.
+* **Next action:** Obtain separate owner confirmation for Block 1 and owner-provided rates, layout margins, tax/rounding rule, and initial font files; test-only values may be used internally but must not appear as public prices.
+* **Blockers/risks:** Real rates and exact licensed font files are not yet provided. Do not expose placeholder prices or rely on device system fonts.
+* **Updated documents:** calculator plan (план калькулятора), page implementation plan (план внедрения страницы), this README (этот файл-ориентир), domain progress log (доменный журнал), and `PROGRESS.md` (краткий глобальный журнал).
+
+### 2026-07-14 - Request-Process Section Removed (удалён блок процесса запроса)
+
+* **Current sprint/block:** Owner-directed removal of `Как проходит запрос` / `So läuft die Anfrage ab` (блока процесса запроса) from the localized illuminated-valance page (локализованной страницы воланов с подсветкой).
+* **Done:** Removed the entire section, not only its rendering: route markup (разметку маршрута), typed copy schema (типизированную структуру текстов), German/Russian copy (немецкие и русские тексты), heading, introduction, four numbered steps, and three order-option cards. The compact compatibility block (компактный блок проверки совместимости) now connects directly to the individual cost assessment (индивидуальной оценке стоимости). Source search (поиск по исходному коду), RU and DE DOM checks (проверки структуры русской и немецкой страниц), mobile rendering (мобильный рендер), targeted ESLint (точечная проверка кода), `git diff --check` (проверка формата изменений), and horizontal-overflow checks (проверки горизонтального переполнения) passed.
+* **In progress:** Owner visual review (визуальная проверка владельцем) of the shortened RU page flow (сокращённой последовательности русской страницы).
+* **Next action:** Continue only with the next separately approved page change.
+* **Blockers/risks:** The routes remain `noindex` (запрещёнными для индексации), outside `sitemap.xml` (карты сайта) and `hreflang` (языковых альтернатив). Essential request guidance must remain available through the compact compatibility block and request form (форму обращения).
+* **Updated documents:** this README (этот файл-ориентир), domain progress log (доменный журнал), implementation plan (план внедрения), `PROGRESS.md` (краткий глобальный журнал), and route page (страница маршрута).
+
+### 2026-07-14 - Compact Compatibility Block (компактный блок проверки совместимости)
+
+* **Current sprint/block:** Owner-approved reduction of `Passt das zu meiner Markise?` (подойдёт ли это к моей маркизе?) in RU and DE (русской и немецкой версиях).
+* **Done:** Replaced three numbered step cards and two repeated lower cards with a shorter heading, one direct photo instruction, two three-item cards (`Что прислать` and `Что пока не нужно`), one CTA (призыв к действию), and one short note for incomplete photo sets. The next process section (следующий блок процесса) is unchanged. RU and DE desktop/mobile rendering (русский и немецкий рендер на компьютере и мобильном устройстве), targeted ESLint (точечная проверка кода), `git diff --check` (проверка формата изменений), and horizontal overflow checks (проверки горизонтального переполнения) passed.
+* **In progress:** Owner visual/copy review (визуальная и текстовая проверка владельцем) of the compact block.
+* **Next action:** Continue only with the next separately approved page change; after complete RU approval, prepare EN/TR/PL/AR translations (переводы на английский, турецкий, польский и арабский).
+* **Blockers/risks:** The routes remain `noindex` (запрещёнными для индексации), outside `sitemap.xml` (карты сайта) and `hreflang` (языковых альтернатив). Do not turn the compatibility wording into a universal compatibility promise (обещание универсальной совместимости).
+* **Updated documents:** this README (этот файл-ориентир), domain progress log (доменный журнал), implementation plan (план внедрения), `PROGRESS.md` (краткий глобальный журнал), localized copy (локализованные тексты), and route page (страница маршрута).
+
+### 2026-07-14 - Russian `Beleuchtete Markisen-Volants` Localization (русская локализация страницы воланов для маркиз с подсветкой)
+
+* **Current sprint/block:** Owner-approved RU page-copy implementation (внедрение утверждённого русского текста страницы).
+* **Done:** `/ru/leistungen/beleuchtete-markisenvolants` (русская страница воланов для маркиз с подсветкой) now renders the approved natural Russian adaptation across the full page, localized metadata (метаданные), image alt text (альтернативные описания изображений), day/night control (переключатель день/ночь), exchange animation and slider labels (подписи анимации и слайдера замены), and request prefills (предзаполнения обращения). Shared RU navigation/form labels (русские подписи навигации и формы) now consistently use the normative forms `волан/воланы/волана` (нормативные русские формы); the previous public terms `волант` and `ламбрекен` are no longer used for this product in the implemented Russian interface. DE (немецкая версия) is unchanged; targeted ESLint (точечная проверка кода), JSON validation (проверка JSON), metadata/DOM checks (проверки метаданных и структуры страницы), and 390/1440 px responsive rendering (адаптивный рендер) passed without page-level horizontal overflow (горизонтального переполнения страницы).
+* **In progress:** Owner local visual/copy review (локальная визуальная и текстовая проверка владельцем) of the RU desktop/mobile page (русской страницы на компьютере и мобильном устройстве).
+* **Next action:** After RU approval (утверждения русской версии), translate EN/TR/PL/AR in separate language passes (отдельными языковыми проходами), replace temporary visualizations (временные визуализации) with approved real project media, and then run the separate indexability/release pass (проход индексации и публикации).
+* **Blockers/risks:** All route variants remain `noindex` (запрещёнными для индексации), outside `sitemap.xml` (карты сайта) and `hreflang` (языковых альтернатив). EN/TR/PL/AR still use the temporary DE fallback (немецкий текст-заполнитель). Repository-wide TypeScript (общая проверка TypeScript) is still blocked only by pre-existing unrelated errors in `referenzen` (примеры работ) and `status` (статус заявки).
+* **Updated documents:** this README (этот файл-ориентир), domain progress log (доменный журнал), implementation plan (план внедрения), and `PROGRESS.md` (краткий глобальный журнал); changed application files are the localized route copy (тексты локализованного маршрута), route page (страница маршрута), hero/exchange components (компоненты первого экрана и замены), and RU messages (русские строки интерфейса).
+
+### 2026-07-13 - `Beleuchtete Markisen-Volants` Visual-Impact Section (визуальный блок результата световых ламбрекенов маркиз)
+
+* **Current sprint/block:** Owner-led upper-page sequence and product-value refinement (доработка порядка верхних блоков и ценности продукта с владельцем).
+* **Done:** Moved the reworked `Ihre sichtbare Markenfläche` (видимая бренд-зона) section directly after the hero (первого экрана), placed `Volantwechsel` (замена валана) third, and replaced the five-card bento grid (разновесная сетка) with three image-led cards (три карточки с главным акцентом на фотографии). Each card is explicitly marked `Visualisierung` (визуализация), keeps its title visible, reveals supporting copy on desktop hover/focus (при наведении/фокусе на компьютере), and shows the full copy by default on mobile (на мобильном устройстве). Three generated WebP placeholders (три временных сгенерированных изображения WebP) are stored locally for review and are not presented as completed PixelRing projects (выполненные проекты PixelRing).
+* **In progress:** Owner visual review (визуальная проверка владельцем) of the DE desktop/mobile block (немецкого блока на компьютере и мобильном устройстве) and final copy hierarchy (иерархии текста).
+* **Next action:** Replace the temporary visualizations (временные визуализации) with approved real project photos before release; keep the current `noindex` (запрет индексации) and localization boundary (границу локализации) until the separate release pass (проход публикации).
+* **Blockers/risks:** The generated media are concept placeholders (концептуальные временные материалы), not customer references (клиентские кейсы). Targeted ESLint (точечная проверка кода), desktop/mobile browser rendering (рендер на компьютере и мобильном устройстве), image loading (загрузка изображений), focus disclosure (раскрытие по фокусу), horizontal overflow (горизонтальное переполнение), console errors (ошибки консоли), and error overlay (окно ошибки) passed; the repository-wide TypeScript check (общая проверка TypeScript) remains blocked by pre-existing errors in unrelated `referenzen` (примеры работ) and `status` (статус заявки) routes.
+* **Updated documents:** this README (этот файл-ориентир), domain progress log (доменный журнал), `PROGRESS.md` (краткий глобальный журнал), the service-page route (маршрут страницы услуги), and three temporary WebP assets (три временных изображения WebP).
+
+### 2026-07-12 - `Beleuchtete Markisen-Volants` Block-by-Block DE Review (пошаговая DE-проверка блоков страницы)
+
+* **Current sprint/block:** Owner-led refinement (доработка с владельцем) of the isolated DE review route (изолированный немецкий маршрут для проверки).
+* **Done:** The owner-provided day/night hero (первый экран день/ночь) with the accessible `Tag/Nacht` (день/ночь) control remains active. The hero height, headline scale, text width, and text placement now match neighboring service pages; its subline was shortened. The first explanatory block now states that only the front valance is being considered. The compatibility block now follows a customer-friendly sequence: visible photos first, PixelRing technical review second, and measurements/electrical details only when they become necessary.
+* **In progress:** Owner DE desktop/mobile review (проверка немецкой версии на компьютере и мобильном устройстве) continues one page block at a time. The latest copy/layout refinements passed code checks, but are not yet a completed visual approval.
+* **Next action:** Review and decide on the next page block before changing it; defer the integration/localization pass (проход интеграции и локализаций) until the owner accepts the page content.
+* **Blockers/risks:** The route remains DE-only (только немецкий) and `noindex` (запрещён для индексации), outside `sitemap.xml` (карта сайта), `hreflang` (языковые альтернативы), public navigation, and cards. Do not add unsupported technical, price, warranty, or universal-compatibility claims.
+* **Updated documents:** implementation plan (план внедрения), this README, domain progress log (доменный журнал), and `PROGRESS.md` (краткий журнал состояния проекта).
+
+### 2026-07-11 - `Beleuchtete Markisen-Volants` DE Canonical Copy (канонический немецкий текст световых ламбрекенов маркиз)
+
+* **Current sprint/block:** Product-brief reconciliation and DE copy prototype (синхронизация продуктового брифа и DE-текстовый прототип).
+* **Done:** Reconciled the older supplier/launch prerequisites with the approved first public version; prepared a separate German canonical copy draft (отдельный черновик канонического немецкого текста) covering all page blocks, metadata, CTA (призывы к действию), FAQ (частые вопросы), navigation, service cards, homepage card, and form prefill (предзаполнение формы).
+* **In progress:** The owner approved the German canonical copy (владелец утвердил канонический немецкий текст); a front-facing day/night hero pair (фронтальная пара первого экрана день/ночь) with official PixelRing artwork has been prepared for visual review, while application code, form changes, and the calculator remain unimplemented.
+* **Next action:** Owner visually reviews the hero pair (пару первого экрана); after approval, begin the dedicated DE route implementation pass (проход реализации отдельного DE-маршрута).
+* **Blockers/risks:** Numeric technical claims, product-specific promises, price, warranty, and final electrical-execution model remain blocked pending internal validation.
+* **Updated documents:** product brief (продуктовый бриф), implementation plan (план внедрения), DE canonical copy draft (черновик канонического немецкого текста), this README, domain progress log (доменный журнал), and `PROGRESS.md` (краткий журнал состояния проекта).
+
+### 2026-07-11 - `Beleuchtete Markisen-Volants` Implementation Plan (план внедрения световых ламбрекенов маркиз)
+
+* **Current sprint/block:** Owner-decision closure and staged implementation planning (закрытие решений владельца и поэтапное планирование внедрения).
+* **Done:** Approved the product name and route, PixelRing-owned offer framing, Germany-wide product delivery, Berlin/Brandenburg installation with other regions on request, photo-first intake without blocking missing fields, full-width day/night hero (первый экран день/ночь), seventh navigation/service card, eight-card homepage service grid, DE-first localization sequence, deferred calculator block, FAQ (частые вопросы), and seven implementation/verification passes.
+* **In progress:** No DE public copy, visuals, application code, or calculator has been implemented.
+* **Next action:** Reconcile the older product brief with the newer owner decisions, then prepare the complete German canonical page copy (канонический немецкий текст страницы) for approval before code.
+* **Blockers/risks:** Owner reference links are still needed before visual generation; public numeric technical claims remain blocked until internally verified.
+* **Updated documents:** implementation plan (план внедрения), this README, the domain progress log (доменный журнал), and `PROGRESS.md` (краткий журнал состояния проекта).
+
+### 2026-07-11 - `Beleuchtete Markisen-Volants` Product Brief (продуктовый бриф световых ламбрекенов маркиз)
+
+* **Current sprint/block:** Product definition and evidence base (определение продукта и доказательная база) for a future dedicated service page (будущая отдельная страница услуги).
+* **Done:**
+  - Defined `Beleuchtete Markisen-Volants` (световые ламбрекены маркиз) as a separate product-service category (отдельную товарно-сервисную категорию), not a subsection of `LED-Modernisierung` (LED-модернизации).
+  - Limited the first product version to `Nachrüstung einer bestehenden Markise` (модернизации существующей маркизы); full new awnings, standalone rails, and dynamic media variants (новые маркизы целиком, отдельные направляющие и динамические медиаварианты) remain deferred.
+  - Documented the offer modules, product variants, compatibility gate (проверку совместимости), request inputs, price factors, page structure, SEO/GEO terminology (поисковую и AI-терминологию), visual proof rules, site integration map (карту интеграции в сайт), and staged rollout (поэтапный запуск).
+  - Created a primary-source evidence matrix (матрицу первичных источников) covering Germany, France, EU/German product compliance (соответствие продукции требованиям ЕС и Германии), electrical work, permits, supplier conflicts, safe claims (безопасные публичные утверждения), and a supplier request checklist (контрольный список запроса поставщику).
+* **In progress:** No supplier, exact system, public price, warranty, or implementation has been approved.
+* **Next action:** Send one comparable technical request to at least two suppliers, verify the exact system documents, and then approve the German canonical product copy (канонический немецкий текст продукта).
+* **Blockers/risks:** Public technical numbers, universal compatibility, fixed prices, warranties, and permit claims (утверждения о разрешениях) remain blocked until a system, operational roles, and evidence are confirmed.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/02_public_website/README.md`
+  - `docs/07_content_ai_seo/README.md`
+  - `docs/07_content_ai_seo/content_ai_seo_progress_log.md`
+  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_product_brief.md`
+  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_evidence_matrix.md`
 
 ### 2026-07-09 - Public SEO Metadata Merge
 

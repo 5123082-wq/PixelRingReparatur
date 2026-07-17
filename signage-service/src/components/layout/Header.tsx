@@ -20,6 +20,7 @@ const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
     services_audit: 'Audit & Diagnose',
     services_installation: 'Montage & Demontage',
     services_branding: 'Druckprodukte & Branding',
+    services_illuminated_valance: 'Leuchtvolants',
   },
   en: {
     services_repair: 'Signage repair',
@@ -28,6 +29,7 @@ const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
     services_audit: 'Audit & diagnostics',
     services_installation: 'Installation & dismantling',
     services_branding: 'Print products & branding',
+    services_illuminated_valance: 'Illuminated awning valances',
   },
   ru: {
     services_repair: 'Ремонт рекламных конструкций',
@@ -36,6 +38,7 @@ const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
     services_audit: 'Аудит и диагностика',
     services_installation: 'Монтаж и демонтаж',
     services_branding: 'Печать и брендинг',
+    services_illuminated_valance: 'Световые ламбрекены маркиз',
   },
   tr: {
     services_repair: 'Reklam sistemi onarımı',
@@ -44,6 +47,7 @@ const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
     services_audit: 'Denetim ve teşhis',
     services_installation: 'Montaj ve demontaj',
     services_branding: 'Baskı ürünleri ve markalama',
+    services_illuminated_valance: 'Işıklı tente valansları',
   },
   pl: {
     services_repair: 'Naprawa reklam',
@@ -52,6 +56,7 @@ const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
     services_audit: 'Audyt i diagnostyka',
     services_installation: 'Montaż i demontaż',
     services_branding: 'Druk i branding',
+    services_illuminated_valance: 'Podświetlane lambrekiny markiz',
   },
   ar: {
     services_repair: 'إصلاح اللوحات الإعلانية',
@@ -60,6 +65,7 @@ const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
     services_audit: 'التدقيق والتشخيص',
     services_installation: 'التركيب والفك',
     services_branding: 'الطباعة والهوية',
+    services_illuminated_valance: 'دلايات المظلات المضيئة',
   },
 };
 
@@ -134,6 +140,7 @@ const Header = ({
     { label: getNavLabel('services_audit'), href: '/leistungen/werbeanlagen-audit-diagnose' },
     { label: getNavLabel('services_installation'), href: '/leistungen/montage-demontage-werbeanlagen' },
     { label: getNavLabel('services_branding'), href: '/leistungen/druckprodukte-branding-werbematerialien' },
+    { label: getNavLabel('services_illuminated_valance'), href: '/leistungen/beleuchtete-markisenvolants' },
   ];
   const hasCmsAccountStatusLabel =
     content?.accountStatusLabel && !content.accountStatusLabel.startsWith('Nav.');
@@ -212,7 +219,7 @@ const Header = ({
         className="pr-header-surface fixed top-0 z-50 w-full border-b"
         data-secondary-nav-visible={isDesktopNavVisible}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="pr-site-container">
           <div
             className="flex min-h-[72px] items-center justify-between gap-3"
             onPointerEnter={() => setIsDesktopNavVisible(true)}

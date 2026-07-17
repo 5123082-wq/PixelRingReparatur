@@ -45,7 +45,7 @@ const HeroSection = ({ content }: { content?: HomeHeroContent | null }) => {
         {/* Subtle top-right glow */}
         <div className="absolute top-0 right-0 w-[700px] h-[500px] bg-white/60 rounded-full blur-[120px] -translate-y-1/3 translate-x-1/4 pointer-events-none" />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6">
+        <div className="relative z-10 pr-site-container">
           <div className="grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:gap-10 items-center lg:min-h-[460px] xl:min-h-[480px]">
 
             {/* ── LEFT COLUMN ─────────────────────────── */}

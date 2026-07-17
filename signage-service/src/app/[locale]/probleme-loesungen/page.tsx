@@ -1328,7 +1328,7 @@ export default async function ProblemeLoesungenPage({
               <div className="absolute inset-0 bg-gradient-to-r from-[#0E1A2B]/48 via-[#0E1A2B]/12 to-transparent rtl:bg-gradient-to-l" />
               <HeroBreadcrumbs items={getPageBreadcrumbs(safeLocale, content.badge)} />
 
-              <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-4 pb-12 sm:px-6 sm:pb-14 lg:pb-16">
+              <div className="pr-site-container relative flex h-full flex-col justify-end pb-12 sm:pb-14 lg:pb-16">
                 <div className="mb-4 h-1 w-20 bg-[#B8643E]" />
                 <h1 className="max-w-[860px] text-[36px] font-black leading-[1.05] text-white sm:text-[52px] lg:text-[60px]">
                   {content.heroTitle}
@@ -1343,7 +1343,7 @@ export default async function ProblemeLoesungenPage({
 
         {content.problemEnabled !== false && (
           <section id="probleme" className="bg-white py-14 sm:py-20">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="pr-site-container">
               <div className="max-w-4xl">
                 <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">
                   {content.problemTitle}
@@ -1363,7 +1363,7 @@ export default async function ProblemeLoesungenPage({
 
         {content.impactEnabled !== false && (
           <section id="wirkung" className="bg-[#EEF3FB] py-14 sm:py-20">
-            <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+            <div className="pr-site-container grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
               <div>
                 <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">
                   {content.impactTitle}
@@ -1430,7 +1430,7 @@ export default async function ProblemeLoesungenPage({
             id="dringend"
             className="bg-[#0E1A2B] py-14 text-white sm:py-20"
           >
-            <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+            <div className="pr-site-container grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
               <div>
                 <h2 className="text-3xl font-extrabold leading-[1.1] sm:text-5xl">
                   {content.urgentTitle}
@@ -1466,7 +1466,7 @@ export default async function ProblemeLoesungenPage({
 
         {content.assessmentEnabled !== false && (
           <section id="einschaetzung" className="bg-white py-14 sm:py-20">
-            <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr]">
+            <div className="pr-site-container grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
               <div>
                 <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">
                   {content.assessmentTitle}
@@ -1493,7 +1493,7 @@ export default async function ProblemeLoesungenPage({
         )}
 
         <section id="seo-geo" className="bg-[#F7F1E8] py-14 sm:py-20">
-          <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.78fr_1.22fr]">
+          <div className="pr-site-container grid gap-10 lg:grid-cols-[0.78fr_1.22fr]">
             <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">
               {content.seoTitle}
             </h2>
@@ -1507,7 +1507,7 @@ export default async function ProblemeLoesungenPage({
 
         {content.faqEnabled !== false && (
           <section id="faq" className="bg-white py-14 sm:py-20">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="pr-site-container">
               <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
                 <div>
                   <h2 className="text-3xl font-extrabold leading-[1.1] text-[#0E1A2B] sm:text-5xl">
@@ -1540,8 +1540,8 @@ export default async function ProblemeLoesungenPage({
           </section>
         )}
         {content.finalEnabled !== false && (
-          <section className="bg-white px-6 py-14 sm:py-18">
-            <div className="mx-auto max-w-7xl">
+          <section className="bg-white py-14 sm:py-18">
+            <div className="pr-site-container">
               <div
                 className="grid gap-8 overflow-hidden rounded-[28px] border border-[#d3b2a2]/50 px-6 py-7 shadow-[0_18px_50px_rgba(8,24,39,0.08)] sm:px-8 sm:py-9 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-12"
                 style={{

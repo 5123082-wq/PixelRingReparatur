@@ -1,5 +1,16 @@
 # Design System Documentation Change Log
 
+## 2026-07-12
+
+- Replaced the stale `max-w-7xl` / repeated section-gutter guidance with the implemented global
+  `pr-site-container` rule: `16px`/`24px` small-screen gutters and a centered `1332px` maximum
+  desktop frame from `1280px` upward.
+- Documented that the header logo/action row, ordinary public-page content, and footer use the
+  same outer rail; narrow inner reading/form widths remain intentional nested constraints.
+- Added the `pr-carousel-rail` exception and controlled-overflow requirements for horizontal
+  media/case carousels, including RTL and document-overflow checks.
+- Expanded responsive verification from homepage-only checks to all public-page layout changes.
+
 ## 2026-05-23
 
 - Added the inner-page final CTA standard: secondary public pages should use a consistent compact final CTA with one primary service button only, without messenger/chat/e-mail quick-action icons beside the button. The `/business` final CTA is the accepted reference pattern.

@@ -74,9 +74,11 @@ export default async function TelegramReturnPage({ params, searchParams }: PageP
   const target = await getTelegramReturnTarget(prisma, returnNonce);
 
   return (
-    <main className="min-h-[100svh] bg-[#F7F1E8] px-4 py-4 text-[#0E1A2B] sm:px-6 lg:px-8">
-      <CustomerStandaloneNav />
-      <TelegramReturnClient telegramUrl={target.telegramReturnUrl} copy={getCopy(locale)} />
+    <main className="min-h-[100svh] bg-[#F7F1E8] text-[#0E1A2B]">
+      <div className="pr-site-container py-4">
+        <CustomerStandaloneNav />
+        <TelegramReturnClient telegramUrl={target.telegramReturnUrl} copy={getCopy(locale)} />
+      </div>
     </main>
   );
 }

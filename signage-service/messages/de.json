@@ -29,7 +29,8 @@
     "services_led": "Lichtwerbung & LED-Modernisierung",
     "services_audit": "Audit & Diagnose",
     "services_installation": "Montage & Demontage",
-    "services_branding": "Druckprodukte & Branding"
+    "services_branding": "Druckprodukte & Branding",
+    "services_illuminated_valance": "Leuchtvolants"
   },
   "Footer": {
     "copyright": "© 2024 PixelRing Technical Atelier. Alle Rechte vorbehalten.",
@@ -309,9 +310,10 @@
     "field_name_company": "Name und Firma (optional)",
     "field_issue_type": "Typ der Anfrage (optional)",
     "issue_repair": "Reparatur",
-  "issue_installation": "Montage",
-  "issue_maintenance": "Wartung",
-  "issue_cleaning": "Reinigung / Pflege",
+    "issue_installation": "Montage",
+    "issue_maintenance": "Wartung",
+    "issue_cleaning": "Reinigung / Pflege",
+    "issue_illuminated_valance": "Beleuchtete Markisen-Volants",
     "field_location": "Adresse oder Ort (optional)",
     "field_contact": "E-Mail für die Anfrage",
     "field_email": "E-Mail für die Anfrage",

@@ -225,12 +225,12 @@ export default function DesktopNav({
                         </li>
                       );
                     })}
-                    <li className="pr-header-separator col-span-2 mt-1 border-t pt-2 xl:col-span-3">
+                    <li className="col-span-1 xl:col-span-2">
                       <Link
                         href="/leistungen"
                         onClick={closeServices}
                         aria-current={isExactNavPath(pathname, '/leistungen') ? 'page' : undefined}
-                        className={`pr-header-nav-item flex min-h-10 items-center justify-center gap-2 rounded-[12px] px-3.5 py-2 text-[14px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]/40 ${
+                        className={`pr-header-nav-item flex min-h-12 items-center justify-center gap-2 rounded-[12px] px-3.5 py-2.5 text-[14px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]/40 ${
                           isExactNavPath(pathname, '/leistungen')
                             ? 'pr-header-nav-item-active'
                             : ''

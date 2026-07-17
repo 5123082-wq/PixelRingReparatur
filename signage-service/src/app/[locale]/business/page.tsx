@@ -739,7 +739,7 @@ export default async function BusinessPage({
             </div>
             <HeroBreadcrumbs items={getBusinessBreadcrumbs(locale)} />
 
-            <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col justify-end px-6 pb-12 sm:pb-14 lg:pb-16">
+            <div className="pr-site-container relative z-10 flex h-full flex-col justify-end pb-12 sm:pb-14 lg:pb-16">
               <div className="max-w-[800px]">
                 <div className="mb-4 h-1 w-20 bg-[#B8643E]" />
                 <h1 className="text-[36px] font-extrabold leading-[1.05] tracking-tight text-white sm:text-[52px] lg:text-[60px]">
@@ -756,7 +756,7 @@ export default async function BusinessPage({
         {/* TARGET GROUPS */}
         {content.targetEnabled !== false && (
           <section className="relative bg-white pb-[100px] pt-[44px]">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="pr-site-container">
               <SectionEyebrow className="mb-[43px]">
                 {mockup.targetEyebrow}
               </SectionEyebrow>
@@ -783,7 +783,7 @@ export default async function BusinessPage({
               'radial-gradient(circle at 14% 18%, rgba(184,100,62,0.10) 0%, transparent 30%), linear-gradient(180deg, #ffffff 0%, #f3f8fd 100%)',
           }}
         >
-          <div className="mx-auto max-w-7xl px-6">
+          <div className="pr-site-container">
             <SectionEyebrow className="mb-[22px]">
               {mockup.partnerEyebrow}
             </SectionEyebrow>
@@ -878,7 +878,7 @@ export default async function BusinessPage({
                 'radial-gradient(circle at 14% 16%, rgba(184,100,62,0.10) 0%, transparent 28%), linear-gradient(180deg, #eef5fc 0%, #f7fbff 100%)',
             }}
           >
-            <div className="mx-auto max-w-7xl px-6">
+            <div className="pr-site-container">
               <SectionEyebrow className="mb-[43px]">
                 {mockup.auditEyebrow}
               </SectionEyebrow>
@@ -1001,7 +1001,7 @@ export default async function BusinessPage({
 
         {content.platformEnabled !== false && (
           <section className="relative overflow-hidden bg-white pb-[100px] pt-[44px]">
-            <div className="mx-auto max-w-7xl px-6">
+            <div className="pr-site-container">
               <SectionEyebrow className="mb-[43px]">
                 {mockup.platformEyebrow}
               </SectionEyebrow>
@@ -1133,8 +1133,8 @@ export default async function BusinessPage({
         )}
 
         {content.trustEnabled !== false && (
-          <section className="bg-white px-6 py-14 sm:py-18">
-            <div className="mx-auto max-w-7xl">
+          <section className="bg-white py-14 sm:py-18">
+            <div className="pr-site-container">
               <div
                 className="grid gap-8 overflow-hidden rounded-[28px] border border-[#d3b2a2]/50 px-6 py-7 shadow-[0_18px_50px_rgba(8,24,39,0.08)] sm:px-8 sm:py-9 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-12"
                 style={{

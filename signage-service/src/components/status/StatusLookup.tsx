@@ -217,7 +217,7 @@ export default function StatusLookup({
   };
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-2 lg:h-[calc(100vh-160px)] flex items-center min-h-[550px]">
+    <section className="pr-site-container flex min-h-[550px] items-center py-2 lg:h-[calc(100vh-160px)]">
       <div className="grid lg:grid-cols-[0.9fr_1.1fr] bg-white rounded-[32px] overflow-hidden shadow-2xl border border-black/5 h-full w-full">
         {/* --- LEFT COLUMN: Portal CTA --- */}
         <div className="bg-[#0A111F] text-white p-6 sm:p-8 flex flex-col relative overflow-hidden h-full">

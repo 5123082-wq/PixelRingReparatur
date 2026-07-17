@@ -151,8 +151,8 @@ const BentoGridSection = ({ content }: BentoGridSectionProps) => {
   const bottomSteps = steps.slice(3, 5);
 
   return (
-    <section className="w-full bg-[#F7F1E8] py-20 px-6 overflow-hidden">
-      <div className="max-w-7xl mx-auto flex flex-col gap-12">
+    <section className="w-full bg-[#F7F1E8] py-20 overflow-hidden">
+      <div className="pr-site-container flex flex-col gap-12">
         <div className="flex flex-col gap-4">
           <motion.div
             initial={{ opacity: 0, x: -20 }}

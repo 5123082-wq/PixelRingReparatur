@@ -671,6 +671,23 @@ The following text must be used in the "Details" or "Settings" section of the ba
 
 ## 30. Progress Log
 
+* **Date:** 2026-07-11
+* **Current sprint/block:** Google Ads (рекламная система Google) campaign launch measurement (измерение запуска рекламной кампании)
+* **Done:**
+  - Audited two existing Google Ads campaigns (проверены две существующие рекламные кампании Google) and documented the performance snapshot and failure modes.
+  - Kept `Service starten lead` (лид после начала сервисной заявки) as the only primary conversion (основная конверсия); two duplicate form actions are secondary observation actions (дополнительные действия для наблюдения).
+  - Submitted an owner-authorized test request (разрешённая владельцем тестовая заявка) and confirmed successful request creation as `PR-UJTL-PODB`.
+  - Created and documented the paused `Search | Reparatur | Berlin+Brandenburg | DE | 2026-07` (поиск | ремонт | Берлин+Бранденбург | немецкий язык | 2026-07) campaign.
+  - Completed four Google Keyword Planner passes (четыре прохода планировщика ключевых слов Google) for German-language Google Search (немецкоязычный поиск Google) in Berlin and Brandenburg (Берлин и Бранденбург), expanded the active set from 14 to 20 phrase/exact keywords (с 14 до 20 фразовых/точных ключевых слов), and added 31 campaign-level negative keywords (31 минус-слово на уровне кампании) with verified match types (проверенные типы соответствия).
+* **In progress:** Google Ads review (проверка Google Ads) of the responsive search ad (адаптивное поисковое объявление) and delayed conversion diagnostics (диагностика конверсии с задержкой).
+* **Next action:** Verify the primary conversion (основная конверсия), complete the remaining launch checklist (оставшийся контрольный список запуска), and request explicit owner approval before enabling the campaign.
+* **Blockers/risks:** Google Ads conversion status (статус конверсии Google Ads) can take 24–48 hours to update; enabling the campaign before verification can create unmeasured spend (расход без подтверждённого измерения).
+* **Updated documents/files:**
+  - `PROGRESS.md`
+  - `docs/11_operations/README.md`
+  - `docs/11_operations/marketing_analytics.md`
+  - `docs/11_operations/google_ads_campaign_setup.md`
+
 * **Date:** 2026-06-23
 * **Current sprint/block:** Google Ads (рекламная система Google) lead conversion (конверсия заявки)
 * **Done:**

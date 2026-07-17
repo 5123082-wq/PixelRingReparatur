@@ -611,8 +611,8 @@ export default function LeistungenDigitalDiagnosis({ locale }: LeistungenDigital
 
   return (
     <>
-      <section id="diagnose" className="border-t border-[#E7DDD3] bg-[#F8F5EF] px-4 py-12 sm:px-6 sm:py-16">
-        <div className="mx-auto max-w-7xl">
+      <section id="diagnose" className="border-t border-[#E7DDD3] bg-[#F8F5EF] py-12 sm:py-16">
+        <div className="pr-site-container">
           <div className="grid gap-5 lg:grid-cols-[minmax(0,0.82fr)_minmax(320px,0.58fr)] lg:items-end">
             <div className="text-start">
               <SectionEyebrow className="mb-2">{content.eyebrow}</SectionEyebrow>

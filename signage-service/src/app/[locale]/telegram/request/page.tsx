@@ -69,9 +69,10 @@ export default async function TelegramRequestPage({ params, searchParams }: Page
   const copy = getCopy(locale);
 
   return (
-    <main className="min-h-[100svh] bg-[#F7F1E8] px-4 py-4 text-[#0E1A2B] sm:px-6 lg:px-8">
-      <CustomerStandaloneNav />
-      <div className="mx-auto w-full max-w-2xl py-8 sm:py-12">
+    <main className="min-h-[100svh] bg-[#F7F1E8] text-[#0E1A2B]">
+      <div className="pr-site-container py-4">
+        <CustomerStandaloneNav />
+        <div className="mx-auto w-full max-w-2xl py-8 sm:py-12">
         <div className="mb-5">
           <p className="text-xs font-black uppercase tracking-[0.18em] text-[#B8643E]">PixelRing Telegram</p>
           <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">{copy.title}</h1>
@@ -85,6 +86,7 @@ export default async function TelegramRequestPage({ params, searchParams }: Page
             {copy.invalid}
           </div>
         )}
+        </div>
       </div>
     </main>
   );

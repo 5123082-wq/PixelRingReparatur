@@ -50,11 +50,17 @@ export default function HeroBreadcrumbs({
       aria-label="Breadcrumb"
       className={
         position === 'absolute'
-          ? 'absolute inset-x-0 top-6 z-10 px-4 sm:px-6 min-[1328px]:px-0'
+          ? 'absolute inset-x-0 top-6 z-10'
           : 'relative z-10 mb-6 px-0'
       }
     >
-      <div className="mx-auto flex max-w-7xl justify-start rtl:justify-end">
+      <div
+        className={
+          position === 'absolute'
+            ? 'pr-site-container flex justify-start rtl:justify-end'
+            : 'flex w-full justify-start rtl:justify-end'
+        }
+      >
         <ol className={`flex max-w-full items-center gap-2 overflow-x-auto rounded-[6px] px-4 py-3 text-[14px] font-medium backdrop-blur-md sm:px-5 sm:text-[15px] ${styles.list}`}>
           {items.map((item, index) => {
             const isLast = index === items.length - 1;

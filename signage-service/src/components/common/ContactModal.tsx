@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import ContactForm from './ContactForm';
 import Logo from '../common/Logo';
 import { SITE_CONFIG } from '@/lib/site-config';
+import type { CalculationSnapshot } from '@/lib/calculation-snapshot';
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -13,6 +14,7 @@ interface ContactModalProps {
   onOpenChat: () => void;
   initialIssueType?: string;
   initialMessage?: string;
+  calculationSnapshot?: CalculationSnapshot | null;
 }
 
 const ContactModal = ({
@@ -21,6 +23,7 @@ const ContactModal = ({
   onOpenChat,
   initialIssueType,
   initialMessage,
+  calculationSnapshot,
 }: ContactModalProps) => {
   const t = useTranslations('ContactModal');
   const [isRendered, setIsRendered] = useState(false);
@@ -216,6 +219,7 @@ const ContactModal = ({
             containedScroll
             initialIssueType={initialIssueType}
             initialMessage={initialMessage}
+            calculationSnapshot={calculationSnapshot}
           />
         </div>
 

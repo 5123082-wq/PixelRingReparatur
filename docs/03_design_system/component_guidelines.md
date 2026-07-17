@@ -1,6 +1,6 @@
 # Component Guidelines And Inventory
 
-Last updated: 2026-05-22.
+Last updated: 2026-07-12.
 
 ## Status Legend
 
@@ -33,6 +33,19 @@ Last updated: 2026-05-22.
 | LanguageSwitcher | `signage-service/src/components/common/LanguageSwitcher.tsx` | `stable` | Supports 6 locales and RTL route usage. |
 
 ## Shared Visual Components
+
+### Shared Layout Primitives
+
+Status: `stable`.
+
+| Primitive | Source | Required use | Exception boundary |
+|---|---|---|---|
+| `pr-site-container` | `signage-service/src/app/globals.css` | One common outer rail for public header rows, normal public content, footer content, and standalone public-entry shells. | Do not use it to replace a deliberately narrow inner reading/form width or an authenticated application shell. |
+| `pr-carousel-rail` | `signage-service/src/app/globals.css` | Shared viewport-spanning rail for the homepage’s horizontal media/case carousels. | Use only for controlled horizontal carousels; full-bleed media and specialized carousel implementations may keep a scoped rail when documented. |
+
+The `pr-site-container` desktop maximum is `83.25rem` (`1332px`) from `1280px` upward, with
+`16px`/`24px` mobile and tablet gutters below that breakpoint. Header logo/action alignment is part
+of this contract, not a homepage-only treatment.
 
 ### Public Content Typography
 

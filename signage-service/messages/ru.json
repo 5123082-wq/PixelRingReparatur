@@ -29,7 +29,8 @@
     "services_led": "Световая реклама и LED-модернизация",
     "services_audit": "Аудит и диагностика",
     "services_installation": "Монтаж и демонтаж",
-    "services_branding": "Печать и брендинг"
+    "services_branding": "Печать и брендинг",
+    "services_illuminated_valance": "Воланы с подсветкой"
   },
   "Footer": {
     "copyright": "© 2024 PixelRing Technical Atelier. Все права защищены.",
@@ -309,9 +310,10 @@
     "field_name_company": "Имя и компания (необязательно)",
     "field_issue_type": "Тип проблемы (опционально)",
     "issue_repair": "Ремонт",
-  "issue_installation": "Монтаж",
-  "issue_maintenance": "Обслуживание",
-  "issue_cleaning": "Очистка / уход",
+    "issue_installation": "Монтаж",
+    "issue_maintenance": "Обслуживание",
+    "issue_cleaning": "Очистка / уход",
+    "issue_illuminated_valance": "Воланы для маркиз с подсветкой",
     "field_location": "Адрес или локация (опционально)",
     "field_contact": "Email для заявки",
     "field_email": "Email для заявки",

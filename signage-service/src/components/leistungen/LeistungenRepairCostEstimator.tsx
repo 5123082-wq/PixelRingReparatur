@@ -145,8 +145,8 @@ export default function LeistungenRepairCostEstimator({
 
   return (
     <>
-      <section id="kosten" className="border-t border-[#E7DDD3] bg-[#F7F1E8] px-4 py-16 sm:px-6 sm:py-24">
-        <div className="mx-auto max-w-7xl">
+      <section id="kosten" className="border-t border-[#E7DDD3] bg-[#F7F1E8] py-16 sm:py-24">
+        <div className="pr-site-container">
           <div className="grid gap-6 lg:grid-cols-[minmax(0,0.72fr)_minmax(280px,0.38fr)] lg:items-end">
             <div className="text-start">
               <SectionEyebrow className="mb-3">

@@ -254,7 +254,7 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
 
   return (
     <section className="w-full bg-[#F7F1E8] py-24 overflow-hidden relative" dir={isRTL ? 'rtl' : 'ltr'}>
-      <div className="max-w-7xl mx-auto flex flex-col gap-16 px-6">
+      <div className="pr-site-container flex flex-col gap-16">
         
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
@@ -304,7 +304,7 @@ const ReviewsSection = ({ content }: ReviewsSectionProps) => {
 
         <div 
           ref={scrollRef}
-          className="no-scrollbar flex overflow-x-auto snap-x snap-mandatory px-[3%] md:px-[4%]"
+          className="pr-carousel-rail no-scrollbar flex overflow-x-auto snap-x snap-mandatory"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {originalIndices.map((idx, i) => (

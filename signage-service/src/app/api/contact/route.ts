@@ -15,6 +15,11 @@ import {
   storeAttachment,
   type StoredAttachmentInput,
 } from '@/lib/attachments';
+import {
+  CALCULATION_SNAPSHOT_FORM_FIELD,
+  CalculationSnapshotValidationError,
+  parseCalculationSnapshotFormValue,
+} from '@/lib/calculation-snapshot';
 
 function inferRequestLocale(request: NextRequest): SiteLocale {
   const referer = request.headers.get('referer');
@@ -95,6 +100,9 @@ export async function POST(request: NextRequest) {
     let serviceLongitude = readCoordinate(formData.get('locationLongitude'), -180, 180);
     let serviceLocationSource = readLocationSource(formData.get('locationSource'));
     const isFromChat = formData.get('isFromChat') === 'true';
+    const calculationSnapshot = parseCalculationSnapshotFormValue(
+      formData.get(CALCULATION_SNAPSHOT_FORM_FIELD)
+    );
 
     let existingSessionId: string | null = null;
     let existingSessionToken: string | null = null;
@@ -192,6 +200,7 @@ export async function POST(request: NextRequest) {
       existingSessionId,
       existingSessionToken,
       isFromChat,
+      calculationSnapshot,
     });
 
     if (result.portalClaimUrl && result.portalClaimExpiresAt && resolvedContact.customerEmail) {
@@ -263,7 +272,8 @@ export async function POST(request: NextRequest) {
         : 'Internal server error';
     const status =
       message.startsWith('Please provide a valid') ||
-      error instanceof AttachmentValidationError
+      error instanceof AttachmentValidationError ||
+      error instanceof CalculationSnapshotValidationError
         ? 400
         : 500;
 

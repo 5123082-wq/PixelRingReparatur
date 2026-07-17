@@ -140,8 +140,8 @@ const Footer = ({ content }: { content?: FooterContent | null }) => {
   const copyright = content?.copyright || FALLBACK_NAV.copyright;
 
   return (
-    <footer className="w-full bg-[#F7F1E8] pt-0 pb-10 px-6 sm:px-10 border-t border-[#E7DDD3] relative overflow-hidden">
-      <div className="max-w-7xl mx-auto relative z-10">
+    <footer className="w-full bg-[#F7F1E8] pt-0 pb-10 border-t border-[#E7DDD3] relative overflow-hidden">
+      <div className="pr-site-container relative z-10">
         {/* Top spacing */}
         <div className="h-12 md:h-16" aria-hidden />
 

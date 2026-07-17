@@ -598,7 +598,7 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
 
   return (
     <section className="w-full bg-[#F5F5F7] py-20 sm:py-24 overflow-hidden relative" dir={isRTL ? 'rtl' : 'ltr'}>
-      <div className="mx-auto flex max-w-[1180px] flex-col gap-10 px-6">
+      <div className="pr-site-container flex flex-col gap-10">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="flex flex-col gap-4">
@@ -665,7 +665,7 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
           className={`
-            no-scrollbar flex snap-x snap-mandatory scroll-px-[max(1rem,calc((100vw-1180px)/2+1.5rem))] gap-5 overflow-x-auto scroll-smooth px-[max(1rem,calc((100vw-1180px)/2+1.5rem))] pb-8 sm:gap-6
+            pr-carousel-rail no-scrollbar flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-8 sm:gap-6
             ${isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'}
           `}
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}

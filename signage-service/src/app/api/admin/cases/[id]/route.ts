@@ -19,6 +19,7 @@ import {
 import { ensurePublicRequestNumberForCase } from '@/lib/request-number';
 import { createCaseStatusAccessLink } from '@/lib/status-access-link';
 import { sendTelegramMessage } from '@/lib/telegram';
+import { tryNormalizeCalculationSnapshot } from '@/lib/calculation-snapshot';
 
 const VALID_STATUSES = Object.values(CaseStatus);
 const MAX_OPERATOR_MESSAGE_LENGTH = 4000;
@@ -161,6 +162,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         serviceLocationSource: true,
         summary: true,
         description: true,
+        calculationSnapshot: true,
         createdAt: true,
         updatedAt: true,
         statusUpdatedAt: true,
@@ -304,7 +306,15 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           })
         : [];
 
-    return NextResponse.json({ case: caseRecord, relatedCases });
+    return NextResponse.json({
+      case: {
+        ...caseRecord,
+        calculationSnapshot: tryNormalizeCalculationSnapshot(
+          caseRecord.calculationSnapshot
+        ),
+      },
+      relatedCases,
+    });
   } catch (error) {
     console.error('Admin case detail error:', error);
 

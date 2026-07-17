@@ -229,10 +229,10 @@ export default async function AboutPage({
 
       <main className="flex-grow pt-0">
         {/* HERO SECTION */}
-        <section className="px-6 pb-10 pt-6 md:pb-12 md:pt-6 overflow-hidden relative">
+        <section className="relative overflow-hidden pb-10 pt-6 md:pb-12 md:pt-6">
           <div className="absolute top-0 right-0 w-[600px] h-[500px] bg-white/50 rounded-full blur-[120px] -translate-y-1/3 translate-x-1/4 pointer-events-none" />
 
-          <div className="mx-auto max-w-7xl relative z-10">
+          <div className="pr-site-container relative z-10">
             <HeroBreadcrumbs items={getAboutBreadcrumbs(locale)} position="static" surface="light" />
 
             <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12 lg:gap-14">
@@ -264,8 +264,8 @@ export default async function AboutPage({
         </section>
 
         {/* HERO BENEFITS */}
-        <section className="border-y border-[#E7DDD3] bg-[#FFFDF9] px-6 py-8 sm:py-10">
-          <div className="mx-auto grid max-w-7xl gap-7 sm:grid-cols-3 lg:gap-10">
+        <section className="border-y border-[#E7DDD3] bg-[#FFFDF9] py-8 sm:py-10">
+          <div className="pr-site-container grid gap-7 sm:grid-cols-3 lg:gap-10">
             {tContent.hero.benefits.map((benefit, idx) => (
               <article key={idx} className="min-w-0">
                 <div className="flex items-start gap-3">
@@ -285,8 +285,8 @@ export default async function AboutPage({
         </section>
 
         {/* WHO WE ARE */}
-        <section className="bg-white px-6 py-20 md:py-24">
-          <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-14">
+        <section className="bg-white py-20 md:py-24">
+          <div className="pr-site-container grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-14">
             <div className="max-w-2xl">
               <SectionEyebrow className="mb-5">{structureLabels.whoEyebrow}</SectionEyebrow>
               <h2 className="text-[32px] font-black leading-tight text-[#0E1A2B] md:text-[44px]">
@@ -326,8 +326,8 @@ export default async function AboutPage({
         </section>
 
         {/* WHAT WE SERVICE */}
-        <section className="border-y border-[#E7DDD3] bg-[#F7F1E8] px-6 py-20 md:py-24">
-          <div className="mx-auto max-w-7xl">
+        <section className="border-y border-[#E7DDD3] bg-[#F7F1E8] py-20 md:py-24">
+          <div className="pr-site-container">
             <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-14">
               <div>
                 <SectionEyebrow className="mb-5">{structureLabels.scopeEyebrow}</SectionEyebrow>
@@ -354,8 +354,8 @@ export default async function AboutPage({
         </section>
 
         {/* PROCESS */}
-        <section className="bg-white px-6 py-20 md:py-24">
-          <div className="mx-auto max-w-7xl">
+        <section className="bg-white py-20 md:py-24">
+          <div className="pr-site-container">
             <div className="mb-12 max-w-3xl">
               <SectionEyebrow className="mb-5">{structureLabels.processEyebrow}</SectionEyebrow>
               <h2 className="text-[32px] font-black leading-tight text-[#0E1A2B] md:text-[42px]">
@@ -381,8 +381,8 @@ export default async function AboutPage({
         </section>
 
         {/* REPAIR RATIONALE */}
-        <section className="bg-[#0E1A2B] px-6 py-20 text-white md:py-24">
-          <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
+        <section className="bg-[#0E1A2B] py-20 text-white md:py-24">
+          <div className="pr-site-container grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
             <div>
               <SectionEyebrow className="mb-5 text-[#F0B38F]">{structureLabels.repairEyebrow}</SectionEyebrow>
               <h2 className="text-[32px] font-black leading-tight md:text-[42px]">
@@ -407,8 +407,8 @@ export default async function AboutPage({
         </section>
 
         {/* TARGET AUDIENCE / SECTORS SECTION */}
-        <section className="bg-white px-6 py-20 md:py-24">
-          <div className="mx-auto max-w-7xl">
+        <section className="bg-white py-20 md:py-24">
+          <div className="pr-site-container">
             <div className="mb-12 max-w-3xl">
               <SectionEyebrow className="mb-5">{structureLabels.audienceEyebrow}</SectionEyebrow>
               <h2 className="text-[32px] font-black leading-tight text-[#0E1A2B] md:text-[42px]">
@@ -430,8 +430,8 @@ export default async function AboutPage({
         </section>
 
         {/* MATERIALS AND SYSTEMS */}
-        <section className="border-y border-[#E7DDD3] bg-[#FFFDF9] px-6 py-20 md:py-24">
-          <div className="mx-auto max-w-7xl">
+        <section className="border-y border-[#E7DDD3] bg-[#FFFDF9] py-20 md:py-24">
+          <div className="pr-site-container">
             <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-14">
               <div>
                 <SectionEyebrow className="mb-5">{structureLabels.materialsEyebrow}</SectionEyebrow>
@@ -472,8 +472,8 @@ export default async function AboutPage({
         </section>
 
         {/* VIDEO-FIRST ABOUT SECTION */}
-        <section className="bg-white px-6 py-20 md:py-24">
-          <div className="mx-auto max-w-7xl">
+        <section className="bg-white py-20 md:py-24">
+          <div className="pr-site-container">
             <div className="grid gap-12 lg:grid-cols-[1.25fr_0.75fr] lg:items-center lg:gap-16">
               <div className="relative">
                 <AboutVideoPlayer
@@ -507,8 +507,8 @@ export default async function AboutPage({
         </section>
 
         {/* TESTIMONIALS SECTION */}
-        <section className="bg-white px-6 py-16">
-          <div className="mx-auto max-w-7xl">
+        <section className="bg-white py-16">
+          <div className="pr-site-container">
             <div className="mb-10 max-w-3xl border-b border-[#E2E8F0] pb-6">
               <SectionEyebrow className="mb-5">{structureLabels.testimonialsEyebrow}</SectionEyebrow>
               <h2 className="text-[30px] font-black leading-tight text-[#0E1A2B] md:text-[38px]">
@@ -541,8 +541,9 @@ export default async function AboutPage({
         </section>
 
         {/* FINAL CTA */}
-        <section className="bg-white px-6 py-8 sm:py-10">
-           <div className="mx-auto flex max-w-7xl flex-col gap-6 rounded-lg border border-[#D8E2EE] bg-[#EAF1F7] px-6 py-7 shadow-[0_16px_45px_rgba(14,26,43,0.07)] md:flex-row md:items-center md:justify-between md:px-9">
+        <section className="bg-white py-8 sm:py-10">
+          <div className="pr-site-container">
+            <div className="flex flex-col gap-6 rounded-lg border border-[#D8E2EE] bg-[#EAF1F7] px-6 py-7 shadow-[0_16px_45px_rgba(14,26,43,0.07)] md:flex-row md:items-center md:justify-between md:px-9">
               <div className="max-w-2xl">
                 <h2 className="text-[25px] font-black leading-[1.12] text-[#0E1A2B] md:text-[32px]">
                    {tContent.final.title}
@@ -557,7 +558,8 @@ export default async function AboutPage({
                 serviceIntent="about-page-final"
                 className="min-h-12 self-start bg-[#B8643E] px-6 py-3 text-[14px] font-bold text-white hover:bg-[#9E5332] md:self-auto"
               />
-           </div>
+            </div>
+          </div>
         </section>
       </main>
 

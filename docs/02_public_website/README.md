@@ -42,6 +42,62 @@ Use this folder for:
 
 ## Progress Log
 
+* **Date:** 2026-07-12
+* **Current sprint/block:** Public-Site Canonical Container Rollout (распространение канонического контейнера публичного сайта)
+* **Done:** Promoted `pr-site-container` (единый контейнер сайта) from a homepage-only adjustment to the outer rail for public pages: the header logo/action row (строка шапки с логотипом и кнопками), ordinary page content, footer content, and standalone public entry shells (отдельные публичные экраны входа) now share the same 16/24 px mobile-and-tablet gutters and 1332 px desktop maximum from 1280 px upward. Preserved full-bleed backgrounds/media (фоны и медиа на всю ширину), narrow reading/form widths (узкие ширины текста и форм), and authenticated portal/CRM/CMS shells (авторизованные интерфейсы портала, CRM и CMS). Formalized dedicated horizontal carousel rails (отдельные направляющие горизонтальных каруселей) as the exception, so only the rail—not the document—may scroll sideways.
+* **In progress:** Final local lint (проверка кода), type check (проверка типов), build (сборка), and desktop/mobile/RTL (направление справа налево) browser review across representative public routes.
+* **Next action:** Owner reviews the matching outer edge of the desktop header logo/action row and first content block at 1280/1512 px, then approves deployment after visual review.
+* **Blockers/risks:** No known functional blocker. Horizontal photo/case rails (фотографические карусели и карточки кейсов) require continued section-level visual review because their cards intentionally extend beyond the normal content rail.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/02_public_website/README.md`
+  - `docs/03_design_system/layout_rules.md`
+  - `docs/03_design_system/responsive_accessibility.md`
+  - `docs/03_design_system/component_guidelines.md`
+  - `docs/03_design_system/change_log.md`
+
+* **Date:** 2026-07-11
+* **Current sprint/block:** Homepage Shared Content Container (единый контейнер контента главной страницы)
+* **Done:** Added the shared `pr-site-container` (единый контейнер сайта) with the homepage-derived 1332 px desktop maximum from 1280 px upward and responsive 16/24 px gutters; aligned homepage sections, footer, header, and coverage-map title/feature overlays to the shared content grid; gave the three homepage horizontal carousels (горизонтальные карусели) their own smaller synchronized rail that preserves through-scroll; kept the coverage-map background full-bleed and its 1000 px 3D stage unchanged to avoid disturbing SVG route recalculation (пересчёт маршрутов SVG).
+* **In progress:** Owner visual review of DE desktop plus RU/AR mobile and RTL (направление справа налево) map rendering.
+* **Next action:** Confirm that the map overlays align with the header at wide desktop widths and that the 3D map routes remain attached to their city nodes on mobile before deployment.
+* **Blockers/risks:** No current blocker; the open browser verified all three carousel rails at the same 52 px inset on a 1512 px viewport and confirmed no page-level horizontal overflow. Lint (проверка кода) and `git diff --check` (проверка формата изменений) passed; remaining risk is responsive review for RU/AR and RTL (направление справа налево).
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/02_public_website/README.md`
+  - `signage-service/src/app/globals.css`
+  - `signage-service/src/components/layout/Header.tsx`
+  - `signage-service/src/components/layout/Footer.tsx`
+  - homepage section components under `signage-service/src/components/sections/`
+
+* **Date:** 2026-07-11
+* **Current sprint/block:** Homepage Services Navigator (навигационный блок услуг на главной странице)
+* **Done:** Replaced the text-heavy six-card homepage services grid with the approved compact image/text split layout (компоновка с изображением и текстом); synchronized it with the six currently rendered `/[locale]/leistungen` (страница услуг) destinations: `Werbeanlagen-Reparatur` (ремонт рекламных конструкций), `Werbeanlagen-Reinigung` (очистка рекламных конструкций), `LED-Modernisierung` (LED-модернизация), `Audit & Diagnose` (аудит и диагностика), `Montage & Demontage` (монтаж и демонтаж), and `Druck & Branding` (печать и брендинг); replaced the unmatched `Wartung & Standort-Service` (обслуживание объектов) entry with `Werbeanlagen-Reinigung` (очистка рекламных конструкций); reused the existing service images through `next/image` (оптимизированный компонент изображений Next.js); shortened the intro copy (вводный текст); and preserved the same structure across DE/EN/RU/TR/PL/AR with Arabic RTL (направление справа налево).
+* **In progress:** Owner visual review of the final German desktop and Russian/Arabic mobile rendering.
+* **Next action:** Deploy after visual approval.
+* **Blockers/risks:** No implementation blocker. The homepage and overview still own separate localized card-copy datasets (наборы локализованных текстов карточек), so a future shared service registry (общий реестр услуг) may be useful if the taxonomy changes again; that broader refactor remains outside this visual pass (визуальная итерация).
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `design-qa.md`
+  - `docs/02_public_website/README.md`
+  - `signage-service/src/components/sections/HomeServicesSection.tsx`
+  - `signage-service/package.json`
+  - `signage-service/package-lock.json`
+
+* **Date:** 2026-07-11
+* **Current sprint/block:** Future `Beleuchtete Markisen-Volants` Page Foundation (основа будущей страницы световых ламбрекенов маркиз)
+* **Done:** Defined the new offer as a separate product-service page (отдельную товарно-сервисную страницу) for retrofitting existing commercial awnings, with a dedicated future route, day/night explanation, comparison with terrace awning lighting (сравнение с подсветкой террасы), compatibility check, modular product configuration, photo intake, technical/legal boundaries, internal links, and implementation map. The [full product brief](../07_content_ai_seo/service_page_beleuchtete_markisenvolants_product_brief.md) (полный продуктовый бриф) and [primary-source evidence matrix](../07_content_ai_seo/service_page_beleuchtete_markisenvolants_evidence_matrix.md) (матрица доказательств по первичным источникам) are stored in `docs/07_content_ai_seo/` (папка контента, поисковой оптимизации и оптимизации для ответов искусственного интеллекта).
+* **In progress:** Planning only; no route, navigation item, service card, form type, public content, or imagery has been implemented.
+* **Next action:** Validate at least two supplier systems and approve the German canonical naming, URL, CTA (призыв к действию), and confirmed configuration before application work.
+* **Blockers/risks:** The current six-service header and homepage grids need a separate design decision before adding a seventh category; public specifications remain blocked until a supplier and system are confirmed.
+* **Updated documents:**
+  - `PROGRESS.md`
+  - `docs/02_public_website/README.md`
+  - `docs/07_content_ai_seo/README.md`
+  - `docs/07_content_ai_seo/content_ai_seo_progress_log.md`
+  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_product_brief.md`
+  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_evidence_matrix.md`
+
 * **Date:** 2026-07-10
 * **Current sprint/block:** Homepage Awning Service Card (карточка услуг по маркизам на главной странице)
 * **Done:** Replaced the former dismantling card with `Markisenreinigung & Aufarbeitung` (чистка и восстановление маркиз) across DE/EN/RU/TR/PL/AR, using owner-provided footage of a specialist cleaning a café awning. The card now links directly to `/leistungen/werbeanlagen-reinigung` (страница очистки рекламных конструкций).

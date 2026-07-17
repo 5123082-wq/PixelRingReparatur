@@ -269,7 +269,7 @@ export default function LeistungenReparaturWorkflow({
 
   return (
     <section className="overflow-hidden bg-[#F5F5F7] py-16 sm:py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      <div className="pr-site-container">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl ltr:text-left rtl:text-right">
             <SectionEyebrow className="mb-3">
@@ -398,7 +398,7 @@ export default function LeistungenReparaturWorkflow({
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      <div className="pr-site-container">
         {fallbackSymptom ? (
           <div className="mt-8 rounded-[24px] border border-[#D9C7BA] bg-white px-6 py-6 shadow-[0_16px_45px_rgba(13,27,42,0.05)] sm:px-8 lg:flex lg:items-center lg:justify-between lg:gap-8">
             <div className="max-w-3xl text-start">

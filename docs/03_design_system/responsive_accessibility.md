@@ -1,6 +1,6 @@
 # Responsive, Localization, And Accessibility Verification
 
-Last updated: 2026-04-13.
+Last updated: 2026-07-12.
 
 ## Localization Baseline
 
@@ -45,14 +45,17 @@ Required checks for UI changes:
 
 ## Localization And Layout Stress Checklist
 
-For every major homepage update, verify:
-1. DE and RU text expansion does not break section titles, CTA buttons, or cards.
-2. Arabic RTL alignment remains coherent for:
-   - hero badges
-   - directional controls
-   - language switcher
-3. No horizontal overflow on common mobile widths.
-4. Core CTA remains visible in first viewport on mobile.
+For every public-page layout update, verify:
+1. At `360px`, `390px`, and `430px`, no page-level horizontal overflow appears and the core CTA
+   remains visible in the first viewport where the page has a hero.
+2. At `1280px` and `1512px`, the outer edges of the header logo/action row, the first ordinary
+   content block, and the footer content follow the same `pr-site-container` rail.
+3. DE and RU text expansion does not break section titles, CTA buttons, forms, or cards; spot-check
+   long-label TR and PL states when they are touched.
+4. Arabic RTL alignment remains coherent for hero badges, directional controls, language switcher,
+   reading-start borders, and carousel direction.
+5. A horizontal carousel may overflow only inside its dedicated rail. Its initial item inset and
+   scroll padding must be intentional, and the document root must still have no horizontal overflow.
 
 ## Known Verification Gaps
 

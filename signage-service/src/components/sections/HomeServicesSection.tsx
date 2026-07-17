@@ -1,21 +1,74 @@
+import Image from 'next/image';
+
 import { Link } from '@/i18n/routing';
 import SectionEyebrow from '../common/SectionEyebrow';
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
 
+type HomeServiceId =
+  | 'repair'
+  | 'cleaning'
+  | 'led'
+  | 'audit'
+  | 'installation'
+  | 'branding'
+  | 'illuminatedValance';
+
 type HomeServiceCard = {
+  id: HomeServiceId;
   title: string;
-  text: string;
-  href: string;
-  tag: string;
 };
 
 type HomeServicesCopy = {
   eyebrow: string;
   title: string;
   intro: string;
+  overviewEyebrow: string;
+  overviewTitle: string;
+  overviewMeta: string;
   overviewLabel: string;
   cards: HomeServiceCard[];
+};
+
+const HOME_SERVICE_CONFIG: Record<
+  HomeServiceId,
+  { href: string; image: string; imageClassName: string }
+> = {
+  repair: {
+    href: '/leistungen/werbeanlagen-reparatur',
+    image: '/images/leistungen/werbeanlagen-reparatur-led-module-pruefung.png',
+    imageClassName: 'object-[42%_50%]',
+  },
+  cleaning: {
+    href: '/leistungen/werbeanlagen-reinigung',
+    image: '/images/leistungen/werbeanlagen-reinigung/werbeanlagen-reinigung-markise-service.webp',
+    imageClassName: 'object-[45%_50%]',
+  },
+  led: {
+    href: '/leistungen/lichtwerbung-led-modernisierung',
+    image: '/images/leistungen/lichtwerbung-led-modernisierung-lichtkasten-led-module.webp',
+    imageClassName: 'object-[20%_50%]',
+  },
+  audit: {
+    href: '/leistungen/werbeanlagen-audit-diagnose',
+    image: '/images/leistungen/werbeanlagen-audit-diagnose-ladenfassade-vor-ort-pruefung.webp',
+    imageClassName: 'object-[52%_50%]',
+  },
+  installation: {
+    href: '/leistungen/montage-demontage-werbeanlagen',
+    image: '/images/leistungen/werbeanlagen-montage-demontage-sportzentrum-fassade.webp',
+    imageClassName: 'object-[56%_50%]',
+  },
+  branding: {
+    href: '/leistungen/druckprodukte-branding-werbematerialien',
+    image: '/images/leistungen/hero-branding.png',
+    imageClassName: 'object-[66%_50%]',
+  },
+  illuminatedValance: {
+    href: '/leistungen/beleuchtete-markisenvolants',
+    image: '/images/leistungen/beleuchtete-markisenvolants/hero-cafe-day.png',
+    imageClassName: 'object-[50%_54%]',
+  },
 };
 
 const HOME_SERVICES_COPY: Record<Locale, HomeServicesCopy> = {
@@ -23,44 +76,39 @@ const HOME_SERVICES_COPY: Record<Locale, HomeServicesCopy> = {
     eyebrow: 'Leistungen',
     title: 'Direkter Einstieg in die passenden Servicebereiche',
     intro:
-      'Wenn die Aufgabe schon klar ist, führen diese Einstiege direkt zu Reparatur, Diagnose, Montage oder Branding-Service.',
+      'Reparatur, Reinigung, LED-Service, Diagnose, Montage, Branding und Leuchtvolants – direkt zum passenden Bereich.',
+    overviewEyebrow: 'PixelRing Leistungen',
+    overviewTitle: 'Alles aus einer verantwortlichen Hand.',
+    overviewMeta: '7 Servicebereiche im Überblick',
     overviewLabel: 'Alle Leistungen ansehen',
     cards: [
       {
+        id: 'repair',
         title: 'Werbeanlagen-Reparatur',
-        text: 'Defekte Schilder, Leuchtkästen, Buchstaben, Folien und sichtbare Schäden strukturiert klären.',
-        href: '/leistungen/werbeanlagen-reparatur',
-        tag: 'Reparatur',
       },
       {
+        id: 'cleaning',
+        title: 'Werbeanlagen-Reinigung',
+      },
+      {
+        id: 'led',
         title: 'LED-Modernisierung',
-        text: 'Lichtwerbung, LED-Module, Netzteile, Controller und Neon sinnvoll prüfen und aktualisieren.',
-        href: '/leistungen/lichtwerbung-led-modernisierung',
-        tag: 'Licht',
       },
       {
+        id: 'audit',
         title: 'Audit & Diagnose',
-        text: 'Zustand, Ursache, Umfang und Priorität einer Werbeanlage nachvollziehbar erfassen.',
-        href: '/leistungen/werbeanlagen-audit-diagnose',
-        tag: 'Prüfung',
       },
       {
+        id: 'installation',
         title: 'Montage & Demontage',
-        text: 'Montage, Rückbau oder Standortwechsel von Werbeanlagen koordiniert vorbereiten.',
-        href: '/leistungen/montage-demontage-werbeanlagen',
-        tag: 'Montage',
       },
       {
+        id: 'branding',
         title: 'Druck & Branding',
-        text: 'Druckprodukte, Folien, Beschriftungen und Werbematerialien für Geschäftsstandorte.',
-        href: '/leistungen/druckprodukte-branding-werbematerialien',
-        tag: 'Branding',
       },
       {
-        title: 'Wartung & Standort-Service',
-        text: 'Regelmäßige Kontrolle sichtbarer Anlagen, Materialien und Prioritäten pro Standort.',
-        href: '/leistungen',
-        tag: 'Service',
+        id: 'illuminatedValance',
+        title: 'Leuchtvolants für Markisen',
       },
     ],
   },
@@ -68,44 +116,39 @@ const HOME_SERVICES_COPY: Record<Locale, HomeServicesCopy> = {
     eyebrow: 'Services',
     title: 'A direct path into the right service area',
     intro:
-      'When the task is already clear, these entries lead directly to repair, diagnostics, installation or branding service.',
+      'Repair, cleaning, LED service, diagnostics, installation, branding and illuminated awning valances — straight to the right service area.',
+    overviewEyebrow: 'PixelRing services',
+    overviewTitle: 'Everything from one accountable service team.',
+    overviewMeta: '7 service areas at a glance',
     overviewLabel: 'View all services',
     cards: [
       {
+        id: 'repair',
         title: 'Signage repair',
-        text: 'Clarify damaged signs, lightboxes, letters, vinyl and visible defects in a structured way.',
-        href: '/leistungen/werbeanlagen-reparatur',
-        tag: 'Repair',
       },
       {
+        id: 'cleaning',
+        title: 'Signage Cleaning',
+      },
+      {
+        id: 'led',
         title: 'LED modernization',
-        text: 'Review and update illuminated signage, LED modules, power supplies, controllers and neon.',
-        href: '/leistungen/lichtwerbung-led-modernisierung',
-        tag: 'Light',
       },
       {
+        id: 'audit',
         title: 'Audit & diagnostics',
-        text: 'Record condition, cause, scope and priority of a signage asset in a traceable way.',
-        href: '/leistungen/werbeanlagen-audit-diagnose',
-        tag: 'Check',
       },
       {
+        id: 'installation',
         title: 'Installation & dismantling',
-        text: 'Prepare installation, removal or relocation of signage with clear coordination.',
-        href: '/leistungen/montage-demontage-werbeanlagen',
-        tag: 'Install',
       },
       {
+        id: 'branding',
         title: 'Print & branding',
-        text: 'Print products, vinyl, lettering and advertising materials for business locations.',
-        href: '/leistungen/druckprodukte-branding-werbematerialien',
-        tag: 'Branding',
       },
       {
-        title: 'Maintenance & site service',
-        text: 'Regular checks of visible assets, materials and priorities for each location.',
-        href: '/leistungen',
-        tag: 'Service',
+        id: 'illuminatedValance',
+        title: 'Illuminated awning valances',
       },
     ],
   },
@@ -113,179 +156,159 @@ const HOME_SERVICES_COPY: Record<Locale, HomeServicesCopy> = {
     eyebrow: 'Услуги',
     title: 'Быстрый вход в нужное сервисное направление',
     intro:
-      'Если задача уже понятна, эти ссылки ведут прямо к ремонту, диагностике, монтажу или брендингу.',
+      'Ремонт, очистка, LED-сервис, диагностика, монтаж, брендинг и световые ламбрекены — сразу к нужному направлению.',
+    overviewEyebrow: 'Услуги PixelRing',
+    overviewTitle: 'Всё — в одних ответственных руках.',
+    overviewMeta: '7 направлений услуг',
     overviewLabel: 'Все услуги',
     cards: [
       {
+        id: 'repair',
         title: 'Ремонт вывесок',
-        text: 'Структурно разобрать дефект вывески, светового короба, букв, пленок и видимых повреждений.',
-        href: '/leistungen/werbeanlagen-reparatur',
-        tag: 'Ремонт',
       },
       {
+        id: 'cleaning',
+        title: 'Мойка вывесок',
+      },
+      {
+        id: 'led',
         title: 'LED-модернизация',
-        text: 'Проверить и обновить световую рекламу, LED-модули, блоки питания, контроллеры и неон.',
-        href: '/leistungen/lichtwerbung-led-modernisierung',
-        tag: 'Свет',
       },
       {
+        id: 'audit',
         title: 'Аудит и диагностика',
-        text: 'Понятно зафиксировать состояние, причину, объем и приоритет по рекламной установке.',
-        href: '/leistungen/werbeanlagen-audit-diagnose',
-        tag: 'Проверка',
       },
       {
+        id: 'installation',
         title: 'Монтаж и демонтаж',
-        text: 'Подготовить монтаж, демонтаж или перенос рекламной конструкции с координацией работ.',
-        href: '/leistungen/montage-demontage-werbeanlagen',
-        tag: 'Монтаж',
       },
       {
+        id: 'branding',
         title: 'Печать и брендинг',
-        text: 'Печатная продукция, пленки, надписи и рекламные материалы для бизнес-локаций.',
-        href: '/leistungen/druckprodukte-branding-werbematerialien',
-        tag: 'Брендинг',
       },
       {
-        title: 'Обслуживание локаций',
-        text: 'Регулярная проверка видимых объектов, материалов и приоритетов по каждой точке.',
-        href: '/leistungen',
-        tag: 'Сервис',
+        id: 'illuminatedValance',
+        title: 'Световые ламбрекены для маркиз',
       },
     ],
   },
   tr: {
     eyebrow: 'Hizmetler',
-    title: 'Dogru hizmet alanina hizli giris',
+    title: 'Doğru hizmet alanına hızlı giriş',
     intro:
-      'Talep netse bu girisler onarim, teshis, montaj veya marka hizmetine dogrudan yonlendirir.',
-    overviewLabel: 'Tum hizmetleri gor',
+      'Onarım, temizlik, LED servisi, teşhis, montaj, markalama ve ışıklı tente volanları — doğrudan ilgili hizmet alanına.',
+    overviewEyebrow: 'PixelRing hizmetleri',
+    overviewTitle: 'Her şey tek bir sorumlu elden.',
+    overviewMeta: '7 hizmet alanına genel bakış',
+    overviewLabel: 'Tüm hizmetleri gör',
     cards: [
       {
-        title: 'Tabela onarimi',
-        text: 'Tabela, isikli kutu, harf, folyo ve gorunur hasarlari duzenli sekilde netlestirme.',
-        href: '/leistungen/werbeanlagen-reparatur',
-        tag: 'Onarim',
+        id: 'repair',
+        title: 'Tabela onarımı',
       },
       {
+        id: 'cleaning',
+        title: 'Tabela temizliği',
+      },
+      {
+        id: 'led',
         title: 'LED modernizasyonu',
-        text: 'Isikli reklam, LED modul, guc kaynagi, kontrol cihazlari ve neon sistemlerini kontrol etme.',
-        href: '/leistungen/lichtwerbung-led-modernisierung',
-        tag: 'Isik',
       },
       {
-        title: 'Audit ve teshis',
-        text: 'Reklam sisteminin durumunu, nedenini, kapsamini ve onceligini izlenebilir sekilde kaydetme.',
-        href: '/leistungen/werbeanlagen-audit-diagnose',
-        tag: 'Kontrol',
+        id: 'audit',
+        title: 'Audit ve teşhis',
       },
       {
+        id: 'installation',
         title: 'Montaj ve demontaj',
-        text: 'Reklam sistemlerinin montaj, sokum veya yer degisikligini koordineli hazirlama.',
-        href: '/leistungen/montage-demontage-werbeanlagen',
-        tag: 'Montaj',
       },
       {
-        title: 'Baski ve markalama',
-        text: 'Is yerleri icin baski urunleri, folyolar, yazilar ve reklam malzemeleri.',
-        href: '/leistungen/druckprodukte-branding-werbematerialien',
-        tag: 'Marka',
+        id: 'branding',
+        title: 'Baskı ve markalama',
       },
       {
-        title: 'Bakim ve lokasyon servisi',
-        text: 'Her lokasyonda gorunur varliklar, malzemeler ve oncelikler icin duzenli kontrol.',
-        href: '/leistungen',
-        tag: 'Servis',
+        id: 'illuminatedValance',
+        title: 'Işıklı tente volanları',
       },
     ],
   },
   pl: {
-    eyebrow: 'Uslugi',
-    title: 'Szybkie przejscie do wlasciwego obszaru serwisu',
+    eyebrow: 'Usługi',
+    title: 'Szybkie przejście do właściwego obszaru serwisu',
     intro:
-      'Gdy zadanie jest jasne, te wejscia prowadza do naprawy, diagnostyki, montazu albo brandingu.',
-    overviewLabel: 'Zobacz wszystkie uslugi',
+      'Naprawa, czyszczenie, serwis LED, diagnostyka, montaż, branding i podświetlane lambrekiny markiz — prosto do właściwej usługi.',
+    overviewEyebrow: 'Usługi PixelRing',
+    overviewTitle: 'Wszystko u jednego odpowiedzialnego partnera.',
+    overviewMeta: '7 obszarów usług w skrócie',
+    overviewLabel: 'Zobacz wszystkie usługi',
     cards: [
       {
-        title: 'Naprawa szyldow',
-        text: 'Uporzadkowac usterki szyldow, kasetonow, liter, folii i widocznych uszkodzen.',
-        href: '/leistungen/werbeanlagen-reparatur',
-        tag: 'Naprawa',
+        id: 'repair',
+        title: 'Naprawa szyldów',
       },
       {
+        id: 'cleaning',
+        title: 'Czyszczenie reklam',
+      },
+      {
+        id: 'led',
         title: 'Modernizacja LED',
-        text: 'Sprawdzic i aktualizowac reklame swietlna, moduly LED, zasilacze, sterowniki i neon.',
-        href: '/leistungen/lichtwerbung-led-modernisierung',
-        tag: 'Swiatlo',
       },
       {
+        id: 'audit',
         title: 'Audyt i diagnostyka',
-        text: 'Zapisac stan, przyczyne, zakres i priorytet instalacji reklamowej w przejrzysty sposob.',
-        href: '/leistungen/werbeanlagen-audit-diagnose',
-        tag: 'Kontrola',
       },
       {
-        title: 'Montaz i demontaz',
-        text: 'Przygotowac montaz, demontaz lub przeniesienie reklamy z jasna koordynacja.',
-        href: '/leistungen/montage-demontage-werbeanlagen',
-        tag: 'Montaz',
+        id: 'installation',
+        title: 'Montaż i demontaż',
       },
       {
+        id: 'branding',
         title: 'Druk i branding',
-        text: 'Produkty drukowane, folie, oznakowanie i materialy reklamowe dla lokalizacji biznesowych.',
-        href: '/leistungen/druckprodukte-branding-werbematerialien',
-        tag: 'Branding',
       },
       {
-        title: 'Serwis lokalizacji',
-        text: 'Regularna kontrola widocznych elementow, materialow i priorytetow dla kazdej lokalizacji.',
-        href: '/leistungen',
-        tag: 'Serwis',
+        id: 'illuminatedValance',
+        title: 'Podświetlane lambrekiny markiz',
       },
     ],
   },
   ar: {
     eyebrow: 'الخدمات',
-    title: 'مدخل مباشر الى مجال الخدمة المناسب',
+    title: 'مدخل مباشر إلى مجال الخدمة المناسب',
     intro:
-      'عندما تكون المهمة واضحة، تقود هذه الروابط مباشرة الى الاصلاح او التشخيص او التركيب او خدمة العلامة.',
+      'الإصلاح والتنظيف وخدمة LED والتشخيص والتركيب والهوية البصرية والحواف المضيئة للمظلات — مباشرة إلى مجال الخدمة المناسب.',
+    overviewEyebrow: 'خدمات PixelRing',
+    overviewTitle: 'كل شيء عبر جهة واحدة مسؤولة.',
+    overviewMeta: 'نظرة عامة على 7 مجالات خدمة',
     overviewLabel: 'عرض كل الخدمات',
     cards: [
       {
-        title: 'اصلاح اللوحات',
-        text: 'توضيح اعطال اللوحات والصناديق المضيئة والحروف والافلام والاضرار الظاهرة بشكل منظم.',
-        href: '/leistungen/werbeanlagen-reparatur',
-        tag: 'اصلاح',
+        id: 'repair',
+        title: 'إصلاح اللوحات',
       },
       {
+        id: 'cleaning',
+        title: 'تنظيف اللوحات الإعلانية',
+      },
+      {
+        id: 'led',
         title: 'تحديث LED',
-        text: 'فحص وتحديث الاعلانات المضيئة ووحدات LED ومزودات الطاقة ووحدات التحكم والنيون.',
-        href: '/leistungen/lichtwerbung-led-modernisierung',
-        tag: 'اضاءة',
       },
       {
+        id: 'audit',
         title: 'فحص وتشخيص',
-        text: 'تسجيل الحالة والسبب والنطاق والاولوية الخاصة باللوحة بطريقة قابلة للتتبع.',
-        href: '/leistungen/werbeanlagen-audit-diagnose',
-        tag: 'فحص',
       },
       {
+        id: 'installation',
         title: 'تركيب وفك',
-        text: 'تحضير تركيب او فك او نقل اللوحات الاعلانية مع تنسيق واضح للخطوات.',
-        href: '/leistungen/montage-demontage-werbeanlagen',
-        tag: 'تركيب',
       },
       {
+        id: 'branding',
         title: 'طباعة وهوية',
-        text: 'مواد مطبوعة وافلام وكتابات ومواد اعلانية لمواقع الاعمال.',
-        href: '/leistungen/druckprodukte-branding-werbematerialien',
-        tag: 'هوية',
       },
       {
-        title: 'صيانة المواقع',
-        text: 'فحص منتظم للعناصر المرئية والمواد والاولوية في كل موقع.',
-        href: '/leistungen',
-        tag: 'خدمة',
+        id: 'illuminatedValance',
+        title: 'حواف مضيئة للمظلات',
       },
     ],
   },
@@ -299,57 +322,65 @@ export default function HomeServicesSection({ locale }: { locale: string }) {
   const copy = getCopy(locale);
 
   return (
-    <section className="w-full bg-[#F7F1E8] px-6 py-16 md:py-20">
-      <div className="mx-auto flex max-w-7xl flex-col gap-9">
-        <div className="flex flex-col gap-5 md:max-w-3xl">
+    <section className="w-full bg-[#F7F1E8] py-16">
+      <div className="pr-site-container flex flex-col gap-[42px]">
+        <div className="flex max-w-[1000px] flex-col">
           <SectionEyebrow>{copy.eyebrow}</SectionEyebrow>
-          <div className="flex flex-col gap-4">
-            <h2 className="text-[32px] font-extrabold leading-[1.1] tracking-[0] text-[#0E1A2B] md:text-[42px]">
-              {copy.title}
-            </h2>
-            <p className="max-w-2xl text-[16px] leading-[1.6] text-[#72665D] md:text-[17px]">
-              {copy.intro}
-            </p>
-          </div>
+          <h2 className="mt-6 max-w-[820px] text-[32px] font-extrabold leading-[1.1] tracking-[0] text-[#0E1A2B] md:text-[42px] xl:text-[48px] xl:leading-[1.06] xl:tracking-[-0.03em]">
+            {copy.title}
+          </h2>
+          <p className="mt-5 max-w-[1000px] text-[16px] leading-[1.6] text-[#72665D] md:text-[17px] xl:text-[18px] xl:leading-[1.55]">
+            {copy.intro}
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {copy.cards.map((card) => (
-            <Link
-              key={card.href + card.title}
-              href={card.href}
-              className="group flex min-h-[168px] flex-col justify-between gap-5 rounded-lg border border-[#E7DDD3] bg-white px-5 py-5 text-[#0E1A2B] shadow-sm shadow-[#0E1A2B]/[0.03] transition duration-300 hover:-translate-y-0.5 hover:border-[#B8643E]/45 hover:shadow-xl hover:shadow-[#0E1A2B]/[0.07]"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <h3 className="text-[20px] font-black leading-tight tracking-[0]">
+        <div className="grid grid-cols-1 gap-x-[18px] gap-y-[30px] md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <Link
+            href="/leistungen"
+            className="group flex min-w-0 flex-col rounded-[14px] text-start text-[#0E1A2B] outline-none transition-transform duration-300 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#B8643E] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F7F1E8] motion-reduce:transform-none motion-reduce:transition-none"
+          >
+            <div className="flex aspect-[319.5/202] flex-col justify-between overflow-hidden rounded-[14px] border border-[#0E1A2B] bg-[#0E1A2B] p-[23px] text-white shadow-[0_8px_24px_rgba(14,26,43,0.05)] transition-[border-color,box-shadow] duration-300 group-hover:border-[#B8643E] group-hover:shadow-[0_14px_30px_rgba(14,26,43,0.12)] group-focus-visible:border-[#B8643E] motion-reduce:transition-none">
+              <span className="text-[11px] font-extrabold uppercase tracking-[0.145em] text-[#E6B295]">
+                {copy.overviewEyebrow}
+              </span>
+              <p className="max-w-[245px] text-[24px] font-black leading-[1.08] tracking-[-0.02em] sm:text-[26px]">
+                {copy.overviewTitle}
+              </p>
+              <span className="text-[13px] leading-normal text-[#C8D0DC]">
+                {copy.overviewMeta}
+              </span>
+            </div>
+            <h3 className="min-h-[68px] px-[3px] pt-[18px] text-[20px] font-black leading-[1.18] tracking-[-0.01em]">
+              {copy.overviewLabel}
+            </h3>
+          </Link>
+
+          {copy.cards.map((card) => {
+            const service = HOME_SERVICE_CONFIG[card.id];
+
+            return (
+              <Link
+                key={card.id}
+                href={service.href}
+                className="group flex min-w-0 flex-col rounded-[14px] text-start text-[#0E1A2B] outline-none transition-transform duration-300 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#B8643E] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F7F1E8] motion-reduce:transform-none motion-reduce:transition-none"
+              >
+                <div className="relative aspect-[319.5/202] overflow-hidden rounded-[14px] border border-[#E2D7CC] bg-white shadow-[0_8px_24px_rgba(14,26,43,0.05)] transition-[border-color,box-shadow] duration-300 group-hover:border-[#B8643E]/60 group-hover:shadow-[0_14px_30px_rgba(14,26,43,0.10)] group-focus-visible:border-[#B8643E] motion-reduce:transition-none">
+                  <Image
+                    src={service.image}
+                    alt=""
+                    fill
+                    sizes="(min-width: 1440px) 320px, (min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                    className={`object-cover ${service.imageClassName} transition-transform duration-500 group-hover:scale-[1.04] group-focus-visible:scale-[1.04] motion-reduce:transform-none motion-reduce:transition-none`}
+                  />
+                </div>
+                <h3 className="min-h-[68px] px-[3px] pt-[18px] text-[20px] font-black leading-[1.18] tracking-[-0.01em]">
                   {card.title}
                 </h3>
-                <span className="shrink-0 rounded-full bg-[#F7F1E8] px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#8F4C2F]">
-                  {card.tag}
-                </span>
-              </div>
-              <div className="flex items-end justify-between gap-5">
-                <p className="text-[14px] leading-[1.5] text-[#72665D]">
-                  {card.text}
-                </p>
-                <span
-                  aria-hidden="true"
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#E7DDD3] text-[20px] leading-none text-[#B8643E] transition group-hover:border-[#B8643E] group-hover:bg-[#B8643E] group-hover:text-white"
-                >
-                  →
-                </span>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
 
-        <Link
-          href="/leistungen"
-          className="inline-flex w-fit items-center gap-3 rounded-full border border-[#D8CBBE] px-5 py-3 text-[14px] font-extrabold text-[#0E1A2B] transition hover:border-[#B8643E] hover:text-[#8F4C2F]"
-        >
-          {copy.overviewLabel}
-          <span aria-hidden="true" className="text-[#B8643E]">→</span>
-        </Link>
       </div>
     </section>
   );

@@ -42,6 +42,10 @@ function isRetiredPublicPath(path: string) {
   return path === '/service' || isRetiredGonePath(path);
 }
 
+function isPrepublicationServicePath(path: string) {
+  return /^\/leistungen\/beleuchtete-markisenvolants\/?$/.test(path);
+}
+
 function normalizeXDefaultLinkHeader(response: NextResponse, request: NextRequest, locale: string | null, stripped: string) {
   if (!locale) {
     return;
@@ -117,7 +121,7 @@ export default async function proxy(request: NextRequest) {
 
   const response = intlMiddleware(request);
 
-  if (isProblemArticlePath(stripped) || isRetiredPublicPath(stripped)) {
+  if (isProblemArticlePath(stripped) || isRetiredPublicPath(stripped) || isPrepublicationServicePath(stripped)) {
     response.headers.delete('Link');
   }
 
