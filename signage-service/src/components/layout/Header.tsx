@@ -9,8 +9,17 @@ import ContactModal from '../common/ContactModal';
 import DesktopNav from './DesktopNav';
 import HeaderActions from './HeaderActions';
 import MobileNav from './MobileNav';
-import type { HeaderContent, HeaderLocale, NavLink, NavMenuLink, PortalAccess } from './Header.types';
+import type { HeaderContent, HeaderLocale, NavLink, NavMenuLink } from './Header.types';
 import { isActiveNavPath } from './headerNavUtils';
+
+const PORTAL_CTA_LABELS: Record<HeaderLocale, string> = {
+  de: 'Zum Portal',
+  en: 'Go to portal',
+  ru: 'В кабинет',
+  tr: 'Portala git',
+  pl: 'Do portalu',
+  ar: 'إلى البوابة',
+};
 
 const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
   de: {
@@ -72,13 +81,7 @@ const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
 const DESKTOP_NAV_TOP_THRESHOLD = 24;
 const DESKTOP_NAV_DIRECTION_DELTA = 8;
 
-const Header = ({
-  content,
-  portalAccess,
-}: {
-  content?: HeaderContent | null;
-  portalAccess?: PortalAccess;
-}) => {
+const Header = ({ content }: { content?: HeaderContent | null }) => {
   const t = useTranslations('Nav');
   const locale = useLocale();
   const pathname = usePathname();
@@ -87,7 +90,46 @@ const Header = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
   const [isDesktopNavVisible, setIsDesktopNavVisible] = useState(true);
+  const [portalSessionState, setPortalSessionState] = useState<
+    'checking' | 'authenticated' | 'anonymous'
+  >('checking');
   const scrollAnchorRef = useRef(0);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadPortalSessionState() {
+      try {
+        const response = await fetch('/api/portal/session-state', {
+          cache: 'no-store',
+          credentials: 'same-origin',
+          signal: controller.signal,
+          headers: {
+            Accept: 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          setPortalSessionState('anonymous');
+          return;
+        }
+
+        const payload = (await response.json()) as { authenticated?: unknown };
+        setPortalSessionState(
+          payload.authenticated === true ? 'authenticated' : 'anonymous'
+        );
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          return;
+        }
+
+        setPortalSessionState('anonymous');
+      }
+    }
+
+    void loadPortalSessionState();
+    return () => controller.abort();
+  }, []);
 
   const fallbackNavLinks = [
     { name: t('services'), href: '/leistungen' },
@@ -144,13 +186,15 @@ const Header = ({
   ];
   const hasCmsAccountStatusLabel =
     content?.accountStatusLabel && !content.accountStatusLabel.startsWith('Nav.');
-  const accountStatusLabel = portalAccess?.isActive
-    ? portalAccess.label
-    : hasCmsAccountStatusLabel
-      ? content.accountStatusLabel ?? t('account_status')
-      : t('account_status');
-  const accountStatusHref = portalAccess?.isActive
-    ? portalAccess.href || '/portal'
+  const accountStatusBaseLabel = hasCmsAccountStatusLabel
+    ? content.accountStatusLabel ?? t('account_status')
+    : t('account_status');
+  const hasPortalAccess = portalSessionState === 'authenticated';
+  const accountStatusLabel = hasPortalAccess
+    ? PORTAL_CTA_LABELS[locale as HeaderLocale] ?? PORTAL_CTA_LABELS.de
+    : accountStatusBaseLabel;
+  const accountStatusHref = hasPortalAccess
+    ? '/portal'
     : content?.accountStatusHref || '/status';
   const requestLabel =
     content?.requestLabel && !content.requestLabel.startsWith('Nav.')
@@ -218,6 +262,7 @@ const Header = ({
       <header
         className="pr-header-surface fixed top-0 z-50 w-full border-b"
         data-secondary-nav-visible={isDesktopNavVisible}
+        data-portal-session-state={portalSessionState}
       >
         <div className="pr-site-container">
           <div
@@ -248,6 +293,7 @@ const Header = ({
             </div>
 
             <HeaderActions
+              accountStatusBaseLabel={accountStatusBaseLabel}
               accountStatusHref={accountStatusHref}
               accountStatusLabel={accountStatusLabel}
               requestHref={requestHref}

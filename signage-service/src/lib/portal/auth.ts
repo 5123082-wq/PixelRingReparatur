@@ -91,12 +91,15 @@ export async function verifyPortalSessionCookie(
   db: PrismaClient,
   value: string | undefined | null
 ): Promise<boolean> {
-  return (await getPortalSessionContext(db, value)) !== null;
+  return (
+    (await getPortalSessionContext(db, value, { touchLastSeen: false })) !== null
+  );
 }
 
 export async function getPortalSessionContext(
   db: PrismaClient,
-  value: string | undefined | null
+  value: string | undefined | null,
+  options: { touchLastSeen?: boolean } = {}
 ): Promise<PortalSessionContext | null> {
   if (!value) {
     return null;
@@ -133,11 +136,13 @@ export async function getPortalSessionContext(
     return null;
   }
 
-  await db.session.update({
-    where: { id: session.id },
-    data: { lastSeenAt: new Date() },
-    select: { id: true },
-  });
+  if (options.touchLastSeen !== false) {
+    await db.session.update({
+      where: { id: session.id },
+      data: { lastSeenAt: new Date() },
+      select: { id: true },
+    });
+  }
 
   return {
     sessionId: session.id,

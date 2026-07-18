@@ -1465,6 +1465,15 @@ Suggested first user-visible result:
 
 ## Progress Log
 
+### 2026-07-18
+
+- Current sprint/block: Public-header portal session indicator without personalized homepage rendering (индикатор входа в кабинет в публичной шапке без персонализированной серверной отрисовки главной).
+- Done: removed the homepage-level server cookie/database check (серверную проверку cookie-файла и базы на главной) while preserving the account/status action. Added private `GET /api/portal/session-state` (служебный запрос состояния входа), which validates real and development-demo sessions (реальную и демонстрационную сессии), returns only `{authenticated: boolean}` (логический признак «выполнен вход»), sends `private, no-store` (запрет общего и браузерного кеширования), `Vary: Cookie` (разделение ответа по cookie-файлу) and `noindex, nofollow` (запрет индексации и перехода по ссылкам), and fails closed (при ошибке считает вход не подтверждённым). The client header requests it after hydration (после загрузки страницы), keeps the status link for anonymous/error states (без входа или при ошибке), and switches to the localized portal link only for exact `true` (истинного значения). The header-only probe (проверка только для шапки) no longer updates `lastSeenAt` (время последней активности), while authoritative portal reads (полноценные проверки кабинета) preserve their previous session-update behavior. Tests verified both `false` and authenticated `true` responses without exposing user ID, e-mail or contact data (идентификатор пользователя, электронную почту или контактные данные).
+- In progress: none locally; a live real-session visual check (визуальная проверка с реальной сессией) remains after deployment.
+- Next action: after deployment, sign in through the normal portal flow (обычный сценарий входа в кабинет), open a localized public homepage, confirm the label changes to the portal link without a full reload, and confirm logout returns it to the status link.
+- Blockers/risks: the endpoint reveals only whether the current browser session is valid (только факт действительности сессии), which is acceptable presentation state but must never be expanded with personal fields. Demo authentication (демонстрационный вход) remains development-only. Production cache verification (проверка промышленного кеша) depends on deployment.
+- Updated documents/code: portal authentication helper and session-state route (вспомогательная логика авторизации и служебный адрес состояния сессии), public shared header (общая публичная шапка), portal regression tests (регрессионные тесты кабинета), public/SEO logs (журналы публичного сайта и поисковой оптимизации), this implementation plan (этот план внедрения) and root `PROGRESS.md` (краткий глобальный журнал).
+
 ### 2026-06-13
 
 - Current sprint/block: Client Portal MVP simplification for classic customer request tracking.
