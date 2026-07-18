@@ -13,12 +13,6 @@ export type HeaderContent = {
   requestHref?: string | null;
 };
 
-export type PortalAccess = {
-  isActive: boolean;
-  label: string;
-  href?: string;
-};
-
 export type NavLink = {
   name: string;
   href: string;

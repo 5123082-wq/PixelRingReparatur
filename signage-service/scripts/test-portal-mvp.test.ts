@@ -375,6 +375,45 @@ test('status API resolves portal activation only after verified status access', 
   assert.ok(source.includes('getPortalSessionContext'));
 });
 
+test('public portal session state exposes only a private boolean response', () => {
+  const source = readProjectFile('src/app/api/portal/session-state/route.ts');
+
+  assert.ok(source.includes("{ authenticated }"));
+  assert.ok(source.includes('verifyPortalSessionCookie'));
+  assert.ok(source.includes('verifyPortalDemoCookie'));
+  assert.ok(source.includes("'Cache-Control': 'private, no-store, max-age=0'"));
+  assert.ok(source.includes("Vary: 'Cookie'"));
+  assert.equal(source.includes('portalUserId'), false);
+  assert.equal(source.includes('email:'), false);
+  assert.equal(source.includes('contactValue'), false);
+});
+
+test('portal session presentation check does not refresh last-seen activity', () => {
+  const source = readProjectFile('src/lib/portal/auth.ts');
+  const verifierIndex = source.indexOf('export async function verifyPortalSessionCookie(');
+  const contextIndex = source.indexOf('export async function getPortalSessionContext(');
+  const verifierBlock = source.slice(verifierIndex, contextIndex);
+
+  assert.notEqual(verifierIndex, -1);
+  assert.notEqual(contextIndex, -1);
+  assert.ok(verifierBlock.includes('{ touchLastSeen: false }'));
+  assert.ok(source.includes('options: { touchLastSeen?: boolean } = {}'));
+  assert.ok(source.includes('if (options.touchLastSeen !== false) {'));
+});
+
+test('public header resolves portal state after hydration without personalizing the homepage', () => {
+  const headerSource = readProjectFile('src/components/layout/Header.tsx');
+  const homeSource = readProjectFile('src/app/[locale]/page.tsx');
+
+  assert.ok(headerSource.includes("fetch('/api/portal/session-state'"));
+  assert.ok(headerSource.includes("cache: 'no-store'"));
+  assert.ok(headerSource.includes("credentials: 'same-origin'"));
+  assert.ok(headerSource.includes("payload.authenticated === true ? 'authenticated' : 'anonymous'"));
+  assert.equal(homeSource.includes('hasPortalAccess'), false);
+  assert.equal(homeSource.includes('portalAccess='), false);
+  assert.equal(homeSource.includes('next/headers'), false);
+});
+
 test('admin manual portal claim action keeps audit details token-safe', () => {
   const source = readProjectFile('src/app/api/admin/cases/[id]/portal-claim-link/route.ts');
   const auditIndex = source.indexOf("action: 'CASE_PORTAL_CLAIM_LINK_CREATED'");

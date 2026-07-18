@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import { setRequestLocale } from 'next-intl/server';
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/sections/HeroSection";
@@ -14,14 +14,14 @@ import ReviewsSection from "@/components/sections/ReviewsSection";
 import FAQSection from "@/components/sections/FAQSection";
 import FooterCTA from "@/components/sections/FooterCTA";
 import { getHomePageCmsContent, getGlobalPageCmsContent } from "@/lib/cms/pages";
+import { routing } from '@/i18n/routing';
 import { buildLanguageAlternates, buildLocaleUrl, buildSiteUrl } from "@/lib/seo";
-import { prisma } from "@/lib/prisma";
-import {
-  PORTAL_DEMO_COOKIE_NAME,
-  PORTAL_SESSION_COOKIE_NAME,
-  getPortalSessionContext,
-  verifyPortalDemoCookie,
-} from "@/lib/portal/auth";
+
+export const revalidate = 300;
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
 const HOME_METADATA: Record<string, { title: string; description: string }> = {
   de: {
@@ -66,34 +66,6 @@ const OPEN_GRAPH_LOCALES: Record<string, string> = {
   pl: 'pl_PL',
   ar: 'ar_AR',
 };
-
-const PORTAL_CTA_LABELS: Record<string, string> = {
-  de: 'Zum Portal',
-  en: 'Go to portal',
-  ru: 'В кабинет',
-  tr: 'Portala git',
-  pl: 'Do portalu',
-  ar: 'إلى البوابة',
-};
-
-async function hasPortalAccess(): Promise<boolean> {
-  try {
-    const cookieStore = await cookies();
-    const portalSessionCookie = cookieStore.get(PORTAL_SESSION_COOKIE_NAME)?.value;
-
-    if (portalSessionCookie) {
-      const portalSession = await getPortalSessionContext(prisma, portalSessionCookie);
-      if (portalSession) {
-        return true;
-      }
-    }
-
-    return verifyPortalDemoCookie(cookieStore.get(PORTAL_DEMO_COOKIE_NAME)?.value);
-  } catch (error) {
-    console.error('Portal access check failed:', error);
-    return false;
-  }
-}
 
 function buildHomeJsonLd(locale: string, metadata: { title: string; description: string }) {
   const pageUrl = buildLocaleUrl(locale);
@@ -192,9 +164,9 @@ export default async function HomePage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const metadata = HOME_METADATA[locale] ?? HOME_METADATA.de;
   const jsonLd = buildHomeJsonLd(locale, metadata);
-  const portalAccess = await hasPortalAccess();
 
   try {
     const [globalCms, homeCms] = await Promise.all([
@@ -216,18 +188,7 @@ export default async function HomePage({
             __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
           }}
         />
-        <Header
-          content={globalCms?.header}
-          portalAccess={
-            portalAccess
-              ? {
-                  isActive: true,
-                  label: PORTAL_CTA_LABELS[locale] ?? PORTAL_CTA_LABELS.de,
-                  href: '/portal',
-                }
-              : undefined
-          }
-        />
+        <Header content={globalCms?.header} />
         <main className="flex-1">
           {homeCms?.hero && <HeroSection content={homeCms.hero} />}
           <HomeBeforeAfterSection locale={locale} />

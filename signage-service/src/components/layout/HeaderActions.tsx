@@ -5,6 +5,7 @@ import LanguageSwitcher from '../common/LanguageSwitcher';
 import ServiceActionButton from '../common/ServiceActionButton';
 
 export default function HeaderActions({
+  accountStatusBaseLabel,
   accountStatusHref,
   accountStatusLabel,
   requestHref,
@@ -15,6 +16,7 @@ export default function HeaderActions({
   onOpenChat,
   onToggleMenu,
 }: {
+  accountStatusBaseLabel: string;
   accountStatusHref: string;
   accountStatusLabel: string;
   requestHref: string;
@@ -40,7 +42,14 @@ export default function HeaderActions({
           isAccountStatusActive ? 'pr-header-control-active' : ''
         }`}
       >
-        {accountStatusLabel}
+        <span className="grid" aria-live="polite">
+          <span className="invisible col-start-1 row-start-1" aria-hidden="true">
+            {accountStatusBaseLabel}
+          </span>
+          <span className="col-start-1 row-start-1 text-center">
+            {accountStatusLabel}
+          </span>
+        </span>
       </Link>
 
       {requestHref ? (

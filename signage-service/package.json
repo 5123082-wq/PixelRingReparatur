@@ -15,6 +15,7 @@
     "test:db": "npm run test:admin-runtime && npm run test:admin-e2e-smoke",
     "test:db-guard": "node --experimental-strip-types --experimental-specifier-resolution=node --test scripts/test-db-test-guard.test.ts",
     "test:portal-mvp": "node --experimental-strip-types --experimental-specifier-resolution=node --test scripts/test-portal-mvp.test.ts",
+    "test:ai-readiness": "node --experimental-strip-types --experimental-specifier-resolution=node --test scripts/test-ai-readiness.test.ts",
     "audit:cms-public": "node scripts/audit-cms-public-content.mjs",
     "admin:bootstrap": "node scripts/bootstrap-admin-users.mjs",
     "db:generate": "prisma generate",
