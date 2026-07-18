@@ -10,6 +10,7 @@ Purpose: short domain router (маршрутизатор домена) for Conte
 
 Current active tracks:
 
+- GEO language strategy (языковая стратегия оптимизации для AI-ответов): [geo_optimization_strategy.md](geo_optimization_strategy.md) is the active decision dated 2026-07-18. DE is canonical and complete; EN is the maintained international version; RU is optional when business value supports it; TR/PL/AR keep key pages but do not require article parity until demand is demonstrated. The former all-articles-in-six-languages rule is superseded/deprecated (заменено и устарело).
 - `Probleme & Lösungen` (проблемы и решения): modernization of the problem-content cluster, including weak article rewrites, structured sections, CTA safety, and CMS article handling.
 - Service pages (страницы услуг): reusable service-page pattern from `Werbeanlagen-Reparatur` (ремонт рекламных конструкций) and follow-up work for neighboring service pages.
 - `LED-Modernisierung` (LED-модернизация): service page strengthening is active; future problem articles remain deferred until explicit owner approval.
@@ -73,14 +74,32 @@ Archive/history rule:
 
 Do not read full progress log at startup. Read only when continuing this track.
 
+### 2026-07-18 - GEO Language Portfolio Decision (решение по языковому портфелю GEO)
+
+* **Current sprint/block:** Quality-over-language-count (качество важнее количества языков) strategy alignment.
+* **Done:** Marked mandatory DE/EN/RU/TR/PL/AR article parity as superseded/deprecated (заменённая и устаревшая стратегия). Set DE as full canonical content, EN as the maintained international version, RU as optional when business value supports it, and TR/PL/AR as key-page locales without mandatory article translation until demand is proven. Prioritized canonical expert materials, real cases, normative/manufacturer evidence and external trust signals.
+* **In progress:** Apply this decision to future content planning; no existing quality translation is removed automatically.
+* **Next action:** Build and refresh the strongest German canonical materials first; approve additional article locales only from traffic, queries, leads or partner evidence.
+* **Blockers/risks:** Key-page localization and Arabic RTL (направление справа налево) remain product requirements. Missing TR/PL/AR article variants are intentional scope, not an automatic GEO defect.
+* **Updated documents:** [geo_optimization_strategy.md](geo_optimization_strategy.md), this README, [content_ai_seo_progress_log.md](content_ai_seo_progress_log.md), [CMS audit](../09_engineering/cms_public_content_audit_2026-05-21.md), and root [PROGRESS.md](../../PROGRESS.md).
+
 ### 2026-07-18 - AI Crawler Visibility And Cacheable Homepage (видимость для AI-роботов и кешируемая главная)
 
 * **Current sprint/block:** Owner-approved AI-readiness remediation (утверждённое владельцем устранение проблем готовности сайта для AI-систем).
 * **Done:** Kept `GPTBot` (робот OpenAI для обучения) and the search/answer crawlers of Google, Bing, OpenAI, Anthropic and Perplexity explicitly allowed in `robots.txt` (файле правил для роботов), with the wildcard fallback (общим резервным правилом) still open and only `/api/` (служебные программные адреса) disallowed. Removed the personal portal-session lookup (персональную проверку сессии кабинета) from server rendering of the public homepage. All six localized homepages are now statically generated with five-minute revalidation (статически создаются и обновляются раз в пять минут); the header preserves the localized portal return link by fetching only `{authenticated: boolean}` (логический признак «выполнен вход») after hydration (после загрузки страницы). Focused tests, targeted lint (точечная проверка кода), production build (промышленная сборка), generated `robots.txt` (файл правил для роботов), anonymous/authenticated session checks (проверки без входа и после входа), cache headers (заголовки кеша), six-locale prerendering (предварительная генерация шести языков), Arabic RTL (арабское направление справа налево) and `sitemap.xml` (карта сайта) passed.
 * **In progress:** None locally; deployment and an external rescan (повторная внешняя проверка) are intentionally not part of this repository-only step.
 * **Next action:** Deploy, confirm `x-vercel-cache: HIT` (ответ из кеша Vercel) for DE/EN/RU/TR/PL/AR homepages, then rerun the Signum AI readiness checker (проверку готовности для AI-систем Signum).
-* **Blockers/risks:** An AI-readiness score (оценка готовности для AI-систем) is a vendor heuristic (эвристика поставщика), not a Google or OpenAI ranking factor (фактор ранжирования Google или OpenAI). The read-only CMS audit (аудит CMS без записи) still reports twelve unrelated missing TR/PL/AR problem-article variants (отсутствующие турецкие, польские и арабские версии четырёх статей). The production build succeeded, but the remote database briefly reset several TLS connections (соединения с шифрованием) and static fallbacks (статические резервные тексты) were used for those individual reads.
+* **Blockers/risks:** An AI-readiness score (оценка готовности для AI-систем) is a vendor heuristic (эвристика поставщика), not a Google or OpenAI ranking factor (фактор ранжирования Google или OpenAI). The read-only CMS audit (аудит CMS без записи) still reports twelve missing TR/PL/AR problem-article variants (отсутствующие турецкие, польские и арабские версии четырёх статей), but the active GEO language strategy classifies them as intentional scope rather than mandatory remediation until demand is demonstrated. The production build succeeded, but the remote database briefly reset several TLS connections (соединения с шифрованием) and static fallbacks (статические резервные тексты) were used for those individual reads.
 * **Updated documents/code:** Crawler metadata (правила для роботов), homepage/locale rendering (отрисовка главной и языков), client header/session-state endpoint (клиентская шапка и служебный адрес состояния сессии), portal authentication helper (вспомогательная логика авторизации кабинета), focused tests (точечные тесты), public/portal/domain progress logs (журналы публичного сайта, кабинета и домена) and root `PROGRESS.md` (краткий глобальный журнал).
+
+### 2026-07-18 - DE Problem-Article Publication (публикация немецких статей о проблемах)
+
+* **Current sprint/block:** `shaky-sign` (служебный идентификатор статьи о шатающейся вывеске) full rewrite (полная переработка) and `urgent-repair` (служебный идентификатор статьи о срочном ремонте) source-backed editorial refresh (редакторская доработка на основе источников).
+* **Done:** Verified the former DE CMS content (прежний немецкий контент CMS), created and owner-approved both complete Markdown sources (созданы и утверждены владельцем оба полных Markdown-источника), and published them through `db:seed:articles-shaky-urgent-de` (отдельный скрипт загрузки двух статей). The seed parses the public article and CMS mapping (публичную статью и карту полей CMS) directly from each source, supports `--dry-run` (проверку без записи) and `--verify` (проверку точного совпадения базы), runs both row updates in one transaction (одной транзакции), and preserves the original IDs and publication dates (исходные идентификаторы и даты публикации). `shaky-sign` (статья о шатающейся вывеске) now has the correct canonical URL (канонический адрес), 13,725 public characters (13 725 символов публичного текста) and structured `selfRepairTips` (структурированные советы безопасных действий); `urgent-repair` (статья о срочном ремонте) now matches its approved 12,271-character refresh (утверждённую редакцию объёмом 12 271 символ). Exact DB verification (точная проверка базы), three HTTP 200 checks (три проверки страниц), metadata/content assertions (проверки метаданных и содержимого), targeted lint (точечная проверка кода), CMS workflow tests (тесты рабочего процесса CMS) and production build (промышленная сборка) pass.
+* **In progress:** Optional owner visual review (необязательная визуальная проверка владельцем) of the updated overview modals and full article pages (модальных окон обзора и полных страниц статей).
+* **Next action:** Address only visual/content feedback if the owner finds an issue; localization beyond DE (локализация кроме немецкого) remains a separately approved track.
+* **Blockers/risks:** No publication blocker remains (блокеров публикации нет). Automated in-app interaction with localhost was denied by the browser URL policy (автоматическое взаимодействие встроенного браузера с localhost отклонено политикой URL); database, SSR payload, routes, metadata and build (база, серверная разметка, страницы, метаданные и сборка) were verified independently. Public copy must continue to avoid `24/7` (круглосуточный сервис), fixed response times (фиксированное время реакции), or safety confirmation from photos (подтверждение безопасности по фотографиям).
+* **Updated documents/code:** Two published DE article sources (два опубликованных немецких источника статей), the dedicated seed and package command (отдельный скрипт загрузки и команда пакета), problem-article workspace log (журнал рабочей области статей), domain progress log (доменный журнал), this README (этот файл-ориентир), and root `PROGRESS.md` (краткий глобальный журнал).
 
 ### 2026-07-17 - Illuminated-Valance Google Indexing Release (выпуск страницы воланов для индексации Google)
 
@@ -188,8 +207,8 @@ Do not read full progress log at startup. Read only when continuing this track.
   - `docs/02_public_website/README.md`
   - `docs/07_content_ai_seo/README.md`
   - `docs/07_content_ai_seo/content_ai_seo_progress_log.md`
-  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_product_brief.md`
-  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_evidence_matrix.md`
+  - `docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_product_brief.md`
+  - `docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_evidence_matrix.md`
 
 ### 2026-07-09 - Public SEO Metadata Merge
 
