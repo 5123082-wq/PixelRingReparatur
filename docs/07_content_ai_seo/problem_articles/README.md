@@ -18,7 +18,18 @@
 
 Перед загрузкой в CMS статья сначала редактируется и проверяется здесь.
 
+Языковой охват определяется [действующей GEO-стратегией](../geo_optimization_strategy.md): полный перевод каждой статьи на DE/EN/RU/TR/PL/AR больше не обязателен. DE остаётся каноническим полным контентом, EN поддерживается как международная версия, RU добавляется при наличии бизнес-смысла, а TR/PL/AR-статьи создаются только после подтверждения спроса. Существующие качественные переводы сохраняются.
+
 ## Progress Log
+
+### 2026-07-18 - `shaky-sign` / `urgent-repair` DE publication (публикация немецких версий)
+
+- Current sprint/block: `shaky-sign` (служебный идентификатор статьи о шатающейся вывеске) full rewrite (полная переработка) and `urgent-repair` (служебный идентификатор статьи о срочном ремонте) focused source-backed editorial refresh (точечная редакторская доработка на основе источников).
+- Done: verified the former DE CMS records (прежние немецкие записи CMS); created, independently reviewed and owner-approved (создали, независимо проверили и получили утверждение владельца) `вывеска шатается – 09/problem_article_werbeanlage-wackelt_de.md` and `срочный ремонт вывески – 10/problem_article_dringende-reparatur-werbeanlage_de.md`; published both through the dedicated atomic `db:seed:articles-shaky-urgent-de` command (отдельную атомарную команду загрузки); preserved the original record IDs and publication dates (исходные идентификаторы и даты публикации); corrected the `shaky-sign` canonical URL (канонический адрес статьи о шатающейся вывеске); synchronized full public content, SEO/CMS fields (полный публичный текст и поисковые/CMS-поля), arrays and structured `selfRepairTips` (массивы и структурированные советы безопасных действий); and verified exact DB equality, three HTTP 200 routes, metadata, SSR modal payloads, one H1 per article, tables, CTA copy, targeted lint, CMS workflow tests and production build (точное совпадение базы, три страницы HTTP 200, метаданные, серверные данные модальных окон, один H1 в статье, таблицы, призывы к действию, точечную проверку кода, тесты CMS и промышленную сборку).
+- In progress: optional owner visual review (необязательная визуальная проверка владельцем) of the two overview modals and full article pages (двух модальных окон обзора и полных страниц статей).
+- Next action: address only owner feedback if present; additional language publication (публикация на других языках) requires a separate approved track.
+- Blockers/risks: no CMS publication blocker remains (блокеров публикации в CMS нет); automated localhost clicks were blocked by the in-app browser URL policy (автоматические клики по localhost заблокированы политикой URL встроенного браузера), while DB/SSR/HTTP/build verification (проверка базы, серверной разметки, HTTP и сборки) passed. Do not introduce `24/7` promises (обещания круглосуточного сервиса), fixed response times (фиксированное время реакции), photo-based safety confirmation (подтверждение безопасности по фотографиям), or DIY electrical/mechanical instructions (инструкции по самостоятельному электрическому/механическому ремонту).
+- Updated documents/files: both published DE article sources (оба опубликованных немецких источника статей), `signage-service/scripts/seed-articles-shaky-urgent-de.mjs` (скрипт загрузки), `signage-service/package.json` (команда пакета), this workspace log (этот журнал рабочей области), `../README.md` (доменный файл-ориентир), `../content_ai_seo_progress_log.md` (доменный журнал прогресса), root `PROGRESS.md` (краткий глобальный журнал).
 
 ### 2026-07-03 - RU/EN localized review drafts
 

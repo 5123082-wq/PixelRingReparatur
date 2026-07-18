@@ -247,9 +247,12 @@ export default function ProblemKnowledgeGrid({
               <button
                 type="button"
                 onClick={() => setModalProblemId(null)}
-                className="m-5 rounded-full border border-[#D9C7BA] bg-white px-4 py-2 text-[14px] font-bold text-[#4E5A5A] transition-colors hover:border-[#B8643E] hover:text-[#8F4F34] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8643E] sm:m-8"
+                className="m-5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#D9C7BA] bg-white text-[#4E5A5A] transition-colors hover:border-[#B8643E] hover:text-[#8F4F34] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8643E] sm:m-8"
+                aria-label={articleLabels.close}
               >
-                {articleLabels.close}
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
 

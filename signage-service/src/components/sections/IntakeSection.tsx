@@ -25,18 +25,18 @@ const IntakeSection = ({ content }: { content?: IntakeSectionContent | null }) =
   const [chatOpen, setChatOpen] = useState(false);
   const [discountInfoOpen, setDiscountInfoOpen] = useState(false);
   const cardClassName =
-    'group grid min-h-[244px] grid-rows-[48px_minmax(64px,auto)_minmax(72px,1fr)_auto] rounded-[22px] border border-[#E7DDD3] bg-[#FAF7F2] p-5 text-start shadow-sm shadow-[#0E1A2B]/5 transition-all duration-300 hover:border-[#B8643E]/45 hover:bg-white hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]';
+    'group grid h-[200px] grid-rows-[36px_minmax(40px,auto)_minmax(44px,1fr)_auto] rounded-[22px] border border-[#E7DDD3] bg-[#FAF7F2] p-3.5 text-start shadow-sm shadow-[#0E1A2B]/5 transition-all duration-300 hover:border-[#B8643E]/45 hover:bg-white hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E] md:h-auto md:min-h-[244px] md:grid-rows-[48px_minmax(64px,auto)_minmax(72px,1fr)_auto] md:p-5';
   const cardIconClassName =
-    'flex h-10 w-10 items-center justify-center rounded-2xl bg-[#EED8C8] text-[#B8643E] transition-colors group-hover:bg-[#B8643E] group-hover:text-white';
+    'flex h-9 w-9 items-center justify-center rounded-2xl bg-[#EED8C8] text-[#B8643E] transition-colors group-hover:bg-[#B8643E] group-hover:text-white md:h-10 md:w-10';
   const staticCardClassName =
-    'grid min-h-[244px] grid-rows-[48px_minmax(64px,auto)_minmax(72px,1fr)_auto] rounded-[22px] border border-[#E7DDD3] bg-[#FAF7F2] p-5 text-start shadow-sm shadow-[#0E1A2B]/5 transition-all duration-300';
+    'grid h-[200px] grid-rows-[36px_minmax(40px,auto)_minmax(44px,1fr)_auto] rounded-[22px] border border-[#E7DDD3] bg-[#FAF7F2] p-3.5 text-start shadow-sm shadow-[#0E1A2B]/5 transition-all duration-300 md:h-auto md:min-h-[244px] md:grid-rows-[48px_minmax(64px,auto)_minmax(72px,1fr)_auto] md:p-5';
   const staticCardIconClassName =
-    'flex h-10 w-10 items-center justify-center rounded-2xl bg-[#EED8C8] text-[#B8643E]';
+    'flex h-9 w-9 items-center justify-center rounded-2xl bg-[#EED8C8] text-[#B8643E] md:h-10 md:w-10';
   const staticCardTitleClassName =
     'self-start text-[20px] font-black leading-[1.18] tracking-tight text-[#0E1A2B]';
   const cardTitleClassName =
     'self-start text-[20px] font-black leading-[1.18] tracking-tight text-[#0E1A2B] transition-colors group-hover:text-[#B8643E]';
-  const cardBodyClassName = 'mt-3 text-[14px] leading-relaxed text-[#72665D]';
+  const cardBodyClassName = 'mt-2 text-[14px] leading-relaxed text-[#72665D] md:mt-3';
 
   const closeDiscountInfoIfFocusLeaves = (event: React.FocusEvent<HTMLDivElement>) => {
     const nextTarget = event.relatedTarget;
@@ -159,7 +159,7 @@ const IntakeSection = ({ content }: { content?: IntakeSectionContent | null }) =
                 {t('form_desc')}
               </p>
 
-              <span className="mt-4 inline-flex items-center gap-1 text-[13px] font-bold text-[#B8643E]">
+              <span className="mt-2 inline-flex items-center gap-1 text-[13px] font-bold text-[#B8643E] md:mt-4">
                 {t('form_title')}
                 <svg className="h-3.5 w-3.5 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -180,7 +180,7 @@ const IntakeSection = ({ content }: { content?: IntakeSectionContent | null }) =
                 {t('messenger_desc')}
               </p>
 
-              <div className="mt-4 grid grid-cols-2 gap-2">
+              <div className="mt-2 grid grid-cols-2 gap-2 md:mt-4">
                 <a
                   href={SITE_CONFIG.messengers.whatsapp}
                   target="_blank"
@@ -222,7 +222,7 @@ const IntakeSection = ({ content }: { content?: IntakeSectionContent | null }) =
                 {t('email_desc')}
               </p>
 
-              <span className="mt-4 inline-flex items-center gap-1 text-[13px] font-bold text-[#B8643E]">
+              <span className="mt-2 inline-flex items-center gap-1 text-[13px] font-bold text-[#B8643E] md:mt-4">
                 {t('email_cta')}
                 <svg className="h-3.5 w-3.5 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

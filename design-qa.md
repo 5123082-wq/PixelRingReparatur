@@ -146,7 +146,7 @@ final result: blocked
 - Date: 2026-07-12
 - Scope: extend the approved image-first homepage services navigator from six to eight cards
 - Source visual truth: `/var/folders/sw/wqxr8fzn2z9d0ht64tglhf3m0000gn/T/codex-clipboard-16eb8985-9d69-416d-989e-db7bb7c544ba.png`
-- Product addition source: `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_implementation_plan.md`, section 6.4
+- Product addition source: `docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_implementation_plan.md`, section 6.4
 - Implementation route: `http://localhost:3000/de`
 - State: DE desktop and mobile default; DE/EN/RU/TR/PL/AR content validation; AR desktop RTL
 

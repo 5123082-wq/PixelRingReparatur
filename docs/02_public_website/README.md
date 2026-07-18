@@ -103,8 +103,8 @@ Use this folder for:
   - `docs/02_public_website/README.md`
   - `docs/07_content_ai_seo/README.md`
   - `docs/07_content_ai_seo/content_ai_seo_progress_log.md`
-  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_product_brief.md`
-  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_evidence_matrix.md`
+  - `docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_product_brief.md`
+  - `docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_evidence_matrix.md`
 
 * **Date:** 2026-07-10
 * **Current sprint/block:** Homepage Awning Service Card (карточка услуг по маркизам на главной странице)

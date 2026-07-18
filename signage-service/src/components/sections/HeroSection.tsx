@@ -30,7 +30,6 @@ const HeroSection = ({ content }: { content?: HomeHeroContent | null }) => {
   const titleSuffix = content?.titleSuffix || '';
   const intro = content?.intro || '';
   const ctaPrimary = content?.ctaPrimary || '';
-  const trustBadge = content?.trustBadge || '';
   const responseBadge = content?.responseBadge || '';
   const heroImage =
     content?.assetUrl && content.assetUrl.trim() ? content.assetUrl : '';
@@ -105,10 +104,6 @@ const HeroSection = ({ content }: { content?: HomeHeroContent | null }) => {
                 </div>
               </div>
 
-              {/* Trust micro-label */}
-              <p className="text-[13px] text-[#94A3B8] italic">
-                {trustBadge}
-              </p>
             </div>
 
             {/* ── RIGHT COLUMN — tilted image card ──────── */}
@@ -118,10 +113,7 @@ const HeroSection = ({ content }: { content?: HomeHeroContent | null }) => {
               <div className="relative w-full max-w-[460px] xl:max-w-[500px]">
 
                 {/* Tilted image card */}
-                <div
-                  className="relative rounded-[28px] overflow-hidden shadow-2xl shadow-[#B8643E]/15"
-                  style={{ transform: 'rotate(3deg)' }}
-                >
+                <div className="relative rotate-[3deg] overflow-hidden rounded-[28px] shadow-2xl shadow-[#B8643E]/15">
                   <div className="relative aspect-[4/3.2]">
                     <CmsImage
                       src={heroImage}
@@ -137,11 +129,8 @@ const HeroSection = ({ content }: { content?: HomeHeroContent | null }) => {
                   </div>
                 </div>
 
-                {/* 24h badge — outside the card, bottom-left, counter-rotated */}
-                <div
-                  className="absolute -bottom-6 ltr:-left-6 rtl:-right-6 bg-white rounded-2xl px-5 py-4 shadow-xl shadow-black/10 z-10"
-                  style={{ transform: 'rotate(-3deg)' }}
-                >
+                {/* 24h badge — horizontal on mobile, counter-rotated from sm upward */}
+                <div className="absolute -bottom-5 z-10 rotate-0 rounded-2xl bg-white px-5 py-4 shadow-xl shadow-black/10 ltr:-left-3 rtl:-right-3 sm:-bottom-6 sm:rotate-[-3deg] sm:ltr:-left-6 sm:rtl:-right-6">
                   <p className="text-[24px] font-extrabold text-[#B8643E] leading-none">24h</p>
                   <p className="text-[13px] text-[#64748B] mt-1 leading-snug max-w-[130px]">
                     {responseBadge}

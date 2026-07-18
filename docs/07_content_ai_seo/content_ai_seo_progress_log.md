@@ -5,6 +5,14 @@ Purpose: detailed domain history for Content/AI/SEO work. Do not read this full 
 ## Progress Log
 
 * **Date:** 2026-07-18
+* **Current sprint/block:** GEO language portfolio decision (решение по языковому портфелю оптимизации для AI-ответов).
+* **Done:** Marked the former requirement to translate every article into DE/EN/RU/TR/PL/AR as superseded/deprecated (заменённое и устаревшее). Established the active matrix: complete canonical DE content; maintained international EN; optional RU when supported by business value; TR/PL/AR key pages only, with article translation opened only after demonstrated demand. Recorded quality-over-language-count (качество важнее количества языков), canonical expert materials, real cases, normative and manufacturer sources, and external trust as the primary GEO investment.
+* **In progress:** Future content planning follows the new matrix; existing high-quality localized articles remain valid and are not removed automatically.
+* **Next action:** Prioritize creation and substantive refresh of authoritative German materials, then select EN/RU or other article localizations from traffic, query, lead and partner evidence.
+* **Blockers/risks:** Six-language product navigation and key-page coverage remain in scope, including Arabic RTL (направление справа налево). Missing TR/PL/AR article variants are now intentional unless demand is confirmed; automated audits must not present them as mandatory remediation.
+* **Updated documents:** `geo_optimization_strategy.md` (действующая GEO-стратегия), `README.md` (доменный файл-ориентир), `content_ai_seo_progress_log.md` (этот журнал), `../09_engineering/cms_public_content_audit_2026-05-21.md` (аудит CMS), and root `PROGRESS.md` (краткий глобальный журнал).
+
+* **Date:** 2026-07-18
 * **Current sprint/block:** AI crawler visibility and cacheable multilingual homepage (видимость для AI-роботов и кешируемая многоязычная главная).
 * **Done:**
   - Confirmed that the existing wildcard crawler policy (общее правило для роботов) was already visibility-first (ориентированным на доступность), so `GPTBot` (робот OpenAI для обучения) was not blocked. Added an explicit governance list (явный управляемый список) for `Googlebot`, `Bingbot`, `OAI-SearchBot`, `ChatGPT-User`, `GPTBot`, `Claude-SearchBot`, `Claude-User`, `ClaudeBot`, `PerplexityBot`, `Perplexity-User` and `Google-Extended` (роботов поиска, AI-ответов и управления использованием контента), while retaining the open wildcard fallback (общее резервное правило) and disallowing only `/api/` (служебные программные адреса).
@@ -14,8 +22,23 @@ Purpose: detailed domain history for Content/AI/SEO work. Do not read this full 
   - Verified 20/20 portal tests (20 тестов кабинета), 4/4 AI-readiness tests (4 теста готовности для AI-систем), targeted lint (точечную проверку кода), read-only CMS audit (аудит CMS без записи), successful Next.js production build (успешную промышленную сборку Next.js), all six prerendered homepages (все шесть предварительно созданных главных), local cache `HIT` (ответ из кеша), no `NEXT_LOCALE` cookie (отсутствие языкового cookie-файла), anonymous `false` and demo-authenticated `true` session responses (ответы «нет входа» и «вход выполнен»), private response headers (закрытые заголовки ответа), generated `robots.txt` (файл правил для роботов), `sitemap.xml` HTTP 200 (успешный ответ карты сайта), and Arabic `lang="ar" dir="rtl"` (арабский язык и направление справа налево).
 * **In progress:** Repository work is complete; production deployment and external scoring (развёртывание и внешняя оценка) remain outside this local change.
 * **Next action:** Deploy, confirm Vercel cache `HIT` (ответ из кеша Vercel) for all six homepages, then rerun the Signum AI readiness checker (проверку готовности для AI-систем Signum) and compare the category-level result rather than treating the total score as a search-ranking metric (показатель поискового ранжирования).
-* **Blockers/risks:** The CMS audit (аудит CMS) reports twelve pre-existing missing TR/PL/AR variants (отсутствующие турецкие, польские и арабские версии) across `flicking`, `faded-film`, `shaky-sign` and `urgent-repair` (служебные идентификаторы четырёх статей); this is a separate content backlog (отдельная очередь контентных задач). The production build completed, but several remote database TLS connections (защищённые соединения с базой) were reset and the existing static fallback (статический резервный контент) handled those reads. Allowing a crawler (разрешение робота) does not guarantee citation, ranking, training inclusion or model-memory updates (цитирование, позицию, включение в обучение или обновление памяти модели).
+* **Blockers/risks:** The CMS audit (аудит CMS) reports twelve pre-existing missing TR/PL/AR variants (отсутствующие турецкие, польские и арабские версии) across `flicking`, `faded-film`, `shaky-sign` and `urgent-repair` (служебные идентификаторы четырёх статей); under the active GEO language strategy these are intentional scope, not mandatory remediation until demand is demonstrated. The production build completed, but several remote database TLS connections (защищённые соединения с базой) were reset and the existing static fallback (статический резервный контент) handled those reads. Allowing a crawler (разрешение робота) does not guarantee citation, ranking, training inclusion or model-memory updates (цитирование, позицию, включение в обучение или обновление памяти модели).
 * **Updated documents and code:** `robots.ts` (правила для роботов), localized homepage/layout and routing (локализованная главная, макет и маршрутизация), `Header`/`HeaderActions` (шапка и её действия), portal session-state route and authentication helper (служебный адрес состояния сессии и вспомогательная логика авторизации), focused tests (точечные тесты), public/portal/domain progress logs (журналы публичного сайта, кабинета и домена) and root `PROGRESS.md` (краткий глобальный журнал).
+
+* **Date:** 2026-07-18
+* **Current sprint/block:** `Probleme & Lösungen` (проблемы и решения) — owner-approved DE publication (утверждённая владельцем публикация немецких версий) for `shaky-sign` (служебный идентификатор статьи о шатающейся вывеске) and `urgent-repair` (служебный идентификатор статьи о срочном ремонте).
+* **Done:**
+  - Verified the authoritative DE CMS state (актуальное немецкое состояние CMS) before drafting. `shaky-sign` (статья о шатающейся вывеске) remained thin and outdated; `urgent-repair` (статья о срочном ремонте) already contained the substantial 2026-06-13 rewrite, so the selected scope became one full rewrite and one focused source-backed editorial refresh (одна полная переработка и одна точечная редакторская доработка на основе источников).
+  - Created `problem_article_werbeanlage-wackelt_de.md` and `problem_article_dringende-reparatur-werbeanlage_de.md` as complete owner-review drafts (полные черновики для проверки владельцем). Each includes SEO fields (поисковые поля), small-card and modal copy (тексты малой карточки и модального окна), a complete public article (полную публичную статью), FAQ (частые вопросы), CMS mapping (карту полей CMS), structured `selfRepairTips` (структурированные советы безопасных действий), and a non-public AI/source note (непубличную заметку для AI и источников). The `shaky-sign` draft (черновик статьи о шатающейся вывеске) also includes the required practical B2B context for shops, branches, property managers and shopping centres in Berlin and Brandenburg (практический B2B-контекст для магазинов, филиалов, управляющих компаний и торговых центров Берлина и Бранденбурга).
+  - Based technical and safety boundaries on official BAuA, DGUV, DIBt, VDE, BBK, Berlin building-authority and Berlin law sources (официальных источниках BAuA, DGUV, DIBt, VDE, BBK, строительного ведомства и законодательства Берлина). Applied independent German-language and safety review (независимую проверку немецкого языка и безопасности), corrected the DGUV reference, clarified when `112` (единый номер экстренной помощи) applies, and made the switch-off advice conditional on the absence of acute danger (совет об отключении условным при отсутствии острой опасности).
+  - Validated exactly one public H1 (один публичный заголовок первого уровня), 16/16 H2 sections (16/16 разделов второго уровня), 1,904/1,673 public words (1 904/1 673 слова публичного текста), matching CMS title/H1 (совпадение заголовка CMS и H1), parseable `selfRepairTips` JSON (корректный JSON структурированных советов), no internal-note leakage (отсутствие попадания внутренних заметок в публичный текст), and no unresolved placeholders (отсутствие незаполненных мест).
+  - Added `scripts/seed-articles-shaky-urgent-de.mjs` and `db:seed:articles-shaky-urgent-de` (отдельный скрипт и команду загрузки двух немецких статей). The script reads frontmatter, the public article boundary and every CMS mapping field (frontmatter, границу публичной статьи и каждое поле карты CMS) from the approved Markdown, validates SEO lengths, H1/title identity, structured arrays and `selfRepairTips` (проверяет длину SEO-полей, совпадение H1/заголовка, структурированные массивы и советы безопасных действий), and updates only the two rows in one transaction (одной транзакции). It preserves existing IDs, `createdAt` and `publishedAt` (идентификаторы, дату создания и дату первой публикации) and provides read-only `--verify` (проверку точного совпадения базы).
+  - Published both DE rows (опубликовали обе немецкие записи). `shaky-sign` retained ID `733aa591-58de-4f1e-9e0e-fb9b8546487f` and `publishedAt` 2026-04-07, changed from 1,262 to 13,725 public characters (с 1 262 до 13 725 символов), corrected `/de/support/shaky-sign` to `/de/probleme-loesungen/werbeanlage-wackelt` (исправил канонический адрес), and gained complete `selfRepairTips` (полные структурированные советы безопасных действий). `urgent-repair` retained ID `ff69f06f-1de2-4990-b5ab-39dc0b125bac` and the same original publication date, and now matches the approved 12,271-character content (утверждённый текст объёмом 12 271 символ).
+  - Exact `--verify` (точная read-only проверка) matched every stored public/structured field and both SHA-256 content hashes (контрольные хэши содержимого). `/de/probleme-loesungen`, `/de/probleme-loesungen/werbeanlage-wackelt` and `/de/probleme-loesungen/dringende-reparatur-werbeanlage` returned HTTP 200 with one H1 each (одним H1 на странице), real article tables (настоящими таблицами статей), correct SEO title/description/canonical (правильными поисковыми заголовками, описаниями и каноническими адресами), new body/CTA copy (новыми текстами статей и призывами к действию), modal self-repair payloads (данными советов для модальных окон), no duplicate H1-as-H2 (без повторного заголовка) and no internal-note leakage (без внутренних заметок). Targeted ESLint (точечная проверка кода), three CMS workflow tests (три теста рабочего процесса CMS), `git diff --check` (проверка формата изменений) and production build (промышленная сборка) pass.
+* **In progress:** Optional owner visual review (необязательная визуальная проверка владельцем) of the two overview modals and full article pages (двух модальных окон обзора и полных страниц статей).
+* **Next action:** Address only owner visual/content feedback if present; publication of EN/RU/TR/PL/AR versions (публикация английской, русской, турецкой, польской и арабской версий) remains a separate approved track.
+* **Blockers/risks:** No CMS publication blocker remains (блокеров публикации в CMS нет). The in-app browser URL policy blocked automated localhost interaction (политика URL встроенного браузера заблокировала автоматическое взаимодействие с localhost), so visible click-through was not automated; DB equality, SSR modal payloads, route output, metadata and build (совпадение базы, серверные данные модальных окон, страницы, метаданные и сборка) passed independently. The public copy must not gain `24/7` promises (обещания круглосуточного сервиса), fixed response times (фиксированное время реакции), photo-based safety confirmation (подтверждение безопасности по фотографии), or DIY electrical/mechanical instructions (инструкции по самостоятельному электрическому/механическому ремонту).
+* **Updated documents/code:** Both published DE article sources (оба опубликованных немецких источника статей), `scripts/seed-articles-shaky-urgent-de.mjs` (скрипт загрузки), `package.json` (команда пакета), `problem_articles/README.md` (журнал рабочей области статей), `README.md` (доменный файл-ориентир), this progress log (этот журнал) and root `PROGRESS.md` (краткий глобальный журнал).
 
 * **Date:** 2026-07-17
 * **Current sprint/block:** `Beleuchtete Markisen-Volants` (воланы с подсветкой для маркиз) — owner-approved Google indexing release (утверждённый выпуск для индексации Google).
@@ -187,7 +210,7 @@ Purpose: detailed domain history for Content/AI/SEO work. Do not read this full 
   - `PROGRESS.md` (краткий глобальный журнал)
   - `docs/07_content_ai_seo/README.md` (маршрутизатор домена)
   - `docs/07_content_ai_seo/content_ai_seo_progress_log.md` (доменный журнал)
-  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_implementation_plan.md` (план внедрения)
+  - `docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_implementation_plan.md` (план внедрения)
   - `signage-service/src/app/[locale]/leistungen/beleuchtete-markisenvolants/page.tsx` (страница маршрута)
   - `signage-service/src/app/[locale]/leistungen/beleuchtete-markisenvolants/copy.ts` (локализованные тексты страницы)
 
@@ -206,7 +229,7 @@ Purpose: detailed domain history for Content/AI/SEO work. Do not read this full 
   - `PROGRESS.md` (краткий глобальный журнал)
   - `docs/07_content_ai_seo/README.md` (маршрутизатор домена)
   - `docs/07_content_ai_seo/content_ai_seo_progress_log.md` (доменный журнал)
-  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_implementation_plan.md` (план внедрения)
+  - `docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_implementation_plan.md` (план внедрения)
   - `signage-service/src/app/[locale]/leistungen/beleuchtete-markisenvolants/copy.ts` (локализованные тексты страницы)
   - `signage-service/src/app/[locale]/leistungen/beleuchtete-markisenvolants/page.tsx` (страница маршрута)
 
@@ -225,7 +248,7 @@ Purpose: detailed domain history for Content/AI/SEO work. Do not read this full 
   - `PROGRESS.md` (краткий глобальный журнал)
   - `docs/07_content_ai_seo/README.md` (маршрутизатор домена)
   - `docs/07_content_ai_seo/content_ai_seo_progress_log.md` (доменный журнал)
-  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_implementation_plan.md` (план внедрения)
+  - `docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_implementation_plan.md` (план внедрения)
   - `signage-service/src/app/[locale]/leistungen/beleuchtete-markisenvolants/copy.ts` (локализованные тексты страницы)
   - `signage-service/src/app/[locale]/leistungen/beleuchtete-markisenvolants/page.tsx` (страница маршрута)
   - `signage-service/src/components/leistungen/LeistungenIlluminatedValanceHero.tsx` (компонент первого экрана)
@@ -263,7 +286,7 @@ Purpose: detailed domain history for Content/AI/SEO work. Do not read this full 
 * **Updated documents:**
   - `PROGRESS.md` (краткий глобальный журнал)
   - `docs/07_content_ai_seo/content_ai_seo_progress_log.md` (доменный журнал)
-  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_implementation_plan.md` (план внедрения)
+  - `docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_implementation_plan.md` (план внедрения)
   - `signage-service/src/app/[locale]/leistungen/beleuchtete-markisenvolants/page.tsx` (маршрут страницы)
 
 * **Date:** 2026-07-12
@@ -298,7 +321,7 @@ Purpose: detailed domain history for Content/AI/SEO work. Do not read this full 
   - `PROGRESS.md` (краткий глобальный журнал)
   - `docs/07_content_ai_seo/README.md` (маршрутизатор домена)
   - `docs/07_content_ai_seo/content_ai_seo_progress_log.md` (доменный журнал)
-  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_implementation_plan.md` (план внедрения)
+  - `docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_implementation_plan.md` (план внедрения)
 
 * **Date:** 2026-07-12
 * **Current sprint/block:** `Beleuchtete Markisen-Volants` Block-by-Block DE Review (пошаговая DE-проверка блоков страницы).
@@ -314,7 +337,7 @@ Purpose: detailed domain history for Content/AI/SEO work. Do not read this full 
   - `PROGRESS.md`
   - `docs/07_content_ai_seo/README.md`
   - `docs/07_content_ai_seo/content_ai_seo_progress_log.md`
-  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_implementation_plan.md`
+  - `docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_implementation_plan.md`
   - `signage-service/src/app/[locale]/leistungen/beleuchtete-markisenvolants/page.tsx`
 
 * **Date:** 2026-07-12
@@ -325,7 +348,7 @@ Purpose: detailed domain history for Content/AI/SEO work. Do not read this full 
 * **Blockers/risks:** The route remains DE-only (только немецкий) and `noindex` (запрещён для индексации), outside `sitemap.xml` (карта сайта), `hreflang` (языковые альтернативы), public navigation, and cards. The rejected `hero-front-*.png` files remain unreferenced.
 * **Updated documents:**
   - `PROGRESS.md`
-  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_implementation_plan.md`
+  - `docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_implementation_plan.md`
   - `docs/07_content_ai_seo/content_ai_seo_progress_log.md`
   - `signage-service/src/app/[locale]/leistungen/beleuchtete-markisenvolants/page.tsx`
   - `signage-service/src/components/leistungen/LeistungenIlluminatedValanceHero.tsx`
@@ -347,7 +370,7 @@ Purpose: detailed domain history for Content/AI/SEO work. Do not read this full 
   - `PROGRESS.md`
   - `docs/07_content_ai_seo/README.md`
   - `docs/07_content_ai_seo/content_ai_seo_progress_log.md`
-  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_implementation_plan.md`
+  - `docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_implementation_plan.md`
   - `signage-service/src/app/[locale]/leistungen/beleuchtete-markisenvolants/page.tsx`
   - `signage-service/src/components/common/ContactForm.tsx`
   - `signage-service/messages/{de,en,ru,tr,pl,ar}.json`
@@ -365,8 +388,8 @@ Purpose: detailed domain history for Content/AI/SEO work. Do not read this full 
   - PROGRESS.md
   - docs/07_content_ai_seo/README.md
   - docs/07_content_ai_seo/content_ai_seo_progress_log.md
-  - docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_product_brief.md
-  - docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_implementation_plan.md
+  - docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_product_brief.md
+  - docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_implementation_plan.md
   - signage-service/public/images/leistungen/beleuchtete-markisenvolants/hero-front-day-v1.png
   - signage-service/public/images/leistungen/beleuchtete-markisenvolants/hero-front-night-v1.png
 
@@ -380,8 +403,8 @@ Purpose: detailed domain history for Content/AI/SEO work. Do not read this full 
   - PROGRESS.md
   - docs/07_content_ai_seo/README.md
   - docs/07_content_ai_seo/content_ai_seo_progress_log.md
-  - docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_product_brief.md
-  - docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_implementation_plan.md
+  - docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_product_brief.md
+  - docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_implementation_plan.md
 
 * **Date:** 2026-07-11
 * **Current sprint/block:** `Beleuchtete Markisen-Volants` Product-Brief Reconciliation and DE Copy Prototype (синхронизация продуктового брифа и DE-текстовый прототип световых ламбрекенов маркиз)
@@ -397,9 +420,9 @@ Purpose: detailed domain history for Content/AI/SEO work. Do not read this full 
   - `PROGRESS.md`
   - `docs/07_content_ai_seo/README.md`
   - `docs/07_content_ai_seo/content_ai_seo_progress_log.md`
-  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_product_brief.md`
-  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_implementation_plan.md`
-  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_de_canonical_copy_draft.md`
+  - `docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_product_brief.md`
+  - `docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_implementation_plan.md`
+  - `docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_de_canonical_copy_draft.md`
 
 * **Date:** 2026-07-11
 * **Current sprint/block:** `Beleuchtete Markisen-Volants` Implementation Planning (планирование внедрения световых ламбрекенов маркиз)
@@ -417,7 +440,7 @@ Purpose: detailed domain history for Content/AI/SEO work. Do not read this full 
   - `PROGRESS.md`
   - `docs/07_content_ai_seo/README.md`
   - `docs/07_content_ai_seo/content_ai_seo_progress_log.md`
-  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_implementation_plan.md`
+  - `docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_implementation_plan.md`
 
 * **Date:** 2026-07-11
 * **Current sprint/block:** `Beleuchtete Markisen-Volants` Product and Page Foundation (продуктовая и страничная основа световых ламбрекенов маркиз)
@@ -437,8 +460,8 @@ Purpose: detailed domain history for Content/AI/SEO work. Do not read this full 
   - `docs/02_public_website/README.md`
   - `docs/07_content_ai_seo/README.md`
   - `docs/07_content_ai_seo/content_ai_seo_progress_log.md`
-  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_product_brief.md`
-  - `docs/07_content_ai_seo/service_page_beleuchtete_markisenvolants_evidence_matrix.md`
+  - `docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_product_brief.md`
+  - `docs/07_content_ai_seo/markisenvolants/service_page_beleuchtete_markisenvolants_evidence_matrix.md`
 
 * **Date:** 2026-06-13
 * **Current sprint/block:** `Probleme & Lösungen` P1.1 `urgent-repair` Rewrite (переписывание P1.1 статьи о срочном ремонте)

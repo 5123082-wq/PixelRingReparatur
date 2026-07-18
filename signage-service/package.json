@@ -37,6 +37,7 @@
     "db:seed:article-rain-fail": "node scripts/seed-article-rain-fail-all-locales.mjs",
     "db:seed:article-peeling-film": "node scripts/seed-article-peeling-film-all-locales.mjs",
     "db:seed:article-self-repair-tips": "node scripts/seed-article-self-repair-tips.mjs",
+    "db:seed:articles-shaky-urgent-de": "node scripts/seed-articles-shaky-urgent-de.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {

@@ -217,7 +217,7 @@ The lint failure is not introduced by the CMS public content audit script.
 
 ## Recommended Next Actions
 
-1. Keep TR, PL, and AR problem article fallback/noindex behavior as an accepted short-term risk unless the owner reopens localization.
+1. Keep TR, PL, and AR problem article fallback/noindex behavior as the accepted active content policy unless demonstrated demand reopens localization. Under the [active GEO language strategy](../07_content_ai_seo/geo_optimization_strategy.md), article parity across DE/EN/RU/TR/PL/AR is superseded/deprecated (заменено и устарело); these missing variants are informational audit findings, not mandatory remediation.
 2. Decide whether historical `support` CMS pages should be archived, remapped, or left as inactive records.
 3. After any CMS/content fixes, rerun:
 
@@ -233,5 +233,5 @@ npm run audit:cms-public -- --base-url=http://localhost:3010
 - Done: Added read-only audit script, ran DB audit, loaded `/ueber-uns` into CMS as `about`, connected `/ueber-uns` to CMS, ran runtime crawl, verified production build, and completed a browser check for DE/AR.
 - In progress: Owner decision on inactive historical `support` CMS pages.
 - Next action: Decide whether to archive/remap inactive `support` CMS pages or leave them as historical records.
-- Blockers/risks: Existing lint blockers remain outside this audit scope; localized problem articles for TR/PL/AR are intentionally accepted as a short-term risk.
+- Blockers/risks: Existing lint blockers remain outside this audit scope; under the [active GEO language strategy](../07_content_ai_seo/geo_optimization_strategy.md), absent TR/PL/AR problem articles are intentional scope until demand is confirmed, not a mandatory localization blocker.
 - Updated documents: `docs/09_engineering/cms_public_content_audit_2026-05-21.md`, `docs/09_engineering/README.md`, `PROGRESS.md`.
