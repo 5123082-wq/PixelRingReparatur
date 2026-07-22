@@ -16,11 +16,25 @@ Confirmed with project owner:
 - UI layer: Tabler components/theme as the admin interface foundation.
 - Core platform: keep current `Next.js + Prisma + PostgreSQL`.
 - CMS and CRM remain separate internal zones (`/ring-master-config` and `/ring-manager-crm`).
-- Build forward from current codebase; do not replace with external CMS platform.
+- Historical baseline for the existing admin platform: build forward from the current codebase and do not perform a big-bang replacement.
 
 Important boundary:
 
 - Tabler is a UI layer, not backend auth/workflow/storage architecture.
+
+## Owner-Approved Parallel CMS Decision (2026-07-20)
+
+The owner approved a narrow exception to the earlier no-external-CMS decision for the public content layer only:
+
+- start an isolated Payload CMS (новую систему управления публичным контентом) application under `content-studio/`;
+- keep `/ring-master-config`, CRM (систему работы с заявками), AI Knowledge (управление знаниями для ИИ) and all other current operational modules running;
+- use `Referenzen` (страницу примеров работ) as the first pilot;
+- develop and validate Payload locally while production continues reading the existing `CmsPage` / `CmsMedia` source;
+- migrate content by read-only export and copy-based import, without deleting or mutating the legacy records;
+- switch one public page only after local and protected server UAT (приёмочной проверки), with a documented rollback (откат);
+- never edit the same migrated page concurrently in both CMS systems.
+
+The active implementation and release sequence for this exception is `payload_parallel_cms_pilot_plan.md`. Nothing in this decision marks Payload, its database, its media collection or its public adapter as already implemented.
 
 ## Server Model (Block 1)
 
@@ -155,9 +169,9 @@ Content Core modules:
 - preview is restricted to authenticated admin sessions;
 - menus and SEO metadata are manageable without code edits.
 
-## Current Entity Continuity (Confirmed)
+## Current Entity Continuity (Confirmed For Legacy Scope)
 
-The roadmap extends existing CMS entities instead of replacing them.
+For content that remains in the current CMS, the roadmap extends existing entities instead of deleting or bypassing them.
 
 1. `CmsArticle` (`Content & Wiki`) -> add revision/workflow depth and moderation controls.
 2. `CmsPage` (`Page Content CMS`) -> keep JSON blocks, add revision/workflow/preview/scheduling.
@@ -167,7 +181,9 @@ The roadmap extends existing CMS entities instead of replacing them.
 
 Rule:
 
-- future design and implementation decisions must map back to one or more existing entities above.
+- current-CMS design and implementation decisions must map back to one or more existing entities above;
+- a page explicitly migrated under `payload_parallel_cms_pilot_plan.md` may use Payload collections as its new authoritative content source after acceptance and cutover;
+- the legacy entity remains preserved for rollback until a separate owner-approved retirement decision.
 
 ## Assets And Forms Scope (Block 3)
 
@@ -185,7 +201,7 @@ Assets and forms modules:
 
 ## Assets And Forms Technology Decisions (Block 3)
 
-- keep `CmsMedia` as the primary public asset registry;
+- keep `CmsMedia` as the primary public asset registry for pages that have not migrated; use Payload Media (медиатеку Payload) only for explicitly migrated pages after their acceptance gate;
 - keep customer/private attachments as a separate domain and policy;
 - use managed object storage as growth path while current starter storage remains supported;
 - use `sharp`-based image derivative/optimization pipeline;

@@ -171,6 +171,44 @@ const requiredRouteContracts = [
       },
     ],
   },
+  {
+    relativePath: 'src/app/api/cms/pages/batch/route.ts',
+    description: 'CMS page atomic batch route',
+    checks: [
+      {
+        pattern: /validateAdminCsrf\(/,
+        label: 'POST /api/cms/pages/batch must enforce CSRF validation',
+      },
+      {
+        pattern: /requireAdminPermissionActor\([\s\S]*CMS_PAGE_WRITE/,
+        label: 'POST /api/cms/pages/batch must require page write permission',
+      },
+      {
+        pattern: /hasAdminPermissions\(actor\.role,\s*\['CMS_PAGE_PUBLISH'\]\)/,
+        label: 'POST /api/cms/pages/batch must gate live changes on page publish permission',
+      },
+      {
+        pattern: /hasAdminPermissions\(actor\.role,\s*\['CMS_PAGE_RESTORE'\]\)/,
+        label: 'POST /api/cms/pages/batch must gate soft-delete recovery on page restore permission',
+      },
+      {
+        pattern: /expectedUpdatedAt/,
+        label: 'POST /api/cms/pages/batch must use optimistic concurrency tokens',
+      },
+      {
+        pattern: /TransactionIsolationLevel\.Serializable/,
+        label: 'POST /api/cms/pages/batch must use a serializable transaction',
+      },
+      {
+        pattern: /createAdminAuditLog\(/,
+        label: 'POST /api/cms/pages/batch must create audit records',
+      },
+      {
+        pattern: /createPageRevisionSnapshot\(/,
+        label: 'POST /api/cms/pages/batch must create page revisions',
+      },
+    ],
+  },
 ];
 
 const cmsMediaSchema = readProjectFile('prisma/schema.prisma');

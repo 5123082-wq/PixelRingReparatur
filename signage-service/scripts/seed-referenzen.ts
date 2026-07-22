@@ -14,6 +14,9 @@ const IMAGE_SET = {
   business: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80',
   repair: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80',
   maintenance: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&q=80',
+  pasternakFacadeLetteringBefore: '/images/references/pasternak-facade-lettering-before.png',
+  pasternakFacadeLetteringProcess: '/images/references/pasternak-facade-lettering-process.jpg',
+  pasternakFacadeLetteringResult: '/images/references/pasternak-facade-lettering-result.jpg',
   ledNatural: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80',
   process: 'https://images.unsplash.com/photo-1534073828943-f801091bb18c?auto=format&fit=crop&q=80',
   design: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&q=80',
@@ -29,9 +32,35 @@ const IMAGE_SET = {
   generatedBranchEvening: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80',
   generatedStorefrontRow: 'https://images.unsplash.com/photo-1565620731358-e8c038ecbfda?auto=format&fit=crop&q=80',
   generatedCircuitRepair: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80',
+  sloganSignage: '/images/references/references-slogan-signage-v1.webp',
 };
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
+
+const GALLERY_SECTION_TITLES: Record<Locale, string> = {
+  de: 'Galerie der Arbeiten',
+  en: 'Work gallery',
+  ru: 'Галерея работ',
+  tr: 'İş galerisi',
+  pl: 'Galeria prac',
+  ar: 'معرض الأعمال',
+};
+const FINAL_CTA_EYEBROWS: Record<Locale, string> = {
+  de: 'NEXT STEP',
+  en: 'NEXT STEP',
+  ru: 'СЛЕДУЮЩИЙ ШАГ',
+  tr: 'SONRAKI ADIM',
+  pl: 'NASTEPNY KROK',
+  ar: 'الخطوة التالية',
+};
+const REPORT_IMAGE_ALTS: Record<Locale, string> = {
+  de: 'Gleichmäßig beleuchtete Profilbuchstaben auf einer hellen Fassade',
+  en: 'Evenly illuminated channel letters mounted on a light facade',
+  ru: 'Равномерно подсвеченные объёмные буквы на светлом фасаде',
+  tr: 'Açık renkli cephede eşit şekilde aydınlatılmış kutu harfler',
+  pl: 'Równomiernie podświetlone litery przestrzenne na jasnej elewacji',
+  ar: 'حروف بارزة مضاءة بشكل متساوٍ على واجهة فاتحة',
+};
 
 type BaseReferenceCase = {
   id: string;
@@ -89,9 +118,13 @@ const BASE_CASES: BaseReferenceCase[] = [
   },
   {
     id: 'mounting-review',
-    beforeImage: IMAGE_SET.maintenance,
-    afterImage: IMAGE_SET.mounting,
-    gallery: [IMAGE_SET.maintenance, IMAGE_SET.mounting, IMAGE_SET.ledNatural],
+    beforeImage: IMAGE_SET.pasternakFacadeLetteringBefore,
+    afterImage: IMAGE_SET.pasternakFacadeLetteringResult,
+    gallery: [
+      IMAGE_SET.pasternakFacadeLetteringBefore,
+      IMAGE_SET.pasternakFacadeLetteringProcess,
+      IMAGE_SET.pasternakFacadeLetteringResult,
+    ],
   },
 ];
 
@@ -102,7 +135,7 @@ const CASE_COPY: Record<Locale, ReferenceCaseCopy[]> = {
     { id: 'neon-contour', title: 'Neon-Kontur an Bar-Fassade', category: 'Neon', problem: 'Ein Riss im Glas führte zum Ausfall eines gesamten Segments der Kontur.', work: 'Das defekte Rohrstück vermessen, in gleicher Farbe neu geblasen und vor Ort mit neuem Trafo installiert.', result: 'Die durchgehende Linie der Bar ist wiederhergestellt.', defaultText: 'Leuchtende Farben und fließende Linien ohne Unterbrechung.', beforeText: 'Vorher: defektes Rohrstück unterbrach die Kontur.' },
     { id: 'window-film', title: 'Schaufenster-Folierung', category: 'Folierung', problem: 'Die alte Folie blätterte ab, das Logo war verblasst und unansehnlich.', work: 'Alte Folie rückstandslos entfernt, Scheiben gereinigt und neue UV-beständige Folie blasenfrei appliziert.', result: 'Das Schaufenster wirkt wieder einladend und repräsentativ.', defaultText: 'Scharfe Konturen und frische Farben an der Scheibe.', beforeText: 'Vorher: abgelöste und verblichene Folienteile.' },
     { id: 'branch-service', title: 'Filial-Wartung', category: 'Service', problem: 'Mehrere Filialen meldeten Ausfälle bei der Außenbeleuchtung nach einem Unwetter.', work: 'Priorisierte Routenplanung, Fehlerdiagnose vor Ort, Austausch von Netzteilen und Leuchtmitteln.', result: 'Alle Filialen sind wieder CI-konform beleuchtet.', defaultText: 'Einheitlicher Markenauftritt an allen Standorten.', beforeText: 'Vorher: unterschiedliche Lichtbilder durch defekte Anlagen.' },
-    { id: 'mounting-review', title: 'Fassaden-Montage', category: 'Montage', problem: 'Ein Sturm hatte Teile der Unterkonstruktion einer großen Anlage gelockert.', work: 'Mit Hebebühne gesichert, Verschraubungen erneuert und Anlage sturmfest nach DIN-Norm neu verankert.', result: 'Die Anlage ist sicher und entspricht den aktuellen Vorgaben.', defaultText: 'Sicherer Halt und normgerechte Befestigung.', beforeText: 'Vorher: lockere Elemente nach starkem Wind.' },
+    { id: 'mounting-review', title: 'Fassadenbeschriftung für Restaurant Pasternak', category: 'Fassadenbeschriftung', problem: 'Die bestehende Beschriftung der Restaurantfassade sollte im vorhandenen Erscheinungsbild erneuert werden.', work: 'Die neue Beschriftung wurde mit einer passgenauen Schablone vorbereitet und anschließend direkt auf die Fassade lackiert.', result: 'Das Schriftbild wirkt wieder sauber und einheitlich.', defaultText: 'Präzise Schablonenlackierung für ein klares, einheitliches Schriftbild.', beforeText: 'Vorher: bestehende Fassadenbeschriftung vor der Erneuerung.', beforeAlt: 'Fassadenbeschriftung von Restaurant Pasternak vor der Erneuerung', afterAlt: 'Fertig lackierte Fassadenbeschriftung von Restaurant Pasternak', galleryAlts: ['Fassadenbeschriftung von Restaurant Pasternak vor der Erneuerung', 'Schablonenlackierung der Fassadenbeschriftung von Restaurant Pasternak während der Ausführung', 'Fertig lackierte Fassadenbeschriftung von Restaurant Pasternak'] },
   ],
   en: [
     { id: 'lightbox-facade', title: 'Facade LED Lightbox', category: 'Lightbox', problem: 'Part of the light field was dark, making the entrance look neglected at night.', work: 'Checked power supply, replaced damaged LED elements, cleaned interior, and balanced brightness.', result: 'The facade looks active and highly visible again.', defaultText: 'Even illumination for better evening impact.', beforeText: 'Before: dark areas and a visibly aged box.' },
@@ -110,7 +143,7 @@ const CASE_COPY: Record<Locale, ReferenceCaseCopy[]> = {
     { id: 'neon-contour', title: 'Bar Facade Neon Contour', category: 'Neon', problem: 'A crack in the glass caused an entire segment of the contour to fail.', work: 'Measured the defective tube, blew a new one in the same color, and installed it on-site with a new transformer.', result: 'The continuous line of the bar is restored.', defaultText: 'Bright colors and flowing lines without interruption.', beforeText: 'Before: defective tube piece interrupted the contour.' },
     { id: 'window-film', title: 'Storefront Window Film', category: 'Window Film', problem: 'The old film was peeling, and the logo was faded and unsightly.', work: 'Removed old film without residue, cleaned windows, and applied new UV-resistant film without bubbles.', result: 'The storefront looks inviting and representative again.', defaultText: 'Sharp contours and fresh colors on the window.', beforeText: 'Before: peeling and faded film sections.' },
     { id: 'branch-service', title: 'Branch Service & Maintenance', category: 'Service', problem: 'Several branches reported exterior lighting failures after a storm.', work: 'Prioritized route planning, on-site diagnostics, replacement of power supplies and lamps.', result: 'All branches are illuminated in compliance with CI again.', defaultText: 'Consistent brand image across all locations.', beforeText: 'Before: inconsistent lighting due to defective systems.' },
-    { id: 'mounting-review', title: 'Facade Sign Mounting', category: 'Mounting', problem: 'A storm had loosened parts of the substructure of a large sign.', work: 'Secured with a lift, renewed screwed connections, and re-anchored the sign to be stormproof according to DIN standards.', result: 'The sign is safe and complies with current regulations.', defaultText: 'Secure hold and standard-compliant mounting.', beforeText: 'Before: loose elements after strong wind.' },
+    { id: 'mounting-review', title: 'Facade lettering for Restaurant Pasternak', category: 'Facade lettering', problem: 'The existing lettering on the restaurant facade needed renewal within the established visual design.', work: 'The new lettering was prepared with a precise stencil and then painted directly onto the facade.', result: 'The lettering now looks clean and visually consistent again.', defaultText: 'Precise stencil painting for clear, consistent facade lettering.', beforeText: 'Before: existing facade lettering before renewal.', beforeAlt: 'Restaurant Pasternak facade lettering before renewal', afterAlt: 'Finished painted facade lettering at Restaurant Pasternak', galleryAlts: ['Restaurant Pasternak facade lettering before renewal', 'Stencil painting of Restaurant Pasternak facade lettering during the work', 'Finished painted facade lettering at Restaurant Pasternak'] },
   ],
   ru: [
     { id: 'lightbox-facade', title: 'Световой короб на фасаде', category: 'Лайтбокс', problem: 'Часть светового поля не горела, из-за чего вход вечером выглядел заброшенным.', work: 'Проверили питание, заменили поврежденные LED-модули, очистили внутреннюю часть и выровняли яркость.', result: 'Фасад снова выглядит активным и хорошо заметным вечером.', defaultText: 'Равномерное освещение для лучшего эффекта в темное время суток.', beforeText: 'До: темные участки и заметно постаревший короб.' },
@@ -118,7 +151,7 @@ const CASE_COPY: Record<Locale, ReferenceCaseCopy[]> = {
     { id: 'neon-contour', title: 'Неоновый контур на фасаде бара', category: 'Неон', problem: 'Трещина в стекле привела к выходу из строя целого сегмента контура.', work: 'Сделали замеры поврежденной трубки, изготовили новую того же цвета и установили на месте с новым трансформатором.', result: 'Непрерывная линия бара восстановлена.', defaultText: 'Яркие цвета и плавные линии без прерываний.', beforeText: 'До: разбитая трубка разрывала контур.' },
     { id: 'window-film', title: 'Оклейка витрин пленкой', category: 'Оклейка', problem: 'Старая пленка начала отслаиваться, логотип выцвел и потерял вид.', work: 'Удалили старую пленку без следов, очистили стекла и наклеили новую УФ-стойкую пленку без пузырей.', result: 'Витрина снова выглядит привлекательно и представительно.', defaultText: 'Четкие контуры и свежие цвета на стекле.', beforeText: 'До: отслоившиеся и выцветшие участки пленки.' },
     { id: 'branch-service', title: 'Обслуживание сети филиалов', category: 'Сервис', problem: 'Несколько филиалов сообщили о проблемах с наружным освещением после грозы.', work: 'Спланировали приоритетные маршруты, провели диагностику на местах, заменили блоки питания и лампы.', result: 'Все филиалы снова освещены в соответствии с фирменным стилем.', defaultText: 'Единый имидж бренда на всех локациях.', beforeText: 'До: разное освещение из-за неисправных систем.' },
-    { id: 'mounting-review', title: 'Монтаж фасадной вывески', category: 'Монтаж', problem: 'Из-за шторма расшатались элементы крепления крупногабаритной вывески.', work: 'С помощью автовышки зафиксировали конструкцию, обновили крепления и закрепили по стандартам DIN для защиты от ветра.', result: 'Вывеска надежно закреплена и соответствует актуальным нормам безопасности.', defaultText: 'Надежная фиксация и монтаж по стандартам.', beforeText: 'До: расшатанные элементы после сильного ветра.' },
+    { id: 'mounting-review', title: 'Фасадная надпись для ресторана Pasternak', category: 'Фасадная надпись', problem: 'Существующую надпись на фасаде ресторана нужно было обновить, сохранив её привычный визуальный образ.', work: 'Новую надпись подготовили с точным трафаретом, а затем нанесли краской непосредственно на фасад.', result: 'Надпись снова выглядит чисто и цельно.', defaultText: 'Точная окраска по трафарету для чёткой и единой фасадной надписи.', beforeText: 'До: исходная фасадная надпись перед обновлением.', beforeAlt: 'Фасадная надпись ресторана Pasternak до обновления', afterAlt: 'Готовая окрашенная фасадная надпись ресторана Pasternak', galleryAlts: ['Фасадная надпись ресторана Pasternak до обновления', 'Окраска по трафарету фасадной надписи ресторана Pasternak во время работ', 'Готовая окрашенная фасадная надпись ресторана Pasternak'] },
   ],
   tr: [
     { id: 'lightbox-facade', title: 'Cephe LED Işıklı Kutu', category: 'Işıklı Kutu', problem: 'Işık alanının bir kısmı karanlıktı, bu da girişin akşamları bakımsız görünmesine neden oluyordu.', work: 'Güç kaynağı kontrol edildi, hasarlı LED elemanları değiştirildi, iç kısım temizlendi ve parlaklık dengelendi.', result: 'Cephe akşamları tekrar canlı ve iyi görünür durumda.', defaultText: 'Daha iyi akşam etkisi için eşit aydınlatma.', beforeText: 'Öncesi: karanlık alanlar ve gözle görülür şekilde eskimiş bir kutu.' },
@@ -126,7 +159,7 @@ const CASE_COPY: Record<Locale, ReferenceCaseCopy[]> = {
     { id: 'neon-contour', title: 'Bar Cephesi Neon Kontur', category: 'Neon', problem: 'Camdaki bir çatlak, konturun bir segmentinin tamamen bozulmasına neden oldu.', work: 'Arızalı tüp ölçüldü, aynı renkte yenisi üretildi ve yeni bir transformatörle yerinde monte edildi.', result: 'Barın kesintisiz çizgisi geri getirildi.', defaultText: 'Kesintisiz parlak renkler ve akıcı çizgiler.', beforeText: 'Öncesi: arızalı tüp parçası konturu kesintiye uğratmıştı.' },
     { id: 'window-film', title: 'Vitrin Folyo Kaplama', category: 'Folyo Kaplama', problem: 'Eski folyo dökülüyordu, logo solmuş ve çirkin görünüyordu.', work: 'Eski folyo kalıntı bırakmadan söküldü, camlar temizlendi ve yeni UV ışınlarına dayanıklı folyo kabarcıksız olarak uygulandı.', result: 'Vitrin tekrar davetkar ve kurumsal görünüyor.', defaultText: 'Camda keskin hatlar ve taze renkler.', beforeText: 'Öncesi: dökülen ve solmuş folyo parçaları.' },
     { id: 'branch-service', title: 'Şube Bakım ve Servis', category: 'Servis', problem: 'Bir fırtınadan sonra birkaç şube dış aydınlatma arızası bildirdi.', work: 'Öncelikli rota planlaması yapıldı, yerinde arıza tespiti gerçekleştirildi, güç kaynakları ve ampuller değiştirildi.', result: 'Tüm şubeler kurumsal kimliğe uygun olarak tekrar aydınlatıldı.', defaultText: 'Tüm konumlarda tutarlı marka imajı.', beforeText: 'Öncesi: arızalı sistemler nedeniyle farklı aydınlatma görüntüleri.' },
-    { id: 'mounting-review', title: 'Cephe Tabela Montajı', category: 'Montaj', problem: 'Bir fırtına, büyük bir tabelanın altyapı parçalarını gevşetmişti.', work: 'Sepetli vinç ile emniyete alındı, vida bağlantıları yenilendi ve tabela fırtınaya dayanıklı DIN standartlarına göre yeniden sabitlendi.', result: 'Tabela güvenli ve mevcut yönetmeliklere uygun hale getirildi.', defaultText: 'Güvenli tutuş ve standartlara uygun montaj.', beforeText: 'Öncesi: şiddetli rüzgardan sonra gevşemiş elemanlar.' },
+    { id: 'mounting-review', title: 'Restaurant Pasternak için cephe yazısı', category: 'Cephe yazısı', problem: 'Restoran cephesindeki mevcut yazının, yerleşik görsel kimlik korunarak yenilenmesi gerekiyordu.', work: 'Yeni yazı hassas bir şablonla hazırlandı ve ardından doğrudan cepheye boyandı.', result: 'Yazı yeniden temiz ve bütünlüklü görünüyor.', defaultText: 'Net ve tutarlı cephe yazısı için hassas şablon boyaması.', beforeText: 'Önce: yenileme öncesi mevcut cephe yazısı.', beforeAlt: 'Restaurant Pasternak cephe yazısı yenileme öncesinde', afterAlt: 'Restaurant Pasternak için tamamlanmış boyalı cephe yazısı', galleryAlts: ['Restaurant Pasternak cephe yazısı yenileme öncesinde', 'Restaurant Pasternak cephe yazısının çalışma sırasında şablonla boyanması', 'Restaurant Pasternak için tamamlanmış boyalı cephe yazısı'] },
   ],
   pl: [
     { id: 'lightbox-facade', title: 'Kaseton LED na elewacji', category: 'Kaseton', problem: 'Część pola świetlnego była ciemna, przez co wejście wieczorem wyglądało na zaniedbane.', work: 'Sprawdzono zasilanie, wymieniono uszkodzone elementy LED, wyczyszczono wnętrze i wyrównano jasność.', result: 'Elewacja znów wygląda aktywnie i jest dobrze widoczna wieczorem.', defaultText: 'Równomierne oświetlenie dla lepszego efektu wieczornego.', beforeText: 'Przed: ciemne obszary i widocznie zestarzały kaseton.' },
@@ -134,7 +167,7 @@ const CASE_COPY: Record<Locale, ReferenceCaseCopy[]> = {
     { id: 'neon-contour', title: 'Kontur neonowy na elewacji baru', category: 'Neon', problem: 'Pęknięcie szkła spowodowało awarię całego segmentu konturu.', work: 'Zmierzono uszkodzoną rurkę, wydmuchano nową w tym samym kolorze i zamontowano na miejscu z nowym transformatorem.', result: 'Ciągła linia baru została przywrócona.', defaultText: 'Jasne kolory i płynne linie bez przerw.', beforeText: 'Przed: uszkodzona rurka przerywała kontur.' },
     { id: 'window-film', title: 'Oklejanie witryn folią', category: 'Oklejanie', problem: 'Stara folia łuszczyła się, a logo wyblakło i wyglądało nieestetycznie.', work: 'Usunięto starą folię bez śladów, wyczyszczono szyby i nałożono nową folię odporną na promieniowanie UV bez pęcherzyków powietrza.', result: 'Witryna znów wygląda zachęcająco i reprezentacyjnie.', defaultText: 'Ostre kontury i świeże kolory na szybie.', beforeText: 'Przed: łuszczące się i wyblakłe fragmenty folii.' },
     { id: 'branch-service', title: 'Obsługa serwisowa oddziałów', category: 'Serwis', problem: 'Kilka oddziałów zgłosiło awarie oświetlenia zewnętrznego po burzy.', work: 'Zaplanowano priorytetowe trasy, przeprowadzono diagnostykę na miejscu, wymieniono zasilacze i źródła światła.', result: 'Wszystkie oddziały są znów oświetlone zgodnie z identyfikacją wizualną.', defaultText: 'Spójny wizerunek marki we wszystkich lokalizacjach.', beforeText: 'Przed: różne oświetlenie z powodu niesprawnych systemów.' },
-    { id: 'mounting-review', title: 'Montaż szyldu na elewacji', category: 'Montaż', problem: 'Wichura poluzowała części konstrukcji nośnej dużego szyldu.', work: 'Zabezpieczono z podnośnika koszowego, odnowiono połączenia śrubowe i zakotwiczono szyld zgodnie z normami DIN, aby był odporny na burze.', result: 'Szyld jest bezpieczny i spełnia aktualne przepisy.', defaultText: 'Pewne mocowanie i montaż zgodny z normami.', beforeText: 'Przed: luźne elementy po silnym wietrze.' },
+    { id: 'mounting-review', title: 'Napis na fasadzie restauracji Pasternak', category: 'Napis na fasadzie', problem: 'Istniejący napis na fasadzie restauracji wymagał odnowienia z zachowaniem dotychczasowego wyglądu.', work: 'Nowy napis przygotowano przy użyciu precyzyjnego szablonu, a następnie pomalowano bezpośrednio na fasadzie.', result: 'Napis ponownie wygląda czysto i spójnie.', defaultText: 'Precyzyjne malowanie szablonowe dla czytelnego, spójnego napisu na fasadzie.', beforeText: 'Przed: istniejący napis na fasadzie przed odnowieniem.', beforeAlt: 'Napis na fasadzie restauracji Pasternak przed odnowieniem', afterAlt: 'Gotowy malowany napis na fasadzie restauracji Pasternak', galleryAlts: ['Napis na fasadzie restauracji Pasternak przed odnowieniem', 'Malowanie szablonowe napisu na fasadzie restauracji Pasternak podczas prac', 'Gotowy malowany napis na fasadzie restauracji Pasternak'] },
   ],
   ar: [
     { id: 'lightbox-facade', title: 'صندوق إضاءة LED للواجهة', category: 'صندوق إضاءة', problem: 'كان جزء من مساحة الإضاءة معتماً، مما جعل المدخل يبدو مهملاً في المساء.', work: 'تم فحص مصدر الطاقة، واستبدال عناصر LED التالفة، وتنظيف الجزء الداخلي وموازنة السطوع.', result: 'عادت الواجهة لتبدو نشطة ومرئية بوضوح في المساء.', defaultText: 'إضاءة متساوية لتأثير مسائي أفضل.', beforeText: 'قبل: مناطق مظلمة وصندوق يبدو عليه القدم بوضوح.' },
@@ -142,7 +175,7 @@ const CASE_COPY: Record<Locale, ReferenceCaseCopy[]> = {
     { id: 'neon-contour', title: 'محيط نيون لواجهة حانة', category: 'نيون', problem: 'أدى صدع في الزجاج إلى تعطل جزء كامل من المحيط.', work: 'تم قياس الأنبوب المعيب، وتشكيل أنبوب جديد بنفس اللون، وتركيبه في الموقع مع محول جديد.', result: 'تمت استعادة الخط المستمر للحانة.', defaultText: 'ألوان زاهية وخطوط انسيابية بدون انقطاع.', beforeText: 'قبل: قطعة أنبوب معيبة قطعت المحيط.' },
     { id: 'window-film', title: 'تغليف واجهات العرض', category: 'تغليف بالفويل', problem: 'كان الفويل القديم يتقشر، وكان الشعار باهتاً وغير جذاب.', work: 'تمت إزالة الفويل القديم دون ترك أثر، وتنظيف الزجاج، ووضع فويل جديد مقاوم للأشعة فوق البنفسجية بدون فقاعات.', result: 'عادت واجهة العرض لتبدو جذابة وتمثيلية مرة أخرى.', defaultText: 'حواف حادة وألوان منعشة على الزجاج.', beforeText: 'قبل: أجزاء فويل متقشرة وباهتة.' },
     { id: 'branch-service', title: 'صيانة الفروع', category: 'خدمة', problem: 'أبلغت عدة فروع عن أعطال في الإضاءة الخارجية بعد عاصفة.', work: 'تم تخطيط مسارات ذات أولوية، وإجراء تشخيص للأعطال في الموقع، واستبدال مصادر الطاقة والمصابيح.', result: 'عادت الإضاءة لجميع الفروع بما يتوافق مع الهوية المؤسسية.', defaultText: 'صورة موحدة للعلامة التجارية في جميع المواقع.', beforeText: 'قبل: إضاءة غير متناسقة بسبب الأنظمة المعيبة.' },
-    { id: 'mounting-review', title: 'تركيب لافتات الواجهة', category: 'تركيب', problem: 'أدت عاصفة إلى ارتخاء أجزاء من البنية التحتية للافتة كبيرة.', work: 'تم التأمين باستخدام رافعة، وتجديد الوصلات اللولبية، وإعادة تثبيت اللافتة لتكون مقاومة للعواصف وفقاً لمعايير DIN.', result: 'اللافتة آمنة وتتوافق مع اللوائح الحالية.', defaultText: 'تثبيت آمن وتركيب متوافق مع المعايير.', beforeText: 'قبل: عناصر مرتخية بعد رياح قوية.' },
+    { id: 'mounting-review', title: 'كتابة الواجهة لمطعم Pasternak', category: 'كتابة الواجهة', problem: 'احتاجت الكتابة القائمة على واجهة المطعم إلى تجديد مع الحفاظ على طابعها البصري المعتاد.', work: 'جُهزت الكتابة الجديدة بقالب دقيق ثم طُليت مباشرة على الواجهة.', result: 'أصبحت الكتابة تبدو نظيفة ومتناسقة من جديد.', defaultText: 'طلاء دقيق بالقالب لكتابة واجهة واضحة ومتناسقة.', beforeText: 'قبل: كتابة الواجهة القائمة قبل التجديد.', beforeAlt: 'كتابة واجهة مطعم Pasternak قبل التجديد', afterAlt: 'كتابة واجهة مطعم Pasternak النهائية بعد الطلاء', galleryAlts: ['كتابة واجهة مطعم Pasternak قبل التجديد', 'طلاء كتابة واجهة مطعم Pasternak بالقالب أثناء التنفيذ', 'كتابة واجهة مطعم Pasternak النهائية بعد الطلاء'] },
   ],
 };
 
@@ -152,7 +185,7 @@ const CONTENT = {
     metaDescription:
       'Ausgewaehlte Referenzen von PixelRing: Leuchtkästen, LED-Buchstaben, Neon, Folien, Fassadenmontage und Filialservice ohne private Kundendaten.',
     badge: 'Referenzen',
-    heroTitle: 'Sichtbare Ergebnisse nach Reparatur und Service',
+    heroTitle: 'Unsere Arbeiten',
     heroIntro:
       'Diese Beispiele zeigen, was defekt war, was PixelRing geprüft und umgesetzt hat und wie die Werbeanlage danach wieder wirkt. Ohne Kundennamen, genaue Adressen oder interne CRM-Daten.',
     heroPrimaryCta: 'Arbeiten ansehen',
@@ -178,19 +211,16 @@ const CONTENT = {
       { id: 'r3', type: 'Folierung', issue: 'Kanten lösten sich, Farben wirkten nicht mehr markengerecht.', outcome: 'Untergrund vorbereitet und Sichtfläche neu foliert.' },
       { id: 'r4', type: 'Filialservice', issue: 'Mehrere kleine Mängel lagen verteilt ueber Standorte vor.', outcome: 'Ein Servicebericht mit priorisierten nächsten Schritten erstellt.' },
     ],
-    galleryEyebrow: 'Gesamte Bildauswahl',
-    galleryTitle: 'Ein kompakter Viewer für Details',
+    galleryEyebrow: 'Projektvideo',
+    galleryTitle: 'Arbeit im Projekt',
     galleryIntro:
-      'Die Galerie ist bewusst kleiner als der Hauptcarousel. Ein Klick oeffnet alle Fotos in einem Viewer mit Kategorien und Thumbnails.',
-    galleryPromoEyebrow: 'Projektvideos',
-    galleryPromoTitle: 'Einblicke aus der Arbeit',
+      'Ein kurzer Clip zeigt Montage, Ausführung und die Wirkung der Lichtwerbung direkt am Standort.',
+    galleryPromoEyebrow: 'Fotogalerie',
+    galleryPromoTitle: 'Details realisierter Arbeiten',
     galleryPromoText:
-      'Kurze Clips zeigen, wie Lichtwerbung, Folien und Fassadenelemente nach Service, Montage oder Reparatur am Standort wirken.',
-    galleryPromoCta: 'Videos ansehen',
-    galleryPromoHref: '/leistungen',
-    categoriesTitle: 'Produktbereiche, in denen Referenzen entstehen',
-    categoriesIntro:
-      'PixelRing bleibt ein verantwortlicher Servicepartner: Reparatur, Montage, Branding und Standortservice laufen ueber einen Einstiegspunkt.',
+      'Fotos zeigen Materialien, Verarbeitung und Ergebnisse aus Reparatur, Montage und Branding.',
+    galleryPromoCta: 'Fotos ansehen',
+    galleryPromoHref: '#gallery',
     typeBandLines: ['Repair evidence', 'LED · Neon · Folie · Montage', 'Ein Partner. Ein Auftrag. Ein Ergebnis.'],
     finalTitle: 'Zeigen Sie uns Ihr Schild, Ihre Fassade oder Ihr Werbeelement.',
     finalText:
@@ -209,7 +239,7 @@ const CONTENT = {
     metaDescription:
       'Selected PixelRing references: lightboxes, LED letters, neon, window film, facade mounting, and branch service without private customer data.',
     badge: 'References',
-    heroTitle: 'Visible results after repair and service',
+    heroTitle: 'Our work',
     heroIntro:
       'These examples show what was wrong, what PixelRing checked and repaired, and how the advertising element looked after service. No customer names, exact addresses, or internal CRM data.',
     heroPrimaryCta: 'View work',
@@ -235,19 +265,16 @@ const CONTENT = {
       { id: 'r3', type: 'Window film', issue: 'Edges lifted and colors no longer matched the brand.', outcome: 'Surface prepared and the visible area wrapped again.' },
       { id: 'r4', type: 'Branch service', issue: 'Several small defects were spread across locations.', outcome: 'One service report created with prioritized next steps.' },
     ],
-    galleryEyebrow: 'Full image set',
-    galleryTitle: 'A compact viewer for details',
+    galleryEyebrow: 'Project video',
+    galleryTitle: 'Work on site',
     galleryIntro:
-      'The gallery is intentionally smaller than the main carousel. Click opens all photos in one viewer with categories and thumbnails.',
-    galleryPromoEyebrow: 'Project videos',
-    galleryPromoTitle: 'Work in motion',
+      'A short clip shows installation, execution, and the effect of illuminated signage at the location.',
+    galleryPromoEyebrow: 'Photo gallery',
+    galleryPromoTitle: 'Details from completed work',
     galleryPromoText:
-      'Short clips show how illuminated signage, window film, and facade elements look after service, mounting, or repair.',
-    galleryPromoCta: 'View videos',
-    galleryPromoHref: '/leistungen',
-    categoriesTitle: 'Product areas where references are created',
-    categoriesIntro:
-      'PixelRing stays one accountable service partner: repair, mounting, branding, and location service run through one entry point.',
+      'Photos show materials, workmanship, and results from repair, installation, and branding.',
+    galleryPromoCta: 'View photos',
+    galleryPromoHref: '#gallery',
     typeBandLines: ['Repair evidence', 'LED · Neon · Film · Mounting', 'One partner. One request. One result.'],
     finalTitle: 'Show us your sign, facade, or advertising element.',
     finalText:
@@ -266,7 +293,7 @@ const CONTENT = {
     metaDescription:
       'Выбранные примеры PixelRing: световые короба, LED-буквы, неон, пленка, фасадный монтаж и сервис филиалов без раскрытия частных данных клиентов.',
     badge: 'Примеры работ',
-    heroTitle: 'Видимый результат после ремонта и сервиса',
+    heroTitle: 'Наши работы',
     heroIntro:
       'На этой странице показано, что было неисправно, что PixelRing проверил и восстановил, и как рекламный элемент стал выглядеть после работы. Без имен клиентов, точных адресов и CRM-данных.',
     heroPrimaryCta: 'Смотреть работы',
@@ -292,19 +319,16 @@ const CONTENT = {
       { id: 'r3', type: 'Витринная пленка', issue: 'Края отходили, цвет больше не соответствовал бренду.', outcome: 'Поверхность подготовлена и видимая зона оклеена заново.' },
       { id: 'r4', type: 'Сервис филиалов', issue: 'Мелкие дефекты копились на нескольких объектах.', outcome: 'Собран единый отчет с приоритетом следующих работ.' },
     ],
-    galleryEyebrow: 'Общая подборка',
-    galleryTitle: 'Компактный просмотр деталей',
+    galleryEyebrow: 'Видео проекта',
+    galleryTitle: 'Работа на объекте',
     galleryIntro:
-      'Галерея отделена от выбранных работ. По клику открывается общий просмотр со всеми фотографиями, категориями и миниатюрами.',
-    galleryPromoEyebrow: 'Видео проектов',
-    galleryPromoTitle: 'Работы в движении',
+      'Короткий ролик показывает монтаж, выполнение работ и результат световой рекламы непосредственно на объекте.',
+    galleryPromoEyebrow: 'Фотогалерея',
+    galleryPromoTitle: 'Детали выполненных работ',
     galleryPromoText:
-      'Короткие ролики показывают, как световая реклама, пленка и фасадные элементы выглядят после сервиса, монтажа или ремонта.',
-    galleryPromoCta: 'Смотреть видео',
-    galleryPromoHref: '/leistungen',
-    categoriesTitle: 'Направления, где появляются такие работы',
-    categoriesIntro:
-      'PixelRing остается одним ответственным сервисом: ремонт, монтаж, брендинг и обслуживание объектов идут через одну точку входа.',
+      'Фотографии показывают материалы, качество исполнения и результаты ремонта, монтажа и брендинга.',
+    galleryPromoCta: 'Смотреть фотографии',
+    galleryPromoHref: '#gallery',
     typeBandLines: ['Repair evidence', 'LED · Neon · Folie · Montage', 'Один партнер. Одна заявка. Один результат.'],
     finalTitle: 'Покажите нам вывеску, фасад или рекламный элемент.',
     finalText:
@@ -323,7 +347,7 @@ const CONTENT = {
     metaDescription:
       'PixelRing seçili referansları: ışıklı kutular, LED harfler, neon, vitrin filmi, cephe montajı ve şube servisi. Özel müşteri verisi paylaşılmaz.',
     badge: 'Referanslar',
-    heroTitle: 'Onarım ve servisten sonra görünen sonuçlar',
+    heroTitle: 'Çalışmalarımız',
     heroIntro:
       'Bu örnekler neyin bozuk olduğunu, PixelRing’in neyi kontrol edip onardığını ve reklam unsurunun servis sonrası nasıl göründüğünü gösterir. Müşteri adı, tam adres veya CRM verisi yoktur.',
     heroPrimaryCta: 'İşleri görüntüle',
@@ -349,19 +373,16 @@ const CONTENT = {
       { id: 'r3', type: 'Vitrin filmi', issue: 'Kenarlar kalkmıştı ve renkler markaya uygun değildi.', outcome: 'Yüzey hazırlandı ve görünür alan yeniden kaplandı.' },
       { id: 'r4', type: 'Şube servisi', issue: 'Küçük arızalar farklı lokasyonlara dağılmıştı.', outcome: 'Öncelikli adımları olan tek servis raporu oluşturuldu.' },
     ],
-    galleryEyebrow: 'Tüm görsel seçki',
-    galleryTitle: 'Detaylar için kompakt görüntüleyici',
+    galleryEyebrow: 'Proje videosu',
+    galleryTitle: 'Sahada çalışma',
     galleryIntro:
-      'Galeri ana carousel’den daha küçüktür. Tıklama tüm fotoğrafları kategori ve küçük resimlerle tek viewer içinde açar.',
-    galleryPromoEyebrow: 'Proje videoları',
-    galleryPromoTitle: 'İşlerden hareketli kesitler',
+      'Kısa video, montajı, uygulamayı ve ışıklı reklamın lokasyondaki etkisini gösterir.',
+    galleryPromoEyebrow: 'Fotoğraf galerisi',
+    galleryPromoTitle: 'Tamamlanan işlerden detaylar',
     galleryPromoText:
-      'Kısa videolar ışıklı reklamların, vitrin filmlerinin ve cephe elemanlarının servis, montaj veya onarım sonrası etkisini gösterir.',
-    galleryPromoCta: 'Videoları izle',
-    galleryPromoHref: '/leistungen',
-    categoriesTitle: 'Referansların oluştuğu ürün alanları',
-    categoriesIntro:
-      'PixelRing tek sorumlu servis ortağı olarak kalır: onarım, montaj, branding ve lokasyon servisi tek giriş noktasından yürür.',
+      'Fotoğraflar onarım, montaj ve markalama çalışmalarındaki malzemeleri, işçiliği ve sonuçları gösterir.',
+    galleryPromoCta: 'Fotoğrafları görüntüle',
+    galleryPromoHref: '#gallery',
     typeBandLines: ['Repair evidence', 'LED · Neon · Film · Montaj', 'Tek ortak. Tek talep. Tek sonuç.'],
     finalTitle: 'Tabelanızı, cephenizi veya reklam unsurunuzu gösterin.',
     finalText:
@@ -380,7 +401,7 @@ const CONTENT = {
     metaDescription:
       'Wybrane realizacje PixelRing: kasetony, litery LED, neon, folie, montaż elewacyjny i obsługa sieci bez ujawniania prywatnych danych klientów.',
     badge: 'Realizacje',
-    heroTitle: 'Widoczne efekty po naprawie i serwisie',
+    heroTitle: 'Nasze realizacje',
     heroIntro:
       'Te przykłady pokazują, co było uszkodzone, co PixelRing sprawdził i naprawił oraz jak element reklamowy wyglądał po usłudze. Bez nazw klientów, dokładnych adresów i danych CRM.',
     heroPrimaryCta: 'Zobacz prace',
@@ -406,19 +427,16 @@ const CONTENT = {
       { id: 'r3', type: 'Folia witrynowa', issue: 'Krawędzie odchodziły, kolory nie pasowały już do marki.', outcome: 'Przygotowano podłoże i ponownie oklejono widoczną powierzchnię.' },
       { id: 'r4', type: 'Serwis sieci', issue: 'Kilka małych usterek było rozproszonych po lokalizacjach.', outcome: 'Utworzono jeden raport z priorytetami kolejnych działań.' },
     ],
-    galleryEyebrow: 'Pełny zestaw zdjęć',
-    galleryTitle: 'Kompaktowy viewer do szczegółów',
+    galleryEyebrow: 'Wideo projektu',
+    galleryTitle: 'Praca na miejscu',
     galleryIntro:
-      'Galeria jest celowo mniejsza niż główny carousel. Kliknięcie otwiera wszystkie zdjęcia z kategoriami i miniaturami.',
-    galleryPromoEyebrow: 'Wideo projektów',
-    galleryPromoTitle: 'Realizacje w ruchu',
+      'Krótki film pokazuje montaż, wykonanie i efekt reklamy świetlnej bezpośrednio w obiekcie.',
+    galleryPromoEyebrow: 'Galeria zdjęć',
+    galleryPromoTitle: 'Detale zrealizowanych prac',
     galleryPromoText:
-      'Krótkie klipy pokazują, jak reklamy świetlne, folie i elementy fasad wyglądają po serwisie, montażu lub naprawie.',
-    galleryPromoCta: 'Zobacz wideo',
-    galleryPromoHref: '/leistungen',
-    categoriesTitle: 'Obszary produktowe, z których powstają realizacje',
-    categoriesIntro:
-      'PixelRing pozostaje jednym odpowiedzialnym partnerem: naprawa, montaż, branding i serwis lokalizacji mają jeden punkt wejścia.',
+      'Zdjęcia pokazują materiały, jakość wykonania i rezultaty napraw, montażu oraz brandingu.',
+    galleryPromoCta: 'Zobacz zdjęcia',
+    galleryPromoHref: '#gallery',
     typeBandLines: ['Repair evidence', 'LED · Neon · Folia · Montaż', 'Jeden partner. Jedno zgłoszenie. Jeden wynik.'],
     finalTitle: 'Pokaż nam swój szyld, fasadę lub element reklamowy.',
     finalText:
@@ -437,7 +455,7 @@ const CONTENT = {
     metaDescription:
       'نماذج مختارة من أعمال PixelRing: صناديق مضيئة، حروف LED، نيون، أفلام واجهات، تثبيت واجهات وخدمة فروع بدون كشف بيانات العملاء الخاصة.',
     badge: 'الأعمال المنجزة',
-    heroTitle: 'نتائج واضحة بعد الإصلاح والخدمة',
+    heroTitle: 'أعمالنا',
     heroIntro:
       'تعرض هذه الأمثلة ما كان معطلاً، وما فحصته PixelRing ونفذته، وكيف أصبح العنصر الإعلاني بعد الخدمة. لا أسماء عملاء، لا عناوين دقيقة، ولا بيانات CRM داخلية.',
     heroPrimaryCta: 'عرض الأعمال',
@@ -463,19 +481,16 @@ const CONTENT = {
       { id: 'r3', type: 'فيلم واجهة', issue: 'الحواف بدأت تنفصل والألوان لم تعد مناسبة للعلامة.', outcome: 'تم تحضير السطح وتغليف المنطقة المرئية من جديد.' },
       { id: 'r4', type: 'خدمة فروع', issue: 'عدة أعطال صغيرة موزعة على مواقع مختلفة.', outcome: 'تم إعداد تقرير خدمة واحد مع خطوات ذات أولوية.' },
     ],
-    galleryEyebrow: 'مجموعة الصور',
-    galleryTitle: 'عارض مدمج للتفاصيل',
+    galleryEyebrow: 'فيديو المشروع',
+    galleryTitle: 'العمل في الموقع',
     galleryIntro:
-      'المعرض أصغر عمداً من carousel الرئيسي. النقر يفتح كل الصور في عارض واحد مع الفئات والصور المصغرة.',
-    galleryPromoEyebrow: 'فيديوهات المشاريع',
-    galleryPromoTitle: 'لقطات من العمل',
+      'يعرض مقطع قصير التركيب والتنفيذ وتأثير الإعلان المضيء مباشرة في الموقع.',
+    galleryPromoEyebrow: 'معرض الصور',
+    galleryPromoTitle: 'تفاصيل من الأعمال المنفذة',
     galleryPromoText:
-      'مقاطع قصيرة تعرض كيف تبدو الإعلانات الضوئية والأفلام وعناصر الواجهات بعد الخدمة أو التركيب أو الإصلاح.',
-    galleryPromoCta: 'مشاهدة الفيديوهات',
-    galleryPromoHref: '/leistungen',
-    categoriesTitle: 'مجالات المنتج التي تظهر فيها المراجع',
-    categoriesIntro:
-      'تبقى PixelRing شريك خدمة واحداً مسؤولاً: الإصلاح، التثبيت، الهوية البصرية وخدمة المواقع عبر نقطة دخول واحدة.',
+      'تعرض الصور المواد وجودة التنفيذ ونتائج الإصلاح والتركيب والهوية البصرية.',
+    galleryPromoCta: 'عرض الصور',
+    galleryPromoHref: '#gallery',
     typeBandLines: ['Repair evidence', 'LED · Neon · Film · Mounting', 'شريك واحد. طلب واحد. نتيجة واحدة.'],
     finalTitle: 'أرنا لوحتك أو واجهتك أو العنصر الإعلاني لديك.',
     finalText:
@@ -494,6 +509,22 @@ const CONTENT = {
 const PAGE_KEY = 'referenzen';
 const LOCALES: Locale[] = ['de', 'en', 'ru', 'tr', 'pl', 'ar'];
 
+function stableListId(prefix: string, index: number): string {
+  return `${prefix}-${String(index + 1).padStart(2, '0')}`;
+}
+
+function getCaseImageAlt(referenceCase: ReferenceCase, image: string, index: number): string {
+  const configuredAlt = referenceCase.galleryAlts?.[index];
+  if (configuredAlt?.trim()) return configuredAlt;
+  if (image === referenceCase.beforeImage) {
+    return referenceCase.beforeAlt?.trim() || referenceCase.beforeText;
+  }
+  if (image === referenceCase.afterImage) {
+    return referenceCase.afterAlt?.trim() || referenceCase.result;
+  }
+  return referenceCase.title;
+}
+
 async function seed() {
   console.log(`Starting to seed ${PAGE_KEY}...`);
 
@@ -509,14 +540,18 @@ async function seed() {
     
     const casesWithStructuredGallery = cases.map(c => {
       const { gallery, ...rest } = c;
+      const beforeAlt = c.beforeAlt?.trim() || c.beforeText;
+      const afterAlt = c.afterAlt?.trim() || c.result;
       return {
         ...rest,
+        beforeAlt,
+        afterAlt,
         galleryImage1: gallery[0] || '',
         galleryImage2: gallery[1] || '',
         galleryImage3: gallery[2] || '',
-        galleryAlt1: c.galleryAlts?.[0] || '',
-        galleryAlt2: c.galleryAlts?.[1] || '',
-        galleryAlt3: c.galleryAlts?.[2] || '',
+        galleryAlt1: gallery[0] ? getCaseImageAlt(c, gallery[0], 0) : '',
+        galleryAlt2: gallery[1] ? getCaseImageAlt(c, gallery[1], 1) : '',
+        galleryAlt3: gallery[2] ? getCaseImageAlt(c, gallery[2], 2) : '',
       };
     });
 
@@ -564,20 +599,28 @@ async function seed() {
         sortOrder: 3,
         title: data.reportTitle,
         description: data.reportIntro,
+        image: IMAGE_SET.sloganSignage,
+        imageAlt: REPORT_IMAGE_ALTS[locale],
       },
       {
         type: 'cardList',
         key: 'reportHooksBlock',
         enabled: true,
         sortOrder: 4,
-        items: data.reportHooks,
+        items: data.reportHooks.map((item, index) => ({
+          ...item,
+          id: item.id || stableListId('report-hook', index),
+        })),
       },
       {
         type: 'cardList',
         key: 'reportsBlock',
         enabled: true,
         sortOrder: 5,
-        items: data.reports,
+        items: data.reports.map((item, index) => ({
+          ...item,
+          id: item.id || stableListId('report', index),
+        })),
       },
       {
         type: 'textSection',
@@ -585,6 +628,7 @@ async function seed() {
         enabled: true,
         sortOrder: 6,
         pretitle: data.galleryEyebrow,
+        sectionTitle: GALLERY_SECTION_TITLES[locale],
         title: data.galleryTitle,
         description: data.galleryIntro,
       },
@@ -593,11 +637,12 @@ async function seed() {
         key: 'galleryItemsBlock',
         enabled: true,
         sortOrder: 7,
-        items: cases.slice(0, 9).map(c => ({
+        items: cases.slice(0, 9).map((c, index) => ({
+          id: stableListId('gallery', index),
           title: c.title,
           category: c.category,
           image: c.gallery[0],
-          imageAlt: c.galleryAlts?.[0] || c.afterAlt || c.title,
+          imageAlt: getCaseImageAlt(c, c.gallery[0], 0),
           description: c.result
         })),
       },
@@ -613,36 +658,18 @@ async function seed() {
         requestHref: data.galleryPromoHref,
       },
       {
-        type: 'textSection',
-        key: 'categoriesIntroBlock',
-        enabled: true,
-        sortOrder: 9,
-        title: data.categoriesTitle,
-        description: data.categoriesIntro,
-      },
-      {
-        type: 'cardList',
-        key: 'productCategoriesBlock',
-        enabled: true,
-        sortOrder: 10,
-        items: [
-          { title: cases[0].title, text: cases[0].problem, image: cases[0].afterImage, imageAlt: cases[0].afterAlt || cases[0].title, filter: 'filter-lightbox' },
-          { title: cases[1].title, text: cases[1].problem, image: cases[1].afterImage, imageAlt: cases[1].afterAlt || cases[1].title, filter: 'filter-led' },
-          { title: cases[2].title, text: cases[2].problem, image: cases[2].afterImage, imageAlt: cases[2].afterAlt || cases[2].title, filter: 'filter-neon' },
-        ],
-      },
-      {
         type: 'cardList',
         key: 'typeBandLinesBlock',
         enabled: true,
-        sortOrder: 11,
+        sortOrder: 9,
         items: data.typeBandLines.map(line => ({ text: line })),
       },
       {
         type: 'cta',
         key: 'finalCtaBlock',
         enabled: true,
-        sortOrder: 12,
+        sortOrder: 10,
+        badge: FINAL_CTA_EYEBROWS[locale],
         title: data.finalTitle,
         description: data.finalText,
         primaryLabel: data.finalCta,
@@ -651,7 +678,7 @@ async function seed() {
         type: 'labels',
         key: 'labelsBlock',
         enabled: true,
-        sortOrder: 12,
+        sortOrder: 11,
         modalProblemLabel: data.modalProblemLabel,
         modalWorkLabel: data.modalWorkLabel,
         modalResultLabel: data.modalResultLabel,

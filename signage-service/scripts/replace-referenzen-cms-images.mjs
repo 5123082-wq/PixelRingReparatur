@@ -460,22 +460,6 @@ function setGalleryImages(items, urls) {
   }));
 }
 
-function setProductCategoryImages(items, urls) {
-  const productImages = [
-    urls.ledLettersFacadeAfter,
-    urls.agentFacadeLightboxAfter,
-    urls.neonContourAfter,
-    urls.agentStorefrontFilmApplication,
-    urls.agentFacadeMountingLift,
-    urls.agentBranchStorefrontRow,
-  ];
-
-  return items.map((item, index) => ({
-    ...item,
-    image: productImages[index % productImages.length],
-  }));
-}
-
 function rewriteBlocks(blocks, urls) {
   let changedRefs = 0;
   const nextBlocks = blocks.map((block) => {
@@ -509,12 +493,6 @@ function rewriteBlocks(blocks, urls) {
 
     if (block.key === 'galleryItemsBlock' && Array.isArray(block.items)) {
       const nextItems = setGalleryImages(block.items, urls);
-      changedRefs += block.items.length;
-      return { ...block, items: nextItems };
-    }
-
-    if (block.key === 'productCategoriesBlock' && Array.isArray(block.items)) {
-      const nextItems = setProductCategoryImages(block.items, urls);
       changedRefs += block.items.length;
       return { ...block, items: nextItems };
     }

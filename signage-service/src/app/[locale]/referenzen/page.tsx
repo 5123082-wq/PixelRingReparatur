@@ -1,36 +1,101 @@
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
+import { notFound } from 'next/navigation';
+import { cache } from 'react';
 
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
 import ReferencesExperience, {
-  type CategoryItem,
   type GalleryItem,
   type ReportHook,
+  type ReferencesBlockVisibility,
   type ReferencesContent,
   type ReferenceCase,
   type ReportRow,
 } from '@/components/references/ReferencesExperience';
+import { CMS_SESSION_COOKIE_NAME, requireAdminSession } from '@/lib/admin-auth';
 import {
   type CmsPageBlock,
+  type CmsPagePublicContent,
+  getCmsPagePublicationState,
+  getDraftCapableCmsPage,
   getGlobalPageCmsContent,
-  getPublishedCmsPage,
   getBlock,
   getBlockText,
   getBlockObjectList,
 } from '@/lib/cms/pages';
+import { prisma } from '@/lib/prisma';
 import { buildLocaleUrl, buildPublicPageMetadata, buildSiteUrl } from '@/lib/seo';
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
 type JsonLdObject = Record<string, unknown>;
 
-type LocalizedPageContent = Omit<ReferencesContent, 'locale' | 'cases' | 'galleryItems' | 'productCategories'> & {
+type LocalizedPageContent = Omit<
+  ReferencesContent,
+  | 'locale'
+  | 'cases'
+  | 'galleryItems'
+  | 'gallerySectionTitle'
+  | 'finalEyebrow'
+  | 'reportImage'
+  | 'reportImageAlt'
+> & {
   metaTitle: string;
   metaDescription: string;
 };
 
 const REFERENCES_PAGE_PATH = '/referenzen';
+const GALLERY_SECTION_TITLES: Record<Locale, string> = {
+  de: 'Galerie der Arbeiten',
+  en: 'Work gallery',
+  ru: 'Галерея работ',
+  tr: 'İş galerisi',
+  pl: 'Galeria prac',
+  ar: 'معرض الأعمال',
+};
+const FINAL_CTA_EYEBROWS: Record<Locale, string> = {
+  de: 'NEXT STEP',
+  en: 'NEXT STEP',
+  ru: 'СЛЕДУЮЩИЙ ШАГ',
+  tr: 'SONRAKI ADIM',
+  pl: 'NASTEPNY KROK',
+  ar: 'الخطوة التالية',
+};
+const REPORT_IMAGE_SRC = '/images/references/references-slogan-signage-v1.webp';
+const REPORT_IMAGE_ALTS: Record<Locale, string> = {
+  de: 'Gleichmäßig beleuchtete Profilbuchstaben auf einer hellen Fassade',
+  en: 'Evenly illuminated channel letters mounted on a light facade',
+  ru: 'Равномерно подсвеченные объёмные буквы на светлом фасаде',
+  tr: 'Açık renkli cephede eşit şekilde aydınlatılmış kutu harfler',
+  pl: 'Równomiernie podświetlone litery przestrzenne na jasnej elewacji',
+  ar: 'حروف بارزة مضاءة بشكل متساوٍ على واجهة فاتحة',
+};
 
-export const IMAGE_SET = {
+const getReferencesPublicationState = cache((locale: string) =>
+  getCmsPagePublicationState('referenzen', locale)
+);
+
+const hasOwnerCmsSession = cache(async (): Promise<boolean> => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(CMS_SESSION_COOKIE_NAME)?.value;
+  return Boolean(await requireAdminSession(prisma, token, ['OWNER']));
+});
+
+function isCmsPreview(value: string | string[] | undefined): boolean {
+  const values = Array.isArray(value) ? value : value ? [value] : [];
+  return values.includes('1');
+}
+
+function getEnabledBlock(
+  page: CmsPagePublicContent,
+  type: Parameters<typeof getBlock>[1],
+  keys: string[]
+): CmsPageBlock | null {
+  const block = getBlock(page, type, keys);
+  return block?.enabled === false ? null : block;
+}
+
+const IMAGE_SET = {
   lightbox: '/images/ex-lightbox.png',
   led: '/images/leistungen/hero-led.png',
   ledNatural: '/images/leistungen/hero-led-natural.png',
@@ -38,6 +103,9 @@ export const IMAGE_SET = {
   film: '/images/leistungen/hero-branding.png',
   maintenance: '/images/leistungen/hero-maintenance.png',
   mounting: '/images/ex-mounting.png',
+  pasternakFacadeLetteringBefore: '/images/references/pasternak-facade-lettering-before.png',
+  pasternakFacadeLetteringProcess: '/images/references/pasternak-facade-lettering-process.jpg',
+  pasternakFacadeLetteringResult: '/images/references/pasternak-facade-lettering-result.jpg',
   repair: '/images/leistungen/hero-repair.png',
   beforeGeneral: '/images/hero.jpg',
   process: '/images/ex-repair.png',
@@ -58,7 +126,7 @@ export const IMAGE_SET = {
 
 const REFERENCES_OG_IMAGE = IMAGE_SET.generatedStorefrontRow;
 
-export const BASE_CASES: Array<Pick<ReferenceCase, 'id' | 'beforeImage' | 'afterImage' | 'gallery'>> = [
+const BASE_CASES: Array<Pick<ReferenceCase, 'id' | 'beforeImage' | 'afterImage' | 'gallery'>> = [
   {
     id: 'lightbox-facade',
     beforeImage: IMAGE_SET.beforeGeneral,
@@ -91,9 +159,13 @@ export const BASE_CASES: Array<Pick<ReferenceCase, 'id' | 'beforeImage' | 'after
   },
   {
     id: 'mounting-review',
-    beforeImage: IMAGE_SET.maintenance,
-    afterImage: IMAGE_SET.mounting,
-    gallery: [IMAGE_SET.maintenance, IMAGE_SET.mounting, IMAGE_SET.ledNatural],
+    beforeImage: IMAGE_SET.pasternakFacadeLetteringBefore,
+    afterImage: IMAGE_SET.pasternakFacadeLetteringResult,
+    gallery: [
+      IMAGE_SET.pasternakFacadeLetteringBefore,
+      IMAGE_SET.pasternakFacadeLetteringProcess,
+      IMAGE_SET.pasternakFacadeLetteringResult,
+    ],
   },
 ];
 
@@ -103,7 +175,7 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     metaDescription:
       'Ausgewählte Referenzen von PixelRing: Leuchtkästen, LED-Buchstaben, Neon, Folien, Fassadenmontage und Filialservice ohne private Kundendaten.',
     badge: 'Referenzen',
-    heroTitle: 'Sichtbare Ergebnisse nach Reparatur und Service',
+    heroTitle: 'Unsere Arbeiten',
     heroIntro:
       'Diese Beispiele zeigen, was defekt war, was PixelRing geprüft und umgesetzt hat und wie die Werbeanlage danach wieder wirkt. Ohne Kundennamen, genaue Adressen oder interne CRM-Daten.',
     heroPrimaryCta: 'Arbeiten ansehen',
@@ -129,19 +201,16 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
       { id: 'r3', type: 'Folierung', issue: 'Kanten lösten sich, Farben wirkten nicht mehr markengerecht.', outcome: 'Untergrund vorbereitet und Sichtfläche neu foliert.' },
       { id: 'r4', type: 'Filialservice', issue: 'Mehrere kleine Mängel lagen verteilt ueber Standorte vor.', outcome: 'Ein Servicebericht mit priorisierten nächsten Schritten erstellt.' },
     ],
-    galleryEyebrow: 'Gesamte Bildauswahl',
-    galleryTitle: 'Ein kompakter Viewer für Details',
+    galleryEyebrow: 'Projektvideo',
+    galleryTitle: 'Arbeit im Projekt',
     galleryIntro:
-      'Die Galerie ist bewusst kleiner als der Hauptcarousel. Ein Klick oeffnet alle Fotos in einem Viewer mit Kategorien und Thumbnails.',
-    galleryPromoEyebrow: 'Projektvideos',
-    galleryPromoTitle: 'Einblicke aus der Arbeit',
+      'Ein kurzer Clip zeigt Montage, Ausführung und die Wirkung der Lichtwerbung direkt am Standort.',
+    galleryPromoEyebrow: 'Fotogalerie',
+    galleryPromoTitle: 'Details realisierter Arbeiten',
     galleryPromoText:
-      'Kurze Clips zeigen, wie Lichtwerbung, Folien und Fassadenelemente nach Service, Montage oder Reparatur am Standort wirken.',
-    galleryPromoCta: 'Videos ansehen',
-    galleryPromoHref: '/leistungen',
-    categoriesTitle: 'Produktbereiche, in denen Referenzen entstehen',
-    categoriesIntro:
-      'PixelRing bleibt ein verantwortlicher Servicepartner: Reparatur, Montage, Branding und Standortservice laufen ueber einen Einstiegspunkt.',
+      'Fotos zeigen Materialien, Verarbeitung und Ergebnisse aus Reparatur, Montage und Branding.',
+    galleryPromoCta: 'Fotos ansehen',
+    galleryPromoHref: '#gallery',
     typeBandLines: ['Repair evidence', 'LED · Neon · Folie · Montage', 'Ein Partner. Ein Auftrag. Ein Ergebnis.'],
     finalTitle: 'Zeigen Sie uns Ihr Schild, Ihre Fassade oder Ihr Werbeelement.',
     finalText:
@@ -160,7 +229,7 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     metaDescription:
       'Selected PixelRing references: lightboxes, LED letters, neon, window film, facade mounting, and branch service without private customer data.',
     badge: 'References',
-    heroTitle: 'Visible results after repair and service',
+    heroTitle: 'Our work',
     heroIntro:
       'These examples show what was wrong, what PixelRing checked and repaired, and how the advertising element looked after service. No customer names, exact addresses, or internal CRM data.',
     heroPrimaryCta: 'View work',
@@ -186,19 +255,16 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
       { id: 'r3', type: 'Window film', issue: 'Edges lifted and colors no longer matched the brand.', outcome: 'Surface prepared and the visible area wrapped again.' },
       { id: 'r4', type: 'Branch service', issue: 'Several small defects were spread across locations.', outcome: 'One service report created with prioritized next steps.' },
     ],
-    galleryEyebrow: 'Full image set',
-    galleryTitle: 'A compact viewer for details',
+    galleryEyebrow: 'Project video',
+    galleryTitle: 'Work on site',
     galleryIntro:
-      'The gallery is intentionally smaller than the main carousel. Click opens all photos in one viewer with categories and thumbnails.',
-    galleryPromoEyebrow: 'Project videos',
-    galleryPromoTitle: 'Work in motion',
+      'A short clip shows installation, execution, and the effect of illuminated signage at the location.',
+    galleryPromoEyebrow: 'Photo gallery',
+    galleryPromoTitle: 'Details from completed work',
     galleryPromoText:
-      'Short clips show how illuminated signage, window film, and facade elements look after service, mounting, or repair.',
-    galleryPromoCta: 'View videos',
-    galleryPromoHref: '/leistungen',
-    categoriesTitle: 'Product areas where references are created',
-    categoriesIntro:
-      'PixelRing stays one accountable service partner: repair, mounting, branding, and location service run through one entry point.',
+      'Photos show materials, workmanship, and results from repair, installation, and branding.',
+    galleryPromoCta: 'View photos',
+    galleryPromoHref: '#gallery',
     typeBandLines: ['Repair evidence', 'LED · Neon · Film · Mounting', 'One partner. One request. One result.'],
     finalTitle: 'Show us your sign, facade, or advertising element.',
     finalText:
@@ -217,7 +283,7 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     metaDescription:
       'Выбранные примеры PixelRing: световые короба, LED-буквы, неон, пленка, фасадный монтаж и сервис филиалов без раскрытия частных данных клиентов.',
     badge: 'Примеры работ',
-    heroTitle: 'Видимый результат после ремонта и сервиса',
+    heroTitle: 'Наши работы',
     heroIntro:
       'На этой странице показано, что было неисправно, что PixelRing проверил и восстановил, и как рекламный элемент стал выглядеть после работы. Без имен клиентов, точных адресов и CRM-данных.',
     heroPrimaryCta: 'Смотреть работы',
@@ -243,19 +309,16 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
       { id: 'r3', type: 'Витринная пленка', issue: 'Края отходили, цвет больше не соответствовал бренду.', outcome: 'Поверхность подготовлена и видимая зона оклеена заново.' },
       { id: 'r4', type: 'Сервис филиалов', issue: 'Мелкие дефекты копились на нескольких объектах.', outcome: 'Собран единый отчет с приоритетом следующих работ.' },
     ],
-    galleryEyebrow: 'Общая подборка',
-    galleryTitle: 'Компактный просмотр деталей',
+    galleryEyebrow: 'Видео проекта',
+    galleryTitle: 'Работа на объекте',
     galleryIntro:
-      'Галерея отделена от выбранных работ. По клику открывается общий просмотр со всеми фотографиями, категориями и миниатюрами.',
-    galleryPromoEyebrow: 'Видео проектов',
-    galleryPromoTitle: 'Работы в движении',
+      'Короткий ролик показывает монтаж, выполнение работ и результат световой рекламы непосредственно на объекте.',
+    galleryPromoEyebrow: 'Фотогалерея',
+    galleryPromoTitle: 'Детали выполненных работ',
     galleryPromoText:
-      'Короткие ролики показывают, как световая реклама, пленка и фасадные элементы выглядят после сервиса, монтажа или ремонта.',
-    galleryPromoCta: 'Смотреть видео',
-    galleryPromoHref: '/leistungen',
-    categoriesTitle: 'Направления, где появляются такие работы',
-    categoriesIntro:
-      'PixelRing остается одним ответственным сервисом: ремонт, монтаж, брендинг и обслуживание объектов идут через одну точку входа.',
+      'Фотографии показывают материалы, качество исполнения и результаты ремонта, монтажа и брендинга.',
+    galleryPromoCta: 'Смотреть фотографии',
+    galleryPromoHref: '#gallery',
     typeBandLines: ['Repair evidence', 'LED · Neon · Folie · Montage', 'Один партнер. Одна заявка. Один результат.'],
     finalTitle: 'Покажите нам вывеску, фасад или рекламный элемент.',
     finalText:
@@ -274,7 +337,7 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     metaDescription:
       'PixelRing seçili referansları: ışıklı kutular, LED harfler, neon, vitrin filmi, cephe montajı ve şube servisi. Özel müşteri verisi paylaşılmaz.',
     badge: 'Referanslar',
-    heroTitle: 'Onarım ve servisten sonra görünen sonuçlar',
+    heroTitle: 'Çalışmalarımız',
     heroIntro:
       'Bu örnekler neyin bozuk olduğunu, PixelRing’in neyi kontrol edip onardığını ve reklam unsurunun servis sonrası nasıl göründüğünü gösterir. Müşteri adı, tam adres veya CRM verisi yoktur.',
     heroPrimaryCta: 'İşleri görüntüle',
@@ -300,19 +363,16 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
       { id: 'r3', type: 'Vitrin filmi', issue: 'Kenarlar kalkmıştı ve renkler markaya uygun değildi.', outcome: 'Yüzey hazırlandı ve görünür alan yeniden kaplandı.' },
       { id: 'r4', type: 'Şube servisi', issue: 'Küçük arızalar farklı lokasyonlara dağılmıştı.', outcome: 'Öncelikli adımları olan tek servis raporu oluşturuldu.' },
     ],
-    galleryEyebrow: 'Tüm görsel seçki',
-    galleryTitle: 'Detaylar için kompakt görüntüleyici',
+    galleryEyebrow: 'Proje videosu',
+    galleryTitle: 'Sahada çalışma',
     galleryIntro:
-      'Galeri ana carousel’den daha küçüktür. Tıklama tüm fotoğrafları kategori ve küçük resimlerle tek viewer içinde açar.',
-    galleryPromoEyebrow: 'Proje videoları',
-    galleryPromoTitle: 'İşlerden hareketli kesitler',
+      'Kısa video, montajı, uygulamayı ve ışıklı reklamın lokasyondaki etkisini gösterir.',
+    galleryPromoEyebrow: 'Fotoğraf galerisi',
+    galleryPromoTitle: 'Tamamlanan işlerden detaylar',
     galleryPromoText:
-      'Kısa videolar ışıklı reklamların, vitrin filmlerinin ve cephe elemanlarının servis, montaj veya onarım sonrası etkisini gösterir.',
-    galleryPromoCta: 'Videoları izle',
-    galleryPromoHref: '/leistungen',
-    categoriesTitle: 'Referansların oluştuğu ürün alanları',
-    categoriesIntro:
-      'PixelRing tek sorumlu servis ortağı olarak kalır: onarım, montaj, branding ve lokasyon servisi tek giriş noktasından yürür.',
+      'Fotoğraflar onarım, montaj ve markalama çalışmalarındaki malzemeleri, işçiliği ve sonuçları gösterir.',
+    galleryPromoCta: 'Fotoğrafları görüntüle',
+    galleryPromoHref: '#gallery',
     typeBandLines: ['Repair evidence', 'LED · Neon · Film · Montaj', 'Tek ortak. Tek talep. Tek sonuç.'],
     finalTitle: 'Tabelanızı, cephenizi veya reklam unsurunuzu gösterin.',
     finalText:
@@ -331,7 +391,7 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     metaDescription:
       'Wybrane realizacje PixelRing: kasetony, litery LED, neon, folie, montaż elewacyjny i obsługa sieci bez ujawniania prywatnych danych klientów.',
     badge: 'Realizacje',
-    heroTitle: 'Widoczne efekty po naprawie i serwisie',
+    heroTitle: 'Nasze realizacje',
     heroIntro:
       'Te przykłady pokazują, co było uszkodzone, co PixelRing sprawdził i naprawił oraz jak element reklamowy wyglądał po usłudze. Bez nazw klientów, dokładnych adresów i danych CRM.',
     heroPrimaryCta: 'Zobacz prace',
@@ -357,19 +417,16 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
       { id: 'r3', type: 'Folia witrynowa', issue: 'Krawędzie odchodziły, kolory nie pasowały już do marki.', outcome: 'Przygotowano podłoże i ponownie oklejono widoczną powierzchnię.' },
       { id: 'r4', type: 'Serwis sieci', issue: 'Kilka małych usterek było rozproszonych po lokalizacjach.', outcome: 'Utworzono jeden raport z priorytetami kolejnych działań.' },
     ],
-    galleryEyebrow: 'Pełny zestaw zdjęć',
-    galleryTitle: 'Kompaktowy viewer do szczegółów',
+    galleryEyebrow: 'Wideo projektu',
+    galleryTitle: 'Praca na miejscu',
     galleryIntro:
-      'Galeria jest celowo mniejsza niż główny carousel. Kliknięcie otwiera wszystkie zdjęcia z kategoriami i miniaturami.',
-    galleryPromoEyebrow: 'Wideo projektów',
-    galleryPromoTitle: 'Realizacje w ruchu',
+      'Krótki film pokazuje montaż, wykonanie i efekt reklamy świetlnej bezpośrednio w obiekcie.',
+    galleryPromoEyebrow: 'Galeria zdjęć',
+    galleryPromoTitle: 'Detale zrealizowanych prac',
     galleryPromoText:
-      'Krótkie klipy pokazują, jak reklamy świetlne, folie i elementy fasad wyglądają po serwisie, montażu lub naprawie.',
-    galleryPromoCta: 'Zobacz wideo',
-    galleryPromoHref: '/leistungen',
-    categoriesTitle: 'Obszary produktowe, z których powstają realizacje',
-    categoriesIntro:
-      'PixelRing pozostaje jednym odpowiedzialnym partnerem: naprawa, montaż, branding i serwis lokalizacji mają jeden punkt wejścia.',
+      'Zdjęcia pokazują materiały, jakość wykonania i rezultaty napraw, montażu oraz brandingu.',
+    galleryPromoCta: 'Zobacz zdjęcia',
+    galleryPromoHref: '#gallery',
     typeBandLines: ['Repair evidence', 'LED · Neon · Folia · Montaż', 'Jeden partner. Jedno zgłoszenie. Jeden wynik.'],
     finalTitle: 'Pokaż nam swój szyld, fasadę lub element reklamowy.',
     finalText:
@@ -388,7 +445,7 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     metaDescription:
       'نماذج مختارة من أعمال PixelRing: صناديق مضيئة، حروف LED، نيون، أفلام واجهات، تثبيت واجهات وخدمة فروع بدون كشف بيانات العملاء الخاصة.',
     badge: 'الأعمال المنجزة',
-    heroTitle: 'نتائج واضحة بعد الإصلاح والخدمة',
+    heroTitle: 'أعمالنا',
     heroIntro:
       'تعرض هذه الأمثلة ما كان معطلاً، وما فحصته PixelRing ونفذته، وكيف أصبح العنصر الإعلاني بعد الخدمة. لا أسماء عملاء، لا عناوين دقيقة، ولا بيانات CRM داخلية.',
     heroPrimaryCta: 'عرض الأعمال',
@@ -414,19 +471,16 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
       { id: 'r3', type: 'فيلم واجهة', issue: 'الحواف بدأت تنفصل والألوان لم تعد مناسبة للعلامة.', outcome: 'تم تحضير السطح وتغليف المنطقة المرئية من جديد.' },
       { id: 'r4', type: 'خدمة فروع', issue: 'عدة أعطال صغيرة موزعة على مواقع مختلفة.', outcome: 'تم إعداد تقرير خدمة واحد مع خطوات ذات أولوية.' },
     ],
-    galleryEyebrow: 'مجموعة الصور',
-    galleryTitle: 'عارض مدمج للتفاصيل',
+    galleryEyebrow: 'فيديو المشروع',
+    galleryTitle: 'العمل في الموقع',
     galleryIntro:
-      'المعرض أصغر عمداً من carousel الرئيسي. النقر يفتح كل الصور في عارض واحد مع الفئات والصور المصغرة.',
-    galleryPromoEyebrow: 'فيديوهات المشاريع',
-    galleryPromoTitle: 'لقطات من العمل',
+      'يعرض مقطع قصير التركيب والتنفيذ وتأثير الإعلان المضيء مباشرة في الموقع.',
+    galleryPromoEyebrow: 'معرض الصور',
+    galleryPromoTitle: 'تفاصيل من الأعمال المنفذة',
     galleryPromoText:
-      'مقاطع قصيرة تعرض كيف تبدو الإعلانات الضوئية والأفلام وعناصر الواجهات بعد الخدمة أو التركيب أو الإصلاح.',
-    galleryPromoCta: 'مشاهدة الفيديوهات',
-    galleryPromoHref: '/leistungen',
-    categoriesTitle: 'مجالات المنتج التي تظهر فيها المراجع',
-    categoriesIntro:
-      'تبقى PixelRing شريك خدمة واحداً مسؤولاً: الإصلاح، التثبيت، الهوية البصرية وخدمة المواقع عبر نقطة دخول واحدة.',
+      'تعرض الصور المواد وجودة التنفيذ ونتائج الإصلاح والتركيب والهوية البصرية.',
+    galleryPromoCta: 'عرض الصور',
+    galleryPromoHref: '#gallery',
     typeBandLines: ['Repair evidence', 'LED · Neon · Film · Mounting', 'شريك واحد. طلب واحد. نتيجة واحدة.'],
     finalTitle: 'أرنا لوحتك أو واجهتك أو العنصر الإعلاني لديك.',
     finalText:
@@ -442,14 +496,14 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
   },
 };
 
-export const CASE_COPY: Record<Locale, Array<Omit<ReferenceCase, 'beforeImage' | 'afterImage' | 'gallery'>>> = {
+const CASE_COPY: Record<Locale, Array<Omit<ReferenceCase, 'beforeImage' | 'afterImage' | 'gallery'>>> = {
   de: [
     { id: 'lightbox-facade', title: 'LED-Lightbox an der Fassade', category: 'Leuchtkasten', problem: 'Ein Teil des Lichtfelds blieb dunkel, der Eingang wirkte abends vernachlässigt.', work: 'Stromversorgung geprüft, beschädigte LED-Elemente ersetzt, Innenfläche gereinigt und Helligkeit angeglichen.', result: 'Die Fassade wirkt abends wieder aktiv und gut sichtbar.', defaultText: 'Gleichmäßige Ausleuchtung für bessere Abendwirkung.', beforeText: 'Vorher: dunkle Bereiche und ein sichtbar gealterter Kasten.' },
     { id: 'led-letters', title: 'LED-Buchstaben an der Shop-Fassade', category: 'LED-Buchstaben', problem: 'Die Hauptbeschriftung an der Fassade blieb dunkel: Das Signetelement war sichtbar, die Buchstaben aber nicht.', work: 'Stromversorgung und Verbindungen geprüft, LED-Module wieder in Betrieb genommen und die sichtbare Helligkeit abgestimmt.', result: 'Die Fassadenbeschriftung ist abends wieder vollständig lesbar.', defaultText: 'Die Fassadenbeschriftung ist abends wieder klar sichtbar.', beforeText: 'Vorher: die Hauptbeschriftung an der Fassade leuchtete nicht.', beforeAlt: 'Vor der Reparatur: Shop-Fassade mit LED-Buchstaben, deren Hauptbeschriftung nicht leuchtet', afterAlt: 'Nach der Reparatur: Shop-Fassade mit wiederhergestellter Beleuchtung der LED-Buchstaben am Abend', galleryAlts: ['Vor der Reparatur: Shop-Fassade mit dunkler Hauptbeschriftung', 'Nach der Reparatur: Shop-Fassade mit hell leuchtenden LED-Buchstaben'] },
     { id: 'neon-contour', title: 'Neon-Konturlicht', category: 'Neon', problem: 'Teile der Kontur flackerten oder schalteten nach dem Aufwärmen ab.', work: 'Instabilen Abschnitt eingegrenzt, Kontakt wiederhergestellt und Abendbetrieb geprüft.', result: 'Der warme Konturverlauf ist wieder ohne sichtbare Aussetzer.', defaultText: 'Warmer Konturverlauf ohne sichtbare Aussetzer.', beforeText: 'Vorher: Flackern und unterbrochene Lichtlinie.' },
     { id: 'window-film', title: 'Schaufenster-Folierung', category: 'Folien', problem: 'Die Folie war ausgeblichen und löste sich an den Kanten.', work: 'Alte Schicht entfernt, Untergrund vorbereitet und neue Markenfläche aufgebracht.', result: 'Die Fläche wirkt wieder wie ein gepflegter Teil des Standorts.', defaultText: 'Aktualisierte Sichtfläche statt provisorischer Wirkung.', beforeText: 'Vorher: gelöste Kanten und verblasste Markenfarbe.' },
     { id: 'branch-service', title: 'Service für mehrere Standorte', category: 'Filialservice', problem: 'Mängel lagen verteilt vor und wurden nicht gemeinsam priorisiert.', work: 'Zustand zusammengeführt, akute und planbare Arbeiten getrennt und als Servicebericht strukturiert.', result: 'Das Team erhielt eine klare Reihenfolge für die nächsten Schritte.', defaultText: 'Mehrere Standorte in einem verständlichen Servicebild.', beforeText: 'Vorher: Einzelfälle ohne Gesamtüberblick.' },
-    { id: 'mounting-review', title: 'Montage- und Sicherheitscheck', category: 'Fassade', problem: 'Befestigung und Servicezugang mussten vor dem Wiederbetrieb geprüft werden.', work: 'Sichtbare Befestigungspunkte, Zugang und Schäden geprüft und Maßnahmen vorbereitet.', result: 'Der Objektzustand war für die weitere Planung klar.', defaultText: 'Klarer Zustand für Reparatur, Montage und Wartung.', beforeText: 'Vorher: Unsicherheit bei Befestigung und Zugang.' },
+    { id: 'mounting-review', title: 'Fassadenbeschriftung für Restaurant Pasternak', category: 'Fassadenbeschriftung', problem: 'Die bestehende Beschriftung der Restaurantfassade sollte im vorhandenen Erscheinungsbild erneuert werden.', work: 'Die neue Beschriftung wurde mit einer passgenauen Schablone vorbereitet und anschließend direkt auf die Fassade lackiert.', result: 'Das Schriftbild wirkt wieder sauber und einheitlich.', defaultText: 'Präzise Schablonenlackierung für ein klares, einheitliches Schriftbild.', beforeText: 'Vorher: bestehende Fassadenbeschriftung vor der Erneuerung.', beforeAlt: 'Fassadenbeschriftung von Restaurant Pasternak vor der Erneuerung', afterAlt: 'Fertig lackierte Fassadenbeschriftung von Restaurant Pasternak', galleryAlts: ['Fassadenbeschriftung von Restaurant Pasternak vor der Erneuerung', 'Schablonenlackierung der Fassadenbeschriftung von Restaurant Pasternak während der Ausführung', 'Fertig lackierte Fassadenbeschriftung von Restaurant Pasternak'] },
   ],
   en: [
     { id: 'lightbox-facade', title: 'Facade LED lightbox', category: 'Lightbox', problem: 'Part of the light field stayed dark and the entrance looked neglected at night.', work: 'Power supply checked, damaged LED elements replaced, interior cleaned, brightness balanced.', result: 'The facade looks active and visible again after dark.', defaultText: 'Even lighting restored for stronger evening visibility.', beforeText: 'Vorher: dark areas and a visibly tired lightbox.' },
@@ -457,7 +511,7 @@ export const CASE_COPY: Record<Locale, Array<Omit<ReferenceCase, 'beforeImage' |
     { id: 'neon-contour', title: 'Neon contour light', category: 'Neon', problem: 'Sections flickered or switched off after warming up.', work: 'Unstable section isolated, contact restored, evening operation checked.', result: 'The warm contour line runs without visible gaps.', defaultText: 'Warm contour light without visible dropouts.', beforeText: 'Vorher: flicker and interrupted light line.' },
     { id: 'window-film', title: 'Storefront film', category: 'Films', problem: 'The film had faded and started lifting at the edges.', work: 'Old layer removed, substrate prepared, new branded surface applied.', result: 'The surface looks like a maintained part of the location again.', defaultText: 'Updated visible surface instead of a temporary look.', beforeText: 'Vorher: lifted edges and faded brand color.' },
     { id: 'branch-service', title: 'Multi-location service', category: 'Branch service', problem: 'Defects were spread across locations and not prioritized together.', work: 'Condition consolidated, urgent and planned work separated, report structured.', result: 'The team received a clear order for next steps.', defaultText: 'Several locations combined into one clear service view.', beforeText: 'Vorher: isolated issues without a shared overview.' },
-    { id: 'mounting-review', title: 'Mounting and safety check', category: 'Facade', problem: 'Mounting and service access had to be checked before restarting the system.', work: 'Visible fixing points, access, and damage checked; measures prepared.', result: 'The object condition was clear for further planning.', defaultText: 'Clear condition for repair, mounting, and maintenance.', beforeText: 'Vorher: uncertainty around fixing points and access.' },
+    { id: 'mounting-review', title: 'Facade lettering for Restaurant Pasternak', category: 'Facade lettering', problem: 'The existing lettering on the restaurant facade needed renewal within the established visual design.', work: 'The new lettering was prepared with a precise stencil and then painted directly onto the facade.', result: 'The lettering now looks clean and visually consistent again.', defaultText: 'Precise stencil painting for clear, consistent facade lettering.', beforeText: 'Before: existing facade lettering before renewal.', beforeAlt: 'Restaurant Pasternak facade lettering before renewal', afterAlt: 'Finished painted facade lettering at Restaurant Pasternak', galleryAlts: ['Restaurant Pasternak facade lettering before renewal', 'Stencil painting of Restaurant Pasternak facade lettering during the work', 'Finished painted facade lettering at Restaurant Pasternak'] },
   ],
   ru: [
     { id: 'lightbox-facade', title: 'LED-lightbox фасада', category: 'Световой короб', problem: 'Часть светового поля не горела, вход вечером выглядел заброшенным.', work: 'Проверили питание, заменили поврежденные LED-элементы, очистили внутреннюю поверхность и выровняли яркость.', result: 'Фасад снова выглядит активным и заметным вечером.', defaultText: 'Равномерная подсветка восстановлена для вечерней видимости.', beforeText: 'ДО: темные зоны и визуально уставший короб.' },
@@ -465,7 +519,7 @@ export const CASE_COPY: Record<Locale, Array<Omit<ReferenceCase, 'beforeImage' |
     { id: 'neon-contour', title: 'Неоновый контур', category: 'Неон', problem: 'Секции мерцали или отключались после прогрева.', work: 'Нашли нестабильный участок, восстановили контакт и проверили работу вечером.', result: 'Теплый контур снова работает без заметных провалов.', defaultText: 'Теплый контур без заметных разрывов.', beforeText: 'ДО: мерцание и разорванная линия света.' },
     { id: 'window-film', title: 'Витринная пленка', category: 'Пленки', problem: 'Пленка выгорела и начала отходить по краям.', work: 'Сняли старый слой, подготовили основание и нанесли новую брендированную поверхность.', result: 'Витрина снова выглядит как ухоженная часть действующей точки.', defaultText: 'Обновленная поверхность без ощущения временного ремонта.', beforeText: 'ДО: отходящие края и выцветший цвет бренда.' },
     { id: 'branch-service', title: 'Сервис нескольких точек', category: 'Сервис филиалов', problem: 'Дефекты были разбросаны по объектам и не имели общего приоритета.', work: 'Собрали состояние в один отчет, разделили срочные и плановые работы.', result: 'Команда получила понятный порядок следующих действий.', defaultText: 'Несколько объектов сведены в один понятный обзор.', beforeText: 'ДО: отдельные проблемы без общей картины.' },
-    { id: 'mounting-review', title: 'Проверка монтажа и безопасности', category: 'Фасад', problem: 'Крепления и доступ к сервису нужно было проверить перед повторным запуском.', work: 'Проверили видимые точки крепления, доступ и повреждения, подготовили меры.', result: 'Состояние объекта стало понятным для дальнейшего планирования.', defaultText: 'Понятное состояние для ремонта, монтажа и сервиса.', beforeText: 'ДО: неопределенность по креплениям и доступу.' },
+    { id: 'mounting-review', title: 'Фасадная надпись для ресторана Pasternak', category: 'Фасадная надпись', problem: 'Существующую надпись на фасаде ресторана нужно было обновить, сохранив её привычный визуальный образ.', work: 'Новую надпись подготовили с точным трафаретом, а затем нанесли краской непосредственно на фасад.', result: 'Надпись снова выглядит чисто и цельно.', defaultText: 'Точная окраска по трафарету для чёткой и единой фасадной надписи.', beforeText: 'До: исходная фасадная надпись перед обновлением.', beforeAlt: 'Фасадная надпись ресторана Pasternak до обновления', afterAlt: 'Готовая окрашенная фасадная надпись ресторана Pasternak', galleryAlts: ['Фасадная надпись ресторана Pasternak до обновления', 'Окраска по трафарету фасадной надписи ресторана Pasternak во время работ', 'Готовая окрашенная фасадная надпись ресторана Pasternak'] },
   ],
   tr: [
     { id: 'lightbox-facade', title: 'Cephe LED ışıklı kutu', category: 'Işıklı kutu', problem: 'Işık alanının bir bölümü karanlıktı ve giriş akşamları bakımsız görünüyordu.', work: 'Güç kaynağı kontrol edildi, hasarlı LED elemanları değiştirildi, iç yüzey temizlendi ve parlaklık dengelendi.', result: 'Cephe akşamları tekrar aktif ve görünür hale geldi.', defaultText: 'Akşam görünürlüğü için eşit aydınlatma geri geldi.', beforeText: 'Vorher: karanlık bölgeler ve yıpranmış görünen kutu.' },
@@ -473,7 +527,7 @@ export const CASE_COPY: Record<Locale, Array<Omit<ReferenceCase, 'beforeImage' |
     { id: 'neon-contour', title: 'Neon kontur ışığı', category: 'Neon', problem: 'Bazı bölümler titriyor veya ısındıktan sonra kapanıyordu.', work: 'Dengesiz bölüm bulundu, kontak onarıldı ve akşam çalışma modu kontrol edildi.', result: 'Sıcak kontur çizgisi görünür kesinti olmadan çalışıyor.', defaultText: 'Sıcak kontur ışığı görünür kesinti olmadan çalışıyor.', beforeText: 'Vorher: titreme ve kesintili ışık çizgisi.' },
     { id: 'window-film', title: 'Vitrin filmi', category: 'Filmler', problem: 'Film solmuştu ve kenarlardan kalkmaya başlamıştı.', work: 'Eski katman söküldü, zemin hazırlandı ve yeni markalı yüzey uygulandı.', result: 'Yüzey tekrar bakımlı bir lokasyon parçası gibi görünüyor.', defaultText: 'Geçici görünüm yerine yenilenmiş vitrin yüzeyi.', beforeText: 'Vorher: kalkmış kenarlar ve solmuş marka rengi.' },
     { id: 'branch-service', title: 'Çok lokasyonlu servis', category: 'Şube servisi', problem: 'Kusurlar lokasyonlara dağılmıştı ve birlikte önceliklendirilmiyordu.', work: 'Durum tek raporda toplandı, acil ve planlı işler ayrıldı.', result: 'Ekip sonraki adımlar için net bir sıra aldı.', defaultText: 'Birden fazla lokasyon tek servis görünümünde toplandı.', beforeText: 'Vorher: ortak görünümü olmayan ayrı sorunlar.' },
-    { id: 'mounting-review', title: 'Montaj ve güvenlik kontrolü', category: 'Cephe', problem: 'Sistemi yeniden başlatmadan önce montaj ve servis erişimi kontrol edilmeliydi.', work: 'Görünen bağlantı noktaları, erişim ve hasarlar kontrol edilip önlemler hazırlandı.', result: 'Nesnenin durumu sonraki planlama için netleşti.', defaultText: 'Onarım, montaj ve bakım için net durum.', beforeText: 'Vorher: bağlantı noktaları ve erişim konusunda belirsizlik.' },
+    { id: 'mounting-review', title: 'Restaurant Pasternak için cephe yazısı', category: 'Cephe yazısı', problem: 'Restoran cephesindeki mevcut yazının, yerleşik görsel kimlik korunarak yenilenmesi gerekiyordu.', work: 'Yeni yazı hassas bir şablonla hazırlandı ve ardından doğrudan cepheye boyandı.', result: 'Yazı yeniden temiz ve bütünlüklü görünüyor.', defaultText: 'Net ve tutarlı cephe yazısı için hassas şablon boyaması.', beforeText: 'Önce: yenileme öncesi mevcut cephe yazısı.', beforeAlt: 'Restaurant Pasternak cephe yazısı yenileme öncesinde', afterAlt: 'Restaurant Pasternak için tamamlanmış boyalı cephe yazısı', galleryAlts: ['Restaurant Pasternak cephe yazısı yenileme öncesinde', 'Restaurant Pasternak cephe yazısının çalışma sırasında şablonla boyanması', 'Restaurant Pasternak için tamamlanmış boyalı cephe yazısı'] },
   ],
   pl: [
     { id: 'lightbox-facade', title: 'Kaseton LED na fasadzie', category: 'Kaseton', problem: 'Część pola świetlnego była ciemna, a wejście wieczorem wyglądało na zaniedbane.', work: 'Sprawdzono zasilanie, wymieniono uszkodzone elementy LED, oczyszczono wnętrze i wyrównano jasność.', result: 'Fasada znów wygląda aktywnie i jest dobrze widoczna po zmroku.', defaultText: 'Równe światło przywrócone dla lepszej widoczności wieczorem.', beforeText: 'Vorher: ciemne obszary i wyraźnie zużyty kaseton.' },
@@ -481,7 +535,7 @@ export const CASE_COPY: Record<Locale, Array<Omit<ReferenceCase, 'beforeImage' |
     { id: 'neon-contour', title: 'Kontur neonowy', category: 'Neon', problem: 'Części konturu migały lub wyłączały się po nagrzaniu.', work: 'Zlokalizowano niestabilny odcinek, przywrócono kontakt i sprawdzono pracę wieczorem.', result: 'Ciepła linia konturu działa bez widocznych przerw.', defaultText: 'Ciepła linia neonowa bez widocznych przerw.', beforeText: 'Vorher: migotanie i przerwana linia światła.' },
     { id: 'window-film', title: 'Folia witrynowa', category: 'Folie', problem: 'Folia wyblakła i zaczęła odchodzić na krawędziach.', work: 'Usunięto starą warstwę, przygotowano podłoże i nałożono nową powierzchnię brandową.', result: 'Witryna znów wygląda jak zadbana część działającego punktu.', defaultText: 'Odnowiona powierzchnia zamiast tymczasowego wyglądu.', beforeText: 'Vorher: odchodzące krawędzie i wyblakły kolor marki.' },
     { id: 'branch-service', title: 'Serwis wielu lokalizacji', category: 'Serwis sieci', problem: 'Usterki były rozproszone i nie miały wspólnego priorytetu.', work: 'Zebrano stan w jednym raporcie, oddzielono prace pilne od planowych.', result: 'Zespół otrzymał jasną kolejność następnych działań.', defaultText: 'Kilka lokalizacji połączonych w jeden obraz serwisowy.', beforeText: 'Vorher: osobne problemy bez wspólnego przeglądu.' },
-    { id: 'mounting-review', title: 'Kontrola montażu i bezpieczeństwa', category: 'Fasada', problem: 'Mocowanie i dostęp serwisowy wymagały kontroli przed ponownym uruchomieniem.', work: 'Sprawdzono widoczne punkty mocowania, dostęp i uszkodzenia oraz przygotowano działania.', result: 'Stan obiektu był jasny dla dalszego planowania.', defaultText: 'Jasny stan dla naprawy, montażu i serwisu.', beforeText: 'Vorher: niepewność wokół mocowań i dostępu.' },
+    { id: 'mounting-review', title: 'Napis na fasadzie restauracji Pasternak', category: 'Napis na fasadzie', problem: 'Istniejący napis na fasadzie restauracji wymagał odnowienia z zachowaniem dotychczasowego wyglądu.', work: 'Nowy napis przygotowano przy użyciu precyzyjnego szablonu, a następnie pomalowano bezpośrednio na fasadzie.', result: 'Napis ponownie wygląda czysto i spójnie.', defaultText: 'Precyzyjne malowanie szablonowe dla czytelnego, spójnego napisu na fasadzie.', beforeText: 'Przed: istniejący napis na fasadzie przed odnowieniem.', beforeAlt: 'Napis na fasadzie restauracji Pasternak przed odnowieniem', afterAlt: 'Gotowy malowany napis na fasadzie restauracji Pasternak', galleryAlts: ['Napis na fasadzie restauracji Pasternak przed odnowieniem', 'Malowanie szablonowe napisu na fasadzie restauracji Pasternak podczas prac', 'Gotowy malowany napis na fasadzie restauracji Pasternak'] },
   ],
   ar: [
     { id: 'lightbox-facade', title: 'صندوق LED مضيء على الواجهة', category: 'صندوق مضيء', problem: 'بقي جزء من مساحة الإضاءة مطفأً وكان المدخل يبدو مهملاً في المساء.', work: 'تم فحص التغذية، تبديل عناصر LED المتضررة، تنظيف الداخل، وتوحيد السطوع.', result: 'أصبحت الواجهة نشطة وواضحة مرة أخرى في المساء.', defaultText: 'إضاءة متساوية عادت لتحسين الرؤية المسائية.', beforeText: 'Vorher: مناطق مظلمة وصندوق يبدو قديماً.' },
@@ -489,7 +543,7 @@ export const CASE_COPY: Record<Locale, Array<Omit<ReferenceCase, 'beforeImage' |
     { id: 'neon-contour', title: 'إضاءة نيون محيطية', category: 'نيون', problem: 'كانت بعض المقاطع تومض أو تنطفئ بعد التسخين.', work: 'تم تحديد المقطع غير المستقر، إصلاح التلامس، وفحص التشغيل المسائي.', result: 'عاد خط النيون الدافئ دون انقطاعات ظاهرة.', defaultText: 'خط ضوء دافئ دون انقطاعات واضحة.', beforeText: 'Vorher: وميض وخط ضوئي متقطع.' },
     { id: 'window-film', title: 'فيلم واجهة متجر', category: 'أفلام', problem: 'بهت الفيلم وبدأ ينفصل عند الحواف.', work: 'أزيلت الطبقة القديمة، تم تحضير السطح، وتطبيق سطح جديد مطابق للهوية.', result: 'عادت الواجهة لتبدو كجزء مصان من الموقع.', defaultText: 'سطح مرئي محدث بدلاً من مظهر مؤقت.', beforeText: 'Vorher: حواف منفصلة ولون علامة باهت.' },
     { id: 'branch-service', title: 'خدمة عدة مواقع', category: 'خدمة الفروع', problem: 'كانت العيوب موزعة على المواقع ولم يتم ترتيبها ضمن أولوية واحدة.', work: 'تم جمع الحالة في تقرير واحد وفصل الأعمال العاجلة عن المخططة.', result: 'حصل الفريق على ترتيب واضح للخطوات التالية.', defaultText: 'عدة مواقع ضمن صورة خدمة واحدة واضحة.', beforeText: 'Vorher: مشاكل منفصلة بلا نظرة عامة مشتركة.' },
-    { id: 'mounting-review', title: 'فحص التثبيت والسلامة', category: 'واجهة', problem: 'كان يجب فحص التثبيت والوصول للصيانة قبل إعادة التشغيل.', work: 'تم فحص نقاط التثبيت الظاهرة والوصول والأضرار وتحضير الإجراءات.', result: 'أصبحت حالة العنصر واضحة للتخطيط اللاحق.', defaultText: 'حالة واضحة للإصلاح والتثبيت والصيانة.', beforeText: 'Vorher: عدم وضوح حول نقاط التثبيت والوصول.' },
+    { id: 'mounting-review', title: 'كتابة الواجهة لمطعم Pasternak', category: 'كتابة الواجهة', problem: 'احتاجت الكتابة القائمة على واجهة المطعم إلى تجديد مع الحفاظ على طابعها البصري المعتاد.', work: 'جُهزت الكتابة الجديدة بقالب دقيق ثم طُليت مباشرة على الواجهة.', result: 'أصبحت الكتابة تبدو نظيفة ومتناسقة من جديد.', defaultText: 'طلاء دقيق بالقالب لكتابة واجهة واضحة ومتناسقة.', beforeText: 'قبل: كتابة الواجهة القائمة قبل التجديد.', beforeAlt: 'كتابة واجهة مطعم Pasternak قبل التجديد', afterAlt: 'كتابة واجهة مطعم Pasternak النهائية بعد الطلاء', galleryAlts: ['كتابة واجهة مطعم Pasternak قبل التجديد', 'طلاء كتابة واجهة مطعم Pasternak بالقالب أثناء التنفيذ', 'كتابة واجهة مطعم Pasternak النهائية بعد الطلاء'] },
   ],
 };
 
@@ -511,6 +565,7 @@ function getContent(locale: string): ReferencesContent & { metaTitle: string; me
     { id: 'g-mounting', title: cases[5].title, category: cases[5].category, image: IMAGE_SET.mounting, description: cases[5].result },
     { id: 'g-before', title: text.modalBeforeLabel, category: 'Before', image: IMAGE_SET.beforeGeneral, description: cases[0].problem },
     { id: 'g-process', title: text.modalWorkLabel, category: 'Service', image: IMAGE_SET.process, description: cases[2].work },
+    { id: 'g-filial-maintenance-wide', title: cases[4].title, category: cases[4].category, image: IMAGE_SET.maintenance, description: cases[4].result },
     { id: 'g-led-detail', title: cases[1].title, category: cases[1].category, image: IMAGE_SET.generatedLedDetail, description: cases[1].work },
     { id: 'g-lightbox-lift', title: cases[0].title, category: cases[0].category, image: IMAGE_SET.generatedLightboxLift, description: cases[0].work },
     { id: 'g-neon-bench', title: cases[2].title, category: cases[2].category, image: IMAGE_SET.generatedNeonBench, description: cases[2].work },
@@ -521,49 +576,23 @@ function getContent(locale: string): ReferencesContent & { metaTitle: string; me
     { id: 'g-circuit-repair', title: text.modalWorkLabel, category: 'Service', image: IMAGE_SET.generatedCircuitRepair, description: cases[0].work },
   ];
 
-  const productCategories = [
-    { id: 'led', title: text.heroTags[0], text: cases[1].defaultText, image: cases[1].afterImage, imageAlt: cases[1].afterAlt, filter: cases[1].category },
-    { id: 'lightbox', title: text.heroTags[1], text: cases[0].defaultText, image: IMAGE_SET.lightbox, filter: cases[0].category },
-    { id: 'neon', title: text.heroTags[2], text: cases[2].defaultText, image: IMAGE_SET.neon, filter: cases[2].category },
-    { id: 'films', title: text.heroTags[3], text: cases[3].defaultText, image: IMAGE_SET.film, filter: cases[3].category },
-    { id: 'facade', title: text.heroTags[4], text: cases[5].defaultText, image: IMAGE_SET.mounting, filter: cases[5].category },
-    { id: 'service', title: text.heroTags[5], text: cases[4].defaultText, image: IMAGE_SET.business, filter: cases[4].category },
-  ];
-
   return {
     locale: safeLocale,
+    gallerySectionTitle: GALLERY_SECTION_TITLES[safeLocale],
+    finalEyebrow: FINAL_CTA_EYEBROWS[safeLocale],
     ...text,
+    reportImage: REPORT_IMAGE_SRC,
+    reportImageAlt: REPORT_IMAGE_ALTS[safeLocale],
     cases,
     galleryItems,
-    productCategories,
   };
 }
 
-const LEGACY_RECENT_TITLES = new Set([
-  'Vorher sichtbar. Danach wieder betriebsbereit.',
-  'Before it was visible. After it was operational again.',
-  'До было заметно. После снова работает.',
-  'Önce sorun görünüyordu. Sonra tekrar çalışır hale geldi.',
-  'Przedtem problem był widoczny. Potem obiekt znów działał.',
-  'كان الخلل واضحاً. ثم عاد العنصر للعمل.',
-]);
-
-const LEGACY_RECENT_INTROS = new Set([
-  'Die Karten bewegen sich horizontal. Im Fokus oder Hover sehen Sie den problemorientierten Vorher-Zustand; ein Klick oeffnet den kompakten Reparaturbericht.',
-  'The cards move horizontally. Hover or focus shows the problem-oriented before state; click opens a compact repair report.',
-  'Карточки двигаются горизонтально. При наведении показывается исходное состояние, по клику открывается краткий ремонтный отчет.',
-  'Kartlar yatay hareket eder. Hover veya focus problem odaklı önceki durumu gösterir; tıklama kısa raporu açar.',
-  'Karty przesuwają się poziomo. Hover lub focus pokazuje stan przed naprawą; kliknięcie otwiera krótki raport.',
-  'تتحرك البطاقات أفقياً. عند التركيز أو التحويم تظهر حالة ما قبل الإصلاح؛ النقر يفتح تقريراً مختصراً.',
-]);
-
-function ignoreLegacyRecentText(value: string | undefined, legacyValues: Set<string>) {
-  return value && !legacyValues.has(value) ? value : undefined;
-}
-
-function buildReferencesPageJsonLd(content: ReferencesContent & { metaTitle: string; metaDescription: string }): JsonLdObject {
-  const canonicalUrl = buildLocaleUrl(content.locale, REFERENCES_PAGE_PATH);
-
+function buildReferencesPageJsonLd(
+  content: ReferencesContent & { metaTitle: string; metaDescription: string },
+  canonicalUrl: string,
+  primaryImage: string | null
+): JsonLdObject {
   return {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
@@ -584,152 +613,334 @@ function buildReferencesPageJsonLd(content: ReferencesContent & { metaTitle: str
       name: 'PixelRing Reparatur',
       url: buildSiteUrl('/'),
     },
-    primaryImageOfPage: {
-      '@type': 'ImageObject',
-      url: buildSiteUrl(REFERENCES_OG_IMAGE),
-    },
-    mainEntity: {
-      '@type': 'ItemList',
-      name: content.categoriesTitle,
-      itemListElement: content.productCategories.map((category, index) => ({
-        '@type': 'ListItem',
-        position: index + 1,
-        item: {
-          '@type': 'CreativeWork',
-          name: category.title,
-          description: category.text,
-          image: buildSiteUrl(category.image),
-        },
-      })),
-    },
+    ...(primaryImage
+      ? {
+          primaryImageOfPage: {
+            '@type': 'ImageObject',
+            url: buildSiteUrl(primaryImage),
+          },
+        }
+      : {}),
   };
+}
+
+type ReferencesPageSource =
+  | { kind: 'cms'; page: CmsPagePublicContent; preview: boolean }
+  | { kind: 'fallback'; page: null; preview: false }
+  | { kind: 'blocked'; page: null; preview: false };
+
+const getReferencesPreviewPage = cache((locale: string) =>
+  getDraftCapableCmsPage('referenzen', locale)
+);
+
+async function resolveReferencesPageSource(
+  locale: string,
+  previewRequested: boolean
+): Promise<ReferencesPageSource> {
+  if (previewRequested && (await hasOwnerCmsSession())) {
+    const previewPage = await getReferencesPreviewPage(locale);
+    return previewPage
+      ? { kind: 'cms', page: previewPage, preview: true }
+      : { kind: 'blocked', page: null, preview: false };
+  }
+
+  const state = await getReferencesPublicationState(locale);
+  if (state.kind === 'published') {
+    return { kind: 'cms', page: state.page, preview: false };
+  }
+
+  if (state.kind === 'missing' || state.kind === 'unavailable') {
+    return { kind: 'fallback', page: null, preview: false };
+  }
+
+  return { kind: 'blocked', page: null, preview: false };
+}
+
+function getItemText(item: Record<string, unknown>, field: string): string {
+  const value = item[field];
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function getCmsText(block: CmsPageBlock | null, field: string): string {
+  return block ? getBlockText(block, field) ?? '' : '';
+}
+
+function getCmsTextWithLegacyFallback(
+  block: CmsPageBlock | null,
+  field: string,
+  fallback: string
+): string {
+  if (!block || Object.prototype.hasOwnProperty.call(block, field)) {
+    return getCmsText(block, field);
+  }
+
+  return fallback;
+}
+
+function getCmsItems(block: CmsPageBlock | null): Record<string, unknown>[] {
+  return block ? getBlockObjectList(block, 'items') ?? [] : [];
+}
+
+function mapReferenceCases(items: Record<string, unknown>[]): ReferenceCase[] {
+  return items
+    .map((item, index) => {
+      const galleryPairs = [1, 2, 3].flatMap((slot) => {
+        const image = getItemText(item, `galleryImage${slot}`);
+        if (!image) return [];
+
+        return [
+          {
+            image,
+            alt: getItemText(item, `galleryAlt${slot}`),
+          },
+        ];
+      });
+
+      return {
+        id: getItemText(item, 'id') || `reference-${index + 1}`,
+        title: getItemText(item, 'title'),
+        category: getItemText(item, 'category'),
+        problem: getItemText(item, 'problem'),
+        work: getItemText(item, 'work'),
+        result: getItemText(item, 'result'),
+        beforeImage: getItemText(item, 'beforeImage'),
+        afterImage: getItemText(item, 'afterImage'),
+        beforeAlt: getItemText(item, 'beforeAlt'),
+        afterAlt: getItemText(item, 'afterAlt'),
+        defaultText: getItemText(item, 'defaultText'),
+        beforeText: getItemText(item, 'beforeText'),
+        gallery: galleryPairs.map((pair) => pair.image),
+        galleryAlts: galleryPairs.map((pair) => pair.alt),
+      };
+    })
+    .filter(
+      (item) =>
+        item.title &&
+        item.category &&
+        item.beforeImage &&
+        item.afterImage
+    );
+}
+
+function mapReportHooks(items: Record<string, unknown>[]): ReportHook[] {
+  return items
+    .map((item, index) => ({
+      id: getItemText(item, 'id') || `report-hook-${index + 1}`,
+      title: getItemText(item, 'title'),
+      text: getItemText(item, 'text'),
+    }))
+    .filter((item) => item.title && item.text);
+}
+
+function mapReportRows(items: Record<string, unknown>[]): ReportRow[] {
+  return items
+    .map((item, index) => ({
+      id: getItemText(item, 'id') || `report-${index + 1}`,
+      type: getItemText(item, 'type'),
+      issue: getItemText(item, 'issue'),
+      outcome: getItemText(item, 'outcome'),
+    }))
+    .filter((item) => item.type && item.issue && item.outcome);
+}
+
+function mapGalleryItems(items: Record<string, unknown>[]): GalleryItem[] {
+  return items
+    .map((item, index) => ({
+      id: getItemText(item, 'id') || `gallery-${index + 1}`,
+      title: getItemText(item, 'title'),
+      category: getItemText(item, 'category'),
+      image: getItemText(item, 'image'),
+      imageAlt: getItemText(item, 'imageAlt'),
+      description: getItemText(item, 'description'),
+    }))
+    .filter((item) => item.title && item.category && item.image);
+}
+
+function buildCmsReferencesContent(
+  staticContent: ReferencesContent & { metaTitle: string; metaDescription: string },
+  page: CmsPagePublicContent
+): ReferencesContent & { metaTitle: string; metaDescription: string } {
+  const heroBlock = getEnabledBlock(page, 'hero', ['heroBlock', 'hero']);
+  const recentIntroBlock = getEnabledBlock(page, 'textSection', ['recentIntroBlock']);
+  const casesBlock = getEnabledBlock(page, 'cardList', ['casesBlock', 'cases']);
+  const reportIntroBlock = getEnabledBlock(page, 'textSection', ['reportIntroBlock']);
+  const reportHooksBlock = getEnabledBlock(page, 'cardList', ['reportHooksBlock']);
+  const reportsBlock = getEnabledBlock(page, 'cardList', ['reportsBlock']);
+  const galleryIntroBlock = getEnabledBlock(page, 'textSection', ['galleryIntroBlock']);
+  const galleryItemsBlock = getEnabledBlock(page, 'cardList', ['galleryItemsBlock']);
+  const promoBlock = getEnabledBlock(page, 'cta', ['promoBlock']);
+  const typeBandLinesBlock = getEnabledBlock(page, 'cardList', ['typeBandLinesBlock']);
+  const finalCtaBlock = getEnabledBlock(page, 'cta', ['finalCtaBlock']);
+  const labelsBlock = getEnabledBlock(page, 'labels', ['labelsBlock']);
+  const blockVisibility: ReferencesBlockVisibility = {
+    hero: Boolean(heroBlock),
+    recentIntro: Boolean(recentIntroBlock),
+    cases: Boolean(casesBlock),
+    reportIntro: Boolean(reportIntroBlock),
+    reportHooks: Boolean(reportHooksBlock),
+    reports: Boolean(reportsBlock),
+    galleryIntro: Boolean(galleryIntroBlock),
+    galleryItems: Boolean(galleryItemsBlock),
+    promo: Boolean(promoBlock),
+    typeBand: Boolean(typeBandLinesBlock),
+    finalCta: Boolean(finalCtaBlock),
+  };
+
+  const heroTags = getCmsText(heroBlock, 'tags')
+    .split('|||')
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+  const heroSlides = [1, 2, 3, 4, 5]
+    .map((slot) => getCmsText(heroBlock, `heroImage${slot}`))
+    .filter(Boolean);
+  const cmsMetaTitle = page.seoTitle?.trim() || page.title.trim();
+  const cmsMetaDescription =
+    page.seoDescription?.trim() ||
+    getCmsText(heroBlock, 'intro') ||
+    getCmsText(recentIntroBlock, 'description') ||
+    page.title.trim();
+
+  return {
+    locale: staticContent.locale,
+    metaTitle: cmsMetaTitle,
+    metaDescription: cmsMetaDescription,
+    badge: getCmsText(heroBlock, 'badge'),
+    heroTitle: getCmsText(heroBlock, 'title'),
+    heroIntro: getCmsText(heroBlock, 'intro'),
+    heroPrimaryCta: getCmsText(heroBlock, 'ctaPrimary'),
+    heroSecondaryCta: getCmsText(heroBlock, 'ctaSecondary'),
+    heroTags,
+    heroNoteTitle: getCmsText(heroBlock, 'subtitle'),
+    heroNoteText: getCmsText(heroBlock, 'description'),
+    recentEyebrow: getCmsText(recentIntroBlock, 'pretitle'),
+    recentTitle: getCmsText(recentIntroBlock, 'title'),
+    recentIntro: getCmsText(recentIntroBlock, 'description'),
+    reportTitle: getCmsText(reportIntroBlock, 'title'),
+    reportIntro: getCmsText(reportIntroBlock, 'description'),
+    reportImage: getCmsTextWithLegacyFallback(
+      reportIntroBlock,
+      'image',
+      staticContent.reportImage
+    ),
+    reportImageAlt: getCmsTextWithLegacyFallback(
+      reportIntroBlock,
+      'imageAlt',
+      staticContent.reportImageAlt
+    ),
+    reportHooks: mapReportHooks(getCmsItems(reportHooksBlock)),
+    reports: mapReportRows(getCmsItems(reportsBlock)),
+    galleryEyebrow: getCmsText(galleryIntroBlock, 'pretitle'),
+    gallerySectionTitle: getCmsText(galleryIntroBlock, 'sectionTitle'),
+    galleryTitle: getCmsText(galleryIntroBlock, 'title'),
+    galleryIntro: getCmsText(galleryIntroBlock, 'description'),
+    galleryItems: mapGalleryItems(getCmsItems(galleryItemsBlock)),
+    galleryPromoEyebrow: getCmsText(promoBlock, 'badge'),
+    galleryPromoTitle: getCmsText(promoBlock, 'title'),
+    galleryPromoText: getCmsText(promoBlock, 'description'),
+    galleryPromoCta: getCmsText(promoBlock, 'primaryLabel'),
+    galleryPromoHref: getCmsText(promoBlock, 'requestHref'),
+    typeBandLines: getCmsItems(typeBandLinesBlock)
+      .map((item) => getItemText(item, 'text'))
+      .filter(Boolean),
+    finalEyebrow: getCmsText(finalCtaBlock, 'badge'),
+    finalTitle: getCmsText(finalCtaBlock, 'title'),
+    finalText: getCmsText(finalCtaBlock, 'description'),
+    finalCta: getCmsText(finalCtaBlock, 'primaryLabel'),
+    modalProblemLabel: getCmsText(labelsBlock, 'modalProblemLabel'),
+    modalWorkLabel: getCmsText(labelsBlock, 'modalWorkLabel'),
+    modalResultLabel: getCmsText(labelsBlock, 'modalResultLabel'),
+    modalBeforeLabel: getCmsText(labelsBlock, 'modalBeforeLabel'),
+    modalCta: getCmsText(labelsBlock, 'modalCta'),
+    viewerAllLabel: getCmsText(labelsBlock, 'viewerAllLabel'),
+    viewerCloseLabel: getCmsText(labelsBlock, 'viewerCloseLabel'),
+    cases: mapReferenceCases(getCmsItems(casesBlock)),
+    heroSlides,
+    blockVisibility,
+  };
+}
+
+function getReferencesPrimaryImage(content: ReferencesContent): string | null {
+  if (content.blockVisibility?.hero !== false && content.heroSlides?.[0]) {
+    return content.heroSlides[0];
+  }
+
+  if (content.blockVisibility?.galleryItems !== false && content.galleryItems[0]?.image) {
+    return content.galleryItems[0].image;
+  }
+
+  if (content.blockVisibility?.reportIntro !== false && content.reportImage) {
+    return content.reportImage;
+  }
+
+  if (content.blockVisibility?.cases !== false && content.cases[0]?.afterImage) {
+    return content.cases[0].afterImage;
+  }
+
+  return null;
 }
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ cmsPreview?: string | string[] }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const page = await getPublishedCmsPage('referenzen', locale);
+  const query = await searchParams;
+  const source = await resolveReferencesPageSource(locale, isCmsPreview(query.cmsPreview));
   const staticContent = getContent(locale);
-  const title = page?.seoTitle || staticContent.metaTitle;
-  const description = page?.seoDescription || staticContent.metaDescription;
+  const page = source.kind === 'cms' ? source.page : null;
+  const content = page ? buildCmsReferencesContent(staticContent, page) : staticContent;
+  const title = content.metaTitle;
+  const description = content.metaDescription;
+  const image = page ? getReferencesPrimaryImage(content) ?? undefined : REFERENCES_OG_IMAGE;
 
-  return buildPublicPageMetadata({
+  const metadata = buildPublicPageMetadata({
     locale,
     path: REFERENCES_PAGE_PATH,
+    canonicalUrl: page?.canonicalUrl,
     title,
     description,
-    image: REFERENCES_OG_IMAGE,
-    imageAlt: staticContent.heroTitle,
+    image,
+    imageAlt: content.heroTitle || title,
   });
+
+  if (source.kind === 'cms' && source.preview) {
+    metadata.robots = { index: false, follow: false };
+  }
+
+  if (source.kind === 'blocked') {
+    metadata.robots = { index: false, follow: false };
+  }
+
+  return metadata;
 }
 
 export default async function ReferenzenPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ cmsPreview?: string | string[] }>;
 }) {
   const { locale } = await params;
-  const globalCms = await getGlobalPageCmsContent(locale);
-  const page = await getPublishedCmsPage('referenzen', locale);
+  const query = await searchParams;
+  const source = await resolveReferencesPageSource(locale, isCmsPreview(query.cmsPreview));
 
-  // Fallback to static content if CMS page is not found
-  const staticContent = getContent(locale);
-
-  let content = staticContent;
-
-  if (page) {
-    const heroBlock = getBlock(page, 'hero', ['heroBlock', 'hero']);
-    const recentIntroBlock = getBlock(page, 'textSection', ['recentIntroBlock']);
-    const casesBlock = getBlock(page, 'cardList', ['casesBlock', 'cases']);
-    const reportIntroBlock = getBlock(page, 'textSection', ['reportIntroBlock']);
-    const reportHooksBlock = getBlock(page, 'cardList', ['reportHooksBlock']);
-    const reportsBlock = getBlock(page, 'cardList', ['reportsBlock']);
-    const galleryIntroBlock = getBlock(page, 'textSection', ['galleryIntroBlock']);
-    const galleryItemsBlock = getBlock(page, 'cardList', ['galleryItemsBlock']);
-    const promoBlock = getBlock(page, 'cta', ['promoBlock']);
-    const categoriesIntroBlock = getBlock(page, 'textSection', ['categoriesIntroBlock']);
-    const productCategoriesBlock = getBlock(page, 'cardList', ['productCategoriesBlock']);
-    const typeBandLinesBlock = getBlock(page, 'cardList', ['typeBandLinesBlock']);
-    const finalCtaBlock = getBlock(page, 'cta', ['finalCtaBlock']);
-    const labelsBlock = getBlock(page, 'labels', ['labelsBlock']);
-
-    const safeText = (block: CmsPageBlock | null, field: string) => block ? getBlockText(block, field) : undefined;
-    const safeList = (block: CmsPageBlock | null, field: string) => block ? getBlockObjectList(block, field) : undefined;
-
-    content = {
-      ...staticContent,
-      metaTitle: page.seoTitle || staticContent.metaTitle,
-      metaDescription: page.seoDescription || staticContent.metaDescription,
-
-      badge: safeText(heroBlock, 'badge') || staticContent.badge,
-      heroTitle: safeText(heroBlock, 'title') || staticContent.heroTitle,
-      heroIntro: safeText(heroBlock, 'intro') || staticContent.heroIntro,
-      heroPrimaryCta: safeText(heroBlock, 'ctaPrimary') || staticContent.heroPrimaryCta,
-      heroSecondaryCta: safeText(heroBlock, 'ctaSecondary') || staticContent.heroSecondaryCta,
-      heroTags: safeText(heroBlock, 'tags')?.split('|||') || staticContent.heroTags,
-      heroNoteTitle: safeText(heroBlock, 'subtitle') || staticContent.heroNoteTitle,
-      heroNoteText: safeText(heroBlock, 'description') || staticContent.heroNoteText,
-
-      recentEyebrow: safeText(recentIntroBlock, 'pretitle') || staticContent.recentEyebrow,
-      recentTitle: ignoreLegacyRecentText(safeText(recentIntroBlock, 'title'), LEGACY_RECENT_TITLES) || staticContent.recentTitle,
-      recentIntro: ignoreLegacyRecentText(safeText(recentIntroBlock, 'description'), LEGACY_RECENT_INTROS) || staticContent.recentIntro,
-
-      reportTitle: safeText(reportIntroBlock, 'title') || staticContent.reportTitle,
-      reportIntro: safeText(reportIntroBlock, 'description') || staticContent.reportIntro,
-      reportHooks: (safeList(reportHooksBlock, 'items')?.map((item, i) => ({ id: item.id || `report-hook-${i}`, ...item })) as ReportHook[] | undefined) || staticContent.reportHooks,
-      reports: (safeList(reportsBlock, 'items')?.map((item, i) => ({ id: item.id || `report-${i}`, ...item })) as ReportRow[] | undefined) || staticContent.reports,
-
-      galleryEyebrow: safeText(galleryIntroBlock, 'pretitle') || staticContent.galleryEyebrow,
-      galleryTitle: safeText(galleryIntroBlock, 'title') || staticContent.galleryTitle,
-      galleryIntro: safeText(galleryIntroBlock, 'description') || staticContent.galleryIntro,
-      galleryItems: (safeList(galleryItemsBlock, 'items')?.map((item, i) => ({ id: item.id || `gallery-${i}`, ...item })) as GalleryItem[] | undefined) || staticContent.galleryItems,
-
-      galleryPromoEyebrow: safeText(promoBlock, 'badge') || staticContent.galleryPromoEyebrow,
-      galleryPromoTitle: safeText(promoBlock, 'title') || staticContent.galleryPromoTitle,
-      galleryPromoText: safeText(promoBlock, 'description') || staticContent.galleryPromoText,
-      galleryPromoCta: safeText(promoBlock, 'primaryLabel') || staticContent.galleryPromoCta,
-      galleryPromoHref: safeText(promoBlock, 'requestHref') || staticContent.galleryPromoHref,
-
-      categoriesTitle: safeText(categoriesIntroBlock, 'title') || staticContent.categoriesTitle,
-      categoriesIntro: safeText(categoriesIntroBlock, 'description') || staticContent.categoriesIntro,
-      productCategories: (safeList(productCategoriesBlock, 'items')?.map((item, i) => ({ id: item.id || `category-${i}`, ...item })) as CategoryItem[] | undefined) || staticContent.productCategories,
-
-      typeBandLines: safeList(typeBandLinesBlock, 'items')?.map(i => i.text as string) || staticContent.typeBandLines,
-
-      finalTitle: safeText(finalCtaBlock, 'title') || staticContent.finalTitle,
-      finalText: safeText(finalCtaBlock, 'description') || staticContent.finalText,
-      finalCta: safeText(finalCtaBlock, 'primaryLabel') || staticContent.finalCta,
-
-      modalProblemLabel: safeText(labelsBlock, 'modalProblemLabel') || staticContent.modalProblemLabel,
-      modalWorkLabel: safeText(labelsBlock, 'modalWorkLabel') || staticContent.modalWorkLabel,
-      modalResultLabel: safeText(labelsBlock, 'modalResultLabel') || staticContent.modalResultLabel,
-      modalBeforeLabel: safeText(labelsBlock, 'modalBeforeLabel') || staticContent.modalBeforeLabel,
-      modalCta: safeText(labelsBlock, 'modalCta') || staticContent.modalCta,
-      viewerAllLabel: safeText(labelsBlock, 'viewerAllLabel') || staticContent.viewerAllLabel,
-      viewerCloseLabel: safeText(labelsBlock, 'viewerCloseLabel') || staticContent.viewerCloseLabel,
-
-      heroSlides: [
-        safeText(heroBlock, 'heroImage1'),
-        safeText(heroBlock, 'heroImage2'),
-        safeText(heroBlock, 'heroImage3'),
-        safeText(heroBlock, 'heroImage4'),
-        safeText(heroBlock, 'heroImage5'),
-      ].filter(Boolean) as string[],
-    };
-
-    const cmsCases = safeList(casesBlock, 'items');
-    if (cmsCases) {
-      content.cases = cmsCases.map((item) => ({
-        ...item,
-        gallery: [item.galleryImage1, item.galleryImage2, item.galleryImage3].filter(Boolean),
-        galleryAlts: [item.galleryAlt1, item.galleryAlt2, item.galleryAlt3].filter(Boolean)
-      })) as ReferenceCase[];
-    }
+  if (source.kind === 'blocked') {
+    notFound();
   }
-  const jsonLd = buildReferencesPageJsonLd(content);
+
+  const globalCms = await getGlobalPageCmsContent(locale);
+  const staticContent = getContent(locale);
+  const page = source.kind === 'cms' ? source.page : null;
+  const content = page ? buildCmsReferencesContent(staticContent, page) : staticContent;
+  const canonicalUrl = page?.canonicalUrl
+    ? buildSiteUrl(page.canonicalUrl)
+    : buildLocaleUrl(content.locale, REFERENCES_PAGE_PATH);
+  const primaryImage = page ? getReferencesPrimaryImage(content) : REFERENCES_OG_IMAGE;
+  const jsonLd = buildReferencesPageJsonLd(content, canonicalUrl, primaryImage);
 
   return (
     <div className={`min-h-screen bg-white ${content.locale === 'ar' ? 'rtl' : 'ltr'}`} dir={content.locale === 'ar' ? 'rtl' : 'ltr'}>

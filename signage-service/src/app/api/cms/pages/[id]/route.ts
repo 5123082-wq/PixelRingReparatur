@@ -323,6 +323,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     ) as CmsPageKey;
     const nextLocale =
       typeof updates.locale === 'string' ? updates.locale : current.locale;
+    const nextStatus = (
+      typeof updates.status === 'string' ? updates.status : current.status
+    ) as CmsPageStatus;
 
     const blocksForValidation = Array.isArray(updates.blocks)
       ? updates.blocks
@@ -345,7 +348,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
           typeof updates.canonicalUrl === 'string' || updates.canonicalUrl === null
             ? updates.canonicalUrl as string | null
             : current.canonicalUrl,
-        ]
+        ],
+        nextStatus
       );
 
       if (blockValidationError) {
@@ -371,9 +375,6 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       }
     }
 
-    const nextStatus = (
-      typeof updates.status === 'string' ? updates.status : current.status
-    ) as CmsPageStatus;
     const previousStatus = current.status as CmsPageStatus;
     const nextValues: Record<string, unknown> = { ...updates };
     const requiresPublishPermission =

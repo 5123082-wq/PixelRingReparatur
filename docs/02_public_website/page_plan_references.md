@@ -255,6 +255,27 @@ The standalone prototype is a visual and interaction reference, not production c
 
 ## Progress Log
 
+### 2026-07-21 — Single-Slogan Proof Card
+
+- Current sprint/block: owner-selected replacement of the long report block with one premium slogan card (премиальная карточка-слоган).
+- Done: removed the visible statistics, explanatory copy and four compact report rows while preserving their existing CMS data. The block now renders only `Ein Schild darf nicht müde aussehen.` (вывеска не должна выглядеть уставшей) in the existing Inter typeface (шрифт Inter) on the left and a separately replaceable signage image on the right. `reportIntroBlock.image` (общее поле изображения блока) is managed through the current media library for all languages; `reportIntroBlock.imageAlt` (локализованное альтернативное описание изображения) is editable per DE/EN/RU/TR/PL/AR locale. Decorative arcs and the CSS gradient (плавный переход CSS) remain independent layout layers, so replacing the image cannot remove or bake in the transition.
+- In progress: owner visual acceptance on the local route.
+- Next action: approve the desktop/mobile visual result, then separately approve commit/deployment.
+- Blockers/risks: the CMS still contains the hidden report content by design; no content rows were deleted. The visible contract now requires `title` (заголовок), `image` (изображение) and `imageAlt` (альтернативное описание) before publication.
+- Updated documents/code: public Referenzen renderer (публичный компонент страницы), CMS adapter/editor/schema (адаптер, редактор и схема CMS), generated replaceable image and decorative background (созданные заменяемое изображение и декоративный фон), CMS update utility (утилита обновления CMS), `design-qa.md` (визуальная проверка), public/admin progress documents (журналы публичного сайта и админ-платформы) and `PROGRESS.md` (краткий глобальный журнал).
+
+### 2026-07-19 — Referenzen CMS Control And Publication Hardening
+
+- Current sprint/block: owner-approved full CMS control and publication correctness for `/[locale]/referenzen` (страница примеров работ).
+- Done: replaced the permissive CMS overlay with an authoritative page-specific contract. The fixed public layout now reads every visible section, report row, CTA (кнопку действия), gallery heading, category heading, final heading, photo, Alt text (альтернативное описание), category filter and visibility state from `CmsPage`; disabled blocks and empty lists stay hidden/empty instead of restoring static content. Static fallback (резервный статический контент) is now limited to a genuinely missing row or recoverable database outage; `DRAFT` (черновик), soft-deleted (мягко удалённая) and invalid published records return the not-found page instead of leaking old content. OWNER-only preview (предпросмотр владельца) can show the latest saved draft with `noindex, nofollow` (запрет индексации и перехода по ссылкам).
+- Done: made the previously unused reports visible, connected the CMS promo URL, removed the placeholder video modal, made the CMS gallery/category values authoritative, and verified the Russian photo viewer plus category switching and the Arabic RTL layout (арабское направление справа налево) in the local browser.
+- Done: repaired all six current CMS records atomically. Removed 18 incomplete gallery cards (three per locale), added 41 stable list IDs (стабильных идентификаторов), filled 191 missing Alt fields (полей альтернативного описания), corrected 18 gallery-category filters and added 18 independently editable layout-label fields. Media rows and binaries were not deleted; every repair pass created a revision and audit record for each changed locale.
+- Done: the focused CMS audit (точечный аудит CMS) passes for all six locales with no findings; TypeScript (проверка типов), targeted lint (точечная проверка кода), security verification, focused tests, production build (промышленная сборка), six-locale HTTP crawl (обход шести языковых страниц), Russian interaction check and Arabic RTL check pass.
+- In progress: authenticated editor UAT (приёмочная проверка редактора после входа) remains manual because the available browser session was not signed in; no password is required by the agent.
+- Next action: the owner signs in normally, then checks one reversible editor scenario: save a draft, open preview (предпросмотр), publish, hide/show a section, add/edit/delete one gallery item, inspect revision history and restore it. Deploy only after this UAT (приёмочная проверка) is accepted.
+- Blockers/risks: no known code or data blocker. Commit and deployment were intentionally not performed. Existing media Alt text (альтернативные описания медиатеки) can still be improved editorially per locale even though every published image now has a non-empty Alt value and the editor supports locale-aware Alt management.
+- Updated documents: `PROGRESS.md`, `docs/02_public_website/README.md`, `docs/02_public_website/page_plan_references.md`, `docs/05_admin_platform/admin_rollout_execution_plan.md`, `docs/05_admin_platform/cms_site_management.md`, `docs/05_admin_platform/page_content_cms_plan.md`, `docs/00_project_overview/project_state_and_roadmap.md`.
+
 ### 2026-05-02 — Review Follow-up Scope
 
 - Current sprint/block: References page review follow-up after owner comments.
