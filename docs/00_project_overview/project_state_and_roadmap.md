@@ -109,6 +109,7 @@ Partially integrated with CMS:
 
 - published CMS support articles can power `/support` and `/support/[slug]`;
 - published CMS page content can override the `/status` hero starter block;
+- `/[locale]/referenzen` (страница примеров работ) has a verified authoritative structured CMS integration: all visible content/media/visibility comes from its valid `PUBLISHED` (опубликованной) row, OWNER preview (предпросмотр владельца) can show the latest saved version, and hidden/empty/draft/deleted states do not restore old static content;
 - broad public page CMS integration is not complete.
 
 ### Request And Status Flow
@@ -187,6 +188,9 @@ Implemented API areas:
 - `/api/cms/articles/translate-field`
 - `/api/cms/pages`
 - `/api/cms/pages/[id]`
+- `/api/cms/pages/[id]/revisions`
+- `/api/cms/pages/[id]/restore`
+- `/api/cms/pages/batch` (атомарное пакетное сохранение страниц)
 - `/api/cms/media`
 - `/api/cms/media/[id]`
 - `/api/cms/seo`
@@ -200,6 +204,15 @@ Current CMS data models:
 - `CmsMedia`
 - `CmsSeoConfig`
 - `AiConfig`
+
+Owner-approved parallel public-content CMS pilot (planned, not implemented, 2026-07-20):
+
+- Payload CMS (новая система управления публичным контентом) will be evaluated in a separate `content-studio/` application;
+- `Referenzen` (страница примеров работ) is the first and only approved pilot page;
+- the existing CMS remains the production source until local development, read-only export/copy import, protected preview (предпросмотр) and owner UAT (приёмочная проверка) pass;
+- existing `CmsPage` and `CmsMedia` records are preserved for rollback (отката), with no dual-write workflow;
+- CRM (система работы с заявками), AI Knowledge (управление знаниями для ИИ), portal and operational modules remain on the current platform;
+- the approved sequence is `../05_admin_platform/payload_parallel_cms_pilot_plan.md`.
 
 ### AI Assistant And Knowledge Base
 
@@ -251,12 +264,14 @@ Started:
 - Admin UI starter.
 - API for `home`, `support`, `status`, and `global` page keys.
 - Fallback rule to static/i18n content.
+- page/article revision snapshots (снимки ревизий) and restore endpoints (маршруты восстановления).
+- a hardened Referenzen slice (усиленный редактор страницы примеров работ) with fixed typed sections, nested publication validation, stable multilingual item IDs (стабильные идентификаторы элементов между языками), atomic locale save, OWNER preview (предпросмотр владельца), locale soft delete/recovery (мягкое удаление/восстановление языка), and locale-aware media/Alt controls (управление медиа и альтернативными описаниями по языку).
 
 Still incomplete:
 
 - broad public page integration;
-- structured per-block editing forms;
-- versioning/publishing workflow;
+- structured per-block editing forms for page keys other than the hardened Referenzen slice (усиленный редактор страницы примеров работ);
+- full review/approval/scheduling workflow beyond `DRAFT` / `PUBLISHED` (черновик / опубликовано);
 - content workflow governance;
 - full multilingual page governance.
 

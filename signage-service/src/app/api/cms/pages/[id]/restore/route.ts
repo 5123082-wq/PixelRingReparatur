@@ -128,11 +128,12 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
             typeof restoreData.canonicalUrl === 'string' || restoreData.canonicalUrl === null
               ? restoreData.canonicalUrl
               : current.canonicalUrl,
-          ]
+          ],
+          restoreData.status === 'PUBLISHED' ? 'PUBLISHED' : 'DRAFT'
         );
 
         if (blockValidationError) {
-          throw new Error('INVALID_LEGAL_PAGE_BLOCKS');
+          throw new Error(`INVALID_PAGE_BLOCKS:${blockValidationError}`);
         }
       }
 
@@ -191,10 +192,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     if (
       error instanceof Error &&
-      error.message === 'INVALID_LEGAL_PAGE_BLOCKS'
+      error.message.startsWith('INVALID_PAGE_BLOCKS:')
     ) {
       return NextResponse.json(
-        { error: 'Legal pages cannot be restored without mainContent text.' },
+        { error: error.message.slice('INVALID_PAGE_BLOCKS:'.length) },
         { status: 400 }
       );
     }

@@ -4,7 +4,19 @@
 
 Phase 3 makes fixed public website page content editable from `/ring-master-config` without turning the site into a free-form page builder.
 
-The CMS stores safe structured data. The frontend continues to render known components and falls back to the current i18n messages when CMS content is missing, draft-only, invalid, or unavailable.
+The CMS stores safe structured data. Starter integrations may fall back to current i18n messages according to their documented page contract. A page-specific authoritative integration may use stricter publication semantics; `referenzen` now intentionally falls back only when its CMS row is missing or the database is recoverably unavailable, while `DRAFT` (черновик), deleted and invalid records remain unpublished.
+
+## Scope Update (Owner Decision 2026-07-20)
+
+This document remains the current-state and legacy Page CMS plan. The owner has separately approved a parallel Payload CMS pilot (параллельный пилот новой CMS) for `Referenzen` (страницы примеров работ):
+
+- current `CmsPage` / `CmsMedia` records remain authoritative in production until an explicit cutover;
+- local Payload development and copy-based migration do not invalidate the hardened legacy implementation documented below;
+- no dual writes or automatic two-way synchronization are allowed;
+- after successful UAT (приёмочной проверки), only the migrated page may switch to Payload as its authoritative source;
+- the implementation, release and rollback (откат) contract is `payload_parallel_cms_pilot_plan.md`.
+
+Payload is approved future work and is not part of the implemented state described in this document yet.
 
 ## Agreed V1 Scope
 
@@ -194,6 +206,16 @@ Implemented starter integration:
 - `/[locale]/status` can read a published `status` page `hero` block via `getStatusPageCmsContent()`;
 - if the CMS row is missing, draft, invalid, empty, or the DB is unavailable in that recoverable helper path, `StatusLookup` uses the existing `StatusPage` translations from `messages/*.json`;
 - no broad home/support/footer render refactor has been done.
+
+Implemented Referenzen hardening follow-up (2026-07-19):
+
+- `referenzen` has a page-specific allowlisted schema (разрешённую схему страницы) covering its fixed sections, nested list items, photos, paired Alt text (альтернативные описания), labels, filters and visibility;
+- the generic add/reorder/remove controls are disabled for this page; known missing sections can be restored in canonical order, and list items receive stable cross-locale IDs (стабильные идентификаторы между языками);
+- `DRAFT` (черновик) may be incomplete, but `PUBLISHED` (опубликовано) is rejected unless every enabled required field and nested item passes server validation;
+- `/api/cms/pages/batch` (атомарный пакетный API страниц) saves all participating locales in one Serializable transaction (транзакции с сериализуемой изоляцией), with optimistic concurrency (защитой от перезаписи), permissions, CSRF protection (защитой от поддельных запросов), audit logging and revision snapshots;
+- OWNER preview (предпросмотр владельца), revision listing/restore and locale-level soft delete/recovery (мягкое удаление/восстановление языка) are available in the page editor;
+- current public rendering uses the CMS record as the sole content source whenever that row is valid and published; hidden sections and deliberately empty lists do not recover old static data;
+- this narrow slice does not turn the other page keys into a visual page builder or claim complete multilingual governance across the whole site.
 
 Narrow follow-up compatibility:
 

@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { containsStaleLegalContent } from '@/lib/legal-content';
+import { validateReferenzenBlocksForPublish } from '@/lib/cms/referenzen-schema';
 import { prisma } from '@/lib/prisma';
 
 export const CMS_PAGE_KEYS = [
@@ -94,6 +95,10 @@ export type CmsPagePublicContent = {
   seoDescription: string | null;
   canonicalUrl: string | null;
 };
+
+export type CmsPagePublicationState =
+  | { kind: 'published'; page: CmsPagePublicContent }
+  | { kind: 'missing' | 'unavailable' | 'unpublished' | 'deleted' | 'invalid'; page: null };
 
 export type StatusPageCmsContent = {
   badge?: string;
@@ -517,7 +522,15 @@ export function normalizeCmsPageBlocks(value: unknown): CmsPageBlock[] | null {
     return null;
   }
 
-  const blocks = value.map(normalizeBlock).filter((block): block is CmsPageBlock => block !== null);
+  const blocks: CmsPageBlock[] = [];
+
+  for (const valueBlock of value) {
+    const block = normalizeBlock(valueBlock);
+    if (!block) {
+      return null;
+    }
+    blocks.push(block);
+  }
 
   return blocks;
 }
@@ -526,8 +539,15 @@ export function validateCmsPageBlocksForPage(
   pageKey: CmsPageKey,
   locale: string,
   blocks: CmsPageBlock[],
-  metadataText: Array<string | null | undefined> = []
+  metadataText: Array<string | null | undefined> = [],
+  status: CmsPageStatus = 'PUBLISHED'
 ): string | null {
+  if (pageKey === 'referenzen') {
+    return status === 'PUBLISHED'
+      ? validateReferenzenBlocksForPublish(blocks, locale)
+      : null;
+  }
+
   if (pageKey !== 'impressum' && pageKey !== 'privacy') {
     return null;
   }
@@ -792,6 +812,92 @@ async function getCmsPageByStatus(
 
     console.error(`CMS page fallback for ${pageKey}/${locale}:`, error);
     return null;
+  }
+}
+
+export async function getCmsPagePublicationState(
+  pageKey: CmsPageKey,
+  locale: string
+): Promise<CmsPagePublicationState> {
+  const normalizedLocale = normalizeCmsPageLocale(locale);
+
+  if (!normalizedLocale) {
+    return { kind: 'missing', page: null };
+  }
+
+  try {
+    const page = await prisma.cmsPage.findUnique({
+      where: {
+        pageKey_locale: {
+          pageKey,
+          locale: normalizedLocale,
+        },
+      },
+      select: {
+        pageKey: true,
+        locale: true,
+        status: true,
+        title: true,
+        blocks: true,
+        seoTitle: true,
+        seoDescription: true,
+        canonicalUrl: true,
+        deletedAt: true,
+      },
+    });
+
+    if (!page) {
+      return { kind: 'missing', page: null };
+    }
+
+    if (page.deletedAt) {
+      return { kind: 'deleted', page: null };
+    }
+
+    if (page.status !== 'PUBLISHED') {
+      return { kind: 'unpublished', page: null };
+    }
+
+    const blocks = normalizeCmsPageBlocks(page.blocks);
+    if (!blocks || blocks.length === 0) {
+      return { kind: 'invalid', page: null };
+    }
+
+    const validationError = validateCmsPageBlocksForPage(
+      pageKey,
+      page.locale,
+      blocks,
+      [page.seoTitle, page.seoDescription, page.canonicalUrl],
+      'PUBLISHED'
+    );
+    if (validationError) {
+      console.error(
+        `Published CMS page ${pageKey}/${page.locale} is invalid: ${validationError}`
+      );
+      return { kind: 'invalid', page: null };
+    }
+
+    return {
+      kind: 'published',
+      page: {
+        pageKey,
+        locale: page.locale,
+        title: page.title,
+        blocks,
+        seoTitle: page.seoTitle,
+        seoDescription: page.seoDescription,
+        canonicalUrl: page.canonicalUrl,
+      },
+    };
+  } catch (error) {
+    if (isCmsDatabaseUnavailableError(error)) {
+      console.warn(
+        `CMS unavailable for ${pageKey}/${locale}; using local fallback content.`
+      );
+      return { kind: 'unavailable', page: null };
+    }
+
+    throw error;
   }
 }
 

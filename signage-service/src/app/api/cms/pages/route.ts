@@ -227,7 +227,7 @@ export async function POST(request: NextRequest) {
       seoTitle.value,
       seoDescription.value,
       canonicalUrl.value,
-    ]);
+    ], status);
 
     if (blockValidationError) {
       return NextResponse.json({ error: blockValidationError }, { status: 400 });

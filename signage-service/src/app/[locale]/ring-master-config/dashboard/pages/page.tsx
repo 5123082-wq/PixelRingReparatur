@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 
 import { adminFetch } from '@/lib/admin-fetch';
+import { getReferenzenPublishIssues } from '@/lib/cms/referenzen-schema';
 
 // ─────────────────────────────────────────────────────────
 // Types
@@ -53,12 +54,32 @@ type PagesResponse = {
 
 type CmsMedia = {
   id: string;
+  locale: string;
   usageType: string;
   title: string | null;
   alt: string | null;
   filename: string | null;
   url: string | null;
   mimeType: string | null;
+};
+
+type CmsPageRevision = {
+  id: string;
+  sourceAction: string | null;
+  reason: string | null;
+  createdAt: string;
+  snapshotSummary: {
+    pageKey: string | null;
+    locale: string | null;
+    status: string | null;
+    title: string | null;
+  } | null;
+};
+
+type ReferenzenBlockDefinition = {
+  type: string;
+  key: string;
+  textFields: string[];
 };
 
 /** One unified block: structure is shared, texts per locale. */
@@ -116,6 +137,16 @@ type PageContentRow = {
 // ─────────────────────────────────────────────────────────
 
 const SUPPORTED_LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'] as const;
+const REFERENZEN_REPORT_IMAGE_FALLBACK =
+  '/images/references/references-slogan-signage-v1.webp';
+const REFERENZEN_REPORT_IMAGE_ALT_FALLBACKS: Record<string, string> = {
+  de: 'Gleichmäßig beleuchtete Profilbuchstaben auf einer hellen Fassade',
+  en: 'Evenly illuminated channel letters mounted on a light facade',
+  ru: 'Равномерно подсвеченные объёмные буквы на светлом фасаде',
+  tr: 'Açık renkli cephede eşit şekilde aydınlatılmış kutu harfler',
+  pl: 'Równomiernie podświetlone litery przestrzenne na jasnej elewacji',
+  ar: 'حروف بارزة مضاءة بشكل متساوٍ على واجهة فاتحة',
+};
 const PAGE_KEYS: CmsPageKey[] = [
   'home',
   'status',
@@ -156,6 +187,68 @@ const BLOCK_TEXT_FIELDS: Record<string, string[]> = {
   footerCta: ['title', 'subtitle', 'connectLabel', 'formTitle', 'formSubtitle'],
   excellence: ['title', 'subtitle', 'items'],
   labels: ['modalProblemLabel', 'modalWorkLabel', 'modalResultLabel', 'modalBeforeLabel', 'modalCta', 'viewerAllLabel', 'viewerCloseLabel'],
+};
+
+const REFERENZEN_BLOCK_DEFINITIONS: ReferenzenBlockDefinition[] = [
+  {
+    type: 'hero',
+    key: 'heroBlock',
+    textFields: [
+      'badge',
+      'title',
+      'intro',
+      'ctaPrimary',
+      'ctaSecondary',
+      'tags',
+      'subtitle',
+      'description',
+      'heroImage1',
+      'heroImage2',
+      'heroImage3',
+      'heroImage4',
+      'heroImage5',
+    ],
+  },
+  { type: 'textSection', key: 'recentIntroBlock', textFields: ['pretitle', 'title', 'description'] },
+  { type: 'cardList', key: 'casesBlock', textFields: ['items'] },
+  {
+    type: 'textSection',
+    key: 'reportIntroBlock',
+    textFields: ['title', 'description', 'imageAlt'],
+  },
+  { type: 'cardList', key: 'reportHooksBlock', textFields: ['items'] },
+  { type: 'cardList', key: 'reportsBlock', textFields: ['items'] },
+  { type: 'textSection', key: 'galleryIntroBlock', textFields: ['pretitle', 'sectionTitle', 'title', 'description'] },
+  { type: 'cardList', key: 'galleryItemsBlock', textFields: ['items'] },
+  { type: 'cta', key: 'promoBlock', textFields: ['badge', 'title', 'description', 'primaryLabel', 'requestHref'] },
+  { type: 'cardList', key: 'typeBandLinesBlock', textFields: ['items'] },
+  { type: 'cta', key: 'finalCtaBlock', textFields: ['badge', 'title', 'description', 'primaryLabel'] },
+  {
+    type: 'labels',
+    key: 'labelsBlock',
+    textFields: [
+      'modalProblemLabel',
+      'modalWorkLabel',
+      'modalResultLabel',
+      'modalBeforeLabel',
+      'modalCta',
+      'viewerAllLabel',
+      'viewerCloseLabel',
+    ],
+  },
+];
+
+const REFERENZEN_BLOCK_ORDER = new Map(
+  REFERENZEN_BLOCK_DEFINITIONS.map((definition, index) => [definition.key, index])
+);
+
+const MEDIA_ALT_FIELD_BY_IMAGE_FIELD: Record<string, string> = {
+  image: 'imageAlt',
+  beforeImage: 'beforeAlt',
+  afterImage: 'afterAlt',
+  galleryImage1: 'galleryAlt1',
+  galleryImage2: 'galleryAlt2',
+  galleryImage3: 'galleryAlt3',
 };
 
 /** Structural keys never treated as shared or text — they live at the block root. */
@@ -238,8 +331,107 @@ function validateBlocksForSave(
   return null;
 }
 
-function getTextFieldNames(blockType: string): string[] {
+function getTextFieldNames(
+  blockType: string,
+  pageKey?: CmsPageKey,
+  blockKey?: string
+): string[] {
+  if (pageKey === 'referenzen' && blockKey) {
+    const definition = REFERENZEN_BLOCK_DEFINITIONS.find(
+      (candidate) => candidate.key === blockKey && candidate.type === blockType
+    );
+    if (definition) return definition.textFields;
+  }
+
   return BLOCK_TEXT_FIELDS[blockType] || [];
+}
+
+function createStableItemId(prefix: string): string {
+  const id = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  return `${prefix}-${id}`;
+}
+
+function getListItemTemplate(
+  pageKey: CmsPageKey,
+  blockKey: string,
+  field: string
+): Record<string, unknown> {
+  if (pageKey === 'referenzen' && field === 'items') {
+    if (blockKey === 'casesBlock') {
+      return {
+        id: createStableItemId('case'),
+        title: '',
+        category: '',
+        problem: '',
+        work: '',
+        result: '',
+        defaultText: '',
+        beforeText: '',
+        beforeImage: '',
+        afterImage: '',
+        beforeAlt: '',
+        afterAlt: '',
+        galleryImage1: '',
+        galleryImage2: '',
+        galleryImage3: '',
+        galleryAlt1: '',
+        galleryAlt2: '',
+        galleryAlt3: '',
+      };
+    }
+    if (blockKey === 'reportHooksBlock') {
+      return { id: createStableItemId('hook'), title: '', text: '' };
+    }
+    if (blockKey === 'reportsBlock') {
+      return { id: createStableItemId('report'), type: '', issue: '', outcome: '' };
+    }
+    if (blockKey === 'galleryItemsBlock') {
+      return {
+        id: createStableItemId('gallery'),
+        title: '',
+        category: '',
+        image: '',
+        imageAlt: '',
+        description: '',
+      };
+    }
+    if (blockKey === 'typeBandLinesBlock') {
+      return { text: '' };
+    }
+  }
+
+  if (field === 'links') return { label: '', href: '' };
+  if (field === 'stats') return { value: '', label: '', description: '' };
+  if (field === 'features') return { icon: '', label: '' };
+  if (blockKey === 'excellenceSection') {
+    return {
+      id: createStableItemId('post'),
+      title: '',
+      tag: '',
+      description: '',
+      image: '',
+      imageAlt: '',
+    };
+  }
+
+  return {
+    id: createStableItemId('item'),
+    title: '',
+    description: '',
+    image: '',
+    imageAlt: '',
+    cta: '',
+  };
+}
+
+function sortReferenzenBlocks(blocks: UnifiedBlock[]): UnifiedBlock[] {
+  return [...blocks].sort((left, right) => {
+    const leftOrder = REFERENZEN_BLOCK_ORDER.get(left.key) ?? Number.MAX_SAFE_INTEGER;
+    const rightOrder = REFERENZEN_BLOCK_ORDER.get(right.key) ?? Number.MAX_SAFE_INTEGER;
+    return leftOrder - rightOrder || left.sortOrder - right.sortOrder;
+  });
 }
 
 async function readApiError(response: Response): Promise<string> {
@@ -267,6 +459,7 @@ function normalizeMediaResponse(value: unknown): CmsMedia[] {
     )
     .map((row) => ({
       id: String(row.id ?? ''),
+      locale: asString(row.locale) || 'de',
       usageType: asString(row.usageType) || 'GENERAL',
       title: asString(row.title),
       alt: asString(row.alt) || asString(row.altText),
@@ -277,8 +470,68 @@ function normalizeMediaResponse(value: unknown): CmsMedia[] {
     .filter((item) => item.id);
 }
 
+function normalizePageRevisionsResponse(value: unknown): CmsPageRevision[] {
+  const container = value as { revisions?: unknown; items?: unknown } | null;
+  const rows = Array.isArray(value)
+    ? value
+    : Array.isArray(container?.revisions)
+      ? container.revisions
+      : Array.isArray(container?.items)
+        ? container.items
+        : [];
+
+  return rows
+    .filter((row): row is Record<string, unknown> =>
+      Boolean(row && typeof row === 'object' && !Array.isArray(row))
+    )
+    .map((row) => {
+      const rawSummary = row.snapshotSummary;
+      const summary =
+        rawSummary && typeof rawSummary === 'object' && !Array.isArray(rawSummary)
+          ? (rawSummary as Record<string, unknown>)
+          : null;
+      return {
+        id: String(row.id ?? ''),
+        sourceAction: asString(row.sourceAction),
+        reason: asString(row.reason),
+        createdAt: asString(row.createdAt) || '',
+        snapshotSummary: summary
+          ? {
+              pageKey: asString(summary.pageKey),
+              locale: asString(summary.locale),
+              status: asString(summary.status),
+              title: asString(summary.title),
+            }
+          : null,
+      };
+    })
+    .filter((revision) => revision.id)
+    .sort((left, right) => Date.parse(right.createdAt) - Date.parse(left.createdAt));
+}
+
 function isMediaField(field: string): boolean {
   return field === 'assetUrl' || field === 'image' || field === 'beforeImage' || field === 'afterImage' || field === 'galleryImage1' || field === 'galleryImage2' || field === 'galleryImage3' || field.startsWith('heroImage');
+}
+
+function buildMediaSelectionUpdates(
+  field: string,
+  media: CmsMedia,
+  currentValues: Record<string, unknown>,
+  activeLocale: string
+): Record<string, unknown> {
+  const updates: Record<string, unknown> = { [field]: media.url || '' };
+  const altField = MEDIA_ALT_FIELD_BY_IMAGE_FIELD[field];
+
+  if (
+    altField &&
+    media.locale === activeLocale &&
+    media.alt &&
+    !asString(currentValues[altField])
+  ) {
+    updates[altField] = media.alt;
+  }
+
+  return updates;
 }
 
 const NON_CONTENT_ITEM_FIELDS = new Set([
@@ -428,10 +681,11 @@ function buildPageContentRows(pages: CmsPage[]): PageContentRow[] {
 
 // ── Merge / Split ───────────────────────────────────────
 
-function mergeToUnified(allPages: CmsPage[]): {
+function mergeToUnified(allPages: CmsPage[], requestedPageKey?: CmsPageKey): {
   blocks: UnifiedBlock[];
   localeMeta: Record<string, LocalePageMeta>;
 } {
+  const pageKey = requestedPageKey ?? allPages[0]?.pageKey;
   const localeMeta: Record<string, LocalePageMeta> = {};
   const blocksByKey: Record<string, Record<string, CmsPageBlock>> = {};
 
@@ -478,11 +732,36 @@ function mergeToUnified(allPages: CmsPage[]): {
     allPages[0];
   const blocks: UnifiedBlock[] = [];
 
-  if (masterPage) {
-    for (const block of masterPage.blocks) {
+  const sourceBlocks: CmsPageBlock[] = [];
+  const sourceKeys = new Set<string>();
+  const pushSourceBlock = (block: CmsPageBlock | undefined) => {
+    if (!block) return;
+    const key = block.key || `${block.type}-anon`;
+    if (sourceKeys.has(key)) return;
+    sourceKeys.add(key);
+    sourceBlocks.push(block);
+  };
+
+  if (pageKey === 'referenzen') {
+    for (const definition of REFERENZEN_BLOCK_DEFINITIONS) {
+      pushSourceBlock(
+        blocksByKey[definition.key]?.de ??
+          Object.values(blocksByKey[definition.key] ?? {})[0]
+      );
+    }
+  } else {
+    masterPage?.blocks.forEach(pushSourceBlock);
+  }
+
+  for (const page of allPages) {
+    page.blocks.forEach(pushSourceBlock);
+  }
+
+  if (sourceBlocks.length > 0) {
+    for (const block of sourceBlocks) {
       const key = block.key || `${block.type}-anon`;
       const type = block.type || '';
-      const textFields = getTextFieldNames(type);
+      const textFields = getTextFieldNames(type, pageKey, key);
 
       const shared: Record<string, unknown> = {};
       for (const [prop, val] of Object.entries(block)) {
@@ -490,13 +769,31 @@ function mergeToUnified(allPages: CmsPage[]): {
         if (textFields.includes(prop)) continue;
         shared[prop] = val;
       }
+      if (
+        pageKey === 'referenzen' &&
+        key === 'reportIntroBlock' &&
+        !Object.prototype.hasOwnProperty.call(shared, 'image')
+      ) {
+        shared.image = REFERENZEN_REPORT_IMAGE_FALLBACK;
+      }
 
       const texts: Record<string, Record<string, unknown>> = {};
       for (const locale of SUPPORTED_LOCALES) {
         const lb = blocksByKey[key]?.[locale];
         const localeTexts: Record<string, unknown> = {};
         for (const tf of textFields) {
-          localeTexts[tf] = lb ? (lb[tf] ?? '') : '';
+          const hasStoredValue = Boolean(
+            lb && Object.prototype.hasOwnProperty.call(lb, tf)
+          );
+          localeTexts[tf] = hasStoredValue ? (lb?.[tf] ?? '') : '';
+          if (
+            !hasStoredValue &&
+            pageKey === 'referenzen' &&
+            key === 'reportIntroBlock' &&
+            tf === 'imageAlt'
+          ) {
+            localeTexts[tf] = REFERENZEN_REPORT_IMAGE_ALT_FALLBACKS[locale] || '';
+          }
           // Ensure items arrays are deep-cloned
           if (tf === 'items' && Array.isArray(localeTexts[tf])) {
             localeTexts[tf] = JSON.parse(JSON.stringify(localeTexts[tf]));
@@ -505,15 +802,37 @@ function mergeToUnified(allPages: CmsPage[]): {
         texts[locale] = localeTexts;
       }
 
-      blocks.push({ type, key, enabled: block.enabled !== false, sortOrder: block.sortOrder ?? blocks.length, shared, texts });
+      blocks.push({
+        type,
+        key,
+        enabled:
+          pageKey === 'referenzen' && key === 'labelsBlock'
+            ? true
+            : block.enabled !== false,
+        sortOrder:
+          pageKey === 'referenzen'
+            ? REFERENZEN_BLOCK_ORDER.get(key) ?? block.sortOrder ?? blocks.length
+            : block.sortOrder ?? blocks.length,
+        shared,
+        texts,
+      });
     }
   }
 
-  return { blocks, localeMeta };
+  return {
+    blocks: pageKey === 'referenzen' ? sortReferenzenBlocks(blocks) : blocks,
+    localeMeta,
+  };
 }
 
-function splitToLocaleBlocks(blocks: UnifiedBlock[], locale: string): CmsPageBlock[] {
-  return blocks.map((block, index) => ({
+function splitToLocaleBlocks(
+  blocks: UnifiedBlock[],
+  locale: string,
+  pageKey?: CmsPageKey
+): CmsPageBlock[] {
+  const orderedBlocks = pageKey === 'referenzen' ? sortReferenzenBlocks(blocks) : blocks;
+
+  return orderedBlocks.map((block, index) => ({
     type: block.type,
     key: block.key,
     enabled: block.enabled,
@@ -548,7 +867,6 @@ export default function PagesPage() {
   // ── Data state ──
   const [pages, setPages] = useState<CmsPage[]>([]);
   const [error, setError] = useState('');
-  const [refreshVersion, setRefreshVersion] = useState(0);
   const [mediaItems, setMediaItems] = useState<CmsMedia[]>([]);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [mediaError, setMediaError] = useState('');
@@ -560,6 +878,12 @@ export default function PagesPage() {
   const [activeLocale, setActiveLocale] = useState(routeLocale);
   const [formError, setFormError] = useState('');
   const [formSaving, setFormSaving] = useState(false);
+  const [pageRevisions, setPageRevisions] = useState<CmsPageRevision[]>([]);
+  const [revisionsLoading, setRevisionsLoading] = useState(false);
+  const [revisionsError, setRevisionsError] = useState('');
+  const [restoreReason, setRestoreReason] = useState('');
+  const [restoringRevisionId, setRestoringRevisionId] = useState('');
+  const [deletingLocale, setDeletingLocale] = useState(false);
   const [pageFilter, setPageFilter] = useState<'ALL' | CmsPageKey>('ALL');
   const [blockFilter, setBlockFilter] = useState('ALL');
   const [localeFilter, setLocaleFilter] = useState<FilterLocale>('ALL');
@@ -588,7 +912,7 @@ export default function PagesPage() {
       if (pageFilter !== 'ALL' && pageFilter !== pageKey) return false;
 
       const groupPages = pages.filter((page) => page.pageKey === pageKey);
-      const { blocks } = mergeToUnified(groupPages);
+      const { blocks } = mergeToUnified(groupPages, pageKey);
 
       if (localeFilter !== 'ALL' && !groupPages.some((page) => page.locale === localeFilter)) {
         return false;
@@ -726,24 +1050,40 @@ export default function PagesPage() {
 
   const activeMeta = form.localeMeta[activeLocale] || form.localeMeta.de;
   const isEditingLegalPage = isLegalPageKey(form.pageKey);
+  const missingReferenzenBlocks = useMemo(() => {
+    if (form.pageKey !== 'referenzen') return [];
+    const currentKeys = new Set(form.blocks.map((block) => block.key));
+    return REFERENZEN_BLOCK_DEFINITIONS.filter(
+      (definition) => !currentKeys.has(definition.key)
+    );
+  }, [form.blocks, form.pageKey]);
 
   // ── Data loading ──
-  const loadPages = useCallback(async () => {
+  const loadPages = useCallback(async (): Promise<CmsPage[]> => {
     setError('');
     try {
       const response = await adminFetch('/api/cms/pages', { method: 'GET', cache: 'no-store' });
       const data = (await response.json().catch(() => ({}))) as PagesResponse;
       if (!response.ok) throw new Error(data.error || `Failed to load pages (${response.status}).`);
-      setPages(data.pages || []);
+      const nextPages = data.pages || [];
+      setPages(nextPages);
+      return nextPages;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load pages.');
       setPages([]);
+      return [];
     }
   }, []);
 
   useEffect(() => {
     void loadPages();
-  }, [loadPages, refreshVersion]);
+  }, [loadPages]);
+
+  useEffect(() => {
+    setPageRevisions([]);
+    setRevisionsError('');
+    setRestoreReason('');
+  }, [activeLocale, activePageKey]);
 
   const loadMediaItems = useCallback(async () => {
     setMediaLoading(true);
@@ -779,13 +1119,16 @@ export default function PagesPage() {
   const selectPage = useCallback(
     (pageKey: CmsPageKey) => {
       const groupPages = pages.filter((p) => p.pageKey === pageKey);
-      const { blocks, localeMeta } = mergeToUnified(groupPages);
+      const { blocks, localeMeta } = mergeToUnified(groupPages, pageKey);
       setForm({ pageKey, blocks, localeMeta });
       setActivePageKey(pageKey);
       setActiveSectionId('meta');
       setActiveLocale(isLegalPageKey(pageKey) ? 'de' : routeLocale);
       setFormError('');
       setFormSaving(false);
+      setPageRevisions([]);
+      setRevisionsError('');
+      setRestoreReason('');
     },
     [pages, routeLocale]
   );
@@ -807,6 +1150,7 @@ export default function PagesPage() {
   // ── Block operations ──
   const moveBlock = useCallback((index: number, direction: 'up' | 'down') => {
     setForm((curr) => {
+      if (curr.pageKey === 'referenzen') return curr;
       const next = [...curr.blocks];
       const target = direction === 'up' ? index - 1 : index + 1;
       if (target < 0 || target >= next.length) return curr;
@@ -817,7 +1161,11 @@ export default function PagesPage() {
 
   const removeBlock = useCallback((index: number) => {
     if (!window.confirm('Remove this block from ALL locales?')) return;
-    setForm((curr) => ({ ...curr, blocks: curr.blocks.filter((_, i) => i !== index) }));
+    setForm((curr) =>
+      curr.pageKey === 'referenzen'
+        ? curr
+        : { ...curr, blocks: curr.blocks.filter((_, i) => i !== index) }
+    );
   }, []);
 
   const addBlock = useCallback((type: string, customKey?: string) => {
@@ -852,6 +1200,46 @@ export default function PagesPage() {
       blocks: [...curr.blocks, { type, key, enabled: true, sortOrder: curr.blocks.length, shared, texts }],
     }));
     setActiveSectionId(key);
+  }, []);
+
+  const restoreReferenzenBlock = useCallback((definition: ReferenzenBlockDefinition) => {
+    const texts: Record<string, Record<string, unknown>> = {};
+    for (const locale of SUPPORTED_LOCALES) {
+      texts[locale] = Object.fromEntries(
+        definition.textFields.map((field) => [field, field === 'items' ? [] : ''])
+      );
+    }
+
+    setForm((curr) => {
+      if (
+        curr.pageKey !== 'referenzen' ||
+        curr.blocks.some((block) => block.key === definition.key)
+      ) {
+        return curr;
+      }
+
+      const block: UnifiedBlock = {
+        type: definition.type,
+        key: definition.key,
+        enabled: true,
+        sortOrder: REFERENZEN_BLOCK_ORDER.get(definition.key) ?? curr.blocks.length,
+        shared:
+          definition.key === 'reportIntroBlock'
+            ? { image: REFERENZEN_REPORT_IMAGE_FALLBACK }
+            : {},
+        texts,
+      };
+
+      if (definition.key === 'reportIntroBlock') {
+        for (const locale of SUPPORTED_LOCALES) {
+          block.texts[locale].imageAlt =
+            REFERENZEN_REPORT_IMAGE_ALT_FALLBACKS[locale] || '';
+        }
+      }
+
+      return { ...curr, blocks: sortReferenzenBlocks([...curr.blocks, block]) };
+    });
+    setActiveSectionId(definition.key);
   }, []);
 
   const updateBlockStructure = useCallback((index: number, updates: Partial<Pick<UnifiedBlock, 'enabled' | 'key'>>) => {
@@ -920,23 +1308,36 @@ export default function PagesPage() {
     setForm((curr) => {
       const next = [...curr.blocks];
       const block = { ...next[blockIndex], texts: { ...next[blockIndex].texts } };
+      const activeItems = Array.isArray(block.texts[activeLocale]?.[field])
+        ? (block.texts[activeLocale][field] as Record<string, unknown>[])
+        : [];
+      const targetId = asString(activeItems[itemIndex]?.id);
       for (const locale of SUPPORTED_LOCALES) {
         const lt = { ...(block.texts[locale] || {}) };
         const items = Array.isArray(lt[field]) ? [...(lt[field] as Record<string, unknown>[])] : [];
-        items.splice(itemIndex, 1);
+        const targetIndex = targetId
+          ? items.findIndex((item) => asString(item.id) === targetId)
+          : itemIndex;
+        if (targetIndex >= 0 && targetIndex < items.length) {
+          items.splice(targetIndex, 1);
+        }
         lt[field] = items;
         block.texts[locale] = lt;
       }
       next[blockIndex] = block;
       return { ...curr, blocks: next };
     });
-  }, []);
+  }, [activeLocale]);
 
   const updateListItem = useCallback(
     (blockIndex: number, field: string, itemIndex: number, updates: Record<string, unknown>) => {
       setForm((curr) => {
         const next = [...curr.blocks];
         const block = { ...next[blockIndex], texts: { ...next[blockIndex].texts } };
+        const activeItems = Array.isArray(block.texts[activeLocale]?.[field])
+          ? (block.texts[activeLocale][field] as Record<string, unknown>[])
+          : [];
+        const targetId = asString(activeItems[itemIndex]?.id);
 
         // Identify if we are updating a field that should be synchronized across locales
         const syncedFields = [
@@ -951,10 +1352,13 @@ export default function PagesPage() {
             if (loc === activeLocale) continue;
             const locTexts = { ...(block.texts[loc] || {}) };
             const locItems = Array.isArray(locTexts[field]) ? [...(locTexts[field] as Record<string, unknown>[])] : [];
-            if (locItems[itemIndex]) {
-              locItems[itemIndex] = { ...locItems[itemIndex] };
+            const targetIndex = targetId
+              ? locItems.findIndex((item) => asString(item.id) === targetId)
+              : itemIndex;
+            if (targetIndex >= 0 && locItems[targetIndex]) {
+              locItems[targetIndex] = { ...locItems[targetIndex] };
               for (const f of syncedFields) {
-                if (f in updates) locItems[itemIndex][f] = updates[f];
+                if (f in updates) locItems[targetIndex][f] = updates[f];
               }
             }
             locTexts[field] = locItems;
@@ -964,7 +1368,12 @@ export default function PagesPage() {
 
         const lt = { ...(block.texts[activeLocale] || {}) };
         const items = Array.isArray(lt[field]) ? [...(lt[field] as Record<string, unknown>[])] : [];
-        items[itemIndex] = { ...items[itemIndex], ...updates };
+        const targetIndex = targetId
+          ? items.findIndex((item) => asString(item.id) === targetId)
+          : itemIndex;
+        if (targetIndex >= 0 && items[targetIndex]) {
+          items[targetIndex] = { ...items[targetIndex], ...updates };
+        }
         lt[field] = items;
         block.texts[activeLocale] = lt;
 
@@ -992,21 +1401,25 @@ export default function PagesPage() {
     setFormSaving(true);
     setFormError('');
 
-    const results: { locale: string; success: boolean; error?: string }[] = [];
-
-    await Promise.all(
-      saveableLocales.map(async (locale) => {
+    try {
+      const batchPages = saveableLocales.map((locale) => {
         const meta = form.localeMeta[locale];
-        const blocks = splitToLocaleBlocks(form.blocks, locale);
+        const blocks = splitToLocaleBlocks(form.blocks, locale, form.pageKey);
         const blockValidationError = validateBlocksForSave(form.pageKey, locale, blocks);
 
         if (blockValidationError) {
-          results.push({ locale, success: false, error: blockValidationError });
-          return;
+          throw new Error(`${locale.toUpperCase()}: ${blockValidationError}`);
         }
 
-        const payload = {
-          pageKey: form.pageKey,
+        if (form.pageKey === 'referenzen' && meta.status === 'PUBLISHED') {
+          const issue = getReferenzenPublishIssues(blocks, locale)[0];
+          if (issue) {
+            throw new Error(`${locale.toUpperCase()}: ${issue.message}`);
+          }
+        }
+
+        return {
+          id: meta.id,
           locale,
           status: meta.status,
           title: meta.title.trim() || `${form.pageKey} (${locale})`,
@@ -1014,42 +1427,141 @@ export default function PagesPage() {
           seoTitle: toNullable(meta.seoTitle),
           seoDescription: toNullable(meta.seoDescription),
           canonicalUrl: toNullable(meta.canonicalUrl),
+          expectedUpdatedAt: meta.updatedAt,
         };
+      });
 
-        try {
-          const response = meta.id
-            ? await adminFetch(`/api/cms/pages/${meta.id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-              })
-            : await adminFetch('/api/cms/pages', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-              });
+      const response = await adminFetch('/api/cms/pages/batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pageKey: form.pageKey, pages: batchPages }),
+      });
 
-          if (!response.ok) {
-            results.push({ locale, success: false, error: await readApiError(response) });
-          } else {
-            results.push({ locale, success: true });
-          }
-        } catch (err) {
-          results.push({ locale, success: false, error: err instanceof Error ? err.message : 'Unknown error' });
-        }
-      })
-    );
+      if (!response.ok) {
+        throw new Error(await readApiError(response));
+      }
 
-    const failures = results.filter((r) => !r.success);
-    if (failures.length > 0) {
+      const freshPages = await loadPages();
+      const groupPages = freshPages.filter((page) => page.pageKey === form.pageKey);
+      const { blocks, localeMeta } = mergeToUnified(groupPages, form.pageKey);
+      setForm((current) => ({ ...current, blocks, localeMeta }));
+      setPageRevisions([]);
+      setRestoreReason('');
+    } catch (saveError) {
       setFormError(
-        `Save failed for: ${failures.map((f) => `${f.locale.toUpperCase()} (${f.error})`).join(', ')}`
+        saveError instanceof Error ? saveError.message : 'Failed to save page locales.'
       );
-    } else {
-      setRefreshVersion((v) => v + 1);
+    } finally {
+      setFormSaving(false);
     }
-    setFormSaving(false);
-  }, [form, saveableLocales]);
+  }, [form, loadPages, saveableLocales]);
+
+  const loadPageRevisions = useCallback(async (pageId?: string | null) => {
+    const id = pageId || activeMeta?.id;
+    if (!id) {
+      setPageRevisions([]);
+      return;
+    }
+
+    setRevisionsLoading(true);
+    setRevisionsError('');
+    try {
+      const response = await adminFetch(`/api/cms/pages/${id}/revisions`, {
+        method: 'GET',
+        cache: 'no-store',
+      });
+      if (!response.ok) throw new Error(await readApiError(response));
+      const data = (await response.json().catch(() => null)) as unknown;
+      setPageRevisions(normalizePageRevisionsResponse(data));
+    } catch (loadError) {
+      setPageRevisions([]);
+      setRevisionsError(
+        loadError instanceof Error ? loadError.message : 'Failed to load page revisions.'
+      );
+    } finally {
+      setRevisionsLoading(false);
+    }
+  }, [activeMeta?.id]);
+
+  const restorePageRevision = useCallback(async (revision: CmsPageRevision) => {
+    if (!activeMeta?.id) return;
+    const reason = restoreReason.trim();
+    if (!reason) {
+      setRevisionsError('Restore reason is required.');
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Restore ${form.pageKey.toUpperCase()} ${activeLocale.toUpperCase()} from ${formatDateTime(revision.createdAt)}? Unsaved changes for this locale will be discarded and the page will become DRAFT.`
+    );
+    if (!confirmed) return;
+
+    setRestoringRevisionId(revision.id);
+    setRevisionsError('');
+    try {
+      const response = await adminFetch(`/api/cms/pages/${activeMeta.id}/restore`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ revisionId: revision.id, reason }),
+      });
+      if (!response.ok) throw new Error(await readApiError(response));
+
+      const freshPages = await loadPages();
+      const groupPages = freshPages.filter((page) => page.pageKey === form.pageKey);
+      const { blocks, localeMeta } = mergeToUnified(groupPages, form.pageKey);
+      setForm((current) => ({ ...current, blocks, localeMeta }));
+      setRestoreReason('');
+      await loadPageRevisions(activeMeta.id);
+    } catch (restoreError) {
+      setRevisionsError(
+        restoreError instanceof Error ? restoreError.message : 'Failed to restore page revision.'
+      );
+    } finally {
+      setRestoringRevisionId('');
+    }
+  }, [activeLocale, activeMeta?.id, form.pageKey, loadPageRevisions, loadPages, restoreReason]);
+
+  const deleteActiveLocalePage = useCallback(async () => {
+    if (!activeMeta?.id) return;
+    const confirmed = window.confirm(
+      `Delete the ${activeLocale.toUpperCase()} CMS record for ${form.pageKey}? This removes only this locale. Saving it again will restore the soft-deleted record.`
+    );
+    if (!confirmed) return;
+
+    setDeletingLocale(true);
+    setFormError('');
+    try {
+      const deletedId = activeMeta.id;
+      const response = await adminFetch(`/api/cms/pages/${deletedId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error(await readApiError(response));
+
+      setPages((current) => current.filter((page) => page.id !== deletedId));
+      setForm((current) => ({
+        ...current,
+        localeMeta: {
+          ...current.localeMeta,
+          [activeLocale]: {
+            ...current.localeMeta[activeLocale],
+            id: null,
+            status: 'DRAFT',
+            publishedAt: null,
+            createdAt: null,
+            updatedAt: null,
+          },
+        },
+      }));
+      setPageRevisions([]);
+      setRestoreReason('');
+    } catch (deleteError) {
+      setFormError(
+        deleteError instanceof Error ? deleteError.message : 'Failed to delete locale page.'
+      );
+    } finally {
+      setDeletingLocale(false);
+    }
+  }, [activeLocale, activeMeta?.id, form.pageKey]);
 
   // ─────────────────────────────────
   // Render Helpers
@@ -1099,22 +1611,34 @@ export default function PagesPage() {
     );
   };
 
-  const MediaFieldEditor = ({ value, onSelect }: { value: string; onSelect: (url: string) => void }) => {
+  const MediaFieldEditor = ({
+    value,
+    onSelect,
+  }: {
+    value: string;
+    onSelect: (media: CmsMedia) => void;
+  }) => {
     const [pickerOpen, setPickerOpen] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [uploadAlt, setUploadAlt] = useState('');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
+      if (!uploadAlt.trim()) {
+        alert(`Alternative text is required for ${activeLocale.toUpperCase()} before upload.`);
+        return;
+      }
 
       setIsUploading(true);
       try {
         const formData = new FormData();
         formData.set('file', file);
         formData.set('usageType', 'GENERAL');
+        formData.set('locale', activeLocale);
         formData.set('title', file.name.split('.')[0] || 'Direct Upload');
-        formData.set('alt', '');
+        formData.set('alt', uploadAlt.trim());
 
         const response = await adminFetch('/api/cms/media', {
           method: 'POST',
@@ -1126,9 +1650,11 @@ export default function PagesPage() {
           throw new Error(data.error || 'Upload failed');
         }
 
-        const data = await response.json();
-        if (data.media?.url) {
-          onSelect(data.media.url);
+        const data = (await response.json()) as { media?: unknown };
+        const media = normalizeMediaResponse(data.media ? [data.media] : [])[0];
+        if (media?.url) {
+          onSelect(media);
+          setUploadAlt('');
           setPickerOpen(false);
         }
       } catch (err) {
@@ -1155,7 +1681,15 @@ export default function PagesPage() {
                 {value || 'No image selected'}
               </div>
             </div>
-            <div className="flex gap-2 shrink-0">
+            <div className="flex flex-col gap-2 shrink-0 xl:w-[250px]">
+              <input
+                type="text"
+                value={uploadAlt}
+                onChange={(event) => setUploadAlt(event.target.value)}
+                placeholder={`Upload alt text (${activeLocale.toUpperCase()})`}
+                className="h-9 rounded-lg border border-white/10 bg-black px-3 text-[10px] text-zinc-300 outline-none focus:border-cyan-500/40"
+              />
+              <div className="flex gap-2">
               <input
                 type="file"
                 accept="image/*"
@@ -1166,7 +1700,7 @@ export default function PagesPage() {
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                disabled={isUploading}
+                disabled={isUploading || !uploadAlt.trim()}
                 className="h-9 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 text-[9px] font-black uppercase tracking-widest text-cyan-300 hover:bg-cyan-500/20 transition-colors disabled:opacity-50"
               >
                 {isUploading ? 'Uploading...' : 'Direct Upload'}
@@ -1184,13 +1718,14 @@ export default function PagesPage() {
               >
                 {pickerOpen ? 'Close Library' : value ? 'Change' : 'Library'}
               </button>
+              </div>
             </div>
           </div>
           {pickerOpen ? (
             <div className="mt-3 border-t border-white/[0.04] pt-3">
               <MediaPicker
-                onSelect={(url) => {
-                  onSelect(url);
+                onSelect={(media) => {
+                  onSelect(media);
                   setPickerOpen(false);
                 }}
               />
@@ -1201,7 +1736,7 @@ export default function PagesPage() {
     );
   };
 
-  const MediaPicker = ({ onSelect }: { onSelect: (url: string) => void }) => {
+  const MediaPicker = ({ onSelect }: { onSelect: (media: CmsMedia) => void }) => {
     const [imgErrors, setImgErrors] = useState<Record<string, boolean>>({});
 
     return (
@@ -1244,11 +1779,17 @@ export default function PagesPage() {
             <button
               key={media.id}
               type="button"
-              onClick={() => media.url && onSelect(media.url)}
+              onClick={() => media.url && onSelect(media)}
               disabled={!media.url}
               title={media.title || media.filename || media.usageType}
               className="aspect-square overflow-hidden rounded-lg border border-white/5 bg-zinc-950 hover:border-violet-500/50 disabled:opacity-30 transition-all relative group"
             >
+              <span className="absolute left-1 top-1 z-10 rounded bg-black/70 px-1 py-0.5 text-[7px] font-black text-white">
+                {media.locale.toUpperCase()}
+              </span>
+              <span className={`absolute bottom-1 right-1 z-10 rounded px-1 py-0.5 text-[7px] font-black ${media.alt ? 'bg-emerald-500/80 text-black' : 'bg-red-500/80 text-white'}`}>
+                {media.alt ? 'ALT' : 'NO ALT'}
+              </span>
               {media.url && media.mimeType?.startsWith('image/') && !imgErrors[media.id] ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -1330,6 +1871,90 @@ export default function PagesPage() {
               />
             </div>
           </div>
+
+          <div className="bg-[#0a0a0c] border border-white/[0.06] rounded-2xl p-8 shadow-2xl space-y-8">
+            <div>
+              <div className="mb-5 flex items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-lg font-black text-white">Revision history</h2>
+                  <p className="mt-1 text-[11px] font-semibold text-zinc-600">
+                    History and restore apply only to {activeLocale.toUpperCase()}.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => void loadPageRevisions(activeMeta?.id)}
+                  disabled={!activeMeta?.id || revisionsLoading}
+                  className="h-9 rounded-lg border border-violet-500/20 bg-violet-500/10 px-4 text-[9px] font-black uppercase tracking-widest text-violet-300 disabled:opacity-30"
+                >
+                  {revisionsLoading ? 'Loading...' : 'Load revisions'}
+                </button>
+              </div>
+
+              <input
+                type="text"
+                value={restoreReason}
+                onChange={(event) => setRestoreReason(event.target.value)}
+                placeholder="Required restore reason"
+                maxLength={1000}
+                className="h-10 w-full rounded-xl border border-white/10 bg-black px-4 text-xs text-zinc-200 outline-none focus:border-violet-500/40"
+              />
+
+              {revisionsError ? (
+                <p className="mt-3 rounded-lg border border-red-500/20 bg-red-500/5 px-3 py-2 text-[10px] font-bold text-red-400">
+                  {revisionsError}
+                </p>
+              ) : null}
+
+              {pageRevisions.length > 0 ? (
+                <div className="mt-4 space-y-2">
+                  {pageRevisions.slice(0, 10).map((revision) => (
+                    <div
+                      key={revision.id}
+                      className="flex items-center justify-between gap-4 rounded-xl border border-white/[0.06] bg-black/40 p-3"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-bold text-zinc-500">
+                          {formatDateTime(revision.createdAt)} · {revision.sourceAction || 'UPDATE'}
+                        </p>
+                        <p className="truncate text-xs font-bold text-zinc-200">
+                          {revision.snapshotSummary?.title || form.pageKey}
+                        </p>
+                        <p className="text-[9px] font-black uppercase tracking-wider text-zinc-600">
+                          {revision.snapshotSummary?.status || 'DRAFT'}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => void restorePageRevision(revision)}
+                        disabled={!restoreReason.trim() || restoringRevisionId === revision.id}
+                        className="h-8 rounded-lg border border-white/10 bg-white/[0.04] px-3 text-[9px] font-black uppercase tracking-widest text-zinc-400 transition hover:text-white disabled:opacity-30"
+                      >
+                        {restoringRevisionId === revision.id ? 'Restoring...' : 'Restore'}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+
+            <div className="border-t border-white/[0.06] pt-6">
+              <h3 className="text-xs font-black uppercase tracking-widest text-red-400">
+                Locale record
+              </h3>
+              <p className="mt-2 text-[11px] font-semibold leading-5 text-zinc-600">
+                Soft-delete only {activeLocale.toUpperCase()}. Other locales stay unchanged. Saving this locale again restores the same record and its revision history.
+              </p>
+              <button
+                type="button"
+                onClick={() => void deleteActiveLocalePage()}
+                disabled={!activeMeta?.id || deletingLocale}
+                className="mt-4 h-10 rounded-xl border border-red-500/30 bg-red-500/10 px-5 text-[9px] font-black uppercase tracking-widest text-red-300 transition hover:bg-red-500/20 disabled:opacity-30"
+              >
+                {deletingLocale ? 'Deleting...' : `Delete ${activeLocale.toUpperCase()} record`}
+              </button>
+            </div>
+          </div>
         </div>
       );
     }
@@ -1359,7 +1984,8 @@ export default function PagesPage() {
             </div>
             <div className="flex items-center gap-4">
               {/* Visibility Toggle */}
-              <div className="flex items-center gap-2.5 px-3 py-1.5 bg-white/[0.02] border border-white/[0.05] rounded-xl">
+              {!(form.pageKey === 'referenzen' && block.key === 'labelsBlock') ? (
+                <div className="flex items-center gap-2.5 px-3 py-1.5 bg-white/[0.02] border border-white/[0.05] rounded-xl">
                 <span className={`text-[9px] font-black uppercase tracking-[0.2em] transition-colors ${block.enabled ? 'text-cyan-400' : 'text-zinc-600'}`}>
                   {block.enabled ? 'Live' : 'Hidden'}
                 </span>
@@ -1369,31 +1995,40 @@ export default function PagesPage() {
                 >
                   <div className={`absolute top-1 w-3 h-3 rounded-full transition-all duration-300 ${block.enabled ? 'left-5 bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.5)]' : 'left-1 bg-zinc-600'}`} />
                 </button>
-              </div>
+                </div>
+              ) : (
+                <span className="rounded-xl border border-violet-500/20 bg-violet-500/10 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-violet-300">
+                  Required labels
+                </span>
+              )}
 
-              <div className="w-px h-4 bg-white/10 mx-1" />
+              {form.pageKey !== 'referenzen' ? (
+                <>
+                  <div className="w-px h-4 bg-white/10 mx-1" />
 
-              <button
-                onClick={() => moveBlock(blockIndex, 'up')}
-                disabled={blockIndex === 0}
-                className="w-9 h-9 flex items-center justify-center bg-white/[0.03] border border-white/[0.05] rounded-xl hover:bg-white/[0.08] disabled:opacity-10 transition-colors"
-              >
-                <span className="text-xs">▲</span>
-              </button>
-              <button
-                onClick={() => moveBlock(blockIndex, 'down')}
-                disabled={blockIndex === form.blocks.length - 1}
-                className="w-9 h-9 flex items-center justify-center bg-white/[0.03] border border-white/[0.05] rounded-xl hover:bg-white/[0.08] disabled:opacity-10 transition-colors"
-              >
-                <span className="text-xs">▼</span>
-              </button>
-              <div className="w-px h-4 bg-white/10 mx-1" />
-              <button
-                onClick={() => removeBlock(blockIndex)}
-                className="w-9 h-9 flex items-center justify-center bg-red-500/5 border border-red-500/10 text-red-500/60 rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-all"
-              >
-                <span className="text-sm">🗑️</span>
-              </button>
+                  <button
+                    onClick={() => moveBlock(blockIndex, 'up')}
+                    disabled={blockIndex === 0}
+                    className="w-9 h-9 flex items-center justify-center bg-white/[0.03] border border-white/[0.05] rounded-xl hover:bg-white/[0.08] disabled:opacity-10 transition-colors"
+                  >
+                    <span className="text-xs">▲</span>
+                  </button>
+                  <button
+                    onClick={() => moveBlock(blockIndex, 'down')}
+                    disabled={blockIndex === form.blocks.length - 1}
+                    className="w-9 h-9 flex items-center justify-center bg-white/[0.03] border border-white/[0.05] rounded-xl hover:bg-white/[0.08] disabled:opacity-10 transition-colors"
+                  >
+                    <span className="text-xs">▼</span>
+                  </button>
+                  <div className="w-px h-4 bg-white/10 mx-1" />
+                  <button
+                    onClick={() => removeBlock(blockIndex)}
+                    className="w-9 h-9 flex items-center justify-center bg-red-500/5 border border-red-500/10 text-red-500/60 rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-all"
+                  >
+                    <span className="text-sm">🗑️</span>
+                  </button>
+                </>
+              ) : null}
             </div>
           </header>
 
@@ -1417,7 +2052,21 @@ export default function PagesPage() {
                       onChange={(e) => updateBlockShared(blockIndex, { [k]: e.target.value })}
                     />
                     {isMediaField(k)
-                      ? <MediaFieldEditor value={String(v || '')} onSelect={(url) => updateBlockShared(blockIndex, { [k]: url })} />
+                      ? <MediaFieldEditor
+                          value={String(v || '')}
+                          onSelect={(media) => {
+                            updateBlockShared(blockIndex, { [k]: media.url || '' });
+                            const altField = MEDIA_ALT_FIELD_BY_IMAGE_FIELD[k];
+                            if (
+                              altField &&
+                              media.locale === activeLocale &&
+                              media.alt &&
+                              !asString(localeTexts[altField])
+                            ) {
+                              updateBlockText(blockIndex, activeLocale, { [altField]: media.alt });
+                            }
+                          }}
+                        />
                       : null}
                   </div>
                 ))}
@@ -1441,14 +2090,11 @@ export default function PagesPage() {
                         <label className="text-[11px] font-black text-zinc-400 uppercase tracking-[0.1em]">{k} ({v.length})</label>
                         <button
                           onClick={() => {
-                            let defaultItem: Record<string, unknown> = { title: '', description: '' };
-                            if (k === 'links') defaultItem = { label: '', href: '' };
-                            else if (k === 'stats') defaultItem = { value: '', label: '', description: '' };
-                            else if (k === 'features') defaultItem = { icon: '', label: '' };
-                            else if (block.key === 'excellenceSection') defaultItem = { title: '', tag: '', description: '', image: '', imageAlt: '' };
-                            else defaultItem = { title: '', description: '', image: '', imageAlt: '', cta: '' };
-
-                            addListItem(blockIndex, k, defaultItem);
+                            addListItem(
+                              blockIndex,
+                              k,
+                              getListItemTemplate(form.pageKey, block.key, k)
+                            );
                           }}
                           className="px-4 py-2 bg-gradient-to-r from-cyan-500/10 to-violet-500/10 border border-cyan-500/20 rounded-xl text-[10px] font-black text-cyan-400 hover:from-cyan-500/20 hover:to-violet-500/20 transition-all active:scale-95 flex items-center gap-2"
                         >
@@ -1518,10 +2164,11 @@ export default function PagesPage() {
                             : rawItem;
 
                           const galleryVariant = block.key === 'galleryItemsBlock' ? getGalleryVariantForIndex(ii) : null;
+                          const stableItemId = asString(rawItem.id);
 
                           return (
                             <div
-                              key={ii}
+                              key={stableItemId || ii}
                               className={`
                                 relative group/item transition-all duration-500
                                 ${isExcellence
@@ -1568,7 +2215,14 @@ export default function PagesPage() {
                                     </label>
                                     <MediaFieldEditor
                                       value={String(castItem.image || '')}
-                                      onSelect={(url) => updateListItem(blockIndex, k, ii, { image: url })}
+                                      onSelect={(media) =>
+                                        updateListItem(
+                                          blockIndex,
+                                          k,
+                                          ii,
+                                          buildMediaSelectionUpdates('image', media, castItem, activeLocale)
+                                        )
+                                      }
                                     />
                                   </div>
                                 )}
@@ -1594,11 +2248,22 @@ export default function PagesPage() {
                                             className="w-full h-11 bg-black/40 border border-white/5 rounded-xl px-4 text-xs text-zinc-300 outline-none focus:border-cyan-500/30 transition-all"
                                             value={String(iv || '')}
                                             onChange={(e) => updateListItem(blockIndex, k, ii, { [ik]: e.target.value })}
+                                            readOnly={form.pageKey === 'referenzen' && ik === 'id'}
                                             placeholder={ik === 'tag' ? 'e.g. Design' : `Enter ${ik}...`}
                                           />
                                         )}
                                         {isMediaField(ik) && !isExcellence
-                                          ? <MediaFieldEditor value={String(iv || '')} onSelect={(url) => updateListItem(blockIndex, k, ii, { [ik]: url })} />
+                                          ? <MediaFieldEditor
+                                              value={String(iv || '')}
+                                              onSelect={(media) =>
+                                                updateListItem(
+                                                  blockIndex,
+                                                  k,
+                                                  ii,
+                                                  buildMediaSelectionUpdates(ik, media, castItem, activeLocale)
+                                                )
+                                              }
+                                            />
                                           : null}
                                       </div>
                                     );
@@ -1631,7 +2296,16 @@ export default function PagesPage() {
                       />
                     )}
                     {isMediaField(k)
-                      ? <MediaFieldEditor value={String(v || '')} onSelect={(url) => updateBlockText(blockIndex, activeLocale, { [k]: url })} />
+                      ? <MediaFieldEditor
+                          value={String(v || '')}
+                          onSelect={(media) =>
+                            updateBlockText(
+                              blockIndex,
+                              activeLocale,
+                              buildMediaSelectionUpdates(k, media, localeTexts, activeLocale)
+                            )
+                          }
+                        />
                       : null}
                   </div>
                 );
@@ -1647,7 +2321,7 @@ export default function PagesPage() {
           </summary>
           <div className="p-4 pt-0">
             <div className="bg-black/50 rounded-xl p-4 border border-white/5 font-mono text-[11px] text-zinc-600 overflow-auto max-h-[300px]">
-               {JSON.stringify(splitToLocaleBlocks([block], activeLocale)[0], null, 2)}
+               {JSON.stringify(splitToLocaleBlocks([block], activeLocale, form.pageKey)[0], null, 2)}
             </div>
           </div>
         </details>
@@ -1786,7 +2460,8 @@ export default function PagesPage() {
                           </button>
 
                           {/* Sidebar Reorder Actions */}
-                          <div className="absolute right-0 top-0 bottom-0 flex items-center gap-0.5 opacity-0 group-hover/item:opacity-100 transition-opacity bg-gradient-to-l from-[#08080a] via-[#08080a] to-transparent pl-8 pr-2 rounded-r-lg">
+                          {form.pageKey !== 'referenzen' ? (
+                            <div className="absolute right-0 top-0 bottom-0 flex items-center gap-0.5 opacity-0 group-hover/item:opacity-100 transition-opacity bg-gradient-to-l from-[#08080a] via-[#08080a] to-transparent pl-8 pr-2 rounded-r-lg">
                             <button
                               onClick={(e) => { e.stopPropagation(); moveBlock(bIdx, 'up'); }}
                               disabled={bIdx === 0}
@@ -1801,7 +2476,8 @@ export default function PagesPage() {
                             >
                               ▼
                             </button>
-                          </div>
+                            </div>
+                          ) : null}
                         </div>
                       ))}
 
@@ -1814,20 +2490,44 @@ export default function PagesPage() {
                       {/* Add Block Button nested */}
                       <div className="pt-2 px-3">
                          <div className="relative group/add">
-                            <button className="w-full h-8 rounded-lg border border-dashed border-white/10 flex items-center justify-center gap-2 text-[10px] text-zinc-600 font-bold hover:border-cyan-500/30 hover:text-cyan-400 transition-all">
-                              <span>+</span> Add Section
+                            <button
+                              disabled={form.pageKey === 'referenzen' && missingReferenzenBlocks.length === 0}
+                              className="w-full h-8 rounded-lg border border-dashed border-white/10 flex items-center justify-center gap-2 text-[10px] text-zinc-600 font-bold hover:border-cyan-500/30 hover:text-cyan-400 transition-all disabled:cursor-default disabled:opacity-40"
+                            >
+                              <span>+</span>{' '}
+                              {form.pageKey === 'referenzen'
+                                ? missingReferenzenBlocks.length > 0
+                                  ? 'Restore Section'
+                                  : 'Structure Complete'
+                                : 'Add Section'}
                             </button>
-                            <div className="absolute left-0 bottom-10 hidden group-hover/add:block bg-[#111] border border-white/10 rounded-xl p-2 w-44 shadow-2xl z-50 animate-in zoom-in-95 duration-200">
-                               {['hero', 'cardList', 'faqList', 'reviewList', 'textSection', 'cta', 'footerCta'].map(t => (
-                                 <button
-                                  key={t}
-                                  onClick={() => addBlock(t)}
-                                  className="w-full text-left px-3 py-2 text-[10px] font-bold hover:bg-cyan-500/10 hover:text-cyan-400 rounded-lg text-zinc-500 capitalize transition-colors"
-                                 >
-                                   {t.replace('List', '')}
-                                 </button>
-                               ))}
-                            </div>
+                            {form.pageKey === 'referenzen' ? (
+                              missingReferenzenBlocks.length > 0 ? (
+                                <div className="absolute left-0 bottom-10 hidden group-hover/add:block bg-[#111] border border-white/10 rounded-xl p-2 w-56 shadow-2xl z-50 animate-in zoom-in-95 duration-200">
+                                  {missingReferenzenBlocks.map((definition) => (
+                                    <button
+                                      key={definition.key}
+                                      onClick={() => restoreReferenzenBlock(definition)}
+                                      className="w-full text-left px-3 py-2 text-[10px] font-bold hover:bg-cyan-500/10 hover:text-cyan-400 rounded-lg text-zinc-500 transition-colors"
+                                    >
+                                      {definition.key}
+                                    </button>
+                                  ))}
+                                </div>
+                              ) : null
+                            ) : (
+                              <div className="absolute left-0 bottom-10 hidden group-hover/add:block bg-[#111] border border-white/10 rounded-xl p-2 w-44 shadow-2xl z-50 animate-in zoom-in-95 duration-200">
+                                {['hero', 'cardList', 'faqList', 'reviewList', 'textSection', 'cta', 'footerCta'].map(t => (
+                                  <button
+                                    key={t}
+                                    onClick={() => addBlock(t)}
+                                    className="w-full text-left px-3 py-2 text-[10px] font-bold hover:bg-cyan-500/10 hover:text-cyan-400 rounded-lg text-zinc-500 capitalize transition-colors"
+                                  >
+                                    {t.replace('List', '')}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
                          </div>
                       </div>
                     </div>
@@ -1927,6 +2627,17 @@ export default function PagesPage() {
                       className="h-11 px-5 inline-flex items-center rounded-xl border border-amber-400/20 bg-amber-400/10 text-[11px] font-black uppercase tracking-widest text-amber-200 transition hover:border-amber-300/40 hover:bg-amber-400/15"
                      >
                        Open hidden preview
+                     </a>
+                   )}
+                   {activePageKey === 'referenzen' && (
+                     <a
+                      href={`/${activeLocale}/referenzen?cmsPreview=1`}
+                      target="_blank"
+                      rel="noreferrer"
+                      title="Preview shows the latest saved CMS version."
+                      className="h-11 px-5 inline-flex items-center rounded-xl border border-amber-400/20 bg-amber-400/10 text-[11px] font-black uppercase tracking-widest text-amber-200 transition hover:border-amber-300/40 hover:bg-amber-400/15"
+                     >
+                       Open preview
                      </a>
                    )}
                    <button

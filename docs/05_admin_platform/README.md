@@ -23,6 +23,8 @@ Read first:
 
 Task-specific docs:
 
+- Owner-approved parallel Payload CMS pilot (утверждённый параллельный пилот новой CMS), source switching and Referenzen migration: `payload_parallel_cms_pilot_plan.md`.
+- Orchestrator infrastructure (инфраструктура оркестратора), operational state (оперативное состояние), bootstrap prompt (стартовый промт) and agent templates (шаблоны агентов) for that pilot: `payload_orchestration/README.md`.
 - Rollout sequence, release gates, and active checkpoint: `admin_rollout_execution_plan.md`.
 - Target architecture and phased admin/CMS scope: `admin_platform_overview.md`.
 - Implementation sequencing against current code reality: `admin_implementation_phases.md`.
@@ -60,5 +62,7 @@ Security/admin guardrails:
 
 ## Current Planning Rule
 
+- `payload_parallel_cms_pilot_plan.md` is the active source of truth for the owner-approved parallel migration of public page content, beginning with `Referenzen` (страницей примеров работ). It does not replace CRM or other operational modules.
+- `payload_orchestration/` contains the approved coordination rules and single operational progress source for the future Payload orchestrator (оркестратора Payload); its presence does not authorize implementation or Step 1 (Шаг 1).
 - `admin_platform_overview.md` is the target-state anchor for architecture and phased rollout.
 - `admin_implementation_phases.md` keeps implementation sequencing with current code reality.

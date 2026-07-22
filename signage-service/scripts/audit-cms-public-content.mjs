@@ -1,14 +1,17 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
 import dotenv from 'dotenv';
 
+import { getReferenzenPublishIssues } from '../src/lib/cms/referenzen-schema.ts';
+
 dotenv.config({ path: '.env.local', quiet: true });
 dotenv.config({ quiet: true });
 
-const LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'];
+export const LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'];
 const DEFAULT_JSON_OUTPUT = 'tmp/cms-public-content-audit.json';
 const DEFAULT_MARKDOWN_OUTPUT = 'tmp/cms-public-content-audit.md';
 
@@ -120,18 +123,17 @@ const PAGE_DEFINITIONS = {
     routeUsesCms: true,
     fallback: 'large static CONTENT object in page.tsx',
     blocks: [
-      block('hero', ['heroBlock', 'hero'], ['title', 'intro']),
+      block('hero', ['heroBlock', 'hero'], ['title', 'intro'], { allowDisabled: true }),
       block('textSection', ['recentIntroBlock'], ['title'], { optional: true }),
-      block('cardList', ['casesBlock', 'cases'], ['items']),
-      block('textSection', ['reportIntroBlock'], ['title'], { optional: true }),
+      block('cardList', ['casesBlock', 'cases'], ['items'], { allowDisabled: true }),
+      block('textSection', ['reportIntroBlock'], ['title', 'image', 'imageAlt'], { optional: true }),
+      block('cardList', ['reportHooksBlock'], ['items'], { optional: true, allowDisabled: true }),
       block('cardList', ['reportsBlock'], ['items'], { optional: true }),
       block('textSection', ['galleryIntroBlock'], ['title'], { optional: true }),
-      block('cardList', ['galleryItemsBlock'], ['items']),
+      block('cardList', ['galleryItemsBlock'], ['items'], { allowDisabled: true }),
       block('cta', ['promoBlock'], ['title'], { optional: true }),
-      block('textSection', ['categoriesIntroBlock'], ['title'], { optional: true }),
-      block('cardList', ['productCategoriesBlock'], ['items']),
       block('cardList', ['typeBandLinesBlock'], ['items'], { optional: true }),
-      block('cta', ['finalCtaBlock'], ['title', 'primaryLabel']),
+      block('cta', ['finalCtaBlock'], ['title', 'primaryLabel'], { allowDisabled: true }),
       block('labels', ['labelsBlock'], [], { optional: true }),
     ],
   },
@@ -150,7 +152,15 @@ const EXPECTED_PROBLEM_ARTICLES = [
 ];
 
 function block(type, keys, fields, options = {}) {
-  return { type, keys, fields, optional: false, matchAnyTextSection: false, ...options };
+  return {
+    type,
+    keys,
+    fields,
+    optional: false,
+    matchAnyTextSection: false,
+    allowDisabled: false,
+    ...options,
+  };
 }
 
 function normalizeConnectionString(value) {
@@ -185,19 +195,40 @@ function getPrisma() {
   });
 }
 
-function parseArgs() {
-  const args = process.argv.slice(2);
+export function parseArgs(args = process.argv.slice(2)) {
   const valueFor = (name, fallback) => {
     const prefix = `--${name}=`;
     return args.find((arg) => arg.startsWith(prefix))?.slice(prefix.length) ?? fallback;
   };
 
+  const pageKey = valueFor('page', '').trim().toLowerCase();
+
   return {
     jsonOutput: valueFor('json', DEFAULT_JSON_OUTPUT),
     markdownOutput: valueFor('markdown', DEFAULT_MARKDOWN_OUTPUT),
     baseUrl: valueFor('base-url', process.env.CMS_AUDIT_BASE_URL ?? ''),
+    pageKey: pageKey || null,
     skipCrawl: args.includes('--skip-crawl'),
   };
+}
+
+export function selectPageDefinitions(pageKey = null) {
+  if (!pageKey) {
+    return Object.entries(PAGE_DEFINITIONS);
+  }
+
+  const definition = PAGE_DEFINITIONS[pageKey];
+  if (!definition) {
+    throw new Error(
+      `Unknown CMS page filter (${pageKey}). Expected one of: ${Object.keys(PAGE_DEFINITIONS).join(', ')}.`
+    );
+  }
+
+  return [[pageKey, definition]];
+}
+
+export function shouldAuditProblemArticles(pageKey = null) {
+  return pageKey === null;
 }
 
 function isObject(value) {
@@ -283,15 +314,40 @@ function isMediaUrlField(key) {
   );
 }
 
-async function auditPages(prisma, findings, mediaRefs) {
+function getIssueItemContext(blocks, issue) {
+  const itemMatch = issue.fieldPath.match(/\.items\[(\d+)\]/);
+  const itemIndex = itemMatch ? Number(itemMatch[1]) : null;
+  const block = blocks.find((candidate) => candidate.key === issue.blockKey);
+  const item = itemIndex !== null && Array.isArray(block?.items)
+    ? block.items[itemIndex]
+    : null;
+  const itemId = isObject(item) && typeof item.id === 'string' && item.id.trim()
+    ? item.id.trim()
+    : null;
+
+  return { itemIndex, itemId };
+}
+
+export function collectReferenzenAuditIssues(blocks, locale, status = 'PUBLISHED') {
+  return getReferenzenPublishIssues(blocks, locale).map((issue) => ({
+    ...issue,
+    ...getIssueItemContext(blocks, issue),
+    severity: status === 'PUBLISHED' ? 'ERROR' : 'WARN',
+  }));
+}
+
+export async function auditPages(prisma, findings, mediaRefs, pageKeyFilter = null) {
   const rows = await prisma.cmsPage.findMany({
-    where: { deletedAt: null },
+    where: {
+      deletedAt: null,
+      ...(pageKeyFilter ? { pageKey: pageKeyFilter } : {}),
+    },
     orderBy: [{ pageKey: 'asc' }, { locale: 'asc' }],
   });
   const byKeyLocale = new Map(rows.map((row) => [`${row.pageKey}:${row.locale}`, row]));
   const results = [];
 
-  for (const [pageKey, definition] of Object.entries(PAGE_DEFINITIONS)) {
+  for (const [pageKey, definition] of selectPageDefinitions(pageKeyFilter)) {
     const localesToCheck = definition.canonicalLocaleOnly ? [definition.canonicalLocaleOnly] : LOCALES;
 
     if (!definition.routeUsesCms) {
@@ -316,6 +372,7 @@ async function auditPages(prisma, findings, mediaRefs) {
         blocks: [],
         missingBlocks: [],
         missingFields: [],
+        invalidItems: [],
         fallback: definition.fallback,
       };
 
@@ -377,12 +434,16 @@ async function auditPages(prisma, findings, mediaRefs) {
 
         result.blocks.push(`${found.type}:${found.key}${found.enabled === false ? ' (disabled)' : ''}`);
 
-        if (found.enabled === false && !expected.optional) {
+        if (found.enabled === false && !expected.optional && !expected.allowDisabled) {
           addFinding(findings, 'WARN', 'EXPECTED_BLOCK_DISABLED', `${pageKey}/${locale} block ${found.key} is disabled.`, {
             pageKey,
             locale,
             blockKey: found.key,
           });
+        }
+
+        if (found.enabled === false) {
+          continue;
         }
 
         for (const field of expected.fields) {
@@ -396,6 +457,36 @@ async function auditPages(prisma, findings, mediaRefs) {
               { pageKey, locale, blockKey: found.key, field }
             );
           }
+        }
+      }
+
+      if (pageKey === 'referenzen') {
+        const nestedIssues = collectReferenzenAuditIssues(blocks, locale, row.status);
+
+        for (const issue of nestedIssues) {
+          result.invalidItems.push({
+            code: issue.code,
+            blockKey: issue.blockKey,
+            fieldPath: issue.fieldPath,
+            itemIndex: issue.itemIndex,
+            itemId: issue.itemId,
+            message: issue.message,
+          });
+          addFinding(
+            findings,
+            issue.severity,
+            issue.code,
+            `${pageKey}/${locale}: ${issue.message}`,
+            {
+              pageKey,
+              locale,
+              status: row.status,
+              blockKey: issue.blockKey,
+              fieldPath: issue.fieldPath,
+              itemIndex: issue.itemIndex,
+              itemId: issue.itemId,
+            }
+          );
         }
       }
 
@@ -584,6 +675,54 @@ async function auditMedia(prisma, mediaRefs, findings) {
   return results;
 }
 
+function readHtmlAttribute(htmlTag, attribute) {
+  const match = htmlTag.match(new RegExp(`\\b${attribute}\\s*=\\s*["']([^"']+)["']`, 'i'));
+  return match?.[1]?.trim().toLowerCase() ?? null;
+}
+
+export function inspectLocalizedRouteMarkup(route, html) {
+  const localeMatch = route.match(/^\/([^/]+)(?:\/|$)/);
+  const locale = localeMatch && LOCALES.includes(localeMatch[1]) ? localeMatch[1] : null;
+
+  if (!locale) {
+    return {
+      locale: null,
+      expectedDir: null,
+      lang: null,
+      dir: null,
+      issues: [],
+    };
+  }
+
+  const htmlTag = html.match(/<html\b[^>]*>/i)?.[0] ?? '';
+  const lang = readHtmlAttribute(htmlTag, 'lang');
+  const dir = readHtmlAttribute(htmlTag, 'dir');
+  const expectedDir = locale === 'ar' ? 'rtl' : 'ltr';
+  const issues = [];
+
+  if (lang !== locale) {
+    issues.push({
+      code: 'CRAWL_LOCALE_LANG_INVALID',
+      message: `${route} must render <html lang="${locale}">; received ${lang ?? 'no lang attribute'}.`,
+      locale,
+      expected: locale,
+      actual: lang,
+    });
+  }
+
+  if (dir !== expectedDir) {
+    issues.push({
+      code: 'CRAWL_LOCALE_DIR_INVALID',
+      message: `${route} must render <html dir="${expectedDir}">; received ${dir ?? 'no dir attribute'}.`,
+      locale,
+      expected: expectedDir,
+      actual: dir,
+    });
+  }
+
+  return { locale, expectedDir, lang, dir, issues };
+}
+
 async function crawlRoutes(baseUrl, pageResults, articleResults, findings) {
   const cleanBase = baseUrl.replace(/\/+$/, '');
   const routeSet = new Set();
@@ -606,6 +745,7 @@ async function crawlRoutes(baseUrl, pageResults, articleResults, findings) {
     try {
       const response = await fetch(url, { redirect: 'manual' });
       const text = await response.text().catch(() => '');
+      const localeMarkup = inspectLocalizedRouteMarkup(route, text);
       const result = {
         route,
         url,
@@ -614,12 +754,27 @@ async function crawlRoutes(baseUrl, pageResults, articleResults, findings) {
         bytes: text.length,
         durationMs: Date.now() - startedAt,
         hasPixelRing: /PixelRing/i.test(text),
+        locale: localeMarkup.locale,
+        lang: localeMarkup.lang,
+        dir: localeMarkup.dir,
       };
 
       if (!result.ok) {
         addFinding(findings, 'ERROR', 'CRAWL_ROUTE_NOT_OK', `${route} returned HTTP ${response.status}.`, result);
       } else if (text.length < 1000) {
         addFinding(findings, 'WARN', 'CRAWL_ROUTE_SMALL_RESPONSE', `${route} returned a very small response.`, result);
+      }
+
+      if (result.ok) {
+        for (const issue of localeMarkup.issues) {
+          addFinding(findings, 'ERROR', issue.code, issue.message, {
+            route,
+            url,
+            locale: issue.locale,
+            expected: issue.expected,
+            actual: issue.actual,
+          });
+        }
       }
 
       results.push(result);
@@ -691,6 +846,7 @@ function renderMarkdown(report) {
     status: page.status,
     missingBlocks: page.missingBlocks.join(', '),
     missingFields: page.missingFields.join(', '),
+    invalidItems: page.invalidItems.map((issue) => issue.fieldPath).join(', '),
   }));
 
   const articleRows = report.problemArticles.map((article) => ({
@@ -708,6 +864,7 @@ function renderMarkdown(report) {
     '',
     `Generated: ${report.generatedAt}`,
     `Database: ${report.databaseTarget}`,
+    `Page filter: ${report.pageFilter ?? 'all'}`,
     `Result: ${report.summary.result}`,
     '',
     '## Summary',
@@ -741,19 +898,24 @@ function renderMarkdown(report) {
       { label: 'CMS status', value: (row) => row.status },
       { label: 'Missing blocks', value: (row) => row.missingBlocks },
       { label: 'Missing fields', value: (row) => row.missingFields },
+      { label: 'Invalid nested items', value: (row) => row.invalidItems },
     ]),
-    '',
-    '## Problem Article Matrix',
-    '',
-    markdownTable(articleRows, [
-      { label: 'CMS slug', value: (row) => row.slug },
-      { label: 'Locale', value: (row) => row.locale },
-      { label: 'Public slug', value: (row) => row.publicSlug },
-      { label: 'Status', value: (row) => row.status },
-      { label: 'Content', value: (row) => row.content },
-      { label: 'Short answer', value: (row) => row.shortAnswer },
-      { label: 'SEO', value: (row) => row.seo },
-    ]),
+    articleRows.length
+      ? [
+          '',
+          '## Problem Article Matrix',
+          '',
+          markdownTable(articleRows, [
+            { label: 'CMS slug', value: (row) => row.slug },
+            { label: 'Locale', value: (row) => row.locale },
+            { label: 'Public slug', value: (row) => row.publicSlug },
+            { label: 'Status', value: (row) => row.status },
+            { label: 'Content', value: (row) => row.content },
+            { label: 'Short answer', value: (row) => row.shortAnswer },
+            { label: 'SEO', value: (row) => row.seo },
+          ]),
+        ].join('\n')
+      : '',
     report.crawl?.length
       ? [
           '',
@@ -763,6 +925,8 @@ function renderMarkdown(report) {
             { label: 'Route', value: (row) => row.route },
             { label: 'HTTP', value: (row) => row.status },
             { label: 'OK', value: (row) => row.ok ? 'yes' : 'no' },
+            { label: 'Lang', value: (row) => row.lang ?? '' },
+            { label: 'Dir', value: (row) => row.dir ?? '' },
             { label: 'Bytes', value: (row) => row.bytes },
             { label: 'Duration ms', value: (row) => row.durationMs },
           ]),
@@ -800,13 +964,16 @@ async function writeText(filePath, value) {
 
 async function main() {
   const options = parseArgs();
+  selectPageDefinitions(options.pageKey);
   const prisma = getPrisma();
   const findings = [];
   const mediaRefs = [];
 
   try {
-    const pages = await auditPages(prisma, findings, mediaRefs);
-    const problemArticles = await auditProblemArticles(prisma, findings);
+    const pages = await auditPages(prisma, findings, mediaRefs, options.pageKey);
+    const problemArticles = shouldAuditProblemArticles(options.pageKey)
+      ? await auditProblemArticles(prisma, findings)
+      : [];
     const media = await auditMedia(prisma, mediaRefs, findings);
     const crawl = options.baseUrl && !options.skipCrawl
       ? await crawlRoutes(options.baseUrl, pages, problemArticles, findings)
@@ -815,8 +982,11 @@ async function main() {
       generatedAt: new Date().toISOString(),
       databaseTarget: safeDatabaseTarget(),
       baseUrl: options.baseUrl || null,
+      pageFilter: options.pageKey,
       locales: LOCALES,
-      expectedProblemArticles: EXPECTED_PROBLEM_ARTICLES.map(([cmsSlug, publicSlug]) => ({ cmsSlug, publicSlug })),
+      expectedProblemArticles: shouldAuditProblemArticles(options.pageKey)
+        ? EXPECTED_PROBLEM_ARTICLES.map(([cmsSlug, publicSlug]) => ({ cmsSlug, publicSlug }))
+        : [],
       pages,
       problemArticles,
       media,
@@ -841,7 +1011,13 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error('CMS public content audit failed:', error);
-  process.exitCode = 1;
-});
+const directScriptPath = process.argv[1]
+  ? pathToFileURL(path.resolve(process.argv[1])).href
+  : null;
+
+if (directScriptPath === import.meta.url) {
+  main().catch((error) => {
+    console.error('CMS public content audit failed:', error);
+    process.exitCode = 1;
+  });
+}

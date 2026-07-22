@@ -119,6 +119,7 @@ export function buildLanguageAlternatesForLocales(
 export function buildPublicPageMetadata({
   locale,
   path = '',
+  canonicalUrl: canonicalOverride,
   title,
   description,
   image,
@@ -128,6 +129,7 @@ export function buildPublicPageMetadata({
 }: {
   locale: string;
   path?: string;
+  canonicalUrl?: string | null;
   title: string;
   description: string;
   image?: string;
@@ -136,7 +138,9 @@ export function buildPublicPageMetadata({
   includeLanguageAlternates?: boolean;
 }): Metadata {
   const safeLocale = getSiteLocale(locale);
-  const canonicalUrl = buildLocaleUrl(safeLocale, path);
+  const canonicalUrl = canonicalOverride
+    ? buildSiteUrl(canonicalOverride)
+    : buildLocaleUrl(safeLocale, path);
   const imageUrl = image ? buildSiteUrl(image) : undefined;
 
   return {

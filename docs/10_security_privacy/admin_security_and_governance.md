@@ -9,6 +9,14 @@ Security requirements must apply to both:
 - CMS: `/ring-master-config`;
 - CRM: `/ring-manager-crm`.
 
+Planned parallel CMS boundary (approved, not implemented, 2026-07-20):
+
+- a separate Payload CMS (новая система управления публичным контентом) application is approved for a `Referenzen` (страница примеров работ) pilot only;
+- its authentication, sessions, access control, media uploads, preview (предпросмотр), secrets and audit/version behavior are a new security surface and are not covered by the current `/ring-master-config` guards or existing static security tests;
+- Payload must use separate HTTP-only secure cookies (защищённые файлы сессии), a separate secret, deny-by-default access, restricted CORS (межсайтовые запросы), upload validation and isolated database/storage permissions;
+- production remains on the legacy CMS until the new surface passes its own runtime and browser security checks;
+- the implementation and release gates are defined in `../05_admin_platform/payload_parallel_cms_pilot_plan.md`.
+
 Technology and hosting baseline for this phase:
 
 - admin UI layer can use Tabler components/theme;

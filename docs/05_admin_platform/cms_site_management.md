@@ -2,7 +2,7 @@
 
 ## Goal
 
-`/ring-master-config` must become the complete control panel for public website content, SEO/GEO, media, and AI knowledge.
+`/ring-master-config` remains the current control panel for public website content, SEO/GEO, media, and AI knowledge that has not migrated to the owner-approved parallel Payload CMS (новую систему управления публичным контентом).
 
 It should not expose free-form HTML editing. The CMS should manage structured content that the frontend renders through safe, tested components.
 
@@ -18,8 +18,20 @@ This CMS plan uses the current project entities as the base and extends them in 
 
 Planning constraint:
 
-- do not replace these entities with a new external CMS model;
-- evolve them with revisions, workflow, permissions, and operations hardening.
+- do not delete or mutate these entities through a big-bang external-CMS replacement;
+- evolve them with revisions, workflow, permissions, and operations hardening while they remain authoritative;
+- allow page-by-page migration only under `payload_parallel_cms_pilot_plan.md`, beginning with `Referenzen` (страницей примеров работ);
+- preserve the legacy row and media for rollback (отката) until a separate retirement decision.
+
+## Parallel Payload Pilot Boundary (Approved 2026-07-20)
+
+- Payload is approved for the public content layer only, not CRM (системы работы с заявками), AI Knowledge (управления знаниями для ИИ), the client portal or other operational modules.
+- `Referenzen` (страница примеров работ) is the first and only approved pilot page.
+- Production continues using the current CMS until local development, import, protected preview (предпросмотр) and owner UAT (приёмочная проверка) pass.
+- Local development uses an explicit `legacy` (старая CMS) / `payload` (новая CMS) source switch rather than deleting the existing loader.
+- Source content is exported read-only and imported as a copy; no dual writes or automatic two-way synchronization are allowed.
+- The detailed sequence, storage boundary, acceptance criteria and rollback (откат) are defined in `payload_parallel_cms_pilot_plan.md`.
+- This is approved future work, not a claim that Payload is already installed or connected.
 
 ## CMS Areas
 
@@ -113,6 +125,17 @@ Navigation note (2026-04-22):
 
 Do not store JSX or arbitrary HTML in CMS. Store safe data for existing frontend components.
 
+Current page-specific hardened slice (2026-07-19):
+
+- `referenzen` uses a fixed allowlisted block schema (фиксированную разрешённую схему блоков), not a free-form page builder;
+- its editor exposes typed fields and list-item templates for every rendered section, photo, Alt text (альтернативное описание), category filter, CTA (кнопку действия), interface label and visibility switch;
+- stable item IDs (стабильные идентификаторы элементов) are shared across locales so image changes and deletion target the corresponding item instead of an array position;
+- publishing runs nested server validation; incomplete enabled items, missing required Alt text, duplicate IDs, unsupported blocks, undersized type-band content and unmapped gallery filters are rejected, while incomplete content may still be saved as `DRAFT` (черновик);
+- all locale rows in one editor save use one Serializable transaction (транзакцию с сериализуемой изоляцией), optimistic concurrency (защиту от перезаписи чужих изменений), audit records and revisions;
+- the editor provides OWNER preview (предпросмотр владельца), revision restore and locale-level soft delete/recovery (мягкое удаление/восстановление языка);
+- public rendering treats the CMS record as authoritative: hidden/empty content is not replaced by static copy, `DRAFT` (черновик), deleted and invalid records do not publish, and static fallback (резервный статический контент) is restricted to a missing row or recoverable database outage;
+- this is verified for Referenzen only and must not be generalized into a claim that every page key has the same structured controls.
+
 ### Media Library
 
 The CMS needs a public media library separate from private customer attachments.
@@ -147,6 +170,7 @@ Current MVP coverage:
 - OWNER-only `/api/cms/media` collection/detail routes implement upload + CRUD with CSRF, UUID id guards, and audit logging;
 - delete is blocked when media is still referenced by CMS article/page content (`where used` check);
 - `/ring-master-config/dashboard/media` and starter media pickers in article/page editors are available for selecting and inserting public CMS media references.
+- the Referenzen page editor can upload an image directly with required locale and Alt text (альтернативное описание), shows media locale/Alt readiness and copies a matching-locale Alt value into the paired page field without deleting or duplicating the source media row.
 
 ### Forms Configuration (New Expansion Track)
 
@@ -236,7 +260,8 @@ Production-grade CMS should also support:
 
 Agreed implementation direction for this workflow block:
 
-- workflow/state and revision logic stay in current `Next.js + Prisma + PostgreSQL` backend;
+- workflow/state and revision logic stay in the current `Next.js + Prisma + PostgreSQL` backend for content that remains in the legacy CMS;
+- an explicitly migrated page may use Payload workflow and versions after its pilot acceptance and source cutover;
 - editor and moderation interfaces use Tabler-based admin UI components;
 - scheduled publishing runs through cron (managed-hosting cron first, server cron for self-hosted fallback);
 - no full visual page builder in this phase.
