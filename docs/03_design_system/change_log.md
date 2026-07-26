@@ -1,5 +1,16 @@
 # Design System Documentation Change Log
 
+## 2026-07-25
+
+- Replaced the `/[locale]/ueber-uns` hero diagnostic terminal with the owner-selected logo-led
+  service-line composition.
+- Reused the official PixelRing ring and square as a dedicated transparent visual asset instead
+  of introducing a dashboard, photograph, CSS drawing, or inline SVG.
+- Kept the headline and body copy as live localized text; added three short localized process
+  labels and simplified the following benefit row into a numbered editorial strip.
+- Verified the new composition at 1440 × 900 and 390 × 844, including Arabic RTL and zero
+  horizontal overflow.
+
 ## 2026-07-12
 
 - Replaced the stale `max-w-7xl` / repeated section-gutter guidance with the implemented global

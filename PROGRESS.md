@@ -14,6 +14,34 @@ Startup reading rule:
 
 Latest checkpoint:
 
+- Date: 2026-07-26
+- Current stage: The `Über uns` hero (первый экран страницы «О нас») process logic is implemented locally around the owner-confirmed company formula `PRÜFUNG → REPARATUR → SERVICE` (проверка → ремонт → сервис). Upper labels and lower numbered explanations now describe the same three steps, share aligned column centers, and reuse the existing `ServiceStamp` (фирменную сервисную печать) instead of creating an approximation. DE/EN/RU/TR/PL/AR copy, ESLint, TypeScript, `git diff --check` and production build pass.
+- Next action: Owner opens `http://127.0.0.1:3000/de/ueber-uns` in the integrated browser so the blocked desktop/mobile/RTL screenshot and final design QA (визуальная проверка) can be completed.
+
+- Date: 2026-07-26
+- Current stage: The first two `Über uns` (страницы «О нас») regions are now one owner-approved light editorial surface: the hero (первый экран) and three benefits share a white 34 px container on cool gray, the breadcrumb is plain text instead of a mini-card, spacing and headline density are calmer, and the benefits no longer read as a bordered table. Existing DE/EN/RU/TR/PL/AR text and the official process-line asset remain unchanged. Lint, TypeScript, production build, DE desktop/mobile, AR RTL mobile, console and zero-overflow checks pass; design QA (визуальная проверка) is passed.
+- Next action: Owner visually reviews the supplied German screenshot, then separately approves any further refinement, commit or deployment.
+
+- Date: 2026-07-26
+- Current stage: The owner-approved unified-surface direction is implemented locally on `/[locale]/ueber-uns` (локализованной странице «О нас»). `Was wir betreuen → Reparatur statt Reflex-Austausch → Für wen → So läuft eine Anfrage ab` (что мы обслуживаем → ремонт вместо автоматической замены → для кого → как проходит заявка) now share one calm white container on a cool gray background, with four editorial chapters, hairline dividers and no nested mini-cards. Existing content and four sector links remain intact. Targeted lint, TypeScript, production build, DE/RU/AR browser rendering, Arabic RTL (арабское направление справа налево), console and zero-horizontal-overflow checks pass; design QA (визуальная проверка) is recorded as passed.
+- Next action: Owner visually accepts the local German page, then separately approves any commit or deployment.
+
+- Date: 2026-07-26
+- Current stage: A standalone Russian `Über uns` (страница «О нас») redesign prototype is available at `DesignPrototip/pixelring-about-unified-card.html`: the four owner-selected content sections now read as one calm light surface on a cool gray page, with shared spacing and dividers and without nested mini-cards. The 1280 px desktop rendering, font loading, document structure, console, zero-horizontal-overflow and responsive CSS rules pass; the live application remains unchanged.
+- Next action: Owner reviews the isolated prototype and decides whether this direction should be adapted to the canonical German `Über uns` (страница «О нас») implementation.
+
+- Date: 2026-07-25
+- Current stage: The owner-approved `Über uns` section order (последовательность блоков страницы «О нас») is implemented locally: `Wer wir sind → Was wir betreuen → Reparatur statt Reflex-Austausch → Für wen → So läuft eine Anfrage ab → Materialien & Komponenten` (кто мы → что обслуживаем → ремонт вместо автоматической замены → для кого → как проходит заявка → материалы и компоненты). The materials block is reduced to one localized premium-material statement and a full-width continuous text marquee (полноширинную бегущую строку) for the eight current brands; long supplier/partnership explanations were removed. DE/EN/RU/TR/PL/AR copy, TypeScript, targeted lint, production build, RU desktop/mobile, AR RTL (арабская версия справа налево) and zero-overflow checks pass.
+- Next action: Owner visually accepts the revised local `/ru/ueber-uns` page, then separately approves commit/deployment.
+
+- Date: 2026-07-25
+- Current stage: The owner-selected `Über uns` hero (первый экран страницы «О нас») is implemented locally without photography or the former AI-like `Diagnose-Terminal` (диагностический терминал). The official PixelRing ring and square form a continuous `Prüfen → Entscheiden → Umsetzen` (Проверить → Решить → Выполнить) line; the existing headline and introductory copy remain unchanged, the three short stages are localized for DE/EN/RU/TR/PL/AR, and the following benefit row uses a quieter numbered editorial layout. Targeted lint, TypeScript, production build, DE desktop/mobile, AR RTL (арабская версия справа налево), zero-overflow, mobile-menu and console checks pass; design QA (визуальная проверка) is recorded as passed.
+- Next action: Owner visually reviews `/de/ueber-uns` (немецкую страницу «О нас») and then provides the desired headline, paragraph or stage-label wording changes as a separate copy pass.
+
+- Date: 2026-07-25
+- Current stage: Owner-approved cleanup of the public About page: the standalone work video and anonymized service-case testimonials were removed from the localized page, fallback content, CMS adapter, component tree, seed data, and unique local media assets. Lint and diff checks pass; the later production build also passes with external font access.
+- Next action: Owner visually confirms the shortened `/ru/ueber-uns` page, then separately approves commit/deployment.
+
 - Date: 2026-07-21
 - Current stage: The owner-selected `Referenzen` slogan card (карточка-слоган страницы примеров работ) is implemented locally and in the current CMS as a light Apple-inspired split composition (светлая разделённая композиция в духе Apple): `Ein Schild darf nicht müde aussehen.` (вывеска не должна выглядеть уставшей) remains on the left, while a separately replaceable signage image is shown on the right. The shared image is managed through the existing media library, its Alt text (альтернативное описание) is localized for DE/EN/RU/TR/PL/AR, and the CSS gradient transition (плавный переход CSS) is independent of the image file. Six CMS page records, one media record, revisions and audit logs were updated; focused tests, security checks, production build and DE/RU/AR runtime markup checks pass.
 - Next action: Owner visually accepts the light desktop/mobile card on the local page, then separately approves commit/deployment.

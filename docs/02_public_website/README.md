@@ -42,6 +42,62 @@ Use this folder for:
 
 ## Progress Log
 
+* **Date:** 2026-07-26
+* **Current sprint/block:** `Prüfung → Reparatur → Service` (проверка → ремонт → сервис) hero sequence (последовательность первого экрана).
+* **Done:** Replaced the mismatched duplicate `01–02–03` logic with one coherent brand sequence across DE/EN/RU/TR/PL/AR. The upper curve now names `Prüfung`, `Reparatur`, and `Service` (проверку, ремонт и сервис), while the lower three columns explain the corresponding step. The curve spans the same full-width three-column axis as the explanations. The existing reusable `ServiceStamp` (фирменная сервисная печать) from the homepage is placed as a restrained finishing mark; no approximate seal asset was generated from the supplied screenshot.
+* **In progress:** Browser screenshot and final design QA (визуальная проверка дизайна).
+* **Next action:** Open `http://127.0.0.1:3000/de/ueber-uns` in the integrated browser, then capture DE desktop/mobile and AR RTL mobile (немецкую версию на компьютере и телефоне и арабскую версию справа налево на телефоне).
+* **Blockers/risks:** The integrated browser blocked the existing `localhost` tab under its local-URL policy. ESLint (проверка кода), TypeScript (проверка типов), `git diff --check` (проверка формата изменений) and production build (промышленная сборка) pass, but the design QA result remains blocked until a new browser-rendered screenshot exists.
+* **Updated documents/code:** About page renderer and localized structure copy (рендер и локализованные структурные тексты страницы «О нас»), existing `ServiceStamp` (фирменная сервисная печать), `design-qa.md` (визуальная проверка дизайна), this public-website log (журнал публичного сайта) and root `PROGRESS.md` (краткий глобальный журнал).
+
+* **Date:** 2026-07-26
+* **Current sprint/block:** Unified `Über uns` hero and benefits (единый первый экран и преимущества страницы «О нас»).
+* **Done:** Combined the first screen and its three benefits into one white 34 px surface on `#F2F3F5`. The breadcrumb (хлебные крошки) is now an unboxed text row, headline typography and vertical spacing are calmer, the introductory copy and official `Prüfen → Entscheiden → Umsetzen` (проверить → решить → выполнить) process line form one lower grid, and the benefits sit below one hairline divider without former table-like vertical borders. Existing localized copy and the supplied process-line asset remain unchanged.
+* **In progress:** Owner visual acceptance of the supplied German screenshot.
+* **Next action:** Review `/de/ueber-uns` (немецкую страницу «О нас»), then separately approve any refinement, commit or deployment.
+* **Blockers/risks:** No implementation blocker. Targeted ESLint (целевая проверка кода), TypeScript (проверка типов), `git diff --check` (проверка формата изменений), production build (промышленная сборка), DE desktop/mobile (немецкая версия на компьютере и телефоне), AR RTL mobile (арабская версия справа налево на телефоне), console and zero-horizontal-overflow checks pass.
+* **Updated documents/code:** About page renderer (рендер страницы «О нас»), `design-qa.md` (визуальная проверка дизайна), this public-website log (журнал публичного сайта) and root `PROGRESS.md` (краткий глобальный журнал).
+
+* **Date:** 2026-07-26
+* **Current sprint/block:** Live `Über uns` (страница «О нас») unified service chapters (единые сервисные главы).
+* **Done:** Adapted the owner-approved standalone direction to the live localized page. `Was wir betreuen` (что мы обслуживаем), `Reparatur statt Reflex-Austausch` (ремонт вместо автоматической замены), `Für wen` (для кого) and `So läuft eine Anfrage ab` (как проходит заявка) now sit inside one shared white container on a cool gray background. The four chapters use one spacing system and thin dividers; service bullets, dark argument cards, sector mini-cards and numbered process cards were replaced with plain editorial lists and columns. Existing DE/EN/RU/TR/PL/AR content and all four sector links remain unchanged.
+* **In progress:** Owner visual acceptance of the German canonical implementation (немецкой канонической реализации).
+* **Next action:** Review the local `/de/ueber-uns` (немецкую страницу «О нас»), then separately approve any commit or deployment.
+* **Blockers/risks:** No implementation blocker. Targeted ESLint (целевая проверка кода), TypeScript (проверка типов), `git diff --check` (проверка формата изменений), production build (промышленная сборка), DE/RU/AR browser rendering (отрисовка в браузере), Arabic RTL (арабское направление справа налево), console and zero-horizontal-overflow checks pass. The desktop source-vs-live comparison (сравнение эталона и реализации на компьютере) is recorded as passed; no separate mobile visual target was supplied for this prototype.
+* **Updated documents/code:** About page renderer (рендер страницы «О нас»), `design-qa.md` (визуальная проверка дизайна), this public-website log (журнал публичного сайта) and root `PROGRESS.md` (краткий глобальный журнал).
+
+* **Date:** 2026-07-26
+* **Current sprint/block:** Isolated `Über uns` (страница «О нас») unified-surface prototype (прототип единой поверхности).
+* **Done:** Built a standalone Russian HTML prototype at `DesignPrototip/pixelring-about-unified-card.html`. The four disputed sections are grouped inside one light container on a cool gray background, use one shared spacing system and hairline dividers, and no longer contain nested mini-cards. After browser comparison with the selected Apple reference, the first oversized headline pass was reduced, repeated orange accents and decorative argument numbering were removed, and the final 1280 px desktop composition passed design QA (визуальную проверку дизайна).
+* **In progress:** Owner visual acceptance of the isolated direction.
+* **Next action:** Decide whether to use this prototype as the source for the canonical German `Über uns` (страница «О нас») implementation.
+* **Blockers/risks:** The live page was not changed. The integrated browser verified the desktop rendering, console, document structure, font stack and zero horizontal overflow. Responsive CSS rules exist at 960 px and 620 px; a separate mobile visual capture remains an optional acceptance check because the integrated browser did not expose viewport resizing.
+* **Updated documents/code:** Standalone HTML prototype, companion design QA (визуальная проверка дизайна), this public-website log and root `PROGRESS.md`.
+
+* **Date:** 2026-07-25
+* **Current sprint/block:** `Über uns` section sequence and materials marquee (последовательность блоков и бегущая строка материалов на странице «О нас»).
+* **Done:** Reordered the localized page to `Wer wir sind → Was wir betreuen → Reparatur statt Reflex-Austausch → Für wen → So läuft eine Anfrage ab → Materialien & Komponenten` (кто мы → что обслуживаем → ремонт вместо автоматической замены → для кого → как проходит заявка → материалы и компоненты). Replaced the former text-heavy supplier block with one short premium-material statement and a full-width continuous text marquee (полноширинную бегущую строку) containing 3M, ORAFOL, Samsung LED, Tridonic, Mean Well, PLEXIGLAS®, DIBOND® and Avery Dennison. Removed the long supplier/partnership explanation and the stale deleted-section blocks from the About CMS seed (скрипта наполнения CMS страницы «О нас»).
+* **In progress:** Owner visual acceptance.
+* **Next action:** Review `/ru/ueber-uns` locally and then separately approve commit/deployment.
+* **Blockers/risks:** No current blocker. TypeScript, targeted lint, `git diff --check`, production build, RU desktop/mobile, AR RTL (арабская версия справа налево) and zero-horizontal-overflow checks pass.
+* **Updated documents/code:** About page renderer, six-locale About content, About CMS seed, this log and root `PROGRESS.md`.
+
+* **Date:** 2026-07-25
+* **Current sprint/block:** `Über uns` hero (первый экран страницы «О нас») without photography.
+* **Done:** Replaced the AI-like `Diagnose-Terminal` (диагностический терминал) with the owner-selected PixelRing brand composition. The official ring and square now form one continuous `Prüfen → Entscheiden → Umsetzen` (Проверить → Решить → Выполнить) line; the current headline and introduction stay unchanged, while the three short stages are localized for DE/EN/RU/TR/PL/AR. The benefit row was simplified into a numbered editorial strip. Targeted lint, TypeScript, production build, DE desktop/mobile, AR RTL (арабская версия справа налево), zero-overflow, mobile-menu and console checks pass.
+* **In progress:** Owner visual review and a later separate wording pass.
+* **Next action:** Review `/de/ueber-uns` (немецкую страницу «О нас») locally and specify the desired headline, paragraph or stage-label wording changes.
+* **Blockers/risks:** No current blocker. The decorative line is a dedicated transparent WebP asset (графический файл); significant future geometry changes should replace that asset.
+* **Updated documents/code:** About page renderer and localized labels, the dedicated PixelRing service-line asset, `page_brief_about.md`, design-system change log, `design-qa.md`, this log and root `PROGRESS.md`.
+
+* **Date:** 2026-07-25
+* **Current sprint/block:** About page section removal.
+* **Done:** Removed the standalone work video and anonymized service-case testimonials from `/[locale]/ueber-uns` (локализованной страницы «О нас»), including localized fallback fields, About CMS adapter and seed fields, the dedicated video component, and unique local media assets. Other request-intake video/photo wording and unrelated reference/homepage media remain unchanged.
+* **In progress:** Owner visual review of the shortened page.
+* **Next action:** Confirm `/ru/ueber-uns` and then separately approve commit/deployment.
+* **Blockers/risks:** Lint and `git diff --check` pass. The initial build could not fetch Google Fonts in the restricted environment; the later production build passed with external font access.
+* **Updated documents/code:** `PROGRESS.md`, this README, About page renderer/content/CMS adapter, and removed About video assets.
+
 * **Date:** 2026-07-21
 * **Current sprint/block:** `Referenzen` slogan card (карточка-слоган страницы примеров работ).
 * **Done:** Reworked the owner-selected slogan into the approved light split card (светлую разделённую карточку): `Ein Schild darf nicht müde aussehen.` (вывеска не должна выглядеть уставшей) remains the only visible copy on the left, and a dedicated signage photograph appears on the right. The shared image is now a replaceable CMS media field (медиаполе CMS), while localized Alt text (альтернативное описание) remains editable independently for DE/EN/RU/TR/PL/AR. Pale arcs and the text-to-photo gradient (плавный переход от текста к фотографии) are separate layout layers, so a future image replacement does not require recreating the card. The former statistics, explanatory copy and report tiles remain hidden without deleting their stored data.

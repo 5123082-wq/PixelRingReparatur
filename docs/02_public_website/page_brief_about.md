@@ -31,6 +31,15 @@ This page answers: `Who is actually responsible for the result?`
 
 ## Progress Log
 
+### 2026-07-25
+
+- Current sprint/block: Public Website About hero without photography.
+- Done: Replaced the AI-like diagnostic terminal with the owner-selected brand-led composition. The first screen now uses the official PixelRing ring and square as a continuous `Prüfen → Entscheiden → Umsetzen` service line, while preserving the current headline and two introduction paragraphs. The line is a dedicated transparent WebP asset; the three labels remain editable localized text across DE, EN, RU, TR, PL, and AR. The existing benefit content now continues in a quieter numbered editorial strip.
+- In progress: Owner visual review and later copy refinement.
+- Next action: Review the local German desktop/mobile hero, then provide the preferred wording changes as a separate copy pass.
+- Blockers/risks: No implementation blocker. The line is intentionally rasterized from the selected concept rather than recreated as CSS or inline SVG; future major geometry changes should replace the asset instead of stretching it beyond the current hero proportions.
+- Updated documents: `PROGRESS.md`, `docs/02_public_website/README.md`, `docs/02_public_website/page_brief_about.md`, `docs/03_design_system/change_log.md`, `design-qa.md`, `signage-service/src/app/[locale]/ueber-uns/page.tsx`, `signage-service/src/lib/content/about-page.ts`, and `signage-service/public/images/about/pixelring-service-line.webp`.
+
 ### 2026-06-01
 
 - Current sprint/block: Public Website About page who-we-are visual collage.

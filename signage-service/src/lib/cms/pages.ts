@@ -1898,20 +1898,6 @@ export type AboutPageCmsContent = {
     title?: string;
     brands?: string[];
   };
-  quality?: {
-    enabled?: boolean;
-    title?: string;
-    description?: string;
-    features?: string[];
-    mediaLabel?: string;
-    playLabel?: string;
-    cta?: string;
-  };
-  testimonials?: {
-    enabled?: boolean;
-    title?: string;
-    items?: CmsListItemContent[];
-  };
   final?: {
     enabled?: boolean;
     title?: string;
@@ -1929,8 +1915,6 @@ export async function getAboutPageCmsContent(
   const audience = getBlock(page, 'cardList', ['audience']);
   const process = getBlock(page, 'faqList', ['process']);
   const materials = getBlock(page, 'cardList', ['materials']);
-  const quality = getBlock(page, 'textSection', ['quality']);
-  const testimonials = getBlock(page, 'reviewList', ['testimonials']);
   const final = getBlock(page, 'cta', ['final']);
 
   const content: AboutPageCmsContent = {
@@ -1964,20 +1948,6 @@ export async function getAboutPageCmsContent(
       brands: getBlockObjectList(materials, 'items')
         ?.map((item) => (typeof item.label === 'string' ? item.label : null))
         .filter((item): item is string => Boolean(item)),
-    } : undefined,
-    quality: quality ? {
-      enabled: quality.enabled !== false,
-      title: getBlockText(quality, 'title'),
-      description: getBlockText(quality, 'description'),
-      features: getBlockTextList(quality, 'features'),
-      mediaLabel: getBlockText(quality, 'mediaLabel'),
-      playLabel: getBlockText(quality, 'playLabel'),
-      cta: getBlockText(quality, 'cta'),
-    } : undefined,
-    testimonials: testimonials ? {
-      enabled: testimonials.enabled !== false,
-      title: getBlockText(testimonials, 'title'),
-      items: getBlockObjectList(testimonials, 'items'),
     } : undefined,
     final: final ? {
       enabled: final.enabled !== false,

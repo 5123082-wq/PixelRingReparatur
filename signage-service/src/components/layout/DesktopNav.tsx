@@ -137,34 +137,45 @@ export default function DesktopNav({
                     : isServices && isServicesOpen
                       ? 'pr-header-nav-item-open font-semibold'
                       : 'font-medium';
-                  const itemClassName = `pr-header-nav-item relative inline-flex min-h-9 min-w-0 items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-center text-[14px] leading-tight transition-colors duration-200 xl:px-3.5 xl:text-[15px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]/45 ${itemStateClassName}`;
+                  const itemClassName = `pr-header-nav-item relative inline-flex min-h-9 min-w-0 items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-center text-[14px] leading-tight transition-colors duration-200 xl:px-3.5 xl:text-[15px] ${itemStateClassName}`;
 
                   return (
                     <li key={link.href} className="flex min-w-0">
                       {isServices ? (
-                        <button
-                          type="button"
-                          aria-expanded={isServicesOpen}
-                          aria-controls="desktop-services-navigation"
-                          onPointerEnter={openServices}
-                          onFocus={openServices}
-                          onClick={openServices}
-                          className={itemClassName}
-                        >
-                          <span className="min-w-0">{link.name}</span>
-                          <svg
-                            className={`h-3.5 w-3.5 shrink-0 text-[#8C7A6E] transition-transform duration-200 ${
-                              isServicesOpen ? 'rotate-180' : ''
-                            }`}
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2.3"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
+                        <div className={itemClassName} onPointerEnter={openServices}>
+                          <Link
+                            href={link.href}
+                            aria-current={isActive ? 'page' : undefined}
+                            onPointerEnter={openServices}
+                            onFocus={openServices}
+                            className="min-w-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]/45"
                           >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                          </svg>
-                        </button>
+                            {link.name}
+                          </Link>
+                          <button
+                            type="button"
+                            aria-label={link.name}
+                            aria-expanded={isServicesOpen}
+                            aria-controls="desktop-services-navigation"
+                            onPointerEnter={openServices}
+                            onFocus={openServices}
+                            onClick={() => setIsServicesOpen((isOpen) => !isOpen)}
+                            className="-mr-1 inline-flex rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]/45"
+                          >
+                            <svg
+                              className={`h-3.5 w-3.5 shrink-0 text-[#8C7A6E] transition-transform duration-200 ${
+                                isServicesOpen ? 'rotate-180' : ''
+                              }`}
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.3"
+                              viewBox="0 0 24 24"
+                              aria-hidden="true"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
+                          </button>
+                        </div>
                       ) : (
                         <Link
                           href={link.href}
