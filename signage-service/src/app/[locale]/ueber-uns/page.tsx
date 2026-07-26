@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
 import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestButton';
 import { getAboutPageCmsContent, getGlobalPageCmsContent } from '@/lib/cms/pages';
 import CmsImage from '@/components/common/CmsImage';
 import HeroBreadcrumbs from '@/components/common/HeroBreadcrumbs';
+import ServiceStamp from '@/components/common/ServiceStamp';
 import SectionEyebrow from '@/components/common/SectionEyebrow';
-import ServiceSimulator from '@/components/sections/ServiceSimulator';
-import AboutVideoPlayer from '@/components/sections/AboutVideoPlayer';
 import { buildLocaleUrl, buildPublicPageMetadata, buildSiteUrl } from '@/lib/seo';
 
 import {
@@ -108,15 +108,6 @@ function mergeAboutContent(fallback: AboutContent, cms: AboutCmsContent): AboutC
           }))
         : fallback.about.accordions,
     },
-    quality: {
-      ...fallback.quality,
-      title: cms.quality?.title ?? fallback.quality.title,
-      description: cms.quality?.description ?? fallback.quality.description,
-      features: cms.quality?.features?.length ? cms.quality.features : fallback.quality.features,
-      mediaLabel: cms.quality?.mediaLabel ?? fallback.quality.mediaLabel,
-      playLabel: cms.quality?.playLabel ?? fallback.quality.playLabel,
-      cta: cms.quality?.cta ?? fallback.quality.cta,
-    },
     final: {
       title: cms.final?.title ?? fallback.final.title,
       button: cms.final?.button ?? fallback.final.button,
@@ -133,16 +124,7 @@ function mergeAboutPageLabels(fallback: AboutPageLabels, cms: AboutCmsContent): 
     ...fallback,
     quickServicesTitle: cms.audience?.title ?? fallback.quickServicesTitle,
     serviceCardCta: cms.audience?.serviceCardCta ?? fallback.serviceCardCta,
-    materialTitle: cms.materials?.title ?? fallback.materialTitle,
     materialBrands: cms.materials?.brands?.length ? cms.materials.brands : fallback.materialBrands,
-    testimonialsTitle: cms.testimonials?.title ?? fallback.testimonialsTitle,
-    testimonials: cms.testimonials?.items?.length
-      ? cms.testimonials.items.map((item, index) => ({
-          name: typeof item.name === 'string' ? item.name : fallback.testimonials[index]?.name ?? '',
-          role: typeof item.role === 'string' ? item.role : fallback.testimonials[index]?.role ?? '',
-          text: typeof item.text === 'string' ? item.text : fallback.testimonials[index]?.text ?? '',
-        }))
-      : fallback.testimonials,
   };
 }
 
@@ -218,9 +200,12 @@ export default async function AboutPage({
   const pageLabels = mergeAboutPageLabels(fallbackLabels, aboutCms);
   const structureLabels = ABOUT_STRUCTURE_LABELS[locale] ?? ABOUT_STRUCTURE_LABELS.de;
   const jsonLd = buildAboutPageJsonLd(locale, tContent);
+  const heroStepPositions = isRtl
+    ? ['right-[16.667%] top-[55%]', 'right-1/2 top-[43%]', 'right-[83.333%] top-[29%]']
+    : ['left-[16.667%] top-[55%]', 'left-1/2 top-[43%]', 'left-[83.333%] top-[29%]'];
 
   return (
-    <div className={`flex min-h-screen flex-col bg-[#F7F1E8] ${isRtl ? 'rtl' : 'ltr'}`} dir={isRtl ? 'rtl' : 'ltr'}>
+    <div className={`flex min-h-screen flex-col bg-[#EEF3F8] ${isRtl ? 'rtl' : 'ltr'}`} dir={isRtl ? 'rtl' : 'ltr'}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
@@ -228,64 +213,87 @@ export default async function AboutPage({
       <Header content={globalCms?.header} />
 
       <main className="flex-grow pt-0">
-        {/* HERO SECTION */}
-        <section className="relative overflow-hidden pb-10 pt-6 md:pb-12 md:pt-6">
-          <div className="absolute top-0 right-0 w-[600px] h-[500px] bg-white/50 rounded-full blur-[120px] -translate-y-1/3 translate-x-1/4 pointer-events-none" />
+        {/* HERO + BENEFITS */}
+        <section className="bg-[#EEF3F8] py-10 sm:py-14 md:py-16">
+          <div className="pr-site-container">
+            <div className="overflow-hidden rounded-[24px] border border-[#0E1A2B]/[0.08] bg-white shadow-[0_34px_90px_rgba(14,26,43,0.08)] sm:rounded-[34px]">
+              <div className="px-6 pb-8 pt-7 sm:px-10 sm:pb-10 sm:pt-9 lg:px-16 lg:pb-12 lg:pt-11 xl:px-20 xl:pb-14">
+                <div className="[&_nav]:mb-0 [&_ol]:border-0 [&_ol]:bg-transparent [&_ol]:px-0 [&_ol]:py-0 [&_ol]:shadow-none [&_ol]:backdrop-blur-none">
+                  <HeroBreadcrumbs items={getAboutBreadcrumbs(locale)} position="static" surface="light" />
+                </div>
 
-          <div className="pr-site-container relative z-10">
-            <HeroBreadcrumbs items={getAboutBreadcrumbs(locale)} position="static" surface="light" />
-
-            <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12 lg:gap-14">
-              {/* Left Column: Content */}
-              <div className="lg:col-span-7 flex flex-col gap-6">
-                <div className="pt-3">
-                  <div className="mb-6 h-1 w-20 bg-[#B8643E]" />
-                  <h1 className="text-[34px] sm:text-[40px] md:text-[50px] lg:text-[54px] font-black leading-[1.08] tracking-tight text-[#0E1A2B]">
+                <div className="mt-12 sm:mt-14">
+                  <div className="h-[3px] w-10 bg-[#B8643E]" />
+                  <h1 className="mt-7 max-w-[820px] text-[34px] font-bold leading-[1.06] tracking-[-0.038em] text-[#111A2B] sm:text-[40px] md:text-[48px] lg:text-[54px]">
                     {tContent.hero.titlePrefix}
                   </h1>
-                </div>
 
-                <div className="space-y-3 max-w-[640px]">
-                  {tContent.hero.intro.map((paragraph, idx) => (
-                    <p key={idx} className="text-[16px] md:text-[17px] text-[#4A5568] leading-relaxed">
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
+                  <div className="mt-12 max-w-[640px] space-y-4 lg:mt-14">
+                    {tContent.hero.intro.map((paragraph, idx) => (
+                      <p key={idx} className="text-[16px] leading-[1.7] text-[#5F6877] md:text-[17px]">
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
 
+                  <div className="relative mt-8 sm:mt-10">
+                    <ServiceStamp
+                      idPrefix="about-hero-process-stamp"
+                      className="pointer-events-none absolute end-[1%] top-[2%] z-0 h-28 w-28 opacity-[0.18] sm:h-36 sm:w-36 lg:h-44 lg:w-44"
+                    />
+                    <div className="relative z-10 aspect-[3/1] w-full">
+                      <Image
+                        src="/images/about/pixelring-service-line.webp"
+                        alt=""
+                        fill
+                        priority
+                        sizes="(min-width: 1024px) 1100px, 100vw"
+                        className={`object-contain ${isRtl ? '-scale-x-100' : ''}`}
+                      />
+                    </div>
+
+                    <ol className="relative z-20 mt-4 grid grid-cols-3 gap-2 lg:absolute lg:inset-0 lg:mt-0">
+                      {structureLabels.heroProcessSteps.map((step, index) => (
+                        <li
+                          key={step}
+                          className={`text-center lg:absolute ${
+                            isRtl ? 'lg:translate-x-1/2' : 'lg:-translate-x-1/2'
+                          } ${heroStepPositions[index] ?? heroStepPositions[heroStepPositions.length - 1]}`}
+                        >
+                          <span className="block text-[11px] font-semibold tracking-[0.1em] text-[#B8643E] lg:text-[12px]">
+                            {String(index + 1).padStart(2, '0')}
+                          </span>
+                          <span className="mt-1 block text-[14px] font-semibold leading-tight text-[#111A2B] sm:text-[15px] lg:mt-2 lg:text-[17px]">
+                            {step}
+                          </span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                </div>
               </div>
 
-              {/* Right Column: Interactive Diagnostic Simulator */}
-              <div className="lg:col-span-5 flex justify-center lg:justify-end">
-                <ServiceSimulator locale={locale} />
+              <div className="grid gap-8 border-t border-[#E5E7EB] px-6 py-10 sm:grid-cols-3 sm:px-10 sm:py-12 lg:gap-12 lg:px-16 xl:px-20">
+                {structureLabels.heroProcessDetails.map((detail, idx) => (
+                  <article key={idx} className="min-w-0">
+                    <span className="text-[11px] font-semibold tracking-[0.12em] text-[#B8643E]">
+                      {String(idx + 1).padStart(2, '0')}
+                    </span>
+                    <h2 className="mt-4 text-[18px] font-semibold leading-snug tracking-[-0.02em] text-[#111A2B] sm:text-[19px]">
+                      {detail.title}
+                    </h2>
+                    <p className="mt-3 max-w-[330px] text-[14px] leading-7 text-[#5F6877] sm:text-[15px]">
+                      {detail.description}
+                    </p>
+                  </article>
+                ))}
               </div>
             </div>
           </div>
         </section>
 
-        {/* HERO BENEFITS */}
-        <section className="border-y border-[#E7DDD3] bg-[#FFFDF9] py-8 sm:py-10">
-          <div className="pr-site-container grid gap-7 sm:grid-cols-3 lg:gap-10">
-            {tContent.hero.benefits.map((benefit, idx) => (
-              <article key={idx} className="min-w-0">
-                <div className="flex items-start gap-3">
-                  <div className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#B8643E]" />
-                  <div className="min-w-0">
-                    <h2 className="text-[18px] font-black leading-snug text-[#0E1A2B] sm:text-[20px]">
-                      {benefit.title}
-                    </h2>
-                    <p className="mt-3 text-[15px] leading-7 text-[#6B7788]">
-                      {benefit.description}
-                    </p>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
         {/* WHO WE ARE */}
-        <section className="bg-white py-20 md:py-24">
+        <section className="py-20 md:py-24">
           <div className="pr-site-container grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-14">
             <div className="max-w-2xl">
               <SectionEyebrow className="mb-5">{structureLabels.whoEyebrow}</SectionEyebrow>
@@ -325,239 +333,208 @@ export default async function AboutPage({
           </div>
         </section>
 
-        {/* WHAT WE SERVICE */}
-        <section className="border-y border-[#E7DDD3] bg-[#F7F1E8] py-20 md:py-24">
+        {/* UNIFIED SERVICE CHAPTERS */}
+        <div id="about-service-chapters" className="bg-[#EEF3F8] py-16 sm:py-20 md:py-24">
           <div className="pr-site-container">
-            <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-14">
-              <div>
-                <SectionEyebrow className="mb-5">{structureLabels.scopeEyebrow}</SectionEyebrow>
-                <h2 className="text-[32px] font-black leading-tight text-[#0E1A2B] md:text-[42px]">
-                  {structureLabels.scopeTitle}
-                </h2>
-                <p className="mt-5 text-[17px] leading-8 text-[#4A5568]">
-                  {structureLabels.scopeIntro}
-                </p>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                {structureLabels.scopeItems.map((item) => (
-                  <div key={item} className="border-b border-[#DCCFC2] py-4">
-                    <div className="flex items-start gap-3">
-                      <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#B8643E]" />
-                      <span className="text-[16px] font-black leading-7 text-[#0E1A2B]">{item}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* PROCESS */}
-        <section className="bg-white py-20 md:py-24">
-          <div className="pr-site-container">
-            <div className="mb-12 max-w-3xl">
-              <SectionEyebrow className="mb-5">{structureLabels.processEyebrow}</SectionEyebrow>
-              <h2 className="text-[32px] font-black leading-tight text-[#0E1A2B] md:text-[42px]">
-                {structureLabels.processTitle}
-              </h2>
-              <p className="mt-5 text-[17px] leading-8 text-[#4A5568]">
-                {structureLabels.processLead}
-              </p>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-4">
-              {structureLabels.processSteps.map((step, index) => (
-                <article key={step.title} className="flex min-h-[240px] flex-col rounded-lg border border-[#D8E2EE] bg-[#F8FAFC] p-5">
-                  <div className="mb-6 flex h-9 w-9 items-center justify-center rounded-full bg-[#0E1A2B] text-[13px] font-black text-white">
-                    {index + 1}
-                  </div>
-                  <h3 className="text-[18px] font-black leading-snug text-[#0E1A2B]">{step.title}</h3>
-                  <p className="mt-4 text-[14px] leading-7 text-[#4A5568]">{step.description}</p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* REPAIR RATIONALE */}
-        <section className="bg-[#0E1A2B] py-20 text-white md:py-24">
-          <div className="pr-site-container grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
-            <div>
-              <SectionEyebrow className="mb-5 text-[#F0B38F]">{structureLabels.repairEyebrow}</SectionEyebrow>
-              <h2 className="text-[32px] font-black leading-tight md:text-[42px]">
-                {structureLabels.repairTitle}
-              </h2>
-              <p className="mt-6 text-[17px] leading-8 text-slate-300">
-                {structureLabels.repairText}
-              </p>
-            </div>
-
-            <div className="grid gap-4">
-              {structureLabels.repairItems.map((item) => (
-                <div key={item} className="rounded-lg border border-white/10 bg-white/5 p-5">
-                  <div className="flex items-start gap-3">
-                    <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#F0B38F]" />
-                    <p className="text-[16px] font-semibold leading-7 text-slate-100">{item}</p>
-                  </div>
+            <div className="overflow-hidden rounded-[24px] border border-[#0E1A2B]/[0.08] bg-white shadow-[0_34px_90px_rgba(14,26,43,0.08)] sm:rounded-[34px]">
+              {/* WHAT WE SERVICE */}
+              <section className="grid gap-10 px-6 py-12 sm:px-10 sm:py-16 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16 lg:px-16 lg:py-20 xl:gap-24 xl:px-24 xl:py-24">
+                <div>
+                  <SectionEyebrow className="mb-5 text-[#B8643E]">
+                    {structureLabels.scopeEyebrow}
+                  </SectionEyebrow>
+                  <h2 className="text-[34px] font-bold leading-[1.06] tracking-[-0.038em] text-[#111A2B] sm:text-[40px] lg:text-[46px] xl:text-[48px]">
+                    {structureLabels.scopeTitle}
+                  </h2>
+                  <p className="mt-6 max-w-xl text-[17px] leading-[1.65] text-[#5F6877] lg:text-[18px]">
+                    {structureLabels.scopeIntro}
+                  </p>
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
-        {/* TARGET AUDIENCE / SECTORS SECTION */}
-        <section className="bg-white py-20 md:py-24">
-          <div className="pr-site-container">
-            <div className="mb-12 max-w-3xl">
-              <SectionEyebrow className="mb-5">{structureLabels.audienceEyebrow}</SectionEyebrow>
-              <h2 className="text-[32px] font-black leading-tight text-[#0E1A2B] md:text-[42px]">
-                {pageLabels.quickServicesTitle}
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-              {tContent.services.map((service) => (
-                <article key={service.id} className="flex h-full flex-col rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-5 text-[#0E1A2B]">
-                  <h3 className="text-[19px] font-black leading-snug">{service.title}</h3>
-                  <p className="mt-4 text-[14px] leading-7 text-[#4A5568]">{service.description}</p>
-                  <a href={`${localePath}/business?sector=${service.id}`} className="mt-auto pt-6 text-[13px] font-black uppercase underline decoration-2 underline-offset-8 transition-colors hover:text-[#B8643E]">
-                    {pageLabels.serviceCardCta}
-                  </a>
-                </article>
-              ))}
+                <ul className="grid sm:grid-cols-2 sm:gap-x-10">
+                  {structureLabels.scopeItems.map((item, index) => (
+                    <li
+                      key={item}
+                      className={`border-t border-[#E5E7EB] py-5 text-[17px] font-semibold leading-[1.45] tracking-[-0.02em] text-[#111A2B] ${
+                        index === 0 ? 'border-t-0 pt-0' : ''
+                      } ${index === 1 ? 'sm:border-t-0 sm:pt-0' : ''}`}
+                    >
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+
+              {/* REPAIR RATIONALE */}
+              <section className="grid gap-10 border-t border-[#E5E7EB] px-6 py-12 sm:px-10 sm:py-16 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16 lg:px-16 lg:py-20 xl:gap-24 xl:px-24 xl:py-24">
+                <div>
+                  <SectionEyebrow className="mb-5 text-[#8A919C]">
+                    {structureLabels.repairEyebrow}
+                  </SectionEyebrow>
+                  <h2 className="text-[34px] font-bold leading-[1.06] tracking-[-0.038em] text-[#111A2B] sm:text-[40px] lg:text-[46px] xl:text-[48px]">
+                    {structureLabels.repairTitle}
+                  </h2>
+                </div>
+
+                <div>
+                  <p className="max-w-2xl text-[17px] leading-[1.65] text-[#5F6877] lg:text-[18px]">
+                    {structureLabels.repairText}
+                  </p>
+                  <ul className="mt-8 border-t border-[#E5E7EB]">
+                    {structureLabels.repairItems.map((item) => (
+                      <li
+                        key={item}
+                        className="border-b border-[#E5E7EB] py-5 text-[16px] font-semibold leading-[1.55] tracking-[-0.015em] text-[#111A2B] sm:text-[17px]"
+                      >
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </section>
+
+              {/* TARGET AUDIENCE / SECTORS */}
+              <section className="grid gap-10 border-t border-[#E5E7EB] px-6 py-12 sm:px-10 sm:py-16 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16 lg:px-16 lg:py-20 xl:gap-24 xl:px-24 xl:py-24">
+                <div>
+                  <SectionEyebrow className="mb-5 text-[#8A919C]">
+                    {structureLabels.audienceEyebrow}
+                  </SectionEyebrow>
+                  <h2 className="text-[34px] font-bold leading-[1.06] tracking-[-0.038em] text-[#111A2B] sm:text-[40px] lg:text-[46px] xl:text-[48px]">
+                    {pageLabels.quickServicesTitle}
+                  </h2>
+                </div>
+
+                <ul className="border-t border-[#E5E7EB]">
+                  {tContent.services.map((service) => (
+                    <li key={service.id} className="border-b border-[#E5E7EB]">
+                      <a
+                        href={`${localePath}/business?sector=${service.id}`}
+                        className="group grid gap-3 py-6 outline-none transition-colors hover:text-[#B8643E] focus-visible:ring-2 focus-visible:ring-[#B8643E] focus-visible:ring-offset-4 md:grid-cols-[minmax(150px,0.75fr)_minmax(0,1.25fr)] md:gap-8"
+                      >
+                        <h3 className="text-[18px] font-semibold leading-snug tracking-[-0.02em] text-[#111A2B] transition-colors group-hover:text-[#B8643E]">
+                          {service.title}
+                        </h3>
+                        <span>
+                          <span className="block text-[15px] leading-7 text-[#5F6877]">
+                            {service.description}
+                          </span>
+                          <span className="mt-3 inline-block text-[12px] font-semibold uppercase tracking-[0.06em] text-[#8A919C] underline decoration-[#CDD2D9] underline-offset-4 transition-colors group-hover:text-[#B8643E]">
+                            {pageLabels.serviceCardCta}
+                          </span>
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+
+              {/* PROCESS */}
+              <section className="border-t border-[#E5E7EB] px-6 py-12 sm:px-10 sm:py-16 lg:px-16 lg:py-20 xl:px-24 xl:py-24">
+                <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16 xl:gap-24">
+                  <div>
+                    <SectionEyebrow className="mb-5 text-[#8A919C]">
+                      {structureLabels.processEyebrow}
+                    </SectionEyebrow>
+                    <h2 className="text-[34px] font-bold leading-[1.06] tracking-[-0.038em] text-[#111A2B] sm:text-[40px] lg:text-[46px] xl:text-[48px]">
+                      {structureLabels.processTitle}
+                    </h2>
+                  </div>
+                  <p className="max-w-2xl text-[17px] leading-[1.65] text-[#5F6877] lg:pt-10 lg:text-[18px]">
+                    {structureLabels.processLead}
+                  </p>
+                </div>
+
+                <ol className="mt-12 grid gap-7 border-t border-[#E5E7EB] pt-8 md:grid-cols-2 md:gap-x-10 lg:grid-cols-4 lg:gap-x-12">
+                  {structureLabels.processSteps.map((step, index) => (
+                    <li
+                      key={step.title}
+                      className="border-b border-[#E5E7EB] pb-7 last:border-b-0 md:border-b-0 md:pb-0"
+                    >
+                      <span className="text-[12px] font-semibold tracking-[0.08em] text-[#B8643E]">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                      <h3 className="mt-4 text-[18px] font-semibold leading-snug tracking-[-0.02em] text-[#111A2B]">
+                        {step.title}
+                      </h3>
+                      <p className="mt-3 text-[15px] leading-7 text-[#5F6877]">
+                        {step.description}
+                      </p>
+                    </li>
+                  ))}
+                </ol>
+              </section>
             </div>
           </div>
-        </section>
+        </div>
 
         {/* MATERIALS AND SYSTEMS */}
-        <section className="border-y border-[#E7DDD3] bg-[#FFFDF9] py-20 md:py-24">
-          <div className="pr-site-container">
-            <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-14">
-              <div>
-                <SectionEyebrow className="mb-5">{structureLabels.materialsEyebrow}</SectionEyebrow>
-                <h2 className="text-[32px] font-black leading-tight text-[#0E1A2B] md:text-[42px]">
-                  {pageLabels.materialTitle}
-                </h2>
-                <p className="mt-5 text-[17px] leading-8 text-[#4A5568]">
-                  {structureLabels.materialsLead}
-                </p>
-              </div>
+        <section className="overflow-hidden border-y border-[#E7DDD3] bg-[#EEF3F8] py-12 md:py-14">
+          <div className="pr-site-container text-center">
+            <SectionEyebrow className="mb-4 justify-center">{structureLabels.materialsEyebrow}</SectionEyebrow>
+            <h2 className="text-[28px] font-black leading-tight text-[#0E1A2B] md:text-[38px]">
+              {pageLabels.materialTitle}
+            </h2>
+          </div>
 
-              <div className="min-w-0">
-                <div className="relative max-w-full overflow-hidden border-y border-[#0E1A2B]/10 py-6 [mask-image:linear-gradient(90deg,transparent,black_12%,black_88%,transparent)]">
-                  <style>{`
-                    @keyframes about-brand-marquee {
-                      from { transform: translateX(0); }
-                      to { transform: translateX(-50%); }
-                    }
-                  `}</style>
-                  <div className="flex w-max items-center gap-12 whitespace-nowrap motion-safe:animate-[about-brand-marquee_32s_linear_infinite] hover:[animation-play-state:paused]">
-                    {[...pageLabels.materialBrands, ...pageLabels.materialBrands].map((brand, i) => (
-                      <span
-                        key={`${brand}-${i}`}
-                        aria-label={brand}
-                        className="text-[23px] font-black uppercase tracking-tight text-[#0E1A2B]/35 grayscale transition-colors hover:text-[#0E1A2B]/60"
-                      >
+          <div
+            role="group"
+            aria-label={pageLabels.materialBrands.join(', ')}
+            className="relative mt-8 w-full overflow-hidden border-y border-[#0E1A2B]/10 bg-white/55 py-5 [mask-image:linear-gradient(90deg,transparent,black_5%,black_95%,transparent)] md:mt-10 md:py-6"
+            dir="ltr"
+          >
+            <style>{`
+              @keyframes about-brand-marquee {
+                from { transform: translateX(0); }
+                to { transform: translateX(-50%); }
+              }
+            `}</style>
+            <div
+              aria-hidden="true"
+              className="flex w-max whitespace-nowrap motion-safe:animate-[about-brand-marquee_28s_linear_infinite] hover:[animation-play-state:paused]"
+            >
+              {[0, 1].map((copyIndex) => (
+                <div key={copyIndex} className="flex shrink-0 items-center gap-8 pe-8 sm:gap-12 sm:pe-12 md:gap-16 md:pe-16">
+                  {pageLabels.materialBrands.map((brand) => (
+                    <div key={`${copyIndex}-${brand}`} className="flex items-center gap-8 sm:gap-12 md:gap-16">
+                      <span className="text-[22px] font-black uppercase tracking-[-0.02em] text-[#0E1A2B]/55 sm:text-[25px] md:text-[29px]">
                         {brand}
                       </span>
-                    ))}
-                  </div>
-                </div>
-                <p className="mt-5 text-[13px] font-semibold leading-6 text-[#6B7788]">
-                  {structureLabels.materialsNote}
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* VIDEO-FIRST ABOUT SECTION */}
-        <section className="bg-white py-20 md:py-24">
-          <div className="pr-site-container">
-            <div className="grid gap-12 lg:grid-cols-[1.25fr_0.75fr] lg:items-center lg:gap-16">
-              <div className="relative">
-                <AboutVideoPlayer
-                  mediaLabel={tContent.quality.mediaLabel}
-                  playLabel={tContent.quality.playLabel}
-                  posterSrc="/images/about/quality_video.png"
-                  videoSrc="/videos/about-workshop-service.mp4"
-                />
-              </div>
-
-              <div className="max-w-xl">
-                <h2 className="text-[32px] font-black leading-tight text-[#0E1A2B] md:text-[42px]">
-                  {tContent.quality.title}
-                </h2>
-                <p className="mt-5 text-[17px] leading-8 text-[#4A5568]">
-                  {tContent.quality.description}
-                </p>
-                <div className="mt-7 flex flex-wrap gap-3">
-                  {tContent.quality.features.map((feature) => (
-                    <span key={feature} className="rounded-full border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2 text-[13px] font-black text-[#0E1A2B]">
-                      {feature}
-                    </span>
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#C66A3D]" />
+                    </div>
                   ))}
                 </div>
-                <a href={`${localePath}/referenzen`} className="mt-8 inline-flex text-[15px] font-black text-[#B8643E] underline decoration-[#DAB08A] underline-offset-4 hover:text-[#8E4B2F]">
-                  {tContent.quality.cta}
-                </a>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* TESTIMONIALS SECTION */}
-        <section className="bg-white py-16">
-          <div className="pr-site-container">
-            <div className="mb-10 max-w-3xl border-b border-[#E2E8F0] pb-6">
-              <SectionEyebrow className="mb-5">{structureLabels.testimonialsEyebrow}</SectionEyebrow>
-              <h2 className="text-[30px] font-black leading-tight text-[#0E1A2B] md:text-[38px]">
-                {pageLabels.testimonialsTitle}
-              </h2>
-              <p className="mt-4 text-[15px] leading-7 text-[#4A5568]">
-                {structureLabels.testimonialsLead}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-              {pageLabels.testimonials.map((testimonial) => (
-                <article key={`${testimonial.name}-${testimonial.role}`} className="flex min-h-[210px] flex-col rounded-lg border border-[#D8E2EE] bg-[#F8FAFC] p-5 shadow-sm">
-                  <div className="mb-5 flex items-start gap-3">
-                    <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg">
-                      <div className="flex h-full w-full items-center justify-center bg-[#0E1A2B] text-[12px] font-black uppercase text-white">
-                        {testimonial.name.slice(0, 2)}
-                      </div>
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-[15px] font-black leading-snug text-[#0E1A2B]">{testimonial.name}</div>
-                      <div className="mt-1 text-[12px] leading-5 text-[#4A5568]">{testimonial.role}</div>
-                    </div>
-                  </div>
-                  <p className="mt-auto border-l-2 border-[#C66A3D] pl-4 text-[14px] leading-6 text-[#40516A]">&ldquo;{testimonial.text}&rdquo;</p>
-                </article>
               ))}
             </div>
           </div>
         </section>
 
         {/* FINAL CTA */}
-        <section className="bg-white py-8 sm:py-10">
+        <section className="bg-[#EEF3F8] py-14 sm:py-18">
           <div className="pr-site-container">
-            <div className="flex flex-col gap-6 rounded-lg border border-[#D8E2EE] bg-[#EAF1F7] px-6 py-7 shadow-[0_16px_45px_rgba(14,26,43,0.07)] md:flex-row md:items-center md:justify-between md:px-9">
-              <div className="max-w-2xl">
-                <h2 className="text-[25px] font-black leading-[1.12] text-[#0E1A2B] md:text-[32px]">
-                   {tContent.final.title}
+            <div
+              className="grid gap-8 overflow-hidden rounded-[28px] border border-[#d3b2a2]/50 px-6 py-7 shadow-[0_18px_50px_rgba(8,24,39,0.08)] sm:px-8 sm:py-9 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-12"
+              style={{
+                background:
+                  'radial-gradient(circle at 88% 18%, rgba(184,100,62,0.16) 0%, transparent 30%), linear-gradient(135deg, #F3E7DE 0%, #EEF3F8 100%)',
+              }}
+            >
+              <div className="min-w-0">
+                <SectionEyebrow className="mb-5">{structureLabels.finalEyebrow}</SectionEyebrow>
+                <h2 className="max-w-3xl text-[28px] font-extrabold leading-[1.12] tracking-[0] text-[#081827] sm:text-[34px] lg:text-[38px]">
+                  {tContent.final.title}
                 </h2>
-                <p className="mt-3 text-[15px] leading-7 text-[#4A5568]">
+                <p className="mt-4 max-w-2xl text-[16px] leading-[1.65] text-[#526174] sm:text-[17px]">
                   {structureLabels.finalLead}
                 </p>
               </div>
 
-              <LeistungenRequestButton
-                label={tContent.final.button}
-                serviceIntent="about-page-final"
-                className="min-h-12 self-start bg-[#B8643E] px-6 py-3 text-[14px] font-bold text-white hover:bg-[#9E5332] md:self-auto"
-              />
+              <div className="flex flex-wrap items-center gap-3 lg:justify-end">
+                <LeistungenRequestButton
+                  label={tContent.final.button}
+                  serviceIntent="about-page-final"
+                  className="min-h-[52px] px-7 text-[15px] font-black shadow-[0_16px_34px_rgba(184,100,62,0.22)]"
+                />
+              </div>
             </div>
           </div>
         </section>

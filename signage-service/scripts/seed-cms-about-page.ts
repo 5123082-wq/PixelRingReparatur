@@ -112,19 +112,7 @@ function buildAboutPage(locale: Locale) {
         title: labels.materialTitle,
         items: labels.materialBrands.map((label) => ({ label })),
       }),
-      createBlock('textSection', 'quality', 50, {
-        title: content.quality.title,
-        description: content.quality.description,
-        features: content.quality.features,
-        mediaLabel: content.quality.mediaLabel,
-        playLabel: content.quality.playLabel,
-        cta: content.quality.cta,
-      }),
-      createBlock('reviewList', 'testimonials', 60, {
-        title: labels.testimonialsTitle,
-        items: labels.testimonials,
-      }),
-      createBlock('cta', 'final', 70, {
+      createBlock('cta', 'final', 50, {
         title: content.final.title,
         button: content.final.button,
         primaryLabel: content.final.button,
