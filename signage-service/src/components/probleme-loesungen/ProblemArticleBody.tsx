@@ -1,4 +1,7 @@
+import Link from 'next/link';
+
 import ProblemRequestButton from '@/components/probleme-loesungen/ProblemRequestButton';
+import { buildProblemArticleContextLinks } from '@/components/probleme-loesungen/problemArticleContextLinks';
 import { getProblemKnowledgeLabels, type ProblemIntent } from '@/lib/content/problem-knowledge';
 import type { PublicProblemArticle } from '@/lib/cms/articles';
 
@@ -282,6 +285,57 @@ function BulletSection({
   );
 }
 
+function ArticleContextLinks({ locale, articleSlug }: { locale: string; articleSlug: string }) {
+  const contextLinks = buildProblemArticleContextLinks(locale, articleSlug);
+  const isRtl = contextLinks.direction === 'rtl';
+
+  return (
+    <section
+      dir={contextLinks.direction}
+      aria-labelledby="article-context-links-title"
+      className="rounded-[22px] border border-[#E7DDD3] bg-[#F7F1E8] p-5 sm:p-6"
+    >
+      <p
+        className={`text-[12px] font-extrabold text-[#B8643E] ${
+          isRtl ? '' : 'uppercase tracking-[0.14em]'
+        }`}
+      >
+        {contextLinks.eyebrow}
+      </p>
+      <h2 id="article-context-links-title" className="mt-3 text-2xl font-black text-[#0E1A2B]">
+        {contextLinks.title}
+      </h2>
+      <p className="mt-3 max-w-3xl text-[15px] leading-7 text-[#4E5A5A]">
+        {contextLinks.description}
+      </p>
+
+      <nav aria-label={contextLinks.navLabel} className="mt-5">
+        <ul className="grid gap-3 sm:grid-cols-3">
+          {contextLinks.links.map((link) => (
+            <li key={link.kind} className="min-w-0">
+              <Link
+                href={link.href}
+                className="group block h-full rounded-[16px] border border-[#E7DDD3] bg-[#FFFDF9] px-4 py-4 text-start transition-colors hover:border-[#B8643E]/45 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8643E]"
+              >
+                <span
+                  className={`block text-[11px] font-extrabold text-[#8F4F34] ${
+                    isRtl ? '' : 'uppercase tracking-[0.12em]'
+                  }`}
+                >
+                  {link.eyebrow}
+                </span>
+                <span className="mt-2 block text-[15px] font-bold leading-6 text-[#0E1A2B] group-hover:text-[#8F4F34]">
+                  {link.label}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </section>
+  );
+}
+
 export default function ProblemArticleBody({
   locale,
   article,
@@ -300,6 +354,7 @@ export default function ProblemArticleBody({
   });
   const renderStructuredSections = !bodyLooksComplete;
   const ctaLabel = article.ctaLabel?.trim() || labels.cta;
+  const articleLinkLocale = fallbackContentLocale ?? locale;
 
   return (
     <article className="bg-[#F7F1E8]">
@@ -358,6 +413,8 @@ export default function ProblemArticleBody({
               <BulletSection title={labels.scope} items={article.workScopeFactors} />
             </>
           )}
+
+          <ArticleContextLinks locale={locale} articleSlug={article.publicSlug} />
         </div>
 
         <aside className="h-fit min-w-0 max-w-full rounded-[24px] border border-[#E7DDD3] bg-white p-5 shadow-sm lg:sticky lg:top-8">
@@ -391,7 +448,7 @@ export default function ProblemArticleBody({
                           </span>
                         ) : (
                           <a
-                            href={`/${locale}/probleme-loesungen/${item.publicSlug}`}
+                            href={`/${articleLinkLocale}/probleme-loesungen/${item.publicSlug}`}
                             className="block rounded-xl px-3 py-2 text-[14px] text-[#4E5A5A] transition-colors hover:bg-[#F7F1E8] hover:text-[#0E1A2B]"
                           >
                             {item.title}
@@ -414,7 +471,7 @@ export default function ProblemArticleBody({
             {relatedArticles.map((related) => (
               <a
                 key={related.publicSlug}
-                href={`/${locale}/probleme-loesungen/${related.publicSlug}`}
+                href={`/${articleLinkLocale}/probleme-loesungen/${related.publicSlug}`}
                 className="rounded-[18px] border border-[#E7DDD3] bg-[#FFFDF9] px-5 py-4 text-[16px] font-bold text-[#3E4A48] transition-colors hover:border-[#B8643E]/45 hover:bg-[#FFF7F1]"
               >
                 {related.title}

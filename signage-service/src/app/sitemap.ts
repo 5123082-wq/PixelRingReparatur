@@ -14,6 +14,8 @@ import type { SiteLocale } from '@/lib/seo';
 
 type SitemapEntry = MetadataRoute.Sitemap[number];
 
+export const revalidate = 300;
+
 type ProblemArticleSitemapEntry = {
   locale: SiteLocale;
   path: string;
@@ -23,6 +25,12 @@ type ProblemArticleSitemapEntry = {
 
 async function getPublishedProblemArticleEntries(): Promise<ProblemArticleSitemapEntry[]> {
   if (!process.env.POSTGRES_PRISMA_URL && !process.env.DATABASE_URL) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error(
+        'CMS database configuration is required to generate the production sitemap.'
+      );
+    }
+
     return [];
   }
 
@@ -74,8 +82,8 @@ async function getPublishedProblemArticleEntries(): Promise<ProblemArticleSitema
 
     return entries;
   } catch (error) {
-    console.warn('Unable to load CMS problem articles for sitemap:', error);
-    return [];
+    console.error('Unable to refresh CMS problem articles for sitemap:', error);
+    throw error;
   }
 }
 

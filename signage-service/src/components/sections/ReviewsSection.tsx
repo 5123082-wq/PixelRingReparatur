@@ -72,7 +72,7 @@ const CASE_LINKS_BY_LOCALE: Record<Locale, CaseLink[][]> = {
   ],
   tr: [
     [
-      { label: 'LED titriyor', href: '/probleme-loesungen/werbeanlage-flackert' },
+      { label: 'LED titriyor', href: '/probleme-loesungen' },
       { label: 'LED servis', href: '/leistungen/lichtwerbung-led-modernisierung' },
       { label: 'Onarim', href: '/leistungen/werbeanlagen-reparatur' },
     ],
@@ -89,7 +89,7 @@ const CASE_LINKS_BY_LOCALE: Record<Locale, CaseLink[][]> = {
   ],
   pl: [
     [
-      { label: 'LED miga', href: '/probleme-loesungen/werbeanlage-flackert' },
+      { label: 'LED miga', href: '/probleme-loesungen' },
       { label: 'Serwis LED', href: '/leistungen/lichtwerbung-led-modernisierung' },
       { label: 'Naprawa', href: '/leistungen/werbeanlagen-reparatur' },
     ],
@@ -106,7 +106,7 @@ const CASE_LINKS_BY_LOCALE: Record<Locale, CaseLink[][]> = {
   ],
   ar: [
     [
-      { label: 'وميض LED', href: '/probleme-loesungen/werbeanlage-flackert' },
+      { label: 'وميض LED', href: '/probleme-loesungen' },
       { label: 'خدمة LED', href: '/leistungen/lichtwerbung-led-modernisierung' },
       { label: 'اصلاح', href: '/leistungen/werbeanlagen-reparatur' },
     ],

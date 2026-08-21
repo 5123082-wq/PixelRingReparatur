@@ -10,6 +10,10 @@ const CMS_PATH = 'ring-master-config';
 const OLD_ADMIN_PATH = 'ring-master-admin';
 const CRM_SESSION_COOKIE_NAME = 'pixelring_crm_session';
 const CMS_SESSION_COOKIE_NAME = 'pixelring_cms_session';
+const APPLE_APP_SITE_ASSOCIATION_PATHS = new Set([
+  '/apple-app-site-association',
+  '/.well-known/apple-app-site-association',
+]);
 
 function stripLocale(pathname: string) {
   for (const locale of routing.locales) {
@@ -46,6 +50,10 @@ function isPrepublicationServicePath(path: string) {
   return /^\/leistungen\/beleuchtete-markisenvolants\/?$/.test(path);
 }
 
+function isAppleAppSiteAssociationPath(path: string) {
+  return APPLE_APP_SITE_ASSOCIATION_PATHS.has(path);
+}
+
 function normalizeXDefaultLinkHeader(response: NextResponse, request: NextRequest, locale: string | null, stripped: string) {
   if (!locale) {
     return;
@@ -70,15 +78,21 @@ export default async function proxy(request: NextRequest) {
   const { locale, stripped } = stripLocale(pathname);
   const isServicePreview = request.nextUrl.searchParams.get('cmsPreview') === '1';
 
+  if (isAppleAppSiteAssociationPath(stripped)) {
+    return new NextResponse(null, { status: 404 });
+  }
+
   if (isRetiredGonePath(stripped) || (!locale && stripped === '/service' && !isServicePreview)) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
   if (stripped === `/${OLD_ADMIN_PATH}` || stripped.startsWith(`/${OLD_ADMIN_PATH}/`)) {
     const newStripped = stripped.replace(`/${OLD_ADMIN_PATH}`, `/${CRM_PATH}`);
-    const redirectPath = locale ? buildLocalePath(locale, newStripped) : newStripped;
+    const redirectPath = buildLocalePath(locale ?? routing.defaultLocale, newStripped);
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = redirectPath;
 
-    return NextResponse.redirect(new URL(redirectPath, request.url));
+    return NextResponse.redirect(redirectUrl, 308);
   }
 
   if (pathname === '/admin' || pathname.startsWith('/admin/')) {
@@ -135,6 +149,8 @@ export const config = {
     // Standard internationalized routes
     '/',
     '/(de|en|ru|tr|pl|ar)/:path*',
+    '/apple-app-site-association',
+    '/.well-known/apple-app-site-association',
     
     // Admin & Dashboard routes
     '/admin/:path*',

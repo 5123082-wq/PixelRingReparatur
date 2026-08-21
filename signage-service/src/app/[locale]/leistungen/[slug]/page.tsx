@@ -1150,7 +1150,7 @@ SERVICE_DETAIL_CONTENT.tr = {
       title: 'Modernizasyon somut bir arızadan başladığında',
       intro: 'Bazen ihtiyaç planlı bir yükseltme değil, titreme, kesinti veya kötü ışık etkisiyle başlar. Bu sayfalar sorunu sınıflandırmaya yardımcı olur.',
       links: [
-        { title: 'Tabela titriyor', text: 'Güç kaynakları, nem, LED modülleri veya kontrol sistemiyle ilgili olası işaretler.', href: '/probleme-loesungen/werbeanlage-flackert', tag: 'Titreme' },
+        { title: 'Tabela titriyor', text: 'Güç kaynakları, nem, LED modülleri veya kontrol sistemiyle ilgili olası işaretler.', href: '/probleme-loesungen', tag: 'Titreme' },
         { title: 'LED düzensiz yanıyor', text: 'Karanlık bölgeler, görünen noktalar, yanlış ışık rengi veya düzensiz aydınlatma.', href: '/probleme-loesungen/led-leuchtet-ungleichmaessig', tag: 'Işık' },
         { title: 'Harf yanmıyor', text: 'Tek harf, modül, bağlantı veya güç kaynağı arızaları.', href: '/probleme-loesungen/buchstabe-leuchtet-nicht', tag: 'Harf' },
         { title: 'Tabela yanmıyor', text: 'Güç kaynağı ve kontrolün incelenmesini gerektirebilecek tam aydınlatma kesintisi.', href: '/probleme-loesungen/werbeanlage-leuchtet-nicht', tag: 'Kesinti' },
@@ -1369,7 +1369,7 @@ SERVICE_DETAIL_CONTENT.pl = {
       title: 'Gdy modernizacja zaczyna się od konkretnej usterki',
       intro: 'Czasem potrzeba nie wynika z planowanej przebudowy, lecz z migania, awarii albo słabego efektu światła. Te strony pomagają uporządkować problem.',
       links: [
-        { title: 'Reklama miga', text: 'Możliwe sygnały problemu z zasilaczami, wilgocią, modułami LED lub sterowaniem.', href: '/probleme-loesungen/werbeanlage-flackert', tag: 'Miganie' },
+        { title: 'Reklama miga', text: 'Możliwe sygnały problemu z zasilaczami, wilgocią, modułami LED lub sterowaniem.', href: '/probleme-loesungen', tag: 'Miganie' },
         { title: 'LED świeci nierówno', text: 'Ciemne strefy, widoczne punkty, zła barwa albo niespokojny obraz światła.', href: '/probleme-loesungen/led-leuchtet-ungleichmaessig', tag: 'Światło' },
         { title: 'Litera nie świeci', text: 'Awaria pojedynczych liter, modułów, połączeń albo zasilaczy.', href: '/probleme-loesungen/buchstabe-leuchtet-nicht', tag: 'Litery' },
         { title: 'Reklama nie świeci', text: 'Całkowita awaria oświetlenia z możliwą kontrolą zasilania i sterowania.', href: '/probleme-loesungen/werbeanlage-leuchtet-nicht', tag: 'Awaria' },
@@ -1588,7 +1588,7 @@ SERVICE_DETAIL_CONTENT.ar = {
       title: 'عندما يبدأ التحديث من عطل محدد',
       intro: 'أحياناً لا يبدأ الطلب كتحديث مخطط، بل بسبب وميض أو توقف أو صورة ضوئية سيئة. تساعد هذه الصفحات في تصنيف الحالة.',
       links: [
-        { title: 'الإعلان يومض', text: 'مؤشرات محتملة على مزودات الطاقة أو الرطوبة أو وحدات LED أو التحكم.', href: '/probleme-loesungen/werbeanlage-flackert', tag: 'وميض' },
+        { title: 'الإعلان يومض', text: 'مؤشرات محتملة على مزودات الطاقة أو الرطوبة أو وحدات LED أو التحكم.', href: '/probleme-loesungen', tag: 'وميض' },
         { title: 'LED يضيء بشكل غير متساو', text: 'مناطق داكنة أو نقاط مرئية أو لون ضوء خاطئ أو توزيع غير منتظم.', href: '/probleme-loesungen/led-leuchtet-ungleichmaessig', tag: 'ضوء' },
         { title: 'حرف لا يضيء', text: 'تعطل حروف أو وحدات أو وصلات أو مزودات طاقة منفردة.', href: '/probleme-loesungen/buchstabe-leuchtet-nicht', tag: 'حروف' },
         { title: 'الإعلان لا يضيء', text: 'توقف كامل للإضاءة مع حاجة محتملة لفحص الطاقة والتحكم.', href: '/probleme-loesungen/werbeanlage-leuchtet-nicht', tag: 'توقف' },

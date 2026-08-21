@@ -81,7 +81,13 @@ const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
 const DESKTOP_NAV_TOP_THRESHOLD = 24;
 const DESKTOP_NAV_DIRECTION_DELTA = 8;
 
-const Header = ({ content }: { content?: HeaderContent | null }) => {
+const Header = ({
+  content,
+  availableLocales,
+}: {
+  content?: HeaderContent | null;
+  availableLocales?: readonly HeaderLocale[];
+}) => {
   const t = useTranslations('Nav');
   const locale = useLocale();
   const pathname = usePathname();
@@ -300,6 +306,7 @@ const Header = ({ content }: { content?: HeaderContent | null }) => {
               requestLabel={requestLabel}
               isMenuOpen={isMenuOpen}
               activeNavHref={activeNavHref}
+              availableLocales={availableLocales}
               onOpenContact={() => setIsModalOpen(true)}
               onOpenChat={() => setIsChatOpen(true)}
               onToggleMenu={(openServices) => {

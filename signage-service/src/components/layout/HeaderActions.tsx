@@ -3,6 +3,7 @@
 import { Link, usePathname } from '@/i18n/routing';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 import ServiceActionButton from '../common/ServiceActionButton';
+import type { HeaderLocale } from './Header.types';
 
 export default function HeaderActions({
   accountStatusBaseLabel,
@@ -12,6 +13,7 @@ export default function HeaderActions({
   requestLabel,
   isMenuOpen,
   activeNavHref,
+  availableLocales,
   onOpenContact,
   onOpenChat,
   onToggleMenu,
@@ -23,6 +25,7 @@ export default function HeaderActions({
   requestLabel: string;
   isMenuOpen: boolean;
   activeNavHref: string | null;
+  availableLocales?: readonly HeaderLocale[];
   onOpenContact: () => void;
   onOpenChat: () => void;
   onToggleMenu: (openServices: boolean) => void;
@@ -33,7 +36,7 @@ export default function HeaderActions({
 
   return (
     <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-      <LanguageSwitcher />
+      <LanguageSwitcher availableLocales={availableLocales} />
 
       <Link
         href={accountStatusHref}

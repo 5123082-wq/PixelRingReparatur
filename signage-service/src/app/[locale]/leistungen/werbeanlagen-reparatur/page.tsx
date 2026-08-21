@@ -1114,7 +1114,7 @@ const REPAIR_PROBLEM_LINKS_BY_LOCALE: Record<Locale, RepairProblemLinksContent> 
       {
         title: 'Tabela titriyor',
         text: 'Titreyen LED, dengesiz isik ve aralikli kesintilerin tipik nedenleri.',
-        href: '/probleme-loesungen/werbeanlage-flackert',
+        href: '/probleme-loesungen',
         tag: 'Isik',
       },
       {
@@ -1146,7 +1146,7 @@ const REPAIR_PROBLEM_LINKS_BY_LOCALE: Record<Locale, RepairProblemLinksContent> 
       {
         title: 'Reklama miga',
         text: 'Typowe przyczyny migotania LED, niestabilnego swiatla i okresowych awarii.',
-        href: '/probleme-loesungen/werbeanlage-flackert',
+        href: '/probleme-loesungen',
         tag: 'Swiatlo',
       },
       {
@@ -1178,7 +1178,7 @@ const REPAIR_PROBLEM_LINKS_BY_LOCALE: Record<Locale, RepairProblemLinksContent> 
       {
         title: 'اللوحة تومض',
         text: 'اسباب وميض LED وعدم استقرار الاضاءة والانقطاعات المؤقتة.',
-        href: '/probleme-loesungen/werbeanlage-flackert',
+        href: '/probleme-loesungen',
         tag: 'اضاءة',
       },
       {
