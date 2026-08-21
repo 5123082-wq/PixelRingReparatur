@@ -490,19 +490,19 @@ const ISSUE_LINKS_BY_LOCALE: Record<Locale, LinkCard[]> = {
     { title: 'Folyo ayriliyor', text: 'Temizlik sirasinda eski folyo kenarlari, kabarciklar veya UV hasari gorunur hale gelirse.', href: '/probleme-loesungen/folie-loest-sich', tag: 'Folyo' },
     { title: 'Tabela yagmurdan sonra kapanir', text: 'Nem veya temizlik, isikli reklam icin teknik kontrol gerektigini gosterirse.', href: '/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab', tag: 'Nem' },
     { title: 'Bir harf yanmiyor', text: 'Gorsel kontrolde bazi harfler karanlik kalir veya duzensiz gorunurse.', href: '/probleme-loesungen/buchstabe-leuchtet-nicht', tag: 'Isik' },
-    { title: 'Tabela titriyor', text: 'Sorun sadece kir degil, aydinlatma teknolojisi veya guc kaynagi tepkisi ise.', href: '/probleme-loesungen/werbeanlage-flackert', tag: 'Kontrol' },
+    { title: 'Tabela titriyor', text: 'Sorun sadece kir degil, aydinlatma teknolojisi veya guc kaynagi tepkisi ise.', href: '/probleme-loesungen', tag: 'Kontrol' },
   ],
   pl: [
     { title: 'Folia odchodzi', text: 'Gdy czyszczenie ujawnia stare krawędzie folii, pęcherze albo uszkodzenia UV.', href: '/probleme-loesungen/folie-loest-sich', tag: 'Folia' },
     { title: 'Reklama wyłącza się po deszczu', text: 'Gdy wilgoć lub czyszczenie pokazuje, że reklama świetlna wymaga kontroli technicznej.', href: '/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab', tag: 'Wilgoć' },
     { title: 'Litera nie świeci', text: 'Gdy podczas kontroli pojedyncze litery pozostają ciemne albo świecą nierówno.', href: '/probleme-loesungen/buchstabe-leuchtet-nicht', tag: 'Światło' },
-    { title: 'Reklama miga', text: 'Gdy problemem nie jest tylko brud, ale oświetlenie lub zasilacz reaguje nieregularnie.', href: '/probleme-loesungen/werbeanlage-flackert', tag: 'Diagnoza' },
+    { title: 'Reklama miga', text: 'Gdy problemem nie jest tylko brud, ale oświetlenie lub zasilacz reaguje nieregularnie.', href: '/probleme-loesungen', tag: 'Diagnoza' },
   ],
   ar: [
     { title: 'الفيلم يتقشر', text: 'عندما يكشف التنظيف حواف فيلم قديمة أو فقاعات أو تلفا من الشمس.', href: '/probleme-loesungen/folie-loest-sich', tag: 'فيلم' },
     { title: 'اللوحة تتوقف بعد المطر', text: 'عندما تشير الرطوبة أو التنظيف إلى أن الإعلان المضيء يحتاج فحصا تقنيا.', href: '/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab', tag: 'رطوبة' },
     { title: 'حرف لا يضيء', text: 'عندما تبقى بعض الحروف مظلمة أو غير متساوية أثناء الفحص البصري.', href: '/probleme-loesungen/buchstabe-leuchtet-nicht', tag: 'إضاءة' },
-    { title: 'اللوحة تومض', text: 'عندما لا تكون المشكلة مجرد أوساخ بل في الإضاءة أو مزود الطاقة.', href: '/probleme-loesungen/werbeanlage-flackert', tag: 'تشخيص' },
+    { title: 'اللوحة تومض', text: 'عندما لا تكون المشكلة مجرد أوساخ بل في الإضاءة أو مزود الطاقة.', href: '/probleme-loesungen', tag: 'تشخيص' },
   ],
 };
 

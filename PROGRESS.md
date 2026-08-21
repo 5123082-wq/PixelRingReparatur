@@ -14,6 +14,10 @@ Startup reading rule:
 
 Latest checkpoint:
 
+- Date: 2026-08-21
+- Current stage: Утверждённое владельцем исправление технических причин слабой индексации завершено локально. Текущие 132 URL из `sitemap.xml` (карты сайта) теперь образуют один доступный для робота языковой граф вместо шести изолированных компонентов; все 42 опубликованные статьи о проблемах получили контекстные внутренние ссылки, 12 намеренно оставленных fallback-страниц (резервных страниц) больше не ведут на неопубликованные языковые варианты, а 114/132 публичных URL используют общее кеширование с заданным сроком вместо прежних 30/132. Исправлены постоянные перенаправления, прямые ответы 404, `favicon` (значок сайта), обновление карты сайта, конфигурация рабочей среды и метаданные Open Graph (метаданные изображения для соцсетей). Пройдены точечные тесты, ESLint (проверка качества кода), TypeScript (проверка типов), промышленная сборка, интерактивная проверка в браузере и полный локальный обход 132 URL.
+- Next action: Владелец отдельно подтверждает фиксацию изменений и развёртывание, после чего на рабочем сайте проверяются заголовки кеша и перенаправлений, карта сайта повторно отправляется в Google Search Console (панель Google для владельцев сайта), а причины индексации отслеживаются 2-4 недели. Оставшееся временное перенаправление домена без `www` на `www` настроено на стороне Vercel и требует изменения на уровне платформы.
+
 - Date: 2026-07-26
 - Current stage: The `Über uns` hero (первый экран страницы «О нас») process logic is implemented locally around the owner-confirmed company formula `PRÜFUNG → REPARATUR → SERVICE` (проверка → ремонт → сервис). Upper labels and lower numbered explanations now describe the same three steps, share aligned column centers, and reuse the existing `ServiceStamp` (фирменную сервисную печать) instead of creating an approximation. DE/EN/RU/TR/PL/AR copy, ESLint, TypeScript, `git diff --check` and production build pass.
 - Next action: Owner opens `http://127.0.0.1:3000/de/ueber-uns` in the integrated browser so the blocked desktop/mobile/RTL screenshot and final design QA (визуальная проверка) can be completed.

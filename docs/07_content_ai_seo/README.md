@@ -10,6 +10,7 @@ Purpose: short domain router (маршрутизатор домена) for Conte
 
 Current active tracks:
 
+- Technical indexing remediation (техническое исправление индексации): утверждённая владельцем локальная реализация от 2026-08-21 соединяет все 132 URL карты сайта в один доступный для робота языковой граф, добавляет контекстную перелинковку статей, расширяет общее кеширование до 114/132 публичных URL и убирает подтверждённый лишний обход перенаправлений и резервных страниц. Развёртывание и наблюдение в Google Search Console (панели Google для владельцев сайта) остаются следующим отдельно подтверждаемым шагом; см. последний контрольный пункт и [content_ai_seo_progress_log.md](content_ai_seo_progress_log.md).
 - GEO language strategy (языковая стратегия оптимизации для AI-ответов): [geo_optimization_strategy.md](geo_optimization_strategy.md) is the active decision dated 2026-07-18. DE is canonical and complete; EN is the maintained international version; RU is optional when business value supports it; TR/PL/AR keep key pages but do not require article parity until demand is demonstrated. The former all-articles-in-six-languages rule is superseded/deprecated (заменено и устарело).
 - `Probleme & Lösungen` (проблемы и решения): modernization of the problem-content cluster, including weak article rewrites, structured sections, CTA safety, and CMS article handling.
 - Service pages (страницы услуг): reusable service-page pattern from `Werbeanlagen-Reparatur` (ремонт рекламных конструкций) and follow-up work for neighboring service pages.
@@ -73,6 +74,15 @@ Archive/history rule:
 ## Latest Checkpoints
 
 Do not read full progress log at startup. Read only when continuing this track.
+
+### 2026-08-21 - Technical Indexing Remediation (техническое исправление индексации)
+
+* **Current sprint/block:** Owner-approved implementation of the highest-impact findings from the independent crawl/indexing audit (утверждённое внедрение самых важных выводов независимого аудита обхода и индексации).
+* **Done:** Добавлены доступные для робота серверные языковые ссылки, языковые альтернативы статей ограничены реально опубликованными версиями, а 132 URL карты сайта соединены в одну компоненту. Все 42 опубликованные статьи получили контекстные ссылки на обзор, подходящую услугу и примеры работ. Удалены связи между неопубликованными резервными вариантами, общее кеширование с заданным сроком расширено с 30/132 до 114/132, усилена обработка карты сайта, перенаправлений и прямых ответов 404, исправлены `favicon` (значок сайта) и метаданные Open Graph (метаданные изображения для соцсетей). Пройдены точечные тесты, промышленная сборка, полный обход 132 URL и интерактивная проверка в браузере.
+* **In progress:** Локальная работа завершена; фиксация изменений, развёртывание и внешняя проверка Google требуют отдельного подтверждения владельца.
+* **Next action:** После отдельного подтверждения развернуть изменения, проверить кеш и граф перенаправлений в рабочей среде, повторно отправить `sitemap.xml` (карту сайта), выгрузить примеры исключённых URL и сравнить причину `Discovered, currently not indexed` (обнаружено, но пока не проиндексировано) через 7, 14 и 28 дней.
+* **Blockers/risks:** Улучшенная доступность для обхода не гарантирует индексацию. Временное перенаправление домена без `www` на `www`, соответствие исторических URL причинам исключения в Google Search Console (панели Google для владельцев сайта), дублирование юридических страниц не на немецком и внешние сигналы авторитетности остаются отдельными следующими задачами.
+* **Updated documents/code (обновлённые документы и код):** [content_ai_seo_progress_log.md](content_ai_seo_progress_log.md) (доменный журнал), этот README (доменный файл-ориентир), корневой [PROGRESS.md](../../PROGRESS.md) (краткий глобальный журнал), маршрутизация языковых и статейных страниц, переключатель языков и шапка, контекстные ссылки статей, конфигурация карты сайта, прокси и перенаправлений, значок сайта и точечные тесты.
 
 ### 2026-07-18 - GEO Language Portfolio Decision (решение по языковому портфелю GEO)
 

@@ -14,14 +14,9 @@ import ReviewsSection from "@/components/sections/ReviewsSection";
 import FAQSection from "@/components/sections/FAQSection";
 import FooterCTA from "@/components/sections/FooterCTA";
 import { getHomePageCmsContent, getGlobalPageCmsContent } from "@/lib/cms/pages";
-import { routing } from '@/i18n/routing';
 import { buildLanguageAlternates, buildLocaleUrl, buildSiteUrl } from "@/lib/seo";
 
 export const revalidate = 300;
-
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
-}
 
 const HOME_METADATA: Record<string, { title: string; description: string }> = {
   de: {
@@ -56,7 +51,7 @@ const HOME_METADATA: Record<string, { title: string; description: string }> = {
   },
 };
 
-const HOME_OG_IMAGE_PATH = '/uploads/cms-media/1778015697577-d5a238a08cc1-wide-hero-service-result.png';
+const HOME_OG_IMAGE_PATH = '/images/leistungen/repair-hero/hero-sign-repair-01.jpg';
 
 const OPEN_GRAPH_LOCALES: Record<string, string> = {
   de: 'de_DE',
@@ -143,8 +138,8 @@ export async function generateMetadata({
       images: [
         {
           url: buildSiteUrl(HOME_OG_IMAGE_PATH),
-          width: 1821,
-          height: 864,
+          width: 1672,
+          height: 941,
           alt: 'PixelRing Reparatur service result for signage and light advertising.',
         },
       ],

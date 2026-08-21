@@ -11,6 +11,12 @@ import GoogleAdsTracking from '@/components/analytics/GoogleAdsTracking';
 
 type Locale = (typeof routing.locales)[number];
 
+export const revalidate = 3600;
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
 function isSupportedLocale(locale: string): locale is Locale {
   return routing.locales.includes(locale as Locale);
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { cache } from 'react';
 
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
@@ -7,6 +8,8 @@ import ProblemArticleBody from '@/components/probleme-loesungen/ProblemArticleBo
 import { getGlobalPageCmsContent } from '@/lib/cms/pages';
 import {
   getAllPublishedSymptomArticleNavItems,
+  getProblemArticlePublicSlug,
+  getPublishedSymptomArticles,
   getPublishedSymptomArticleByPublicSlug,
   getPublishedSymptomArticleTitlesByPublicSlugs,
 } from '@/lib/cms/articles';
@@ -33,6 +36,29 @@ const INTENT_BY_PUBLIC_SLUG: Record<string, ProblemIntent> = {
 };
 
 const FALLBACK_ARTICLE_LOCALE: SiteLocale = 'en';
+
+export const revalidate = 3600;
+
+export async function generateStaticParams({
+  params,
+}: {
+  params: { locale: string };
+}) {
+  try {
+    const articles = await getPublishedSymptomArticles(params.locale);
+
+    return articles.flatMap((article) => {
+      const publicSlug = getProblemArticlePublicSlug(article.slug);
+      return publicSlug ? [{ slug: publicSlug }] : [];
+    });
+  } catch (error) {
+    console.warn(
+      `Unable to prerender problem articles for ${params.locale}; routes will be generated on demand.`,
+      error
+    );
+    return [];
+  }
+}
 
 type ArticleResolution = {
   article: PublicProblemArticle | null;
@@ -61,7 +87,7 @@ function safeJsonLd(data: unknown): string {
   return JSON.stringify(data).replace(/</g, '\\u003c');
 }
 
-async function getPublishedArticleLocales(publicSlug: string): Promise<SiteLocale[]> {
+const getPublishedArticleLocales = cache(async (publicSlug: string): Promise<SiteLocale[]> => {
   const checks = await Promise.all(
     SITE_LOCALES.map(async (locale) => {
       const localizedArticle = await getPublishedSymptomArticleByPublicSlug(locale, publicSlug);
@@ -70,9 +96,12 @@ async function getPublishedArticleLocales(publicSlug: string): Promise<SiteLocal
   );
 
   return checks.filter((locale): locale is SiteLocale => Boolean(locale));
-}
+});
 
-async function resolveArticle(locale: string, slug: string): Promise<ArticleResolution> {
+const resolveArticle = cache(async (
+  locale: string,
+  slug: string
+): Promise<ArticleResolution> => {
   const article = await getPublishedSymptomArticleByPublicSlug(locale, slug);
 
   if (article) {
@@ -101,7 +130,7 @@ async function resolveArticle(locale: string, slug: string): Promise<ArticleReso
     contentLocale: FALLBACK_ARTICLE_LOCALE,
     isFallback: Boolean(fallbackArticle),
   };
-}
+});
 
 export async function generateMetadata({
   params,
@@ -181,12 +210,13 @@ export default async function ProblemArticlePage({
     notFound();
   }
 
-  const [navItems, relatedArticles] = await Promise.all([
+  const [navItems, relatedArticles, publishedLocales] = await Promise.all([
     getAllPublishedSymptomArticleNavItems(contentLocale),
     getPublishedSymptomArticleTitlesByPublicSlugs(
       contentLocale,
       RELATED_MAP[article.publicSlug] ?? []
     ),
+    getPublishedArticleLocales(article.publicSlug),
   ]);
   const problemIntent = INTENT_BY_PUBLIC_SLUG[article.publicSlug] ?? 'sign-not-lighting';
 
@@ -252,7 +282,7 @@ export default async function ProblemArticlePage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
       />
-      <Header content={globalCms?.header} />
+      <Header content={globalCms?.header} availableLocales={publishedLocales} />
       <main>
         <ProblemArticleBody
           locale={locale}
