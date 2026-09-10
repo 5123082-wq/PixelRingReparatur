@@ -42,6 +42,8 @@ Use this folder for:
 
 ## Progress Log
 
+* **2026-09-08 — Небольшая правка фона главной страницы:** по запросу владельца базовый бежевый фон заменён на `#EEF3FB`, совпадающий с первым блоком, чтобы убрать цветную полосу под фиксированной шапкой. Проверено в браузере на `/de`, целевая проверка ESLint пройдена. Изменён `signage-service/src/app/[locale]/page.tsx`; следующий шаг — визуальная оценка владельцем, блокеров нет.
+
 * **Date:** 2026-07-26
 * **Current sprint/block:** `Prüfung → Reparatur → Service` (проверка → ремонт → сервис) hero sequence (последовательность первого экрана).
 * **Done:** Replaced the mismatched duplicate `01–02–03` logic with one coherent brand sequence across DE/EN/RU/TR/PL/AR. The upper curve now names `Prüfung`, `Reparatur`, and `Service` (проверку, ремонт и сервис), while the lower three columns explain the corresponding step. The curve spans the same full-width three-column axis as the explanations. The existing reusable `ServiceStamp` (фирменная сервисная печать) from the homepage is placed as a restrained finishing mark; no approximate seal asset was generated from the supplied screenshot.

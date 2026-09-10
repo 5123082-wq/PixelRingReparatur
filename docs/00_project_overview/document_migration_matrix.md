@@ -329,6 +329,10 @@ Reason:
 
 - The document's task statuses and source links are stale. It says Phase 2B is still critical next, but current code already includes the knowledge base, AI system prompt, safety filter, chat engine, `/api/chat/messages`, backend persistence, frontend chat integration, operator messages, and operator takeover. Keep it as historical reference only.
 
+## Объединение результатов проверки безопасности — 2026-09-05
+
+По запросу владельца исходное заключение соседнего агента, дополнительный аудит приложения и временное дополнение по зависимостям объединены в [единый документ передачи и исправлений](../10_security_privacy/security_audit_and_remediation_handoff_2026-09-05.md). Это текущая точка продолжения; прежнее ограничение «21 уязвимость не подтверждена» заменено успешным результатом разрешённой проверки npm. Подробная таблица происхождения материалов находится в разделе 9 нового документа. Служебные записи завершённого сканирования остаются историческими; существующие общепроектные правила не заменялись.
+
 ## Decisions Needed
 
 1. Resolved: `implementation_blueprint.md` moved to archive as stale implementation/status history.

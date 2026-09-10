@@ -1,5 +1,4 @@
 import { CaseOriginChannel, MessageAuthorRole, PrismaClient } from '@prisma/client';
-import { SessionScope } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
@@ -454,23 +453,9 @@ async function loadSessionMessages(
   sessionId: string,
   caseId: string | null
 ) {
-  const caseIds = new Set<string>();
-  if (caseId) caseIds.add(caseId);
-
-  const sessionRelatedCases = await db.message.findMany({
-    where: { sessionId, isCustomerVisible: true },
-    select: { caseId: true },
-    distinct: ['caseId'],
-  });
-  sessionRelatedCases.forEach(r => { if (r.caseId) caseIds.add(r.caseId); });
-
-  const where = {
-    isCustomerVisible: true,
-    OR: [
-      { sessionId },
-      { caseId: { in: Array.from(caseIds) } },
-    ],
-  };
+  const where = caseId
+    ? { isCustomerVisible: true, caseId }
+    : { isCustomerVisible: true, sessionId, caseId: null };
 
   const messages = await db.message.findMany({
     where,
@@ -734,10 +719,7 @@ export async function POST(request: NextRequest) {
 
       await tx.session.update({
         where: { id: session.id },
-        data: {
-          lastSeenAt: now,
-          scope: session.caseId ? SessionScope.CASE_ACCESS : SessionScope.ANONYMOUS_DRAFT,
-        },
+        data: { lastSeenAt: now },
       });
 
       await upsertSessionIntakeDraft(tx, session.id, {
