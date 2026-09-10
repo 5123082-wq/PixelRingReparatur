@@ -8,15 +8,12 @@ import {
   getCaseSessionExpiryDate,
   hashCaseSessionToken,
 } from '../case-session';
+import { isChatAccessSession } from '../session-access-policy';
 
 export type ResolvedChatSession = {
   session: Session;
   cookieToken?: string;
 };
-
-function isSessionActive(session: Pick<Session, 'expiresAt' | 'revokedAt'>): boolean {
-  return session.revokedAt === null && session.expiresAt > new Date();
-}
 
 export async function resolveChatSession(
   prisma: PrismaClient,
@@ -25,7 +22,6 @@ export async function resolveChatSession(
     createIfMissing: boolean;
     userAgent?: string | null;
     ipAddress?: string | null;
-    caseId?: string | null;
   }
 ): Promise<ResolvedChatSession | null> {
   const now = new Date();
@@ -35,27 +31,11 @@ export async function resolveChatSession(
       where: { tokenHash: hashCaseSessionToken(token) },
     });
 
-    if (existingSession && isSessionActive(existingSession)) {
-      const desiredScope = existingSession.caseId
-        ? SessionScope.CASE_ACCESS
-        : SessionScope.ANONYMOUS_DRAFT;
-
-      if (existingSession.lastSeenAt === null || existingSession.scope !== desiredScope) {
-        await prisma.session.update({
-          where: { id: existingSession.id },
-          data: {
-            lastSeenAt: now,
-            scope: desiredScope,
-          },
-        });
-      } else {
-        await prisma.session.update({
-          where: { id: existingSession.id },
-          data: {
-            lastSeenAt: now,
-          },
-        });
-      }
+    if (isChatAccessSession(existingSession, now)) {
+      await prisma.session.update({
+        where: { id: existingSession.id },
+        data: { lastSeenAt: now },
+      });
 
       return { session: existingSession };
     }
@@ -70,8 +50,8 @@ export async function resolveChatSession(
   const session = await prisma.session.create({
     data: {
       tokenHash,
-      scope: options.caseId ? SessionScope.CASE_ACCESS : SessionScope.ANONYMOUS_DRAFT,
-      caseId: options.caseId ?? null,
+      scope: SessionScope.ANONYMOUS_DRAFT,
+      caseId: null,
       userAgent: options.userAgent ?? null,
       ipAddress: options.ipAddress ?? null,
       lastSeenAt: now,

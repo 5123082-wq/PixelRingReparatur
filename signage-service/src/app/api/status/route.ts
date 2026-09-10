@@ -5,11 +5,15 @@ import { prisma } from '@/lib/prisma';
 import { PORTAL_SESSION_COOKIE_NAME, getPortalSessionContext } from '@/lib/portal/auth';
 import { getActivePortalClaimLinkForCase } from '@/lib/portal/claim';
 import { checkRateLimit, getClientIP, STATUS_LIMIT } from '@/lib/rate-limit';
-import { lookupPublicCaseStatus } from '@/lib/status-lookup';
+import {
+  lookupPublicCaseStatus,
+  type StatusAccessLevel,
+} from '@/lib/status-lookup';
 
 async function resolvePortalActivation(input: {
   request: NextRequest;
   caseId: string;
+  accessLevel: StatusAccessLevel;
 }): Promise<
   | { state: 'portal_session'; portalUrl: string }
   | { state: 'active_claim'; claimUrl: string; expiresAt: string }
@@ -36,6 +40,10 @@ async function resolvePortalActivation(input: {
         portalUrl: '/portal',
       };
     }
+  }
+
+  if (input.accessLevel !== 'case_access') {
+    return { state: 'unavailable' };
   }
 
   const claim = await getActivePortalClaimLinkForCase(prisma, {
@@ -78,9 +86,6 @@ export async function POST(request: NextRequest) {
       contact: body?.contact,
       accessToken: body?.access,
       sessionToken: request.cookies.get(CASE_SESSION_COOKIE_NAME)?.value ?? null,
-      userAgent: request.headers.get('user-agent'),
-      ipAddress:
-        request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null,
     });
 
     if (!result.verified) {
@@ -97,10 +102,12 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({
       verified: true,
       verifiedVia: result.case.verifiedVia,
+      accessLevel: result.accessLevel,
       case: result.case,
       portalActivation: await resolvePortalActivation({
         request,
         caseId: result.caseId,
+        accessLevel: result.accessLevel,
       }),
     });
 

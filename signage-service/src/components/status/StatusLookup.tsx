@@ -19,10 +19,13 @@ type PortalActivation =
   | { state: 'active_claim'; claimUrl: string; expiresAt: string }
   | { state: 'unavailable' };
 
+type StatusAccessLevel = 'case_access' | 'status_only';
+
 type StatusLookupResponse =
   | {
       verified: true;
       verifiedVia: 'session' | 'contact';
+      accessLevel: StatusAccessLevel;
       case: PublicStatusCase;
       portalActivation: PortalActivation;
     }
@@ -103,6 +106,7 @@ export default function StatusLookup({
   const [requestNumber, setRequestNumber] = useState(initialRequestNumber);
   const [contact, setContact] = useState('');
   const [result, setResult] = useState<PublicStatusCase | null>(null);
+  const [accessLevel, setAccessLevel] = useState<StatusAccessLevel | null>(null);
   const [portalActivation, setPortalActivation] = useState<PortalActivation | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -172,6 +176,7 @@ export default function StatusLookup({
 
       if (!response.ok || !data.verified) {
         setResult(null);
+        setAccessLevel(null);
         setPortalActivation(null);
         if (!options?.silent) {
           const failure = data as Extract<StatusLookupResponse, { verified: false }>;
@@ -181,6 +186,7 @@ export default function StatusLookup({
       }
 
       setResult(data.case);
+      setAccessLevel(data.accessLevel);
       setPortalActivation(data.portalActivation);
       setHelperMessage(
         data.verifiedVia === 'session'
@@ -408,7 +414,7 @@ export default function StatusLookup({
               <button
                 type="button"
                 onClick={() => {
-                  if (result) {
+                  if (result && accessLevel === 'case_access') {
                     window.dispatchEvent(new Event('openChat'));
                     return;
                   }
@@ -428,7 +434,9 @@ export default function StatusLookup({
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
           </div>
           <p className="text-center text-[10px] text-[#64748B]/60 mt-2 font-medium italic">
-            {result ? chatSessionHint : t('chat_auth_hint')}
+            {result && accessLevel === 'case_access'
+              ? chatSessionHint
+              : t('chat_auth_hint')}
           </p>
         </div>
       </div>

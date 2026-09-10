@@ -1,13 +1,12 @@
-import type { Case, CaseStatus, PrismaClient, Session } from '@prisma/client';
-import { SessionScope } from '@prisma/client';
+import type { Case, CaseStatus, PrismaClient } from '@prisma/client';
 
+import { hashCaseSessionToken } from './case-session.ts';
+import { parseContact } from './contact-policy.ts';
+import { isPublicRequestNumberFormat } from './request-number.ts';
 import {
-  createCaseSessionToken,
-  getCaseSessionExpiryDate,
-  hashCaseSessionToken,
-} from './case-session';
-import { parseContact } from './contact-policy';
-import { isPublicRequestNumberFormat } from './request-number';
+  isCaseStatusSession,
+  isSameDeviceCaseSession,
+} from './session-access-policy.ts';
 
 type PublicCaseStatus = {
   publicRequestNumber: string;
@@ -24,13 +23,14 @@ export type StatusLookupRequest = {
   contact?: string;
   accessToken?: string | null;
   sessionToken?: string | null;
-  userAgent?: string | null;
-  ipAddress?: string | null;
 };
+
+export type StatusAccessLevel = 'case_access' | 'status_only';
 
 export type StatusLookupSuccess = {
   verified: true;
   caseId: string;
+  accessLevel: StatusAccessLevel;
   cookieToken?: string;
   case: PublicCaseStatus;
 };
@@ -166,21 +166,6 @@ function buildPublicCaseStatus(
   };
 }
 
-function isActiveSession(session: Session | null): boolean {
-  if (!session) {
-    return false;
-  }
-
-  const now = new Date();
-
-  return (
-    session.scope === SessionScope.CASE_ACCESS &&
-    session.revokedAt === null &&
-    session.expiresAt > now &&
-    session.caseId !== null
-  );
-}
-
 function isSessionTokenPresent(token: string | null | undefined): token is string {
   return typeof token === 'string' && token.trim().length > 0;
 }
@@ -210,7 +195,7 @@ async function lookupBySessionToken(
     },
   });
 
-  const isValidSession = isActiveSession(session);
+  const isValidSession = isCaseStatusSession(session, input.now);
   const sessionCase = session?.case ?? null;
   const sessionMatchesRequest =
     !hasRequestNumber ||
@@ -227,6 +212,9 @@ async function lookupBySessionToken(
     return {
       verified: true,
       caseId: sessionCase.id,
+      accessLevel: isSameDeviceCaseSession(session, input.now)
+        ? 'case_access'
+        : 'status_only',
       cookieToken: input.token,
       case: buildPublicCaseStatus(sessionCase, 'session'),
     };
@@ -244,6 +232,19 @@ export async function lookupPublicCaseStatus(
   const contact = input.contact ?? '';
   const hasRequestNumber = requestNumber.length > 0;
   const hasContact = contact.trim().length > 0;
+  let matchingCookieResult: StatusLookupSuccess | null = null;
+
+  if (hasRequestNumber && isSessionTokenPresent(input.sessionToken)) {
+    matchingCookieResult = await lookupBySessionToken(prisma, {
+      token: input.sessionToken,
+      publicRequestNumber: requestNumber,
+      now,
+    });
+
+    if (matchingCookieResult?.accessLevel === 'case_access') {
+      return matchingCookieResult;
+    }
+  }
 
   if (isSessionTokenPresent(input.accessToken)) {
     const accessResult = await lookupBySessionToken(prisma, {
@@ -257,7 +258,11 @@ export async function lookupPublicCaseStatus(
     }
   }
 
-  if (isSessionTokenPresent(input.sessionToken)) {
+  if (matchingCookieResult) {
+    return matchingCookieResult;
+  }
+
+  if (!hasRequestNumber && isSessionTokenPresent(input.sessionToken)) {
     const sessionResult = await lookupBySessionToken(prisma, {
       token: input.sessionToken,
       publicRequestNumber: requestNumber,
@@ -316,29 +321,10 @@ export async function lookupPublicCaseStatus(
     };
   }
 
-  const sessionToken = createCaseSessionToken();
-  const sessionTokenHash = hashCaseSessionToken(sessionToken);
-  const parsedContact = parseContact(contact);
-
-  await prisma.session.create({
-    data: {
-      tokenHash: sessionTokenHash,
-      scope: SessionScope.CASE_ACCESS,
-      caseId: caseRecord.id,
-      contactMethod: parsedContact.method,
-      contactValue: parsedContact.value,
-      verifiedAt: now,
-      lastSeenAt: now,
-      expiresAt: getCaseSessionExpiryDate(now),
-      userAgent: input.userAgent ?? null,
-      ipAddress: input.ipAddress ?? null,
-    },
-  });
-
   return {
     verified: true,
     caseId: caseRecord.id,
-    cookieToken: sessionToken,
+    accessLevel: 'status_only',
     case: buildPublicCaseStatus(caseRecord, 'contact'),
   };
 }

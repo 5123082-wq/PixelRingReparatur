@@ -176,7 +176,7 @@ export default async function HomePage({
     ]);
 
     return (
-      <div className="min-h-screen flex flex-col bg-[#F7F1E8]">
+      <div className="min-h-screen flex flex-col bg-[#EEF3FB]">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

@@ -143,14 +143,13 @@ async function seedFixture() {
         "caseId",
         "contactMethod",
         "contactValue",
-        "verifiedAt",
         "lastSeenAt",
         "expiresAt",
         "createdAt",
         "updatedAt"
       ) values (
         $1, $2, 'CASE_ACCESS'::"SessionScope", $3,
-        $4::"PrimaryContactMethod", $5, $6, $7, $8, $9, $10
+        $4::"PrimaryContactMethod", $5, $6, $7, $8, $9
       )`,
       [
         sessionId,
@@ -158,7 +157,6 @@ async function seedFixture() {
         caseId,
         FIXTURE.primaryContactMethod,
         FIXTURE.customerEmail,
-        numberIssuedAt,
         subtractHours(now, 2),
         expiresAt,
         numberIssuedAt,

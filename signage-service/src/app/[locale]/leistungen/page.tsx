@@ -127,6 +127,7 @@ const SERVICE_DETAIL_PATH_BY_CARD_ID: Partial<Record<string, string>> = {
 const ILLUMINATED_VALANCE_SERVICE_CARD_BY_LOCALE: Record<Locale, ServiceShowcaseCard> = {
   de: {
     id: 'beleuchtete-markisenvolants',
+    eyebrow: 'Markisenbeleuchtung',
     intent: 'illuminated-valance',
     title: 'Beleuchtete Markisen-Volants',
     description:
@@ -143,6 +144,7 @@ const ILLUMINATED_VALANCE_SERVICE_CARD_BY_LOCALE: Record<Locale, ServiceShowcase
   },
   en: {
     id: 'beleuchtete-markisenvolants',
+    eyebrow: 'Awning lighting',
     intent: 'illuminated-valance',
     title: 'Illuminated awning valances',
     description:
@@ -159,6 +161,7 @@ const ILLUMINATED_VALANCE_SERVICE_CARD_BY_LOCALE: Record<Locale, ServiceShowcase
   },
   ru: {
     id: 'beleuchtete-markisenvolants',
+    eyebrow: 'Подсветка маркиз',
     intent: 'illuminated-valance',
     title: 'Воланы с подсветкой для маркиз',
     description:
@@ -175,6 +178,7 @@ const ILLUMINATED_VALANCE_SERVICE_CARD_BY_LOCALE: Record<Locale, ServiceShowcase
   },
   tr: {
     id: 'beleuchtete-markisenvolants',
+    eyebrow: 'Tente aydınlatması',
     intent: 'illuminated-valance',
     title: 'Işıklı tente etekleri',
     description:
@@ -191,6 +195,7 @@ const ILLUMINATED_VALANCE_SERVICE_CARD_BY_LOCALE: Record<Locale, ServiceShowcase
   },
   pl: {
     id: 'beleuchtete-markisenvolants',
+    eyebrow: 'Oświetlenie markiz',
     intent: 'illuminated-valance',
     title: 'Podświetlane falbany markizowe',
     description:
@@ -207,6 +212,7 @@ const ILLUMINATED_VALANCE_SERVICE_CARD_BY_LOCALE: Record<Locale, ServiceShowcase
   },
   ar: {
     id: 'beleuchtete-markisenvolants',
+    eyebrow: 'إضاءة المظلات',
     intent: 'illuminated-valance',
     title: 'الحواف الأمامية المضيئة للمظلات',
     description:
@@ -321,6 +327,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'werbeanlagen-reinigung',
+        eyebrow: 'Reinigung & Pflege',
         intent: 'reinigung-pflege',
         title: 'Werbeanlagen-Reinigung',
         description:
@@ -336,6 +343,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'led-modernisierung',
+        eyebrow: 'LED-Service',
         intent: 'lichtwerbung-led',
         title: 'Modernisierung von Lichtwerbung & LED-Systemen',
         description:
@@ -351,6 +359,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'audit-diagnose',
+        eyebrow: 'Diagnose',
         intent: 'diagnose',
         title: 'Inspektion, Audit & Diagnose von Werbeanlagen',
         description:
@@ -366,6 +375,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'montage-demontage',
+        eyebrow: 'Montage',
         intent: 'montage-demontage',
         title: 'Montage, Demontage & Versetzung von Werbeanlagen',
         description:
@@ -381,6 +391,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'druck-branding',
+        eyebrow: 'Druck & Branding',
         intent: 'druckprodukte-branding',
         title: 'Druckprodukte, Branding & Werbematerialien',
         description:
@@ -590,6 +601,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'werbeanlagen-reinigung',
+        eyebrow: 'Cleaning & care',
         intent: 'reinigung-pflege',
         title: 'Signage Cleaning',
         description:
@@ -605,6 +617,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'led-modernisierung',
+        eyebrow: 'LED service',
         intent: 'lichtwerbung-led',
         title: 'Illuminated signage modernization & LED systems',
         description:
@@ -620,6 +633,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'audit-diagnose',
+        eyebrow: 'Diagnostics',
         intent: 'diagnose',
         title: 'Inspection, audit & diagnostics for signage',
         description:
@@ -635,6 +649,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'montage-demontage',
+        eyebrow: 'Installation',
         intent: 'montage-demontage',
         title: 'Installation, dismantling & relocation of signage',
         description:
@@ -650,6 +665,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'druck-branding',
+        eyebrow: 'Print & branding',
         intent: 'druckprodukte-branding',
         title: 'Print products, branding & advertising materials',
         description:
@@ -1005,6 +1021,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'werbeanlagen-reinigung',
+        eyebrow: 'Temizlik ve bakım',
         intent: 'reinigung-pflege',
         title: 'Tabela Temizliği',
         description:
@@ -1020,6 +1037,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'led-modernisierung',
+        eyebrow: 'LED servisi',
         intent: 'lichtwerbung-led',
         title: 'Işıklı reklam ve LED sistem modernizasyonu',
         description:
@@ -1035,6 +1053,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'audit-diagnose',
+        eyebrow: 'Teşhis',
         intent: 'diagnose',
         title: 'Reklam sistemleri için inspeksiyon, denetim ve teşhis',
         description:
@@ -1050,6 +1069,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'montage-demontage',
+        eyebrow: 'Montaj',
         intent: 'montage-demontage',
         title: 'Reklam sistemlerinin montajı, demontajı ve taşınması',
         description:
@@ -1065,6 +1085,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'druck-branding',
+        eyebrow: 'Baskı ve markalama',
         intent: 'druckprodukte-branding',
         title: 'Baskı ürünleri, markalama ve reklam materyalleri',
         description:
@@ -1210,6 +1231,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'werbeanlagen-reinigung',
+        eyebrow: 'Czyszczenie i pielęgnacja',
         intent: 'reinigung-pflege',
         title: 'Czyszczenie reklam',
         description:
@@ -1225,6 +1247,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'led-modernisierung',
+        eyebrow: 'Serwis LED',
         intent: 'lichtwerbung-led',
         title: 'Modernizacja reklamy świetlnej i systemów LED',
         description:
@@ -1240,6 +1263,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'audit-diagnose',
+        eyebrow: 'Diagnostyka',
         intent: 'diagnose',
         title: 'Inspekcja, audyt i diagnostyka instalacji reklamowych',
         description:
@@ -1255,6 +1279,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'montage-demontage',
+        eyebrow: 'Montaż',
         intent: 'montage-demontage',
         title: 'Montaż, demontaż i przeniesienie reklam',
         description:
@@ -1270,6 +1295,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'druck-branding',
+        eyebrow: 'Druk i branding',
         intent: 'druckprodukte-branding',
         title: 'Druk, branding i materiały reklamowe',
         description:
@@ -1415,6 +1441,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'werbeanlagen-reinigung',
+        eyebrow: 'التنظيف والعناية',
         intent: 'reinigung-pflege',
         title: 'تنظيف اللوحات الإعلانية',
         description:
@@ -1430,6 +1457,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'led-modernisierung',
+        eyebrow: 'خدمة LED',
         intent: 'lichtwerbung-led',
         title: 'تحديث الإعلانات المضيئة وأنظمة LED',
         description:
@@ -1445,6 +1473,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'audit-diagnose',
+        eyebrow: 'التشخيص',
         intent: 'diagnose',
         title: 'فحص وتدقيق وتشخيص المنشآت الإعلانية',
         description:
@@ -1460,6 +1489,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'montage-demontage',
+        eyebrow: 'التركيب',
         intent: 'montage-demontage',
         title: 'تركيب وفك ونقل الهياكل الإعلانية',
         description:
@@ -1475,6 +1505,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
       },
       {
         id: 'druck-branding',
+        eyebrow: 'الطباعة والهوية البصرية',
         intent: 'druckprodukte-branding',
         title: 'مواد مطبوعة وهوية تجارية ومواد إعلانية',
         description:
@@ -1704,6 +1735,7 @@ export default async function LeistungenPage({
         className="inline-flex min-h-12 min-w-[160px] items-center justify-center rounded-full border border-[#C8D6E3] bg-[#F8FAFC] px-7 py-3 text-center text-[15px] font-bold text-[#0E1A2B] shadow-sm shadow-[#0E1A2B0D] transition-colors hover:border-[#7BA190] hover:bg-[#EEF6F2] hover:text-[#24594D] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7BA190]"
       >
         {card.cta}
+        <span aria-hidden="true" className="ms-3 rtl:rotate-180">→</span>
       </Link>
     ) : (
       <LeistungenRequestButton
@@ -1739,41 +1771,26 @@ export default async function LeistungenPage({
                     key={card.id}
                     className="overflow-hidden rounded-[28px] border border-[#E2E8F0] bg-white p-5 shadow-sm sm:p-7 lg:p-8"
                   >
-                    {card.eyebrow && (
-                      <div className="mb-8 text-center">
+                    <div className="mb-8 text-center">
+                      {card.eyebrow && (
                         <SectionEyebrow className="mb-7 justify-center">
                           {card.eyebrow}
                         </SectionEyebrow>
-                        <h3 className="mx-auto max-w-4xl break-words text-2xl font-black leading-[1.1] text-[#0E1A2B] sm:text-3xl">
-                          {card.title}
-                        </h3>
-                      </div>
-                    )}
+                      )}
+                      <h3 className="mx-auto max-w-4xl break-words text-2xl font-black leading-[1.1] text-[#0E1A2B] sm:text-3xl">
+                        {card.title}
+                      </h3>
+                    </div>
 
                     <div
-                      className={`grid min-w-0 gap-6 lg:items-center ${
-                        card.eyebrow
-                          ? 'lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-10'
-                          : 'lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]'
-                      } ${
-                        index % 2 !== 0 ? 'lg:[&>div:first-child]:order-2' : ''
+                      className={`grid min-w-0 gap-6 lg:items-stretch lg:gap-10 ${
+                        index % 2 !== 0
+                          ? 'lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]'
+                          : 'lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]'
                       }`}
                     >
-                      <div className="min-w-0">
-                        {!card.eyebrow && (
-                          <h3 className="break-words text-2xl font-black leading-[1.1] text-[#0E1A2B] sm:text-3xl">
-                            {card.title}
-                          </h3>
-                        )}
-                        <p
-                          className={`${card.eyebrow ? 'mt-0' : 'mt-5'} text-[16px] leading-7 text-[#4A5568] ${
-                            card.eyebrow
-                              ? locale === 'ar'
-                                ? 'border-r-2 border-[#B8643E] pr-4'
-                                : 'border-l-2 border-[#B8643E] pl-4'
-                              : ''
-                          }`}
-                        >
+                      <div className={`order-2 flex min-w-0 flex-col ${index % 2 !== 0 ? 'lg:order-2' : 'lg:order-1'}`}>
+                        <p className="border-s-2 border-[#B8643E] ps-4 text-[16px] leading-7 text-[#4A5568]">
                           {card.description}
                         </p>
 
@@ -1788,12 +1805,12 @@ export default async function LeistungenPage({
                           ))}
                         </div>
 
-                        <div className={`mt-7 ${card.eyebrow ? 'flex justify-center' : ''}`}>
+                        <div className="mt-auto pt-7 max-sm:[&>a]:w-full max-sm:[&>button]:w-full">
                           {renderServiceShowcaseCta(card)}
                         </div>
                       </div>
 
-                      <div className="relative aspect-[16/10] min-h-[240px] overflow-hidden rounded-[22px] shadow-lg sm:min-h-[300px]">
+                      <div className={`relative order-1 aspect-[16/10] overflow-hidden rounded-[22px] shadow-lg lg:aspect-auto lg:min-h-[360px] ${index % 2 !== 0 ? 'lg:order-1' : 'lg:order-2'}`}>
                         <CmsImage
                           src={card.image}
                           alt={card.imageAlt ?? card.title}

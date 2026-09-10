@@ -5,8 +5,16 @@ import { dirname, resolve } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
-import { CaseOriginChannel, MessageAuthorRole } from '@prisma/client';
+import { CaseOriginChannel, MessageAuthorRole, SessionScope } from '@prisma/client';
 
+import { lookupPublicCaseStatus } from '../src/lib/status-lookup.ts';
+import {
+  isAnonymousChatSession,
+  isCaseStatusSession,
+  isChatAccessSession,
+  isSameDeviceCaseSession,
+  isStatusOnlyCaseSession,
+} from '../src/lib/session-access-policy.ts';
 import {
   customerSafePortalCaseSummary,
   customerSafePortalCaseTitle,
@@ -142,6 +150,94 @@ function buildFakePortalDetailsDb() {
   db.$transaction = async (callback: (tx: any) => Promise<void>) => callback(db);
 
   return { db, caseRecord, messages, auditLogs };
+}
+
+function buildStatusCaseRecord() {
+  return {
+    id: 'case-1',
+    publicRequestNumber: 'PR-TEST-0001',
+    status: 'UNDER_REVIEW',
+    createdAt: new Date('2026-05-17T09:00:00.000Z'),
+    updatedAt: new Date('2026-05-17T10:00:00.000Z'),
+    customerEmail: 'customer@example.com',
+    customerPhone: '+49 30 1234567',
+    primaryContactMethod: 'EMAIL',
+    primaryContactValue: 'customer@example.com',
+  };
+}
+
+function buildStatusSessionRecord(overrides: Record<string, unknown> = {}) {
+  const caseRecord = buildStatusCaseRecord();
+
+  return {
+    id: 'case-session-1',
+    tokenHash: 'stored-token-hash',
+    scope: SessionScope.CASE_ACCESS,
+    caseId: caseRecord.id,
+    portalUserId: null,
+    verifiedAt: null,
+    expiresAt: new Date('2099-01-01T00:00:00.000Z'),
+    revokedAt: null,
+    lastSeenAt: null,
+    case: caseRecord,
+    ...overrides,
+  };
+}
+
+function buildFakeStatusLookupDb(input: {
+  caseRecord?: ReturnType<typeof buildStatusCaseRecord> | null;
+  sessionRecord?: ReturnType<typeof buildStatusSessionRecord> | null;
+} = {}) {
+  const caseRecord = input.caseRecord === undefined
+    ? buildStatusCaseRecord()
+    : input.caseRecord;
+  const sessionRecord = input.sessionRecord ?? null;
+  const calls = {
+    caseFindUnique: [] as any[],
+    sessionFindUnique: [] as any[],
+    sessionUpdate: [] as any[],
+    sessionCreate: [] as any[],
+  };
+
+  const db: any = {
+    case: {
+      findUnique: async (args: any) => {
+        calls.caseFindUnique.push(args);
+
+        return caseRecord?.publicRequestNumber === args.where.publicRequestNumber
+          ? caseRecord
+          : null;
+      },
+    },
+    session: {
+      findUnique: async (args: any) => {
+        calls.sessionFindUnique.push(args);
+        return sessionRecord;
+      },
+      update: async (args: any) => {
+        calls.sessionUpdate.push(args);
+        return { ...sessionRecord, ...args.data };
+      },
+      create: async (args: any) => {
+        calls.sessionCreate.push(args);
+        return { id: 'unexpected-session', ...args.data };
+      },
+    },
+  };
+
+  return { db, calls };
+}
+
+function buildSessionPolicyRecord(overrides: Record<string, unknown> = {}) {
+  return {
+    scope: SessionScope.CASE_ACCESS,
+    caseId: 'case-1',
+    portalUserId: null,
+    verifiedAt: null,
+    expiresAt: new Date('2026-09-06T12:00:00.000Z'),
+    revokedAt: null,
+    ...overrides,
+  };
 }
 
 function fakePortalMutationRequest(input: {
@@ -359,20 +455,249 @@ test('status lookup with request number alone does not query case or expose port
   assert.equal(source.includes('portalActivation'), false);
 });
 
-test('status API resolves portal activation only after verified status access', () => {
-  const source = readProjectFile('src/app/api/status/route.ts');
-  const unverifiedIndex = source.indexOf('if (!result.verified) {');
-  const verifiedResponseIndex = source.indexOf('const response = NextResponse.json({');
-  const activationIndex = source.indexOf('portalActivation: await resolvePortalActivation({');
+test('matching email or phone grants status-only data without creating a session or cookie', async () => {
+  for (const contact of ['CUSTOMER@example.com', '+49 (30) 1234567']) {
+    const { db, calls } = buildFakeStatusLookupDb();
+    const result = await lookupPublicCaseStatus(db, {
+      publicRequestNumber: 'PR-TEST-0001',
+      contact,
+    });
 
-  assert.notEqual(unverifiedIndex, -1);
-  assert.notEqual(verifiedResponseIndex, -1);
-  assert.notEqual(activationIndex, -1);
-  assert.ok(unverifiedIndex < verifiedResponseIndex);
-  assert.ok(verifiedResponseIndex < activationIndex);
+    if (!result.verified) {
+      assert.fail(result.message);
+    }
+
+    assert.equal(result.accessLevel, 'status_only');
+    assert.equal(result.caseId, 'case-1');
+    assert.equal(result.case.verifiedVia, 'contact');
+    assert.deepEqual(
+      Object.keys(result.case).sort(),
+      [
+        'createdAt',
+        'publicRequestNumber',
+        'status',
+        'statusDescription',
+        'statusLabel',
+        'updatedAt',
+        'verifiedVia',
+      ]
+    );
+    assert.equal(Object.hasOwn(result, 'cookieToken'), false);
+    assert.equal(calls.caseFindUnique.length, 1);
+    assert.equal(calls.sessionFindUnique.length, 0);
+    assert.equal(calls.sessionCreate.length, 0);
+    assert.equal(calls.sessionUpdate.length, 0);
+  }
+});
+
+test('mismatched contact returns the same generic failure as an unknown request and creates no session', async () => {
+  const failures = [];
+
+  for (const contact of ['intruder@example.net', '+49 30 9999999']) {
+    const { db, calls } = buildFakeStatusLookupDb();
+    const result = await lookupPublicCaseStatus(db, {
+      publicRequestNumber: 'PR-TEST-0001',
+      contact,
+    });
+
+    failures.push(result);
+    assert.equal(result.verified, false);
+    assert.equal(Object.hasOwn(result, 'cookieToken'), false);
+    assert.equal(calls.sessionCreate.length, 0);
+    assert.equal(calls.sessionUpdate.length, 0);
+  }
+
+  const { db: unknownCaseDb, calls: unknownCaseCalls } = buildFakeStatusLookupDb();
+  const unknownCaseResult = await lookupPublicCaseStatus(unknownCaseDb, {
+    publicRequestNumber: 'PR-MISS-0000',
+    contact: 'customer@example.com',
+  });
+
+  assert.deepEqual(failures[0], failures[1]);
+  assert.deepEqual(failures[0], unknownCaseResult);
+  assert.deepEqual(failures[0], {
+    verified: false,
+    verificationRequired: true,
+    message: 'Request number alone does not reveal private data. Please verify with the phone or email used on the request, or use the same device that already has access.',
+  });
+  assert.equal(unknownCaseCalls.sessionCreate.length, 0);
+  assert.equal(unknownCaseCalls.sessionUpdate.length, 0);
+});
+
+test('same-device CASE_ACCESS returns case access and touches the existing token only', async () => {
+  const rawToken = 'same-device-token';
+  const { db, calls } = buildFakeStatusLookupDb({
+    sessionRecord: buildStatusSessionRecord(),
+  });
+  const result = await lookupPublicCaseStatus(db, {
+    publicRequestNumber: 'PR-TEST-0001',
+    sessionToken: rawToken,
+  });
+
+  if (!result.verified) {
+    assert.fail(result.message);
+  }
+
+  assert.equal(result.accessLevel, 'case_access');
+  assert.equal(result.cookieToken, rawToken);
+  assert.equal(result.case.verifiedVia, 'session');
+  assert.equal(calls.sessionFindUnique.length, 1);
+  assert.notEqual(calls.sessionFindUnique[0].where.tokenHash, rawToken);
+  assert.equal(calls.sessionUpdate.length, 1);
+  assert.deepEqual(calls.sessionUpdate[0].where, { id: 'case-session-1' });
+  assert.deepEqual(Object.keys(calls.sessionUpdate[0].data), ['lastSeenAt']);
+  assert.ok(calls.sessionUpdate[0].data.lastSeenAt instanceof Date);
+  assert.equal(calls.sessionCreate.length, 0);
+  assert.equal(calls.caseFindUnique.length, 0);
+});
+
+test('verified CASE_ACCESS remains status-only while preserving and touching its token', async () => {
+  const rawToken = 'verified-case-token';
+  const { db, calls } = buildFakeStatusLookupDb({
+    sessionRecord: buildStatusSessionRecord({
+      verifiedAt: new Date('2026-09-05T09:00:00.000Z'),
+    }),
+  });
+  const result = await lookupPublicCaseStatus(db, {
+    publicRequestNumber: 'PR-TEST-0001',
+    sessionToken: rawToken,
+  });
+
+  if (!result.verified) {
+    assert.fail(result.message);
+  }
+
+  assert.equal(result.accessLevel, 'status_only');
+  assert.equal(result.cookieToken, rawToken);
+  assert.equal(result.case.verifiedVia, 'session');
+  assert.equal(calls.sessionUpdate.length, 1);
+  assert.deepEqual(Object.keys(calls.sessionUpdate[0].data), ['lastSeenAt']);
+  assert.equal(calls.sessionCreate.length, 0);
+  assert.equal(calls.caseFindUnique.length, 0);
+});
+
+test('session policy accepts legitimate draft and same-device sessions only in their intended channels', () => {
+  const now = new Date('2026-09-05T12:00:00.000Z');
+  const anonymousDraft = buildSessionPolicyRecord({
+    scope: SessionScope.ANONYMOUS_DRAFT,
+    caseId: null,
+  });
+  const sameDeviceCase = buildSessionPolicyRecord();
+  const verifiedCase = buildSessionPolicyRecord({
+    verifiedAt: new Date('2026-09-05T09:00:00.000Z'),
+  });
+
+  assert.equal(isAnonymousChatSession(anonymousDraft, now), true);
+  assert.equal(isChatAccessSession(anonymousDraft, now), true);
+  assert.equal(isCaseStatusSession(anonymousDraft, now), false);
+
+  assert.equal(isSameDeviceCaseSession(sameDeviceCase, now), true);
+  assert.equal(isChatAccessSession(sameDeviceCase, now), true);
+  assert.equal(isCaseStatusSession(sameDeviceCase, now), true);
+
+  assert.equal(isStatusOnlyCaseSession(verifiedCase, now), true);
+  assert.equal(isChatAccessSession(verifiedCase, now), false);
+  assert.equal(isCaseStatusSession(verifiedCase, now), true);
+});
+
+test('session policy rejects portal, revoked, expired, and mixed-scope records', () => {
+  const now = new Date('2026-09-05T12:00:00.000Z');
+  const rejectedSessions = [
+    buildSessionPolicyRecord({
+      scope: SessionScope.PORTAL_AUTH,
+      portalUserId: 'portal-user-1',
+      verifiedAt: new Date('2026-09-05T09:00:00.000Z'),
+    }),
+    buildSessionPolicyRecord({ revokedAt: new Date('2026-09-05T10:00:00.000Z') }),
+    buildSessionPolicyRecord({ expiresAt: new Date('2026-09-05T11:59:59.000Z') }),
+    buildSessionPolicyRecord({
+      scope: SessionScope.ANONYMOUS_DRAFT,
+      caseId: 'case-1',
+    }),
+    buildSessionPolicyRecord({ caseId: null }),
+    buildSessionPolicyRecord({ portalUserId: 'portal-user-1' }),
+  ];
+
+  for (const session of rejectedSessions) {
+    assert.equal(isChatAccessSession(session, now), false);
+    assert.equal(isCaseStatusSession(session, now), false);
+  }
+});
+
+test('status API gates active claim discovery on case access and forwards the lookup access level', () => {
+  const source = readProjectFile('src/app/api/status/route.ts');
+  const resolverIndex = source.indexOf('async function resolvePortalActivation(');
+  const accessLevelGuardIndex = source.indexOf("if (input.accessLevel !== 'case_access') {", resolverIndex);
+  const activeClaimLookupIndex = source.indexOf('getActivePortalClaimLinkForCase(prisma, {', resolverIndex);
+  const activationCallIndex = source.indexOf('portalActivation: await resolvePortalActivation({');
+  const activationCallEnd = source.indexOf('}),', activationCallIndex) + 3;
+  const activationCallBlock = source.slice(activationCallIndex, activationCallEnd);
+  const cookieGuardIndex = source.indexOf('if (result.cookieToken) {');
+  const cookieWriteIndex = source.indexOf('response.cookies.set({', cookieGuardIndex);
+
+  assert.notEqual(resolverIndex, -1);
+  assert.notEqual(accessLevelGuardIndex, -1);
+  assert.notEqual(activeClaimLookupIndex, -1);
+  assert.ok(accessLevelGuardIndex < activeClaimLookupIndex);
+  assert.ok(
+    source
+      .slice(accessLevelGuardIndex, activeClaimLookupIndex)
+      .includes("return { state: 'unavailable' }")
+  );
+  assert.notEqual(activationCallIndex, -1);
+  assert.ok(activationCallEnd > activationCallIndex + 3);
+  assert.ok(activationCallBlock.includes('accessLevel: result.accessLevel'));
+  assert.notEqual(cookieGuardIndex, -1);
+  assert.notEqual(cookieWriteIndex, -1);
+  assert.ok(cookieGuardIndex < cookieWriteIndex);
   assert.equal(source.includes('createPortalClaimLink'), false);
   assert.ok(source.includes('getActivePortalClaimLinkForCase'));
   assert.ok(source.includes('getPortalSessionContext'));
+});
+
+test('chat history loads one exact case or one unbound draft session without transitive discovery', () => {
+  const source = readProjectFile('src/app/api/chat/messages/route.ts');
+  const loaderIndex = source.indexOf('async function loadSessionMessages(');
+  const getRouteIndex = source.indexOf('export async function GET(', loaderIndex);
+  const loaderBlock = source.slice(loaderIndex, getRouteIndex);
+
+  assert.notEqual(loaderIndex, -1);
+  assert.notEqual(getRouteIndex, -1);
+  assert.match(
+    loaderBlock,
+    /const where = caseId\s*\? \{ isCustomerVisible: true, caseId \}\s*: \{ isCustomerVisible: true, sessionId, caseId: null \};/
+  );
+  assert.equal((loaderBlock.match(/db\.message\.findMany\(/g) ?? []).length, 1);
+  assert.equal(loaderBlock.includes('sessionRelatedCases'), false);
+  assert.equal(loaderBlock.includes("distinct: ['caseId']"), false);
+  assert.equal(loaderBlock.includes('caseId: { in:'), false);
+  assert.equal(loaderBlock.includes('OR:'), false);
+});
+
+test('chat session resolver and POST touch activity without rewriting session scope', () => {
+  const resolverSource = readProjectFile('src/lib/ai/chat-session.ts');
+  const resolverUpdateIndex = resolverSource.indexOf('await prisma.session.update({');
+  const resolverCreateIndex = resolverSource.indexOf('const session = await prisma.session.create({');
+  const resolverUpdateBlock = resolverSource.slice(resolverUpdateIndex, resolverCreateIndex);
+  const routeSource = readProjectFile('src/app/api/chat/messages/route.ts');
+  const postIndex = routeSource.indexOf('export async function POST(');
+  const postUpdateIndex = routeSource.indexOf('await tx.session.update({', postIndex);
+  const postUpdateEnd = routeSource.indexOf('});', postUpdateIndex) + 3;
+  const postUpdateBlock = routeSource.slice(postUpdateIndex, postUpdateEnd);
+
+  assert.notEqual(resolverUpdateIndex, -1);
+  assert.notEqual(resolverCreateIndex, -1);
+  assert.ok(resolverSource.includes('if (isChatAccessSession(existingSession, now))'));
+  assert.ok(resolverUpdateBlock.includes('data: { lastSeenAt: now }'));
+  assert.equal(resolverUpdateBlock.includes('scope:'), false);
+  assert.ok(resolverSource.includes('scope: SessionScope.ANONYMOUS_DRAFT'));
+  assert.ok(resolverSource.includes('caseId: null'));
+
+  assert.notEqual(postIndex, -1);
+  assert.notEqual(postUpdateIndex, -1);
+  assert.ok(postUpdateEnd > postUpdateIndex + 3);
+  assert.ok(postUpdateBlock.includes('data: { lastSeenAt: now }'));
+  assert.equal(postUpdateBlock.includes('scope:'), false);
 });
 
 test('public portal session state exposes only a private boolean response', () => {
