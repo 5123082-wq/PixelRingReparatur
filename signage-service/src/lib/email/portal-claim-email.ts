@@ -1,6 +1,7 @@
 import 'server-only';
 
 import nodemailer from 'nodemailer';
+import { getRequestReceiptCopy } from '../request-receipt-copy';
 
 type PortalCodeEmailMode = 'signup' | 'password-reset' | 'claim-access';
 
@@ -13,6 +14,7 @@ type PortalCodeEmailInput = {
 };
 
 type PortalActivationInviteEmailInput = {
+  mode?: 'create-account' | 'add-request';
   to: string;
   claimUrl: string;
   expiresAt: Date;
@@ -213,7 +215,16 @@ function buildPortalCodeEmailPayload(input: PortalCodeEmailInput): PortalEmailPa
 function buildPortalActivationInvitePayload(
   input: PortalActivationInviteEmailInput
 ): PortalEmailPayload {
-  const copy = activationInviteCopy(input);
+  const base = activationInviteCopy(input);
+  const receipt = getRequestReceiptCopy(input.locale);
+  const heading = input.mode === 'add-request' ? receipt.add : receipt.create;
+  const copy = {
+    ...base,
+    subject: `PixelRing: ${heading} — ${input.publicRequestNumber}`,
+    heading,
+    button: heading,
+    paragraphs: [base.paragraphs[0], receipt.optional, receipt.verify, receipt.ignore],
+  };
   const claimUrl = input.claimUrl;
   const expiresAt = input.expiresAt.toISOString();
   const escapedHeading = escapeHtml(copy.heading);

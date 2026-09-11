@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { CASE_SESSION_COOKIE_NAME } from '@/lib/case-session';
+import {
+  CASE_SESSION_COOKIE_NAME,
+  CHAT_SESSION_COOKIE_NAME,
+} from '@/lib/case-session';
 import { resolveChatSession } from '@/lib/ai/chat-session';
 import { upsertSessionIntakeDraft } from '@/lib/ai/intake-draft';
 import { prisma } from '@/lib/prisma';
@@ -69,9 +72,10 @@ export async function POST(request: NextRequest) {
       phone
     );
     const split = splitContact(contact);
-    const token = request.cookies.get(CASE_SESSION_COOKIE_NAME)?.value ?? null;
+    const token = request.cookies.get(CHAT_SESSION_COOKIE_NAME)?.value ?? null;
     const resolved = await resolveChatSession(prisma, token, {
       createIfMissing: true,
+      fallbackToken: request.cookies.get(CASE_SESSION_COOKIE_NAME)?.value ?? null,
       userAgent: request.headers.get('user-agent'),
       ipAddress: getClientIP(request),
     });
@@ -110,7 +114,7 @@ export async function POST(request: NextRequest) {
 
     if (resolved.cookieToken) {
       response.cookies.set({
-        name: CASE_SESSION_COOKIE_NAME,
+        name: CHAT_SESSION_COOKIE_NAME,
         value: resolved.cookieToken,
         httpOnly: true,
         sameSite: 'lax',

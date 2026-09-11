@@ -1,5 +1,6 @@
 'use client';
 
+import { getRequestReceiptCopy } from '@/lib/request-receipt-copy';
 import { useState, type FormEvent } from 'react';
 import { useLocale } from 'next-intl';
 import { Link, useRouter } from '@/i18n/routing';
@@ -20,11 +21,12 @@ type StartResponse = {
   sent?: boolean;
   devCode?: string;
   verificationToken?: string;
+  accountHasPassword?: boolean;
   redirectTo?: string;
   message?: string;
 };
 
-type ClaimStep = 'email' | 'code' | 'password';
+type ClaimStep = 'email' | 'code' | 'password' | 'confirm';
 
 export default function PortalClaimForm({
   token,
@@ -34,7 +36,9 @@ export default function PortalClaimForm({
   isAuthenticated,
 }: PortalClaimFormProps) {
   const router = useRouter();
-  const copy = getPortalStandaloneCopy(useLocale());
+  const locale = useLocale();
+  const copy = getPortalStandaloneCopy(locale);
+  const receiptCopy = getRequestReceiptCopy(locale);
   const [email, setEmail] = useState(prefillEmail ?? '');
   const [code, setCode] = useState('');
   const [password, setPassword] = useState('');
@@ -119,8 +123,8 @@ export default function PortalClaimForm({
       const data = await readApiResponse(response, copy.claim.invalidCode);
 
       setVerificationToken(data.verificationToken ?? '');
-      setMessage(copy.claim.emailConfirmed);
-      setStep('password');
+      setMessage(data.accountHasPassword ? receiptCopy.confirmed : copy.claim.emailConfirmed);
+      setStep(data.accountHasPassword ? 'confirm' : 'password');
     } catch (error) {
       setError(error instanceof Error ? error.message : copy.claim.invalidCode);
     } finally {
@@ -206,10 +210,10 @@ export default function PortalClaimForm({
                       {copy.claim.emailEyebrow}
                     </p>
                     <h2 className="mt-3 text-[26px] font-black text-[#121826]">
-                      {copy.claim.emailTitle}
+                      {step === 'confirm' ? receiptCopy.add : copy.claim.title}
                     </h2>
                     <p className="mt-3 text-[14px] leading-6 text-[#667085]">
-                      {copy.claim.emailBody}
+                      {receiptCopy.verify}
                     </p>
                     <Link href="/portal" className="mt-3 inline-flex text-[13px] font-black text-[#B8643E] underline">
                       {copy.claim.loginFirst}
@@ -272,6 +276,15 @@ export default function PortalClaimForm({
                         className="text-start text-[13px] font-black text-[#B8643E] underline"
                       >
                         {copy.claim.resendCode}
+                      </button>
+                    </form>
+                  )}
+
+                  {step === 'confirm' && (
+                    <form onSubmit={setAccountPassword}>
+                      <button type="submit" disabled={isSubmitting}
+                        className="mt-2 h-13 w-full rounded-2xl bg-[#B8643E] px-5 text-[15px] font-black text-white disabled:opacity-60">
+                        {isSubmitting ? copy.claim.connectLoading : receiptCopy.add}
                       </button>
                     </form>
                   )}

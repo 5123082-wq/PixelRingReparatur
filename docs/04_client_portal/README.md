@@ -22,6 +22,9 @@ Read first:
 
 Task-specific docs:
 
+- Public request linking, three receipt scenarios and latest validation: latest entry in `client_portal_implementation_plan.md`.
+- Future mass-submission protection options, not implemented: [research](request_intake_abuse_protection_options_2026-09-11.md).
+
 - Portal identity, verification, claim links, sessions, login, registration, password reset: `accounts_and_identity.md`.
 - Current MVP portal shell, request dashboard/detail, request chat, customer-safe read model, future-vs-current boundaries: `client_portal_implementation_plan.md`.
 - Telegram, browser chat, e-mail activation after `PR`, status-page activation CTA, external-entry navigation: `telegram_email_portal_activation_plan.md`.

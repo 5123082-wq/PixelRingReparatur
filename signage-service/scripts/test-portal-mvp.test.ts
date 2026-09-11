@@ -410,7 +410,7 @@ test('portal claim access is bound to the existing customer email when present',
   const emailCodeCreateIndex = loginSource.indexOf('await db.portalEmailCode.create({', createCodeIndex);
   const completeCodeIndex = loginSource.indexOf('export async function completePortalPasswordCode(');
   const completeCodeEmailCheckIndex = loginSource.indexOf('!isPortalClaimEmailAllowed({', completeCodeIndex);
-  const upsertUserIndex = loginSource.indexOf('const portalUserId = await upsertPortalUserWithVerifiedEmail(tx, {', completeCodeIndex);
+  const upsertUserIndex = loginSource.indexOf('await upsertPortalUserWithVerifiedEmail(tx, {', completeCodeIndex);
   const grantSessionIndex = loginSource.indexOf('export async function grantPortalClaimAccessToSessionUser(');
   const grantSessionEmailCheckIndex = loginSource.indexOf('!isPortalClaimEmailAllowed({', grantSessionIndex);
   const grantSessionConsumeIndex = loginSource.indexOf('await tx.portalClaimLink.update({', grantSessionIndex);

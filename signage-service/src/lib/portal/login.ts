@@ -496,8 +496,11 @@ export async function verifyPortalCode(
   }
 
   const verificationToken = createCaseSessionToken();
-  const account = await db.portalUser.findUnique({
-    where: { primaryEmailNormalized: email },
+  const account = await db.portalUser.findFirst({
+    where: { OR: [
+      { primaryEmailNormalized: email },
+      { emails: { some: { emailNormalized: email } } },
+    ] },
     select: { passwordHash: true, status: true },
   });
 
@@ -538,11 +541,13 @@ export async function completePortalPasswordCode(
     return { ok: false, reason: 'invalid_or_expired' };
   }
 
-  if (!isValidPortalPassword(input.password)) {
+  if (input.purpose !== 'CLAIM_ACCESS' && !isValidPortalPassword(input.password)) {
     return { ok: false, reason: 'invalid_password' };
   }
 
-  const passwordHash = await hashPortalPassword(input.password);
+  const passwordHash = isValidPortalPassword(input.password)
+    ? await hashPortalPassword(input.password)
+    : null;
   let result: PortalPasswordCompletionResult = { ok: false, reason: 'invalid_or_expired' };
 
   await db.$transaction(async (tx) => {
@@ -618,7 +623,29 @@ export async function completePortalPasswordCode(
       return;
     }
 
-    const portalUserId = await upsertPortalUserWithVerifiedEmail(tx, {
+    const existingAccount = input.purpose === 'CLAIM_ACCESS'
+      ? await tx.portalUser.findFirst({
+          where: { OR: [
+            { primaryEmailNormalized: codeRecord.emailNormalized },
+            { emails: { some: { emailNormalized: codeRecord.emailNormalized } } },
+          ] },
+          select: { id: true, status: true, passwordHash: true },
+        })
+      : null;
+    if (existingAccount && existingAccount.status !== 'ACTIVE') return;
+    if (!existingAccount?.passwordHash && !passwordHash) {
+      result = { ok: false, reason: 'invalid_password' };
+      return;
+    }
+
+    // Consume once inside the transaction; opening the email link never grants access.
+    const consumedCode = await tx.portalEmailCode.updateMany({
+      where: { id: codeRecord.id, consumedAt: null, expiresAt: { gt: now } },
+      data: { consumedAt: now },
+    });
+    if (consumedCode.count !== 1) return;
+
+    const portalUserId = existingAccount?.passwordHash ? existingAccount.id : await upsertPortalUserWithVerifiedEmail(tx, {
       email: codeRecord.emailNormalized,
       passwordHash,
       displayName: codeRecord.case?.customerName ?? null,

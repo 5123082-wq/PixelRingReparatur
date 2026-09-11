@@ -2,7 +2,10 @@ import { CaseOriginChannel, MessageAuthorRole, PrismaClient } from '@prisma/clie
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
-import { CASE_SESSION_COOKIE_NAME } from '@/lib/case-session';
+import {
+  CASE_SESSION_COOKIE_NAME,
+  CHAT_SESSION_COOKIE_NAME,
+} from '@/lib/case-session';
 import {
   CHAT_MESSAGE_LIMIT,
   checkRateLimit,
@@ -531,10 +534,11 @@ async function loadSessionMessages(
 
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get(CASE_SESSION_COOKIE_NAME)?.value ?? null;
+    const token = request.cookies.get(CHAT_SESSION_COOKIE_NAME)?.value ?? null;
     const locale = request.nextUrl.searchParams.get('locale')?.trim() || undefined;
     const resolved = await resolveChatSession(prisma, token, {
       createIfMissing: true,
+      fallbackToken: request.cookies.get(CASE_SESSION_COOKIE_NAME)?.value ?? null,
       userAgent: request.headers.get('user-agent'),
       ipAddress: getClientIP(request),
     });
@@ -594,7 +598,7 @@ export async function GET(request: NextRequest) {
 
     if (resolved.cookieToken) {
       response.cookies.set({
-        name: CASE_SESSION_COOKIE_NAME,
+        name: CHAT_SESSION_COOKIE_NAME,
         value: resolved.cookieToken,
         httpOnly: true,
         sameSite: 'lax',
@@ -663,9 +667,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const token = request.cookies.get(CASE_SESSION_COOKIE_NAME)?.value ?? null;
+    const token = request.cookies.get(CHAT_SESSION_COOKIE_NAME)?.value ?? null;
     const resolved = await resolveChatSession(prisma, token, {
       createIfMissing: true,
+      fallbackToken: request.cookies.get(CASE_SESSION_COOKIE_NAME)?.value ?? null,
       userAgent: request.headers.get('user-agent'),
       ipAddress: getClientIP(request),
     });
@@ -858,7 +863,7 @@ export async function POST(request: NextRequest) {
 
     if (cookieToken) {
       response.cookies.set({
-        name: CASE_SESSION_COOKIE_NAME,
+        name: CHAT_SESSION_COOKIE_NAME,
         value: cookieToken,
         httpOnly: true,
         sameSite: 'lax',
