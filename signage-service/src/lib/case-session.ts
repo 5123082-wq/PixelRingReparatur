@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 
 export const CASE_SESSION_COOKIE_NAME = 'pixelring_case_session';
+export const CHAT_SESSION_COOKIE_NAME = 'pixelring_chat_session';
 export const CASE_SESSION_TTL_DAYS = 180;
 
 const SESSION_TOKEN_BYTES = 32;

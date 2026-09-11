@@ -1,5 +1,6 @@
 'use client';
 
+import { getRequestReceiptCopy } from '@/lib/request-receipt-copy';
 import React, { useState } from 'react';
 import { useLocale } from 'next-intl';
 import { trackGoogleAdsLeadConversion } from '@/lib/google-ads';
@@ -234,7 +235,8 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
   const [error, setError] = useState('');
   const [done, setDone] = useState(false);
   const [requestNumber, setRequestNumber] = useState('');
-  const [portalClaimUrl, setPortalClaimUrl] = useState('');
+  const [portalLinked, setPortalLinked] = useState(false);
+  const receiptCopy = getRequestReceiptCopy(locale);
   const fileRef = React.useRef<HTMLInputElement>(null);
 
   const saveDraft = async () => {
@@ -276,22 +278,15 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
           <p className="text-xl font-black tracking-widest text-[#0E1A2B]">{requestNumber}</p>
         </div>
         <p className="text-[12px] text-[#72665D] leading-relaxed">
-          {copy.successText}
+          {portalLinked ? receiptCopy.linked : receiptCopy.guest}
         </p>
         <a
-          href={`/${locale}/status?request=${encodeURIComponent(requestNumber)}`}
+          href={portalLinked ? `/${locale}/portal/requests/${encodeURIComponent(requestNumber)}` : `/${locale}/status?request=${encodeURIComponent(requestNumber)}`}
           className="mt-3 inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#B8643E] hover:underline"
         >
-          {copy.trackStatus} →
+          {portalLinked ? receiptCopy.open : copy.trackStatus} →
         </a>
-        {portalClaimUrl && (
-          <a
-            href={portalClaimUrl}
-            className="mt-3 inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#0E1A2B] hover:underline"
-          >
-            {copy.portalSetup} →
-          </a>
-        )}
+
       </div>
     );
   }
@@ -329,7 +324,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
       files.forEach(f => fd.append('files', f));
 
       const res = await fetch('/api/contact', { method: 'POST', body: fd });
-      const data = await res.json() as { publicRequestNumber?: string; portalClaimUrl?: string; error?: string; code?: string };
+      const data = await res.json() as { publicRequestNumber?: string; portalLinked?: boolean; error?: string; code?: string };
 
       if (!res.ok || !data.publicRequestNumber) {
         if (data.code === 'verification_required' && data.error) {
@@ -344,7 +339,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
       }
 
       setRequestNumber(data.publicRequestNumber);
-      setPortalClaimUrl(data.portalClaimUrl ?? '');
+      setPortalLinked(data.portalLinked === true);
       setDone(true);
       trackGoogleAdsLeadConversion(data.publicRequestNumber);
       onSuccess?.(data.publicRequestNumber);

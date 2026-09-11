@@ -48,6 +48,9 @@ export type WebsiteRequestInput = {
   portalUser?: {
     portalUserId: string;
     portalSessionId: string;
+    /** Public forms retain a separate request/chat session and its attachments. */
+    websiteIntake?: boolean;
+    verifiedEmail?: string;
   } | null;
   calculationSnapshot?: CalculationSnapshot | null;
 };
@@ -120,7 +123,7 @@ export async function createWebsiteRequest(
         : null;
 
     let initialMessageId = null;
-    if (!input.isFromChat) {
+    if (!input.isFromChat || !input.existingSessionId) {
       const initialMessage = await tx.message.create({
         data: {
           caseId: createdCase.id,
@@ -134,20 +137,6 @@ export async function createWebsiteRequest(
         select: { id: true },
       });
       initialMessageId = initialMessage.id;
-    } else {
-      const sysMsg = await tx.message.create({
-        data: {
-          caseId: createdCase.id,
-          sessionId: input.existingSessionId || undefined,
-          channel: CaseOriginChannel.WEBSITE_CHAT,
-          authorRole: MessageAuthorRole.SYSTEM,
-          body: `Anfrage erfolgreich registriert. Nummer: ${publicRequestNumber}`,
-          isCustomerVisible: true,
-          sentAt: now,
-        },
-        select: { id: true },
-      });
-      initialMessageId = sysMsg.id;
     }
 
     await tx.case.update({
@@ -163,7 +152,7 @@ export async function createWebsiteRequest(
       await syncCaseCustomerProfile(tx, {
         caseId: createdCase.id,
         customerName: input.name?.trim() || null,
-        customerEmail: parsedContact.customerEmail,
+        customerEmail: input.portalUser.verifiedEmail ?? parsedContact.customerEmail,
         customerPhone: parsedContact.customerPhone,
         serviceAddress: input.serviceLocation?.trim() || null,
         serviceLatitude: input.serviceLatitude ?? null,
@@ -177,7 +166,7 @@ export async function createWebsiteRequest(
     let session;
     let finalSessionToken = sessionToken;
     let linkedSessionAttachmentCount = 0;
-    if (input.portalUser) {
+    if (input.portalUser && !input.portalUser.websiteIntake) {
       session = await tx.session.update({
         where: { id: input.portalUser.portalSessionId },
         data: {
@@ -240,6 +229,22 @@ export async function createWebsiteRequest(
       });
     }
 
+    if (input.isFromChat) {
+      const receipt = await tx.message.create({
+        data: {
+          caseId: createdCase.id,
+          sessionId: session.id,
+          channel: CaseOriginChannel.WEBSITE_CHAT,
+          authorRole: MessageAuthorRole.SYSTEM,
+          body: `Anfrage erfolgreich registriert. Nummer: ${publicRequestNumber}\n${input.portalUser ? 'Kundenportal: Anfrage hinzugefügt.' : 'Kundenportal: Bitte prüfen Sie Ihre E-Mail.'}`,
+          isCustomerVisible: true,
+          sentAt: now,
+        },
+        select: { id: true },
+      });
+      initialMessageId ??= receipt.id;
+    }
+
     if (attachments.length > 0) {
       await tx.attachment.createMany({
         data: attachments.map((attachment) => ({
@@ -277,6 +282,7 @@ export async function createWebsiteRequest(
       return {
         caseId: createdCase.id,
         publicRequestNumber,
+        sessionToken: input.portalUser.websiteIntake ? finalSessionToken : undefined,
         photoReceived: attachments.length + linkedSessionAttachmentCount > 0,
       };
     }

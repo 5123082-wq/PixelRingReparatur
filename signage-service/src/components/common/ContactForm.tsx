@@ -3,6 +3,7 @@
 import React, { useId, useRef, useState, useEffect } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
+import { getRequestReceiptCopy } from '@/lib/request-receipt-copy';
 import { trackGoogleAdsLeadConversion } from '@/lib/google-ads';
 import {
   CALCULATION_SNAPSHOT_FORM_FIELD,
@@ -39,7 +40,8 @@ const ContactForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [publicRequestNumber, setPublicRequestNumber] = useState('');
-  const [portalClaimUrl, setPortalClaimUrl] = useState('');
+  const [portalLinked, setPortalLinked] = useState(false);
+  const receiptCopy = getRequestReceiptCopy(locale);
   const [errorMessage, setErrorMessage] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -69,12 +71,6 @@ const ContactForm = ({
   const locationInputId = `${formId}-contact-location`;
   const messageInputId = `${formId}-contact-message`;
   const fileInputId = `${formId}-contact-attachments`;
-  const openPortalLabel =
-    locale === 'en'
-      ? 'Set up customer portal access'
-      : locale === 'ru'
-        ? 'Подготовить доступ в кабинет'
-        : 'Kundenportal vorbereiten';
 
   const adjustHeight = () => {
     const textarea = textareaRef.current;
@@ -146,7 +142,7 @@ const ContactForm = ({
         error?: string;
         code?: string;
         publicRequestNumber?: string;
-        portalClaimUrl?: string;
+        portalLinked?: boolean;
       };
 
       if (!response.ok) {
@@ -164,7 +160,7 @@ const ContactForm = ({
       }
 
       setPublicRequestNumber(data.publicRequestNumber);
-      setPortalClaimUrl(data.portalClaimUrl ?? '');
+      setPortalLinked(data.portalLinked === true);
       setIsSuccess(true);
       setName('');
       setEmail('');
@@ -233,22 +229,15 @@ const ContactForm = ({
           </p>
         </div>
         <p className="text-[#72665D] text-center text-sm">
-          {t('success_message')}
+          {portalLinked ? receiptCopy.linked : receiptCopy.guest}
         </p>
         <Link
-          href={`/status?request=${encodeURIComponent(publicRequestNumber)}`}
+          href={portalLinked ? `/portal/requests/${encodeURIComponent(publicRequestNumber)}` : `/status?request=${encodeURIComponent(publicRequestNumber)}`}
           className="mt-4 inline-flex items-center justify-center rounded-full bg-[#B8643E] px-5 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#A65835]"
         >
-          {t('open_status')}
+          {portalLinked ? receiptCopy.open : t('open_status')}
         </Link>
-        {portalClaimUrl && (
-          <a
-            href={portalClaimUrl}
-            className="mt-3 inline-flex items-center justify-center rounded-full border border-[#B8643E]/30 bg-white px-5 py-3 text-[14px] font-semibold text-[#B8643E] transition-colors hover:bg-[#F7F1E8]"
-          >
-            {openPortalLabel}
-          </a>
-        )}
+
       </div>
     );
   }

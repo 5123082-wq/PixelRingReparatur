@@ -1,0 +1,73 @@
+/** The anonymous receipt deliberately does not reveal whether the email has an account. */
+const COPY = {
+  de: {
+    guest: 'Ihre Anfrage ist registriert. Prüfen Sie Ihr E-Mail-Postfach für die Anfragenummer und den Zugang zum Kundenportal. Ein Kundenkonto ist für die Bearbeitung nicht erforderlich.',
+    linked: 'Ihre Anfrage ist registriert und wurde Ihrem Kundenportal hinzugefügt.',
+    open: 'Anfrage im Kundenportal öffnen',
+    create: 'Kundenkonto erstellen',
+    add: 'Anfrage zum Kundenportal hinzufügen',
+    optional: 'Ihre Anfrage wird auch ohne Kundenkonto bearbeitet.',
+    verify: 'Bestätigen Sie auf der Website Ihre E-Mail-Adresse und dass Sie diese Anfrage gestellt haben. Erst dann wird sie Ihrem Kundenportal hinzugefügt.',
+    ignore: 'Wenn Sie diese Anfrage nicht gestellt haben, bestätigen Sie sie nicht.',
+    confirmed: 'E-Mail bestätigt. Bestätigen Sie jetzt, dass Sie diese Anfrage zu Ihrem Kundenportal hinzufügen möchten. Ihr Passwort bleibt unverändert.',
+  },
+  en: {
+    guest: 'Your request is registered. Check your email for the request number and customer portal access instructions. An account is not required for us to process your request.',
+    linked: 'Your request is registered and has been added to your customer portal.',
+    open: 'Open request in customer portal',
+    create: 'Create a customer account',
+    add: 'Add request to customer portal',
+    optional: 'We will process your request even if you do not create an account.',
+    verify: 'Confirm your email address and that you submitted this request on the website. Only then will it be added to your customer portal.',
+    ignore: 'If you did not submit this request, do not confirm it.',
+    confirmed: 'Email confirmed. Now confirm that you want to add this request to your customer portal. Your password will remain unchanged.',
+  },
+  ru: {
+    guest: 'Ваша заявка зарегистрирована. Проверьте почту: там номер заявки и инструкции для доступа через личный кабинет. Создавать кабинет или входить в него для обработки заявки необязательно.',
+    linked: 'Ваша заявка зарегистрирована и добавлена в личный кабинет.',
+    open: 'Открыть заявку в личном кабинете',
+    create: 'Создать личный кабинет',
+    add: 'Добавить заявку в личный кабинет',
+    optional: 'Мы обработаем заявку, даже если вы не создадите личный кабинет.',
+    verify: 'На сайте подтвердите свою почту и то, что заявку отправили вы. Только после подтверждения она появится в личном кабинете.',
+    ignore: 'Если вы не оформляли эту заявку, не подтверждайте её.',
+    confirmed: 'Почта подтверждена. Теперь подтвердите добавление этой заявки в личный кабинет. Ваш пароль останется прежним.',
+  },
+  tr: {
+    guest: 'Talebiniz kaydedildi. Talep numarası ve müşteri portalına erişim talimatları için e-postanızı kontrol edin. Talebinizin işleme alınması için hesap gerekli değildir.',
+    linked: 'Talebiniz kaydedildi ve müşteri portalınıza eklendi.',
+    open: 'Talebi müşteri portalında aç',
+    create: 'Müşteri hesabı oluştur',
+    add: 'Talebi müşteri portalına ekle',
+    optional: 'Hesap oluşturmasanız da talebiniz işleme alınacaktır.',
+    verify: 'Web sitesinde e-posta adresinizi ve bu talebi sizin gönderdiğinizi doğrulayın. Talep ancak bundan sonra müşteri portalınıza eklenir.',
+    ignore: 'Bu talebi siz göndermediyseniz onaylamayın.',
+    confirmed: 'E-posta doğrulandı. Şimdi bu talebi müşteri portalınıza eklemek istediğinizi onaylayın. Şifreniz değişmeyecektir.',
+  },
+  pl: {
+    guest: 'Zgłoszenie zostało zarejestrowane. Sprawdź pocztę, aby otrzymać numer zgłoszenia i instrukcje dostępu do panelu klienta. Konto nie jest wymagane do obsługi zgłoszenia.',
+    linked: 'Zgłoszenie zostało zarejestrowane i dodane do panelu klienta.',
+    open: 'Otwórz zgłoszenie w panelu klienta',
+    create: 'Utwórz konto klienta',
+    add: 'Dodaj zgłoszenie do panelu klienta',
+    optional: 'Obsłużymy zgłoszenie również bez zakładania konta.',
+    verify: 'Potwierdź na stronie adres e-mail i fakt wysłania tego zgłoszenia. Dopiero wtedy zostanie ono dodane do panelu klienta.',
+    ignore: 'Jeśli nie wysłano tego zgłoszenia, nie potwierdzaj go.',
+    confirmed: 'Adres e-mail potwierdzony. Teraz potwierdź dodanie zgłoszenia do panelu klienta. Hasło pozostanie bez zmian.',
+  },
+  ar: {
+    guest: 'تم تسجيل طلبك. تحقق من بريدك الإلكتروني للحصول على رقم الطلب وتعليمات الوصول إلى بوابة العميل. إنشاء حساب أو تسجيل الدخول ليس مطلوبًا لمعالجة طلبك.',
+    linked: 'تم تسجيل طلبك وإضافته إلى بوابة العميل الخاصة بك.',
+    open: 'فتح الطلب في بوابة العميل',
+    create: 'إنشاء حساب عميل',
+    add: 'إضافة الطلب إلى بوابة العميل',
+    optional: 'سنعالج طلبك حتى إذا لم تنشئ حسابًا.',
+    verify: 'أكد عنوان بريدك الإلكتروني وأنك أرسلت هذا الطلب على الموقع. عندها فقط سيضاف إلى بوابة العميل الخاصة بك.',
+    ignore: 'إذا لم ترسل هذا الطلب فلا تؤكده.',
+    confirmed: 'تم تأكيد البريد الإلكتروني. أكد الآن إضافة هذا الطلب إلى بوابة العميل. ستبقى كلمة مرورك دون تغيير.',
+  },
+};
+
+export function getRequestReceiptCopy(locale?: string | null) {
+  return COPY[locale as keyof typeof COPY] ?? COPY.de;
+}

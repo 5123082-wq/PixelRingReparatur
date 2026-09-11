@@ -20,15 +20,21 @@ export async function resolveChatSession(
   token: string | null | undefined,
   options: {
     createIfMissing: boolean;
+    fallbackToken?: string | null;
     userAgent?: string | null;
     ipAddress?: string | null;
   }
 ): Promise<ResolvedChatSession | null> {
   const now = new Date();
 
-  if (token?.trim()) {
+  const tokenCandidates = [token, options.fallbackToken].filter(
+    (candidate, index, candidates): candidate is string =>
+      Boolean(candidate?.trim()) && candidates.indexOf(candidate) === index
+  );
+
+  for (const candidate of tokenCandidates) {
     const existingSession = await prisma.session.findUnique({
-      where: { tokenHash: hashCaseSessionToken(token) },
+      where: { tokenHash: hashCaseSessionToken(candidate) },
     });
 
     if (isChatAccessSession(existingSession, now)) {
@@ -37,7 +43,10 @@ export async function resolveChatSession(
         data: { lastSeenAt: now },
       });
 
-      return { session: existingSession };
+      return {
+        session: existingSession,
+        cookieToken: candidate === options.fallbackToken ? candidate : undefined,
+      };
     }
   }
 

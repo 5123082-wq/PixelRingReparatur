@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
+import { validatePortalMutationRequest } from '@/lib/portal/mutation-guard';
 import {
   PORTAL_SESSION_COOKIE_NAME,
   PORTAL_SESSION_MAX_AGE_SECONDS,
@@ -9,6 +10,9 @@ import { completePortalPasswordCode } from '@/lib/portal/login';
 import { checkRateLimit, getClientIP, PORTAL_CLAIM_LIMIT } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
+  const mutationError = validatePortalMutationRequest(request);
+  if (mutationError) return mutationError;
+
   const ip = getClientIP(request);
   const limit = checkRateLimit(ip, PORTAL_CLAIM_LIMIT);
 

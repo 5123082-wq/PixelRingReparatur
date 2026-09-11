@@ -48,7 +48,7 @@ test('website contact policy requires email and keeps phone secondary', () => {
 
 test('public contact endpoint blocks repeat case sessions before file storage and PR creation', () => {
   const source = readProjectFile('src/app/api/contact/route.ts');
-  const repeatSessionCheckIndex = source.indexOf('if (resolved.session.caseId) {');
+  const repeatSessionCheckIndex = source.indexOf('if (resolved.session.caseId && !portalSession) {');
   const verificationCodeIndex = source.indexOf("code: 'verification_required'");
   const storeAttachmentIndex = source.indexOf('storeAttachment(file)');
   const createRequestIndex = source.indexOf('const result = await createWebsiteRequest(prisma, {');

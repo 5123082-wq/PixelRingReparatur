@@ -1,5 +1,6 @@
 'use client';
 
+import { getRequestReceiptCopy } from '@/lib/request-receipt-copy';
 import React, { useState } from 'react';
 import { useLocale } from 'next-intl';
 import type { IntakePrefill } from './ChatIntakeCard';
@@ -270,7 +271,8 @@ export default function ChatRequestConfirmCard({
   const [error, setError] = useState('');
   const [done, setDone] = useState(false);
   const [requestNumber, setRequestNumber] = useState('');
-  const [portalClaimUrl, setPortalClaimUrl] = useState('');
+  const [portalLinked, setPortalLinked] = useState(false);
+  const receiptCopy = getRequestReceiptCopy(locale);
 
   const hasEmail = email.trim().length > 0;
   const hasPhone = phone.trim().length > 0;
@@ -343,7 +345,7 @@ export default function ChatRequestConfirmCard({
       fd.append('isFromChat', 'true');
 
       const res = await fetch('/api/contact', { method: 'POST', body: fd });
-      const data = await res.json() as { publicRequestNumber?: string; portalClaimUrl?: string; error?: string; code?: string };
+      const data = await res.json() as { publicRequestNumber?: string; portalLinked?: boolean; error?: string; code?: string };
 
       if (!res.ok || !data.publicRequestNumber) {
         if (data.code === 'verification_required' && data.error) {
@@ -358,7 +360,7 @@ export default function ChatRequestConfirmCard({
       }
 
       setRequestNumber(data.publicRequestNumber);
-      setPortalClaimUrl(data.portalClaimUrl ?? '');
+      setPortalLinked(data.portalLinked === true);
       setDone(true);
       trackGoogleAdsLeadConversion(data.publicRequestNumber);
       onSuccess?.(data.publicRequestNumber);
@@ -378,22 +380,15 @@ export default function ChatRequestConfirmCard({
           <p className="text-xl font-black tracking-widest text-[#0E1A2B]">{requestNumber}</p>
         </div>
         <p className="mt-3 text-[12px] leading-relaxed text-[#72665D]">
-          {copy.successText}
+          {portalLinked ? receiptCopy.linked : receiptCopy.guest}
         </p>
         <a
-          href={`/${locale}/status?request=${encodeURIComponent(requestNumber)}`}
+          href={portalLinked ? `/${locale}/portal/requests/${encodeURIComponent(requestNumber)}` : `/${locale}/status?request=${encodeURIComponent(requestNumber)}`}
           className="mt-3 inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#B8643E] hover:underline"
         >
-          {copy.statusLink} →
+          {portalLinked ? receiptCopy.open : copy.statusLink} →
         </a>
-        {portalClaimUrl && (
-          <a
-            href={portalClaimUrl}
-            className="mt-3 inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#0E1A2B] hover:underline"
-          >
-            {copy.portalLink} →
-          </a>
-        )}
+
       </div>
     );
   }

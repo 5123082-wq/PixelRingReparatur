@@ -4,11 +4,13 @@ import { createHash, randomUUID } from 'node:crypto';
 import { spawn, type ChildProcessByStdio } from 'node:child_process';
 import { promises as fs } from 'node:fs';
 import os from 'node:os';
+import { createServer, type Server } from 'node:net';
 import path from 'node:path';
 import type { Readable } from 'node:stream';
 import { after, before, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
+import { getRequestReceiptCopy } from '../src/lib/request-receipt-copy.ts';
 import { assertDbTestAllowed } from './db-test-guard.ts';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -20,6 +22,7 @@ assertDbTestAllowed({ scriptName: 'test-portal-access-e2e' });
 const PORT = Number(process.env.PORTAL_ACCESS_E2E_PORT ?? 3213);
 const BASE_URL = `http://127.0.0.1:${PORT}`;
 const CASE_COOKIE = 'pixelring_case_session';
+const CHAT_COOKIE = 'pixelring_chat_session';
 const PORTAL_COOKIE = 'pixelring_portal_session';
 const RUN_ID = `${Date.now()}-${randomUUID().slice(0, 8)}`;
 const USER_AGENT_PREFIX = `pixelring-portal-access-e2e/${RUN_ID}`;
@@ -39,6 +42,59 @@ let prisma: any = null;
 let devServer: ChildProcessByStdio<null, Readable, Readable> | null = null;
 let devServerLogTail = '';
 let requestSequence = 10;
+
+// Local SMTP sink: exercise actual email delivery without contacting external recipients.
+let smtpServer: Server;
+let smtpPort = 0;
+const emails: string[] = [];
+
+async function startSmtpSink() {
+  smtpServer = createServer((socket) => {
+    let buffer = '';
+    let dataMode = false;
+    socket.write('220 localhost ESMTP\r\n');
+    socket.on('data', (chunk) => {
+      buffer += chunk.toString();
+      while (buffer.includes('\r\n')) {
+        if (dataMode) {
+          const end = buffer.indexOf('\r\n.\r\n');
+          if (end < 0) break;
+          const raw = buffer.slice(0, end).replace(/=\r\n/g, '');
+          emails.push(Buffer.from(raw.replace(/=([0-9A-F]{2})/gi, (_, hex) =>
+            String.fromCharCode(parseInt(hex, 16))), 'latin1').toString('utf8'));
+          buffer = buffer.slice(end + 5);
+          dataMode = false;
+          socket.write('250 accepted\r\n');
+          continue;
+        }
+        const end = buffer.indexOf('\r\n');
+        const line = buffer.slice(0, end);
+        buffer = buffer.slice(end + 2);
+        if (/^EHLO/i.test(line)) socket.write('250-localhost\r\n250 AUTH PLAIN\r\n');
+        else if (/^AUTH/i.test(line)) socket.write('235 authenticated\r\n');
+        else if (/^DATA/i.test(line)) { dataMode = true; socket.write('354 send data\r\n'); }
+        else if (/^QUIT/i.test(line)) socket.end('221 bye\r\n');
+        else socket.write('250 ok\r\n');
+      }
+    });
+  });
+  await new Promise<void>((resolve) => smtpServer.listen(0, '127.0.0.1', resolve));
+  const address = smtpServer.address();
+  assert.ok(address && typeof address !== 'string');
+  smtpPort = address.port;
+}
+
+function emailFor(address: string) {
+  const mail = emails.findLast((value) => value.includes(`To: ${address}`));
+  assert.ok(mail, `Expected local email for ${address}`);
+  return mail;
+}
+
+function codeFor(address: string) {
+  const code = emailFor(address).match(/Code: (\d{6})/);
+  assert.ok(code, 'Expected verification code in local email');
+  return code[1];
+}
 
 function sha256(value: string): string {
   return createHash('sha256').update(value).digest('hex');
@@ -112,11 +168,14 @@ function startDevServer(): ChildProcessByStdio<null, Readable, Readable> {
     env: {
       ...process.env,
       NEXT_TELEMETRY_DISABLED: '1',
-      PORTAL_EMAIL_PROVIDER: '',
-      SMTP_HOST: '',
-      SMTP_PORT: '',
-      SMTP_USER: '',
-      SMTP_PASSWORD: '',
+      PORTAL_EMAIL_PROVIDER: 'smtp',
+      PORTAL_EMAIL_FROM: 'test@pixelring.test',
+      SMTP_SECURE: 'false',
+      SMTP_REQUIRE_TLS: 'false',
+      SMTP_HOST: '127.0.0.1',
+      SMTP_PORT: String(smtpPort),
+      SMTP_USER: 'test',
+      SMTP_PASSWORD: 'test',
       SMTP_FROM: '',
       RESEND_API_KEY: '',
       OPENAI_API_KEY: '',
@@ -557,12 +616,14 @@ before(async () => {
   const prismaModule = await import('../src/lib/prisma.ts');
   prisma = prismaModule.prisma;
   await seedFixtures();
+  await startSmtpSink();
   devServer = startDevServer();
   await waitForServerReady();
 });
 
 after(async () => {
   await stopDevServer();
+  if (smtpServer) await new Promise<void>((resolve) => smtpServer.close(() => resolve()));
   await cleanupFixtures();
   if (prisma) await prisma.$disconnect().catch(() => {});
 });
@@ -652,7 +713,9 @@ test('S-01/S-02 access boundaries hold through real HTTP routes', { timeout: 180
   });
   const legacyHistory = await readJson(legacyHistoryResponse);
   assert.equal(legacyHistoryResponse.status, 200, JSON.stringify(legacyHistory));
-  assert.ok(readCookie(legacyHistoryResponse, CASE_COOKIE));
+  assert.equal(readCookie(legacyHistoryResponse, CASE_COOKIE), null);
+  const legacyChatToken = readCookie(legacyHistoryResponse, CHAT_COOKIE);
+  assert.ok(legacyChatToken);
   const legacyHistoryText = JSON.stringify(legacyHistory);
   assert.equal(legacyHistoryText.includes(fixture.caseAMarker), false);
   assert.equal(legacyHistoryText.includes(fixture.draftMarker), false);
@@ -661,14 +724,17 @@ test('S-01/S-02 access boundaries hold through real HTTP routes', { timeout: 180
   const legacyMessagePost = await postJson(
     '/api/chat/messages',
     { message: fixture.legacyReplayWriteMarker, locale: 'de' },
-    { cookie: `${CASE_COOKIE}=${fixture.legacyToken}`, tag: 'legacy-chat-post' }
+    {
+      cookie: `${CASE_COOKIE}=${fixture.legacyToken}; ${CHAT_COOKIE}=${legacyChatToken}`,
+      tag: 'legacy-chat-post',
+    }
   );
   assert.equal(
     legacyMessagePost.response.status,
     200,
     JSON.stringify(legacyMessagePost.json)
   );
-  assert.ok(readCookie(legacyMessagePost.response, CASE_COOKIE));
+  assert.equal(readCookie(legacyMessagePost.response, CASE_COOKIE), null);
   const legacyReplayMessage = await prisma.message.findFirst({
     where: { body: fixture.legacyReplayWriteMarker },
     orderBy: { createdAt: 'desc' },
@@ -690,7 +756,7 @@ test('S-01/S-02 access boundaries hold through real HTTP routes', { timeout: 180
   const legacyDraftResponse = await fetch(`${BASE_URL}/api/chat/intake-draft`, {
     method: 'POST',
     headers: nextRequestHeaders({
-      cookie: `${CASE_COOKIE}=${fixture.legacyToken}`,
+      cookie: `${CASE_COOKIE}=${fixture.legacyToken}; ${CHAT_COOKIE}=${legacyChatToken}`,
       tag: 'legacy-draft-post',
     }),
     body: legacyDraftForm,
@@ -706,6 +772,22 @@ test('S-01/S-02 access boundaries hold through real HTTP routes', { timeout: 180
   });
   assert.deepEqual(legacyAfterReplay, legacyBeforeReplay);
 
+  const legacyStatusAfterChat = await postJson(
+    '/api/status',
+    { requestNumber: fixture.caseANumber },
+    {
+      cookie: `${CASE_COOKIE}=${fixture.legacyToken}; ${CHAT_COOKIE}=${legacyChatToken}`,
+      tag: 'legacy-status-after-chat',
+    }
+  );
+  assert.equal(
+    legacyStatusAfterChat.response.status,
+    200,
+    JSON.stringify(legacyStatusAfterChat.json)
+  );
+  assert.equal(legacyStatusAfterChat.json.accessLevel, 'status_only');
+  assert.equal(legacyStatusAfterChat.json.case.publicRequestNumber, fixture.caseANumber);
+
   const portalBeforeReplay = await prisma.session.findUnique({
     where: { id: fixture.portalSession.id },
   });
@@ -717,7 +799,8 @@ test('S-01/S-02 access boundaries hold through real HTTP routes', { timeout: 180
   });
   const portalReplayGet = await readJson(portalReplayGetResponse);
   assert.equal(portalReplayGetResponse.status, 200, JSON.stringify(portalReplayGet));
-  assert.ok(readCookie(portalReplayGetResponse, CASE_COOKIE));
+  assert.equal(readCookie(portalReplayGetResponse, CASE_COOKIE), null);
+  assert.ok(readCookie(portalReplayGetResponse, CHAT_COOKIE));
   const portalReplayText = JSON.stringify(portalReplayGet);
   assert.equal(portalReplayText.includes(fixture.caseBMarker), false);
   assert.equal(portalReplayText.includes(fixture.draftMarker), false);
@@ -772,10 +855,31 @@ test('S-01/S-02 access boundaries hold through real HTTP routes', { timeout: 180
   });
   const strongHistory = await readJson(strongHistoryResponse);
   assert.equal(strongHistoryResponse.status, 200, JSON.stringify(strongHistory));
+  assert.equal(readCookie(strongHistoryResponse, CASE_COOKIE), null);
+  assert.equal(readCookie(strongHistoryResponse, CHAT_COOKIE), fixture.strongAToken);
   const strongHistoryText = JSON.stringify(strongHistory);
   assert.equal(strongHistoryText.includes(fixture.caseAMarker), true);
   assert.equal(strongHistoryText.includes(fixture.attachmentMarker), true);
   assert.equal(strongHistoryText.includes(fixture.caseBMarker), false);
+
+  const strongFallbackResponse = await fetch(`${BASE_URL}/api/chat/messages?locale=de`, {
+    headers: nextRequestHeaders({
+      cookie: `${CASE_COOKIE}=${fixture.strongAToken}; ${CHAT_COOKIE}=invalid-chat-token`,
+      tag: 'strong-chat-invalid-primary-fallback',
+    }),
+  });
+  const strongFallbackHistory = await readJson(strongFallbackResponse);
+  assert.equal(
+    strongFallbackResponse.status,
+    200,
+    JSON.stringify(strongFallbackHistory)
+  );
+  assert.equal(
+    JSON.stringify(strongFallbackHistory).includes(fixture.caseAMarker),
+    true
+  );
+  assert.equal(readCookie(strongFallbackResponse, CASE_COOKIE), null);
+  assert.equal(readCookie(strongFallbackResponse, CHAT_COOKIE), fixture.strongAToken);
 
   const strongWrite = await postJson(
     '/api/chat/messages',
@@ -806,7 +910,8 @@ test('S-01/S-02 access boundaries hold through real HTTP routes', { timeout: 180
     });
     const json = await readJson(response);
     assert.equal(response.status, 200, JSON.stringify(json));
-    assert.ok(readCookie(response, CASE_COOKIE));
+    assert.equal(readCookie(response, CASE_COOKIE), null);
+    assert.ok(readCookie(response, CHAT_COOKIE));
     assert.equal(JSON.stringify(json).includes(fixture.caseAMarker), false);
   }
 
@@ -1011,7 +1116,8 @@ test('S-01/S-02 access boundaries hold through real HTTP routes', { timeout: 180
   });
   const disabledReplay = await readJson(disabledReplayResponse);
   assert.equal(disabledReplayResponse.status, 200, JSON.stringify(disabledReplay));
-  assert.ok(readCookie(disabledReplayResponse, CASE_COOKIE));
+  assert.equal(readCookie(disabledReplayResponse, CASE_COOKIE), null);
+  assert.ok(readCookie(disabledReplayResponse, CHAT_COOKIE));
   assert.equal(disabledReplay.operatorTakeover, false);
   assert.equal(JSON.stringify(disabledReplay).includes(fixture.caseAMarker), false);
   assert.deepEqual(
@@ -1051,12 +1157,12 @@ test('S-01/S-02 access boundaries hold through real HTTP routes', { timeout: 180
   );
   assert.equal(claimStart.response.status, 200, JSON.stringify(claimStart.json));
   assert.equal(claimStart.json.success, true);
-  assert.equal(claimStart.json.sent, false);
-  assert.match(claimStart.json.devCode, /^\d{6}$/);
+  assert.equal(claimStart.json.sent, true);
+  assert.match(codeFor(fixture.claimEmail), /^\d{6}$/);
 
   const claimVerify = await postJson(
     '/api/portal/claim/verify-code',
-    { email: fixture.claimEmail, code: claimStart.json.devCode },
+    { email: fixture.claimEmail, code: codeFor(fixture.claimEmail) },
     { tag: 'claim-valid-verify' }
   );
   assert.equal(claimVerify.response.status, 200, JSON.stringify(claimVerify.json));
@@ -1095,4 +1201,203 @@ test('S-01/S-02 access boundaries hold through real HTTP routes', { timeout: 180
     where: { tokenHash: sha256(fixture.activePhoneClaimToken) },
   });
   assert.ok(consumedPhoneClaim?.consumedAt);
+});
+
+test('website receipts link only authenticated users or explicitly confirmed email claims', { timeout: 180_000 }, async () => {
+  const email = `receipt-${RUN_ID}@pixelring.test`;
+  async function submit(contact: string, cookie?: string, extra?: Record<string, string>, locale = 'de') {
+    const form = new FormData();
+    form.set('email', contact);
+    form.set('message', 'Receipt integration test');
+    for (const [key, value] of Object.entries(extra ?? {})) form.set(key, value);
+    const response = await fetch(`${BASE_URL}/api/contact`, {
+      method: 'POST', headers: { ...nextRequestHeaders({ cookie, tag: 'receipt-submit', sameOrigin: true }), referer: `${BASE_URL}/${locale}` }, body: form,
+    });
+    const json = await readJson(response);
+    assert.equal(response.status, 200, JSON.stringify(json));
+    const record = await prisma.case.findUnique({ where: { publicRequestNumber: json.publicRequestNumber } });
+    assert.ok(record);
+    ids.cases.push(record.id);
+    assert.equal(json.portalClaimUrl, undefined);
+    return { response, json, record };
+  }
+  async function assertUnlinked(caseId: string) {
+    assert.equal(await prisma.portalCaseAccess.count({ where: { caseId } }), 0);
+  }
+  async function verifyClaim(address: string, claimUrl: string, hasPassword: boolean) {
+    const token = new URL(claimUrl).searchParams.get('token');
+    const start = await postJson('/api/portal/claim/start-verification', { token, email: address }, { tag: 'receipt-code-start' });
+    assert.equal(start.response.status, 200, JSON.stringify(start.json));
+    const verified = await postJson('/api/portal/claim/verify-code', { email: address, code: codeFor(address) }, { tag: 'receipt-code-verify' });
+    assert.equal(verified.response.status, 200, JSON.stringify(verified.json));
+    assert.equal(verified.json.accountHasPassword, hasPassword);
+    return verified.json.verificationToken;
+  }
+  function claimUrl(address: string) {
+    const match = emailFor(address).match(/Link: (https?:\/\/[^\s]+)/);
+    assert.ok(match);
+    return match[1];
+  }
+  // New account: the request exists and is serviceable before account creation.
+  const first = await submit(email);
+  assert.equal(first.json.portalLinked, false);
+  assert.match(emailFor(email), /Kundenkonto erstellen/);
+  assert.match(emailFor(email), /auch ohne Kundenkonto/);
+  await assertUnlinked(first.record.id);
+  const firstLink = claimUrl(email);
+  const opened = await fetch(`${BASE_URL}/de/portal/claim?token=${new URL(firstLink).searchParams.get('token')}`);
+  assert.equal(opened.status, 200);
+  await assertUnlinked(first.record.id);
+  const newVerification = await verifyClaim(email, firstLink, false);
+  await assertUnlinked(first.record.id);
+  const created = await postJson('/api/portal/claim/set-password', {
+    verificationToken: newVerification, password: PASSWORD, passwordRepeat: PASSWORD,
+  }, { tag: 'receipt-create', sameOrigin: true });
+  assert.equal(created.response.status, 200, JSON.stringify(created.json));
+  const user = await prisma.portalUser.findUnique({ where: { primaryEmailNormalized: email } });
+  ids.portalUsers.push(user.id);
+  const passwordHash = user.passwordHash;
+  assert.equal(await prisma.portalCaseAccess.count({ where: { caseId: first.record.id, portalUserId: user.id } }), 1);
+
+  // Existing account, no login: public receipt identical; different private email; no automatic grant.
+  const second = await submit(email);
+  assert.deepEqual(Object.keys(second.json).sort(), Object.keys(first.json).sort());
+  assert.equal(second.json.portalLinked, false);
+  assert.match(emailFor(email), /Anfrage zum Kundenportal hinzufügen/);
+  assert.doesNotMatch(emailFor(email), /Kundenkonto erstellen/);
+  await assertUnlinked(second.record.id);
+  const secondLink = claimUrl(email);
+  const existingVerification = await verifyClaim(email, secondLink, true);
+  await assertUnlinked(second.record.id);
+  const confirmed = await postJson('/api/portal/claim/set-password', { verificationToken: existingVerification }, { tag: 'receipt-confirm', sameOrigin: true });
+  assert.equal(confirmed.response.status, 200, JSON.stringify(confirmed.json));
+  assert.equal((await prisma.portalUser.findUnique({ where: { id: user.id } })).passwordHash, passwordHash);
+  assert.equal(await prisma.portalCaseAccess.count({ where: { caseId: second.record.id, portalUserId: user.id } }), 1);
+  const replay = await postJson('/api/portal/claim/set-password', { verificationToken: existingVerification }, { tag: 'receipt-replay', sameOrigin: true });
+  assert.equal(replay.response.status, 400);
+
+  // Logged in: account comes from session, never from the contact field.
+  const portalToken = readCookie(confirmed.response, PORTAL_COOKIE);
+  assert.ok(portalToken);
+  const cookie = `${PORTAL_COOKIE}=${portalToken}`;
+  const mailCount = emails.length;
+  const third = await submit(fixture.portalEmail, cookie);
+  assert.equal(third.json.portalLinked, true);
+  assert.equal(emails.length, mailCount);
+  assert.equal(await prisma.portalClaimLink.count({ where: { caseId: third.record.id } }), 0);
+  assert.equal(await prisma.portalCaseAccess.count({ where: { caseId: third.record.id, portalUserId: user.id } }), 1);
+  assert.equal(await prisma.portalCaseAccess.count({ where: { caseId: third.record.id, portalUserId: { not: user.id } } }), 0);
+  const repeat = await submit(email, `${cookie}; ${CASE_COOKIE}=${readCookie(third.response, CASE_COOKIE)}`);
+  assert.equal(repeat.json.portalLinked, true);
+  const detail = await fetch(`${BASE_URL}/de/portal/requests/${repeat.json.publicRequestNumber}`, { headers: nextRequestHeaders({ cookie, tag: 'receipt-detail' }) });
+  assert.equal(detail.status, 200);
+
+  // Invalid portal cookies cannot grant access based on email alone.
+  const invalid = await submit(email, `${PORTAL_COOKIE}=invalid`);
+  assert.equal(invalid.json.portalLinked, false);
+  await assertUnlinked(invalid.record.id);
+
+  // Existing chat drafts and files migrate only into the new request, with portal access granted.
+  const chatStart = await fetch(`${BASE_URL}/api/chat/messages`, { headers: nextRequestHeaders({ tag: 'receipt-chat-start' }) });
+  const chatToken = readCookie(chatStart, CHAT_COOKIE);
+  assert.ok(chatToken);
+  const chatSession = await prisma.session.findUnique({ where: { tokenHash: sha256(chatToken) } });
+  const chatMessage = await prisma.message.create({ data: {
+    sessionId: chatSession.id, channel: 'WEBSITE_CHAT', authorRole: 'CUSTOMER',
+    body: 'Receipt chat draft', isCustomerVisible: true, sentAt: new Date(),
+  } });
+  const chatAttachment = await prisma.attachment.create({ data: {
+    uploadedBySessionId: chatSession.id, messageId: chatMessage.id, kind: 'DOCUMENT',
+    storageProvider: 'LOCAL', storageKey: `receipt-${RUN_ID}`, originalFilename: 'receipt.pdf',
+    mimeType: 'application/pdf', byteSize: 20, isCustomerVisible: true,
+  } });
+  const chatRequest = await submit(email, `${cookie}; ${CHAT_COOKIE}=${chatToken}`, { isFromChat: 'true' });
+  async function assertHistoryReceipt(response: Response, number: string, linked: boolean) {
+    const token = readCookie(response, CHAT_COOKIE);
+    assert.ok(token);
+    // Reload twice, as the modal does after submission and after reopening.
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      const history = await fetch(`${BASE_URL}/api/chat/messages`, {
+        headers: nextRequestHeaders({ cookie: `${CHAT_COOKIE}=${token}`, tag: 'receipt-history' }),
+      });
+      assert.equal(history.status, 200);
+      const historyJson = await readJson(history);
+      const receipts = historyJson.messages.filter((message: any) => message.requestRegistration);
+      assert.equal(receipts.length, 1);
+      assert.equal(receipts[0].requestRegistration.publicRequestNumber, number);
+      assert.equal(receipts[0].requestRegistration.portalLinked, linked);
+    }
+  }
+  await assertHistoryReceipt(chatRequest.response, chatRequest.json.publicRequestNumber, true);
+  assert.equal(chatRequest.json.portalLinked, true);
+  assert.equal(chatRequest.json.photoReceived, true);
+  const nextChatRequest = await submit(email, `${cookie}; ${CHAT_COOKIE}=${chatToken}`, { isFromChat: 'true', message: 'New independent chat request' });
+  assert.equal(await prisma.message.count({ where: { caseId: nextChatRequest.record.id, authorRole: 'CUSTOMER', body: 'New independent chat request' } }), 1);
+  assert.equal(await prisma.message.count({ where: { caseId: nextChatRequest.record.id, body: 'Receipt chat draft' } }), 0);
+  await assertHistoryReceipt(nextChatRequest.response, nextChatRequest.json.publicRequestNumber, true);
+  const guestChatRequest = await submit(email, undefined, { isFromChat: 'true' });
+  await assertUnlinked(guestChatRequest.record.id);
+  await assertHistoryReceipt(guestChatRequest.response, guestChatRequest.json.publicRequestNumber, false);
+
+
+  assert.equal((await prisma.message.findUnique({ where: { id: chatMessage.id } })).caseId, chatRequest.record.id);
+  assert.equal((await prisma.attachment.findUnique({ where: { id: chatAttachment.id } })).caseId, chatRequest.record.id);
+  assert.equal((await prisma.session.findUnique({ where: { tokenHash: sha256(portalToken) } })).scope, 'PORTAL_AUTH');
+
+  for (const token of [fixture.disabledPortalToken, 'expired-receipt-' + RUN_ID, 'revoked-receipt-' + RUN_ID]) {
+    if (token !== fixture.disabledPortalToken) await createSession({
+      rawToken: token, scope: 'PORTAL_AUTH', portalUserId: user.id,
+      expiresAt: token.startsWith('expired') ? pastDate() : futureDate(),
+      revokedAt: token.startsWith('revoked') ? pastDate() : undefined, tag: 'receipt-invalid-session',
+    });
+    const unlinked = await submit(email, `${PORTAL_COOKIE}=${token}`);
+    assert.equal(unlinked.json.portalLinked, false);
+    await assertUnlinked(unlinked.record.id);
+  }
+
+  for (const locale of ['de', 'en', 'ru', 'tr', 'pl', 'ar']) {
+    const localizedEmail = `receipt-${locale}-${RUN_ID}@pixelring.test`;
+    const localized = await submit(localizedEmail, undefined, undefined, locale);
+    assert.equal(localized.json.portalLinked, false);
+    const mail = emailFor(localizedEmail);
+    assert.ok(mail.includes(getRequestReceiptCopy(locale).create));
+    assert.ok(mail.includes(getRequestReceiptCopy(locale).optional));
+    assert.ok(mail.includes(localized.json.publicRequestNumber));
+    if (locale === 'ar') assert.ok(mail.includes('dir="rtl"'));
+  }
+
+  const csrfForm = new FormData();
+  csrfForm.set('email', email); csrfForm.set('message', 'Cross-site request');
+  const csrf = await fetch(`${BASE_URL}/api/contact`, {
+    method: 'POST', headers: { cookie, origin: 'https://untrusted.example', 'sec-fetch-site': 'cross-site' }, body: csrfForm,
+  });
+  assert.equal(csrf.status, 403);
+});
+
+
+test('Telegram invitations without a mode retain neutral account copy', { timeout: 60_000 }, async () => {
+  for (const email of [fixture.portalEmail, `telegram-new-${RUN_ID}@pixelring.test`]) {
+    const draft = await prisma.case.create({ data: { originChannel: 'TELEGRAM' } });
+    ids.cases.push(draft.id);
+    const chatId = `receipt-telegram-${draft.id}`;
+    const conversation = await prisma.externalConversation.create({ data: {
+      caseId: draft.id, channel: 'TELEGRAM', externalChatId: chatId,
+    } });
+    const token = `telegram-receipt-${draft.id}`;
+    await prisma.telegramIntakeLink.create({ data: {
+      tokenHash: sha256(token), caseId: draft.id, externalConversationId: conversation.id,
+      telegramChatId: chatId, locale: 'de', returnNonce: randomUUID(), expiresAt: futureDate(),
+    } });
+    const form = new FormData();
+    for (const [key, value] of Object.entries({ token, name: 'Test Customer', email,
+      location: 'Berlin', issueType: 'repair', message: 'Please repair the sign' })) form.set(key, value);
+    const response = await fetch(`${BASE_URL}/api/telegram/intake/submit`, {
+      method: 'POST', headers: nextRequestHeaders({ tag: 'telegram-receipt', sameOrigin: true }), body: form,
+    });
+    const json = await readJson(response);
+    assert.equal(response.status, 200, JSON.stringify(json));
+    assert.match(emailFor(email), /Kundenportal aktivieren/);
+    assert.doesNotMatch(emailFor(email), /Kundenkonto erstellen/);
+    assert.equal(await prisma.portalCaseAccess.count({ where: { caseId: draft.id } }), 0);
+  }
 });

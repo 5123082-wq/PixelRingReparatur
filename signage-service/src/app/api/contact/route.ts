@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
+import { getPortalSessionContext, PORTAL_SESSION_COOKIE_NAME } from '@/lib/portal/auth';
+import { validatePortalMutationRequest } from '@/lib/portal/mutation-guard';
 import { checkRateLimit, getClientIP, CONTACT_LIMIT } from '@/lib/rate-limit';
 import { createWebsiteRequest, resolveWebsiteRequestContact } from '@/lib/request-intake';
-import { CASE_SESSION_COOKIE_NAME } from '@/lib/case-session';
+import {
+  CASE_SESSION_COOKIE_NAME,
+  CHAT_SESSION_COOKIE_NAME,
+} from '@/lib/case-session';
 import { sendAdminTelegramNotification } from '@/lib/admin-telegram-notifications';
 import { getSessionIntakeDraft } from '@/lib/ai/intake-draft';
 import { redactPiiForAi } from '@/lib/ai/pii-redaction';
@@ -75,6 +80,9 @@ function verificationRequiredMessage(locale: SiteLocale): string {
 }
 
 export async function POST(request: NextRequest) {
+  const mutationError = validatePortalMutationRequest(request);
+  if (mutationError) return mutationError;
+
   const ip = getClientIP(request);
   const limit = checkRateLimit(ip, CONTACT_LIMIT);
   let storedAttachments: StoredAttachmentInput[] = [];
@@ -88,6 +96,10 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    const portalSession = await getPortalSessionContext(
+      prisma, request.cookies.get(PORTAL_SESSION_COOKIE_NAME)?.value,
+      { touchLastSeen: false }
+    );
     const formData = await request.formData();
     let name = String(formData.get('name') ?? '').trim();
     let contact = String(formData.get('contact') ?? '').trim();
@@ -108,17 +120,20 @@ export async function POST(request: NextRequest) {
     let existingSessionToken: string | null = null;
     let draftContactKnown = false;
     let draftLocationKnown = false;
-    const cookieToken = request.cookies.get(CASE_SESSION_COOKIE_NAME)?.value ?? null;
+    const caseCookieToken = request.cookies.get(CASE_SESSION_COOKIE_NAME)?.value ?? null;
+    const chatCookieToken = request.cookies.get(CHAT_SESSION_COOKIE_NAME)?.value ?? null;
+    const cookieToken = isFromChat ? chatCookieToken : caseCookieToken;
 
-    if (cookieToken) {
+    if (cookieToken || (isFromChat && caseCookieToken)) {
       const { resolveChatSession } = await import('@/lib/ai/chat-session');
       const resolved = await resolveChatSession(prisma, cookieToken, {
         createIfMissing: false,
+        fallbackToken: isFromChat ? caseCookieToken : null,
         userAgent: request.headers.get('user-agent'),
         ipAddress: getClientIP(request),
       });
-      if (resolved) {
-        if (resolved.session.caseId) {
+      if (resolved && (!resolved.session.caseId || !portalSession)) {
+        if (resolved.session.caseId && !portalSession) {
           const message = verificationRequiredMessage(locale);
 
           return NextResponse.json(
@@ -201,21 +216,38 @@ export async function POST(request: NextRequest) {
       existingSessionToken,
       isFromChat,
       calculationSnapshot,
+      portalUser: portalSession ? {
+        portalUserId: portalSession.portalUserId,
+        portalSessionId: portalSession.sessionId,
+        websiteIntake: true,
+        verifiedEmail: portalSession.email,
+      } : null,
     });
 
     if (result.portalClaimUrl && result.portalClaimExpiresAt && resolvedContact.customerEmail) {
-      await sendPortalActivationInviteEmail({
-        to: resolvedContact.customerEmail,
-        claimUrl: result.portalClaimUrl,
-        expiresAt: new Date(result.portalClaimExpiresAt),
-        publicRequestNumber: result.publicRequestNumber,
-        locale,
-      }).catch(() => {
+      try {
+        // Account existence only changes the private email, never the public response.
+        const existingAccount = await prisma.portalUser.findFirst({
+          where: { OR: [
+            { primaryEmailNormalized: resolvedContact.customerEmail },
+            { emails: { some: { emailNormalized: resolvedContact.customerEmail } } },
+          ] },
+          select: { id: true },
+        });
+        await sendPortalActivationInviteEmail({
+          to: resolvedContact.customerEmail,
+          mode: existingAccount ? 'add-request' : 'create-account',
+          claimUrl: result.portalClaimUrl,
+          expiresAt: new Date(result.portalClaimExpiresAt),
+          publicRequestNumber: result.publicRequestNumber,
+          locale,
+        });
+      } catch {
         console.error('Portal activation invite email failed:', {
           caseId: result.caseId,
           publicRequestNumber: result.publicRequestNumber,
         });
-      });
+      }
     }
 
     await sendAdminTelegramNotification({
@@ -239,8 +271,7 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({
       success: true,
       publicRequestNumber: result.publicRequestNumber,
-      portalClaimUrl: result.portalClaimUrl,
-      portalClaimExpiresAt: result.portalClaimExpiresAt,
+      portalLinked: Boolean(portalSession),
       photoReceived: result.photoReceived,
     });
 
@@ -254,6 +285,18 @@ export async function POST(request: NextRequest) {
         path: '/',
         maxAge: 60 * 60 * 24 * 180,
       });
+
+      if (isFromChat) {
+        response.cookies.set({
+          name: CHAT_SESSION_COOKIE_NAME,
+          value: result.sessionToken,
+          httpOnly: true,
+          sameSite: 'lax',
+          secure: process.env.NODE_ENV === 'production',
+          path: '/',
+          maxAge: 60 * 60 * 24 * 180,
+        });
+      }
     }
 
     return response;

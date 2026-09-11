@@ -2,7 +2,10 @@ import { CaseOriginChannel, MessageAuthorRole, PrismaClient } from '@prisma/clie
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
-import { CASE_SESSION_COOKIE_NAME } from '@/lib/case-session';
+import {
+  CASE_SESSION_COOKIE_NAME,
+  CHAT_SESSION_COOKIE_NAME,
+} from '@/lib/case-session';
 import {
   CHAT_MESSAGE_LIMIT,
   checkRateLimit,
@@ -50,6 +53,7 @@ type ChatMessageResponse = {
     publicRequestNumber: string;
     portalClaimUrl?: string;
     portalClaimExpiresAt?: string;
+    portalLinked?: boolean;
   };
 };
 
@@ -130,6 +134,7 @@ function serializeMessage(message: {
     publicRequestNumber: string;
     portalClaimUrl?: string;
     portalClaimExpiresAt?: string;
+    portalLinked?: boolean;
   };
 }): ChatMessageResponse {
   return {
@@ -523,6 +528,9 @@ async function loadSessionMessages(
           ? {
               publicRequestNumber,
               ...portalClaim,
+              // Only new website receipts carry this marker; keep legacy invitations unchanged.
+              ...(message.body.endsWith('\nKundenportal: Anfrage hinzugefügt.') ? { portalLinked: true }
+                : message.body.endsWith('\nKundenportal: Bitte prüfen Sie Ihre E-Mail.') ? { portalLinked: false } : {}),
             }
           : undefined,
       };
@@ -531,10 +539,11 @@ async function loadSessionMessages(
 
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get(CASE_SESSION_COOKIE_NAME)?.value ?? null;
+    const token = request.cookies.get(CHAT_SESSION_COOKIE_NAME)?.value ?? null;
     const locale = request.nextUrl.searchParams.get('locale')?.trim() || undefined;
     const resolved = await resolveChatSession(prisma, token, {
       createIfMissing: true,
+      fallbackToken: request.cookies.get(CASE_SESSION_COOKIE_NAME)?.value ?? null,
       userAgent: request.headers.get('user-agent'),
       ipAddress: getClientIP(request),
     });
@@ -594,7 +603,7 @@ export async function GET(request: NextRequest) {
 
     if (resolved.cookieToken) {
       response.cookies.set({
-        name: CASE_SESSION_COOKIE_NAME,
+        name: CHAT_SESSION_COOKIE_NAME,
         value: resolved.cookieToken,
         httpOnly: true,
         sameSite: 'lax',
@@ -663,9 +672,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const token = request.cookies.get(CASE_SESSION_COOKIE_NAME)?.value ?? null;
+    const token = request.cookies.get(CHAT_SESSION_COOKIE_NAME)?.value ?? null;
     const resolved = await resolveChatSession(prisma, token, {
       createIfMissing: true,
+      fallbackToken: request.cookies.get(CASE_SESSION_COOKIE_NAME)?.value ?? null,
       userAgent: request.headers.get('user-agent'),
       ipAddress: getClientIP(request),
     });
@@ -858,7 +868,7 @@ export async function POST(request: NextRequest) {
 
     if (cookieToken) {
       response.cookies.set({
-        name: CASE_SESSION_COOKIE_NAME,
+        name: CHAT_SESSION_COOKIE_NAME,
         value: cookieToken,
         httpOnly: true,
         sameSite: 'lax',
