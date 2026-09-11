@@ -218,13 +218,13 @@ function buildPortalActivationInvitePayload(
   const base = activationInviteCopy(input);
   const receipt = getRequestReceiptCopy(input.locale);
   const heading = input.mode === 'add-request' ? receipt.add : receipt.create;
-  const copy = {
+  const copy = input.mode ? {
     ...base,
     subject: `PixelRing: ${heading} — ${input.publicRequestNumber}`,
     heading,
     button: heading,
     paragraphs: [base.paragraphs[0], receipt.optional, receipt.verify, receipt.ignore],
-  };
+  } : base;
   const claimUrl = input.claimUrl;
   const expiresAt = input.expiresAt.toISOString();
   const escapedHeading = escapeHtml(copy.heading);

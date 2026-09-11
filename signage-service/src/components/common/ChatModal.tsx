@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
+import { getRequestReceiptCopy } from '@/lib/request-receipt-copy';
 import Logo from '../common/Logo';
 import ChatIntakeCard, { type IntakePrefill } from './ChatIntakeCard';
 import ChatRequestConfirmCard from './ChatRequestConfirmCard';
@@ -20,6 +21,7 @@ type ChatMessage = {
     publicRequestNumber: string;
     portalClaimUrl?: string;
     portalClaimExpiresAt?: string;
+    portalLinked?: boolean;
   };
 };
 
@@ -40,6 +42,7 @@ type ChatApiResponse = {
       publicRequestNumber?: string;
       portalClaimUrl?: string;
       portalClaimExpiresAt?: string;
+      portalLinked?: boolean;
     };
   }>;
   operatorTakeover?: boolean;
@@ -295,6 +298,7 @@ function normalizeMessage(message: {
     publicRequestNumber?: string;
     portalClaimUrl?: string;
     portalClaimExpiresAt?: string;
+    portalLinked?: boolean;
   };
 }): ChatMessage {
   const publicRequestNumber = message.requestRegistration?.publicRequestNumber?.trim();
@@ -310,6 +314,7 @@ function normalizeMessage(message: {
           publicRequestNumber,
           portalClaimUrl: message.requestRegistration?.portalClaimUrl,
           portalClaimExpiresAt: message.requestRegistration?.portalClaimExpiresAt,
+          portalLinked: message.requestRegistration?.portalLinked,
         }
       : undefined,
   };
@@ -396,6 +401,29 @@ function ChatRequestSuccessCard({
   locale: string;
   registration: NonNullable<ChatMessage['requestRegistration']>;
 }) {
+  if (typeof registration.portalLinked === 'boolean') {
+    const receipt = getRequestReceiptCopy(locale);
+    const ui = getChatUiCopy(locale);
+    return (
+      <div className="w-full max-w-[520px] rounded-[22px] border border-[#E2D4C7] bg-[#FFFDF9] p-4 shadow-sm">
+        <p className="text-[13px] font-black text-[#0E1A2B]">{ui.requestRegistered}</p>
+        <p className="mt-2 text-[11px] font-bold text-[#72665D]">{ui.requestNumber}</p>
+        <p className="mt-1 break-all text-[22px] font-black text-[#0E1A2B]">{registration.publicRequestNumber}</p>
+        <p className="mt-3 text-[12px] leading-5 text-[#5E554E]">
+          {registration.portalLinked ? receipt.linked : receipt.guest}
+        </p>
+        <Link
+          href={registration.portalLinked
+            ? `/portal/requests/${encodeURIComponent(registration.publicRequestNumber)}`
+            : `/status?request=${encodeURIComponent(registration.publicRequestNumber)}`}
+          className="mt-3 inline-flex min-h-11 items-center justify-center rounded-[14px] bg-[#0E1A2B] px-4 py-2 text-center text-[13px] font-black text-white"
+        >
+          {registration.portalLinked ? receipt.open : ui.checkStatus}
+        </Link>
+      </div>
+    );
+  }
+
   const copy = getRequestCardCopy(locale);
   const expiresAt = registration.portalClaimExpiresAt
     ? new Date(registration.portalClaimExpiresAt)

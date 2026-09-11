@@ -1312,11 +1312,33 @@ test('website receipts link only authenticated users or explicitly confirmed ema
     mimeType: 'application/pdf', byteSize: 20, isCustomerVisible: true,
   } });
   const chatRequest = await submit(email, `${cookie}; ${CHAT_COOKIE}=${chatToken}`, { isFromChat: 'true' });
+  async function assertHistoryReceipt(response: Response, number: string, linked: boolean) {
+    const token = readCookie(response, CHAT_COOKIE);
+    assert.ok(token);
+    // Reload twice, as the modal does after submission and after reopening.
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      const history = await fetch(`${BASE_URL}/api/chat/messages`, {
+        headers: nextRequestHeaders({ cookie: `${CHAT_COOKIE}=${token}`, tag: 'receipt-history' }),
+      });
+      assert.equal(history.status, 200);
+      const historyJson = await readJson(history);
+      const receipts = historyJson.messages.filter((message: any) => message.requestRegistration);
+      assert.equal(receipts.length, 1);
+      assert.equal(receipts[0].requestRegistration.publicRequestNumber, number);
+      assert.equal(receipts[0].requestRegistration.portalLinked, linked);
+    }
+  }
+  await assertHistoryReceipt(chatRequest.response, chatRequest.json.publicRequestNumber, true);
   assert.equal(chatRequest.json.portalLinked, true);
   assert.equal(chatRequest.json.photoReceived, true);
   const nextChatRequest = await submit(email, `${cookie}; ${CHAT_COOKIE}=${chatToken}`, { isFromChat: 'true', message: 'New independent chat request' });
   assert.equal(await prisma.message.count({ where: { caseId: nextChatRequest.record.id, authorRole: 'CUSTOMER', body: 'New independent chat request' } }), 1);
   assert.equal(await prisma.message.count({ where: { caseId: nextChatRequest.record.id, body: 'Receipt chat draft' } }), 0);
+  await assertHistoryReceipt(nextChatRequest.response, nextChatRequest.json.publicRequestNumber, true);
+  const guestChatRequest = await submit(email, undefined, { isFromChat: 'true' });
+  await assertUnlinked(guestChatRequest.record.id);
+  await assertHistoryReceipt(guestChatRequest.response, guestChatRequest.json.publicRequestNumber, false);
+
 
   assert.equal((await prisma.message.findUnique({ where: { id: chatMessage.id } })).caseId, chatRequest.record.id);
   assert.equal((await prisma.attachment.findUnique({ where: { id: chatAttachment.id } })).caseId, chatRequest.record.id);
@@ -1350,4 +1372,32 @@ test('website receipts link only authenticated users or explicitly confirmed ema
     method: 'POST', headers: { cookie, origin: 'https://untrusted.example', 'sec-fetch-site': 'cross-site' }, body: csrfForm,
   });
   assert.equal(csrf.status, 403);
+});
+
+
+test('Telegram invitations without a mode retain neutral account copy', { timeout: 60_000 }, async () => {
+  for (const email of [fixture.portalEmail, `telegram-new-${RUN_ID}@pixelring.test`]) {
+    const draft = await prisma.case.create({ data: { originChannel: 'TELEGRAM' } });
+    ids.cases.push(draft.id);
+    const chatId = `receipt-telegram-${draft.id}`;
+    const conversation = await prisma.externalConversation.create({ data: {
+      caseId: draft.id, channel: 'TELEGRAM', externalChatId: chatId,
+    } });
+    const token = `telegram-receipt-${draft.id}`;
+    await prisma.telegramIntakeLink.create({ data: {
+      tokenHash: sha256(token), caseId: draft.id, externalConversationId: conversation.id,
+      telegramChatId: chatId, locale: 'de', returnNonce: randomUUID(), expiresAt: futureDate(),
+    } });
+    const form = new FormData();
+    for (const [key, value] of Object.entries({ token, name: 'Test Customer', email,
+      location: 'Berlin', issueType: 'repair', message: 'Please repair the sign' })) form.set(key, value);
+    const response = await fetch(`${BASE_URL}/api/telegram/intake/submit`, {
+      method: 'POST', headers: nextRequestHeaders({ tag: 'telegram-receipt', sameOrigin: true }), body: form,
+    });
+    const json = await readJson(response);
+    assert.equal(response.status, 200, JSON.stringify(json));
+    assert.match(emailFor(email), /Kundenportal aktivieren/);
+    assert.doesNotMatch(emailFor(email), /Kundenkonto erstellen/);
+    assert.equal(await prisma.portalCaseAccess.count({ where: { caseId: draft.id } }), 0);
+  }
 });

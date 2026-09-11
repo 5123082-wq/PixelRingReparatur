@@ -53,6 +53,7 @@ type ChatMessageResponse = {
     publicRequestNumber: string;
     portalClaimUrl?: string;
     portalClaimExpiresAt?: string;
+    portalLinked?: boolean;
   };
 };
 
@@ -133,6 +134,7 @@ function serializeMessage(message: {
     publicRequestNumber: string;
     portalClaimUrl?: string;
     portalClaimExpiresAt?: string;
+    portalLinked?: boolean;
   };
 }): ChatMessageResponse {
   return {
@@ -526,6 +528,9 @@ async function loadSessionMessages(
           ? {
               publicRequestNumber,
               ...portalClaim,
+              // Only new website receipts carry this marker; keep legacy invitations unchanged.
+              ...(message.body.endsWith('\nKundenportal: Anfrage hinzugefügt.') ? { portalLinked: true }
+                : message.body.endsWith('\nKundenportal: Bitte prüfen Sie Ihre E-Mail.') ? { portalLinked: false } : {}),
             }
           : undefined,
       };

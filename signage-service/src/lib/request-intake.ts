@@ -137,20 +137,6 @@ export async function createWebsiteRequest(
         select: { id: true },
       });
       initialMessageId = initialMessage.id;
-    } else {
-      const sysMsg = await tx.message.create({
-        data: {
-          caseId: createdCase.id,
-          sessionId: input.existingSessionId || undefined,
-          channel: CaseOriginChannel.WEBSITE_CHAT,
-          authorRole: MessageAuthorRole.SYSTEM,
-          body: `Anfrage erfolgreich registriert. Nummer: ${publicRequestNumber}`,
-          isCustomerVisible: true,
-          sentAt: now,
-        },
-        select: { id: true },
-      });
-      initialMessageId = sysMsg.id;
     }
 
     await tx.case.update({
@@ -241,6 +227,22 @@ export async function createWebsiteRequest(
         },
         select: { id: true },
       });
+    }
+
+    if (input.isFromChat) {
+      const receipt = await tx.message.create({
+        data: {
+          caseId: createdCase.id,
+          sessionId: session.id,
+          channel: CaseOriginChannel.WEBSITE_CHAT,
+          authorRole: MessageAuthorRole.SYSTEM,
+          body: `Anfrage erfolgreich registriert. Nummer: ${publicRequestNumber}\n${input.portalUser ? 'Kundenportal: Anfrage hinzugefügt.' : 'Kundenportal: Bitte prüfen Sie Ihre E-Mail.'}`,
+          isCustomerVisible: true,
+          sentAt: now,
+        },
+        select: { id: true },
+      });
+      initialMessageId ??= receipt.id;
     }
 
     if (attachments.length > 0) {
