@@ -11,15 +11,6 @@ const company = SITE_CONFIG.company;
 const address = `${company.address.street}\n${company.address.city}\n${company.address.country}`;
 const phoneLines = company.phone.join('\n');
 
-export const LEGAL_NOTICE_BY_LOCALE: Record<string, string> = {
-  de: 'Dieses Dokument ist rechtlich bindend in seiner deutschen Fassung.',
-  en: 'This document is legally binding in its German version. The original German text is shown below.',
-  ru: 'Этот документ имеет юридическую силу только в немецкой версии. Ниже показан оригинальный немецкий текст.',
-  tr: 'Bu belge yalnizca Almanca surumunde hukuken baglayicidir. Asagida orijinal Almanca metin gosterilmektedir.',
-  pl: 'Ten dokument jest prawnie wiazacy wylacznie w wersji niemieckiej. Ponizej pokazano oryginalny tekst niemiecki.',
-  ar: 'هذا المستند ملزم قانونيا فقط بنسخته الالمانية. يعرض ادناه النص الالماني الاصلي.',
-};
-
 export const CODE_OWNED_LEGAL_CONTENT: Record<LegalPageKey, LegalContent> = {
   impressum: {
     title: 'Impressum',

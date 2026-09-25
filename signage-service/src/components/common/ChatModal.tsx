@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
+import LegalLink from './LegalLink';
 import { getRequestReceiptCopy } from '@/lib/request-receipt-copy';
 import Logo from '../common/Logo';
 import ChatIntakeCard, { type IntakePrefill } from './ChatIntakeCard';
@@ -843,9 +844,9 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
                 <p className="font-bold text-[#0E1A2B] mb-0.5">{copy.aiBannerTitle}</p>
                 <p>
                   {copy.aiBannerTextPrefix}
-                  <Link href="/privacy" locale="de" onClick={onClose} className="underline font-bold text-[#B8643E] hover:opacity-80">
+                  <LegalLink href="/de/privacy" className="underline font-bold text-[#B8643E] hover:opacity-80">
                     {copy.privacyLinkText}
-                  </Link>
+                  </LegalLink>
                   {copy.aiBannerTextSuffix}
                 </p>
                 <p className="mt-1 text-[11px] leading-4 text-[#72665D]/80 italic">

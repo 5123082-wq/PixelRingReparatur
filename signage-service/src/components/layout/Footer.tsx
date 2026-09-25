@@ -3,6 +3,7 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
+import LegalLink from '@/components/common/LegalLink';
 import { SITE_CONFIG } from '@/lib/site-config';
 
 // ─── CMS Types ────────────────────────────────────────────────────────────────
@@ -241,14 +242,13 @@ const Footer = ({ content }: { content?: FooterContent | null }) => {
         <div className="border-t border-[#E7DDD3] pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex flex-wrap justify-center sm:justify-start gap-x-8 gap-y-2">
             {LEGAL_LINKS.map((link) => (
-              <Link
+              <LegalLink
                 key={link.href}
-                href={link.href}
-                locale="de"
+                href={`/de${link.href}`}
                 className="text-[13px] text-[#72665D] hover:text-black transition-colors font-medium"
               >
                 {link.name}
-              </Link>
+              </LegalLink>
             ))}
           </div>
           <p className="text-[13px] text-[#72665D]/60 whitespace-nowrap">
