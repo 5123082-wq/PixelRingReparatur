@@ -31,6 +31,8 @@ const LanguageSwitcher = ({
 }) => {
   const locale = useLocale();
   const pathname = usePathname();
+  // Legal documents stay German; selecting a language returns to that site's home.
+  const languageHref = /^\/(?:de\/)?(?:impressum|privacy)\/?$/.test(pathname) ? '/' : pathname;
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -104,7 +106,7 @@ const LanguageSwitcher = ({
           {visibleLanguages.map((lang) => (
             <Link
               key={lang.code}
-              href={pathname}
+              href={languageHref}
               locale={lang.code}
               hrefLang={lang.code}
               prefetch={false}

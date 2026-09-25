@@ -1,11 +1,9 @@
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
+import LegalPageLayout from '@/components/layout/LegalPageLayout';
 import CookieConsentSettings from '@/components/analytics/CookieConsentSettings';
 import TextSection from '@/components/sections/TextSection';
-import { getGlobalPageCmsContent, getPublishedCmsPage } from '@/lib/cms/pages';
+import { getPublishedCmsPage } from '@/lib/cms/pages';
 import {
   CODE_OWNED_LEGAL_CONTENT,
-  LEGAL_NOTICE_BY_LOCALE,
   containsStaleLegalContent,
 } from '@/lib/legal-content';
 import { buildLocaleUrl } from '@/lib/seo';
@@ -30,13 +28,8 @@ export default async function PrivacyPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const legalNotice = LEGAL_NOTICE_BY_LOCALE[locale] ?? LEGAL_NOTICE_BY_LOCALE.en;
-  
-  const [globalCms, legalCms] = await Promise.all([
-    getGlobalPageCmsContent(locale),
-    // Fetch only German content for legal documents
-    getPublishedCmsPage('privacy', 'de'),
-  ]);
+
+  const legalCms = await getPublishedCmsPage('privacy', 'de');
   const cmsText = legalCms?.blocks
     ?.map((block) => `${String(block.title ?? '')}\n${String(block.description ?? '')}`)
     .join('\n') ?? '';
@@ -45,31 +38,21 @@ export default async function PrivacyPage({
   const fallbackContent = CODE_OWNED_LEGAL_CONTENT.privacy;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F7F1E8]">
-      <Header content={globalCms?.header} availableLocales={['de']} />
-      <main className="flex-1">
-        <div className="pr-site-container pb-12 pt-24">
-           <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-amber-800 text-sm mb-8">
-             {legalNotice}
-           </div>
-        </div>
-
-        {useCmsLegalContent ? (
-          legalBlocks.map((block) => {
-            if (block.type === 'textSection') {
-              return <TextSection key={block.key} content={{ 
-                title: block.title as string, 
-                description: block.description as string 
-              }} />;
-            }
-            return null;
-          })
-        ) : (
-          <TextSection content={fallbackContent} />
-        )}
-        <CookieConsentSettings locale={locale} />
-      </main>
-      <Footer content={globalCms?.footer} />
-    </div>
+    <LegalPageLayout>
+      {useCmsLegalContent ? (
+        legalBlocks.map((block) => {
+          if (block.type === 'textSection') {
+            return <TextSection key={block.key} content={{
+              title: block.title as string,
+              description: block.description as string
+            }} />;
+          }
+          return null;
+        })
+      ) : (
+        <TextSection content={fallbackContent} />
+      )}
+      <CookieConsentSettings locale={locale} />
+    </LegalPageLayout>
   );
 }
