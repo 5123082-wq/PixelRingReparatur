@@ -108,7 +108,11 @@ function buildEntry(
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const entries: SitemapEntry[] = [];
+  // Legal documents have one German URL and no translated alternatives.
+  const entries: SitemapEntry[] = [
+    { url: buildLocaleUrl(DEFAULT_SITE_LOCALE, '/impressum') },
+    { url: buildLocaleUrl(DEFAULT_SITE_LOCALE, '/privacy') },
+  ];
 
   for (const locale of SITE_LOCALES) {
     for (const path of PUBLIC_SITEMAP_PATHS) {

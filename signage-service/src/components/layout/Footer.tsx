@@ -244,6 +244,7 @@ const Footer = ({ content }: { content?: FooterContent | null }) => {
               <Link
                 key={link.href}
                 href={link.href}
+                locale="de"
                 className="text-[13px] text-[#72665D] hover:text-black transition-colors font-medium"
               >
                 {link.name}

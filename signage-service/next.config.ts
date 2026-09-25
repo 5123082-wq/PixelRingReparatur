@@ -29,6 +29,16 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: '/:locale(en|ru|tr|pl|ar)/:document(impressum|privacy)',
+        destination: '/de/:document',
+        permanent: true,
+      },
+      {
+        source: '/:document(impressum|privacy)',
+        destination: '/de/:document',
+        permanent: true,
+      },
+      {
         source: '/ring-master-admin/:path*',
         destination: '/de/ring-manager-crm/:path*',
         permanent: true,
