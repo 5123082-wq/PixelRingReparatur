@@ -135,7 +135,13 @@ export default async function proxy(request: NextRequest) {
 
   const response = intlMiddleware(request);
 
-  if (isProblemArticlePath(stripped) || isRetiredPublicPath(stripped) || isPrepublicationServicePath(stripped)) {
+  if (
+    isProblemArticlePath(stripped) ||
+    isRetiredPublicPath(stripped) ||
+    isPrepublicationServicePath(stripped) ||
+    stripped === '/impressum' ||
+    stripped === '/privacy'
+  ) {
     response.headers.delete('Link');
   }
 

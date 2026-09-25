@@ -46,7 +46,7 @@ export default async function PrivacyPage({
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F7F1E8]">
-      <Header content={globalCms?.header} />
+      <Header content={globalCms?.header} availableLocales={['de']} />
       <main className="flex-1">
         <div className="pr-site-container pb-12 pt-24">
            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-amber-800 text-sm mb-8">

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import {
   persistGoogleAdsConsent,
   readGoogleAdsConsent,
@@ -98,12 +99,12 @@ export default function GoogleAdsConsentBanner({ locale }: { locale: string }) {
         <div className="space-y-1">
           <h2 className="text-[15px] font-bold">{copy.title}</h2>
           <p className="text-[13px] leading-5 text-[#5E554E]">{copy.text}</p>
-          <a
-            href={`/${locale}/privacy#cookie-settings`}
+          <Link
+            href="/de/privacy#cookie-settings"
             className="inline-flex text-[12px] font-semibold text-[#B8643E] underline-offset-4 hover:underline"
           >
             {copy.privacy}
-          </a>
+          </Link>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
           <button

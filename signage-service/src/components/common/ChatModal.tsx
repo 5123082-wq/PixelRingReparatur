@@ -843,7 +843,7 @@ const ChatModal = ({ isOpen, onClose }: ChatModalProps) => {
                 <p className="font-bold text-[#0E1A2B] mb-0.5">{copy.aiBannerTitle}</p>
                 <p>
                   {copy.aiBannerTextPrefix}
-                  <Link href="/privacy" onClick={onClose} className="underline font-bold text-[#B8643E] hover:opacity-80">
+                  <Link href="/privacy" locale="de" onClick={onClose} className="underline font-bold text-[#B8643E] hover:opacity-80">
                     {copy.privacyLinkText}
                   </Link>
                   {copy.aiBannerTextSuffix}

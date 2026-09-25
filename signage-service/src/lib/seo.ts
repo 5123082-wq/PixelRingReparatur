@@ -33,8 +33,6 @@ export const PUBLIC_SITEMAP_PATHS = [
   '/business',
   '/referenzen',
   '/ueber-uns',
-  '/impressum',
-  '/privacy',
 ] as const;
 
 export const PUBLIC_SITEMAP_LAST_MODIFIED_BY_PATH: Partial<
