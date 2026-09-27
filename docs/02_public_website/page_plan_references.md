@@ -51,35 +51,20 @@ Required behavior and content intent:
 - CTA to submit or start a similar request;
 - small service tags may be used if they support scanning.
 
-### 2. Recent Work Carousel
+### 2. Selected Work And Compact Carousel
 
-This is not the full gallery. It is the editorial “latest / selected work” block.
+Owner-approved update, 2026-09-27:
 
-Required behavior:
-
-- horizontal carousel;
-- additional cards visible or partially visible to the left/right where viewport allows;
-- auto-moving carousel;
-- pause movement on hover and focus;
-- user horizontal scroll must still work with trackpad/mouse/touch;
-- cards remain clickable.
-
-Required card behavior:
-
-- normal state shows the repaired/result image;
-- hover/focus state shows a muted or grayscale before image;
-- hover/focus also changes supporting text to a `BEFORE` problem-oriented message;
-- click opens a case/repair report modal for that specific card.
-
-Case modal content:
-
-- gallery for that specific case;
-- case title;
-- category;
-- problem;
-- work done;
-- result;
-- CTA to submit a similar request.
+- Show one large before/result comparison above the horizontal work strip, following the homepage Pasternak block layout.
+- Initially select the existing Pasternak case (`mounting-review`); if absent from the published list, select its first available case.
+- Use the current published case images, alternative text, title and problem/work/result description. Hidden or empty CMS case lists remain hidden.
+- Render uniform cards: 248 × 196 px on desktop and 224 × 188 px on mobile, each with a single result photograph, category and a two-line title. Before/result comparison appears only in the large block.
+- Clicking or keyboard-activating a card updates the large comparison in place and highlights the selected card. It does not open the former case modal.
+- Keep one manually scrollable strip without automatic movement, clones or a pause control. Previous/next arrows on the large comparison select the adjacent object, wrap at the ends, and keep its thumbnail visible without moving the page vertically.
+- Show only the short section eyebrow above the comparison; omit the large introductory heading, explanatory paragraph and visible selection instruction.
+- Temporarily hide `branch-service` from this strip and its previous/next sequence. The separately managed full gallery is unaffected.
+- Localize controls for DE/EN/RU/TR/PL/AR and mirror the comparison and card content for Arabic.
+- Keep the homepage link targeting `/referenzen#recent-work` and the separate full photo gallery unchanged.
 
 ### 3. Short Repair Report Rows
 
@@ -241,9 +226,9 @@ The standalone prototype is a visual and interaction reference, not production c
 - Standard production header is used.
 - Standard production footer is used.
 - Page body matches the approved concept closely.
-- Recent-work carousel scrolls horizontally, auto-moves, and pauses on hover/focus.
-- Recent-work cards show before-state on hover/focus.
-- Recent-work cards open specific case modals.
+- Recent-work strip scrolls manually; arrows on the large comparison select the previous/next object and keep the selected thumbnail visible.
+- Recent-work cards share identical dimensions and show only the result photograph.
+- Recent-work cards switch the large comparison in place; Pasternak is selected initially when available.
 - Full gallery cards open an all-photo viewer, not a single-case modal.
 - Full photo viewer fits in viewport with main photo, categories, and thumbnails visible.
 - Product category block is present and adapted to PixelRing categories.
@@ -254,6 +239,41 @@ The standalone prototype is a visual and interaction reference, not production c
 - RTL behavior is checked for Arabic before release.
 
 ## Progress Log
+
+### 2026-09-27 — Подготовка разрешённого выпуска
+
+- Дата: 2026-09-27.
+- Текущий блок: публикация новой ленты и сравнения работ.
+- Готово: согласованные локальные изменения перенесены поверх действующего выпуска; промышленная сборка, проверка типов и качества кода пройдены.
+- В работе: проверка интерфейса и развёртывание.
+- Следующий шаг: проверить рабочую страницу на шести языках; результат фиксируется в запросе на слияние и [журнале выпуска](../11_operations/release_preparation_2026-09-27.md#дополнительный-выпуск-формы-входа-и-примеров-работ).
+- Блокеры/риски: новых миграций нет; отдельная нижняя фотогалерея сохранена.
+- Обновлённые документы: этот план, журнал выпуска и корневой журнал.
+
+### 2026-09-27 — Уточнение по шести комментариям владельца
+
+- Дата: 2026-09-27.
+- Текущий блок: упрощение верхнего раздела примеров работ.
+- Готово: убраны большой вводный заголовок, поясняющий абзац и видимая подсказка выбора; оставлена короткая подпись раздела. Карточка обслуживания филиалов временно скрыта из этой ленты. Стрелки перенесены на большое сравнение и переключают объекты по кругу. Автоматическое движение, повторы карточек и кнопка паузы удалены; выбранная миниатюра остаётся видимой без вертикального перемещения страницы.
+- Проверено: полный круг из пяти объектов, обратный переход с клавиатуры, совпадение выбранного объекта и миниатюры; мобильная арабская версия 390 пикселей без горизонтального переполнения. Проверка типов и точечная проверка качества кода пройдены.
+- Дополнительное уточнение: убраны поясняющие абзацы карточек «Работа на объекте» и «Детали выполненных работ», а также повтор первого абзаца в просмотре видео. Названия и кнопки сохранены; изменение общего компонента действует для всех шести языков.
+- В работе: визуальная оценка владельцем.
+- Следующий шаг: просмотреть обновлённый блок локально; фиксация и выпуск отдельно.
+- Блокеры/риски: скрытие филиалов относится к верхней ленте; отдельная нижняя фотогалерея и её содержимое сохранены.
+- Обновлённые документы: этот план, указатель публичного сайта и корневой журнал.
+
+### 2026-09-27 — Крупное сравнение и компактная лента работ
+
+- Дата: 2026-09-27.
+- Текущий блок: согласованная владельцем переработка первого раздела примеров работ.
+- Готово: крупное сравнение по образцу главной с Пастернаком по умолчанию; одинаковые карточки с одной фотографией результата, названием и категорией; переключение фотографий и описания внутри страницы; выделение выбранной работы; стрелки, пауза и сохранённая автоматическая прокрутка. Используются существующие опубликованные данные; скрытие блока через систему управления содержимым сохранено.
+- Проверено: проверка типов, точечная проверка качества кода и промышленная сборка; загрузка всех шести языков; одинаковые размеры карточек, выбор работы мышью и клавиатурой, переход с главной; мобильная версия 390 пикселей и арабское направление справа налево без горизонтального переполнения. Ошибок браузера при проверке раздела не обнаружено.
+- Уточнение владельца: нижняя карточка показывает только фотографию результата без подписей «до / после»; сравнение остаётся исключительно в крупном блоке.
+- Проверка уточнения: в браузере у каждой нижней карточки одна фотография, у крупного блока две; размеры карточек одинаковы. Проверка типов и качества кода повторно пройдена. Новые ссылки в документации корректны; в указателе раздела обнаружены две ранее существовавшие ссылки на отсутствующие документы о маркизах, они не относятся к этому изменению.
+- В работе: визуальная оценка владельцем.
+- Следующий шаг: проверить локальный вид; фиксация изменений и выпуск согласуются отдельно.
+- Блокеры/риски: остальные работы используют прежние фотографии и тексты; новые материалы не создавались. Первая попытка сборки остановилась на сетевой загрузке шрифтов; повторная сборка с разрешённым сетевым доступом прошла.
+- Обновлённые документы: этот план, `README.md` (указатель раздела), корневой `PROGRESS.md` (общий журнал).
 
 ### 2026-07-21 — Single-Slogan Proof Card
 

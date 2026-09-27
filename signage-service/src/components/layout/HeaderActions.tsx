@@ -9,6 +9,9 @@ export default function HeaderActions({
   accountStatusBaseLabel,
   accountStatusHref,
   accountStatusLabel,
+  accountStatusAccessibleLabel,
+  hasPortalAccess,
+  isProductionPortalSession,
   requestHref,
   requestLabel,
   isMenuOpen,
@@ -21,6 +24,9 @@ export default function HeaderActions({
   accountStatusBaseLabel: string;
   accountStatusHref: string;
   accountStatusLabel: string;
+  accountStatusAccessibleLabel: string;
+  hasPortalAccess: boolean;
+  isProductionPortalSession: boolean;
   requestHref: string;
   requestLabel: string;
   isMenuOpen: boolean;
@@ -40,12 +46,32 @@ export default function HeaderActions({
 
       <Link
         href={accountStatusHref}
+        aria-label={accountStatusAccessibleLabel}
+        title={hasPortalAccess ? accountStatusAccessibleLabel : undefined}
         aria-current={isAccountStatusActive ? 'page' : undefined}
-        className={`pr-header-control hidden shrink-0 whitespace-nowrap rounded-full border px-4 py-2.5 text-[15px] font-medium text-[#414B59] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]/35 lg:inline-flex ${
-          isAccountStatusActive ? 'pr-header-control-active' : ''
+        data-account-authenticated={hasPortalAccess && isProductionPortalSession}
+        className={`pr-header-control shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border text-[15px] font-medium text-[#414B59] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8643E]/35 lg:inline-flex lg:px-4 lg:py-2.5 ${
+          hasPortalAccess ? 'inline-flex size-11 lg:h-auto lg:w-auto' : 'hidden px-4 py-2.5'
+        } ${
+          isAccountStatusActive || (hasPortalAccess && isProductionPortalSession) ? 'pr-header-control-active' : ''
         }`}
       >
-        <span className="grid" aria-live="polite">
+        {hasPortalAccess && (
+          <span className="relative inline-flex size-5 shrink-0" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="size-5">
+              <circle cx="12" cy="8" r="3.5" />
+              <path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2" strokeLinecap="round" />
+            </svg>
+            {isProductionPortalSession && (
+              <span className="absolute -bottom-1 -end-1.5 flex size-3.5 items-center justify-center rounded-full bg-[#27644A] text-white ring-2 ring-[#F1E1D7]">
+                <svg viewBox="0 0 12 12" fill="none" className="size-2.5">
+                  <path d="m2.5 6 2.25 2.25L9.5 3.5" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+            )}
+          </span>
+        )}
+        <span className={hasPortalAccess ? 'hidden lg:grid' : 'grid'} aria-live="polite">
           <span className="invisible col-start-1 row-start-1" aria-hidden="true">
             {accountStatusBaseLabel}
           </span>

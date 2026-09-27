@@ -700,16 +700,16 @@ test('chat session resolver and POST touch activity without rewriting session sc
   assert.equal(postUpdateBlock.includes('scope:'), false);
 });
 
-test('public portal session state exposes only a private boolean response', () => {
+test('public portal session state keeps profile presentation private and omits internal identifiers', () => {
   const source = readProjectFile('src/app/api/portal/session-state/route.ts');
 
-  assert.ok(source.includes("{ authenticated }"));
-  assert.ok(source.includes('verifyPortalSessionCookie'));
+  assert.ok(source.includes('getPortalSessionContext'));
+  assert.ok(source.includes('{ touchLastSeen: false }'));
   assert.ok(source.includes('verifyPortalDemoCookie'));
   assert.ok(source.includes("'Cache-Control': 'private, no-store, max-age=0'"));
   assert.ok(source.includes("Vary: 'Cookie'"));
   assert.equal(source.includes('portalUserId'), false);
-  assert.equal(source.includes('email:'), false);
+  assert.equal(source.includes('sessionId'), false);
   assert.equal(source.includes('contactValue'), false);
 });
 
@@ -728,12 +728,13 @@ test('portal session presentation check does not refresh last-seen activity', ()
 
 test('public header resolves portal state after hydration without personalizing the homepage', () => {
   const headerSource = readProjectFile('src/components/layout/Header.tsx');
+  const sessionSource = readProjectFile('src/components/common/usePortalSession.ts');
   const homeSource = readProjectFile('src/app/[locale]/page.tsx');
 
-  assert.ok(headerSource.includes("fetch('/api/portal/session-state'"));
-  assert.ok(headerSource.includes("cache: 'no-store'"));
-  assert.ok(headerSource.includes("credentials: 'same-origin'"));
-  assert.ok(headerSource.includes("payload.authenticated === true ? 'authenticated' : 'anonymous'"));
+  assert.ok(headerSource.includes('usePortalSession()'));
+  assert.ok(sessionSource.includes("fetch('/api/portal/session-state'"));
+  assert.ok(sessionSource.includes("cache: 'no-store'"));
+  assert.ok(sessionSource.includes("credentials: 'same-origin'"));
   assert.equal(homeSource.includes('hasPortalAccess'), false);
   assert.equal(homeSource.includes('portalAccess='), false);
   assert.equal(homeSource.includes('next/headers'), false);

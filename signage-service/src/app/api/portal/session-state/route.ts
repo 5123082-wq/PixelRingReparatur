@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
   PORTAL_DEMO_COOKIE_NAME,
   PORTAL_SESSION_COOKIE_NAME,
+  getPortalSessionContext,
   verifyPortalDemoCookie,
-  verifyPortalSessionCookie,
 } from '@/lib/portal/auth';
 import { prisma } from '@/lib/prisma';
 
@@ -16,9 +16,13 @@ const PRIVATE_RESPONSE_HEADERS = {
   'X-Robots-Tag': 'noindex, nofollow',
 };
 
-function sessionStateResponse(authenticated: boolean, status = 200) {
+function sessionStateResponse(
+  mode: 'production' | 'demo' | null,
+  email: string | null = null,
+  status = 200
+) {
   return NextResponse.json(
-    { authenticated },
+    { authenticated: mode !== null, mode, email },
     {
       status,
       headers: PRIVATE_RESPONSE_HEADERS,
@@ -28,17 +32,23 @@ function sessionStateResponse(authenticated: boolean, status = 200) {
 
 export async function GET(request: NextRequest) {
   try {
-    const hasProductionSession = await verifyPortalSessionCookie(
+    const productionSession = await getPortalSessionContext(
       prisma,
-      request.cookies.get(PORTAL_SESSION_COOKIE_NAME)?.value
+      request.cookies.get(PORTAL_SESSION_COOKIE_NAME)?.value,
+      { touchLastSeen: false }
     );
+
+    if (productionSession) {
+      return sessionStateResponse('production', productionSession.email);
+    }
+
     const hasDemoSession = verifyPortalDemoCookie(
       request.cookies.get(PORTAL_DEMO_COOKIE_NAME)?.value
     );
 
-    return sessionStateResponse(hasProductionSession || hasDemoSession);
+    return sessionStateResponse(hasDemoSession ? 'demo' : null);
   } catch (error) {
     console.error('Portal session state check failed:', error);
-    return sessionStateResponse(false, 503);
+    return sessionStateResponse(null, null, 503);
   }
 }
