@@ -1,6 +1,6 @@
 # Component Guidelines And Inventory
 
-Last updated: 2026-07-12.
+Last updated: 2026-09-25.
 
 ## Status Legend
 
@@ -12,17 +12,28 @@ Last updated: 2026-07-12.
 
 | Component | Path | Purpose | Status | Notes |
 |---|---|---|---|---|
-| Header | `signage-service/src/components/layout/Header.tsx` | Global nav, language switch, quick actions | `needs-alignment` | Contains `#services` and `#warranty` anchors without confirmed section IDs. |
-| HeroSection | `signage-service/src/components/sections/HeroSection.tsx` | First-screen value statement and primary CTA | `stable` | Includes anti-marketplace trust line and messenger shortcuts. |
-| IntakeSection | `signage-service/src/components/sections/IntakeSection.tsx` | Visual entry methods for request start | `partial` | Methods look distinct, but actions converge into shared modal flow. |
-| BentoGridSection | `signage-service/src/components/sections/BentoGridSection.tsx` | Process explanation ("how it works") | `partial` | Copy includes "network" framing that should be controlled. |
-| TrustSection | `signage-service/src/components/sections/TrustSection.tsx` | Credibility and capability framing | `stable` | Placement currently lower than intended in old concept docs. |
-| CoverageMap | `signage-service/src/components/sections/CoverageMap.tsx` | Service geography and operational coverage | `partial` | Semantically overlaps with "why easier/more efficient" block. |
-| ExcellenceCarousel | `signage-service/src/components/sections/ExcellenceCarousel.tsx` | Service/case showcase | `stable` | Works as proof/cases surface when paired with reviews. |
-| ReviewsSection | `signage-service/src/components/sections/ReviewsSection.tsx` | Social proof/testimonials | `stable` | Combined with Excellence forms current proof layer. |
-| RoadmapSection | `signage-service/src/components/sections/RoadmapSection.tsx` | Post-submission expectation setting | `stable` | Covers "what happens after request". |
-| FAQSection | `signage-service/src/components/sections/FAQSection.tsx` | Objection handling and clarifications | `stable` | Standard accordion behavior. |
-| FooterCTA | `signage-service/src/components/sections/FooterCTA.tsx` | Final conversion block with form/chat/messengers | `stable` | Strong closing CTA and multi-channel entry. |
+| Header | `signage-service/src/components/layout/Header.tsx` | Global nav, language switch, account and service actions | `stable` | Existing navigation remains; the primary copper button is the homepage color reference. |
+| HeroSection | `signage-service/src/components/sections/HeroSection.tsx` | Repair-first statement and request CTA | `stable` | Third iteration removes the secondary services link; primary action, messenger logos, `#B8643E`, tilted CMS image and urgent-response badge remain. Verified locally. |
+| HomeServicesSection | `signage-service/src/components/sections/HomeServicesSection.tsx` | Existing localized service grid | `stable` | Moved directly below hero; homepage's only service selector at `#services`; verified locally. |
+| HomeProcessSection | `signage-service/src/components/sections/HomeProcessSection.tsx` | Three work stages and three service principles | `stable` | One white surface, plain columns and dividers, six locales in code, no CTA; verified locally. |
+| HomeWorkSection | `signage-service/src/components/sections/HomeWorkSection.tsx` | Permanent large before/after block | `stable` | Owner-designated key homepage block: preserve during future simplification. Fixed Pasternak photos/copy in code; carousel complements it; no automatic reference-publishing updates. |
+| ExcellenceCarousel | `signage-service/src/components/sections/ExcellenceCarousel.tsx` | Complementary photo/video work carousel | `stable` | Restored after the large before/after block; existing media/links and CMS fields plus static media configuration retained, aligned to light/copper style. Verified locally. |
+| CoverageMap | `signage-service/src/components/sections/CoverageMap.tsx` | Service geography map | `stable` | Restored after carousel and before FAQ. Existing cities/animations retained; light/copper palette aligned; title, stage and features separated on mobile. Verified locally. |
+| FAQSection | `signage-service/src/components/sections/FAQSection.tsx` | Objection handling and clarifications | `stable` | Existing accordion with homepage appearance; verified locally. |
+| FooterCTA | `signage-service/src/components/sections/FooterCTA.tsx` | One final form with compact alternate contacts | `stable` | Dark closing surface; chat, messengers and e-mail remain accessible; verified locally. |
+
+Removed from the homepage composition on 2026-09-25: `HomeTasksSection`, `IntakeSection`,
+`BentoGridSection`, `TrustSection` and `ReviewsSection`. `ExcellenceCarousel` and `CoverageMap`
+were restored in the third iteration.
+The first-iteration task selector and its unused translations were removed; previously existing shared/source files are retained. `HomeBeforeAfterSection` and `RoadmapSection` also
+remain outside the current homepage composition. Their existence is not evidence that the
+current homepage uses them. The permanent large before/after section is `HomeWorkSection`,
+not the older `HomeBeforeAfterSection` gallery.
+
+Content-management boundary: the fixed before/after example remains local code. The carousel
+uses existing homepage CMS fields and static media configuration; publishing a reference
+does not automatically update either block. Expanded CMS integration is future work, with
+no CMS writes or automatic synchronization added in this iteration.
 
 ## Shared Interaction Components
 
@@ -50,6 +61,14 @@ of this contract, not a homepage-only treatment.
 ### Public Content Typography
 
 Status: `stable`.
+
+Homepage exception (2026-09-25): ordinary section headings use a consistent `32px` mobile /
+`42px` larger-screen scale with dark navy text; compact card titles use the same restrained
+weight family. No new overline is required when it repeats the heading or brand. White
+surfaces on `#EEF3FB`, `#0E1A2B` text, `#4A5568` body text and `#B8643E` accents replace the
+previous mixture of beige, copper variants and repeated dark panels. Hero and final contact
+layout retain their own scale. Restored carousel and map use the same light/copper palette;
+third-iteration integrated visual verification passed; owner acceptance remains pending.
 
 Purpose: shared typography scale for large public-site content blocks, especially B2B/feature sections with heading, intro text, cards, and a visual mockup.
 
@@ -100,7 +119,7 @@ Canonical naming:
 - Acceptable aliases in discussion: `eyebrow`, `kicker`, `section label`
 
 Default visual standard:
-- Use the minimal text style shown by the homepage `PROCESS` label.
+- Use the minimal text style of the shared `SectionEyebrow` component; the old homepage `PROCESS` example is historical.
 - Use small uppercase text.
 - Use accent color `#B8643E`.
 - Use strong weight (`font-bold` or `font-black`, depending on local type scale).
@@ -108,7 +127,7 @@ Default visual standard:
 - Do not use a pill, rounded badge, or filled container by default.
 
 Usage rules:
-- Use `Section Eyebrow` above section headings and major card groups.
+- Use `Section Eyebrow` where it adds useful context above section headings or major card groups; omit redundant labels on the current homepage.
 - Keep wording short: one to three words where possible.
 - Localize visible text through the relevant content source.
 - Preserve RTL alignment behavior for Arabic layouts.

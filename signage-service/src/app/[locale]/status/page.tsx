@@ -17,10 +17,10 @@ export default async function StatusPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams?: { request?: string; access?: string } | Promise<{ request?: string; access?: string }>;
+  searchParams?: Promise<{ request?: string; access?: string }>;
 }) {
   const { locale } = await params;
-  const query = await Promise.resolve(searchParams ?? {});
+  const query = await searchParams;
   const [cmsContent, globalCms] = await Promise.all([
     getStatusPageCmsContent(locale),
     getGlobalPageCmsContent(locale),

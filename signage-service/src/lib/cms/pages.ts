@@ -1,4 +1,5 @@
 import 'server-only';
+import { getTranslations } from 'next-intl/server';
 
 import { containsStaleLegalContent } from '@/lib/legal-content';
 import { validateReferenzenBlocksForPublish } from '@/lib/cms/referenzen-schema';
@@ -1000,6 +1001,27 @@ function sanitizePublicText(value: string): string {
     [/\blaeuft\b/g, 'läuft'],
     [/\bAufwaermen\b/g, 'Aufwärmen'],
     [/\bNeonroehren\b/g, 'Neonröhren'],
+    [/\bHaeufige\b/g, 'Häufige'],
+    [/\bhaengt\b/g, 'hängt'],
+    [/\bhaengen\b/g, 'hängen'],
+    [/\beinschaetzen\b/g, 'einschätzen'],
+    [/\bVorpruefung\b/g, 'Vorprüfung'],
+    [/\bFaelle\b/g, 'Fälle'],
+    [/\bFaellen\b/g, 'Fällen'],
+    [/\bGeschaeftsstandorten\b/g, 'Geschäftsstandorten'],
+    [/\bkoennen\b/g, 'können'],
+    [/\bKoennen\b/g, 'Können'],
+    [/\bVerfuegbarkeit\b/g, 'Verfügbarkeit'],
+    [/\bgeklaert\b/g, 'geklärt'],
+    [/\bAusfuehrung\b/g, 'Ausführung'],
+    [/\bnoetig\b/g, 'nötig'],
+    [/\bAusgefuehrte\b/g, 'Ausgeführte'],
+    [/\bPrioritaet\b/g, 'Priorität'],
+    [/\bUebernimmt\b/g, 'Übernimmt'],
+    [/\bHoehe\b/g, 'Höhe'],
+    [/\bbenoetigt\b/g, 'benötigt'],
+    [/\bklaert\b/g, 'klärt'],
+    [/\bverfuegbar\b/g, 'verfügbar'],
   ];
 
   for (const [pattern, replacement] of replacements) {
@@ -1314,7 +1336,11 @@ export async function getGlobalPageCmsContent(
 export async function getHomePageCmsContent(
   locale: string
 ): Promise<HomePageCmsContent | null> {
-  const page = await getPublishedCmsPage('home', locale);
+  const [page, baseline, entry] = await Promise.all([
+    getPublishedCmsPage('home', locale),
+    getTranslations({ locale, namespace: 'HomePage' }),
+    getTranslations({ locale, namespace: 'HomeEntry' }),
+  ]);
   const hero = getEnabledBlock(page, 'hero', ['hero']);
   const intake = getEnabledBlock(page, 'textSection', ['intakeSection']);
   const bento = getEnabledBlock(page, 'cardList', ['bentoSection']);
@@ -1425,6 +1451,32 @@ export async function getHomePageCmsContent(
         }
       : undefined,
   };
+
+  // Refresh the original seeded copy without overwriting editorial CMS changes.
+  // Keep a customized heading together instead of mixing old and new fragments.
+  if (content.hero) {
+    const headingFields = [
+      ['titlePrefix', 'hero_title_prefix'],
+      ['titleAccent', 'hero_title_accent'],
+      ['titleSuffix', 'hero_title_suffix'],
+    ] as const;
+    if (headingFields.every(([field, key]) =>
+      !content.hero?.[field] || content.hero[field] === sanitizePublicText(baseline(key))
+    )) {
+      for (const [field] of headingFields) content.hero[field] = entry(`hero.${field}`);
+    }
+    const textFields = [
+      ['intro', 'description'],
+      ['ctaPrimary', 'cta_primary'],
+      ['ctaSecondary', 'cta_secondary'],
+    ] as const;
+    for (const [field, key] of textFields) {
+      if (!content.hero[field] || content.hero[field] === sanitizePublicText(baseline(key))) {
+        content.hero[field] = entry(`hero.${field}`);
+      }
+    }
+    content.hero.imageAlt ||= entry('hero.imageAlt');
+  }
 
   const hasHero = !!hero;
   const hasIntake = !!intake;

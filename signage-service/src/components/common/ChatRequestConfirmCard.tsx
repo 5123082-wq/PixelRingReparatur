@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { useLocale } from 'next-intl';
 import type { IntakePrefill } from './ChatIntakeCard';
 import LocationPicker, { type SelectedLocation } from './LocationPicker';
+import RequestEmailVerification, { useRequestEmailVerification } from './RequestEmailVerification';
 import { trackGoogleAdsLeadConversion } from '@/lib/google-ads';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -263,6 +264,7 @@ export default function ChatRequestConfirmCard({
   const locale = useLocale();
   const copy = getConfirmCopy(locale);
   const [email, setEmail] = useState(getPrefillEmail(prefill));
+  const verification = useRequestEmailVerification(email, locale, true);
   const [phone, setPhone] = useState(getPrefillPhone(prefill));
   const [name, setName] = useState(prefill?.name ?? '');
   const [location, setLocation] = useState(prefill?.location ?? '');
@@ -324,6 +326,7 @@ export default function ChatRequestConfirmCard({
     setError('');
 
     try {
+      if (!await verification.ensureAllowed()) return;
       const fd = new FormData();
       fd.append('name', name);
       fd.append('contact', cleanEmail);
@@ -348,8 +351,9 @@ export default function ChatRequestConfirmCard({
       const data = await res.json() as { publicRequestNumber?: string; portalLinked?: boolean; error?: string; code?: string };
 
       if (!res.ok || !data.publicRequestNumber) {
-        if (data.code === 'verification_required' && data.error) {
-          throw new Error(data.error);
+        if (data.code === 'verification_required') {
+          verification.requireVerification();
+          return;
         }
 
         if (res.status === 400) {
@@ -395,6 +399,7 @@ export default function ChatRequestConfirmCard({
 
   return (
     <div className="space-y-3 rounded-[20px] border border-[#B8643E]/20 bg-[#FDF7F0] p-4 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-400">
+      <RequestEmailVerification verification={verification} email={email} onEmailChange={setEmail} locale={locale} />
       <div className="flex items-center gap-2">
         <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#B8643E]/10">
           <svg className="h-3.5 w-3.5 text-[#B8643E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -492,10 +497,10 @@ export default function ChatRequestConfirmCard({
         <button
           type="button"
           onClick={() => void handleConfirm()}
-          disabled={submitting}
+          disabled={submitting || verification.blocked}
           className="flex-1 rounded-[14px] bg-[#0E1A2B] py-2.5 text-[13px] font-bold text-white transition-all hover:bg-[#1a2e47] active:scale-[0.98] disabled:opacity-50"
         >
-          {submitting ? copy.submitting : copy.submit}
+          {submitting ? copy.submitting : verification.blocked ? verification.copy.pending : copy.submit}
         </button>
         <button
           type="button"

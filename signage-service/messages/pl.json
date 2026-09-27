@@ -1,4 +1,15 @@
 {
+  "HomeEntry": {
+    "hero": {
+      "titlePrefix": "",
+      "titleAccent": "Naprawa i konserwacja",
+      "titleSuffix": "szyldów i reklam świetlnych.",
+      "intro": "Naprawiamy i konserwujemy szyldy LED, kasetony świetlne i reklamy na elewacjach dla firm. Pomagamy też przy pracach z folią i demontażu. Prześlij krótki opis lub zdjęcia — sprawdzimy szczegóły i zaproponujemy kolejny krok.",
+      "ctaPrimary": "Wyślij zgłoszenie",
+      "ctaSecondary": "Zobacz usługi",
+      "imageAlt": "Naprawa podświetlanego szyldu"
+    }
+  },
   "HomePage": {
     "title": "Naprawa PixelRing",
     "hero_title_prefix": "PixelRing:",
@@ -298,6 +309,26 @@
     ]
   },
   "ContactModal": {
+    "compact": {
+      "title": "Wyślij zgłoszenie",
+      "intro": "Opisz, co trzeba zrobić.",
+      "email_label": "Adres e-mail",
+      "message_label": "Opis zadania",
+      "message_placeholder": "Na przykład: szyld miga po deszczu.",
+      "attach": "Dodaj zdjęcie",
+      "optional_details": "Imię, telefon i adres — opcjonalnie",
+      "reply_hint": "Odpowiemy na zgłoszenie e-mailem.",
+      "assistant_title": "Nie wiesz, od czego zacząć?",
+      "assistant_description": "Asystent AI pomoże opisać problem i doprecyzować szczegóły.",
+      "assistant_hint": "Najpierw rozmowa, potem zgłoszenie.",
+      "assistant_action": "Zacznij z asystentem",
+      "human_service": "Prace wykonują specjaliści PixelRing.",
+      "other_channels": "Inne sposoby kontaktu",
+      "email_channel": "E-mail",
+      "close": "Zamknij",
+      "remove_file": "Usuń plik: {name}",
+      "sending": "Wysyłanie…"
+    },
     "title": "Skontaktuj się z nami",
     "subtitle": "Wybierz preferowany kanał komunikacji lub zostaw zapytanie.",
     "sidebar_desc": "Skontaktuj się z nami w najwygodniejszy dla Ciebie sposób. Szybkie kanały zostały wyróżnione, a poniższy formularz wymaga tylko niezbędnych danych.",

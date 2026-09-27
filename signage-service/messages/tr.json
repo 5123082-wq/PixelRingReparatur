@@ -1,4 +1,15 @@
 {
+  "HomeEntry": {
+    "hero": {
+      "titlePrefix": "",
+      "titleAccent": "Tabela ve ışıklı reklam",
+      "titleSuffix": "onarımı ve bakımı.",
+      "intro": "İşletmeler için LED tabelaların, ışıklı kutuların ve cephe reklamlarının onarım ve bakımını yapıyoruz. Folyo uygulamaları ve söküm işlerinde de yardımcı oluyoruz. Kısa bir açıklama veya fotoğraf gönderin — bilgileri inceleyip sonraki adımı netleştirelim.",
+      "ctaPrimary": "Talep gönderin",
+      "ctaSecondary": "Hizmetleri inceleyin",
+      "imageAlt": "Işıklı tabela onarımı"
+    }
+  },
   "HomePage": {
     "title": "PixelRing Onarım",
     "hero_title_prefix": "PixelRing:",
@@ -298,6 +309,26 @@
     ]
   },
   "ContactModal": {
+    "compact": {
+      "title": "Talep gönderin",
+      "intro": "Ne yapılması gerektiğini anlatın.",
+      "email_label": "E-posta adresi",
+      "message_label": "İşin açıklaması",
+      "message_placeholder": "Örneğin: tabela yağmurdan sonra titriyor.",
+      "attach": "Fotoğraf ekle",
+      "optional_details": "Ad, telefon ve adres — isteğe bağlı",
+      "reply_hint": "Talebinize e-posta ile yanıt vereceğiz.",
+      "assistant_title": "Nereden başlayacağınızı bilmiyor musunuz?",
+      "assistant_description": "Yapay zekâ asistanı sorunu açıklamanıza ve ayrıntıları netleştirmenize yardımcı olur.",
+      "assistant_hint": "Önce konuşun, ardından talebinizi gönderin.",
+      "assistant_action": "Asistanla başlayın",
+      "human_service": "İşi PixelRing uzmanları gerçekleştirir.",
+      "other_channels": "Diğer iletişim yolları",
+      "email_channel": "E-posta",
+      "close": "Kapat",
+      "remove_file": "Dosyayı kaldır: {name}",
+      "sending": "Gönderiliyor…"
+    },
     "title": "Bize Ulaşın",
     "subtitle": "Tercih ettiğiniz iletişim kanalını seçin veya talep bırakın.",
     "sidebar_desc": "Bize şu anki en uygun yolla ulaşın. Hızlı kanallar ayrıca belirtilmiştir ve aşağıdaki form sadece gerekli bilgileri ister.",

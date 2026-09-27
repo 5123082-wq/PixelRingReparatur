@@ -1,4 +1,15 @@
 {
+  "HomeEntry": {
+    "hero": {
+      "titlePrefix": "",
+      "titleAccent": "Repair and maintenance",
+      "titleSuffix": "for signs and illuminated advertising.",
+      "intro": "We repair and maintain LED signs, lightboxes and facade signage for businesses. We also help with vinyl graphics and dismantling. Send a short description or photos — we will review the details and explain the next step.",
+      "ctaPrimary": "Send a request",
+      "ctaSecondary": "Explore services",
+      "imageAlt": "Repair of an illuminated sign"
+    }
+  },
   "HomePage": {
     "title": "PixelRing Reparatur",
     "hero_title_prefix": "PixelRing:",
@@ -377,6 +388,26 @@
     ]
   },
   "ContactModal": {
+    "compact": {
+      "title": "Send a request",
+      "intro": "Tell us what needs to be done.",
+      "email_label": "Email address",
+      "message_label": "Task description",
+      "message_placeholder": "For example: the sign flickers after rain.",
+      "attach": "Add a photo",
+      "optional_details": "Name, phone and address — optional",
+      "reply_hint": "We’ll reply to your request by email.",
+      "assistant_title": "Not sure where to start?",
+      "assistant_description": "The AI assistant helps you describe the problem and clarify the details.",
+      "assistant_hint": "Start with a conversation, then send a request.",
+      "assistant_action": "Start with the assistant",
+      "human_service": "The work is carried out by PixelRing specialists.",
+      "other_channels": "Other ways to contact us",
+      "email_channel": "Email",
+      "close": "Close",
+      "remove_file": "Remove file: {name}",
+      "sending": "Sending…"
+    },
     "title": "Get in Touch",
     "subtitle": "Choose your preferred communication channel or leave a request.",
     "sidebar_desc": "Contact us in the way that is convenient now. Fast channels are highlighted separately, and the form below asks only for the necessary fields.",

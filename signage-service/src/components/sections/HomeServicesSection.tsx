@@ -1,7 +1,6 @@
 import Image from 'next/image';
 
 import { Link } from '@/i18n/routing';
-import SectionEyebrow from '../common/SectionEyebrow';
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
 
@@ -74,7 +73,7 @@ const HOME_SERVICE_CONFIG: Record<
 const HOME_SERVICES_COPY: Record<Locale, HomeServicesCopy> = {
   de: {
     eyebrow: 'Leistungen',
-    title: 'Direkter Einstieg in die passenden Servicebereiche',
+    title: 'Unsere Leistungen',
     intro:
       'Reparatur, Reinigung, LED-Service, Diagnose, Montage, Branding und Leuchtvolants – direkt zum passenden Bereich.',
     overviewEyebrow: 'PixelRing Leistungen',
@@ -114,7 +113,7 @@ const HOME_SERVICES_COPY: Record<Locale, HomeServicesCopy> = {
   },
   en: {
     eyebrow: 'Services',
-    title: 'A direct path into the right service area',
+    title: 'Our services',
     intro:
       'Repair, cleaning, LED service, diagnostics, installation, branding and illuminated awning valances — straight to the right service area.',
     overviewEyebrow: 'PixelRing services',
@@ -154,7 +153,7 @@ const HOME_SERVICES_COPY: Record<Locale, HomeServicesCopy> = {
   },
   ru: {
     eyebrow: 'Услуги',
-    title: 'Быстрый вход в нужное сервисное направление',
+    title: 'Наши услуги',
     intro:
       'Ремонт, очистка, LED-сервис, диагностика, монтаж, брендинг и воланы с подсветкой — сразу к нужному направлению.',
     overviewEyebrow: 'Услуги PixelRing',
@@ -194,7 +193,7 @@ const HOME_SERVICES_COPY: Record<Locale, HomeServicesCopy> = {
   },
   tr: {
     eyebrow: 'Hizmetler',
-    title: 'Doğru hizmet alanına hızlı giriş',
+    title: 'Hizmetlerimiz',
     intro:
       'Onarım, temizlik, LED servisi, teşhis, montaj, markalama ve ışıklı tente etekleri — doğrudan ilgili hizmet alanına.',
     overviewEyebrow: 'PixelRing hizmetleri',
@@ -234,7 +233,7 @@ const HOME_SERVICES_COPY: Record<Locale, HomeServicesCopy> = {
   },
   pl: {
     eyebrow: 'Usługi',
-    title: 'Szybkie przejście do właściwego obszaru serwisu',
+    title: 'Nasze usługi',
     intro:
       'Naprawa, czyszczenie, serwis LED, diagnostyka, montaż, branding i podświetlane falbany markizowe — prosto do właściwej usługi.',
     overviewEyebrow: 'Usługi PixelRing',
@@ -274,7 +273,7 @@ const HOME_SERVICES_COPY: Record<Locale, HomeServicesCopy> = {
   },
   ar: {
     eyebrow: 'الخدمات',
-    title: 'مدخل مباشر إلى مجال الخدمة المناسب',
+    title: 'خدماتنا',
     intro:
       'اختر بين الإصلاح والتنظيف وخدمة LED والتشخيص والتركيب والهوية البصرية والحواف الأمامية المضيئة للمظلات.',
     overviewEyebrow: 'خدمات PixelRing',
@@ -322,14 +321,13 @@ export default function HomeServicesSection({ locale }: { locale: string }) {
   const copy = getCopy(locale);
 
   return (
-    <section className="w-full bg-[#F7F1E8] py-16">
+    <section id="services" aria-labelledby="home-services-title" className="w-full scroll-mt-28 bg-[#EEF3FB] py-12 sm:py-16">
       <div className="pr-site-container flex flex-col gap-[42px]">
         <div className="flex max-w-[1000px] flex-col">
-          <SectionEyebrow>{copy.eyebrow}</SectionEyebrow>
-          <h2 className="mt-6 max-w-[820px] text-[32px] font-extrabold leading-[1.1] tracking-[0] text-[#0E1A2B] md:text-[42px] xl:text-[48px] xl:leading-[1.06] xl:tracking-[-0.03em]">
+          <h2 id="home-services-title" className="max-w-[820px] text-[32px] font-extrabold leading-[1.1] text-[#0E1A2B] md:text-[42px]">
             {copy.title}
           </h2>
-          <p className="mt-5 max-w-[1000px] text-[16px] leading-[1.6] text-[#72665D] md:text-[17px] xl:text-[18px] xl:leading-[1.55]">
+          <p className="mt-4 max-w-[1000px] text-base leading-relaxed text-[#4A5568] md:text-[17px]">
             {copy.intro}
           </p>
         </div>
@@ -337,20 +335,20 @@ export default function HomeServicesSection({ locale }: { locale: string }) {
         <div className="grid grid-cols-1 gap-x-[18px] gap-y-[30px] md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           <Link
             href="/leistungen"
-            className="group flex min-w-0 flex-col rounded-[14px] text-start text-[#0E1A2B] outline-none transition-transform duration-300 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#B8643E] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F7F1E8] motion-reduce:transform-none motion-reduce:transition-none"
+            className="group flex min-w-0 flex-col rounded-[14px] text-start text-[#0E1A2B] outline-none transition-transform duration-300 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#B8643E] focus-visible:ring-offset-2 focus-visible:ring-offset-[#EEF3FB] motion-reduce:transform-none motion-reduce:transition-none"
           >
             <div className="flex aspect-[319.5/202] flex-col justify-between overflow-hidden rounded-[14px] border border-[#0E1A2B] bg-[#0E1A2B] p-[23px] text-white shadow-[0_8px_24px_rgba(14,26,43,0.05)] transition-[border-color,box-shadow] duration-300 group-hover:border-[#B8643E] group-hover:shadow-[0_14px_30px_rgba(14,26,43,0.12)] group-focus-visible:border-[#B8643E] motion-reduce:transition-none">
               <span className="text-[11px] font-extrabold uppercase tracking-[0.145em] text-[#E6B295]">
                 {copy.overviewEyebrow}
               </span>
-              <p className="max-w-[245px] text-[24px] font-black leading-[1.08] tracking-[-0.02em] sm:text-[26px]">
+              <p className="max-w-[245px] text-[24px] font-bold leading-[1.08] tracking-[-0.02em] sm:text-[26px]">
                 {copy.overviewTitle}
               </p>
               <span className="text-[13px] leading-normal text-[#C8D0DC]">
                 {copy.overviewMeta}
               </span>
             </div>
-            <h3 className="min-h-[68px] px-[3px] pt-[18px] text-[20px] font-black leading-[1.18] tracking-[-0.01em]">
+            <h3 className="min-h-[68px] px-[3px] pt-[18px] text-[20px] font-semibold leading-[1.18] tracking-[-0.01em]">
               {copy.overviewLabel}
             </h3>
           </Link>
@@ -362,9 +360,9 @@ export default function HomeServicesSection({ locale }: { locale: string }) {
               <Link
                 key={card.id}
                 href={service.href}
-                className="group flex min-w-0 flex-col rounded-[14px] text-start text-[#0E1A2B] outline-none transition-transform duration-300 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#B8643E] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F7F1E8] motion-reduce:transform-none motion-reduce:transition-none"
+                className="group flex min-w-0 flex-col rounded-[14px] text-start text-[#0E1A2B] outline-none transition-transform duration-300 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#B8643E] focus-visible:ring-offset-2 focus-visible:ring-offset-[#EEF3FB] motion-reduce:transform-none motion-reduce:transition-none"
               >
-                <div className="relative aspect-[319.5/202] overflow-hidden rounded-[14px] border border-[#E2D7CC] bg-white shadow-[0_8px_24px_rgba(14,26,43,0.05)] transition-[border-color,box-shadow] duration-300 group-hover:border-[#B8643E]/60 group-hover:shadow-[0_14px_30px_rgba(14,26,43,0.10)] group-focus-visible:border-[#B8643E] motion-reduce:transition-none">
+                <div className="relative aspect-[319.5/202] overflow-hidden rounded-[14px] border border-[#DCE3EB] bg-white shadow-[0_8px_24px_rgba(14,26,43,0.05)] transition-[border-color,box-shadow] duration-300 group-hover:border-[#B8643E]/60 group-hover:shadow-[0_14px_30px_rgba(14,26,43,0.10)] group-focus-visible:border-[#B8643E] motion-reduce:transition-none">
                   <Image
                     src={service.image}
                     alt=""
@@ -373,7 +371,7 @@ export default function HomeServicesSection({ locale }: { locale: string }) {
                     className={`object-cover ${service.imageClassName} transition-transform duration-500 group-hover:scale-[1.04] group-focus-visible:scale-[1.04] motion-reduce:transform-none motion-reduce:transition-none`}
                   />
                 </div>
-                <h3 className="min-h-[68px] px-[3px] pt-[18px] text-[20px] font-black leading-[1.18] tracking-[-0.01em]">
+                <h3 className="min-h-[68px] px-[3px] pt-[18px] text-[20px] font-semibold leading-[1.18] tracking-[-0.01em]">
                   {card.title}
                 </h3>
               </Link>

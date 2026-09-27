@@ -17,6 +17,7 @@ import { createPortalClaimLink } from './portal/claim';
 import { syncCaseCustomerProfile } from './customer-profiles';
 import { resolveWebsiteRequestContact } from './contact-policy';
 import type { CalculationSnapshot } from './calculation-snapshot';
+import { consumeIntakeVerification } from './intake-verification';
 export {
   parseContact,
   parseOptionalContactDetails,
@@ -45,6 +46,7 @@ export type WebsiteRequestInput = {
   existingSessionId?: string | null;
   existingSessionToken?: string | null;
   isFromChat?: boolean;
+  intakeVerificationToken?: string;
   portalUser?: {
     portalUserId: string;
     portalSessionId: string;
@@ -81,6 +83,9 @@ export async function createWebsiteRequest(
   const attachments = input.attachments ?? [];
 
   return prisma.$transaction(async (tx) => {
+    if (input.intakeVerificationToken) {
+      await consumeIntakeVerification(tx, input.intakeVerificationToken, parsedContact.customerEmail ?? '', now);
+    }
     const createdCase = await tx.case.create({
       data: {
         status: CaseStatus.FORMALIZED,
