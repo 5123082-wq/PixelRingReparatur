@@ -2,6 +2,7 @@ import 'server-only';
 
 import nodemailer from 'nodemailer';
 import { getRequestReceiptCopy } from '../request-receipt-copy';
+import { getIntakeVerificationCopy } from '../intake-verification-copy';
 
 type PortalCodeEmailMode = 'signup' | 'password-reset' | 'claim-access';
 
@@ -421,6 +422,16 @@ export async function sendPortalCodeEmail(
   input: PortalCodeEmailInput
 ): Promise<PortalCodeEmailResult> {
   return sendPortalEmailPayload(buildPortalCodeEmailPayload(input));
+}
+
+export async function sendIntakeCodeEmail(input: { to: string; code: string; expiresAt: Date; locale: string }) {
+  const copy = getIntakeVerificationCopy(input.locale);
+  const expires = new Intl.DateTimeFormat(input.locale, { dateStyle: 'short', timeStyle: 'short', timeZone: 'Europe/Berlin' }).format(input.expiresAt);
+  return sendPortalEmailPayload({
+    to: input.to, subject: copy.subject, logMode: 'code', expiresAt: input.expiresAt,
+    text: ['PixelRing', copy.emailIntro, `Code: ${input.code}`, `${copy.expires}: ${expires} (Europe/Berlin)`, copy.ignore].join('\n\n'),
+    html: `<html lang="${escapeHtml(input.locale)}" dir="${input.locale === 'ar' ? 'rtl' : 'ltr'}"><body style="font-family:Arial,sans-serif;color:#0E1A2B;padding:24px;max-width:560px"><h1>${escapeHtml(copy.subject)}</h1><p>${escapeHtml(copy.emailIntro)}</p><p dir="ltr" style="font-size:32px;font-weight:bold;letter-spacing:6px">${escapeHtml(input.code)}</p><p>${escapeHtml(copy.expires)}: ${escapeHtml(expires)} (Europe/Berlin)</p><p>${escapeHtml(copy.ignore)}</p></body></html>`,
+  });
 }
 
 export async function sendPortalActivationInviteEmail(

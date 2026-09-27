@@ -7,9 +7,10 @@ import SectionEyebrow from '../common/SectionEyebrow';
 interface FAQSectionProps {
   content?: FaqCmsContent;
   titleClassName?: string;
+  appearance?: 'default' | 'home';
 }
 
-const FAQSection = ({ content, titleClassName }: FAQSectionProps) => {
+const FAQSection = ({ content, titleClassName, appearance = 'default' }: FAQSectionProps) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const headingClassName = titleClassName || 'text-[32px] font-extrabold leading-[1.1] tracking-[0] text-[#0E1A2B] md:text-[42px]';
 
@@ -19,11 +20,11 @@ const FAQSection = ({ content, titleClassName }: FAQSectionProps) => {
   }));
 
   return (
-    <section className="w-full bg-[#F9F6F2] py-24">
+    <section id={appearance === 'home' ? 'home-faq' : undefined} className={appearance === 'home' ? 'w-full bg-[#EEF3FB] py-12 sm:py-16' : 'w-full bg-[#F9F6F2] py-24'}>
       <div className="pr-site-container">
         <div className="max-w-3xl mx-auto flex flex-col gap-12">
         <div className="flex flex-col items-center gap-4 text-center">
-          <SectionEyebrow>FAQ</SectionEyebrow>
+          {appearance !== 'home' && <SectionEyebrow>FAQ</SectionEyebrow>}
           <h2 className={headingClassName}>
             {content?.title || ''}
           </h2>
@@ -36,11 +37,12 @@ const FAQSection = ({ content, titleClassName }: FAQSectionProps) => {
             return (
             <div
               key={index}
-              className="bg-white rounded-3xl border border-[#E7DDD3] overflow-hidden transition-all duration-300"
+              className={`overflow-hidden border bg-white ${appearance === 'home' ? 'rounded-2xl border-[#DCE3EB]' : 'rounded-3xl border-[#E7DDD3]'}`}
             >
               <button
+                type="button"
                 onClick={() => setActiveIndex(isActive ? null : index)}
-                className="flex w-full items-start justify-between gap-4 px-5 py-5 text-start transition-colors hover:bg-[#F4EDE450] sm:px-8 sm:py-6"
+                className={`flex w-full items-start justify-between gap-4 px-5 py-5 text-start transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#B8643E] sm:px-8 sm:py-6 ${appearance === 'home' ? 'hover:bg-[#EEF3FB]/50' : 'hover:bg-[#F4EDE450]'}`}
                 aria-expanded={isActive}
               >
                 <span className="min-w-0 text-[17px] font-bold leading-snug text-[#0E1A2B] [overflow-wrap:anywhere] sm:text-[18px]">
@@ -54,12 +56,13 @@ const FAQSection = ({ content, titleClassName }: FAQSectionProps) => {
               </button>
               
               <div
+                aria-hidden={!isActive}
                 className={`grid transition-all duration-300 ease-in-out ${
                   isActive ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
                 }`}
               >
                 <div className="min-h-0 overflow-hidden">
-                  <div className="border-t border-[#E7DDD310] px-5 pb-6 pt-3 text-[15px] leading-[1.65] text-[#72665D] sm:px-8 sm:text-[16px]">
+                  <div className={`px-5 pb-6 pt-3 text-[15px] leading-[1.65] sm:px-8 sm:text-base ${appearance === 'home' ? 'text-[#4A5568]' : 'border-t border-[#E7DDD310] text-[#72665D]'}`}>
                     {item.a}
                   </div>
                 </div>

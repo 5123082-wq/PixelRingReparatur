@@ -29,29 +29,29 @@ interface RouteStream {
 // Custom Brand-Styled Icons (Sized down by ~30%)
 const NationwideIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="12" cy="12" r="10" stroke="#C86E4A" strokeWidth="1.5"/>
-    <path d="M12 2C12 2 15 7 15 12C15 17 12 22 12 22" stroke="#C86E4A" strokeWidth="1.5"/>
-    <path d="M12 2C12 2 9 7 9 12C9 17 12 22 12 22" stroke="#C86E4A" strokeWidth="1.5"/>
-    <path d="M2 12H22" stroke="#C86E4A" strokeWidth="1.5"/>
+    <circle cx="12" cy="12" r="10" stroke="#B8643E" strokeWidth="1.5"/>
+    <path d="M12 2C12 2 15 7 15 12C15 17 12 22 12 22" stroke="#B8643E" strokeWidth="1.5"/>
+    <path d="M12 2C12 2 9 7 9 12C9 17 12 22 12 22" stroke="#B8643E" strokeWidth="1.5"/>
+    <path d="M2 12H22" stroke="#B8643E" strokeWidth="1.5"/>
   </svg>
 );
 
 const ExpressIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="#C86E4A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="#B8643E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
 const GuaranteedIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" stroke="#C86E4A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M9 12L11 14L15 10" stroke="#C86E4A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" stroke="#B8643E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M9 12L11 14L15 10" stroke="#B8643E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
 const ExpertsIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77z" stroke="#C86E4A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77z" stroke="#B8643E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
@@ -238,25 +238,27 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
 
   return (
     <section 
+      id="home-coverage"
+      aria-labelledby="home-coverage-title"
       ref={containerRef}
-      className="relative w-full h-[85vh] min-h-[640px] max-h-[880px] bg-[#FFFDF9] overflow-hidden select-none border-y border-[#0E1A2B05]"
+      className="relative flex w-full flex-col overflow-hidden bg-[#EEF3FB] py-8 select-none sm:py-12 lg:block lg:h-[85vh] lg:min-h-[640px] lg:max-h-[880px] lg:py-0"
       style={{ perspective: "2500px" }}
     >
       {/* Background Ambience */}
-      <div className="absolute top-1/2 left-1/2 h-[1500px] w-[1500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(200,110,74,0.035)_0%,rgba(200,110,74,0.016)_38%,transparent_72%)] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 h-[1500px] w-[1500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(184,100,62,0.035)_0%,rgba(184,100,62,0.016)_38%,transparent_72%)] pointer-events-none" />
 
       {/* OVERLAY: Floating Title Card (Top Left) */}
       <motion.div 
         initial={{ opacity: 0, x: -30 }}
         whileInView={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8, delay: 0.2 }}
-        className="pointer-events-none absolute inset-x-0 top-8 z-20 md:top-12"
+        className="pointer-events-none relative z-20 order-1 lg:absolute lg:inset-x-0 lg:top-12"
       >
         <div className="pr-site-container">
-          <div className="pointer-events-auto w-full md:max-w-[380px]">
-            <div className="p-6 md:p-9 bg-gradient-to-br from-white/30 via-[#F7F1E8]/44 to-[#F7F1E8]/58 rounded-[28px] md:rounded-[44px] shadow-[inset_0_1px_0_rgba(255,255,255,0.38),0_16px_32px_rgba(0,0,0,0.02)] flex flex-col gap-4 md:gap-5">
+          <div className="pointer-events-auto w-full lg:max-w-[380px]">
+            <div className="flex flex-col gap-4 lg:rounded-[28px] lg:bg-white/80 lg:p-8">
               <div className="flex flex-col gap-1.5">
-                <h2 className="text-[32px] font-extrabold leading-[1.1] tracking-[0] text-[#0E1A2B] md:text-[42px]">
+                <h2 id="home-coverage-title" className="text-[32px] font-extrabold leading-[1.1] tracking-[0] text-[#0E1A2B] md:text-[42px]">
                   {content?.title || ''}
                 </h2>
               </div>
@@ -270,22 +272,22 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.4 }}
-        className="pointer-events-none absolute inset-x-0 bottom-6 z-20 md:bottom-10"
+        className="pointer-events-none relative z-20 order-3 lg:absolute lg:inset-x-0 lg:bottom-10"
       >
         <div className="pr-site-container">
           <div className="pointer-events-auto w-full">
-            <div className="flex flex-wrap lg:flex-nowrap items-center justify-between gap-4 md:gap-6 p-5 md:p-6 bg-gradient-to-br from-white/30 via-[#F7F1E8]/44 to-[#F7F1E8]/58 rounded-[32px] md:rounded-[40px] shadow-[inset_0_1px_0_rgba(255,255,255,0.38),0_12px_24px_rgba(0,0,0,0.02)]">
+            <div className="grid gap-4 rounded-[28px] bg-white/90 p-5 min-[400px]:grid-cols-2 md:gap-6 md:p-6 lg:grid-cols-4">
               {[
                 { key: 'nationwide' },
                 { key: 'express' },
                 { key: 'guaranteed' },
                 { key: 'experts' }
               ].map((item) => (
-                <div key={item.key} className="flex items-center gap-3 md:gap-4 flex-1 min-w-[150px] group">
-                  <div className="w-10 h-10 md:w-11 md:h-11 rounded-[14px] bg-white/[0.15] shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform duration-500 border border-white/20">
+                <div key={item.key} className="group flex min-w-0 items-center gap-3 md:gap-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-[#EEF3FB] transition-transform duration-500 group-hover:scale-110 md:h-11 md:w-11">
                     {featureIcons[item.key]}
                   </div>
-                  <span className="text-[12px] md:text-[14px] font-bold text-[#0E1A2B] leading-tight flex-1 opacity-80">
+                  <span className="min-w-0 flex-1 text-sm font-semibold leading-snug text-[#4A5568]">
                     {t(`features.${item.key}`)}
                   </span>
                 </div>
@@ -296,7 +298,7 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
       </motion.div>
 
       {/* 3D MAP SCENE */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+      <div className="pointer-events-none relative order-2 flex h-[340px] items-center justify-center sm:h-[420px] md:h-[520px] lg:absolute lg:inset-0 lg:h-auto">
         <div ref={mapFrameRef} className="relative w-[85%] max-w-[1000px] aspect-square">
           {routeOverlay.width > 0 && routeOverlay.height > 0 && (
             <svg
@@ -315,7 +317,7 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
                     key={`route-trail-${route.id}`}
                     d={pathD}
                     fill="none"
-                    stroke="#C86E4A"
+                    stroke="#B8643E"
                     strokeWidth="1.8"
                     strokeLinecap="round"
                     strokeOpacity={0.34}
@@ -390,7 +392,7 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
                     transition={{ delay: 1.2 + idx * 0.08, duration: 0.6 }}
                   >
                     {city.isHQ ? (
-                      <circle data-city-anchor={city.id} cx={city.x} cy={city.y} r="1.3" fill="#C86E4A" />
+                      <circle data-city-anchor={city.id} cx={city.x} cy={city.y} r="1.3" fill="#B8643E" />
                     ) : (
                       <>
                         <circle
@@ -405,7 +407,7 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
                           cx={city.x}
                           cy={city.y}
                           fill="transparent"
-                          stroke="#C86E4A"
+                          stroke="#B8643E"
                           strokeWidth="0.22"
                           initial={{ opacity: 0, r: CITY_NODE_RADIUS }}
                           animate={isInView ? { opacity: 1, r: CITY_NODE_RING_RADIUS } : { opacity: 0, r: CITY_NODE_RADIUS }}
@@ -422,7 +424,7 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
                         cx={city.x}
                         cy={city.y}
                         r="4"
-                        fill="#C86E4A"
+                        fill="#B8643E"
                         fillOpacity="0.15"
                         initial={{ r: 3, opacity: 0.1 }}
                         animate={isInView ? { r: [3, 5, 3], opacity: [0.1, 0.2, 0.1] } : { r: 3, opacity: 0.1 }}
@@ -454,7 +456,7 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
                   >
                     <div className="flex flex-col items-center gap-0.5 whitespace-nowrap">
                       <span
-                        className={`text-[7px] sm:text-[8px] md:text-[12px] font-bold drop-shadow-sm ${city.isHQ ? 'text-[#0E1A2B]' : 'text-[#0E1A2BB0]'}`}
+                        className={`text-[7px] sm:text-[8px] md:text-[12px] font-bold drop-shadow-sm ${city.isHQ ? 'text-[#0E1A2B]' : 'text-[#4A5568]'}`}
                         style={{
                           fontFamily: 'Inter, sans-serif',
                           background: 'rgba(255, 255, 255, 0.72)',
@@ -466,7 +468,7 @@ const CoverageMap = ({ content }: CoverageMapProps) => {
                         {city.name}
                       </span>
                       {city.isHQ && (
-                        <span className="text-[9px] font-black uppercase tracking-widest text-[#C86E4A]">HQ</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest text-[#B8643E]">HQ</span>
                       )}
                     </div>
                   </motion.div>

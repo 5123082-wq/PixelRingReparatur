@@ -5,6 +5,7 @@ import { Link } from '@/i18n/routing';
 import SectionEyebrow from '@/components/common/SectionEyebrow';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
+import LeistungenLedPage from '@/components/leistungen/LeistungenLedPage';
 import LeistungenLedDecisionTool from '@/components/leistungen/LeistungenLedDecisionTool';
 import LeistungenRepairHeroSlider from '@/components/leistungen/LeistungenRepairHeroSlider';
 import LeistungenFooterCTA from '@/components/sections/LeistungenFooterCTA';
@@ -348,7 +349,7 @@ const SERVICE_DETAIL_CONTENT: Record<Locale, Record<ServiceDetailSlug, ServiceDe
         {
           question: 'Kann ein Leuchtkasten modernisiert werden, ohne ihn komplett zu ersetzen?',
           answer:
-            'Nicht automatisch. PixelRing prüft zuerst Reparatur und sinnvolle Teilmodernisierung, bevor eine Ersatzlösung empfohlen wird.',
+            'Oft ja, wenn Gehäuse, Front und Befestigung weiter nutzbar sind. PixelRing prüft, welche Komponenten erhalten bleiben können und welche erneuert werden sollten.',
         },
         {
           question: 'Warum flackert meine LED-Werbeanlage?',
@@ -739,7 +740,7 @@ const SERVICE_DETAIL_CONTENT: Record<Locale, Record<ServiceDetailSlug, ServiceDe
       faqs: [
         { question: 'Can old illuminated signage be converted to LED?', answer: 'Often a partial modernization is possible. Housing, power, space, moisture protection and desired light output matter.' },
         { question: 'Is LED conversion worthwhile for a lightbox?', answer: 'It depends on condition, operating time, power supply, serviceability and light output. PixelRing first checks whether conversion can make technical and economic sense.' },
-        { question: 'Can a lightbox be modernized without full replacement?', answer: 'Not automatically. PixelRing checks repair and sensible partial modernization before recommending a replacement.' },
+        { question: 'Can a lightbox be modernized without full replacement?', answer: 'Often yes, if the housing, face and fixings remain usable. PixelRing checks which components can stay and which should be renewed.' },
         { question: 'Why does my LED sign flicker?', answer: 'Flickering can come from power supplies, moisture, LED modules, wiring or controls. A reliable assessment requires photos, a description and sometimes an on-site check.' },
         { question: 'What should I do with uneven illumination?', answer: 'An overall photo, close-up and note about whether the uneven area is new are helpful. Housing, module position, light color, face material and technology age are reviewed together.' },
         { question: 'Is LED signage maintenance-free?', answer: 'No. LED technology can be lower-maintenance and easier to service, but still depends on drivers, moisture protection, heat, controls and installation context.' },
@@ -971,7 +972,7 @@ SERVICE_DETAIL_CONTENT.ru = {
     faqs: [
       { question: 'Можно ли перевести старую световую рекламу на LED?', answer: 'Частичная модернизация часто возможна. Важны корпус, питание, место, защита от влаги и нужный световой результат.' },
       { question: 'Имеет ли смысл LED-переоборудование светового короба?', answer: 'Это зависит от состояния, времени работы, питания, обслуживаемости и светового образа. PixelRing сначала проверяет, может ли переоборудование быть технически и экономически разумным.' },
-      { question: 'Можно ли модернизировать световой короб без полной замены?', answer: 'Не автоматически. PixelRing сначала проверяет ремонт и разумную частичную модернизацию.' },
+      { question: 'Можно ли модернизировать световой короб без полной замены?', answer: 'Часто да, если корпус, лицевая панель и крепления пригодны для дальнейшего использования. PixelRing проверяет, что можно сохранить, а что нужно обновить.' },
       { question: 'Почему LED-вывеска мерцает?', answer: 'Причиной могут быть блоки питания, влага, LED-модули, проводка или управление. Надежная оценка возможна после фото, описания и при необходимости проверки на месте.' },
       { question: 'Что делать при неравномерной подсветке?', answer: 'Помогают общее фото, крупный план и информация, новая ли эта проблема. Корпус, положение модулей, цвет света, материал фронта и возраст техники проверяются вместе.' },
       { question: 'LED-реклама не требует обслуживания?', answer: 'Нет. LED-техника может быть менее требовательной и удобнее в обслуживании, но зависит от блоков питания, защиты от влаги, тепла, управления и монтажа.' },
@@ -1191,7 +1192,7 @@ SERVICE_DETAIL_CONTENT.tr = {
     faqs: [
       { question: 'Eski ışıklı reklam LED’e çevrilebilir mi?', answer: 'Çoğu zaman kısmi modernizasyon mümkündür. Gövde, güç, alan, nem koruması ve ışık hedefi belirleyicidir.' },
       { question: 'Işıklı kutuda LED dönüşümü mantıklı mı?', answer: 'Bu durum, çalışma süresi, güç kaynağı, bakım kolaylığı ve ışık etkisine bağlıdır. PixelRing önce dönüşümün teknik ve ekonomik olarak mantıklı olup olmadığını kontrol eder.' },
-      { question: 'Işıklı kutu tamamen değiştirilmeden modernize edilebilir mi?', answer: 'Otomatik olarak hayır. PixelRing önce onarım ve mantıklı kısmi modernizasyonu kontrol eder.' },
+      { question: 'Işıklı kutu tamamen değiştirilmeden modernize edilebilir mi?', answer: 'Gövde, ön yüz ve bağlantılar kullanılabilir durumdaysa çoğu zaman evet. PixelRing hangi bileşenlerin korunabileceğini ve hangilerinin yenilenmesi gerektiğini inceler.' },
       { question: 'LED tabela neden titrer?', answer: 'Titreme güç kaynakları, nem, LED modülleri, kablolama veya kontrol sisteminden kaynaklanabilir. Güvenilir değerlendirme için fotoğraf, açıklama ve bazen yerinde kontrol gerekir.' },
       { question: 'Düzensiz aydınlatmada ne yapılmalı?', answer: 'Genel fotoğraf, yakın çekim ve bu durumun yeni olup olmadığı bilgisi yardımcı olur. Gövde, modül konumu, ışık rengi, ön yüzey malzemesi ve tekniğin yaşı birlikte kontrol edilir.' },
       { question: 'LED reklam bakım gerektirmez mi?', answer: 'Hayır. LED tekniği daha az bakım gerektirebilir ve daha kolay servis edilebilir; ancak güç kaynaklarına, nem korumasına, ısıya, kontrole ve montaja bağlıdır.' },
@@ -1410,7 +1411,7 @@ SERVICE_DETAIL_CONTENT.pl = {
     faqs: [
       { question: 'Czy starą reklamę świetlną można przerobić na LED?', answer: 'Często możliwa jest częściowa modernizacja. Ważna jest obudowa, zasilanie, miejsce, ochrona przed wilgocią i oczekiwany efekt światła.' },
       { question: 'Czy konwersja LED w kasetonie ma sens?', answer: 'To zależy od stanu, czasu pracy, zasilania, obsługi serwisowej i efektu światła. PixelRing najpierw sprawdza, czy konwersja może mieć sens techniczny i ekonomiczny.' },
-      { question: 'Czy kaseton można zmodernizować bez pełnej wymiany?', answer: 'Nie automatycznie. PixelRing najpierw sprawdza naprawę i sensowną częściową modernizację.' },
+      { question: 'Czy kaseton można zmodernizować bez pełnej wymiany?', answer: 'Często tak, jeśli obudowa, lico i mocowania nadają się do dalszego użytku. PixelRing sprawdza, które elementy można zachować, a które należy odnowić.' },
       { question: 'Dlaczego reklama LED miga?', answer: 'Miganie może wynikać z zasilaczy, wilgoci, modułów LED, okablowania albo sterowania. Pewna ocena wymaga zdjęć, opisu i czasem kontroli na miejscu.' },
       { question: 'Co zrobić przy nierównym oświetleniu?', answer: 'Pomaga zdjęcie całości, zbliżenie i informacja, czy nierówność jest nowa. Obudowa, pozycja modułów, barwa światła, materiał frontu i wiek techniki są oceniane razem.' },
       { question: 'Czy reklama LED jest bezobsługowa?', answer: 'Nie. Technika LED może wymagać mniej obsługi i być łatwiejsza w serwisie, ale zależy od zasilaczy, ochrony przed wilgocią, ciepła, sterowania i montażu.' },
@@ -1629,7 +1630,7 @@ SERVICE_DETAIL_CONTENT.ar = {
     faqs: [
       { question: 'هل يمكن تحويل إعلان مضيء قديم إلى LED؟', answer: 'غالباً يكون التحديث الجزئي ممكناً. يعتمد ذلك على الهيكل والطاقة والمساحة وحماية الرطوبة ونتيجة الضوء المطلوبة.' },
       { question: 'هل تحويل الصندوق المضيء إلى LED مفيد؟', answer: 'يعتمد ذلك على الحالة ومدة التشغيل والطاقة وسهولة الصيانة والصورة الضوئية. تفحص PixelRing أولاً هل يمكن أن يكون التحويل منطقياً تقنياً واقتصادياً.' },
-      { question: 'هل يمكن تحديث الصندوق المضيء دون استبداله بالكامل؟', answer: 'ليس تلقائياً. تفحص PixelRing أولاً الإصلاح والتحديث الجزئي المنطقي قبل توصية الاستبدال.' },
+      { question: 'هل يمكن تحديث الصندوق المضيء دون استبداله بالكامل؟', answer: 'غالباً نعم، إذا كان الهيكل والواجهة والتثبيت صالحين للاستخدام. تفحص PixelRing المكونات التي يمكن الاحتفاظ بها وتلك التي تحتاج إلى تجديد.' },
       { question: 'لماذا يومض إعلان LED؟', answer: 'قد يأتي الوميض من مزودات الطاقة أو الرطوبة أو وحدات LED أو الأسلاك أو التحكم. يحتاج التقييم الموثوق إلى صور ووصف وأحياناً فحص في الموقع.' },
       { question: 'ماذا أفعل عند الإضاءة غير المتساوية؟', answer: 'تفيد صورة عامة وصورة قريبة ومعلومة هل المشكلة جديدة. تتم مراجعة الهيكل وموضع الوحدات ولون الضوء ومادة الواجهة وعمر التقنية معاً.' },
       { question: 'هل إعلان LED لا يحتاج إلى صيانة؟', answer: 'لا. يمكن أن تكون تقنية LED أقل حاجة للصيانة وأسهل في الخدمة، لكنها تبقى مرتبطة بمزودات الطاقة وحماية الرطوبة والحرارة والتحكم وطريقة التركيب.' },
@@ -1799,7 +1800,10 @@ function getContent(locale: string, slug: string): ServiceDetailContent | null {
     return null;
   }
 
-  return SERVICE_DETAIL_CONTENT[safeLocale][slug] ?? SERVICE_DETAIL_CONTENT.de[slug];
+  const content = SERVICE_DETAIL_CONTENT[safeLocale][slug] ?? SERVICE_DETAIL_CONTENT.de[slug];
+  return slug === 'lichtwerbung-led-modernisierung'
+    ? { ...content, image: '/images/leistungen/lichtwerbung-led-modernisierung-lichtkasten-led-module.webp' }
+    : content;
 }
 
 function withoutJsonLdContext(item: JsonLdObject): JsonLdObject {
@@ -2044,6 +2048,10 @@ export default async function ServiceDetailPage({ params }: PageProps) {
       />
       <Header content={globalCms?.header} />
       <main>
+        {slug === 'lichtwerbung-led-modernisierung' ? (
+          <LeistungenLedPage locale={safeLocale} content={content} breadcrumbs={getServiceBreadcrumbs(safeLocale, content.serviceName)} />
+        ) : (
+        <>
         <LeistungenRepairHeroSlider
           title={content.heroTitle}
           subline={content.heroIntro}
@@ -2256,6 +2264,8 @@ export default async function ServiceDetailPage({ params }: PageProps) {
           imageSrc={content.image}
           imageAlt={content.imageAlt}
         />
+        </>
+        )}
       </main>
       <Footer content={globalCms?.footer} />
     </div>

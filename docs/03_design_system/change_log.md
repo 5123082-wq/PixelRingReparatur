@@ -1,5 +1,44 @@
 # Design System Documentation Change Log
 
+## 2026-09-25
+
+### Third iteration — current local implementation
+
+- Removed the hero's secondary services link and restored the existing photo/video carousel
+  after the large before/after section, then the geography map before FAQ. The homepage now
+  has eight component sections; before/after plus carousel form the combined work area.
+- Recorded the owner's permanent decision: the large before/after block is a key homepage
+  element and must remain through future simplification unless the owner explicitly changes
+  that decision. The carousel complements this block rather than replacing it.
+- Preserved the fixed local Pasternak case and existing carousel CMS fields/static media
+  configuration. Reference publishing does not automatically update these blocks. Expanded
+  CMS integration remains future work; no CMS writes or automatic synchronization are added.
+- Returning carousel and map adopt `#EEF3FB` and `#B8643E`; existing cities, animation,
+  media and links remain. Mobile title, map and feature rows no longer overlap.
+- Targeted lint, types and production build pass. Browser checks confirm media playback and pause, carousel scrolling including RTL, six locales, eight sections in order, one inline form and no overflow from 360-1512px.
+
+### Second iteration — historical checkpoint, extended by third iteration
+
+- Applied the owner's review to the whole homepage composition: hero → existing services →
+  compact process/principles → verified Pasternak work example → FAQ → one final contact form.
+- Restored the tilted hero photo and existing 24-hour urgent-response badge, removed the
+  brand overline, aligned hero accents with the header's `#B8643E` and grouped messenger logos
+  with the primary request button. The badge does not promise repair completion within 24 hours.
+- Removed duplicate task selection, large channel selection, old process/trust, gallery,
+  coverage and review sections from this composition. Removed the first-iteration task selector and its unused translations; retained previously existing source/shared components.
+- Standardized the light `#EEF3FB` background, white surfaces and dark final contact section.
+  Added six-language process and verified-work copy with RTL support. No backend or CMS writes.
+- Integrated lint, types and production build pass. German sizing from 360–1512 px, all six locales at 390 px, Arabic RTL, zero overflow, request/modal, FAQ, chat, anchors and the references link were checked. Owner review and release remain separate.
+
+### First iteration — superseded after owner review
+
+- Reworked the first two homepage blocks with owner approval: repair-first hero and compact
+  task selector replacing the before/after carousel. Subsequent sections remain unchanged.
+- Kept custom CMS copy and imagery, added six-language entry copy, removed the unqualified
+  24-hour badge, and kept direct request and messenger paths.
+- Verified desktop/mobile sizing, six locales, Arabic RTL, repair preselection, anchors,
+  targeted lint, types and production build. Owner visual acceptance remains pending.
+
 ## 2026-07-25
 
 - Replaced the `/[locale]/ueber-uns` hero diagnostic terminal with the owner-selected logo-led

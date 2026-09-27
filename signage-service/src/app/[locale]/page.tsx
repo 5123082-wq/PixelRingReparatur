@@ -3,14 +3,11 @@ import { setRequestLocale } from 'next-intl/server';
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/sections/HeroSection";
-import HomeBeforeAfterSection from "@/components/sections/HomeBeforeAfterSection";
-import IntakeSection from "@/components/sections/IntakeSection";
-import BentoGridSection from "@/components/sections/BentoGridSection";
-import TrustSection from "@/components/sections/TrustSection";
+import HomeProcessSection from "@/components/sections/HomeProcessSection";
 import HomeServicesSection from "@/components/sections/HomeServicesSection";
-import CoverageMap from "@/components/sections/CoverageMap";
+import HomeWorkSection from "@/components/sections/HomeWorkSection";
 import ExcellenceCarousel from "@/components/sections/ExcellenceCarousel";
-import ReviewsSection from "@/components/sections/ReviewsSection";
+import CoverageMap from "@/components/sections/CoverageMap";
 import FAQSection from "@/components/sections/FAQSection";
 import FooterCTA from "@/components/sections/FooterCTA";
 import { getHomePageCmsContent, getGlobalPageCmsContent } from "@/lib/cms/pages";
@@ -186,15 +183,12 @@ export default async function HomePage({
         <Header content={globalCms?.header} />
         <main className="flex-1">
           {homeCms?.hero && <HeroSection content={homeCms.hero} />}
-          <HomeBeforeAfterSection locale={locale} />
-          {homeCms?.intake && <IntakeSection content={homeCms.intake} />}
-          {homeCms?.bento && <BentoGridSection content={homeCms.bento} />}
-          {homeCms?.trust && <TrustSection content={homeCms.trust} />}
           <HomeServicesSection locale={locale} />
-          {homeCms?.coverage && <CoverageMap content={homeCms.coverage} />}
+          <HomeProcessSection locale={locale} />
+          <HomeWorkSection locale={locale} />
           {homeCms?.excellence && <ExcellenceCarousel content={homeCms.excellence} />}
-          {homeCms?.reviews && <ReviewsSection content={homeCms.reviews} />}
-          {homeCms?.faq && <FAQSection content={homeCms.faq} />}
+          {homeCms?.coverage && <CoverageMap content={homeCms.coverage} />}
+          {homeCms?.faq && <FAQSection content={homeCms.faq} appearance="home" />}
           {globalCms?.footerCta && <FooterCTA content={globalCms.footerCta} />}
         </main>
         <Footer content={globalCms?.footer} />

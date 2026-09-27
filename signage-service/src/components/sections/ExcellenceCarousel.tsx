@@ -3,15 +3,23 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useLocale } from 'next-intl';
-import { Link } from '@/i18n/routing';
 import { ExcellenceCmsContent } from '@/lib/cms/pages';
-import SectionEyebrow from '../common/SectionEyebrow';
+import WorkMediaViewer from './WorkMediaViewer';
 
 interface ExcellenceCarouselProps {
   content?: ExcellenceCmsContent;
 }
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
+
+const CAROUSEL_LABELS: Record<Locale, { navigation: string; previous: string; next: string; open: string }> = {
+  de: { navigation: 'Arbeitsbeispiele durchblättern', previous: 'Vorheriges Beispiel', next: 'Nächstes Beispiel', open: 'In Großansicht öffnen' },
+  en: { navigation: 'Browse work examples', previous: 'Previous example', next: 'Next example', open: 'Open full-screen view' },
+  ru: { navigation: 'Просмотр примеров работ', previous: 'Предыдущий пример', next: 'Следующий пример', open: 'Открыть на весь экран' },
+  tr: { navigation: 'Çalışma örneklerine göz atın', previous: 'Önceki örnek', next: 'Sonraki örnek', open: 'Tam ekran aç' },
+  pl: { navigation: 'Przeglądaj przykłady prac', previous: 'Poprzedni przykład', next: 'Następny przykład', open: 'Otwórz na pełnym ekranie' },
+  ar: { navigation: 'تصفح أمثلة الأعمال', previous: 'المثال السابق', next: 'المثال التالي', open: 'افتح بملء الشاشة' },
+};
 
 type WorkCardConfig = {
   title: string;
@@ -30,11 +38,13 @@ function ViewportVideo({
   poster,
   label,
   className,
+  disabled,
 }: {
   src: string;
   poster: string;
   label: string;
   className: string;
+  disabled: boolean;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [shouldLoad, setShouldLoad] = useState(false);
@@ -85,12 +95,13 @@ function ViewportVideo({
     const video = videoRef.current;
     if (!video || !shouldLoad) return;
 
-    if (shouldPlay) {
+    if (shouldPlay && !disabled) {
       void video.play().catch(() => undefined);
     } else {
       video.pause();
     }
-  }, [shouldLoad, shouldPlay]);
+    return () => video.pause();
+  }, [shouldLoad, shouldPlay, disabled]);
 
   return (
     <video
@@ -516,8 +527,11 @@ function getWorkCardOrder(item: WorkCardConfig) {
 const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
   const localeValue = useLocale();
   const locale = isLocale(localeValue) ? localeValue : 'de';
+  const labels = CAROUSEL_LABELS[locale];
   const isRTL = locale === 'ar';
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
+  const dragRef = useRef({ active: false, moved: false, x: 0, y: 0, scrollLeft: 0 });
 
   // Default fallback images aligned to static translation order
   const DEFAULT_IMAGES = [
@@ -549,8 +563,6 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
   const carouselItems = [...items].sort((a, b) => getWorkCardOrder(a) - getWorkCardOrder(b));
   
   const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
 
   const getCardWidth = (el: HTMLDivElement) => {
     const card = el.querySelector('[data-card]') as HTMLElement;
@@ -570,54 +582,66 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
 
     el.scrollTo({
       left: el.scrollLeft + (isRTL ? -offset : offset),
-      behavior: 'smooth',
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
     });
   };
 
   const next = () => scrollRail('next');
   const prev = () => scrollRail('previous');
 
-  // Drag to scroll handlers
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    setStartX(e.pageX - (scrollRef.current?.offsetLeft || 0));
-    setScrollLeft(scrollRef.current?.scrollLeft || 0);
+  // Touch keeps native scrolling; both touch and mouse drags suppress card clicks.
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!event.isPrimary || event.button !== 0) return;
+    dragRef.current = {
+      active: true, moved: false, x: event.clientX, y: event.clientY,
+      scrollLeft: event.currentTarget.scrollLeft,
+    };
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const x = e.pageX - (scrollRef.current?.offsetLeft || 0);
-    const walk = (x - startX) * 1.5;
-    if (scrollRef.current) {
-      scrollRef.current.scrollLeft = scrollLeft - walk;
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current;
+    if (!drag.active) return;
+    if (event.pointerType === 'mouse' && !(event.buttons & 1)) {
+      drag.active = false;
+      setIsDragging(false);
+      return;
+    }
+    const dx = event.clientX - drag.x;
+    if (Math.hypot(dx, event.clientY - drag.y) > 8) drag.moved = true;
+    if (event.pointerType === 'mouse' && drag.moved) {
+      event.preventDefault();
+      setIsDragging(true);
+      event.currentTarget.setPointerCapture(event.pointerId);
+      event.currentTarget.scrollLeft = drag.scrollLeft - dx;
     }
   };
 
-  const handleMouseUp = () => setIsDragging(false);
+  const endDrag = () => {
+    dragRef.current.active = false;
+    setIsDragging(false);
+  };
 
   return (
-    <section className="w-full bg-[#F5F5F7] py-20 sm:py-24 overflow-hidden relative" dir={isRTL ? 'rtl' : 'ltr'}>
+    <section id="home-work-carousel" aria-labelledby="home-work-carousel-title" className="relative w-full overflow-hidden bg-[#EEF3FB] py-8 sm:py-12" dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="pr-site-container flex flex-col gap-10">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="flex flex-col gap-4">
-            <SectionEyebrow>WORK</SectionEyebrow>
-            <h2 className="text-[32px] font-extrabold leading-[1.1] tracking-[0] text-[#0E1A2B] md:text-[42px]">
+            <h2 id="home-work-carousel-title" className="text-[32px] font-extrabold leading-[1.1] tracking-[0] text-[#0E1A2B] md:text-[42px]">
               {content?.title || ''}
             </h2>
-            <p className="text-[16px] md:text-[18px] text-[#72665D] max-w-xl">
+            <p className="max-w-xl text-base leading-relaxed text-[#4A5568] md:text-[17px]">
               {content?.subtitle || ''}
             </p>
           </div>
 
           {/* Navigation Controls */}
-          <div className="hidden items-center gap-2 md:flex md:pb-1" aria-label="Carousel navigation">
+          <div role="group" className="hidden items-center gap-2 md:flex md:pb-1" aria-label={labels.navigation}>
             <button
               type="button"
               onClick={prev}
-              aria-label="Previous"
-              title="Previous"
+              aria-label={labels.previous}
+              title={labels.previous}
               className="group inline-flex size-14 items-center justify-center rounded-full border border-[#B8643E] bg-white/92 text-[#B8643E] shadow-[0_12px_30px_rgba(184,100,62,0.14)] transition-all duration-300 hover:scale-105 hover:bg-[#B8643E] hover:text-white hover:shadow-[0_16px_36px_rgba(184,100,62,0.28)] active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8643E]"
             >
               <svg
@@ -634,8 +658,8 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
             <button
               type="button"
               onClick={next}
-              aria-label="Next"
-              title="Next"
+              aria-label={labels.next}
+              title={labels.next}
               className="group inline-flex size-14 items-center justify-center rounded-full border border-[#B8643E] bg-white/92 text-[#B8643E] shadow-[0_12px_30px_rgba(184,100,62,0.14)] transition-all duration-300 hover:scale-105 hover:bg-[#B8643E] hover:text-white hover:shadow-[0_16px_36px_rgba(184,100,62,0.28)] active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8643E]"
             >
               <svg
@@ -653,22 +677,33 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
       </div>
 
       {/* Carousel Container with Gradients */}
-      <div className="relative mt-12 w-full">
+      <div className="relative mt-8 w-full">
         {/* Narrower Edge Gradients to see neighbor cards better */}
-        <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-20 hidden w-[5%] bg-gradient-to-r from-[#F5F5F7] via-[#F5F5F7]/50 to-transparent md:block" />
-        <div className="pointer-events-none absolute bottom-0 right-0 top-0 z-20 hidden w-[5%] bg-gradient-to-l from-[#F5F5F7] via-[#F5F5F7]/50 to-transparent md:block" />
+        <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-20 hidden w-[5%] bg-gradient-to-r from-[#EEF3FB] via-[#EEF3FB]/50 to-transparent md:block" />
+        <div className="pointer-events-none absolute bottom-0 right-0 top-0 z-20 hidden w-[5%] bg-gradient-to-l from-[#EEF3FB] via-[#EEF3FB]/50 to-transparent md:block" />
 
         <div
           ref={scrollRef}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={() => {
+            dragRef.current.moved = true;
+            endDrag();
+          }}
+          onLostPointerCapture={endDrag}
+          onClickCapture={(event) => {
+            if (event.detail !== 0 && dragRef.current.moved) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+          }}
+          onDragStart={(event) => event.preventDefault()}
           className={`
             pr-carousel-rail no-scrollbar flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-8 sm:gap-6
-            ${isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'}
+            motion-reduce:scroll-auto ${isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'}
           `}
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', scrollSnapType: isDragging ? 'none' : undefined, scrollBehavior: isDragging ? 'auto' : undefined }}
         >
           {carouselItems.map((item, index) => (
             <div
@@ -681,6 +716,7 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
               >
                 {item.video ? (
                   <ViewportVideo
+                    disabled={viewerIndex !== null}
                     src={item.video}
                     label={item.videoLabel || item.imageAlt}
                     poster={item.poster || item.image}
@@ -710,27 +746,45 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
                   <p className="max-w-[15.5rem] text-[14px] font-medium leading-6 text-white/84 sm:text-[15px]">
                     {item.description}
                   </p>
-                  <Link
-                    href={item.serviceHref}
-                    aria-label={`${item.tag}: ${item.title}`}
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/88 text-[#1D1D1F] shadow-[0_10px_26px_rgba(0,0,0,0.16)] transition duration-200 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+                  <span
+                    aria-hidden="true"
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/88 text-[#1D1D1F] shadow-[0_10px_26px_rgba(0,0,0,0.16)]"
                   >
                     <svg
-                      className={`h-4 w-4 ${isRTL ? 'rotate-180' : ''}`}
+                      className="h-5 w-5"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                       aria-hidden="true"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.4} d="M5 12h14m-6-6 6 6-6 6" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 4H4v4m12-4h4v4M4 16v4h4m12-4v4h-4" />
                     </svg>
-                  </Link>
+                  </span>
                 </div>
+                <button
+                  type="button"
+                  data-viewer-trigger
+                  aria-label={`${labels.open}: ${item.title}`}
+                  aria-haspopup="dialog"
+                  onClick={(event) => {
+                    event.currentTarget.focus({ preventScroll: true });
+                    setViewerIndex(index);
+                  }}
+                  className={`absolute inset-0 z-10 rounded-[28px] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-[#B8643E] ${isDragging ? 'cursor-grabbing' : 'cursor-pointer'}`}
+                />
               </div>
             </div>
           ))}
         </div>
       </div>
+      {viewerIndex !== null && (
+        <WorkMediaViewer
+          items={carouselItems}
+          initialIndex={viewerIndex}
+          locale={locale}
+          onClose={() => setViewerIndex(null)}
+        />
+      )}
     </section>
   );
 };

@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
-import { getPortalSessionContext, PORTAL_SESSION_COOKIE_NAME } from '@/lib/portal/auth';
+import { getIntakeSession } from '@/lib/intake-session';
+import { getIntakeVerification, INTAKE_VERIFICATION_COOKIE, IntakeVerificationRequiredError } from '@/lib/intake-verification';
+import { getIntakeVerificationCopy } from '@/lib/intake-verification-copy';
 import { validatePortalMutationRequest } from '@/lib/portal/mutation-guard';
 import { checkRateLimit, getClientIP, CONTACT_LIMIT } from '@/lib/rate-limit';
 import { createWebsiteRequest, resolveWebsiteRequestContact } from '@/lib/request-intake';
@@ -61,22 +63,9 @@ function readLocationSource(value: FormDataEntryValue | null): string | null {
   return value.trim() === 'photon' ? 'photon' : null;
 }
 
-function verificationRequiredMessage(locale: SiteLocale): string {
-  switch (locale) {
-    case 'ru':
-      return 'Перед созданием новой заявки из этой сессии подтвердите контакт в клиентском кабинете.';
-    case 'en':
-      return 'Please verify your contact in the customer portal before creating another request from this browser session.';
-    case 'tr':
-      return 'Bu tarayici oturumundan yeni talep olusturmadan once musteri portalinda iletisim bilginizi dogrulayin.';
-    case 'pl':
-      return 'Przed utworzeniem kolejnego zgloszenia z tej sesji przegladarki potwierdz kontakt w portalu klienta.';
-    case 'ar':
-      return 'يرجى تأكيد بيانات الاتصال في بوابة العميل قبل إنشاء طلب جديد من جلسة المتصفح هذه.';
-    case 'de':
-    default:
-      return 'Bitte bestaetigen Sie Ihren Kontakt im Kundenportal, bevor Sie aus dieser Browser-Sitzung eine weitere Anfrage erstellen.';
-  }
+function verificationRequiredResponse(locale: SiteLocale) {
+  const message = getIntakeVerificationCopy(locale).intro;
+  return NextResponse.json({ error: message, message, code: 'verification_required' }, { status: 409 });
 }
 
 export async function POST(request: NextRequest) {
@@ -96,10 +85,6 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const portalSession = await getPortalSessionContext(
-      prisma, request.cookies.get(PORTAL_SESSION_COOKIE_NAME)?.value,
-      { touchLastSeen: false }
-    );
     const formData = await request.formData();
     let name = String(formData.get('name') ?? '').trim();
     let contact = String(formData.get('contact') ?? '').trim();
@@ -120,54 +105,35 @@ export async function POST(request: NextRequest) {
     let existingSessionToken: string | null = null;
     let draftContactKnown = false;
     let draftLocationKnown = false;
-    const caseCookieToken = request.cookies.get(CASE_SESSION_COOKIE_NAME)?.value ?? null;
-    const chatCookieToken = request.cookies.get(CHAT_SESSION_COOKIE_NAME)?.value ?? null;
-    const cookieToken = isFromChat ? chatCookieToken : caseCookieToken;
-
-    if (cookieToken || (isFromChat && caseCookieToken)) {
-      const { resolveChatSession } = await import('@/lib/ai/chat-session');
-      const resolved = await resolveChatSession(prisma, cookieToken, {
-        createIfMissing: false,
-        fallbackToken: isFromChat ? caseCookieToken : null,
-        userAgent: request.headers.get('user-agent'),
-        ipAddress: getClientIP(request),
-      });
-      if (resolved && (!resolved.session.caseId || !portalSession)) {
-        if (resolved.session.caseId && !portalSession) {
-          const message = verificationRequiredMessage(locale);
-
-          return NextResponse.json(
-            {
-              error: message,
-              message,
-              code: 'verification_required',
-            },
-            { status: 409 }
-          );
+    const { portalSession, session, token } = await getIntakeSession(prisma, request, isFromChat);
+    // A repeat request gets a new session. Never reassign the previous case's chat/files.
+    if (session && !session.caseId) {
+      existingSessionId = session.id;
+      existingSessionToken = token;
+      if (isFromChat) {
+        const draft = await getSessionIntakeDraft(prisma, session.id);
+        name = name || draft?.customerName || '';
+        email = email || draft?.customerEmail || '';
+        phone = phone || draft?.customerPhone || '';
+        contact = contact || draft?.customerEmail || '';
+        if (!location) {
+          location = draft?.serviceLocation || '';
+          serviceLatitude = draft?.serviceLatitude ?? null;
+          serviceLongitude = draft?.serviceLongitude ?? null;
+          serviceLocationSource = draft?.serviceLocationSource ?? null;
         }
-
-        existingSessionId = resolved.session.id;
-        existingSessionToken = resolved.cookieToken || cookieToken;
-
-        if (isFromChat) {
-          const draft = await getSessionIntakeDraft(prisma, resolved.session.id);
-          name = name || draft?.customerName || '';
-          email = email || draft?.customerEmail || '';
-          phone = phone || draft?.customerPhone || '';
-          contact = contact || draft?.customerEmail || '';
-          if (!location) {
-            location = draft?.serviceLocation || '';
-            serviceLatitude = draft?.serviceLatitude ?? null;
-            serviceLongitude = draft?.serviceLongitude ?? null;
-            serviceLocationSource = draft?.serviceLocationSource ?? null;
-          }
-          draftContactKnown = Boolean(draft?.customerEmail || draft?.customerPhone);
-          draftLocationKnown = Boolean(draft?.serviceLocation);
-        }
+        draftContactKnown = Boolean(draft?.customerEmail || draft?.customerPhone);
+        draftLocationKnown = Boolean(draft?.serviceLocation);
       }
     }
 
     const resolvedContact = resolveWebsiteRequestContact({ contact, email, phone });
+    const intakeVerificationToken = session?.caseId && !portalSession
+      ? request.cookies.get(INTAKE_VERIFICATION_COOKIE)?.value : undefined;
+    if (session?.caseId && !portalSession && !await getIntakeVerification(prisma, intakeVerificationToken, resolvedContact.customerEmail ?? '')) {
+      return verificationRequiredResponse(locale);
+    }
+
 
     if (!message) {
       return NextResponse.json(
@@ -215,6 +181,7 @@ export async function POST(request: NextRequest) {
       existingSessionId,
       existingSessionToken,
       isFromChat,
+      intakeVerificationToken,
       calculationSnapshot,
       portalUser: portalSession ? {
         portalUserId: portalSession.portalUserId,
@@ -306,6 +273,8 @@ export async function POST(request: NextRequest) {
         deleteAttachment(attachment)
       )
     );
+
+    if (error instanceof IntakeVerificationRequiredError) return verificationRequiredResponse(locale);
 
     console.error('Contact form error:', error);
 

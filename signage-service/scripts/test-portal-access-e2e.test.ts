@@ -72,6 +72,7 @@ async function startSmtpSink() {
         buffer = buffer.slice(end + 2);
         if (/^EHLO/i.test(line)) socket.write('250-localhost\r\n250 AUTH PLAIN\r\n');
         else if (/^AUTH/i.test(line)) socket.write('235 authenticated\r\n');
+        else if (/^RCPT TO:.*delivery-fail-/i.test(line)) socket.write('550 rejected test recipient\r\n');
         else if (/^DATA/i.test(line)) { dataMode = true; socket.write('354 send data\r\n'); }
         else if (/^QUIT/i.test(line)) socket.end('221 bye\r\n');
         else socket.write('250 ok\r\n');
@@ -91,9 +92,9 @@ function emailFor(address: string) {
 }
 
 function codeFor(address: string) {
-  const code = emailFor(address).match(/Code: (\d{6})/);
+  const code = emailFor(address).match(/Code: (\d{6})|>(\d{6})<\/p>/);
   assert.ok(code, 'Expected verification code in local email');
-  return code[1];
+  return code[1] ?? code[2];
 }
 
 function sha256(value: string): string {
@@ -194,9 +195,11 @@ function startDevServer(): ChildProcessByStdio<null, Readable, Readable> {
 
   child.stdout.on('data', (chunk) => {
     devServerLogTail = `${devServerLogTail}${String(chunk)}`.slice(-12_000);
+    if (process.env.PORTAL_ACCESS_E2E_DEBUG === '1') process.stderr.write(chunk);
   });
   child.stderr.on('data', (chunk) => {
     devServerLogTail = `${devServerLogTail}${String(chunk)}`.slice(-12_000);
+    if (process.env.PORTAL_ACCESS_E2E_DEBUG === '1') process.stderr.write(chunk);
   });
 
   return child;
@@ -593,6 +596,8 @@ async function cleanupFixtures(): Promise<void> {
       where: { id: { in: sessionIds } },
     });
   }
+
+  await prisma.intakeEmailVerification.deleteMany({ where: { emailNormalized: { contains: RUN_ID } } });
 
   await prisma.portalUser.deleteMany({
     where: {
@@ -1400,4 +1405,132 @@ test('Telegram invitations without a mode retain neutral account copy', { timeou
     assert.doesNotMatch(emailFor(email), /Kundenkonto erstellen/);
     assert.equal(await prisma.portalCaseAccess.count({ where: { caseId: draft.id } }), 0);
   }
+});
+
+test('guest repeat request confirms email inline without creating or granting an account', { timeout: 180_000 }, async () => {
+  const email = `intake-${RUN_ID}@pixelring.test`;
+  const oldCookie = `${CHAT_COOKIE}=${fixture.strongAToken}; ${CASE_COOKIE}=${fixture.strongAToken}`;
+  const verificationCookie = 'pixelring_intake_verification';
+  const before = {
+    users: await prisma.portalUser.count(), grants: await prisma.portalCaseAccess.count(),
+    oldSession: await prisma.session.findUnique({ where: { tokenHash: sha256(fixture.strongAToken) } }),
+    messages: await prisma.message.findMany({ where: { caseId: fixture.caseAId }, orderBy: { id: 'asc' } }),
+    attachments: await prisma.attachment.findMany({ where: { caseId: fixture.caseAId }, orderBy: { id: 'asc' } }),
+  };
+  async function step(body: Record<string, unknown>, cookie = oldCookie) {
+    return postJson('/api/contact/verification', { email, isFromChat: true, ...body }, { cookie, tag: 'intake-verification', sameOrigin: true });
+  }
+  async function submit(cookie: string, address = email) {
+    const form = new FormData();
+    form.set('email', address); form.set('message', `New guest request ${RUN_ID}`); form.set('isFromChat', 'true');
+    form.set('name', 'Guest retained name'); form.set('location', 'Berlin test location');
+    form.set('files', new Blob([Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a3ioAAAAASUVORK5CYII=', 'base64')], { type: 'image/png' }), 'retained.png');
+    const response = await fetch(`${BASE_URL}/api/contact`, { method: 'POST', body: form,
+      headers: nextRequestHeaders({ cookie, tag: 'guest-repeat-submit', sameOrigin: true }) });
+    const json = await readJson(response);
+    if (response.ok) {
+      const record = await prisma.case.findUnique({ where: { publicRequestNumber: json.publicRequestNumber } });
+      ids.cases.push(record.id);
+    }
+    return { response, json };
+  }
+  const state = await step({ action: 'state' });
+  assert.equal(state.json.required, true); assert.equal(state.json.verified, false);
+  assert.equal(state.json.previousRequestNumber, fixture.caseANumber);
+  assert.match(state.response.headers.get('cache-control')!, /no-store/);
+  assert.equal((await submit(oldCookie)).response.status, 409);
+  const start = await step({ action: 'start', locale: 'ru' });
+  assert.equal(start.response.status, 200, JSON.stringify(start.json));
+  assert.deepEqual(start.json, { sent: true, retryAfter: 60 });
+  const token = readCookie(start.response, verificationCookie)!;
+  assert.ok(token); assert.match(start.response.headers.get('set-cookie')!, /HttpOnly/);
+  assert.match(emailFor(email), /Личный кабинет создан не будет/);
+  const cookie = `${oldCookie}; ${verificationCookie}=${token}`;
+  const code = codeFor(email);
+  assert.equal((await step({ action: 'verify', code })).response.status, 400, 'code without its browser cookie');
+  assert.equal((await step({ action: 'verify', code, email: `wrong-${email}` }, cookie)).response.status, 400);
+  const wrongCode = code === '000000' ? '000001' : '000000';
+  assert.equal((await step({ action: 'verify', code: wrongCode }, cookie)).response.status, 400);
+  const verified = await step({ action: 'verify', code }, cookie);
+  assert.equal(verified.response.status, 200, JSON.stringify(verified.json));
+  assert.equal(readCookie(verified.response, PORTAL_COOKIE), null);
+  assert.equal((await step({ action: 'state' }, cookie)).json.verified, true);
+  assert.equal((await step({ action: 'state', email: `changed-${email}` }, cookie)).json.verified, false);
+  assert.equal((await submit(cookie, `changed-${email}`)).response.status, 409);
+  // Intake proof must not be usable as a portal session or an account verification token.
+  const portal = await fetch(`${BASE_URL}/api/portal/session-state`, { headers: nextRequestHeaders({ cookie: `${PORTAL_COOKIE}=${token}`, tag: 'intake-proof-replay' }) });
+  assert.equal((await readJson(portal)).authenticated, false);
+  const passwordReplay = await postJson('/api/portal/auth/register/set-password', { verificationToken: token, password: PASSWORD, passwordRepeat: PASSWORD }, { tag: 'intake-password-replay', sameOrigin: true });
+  assert.equal(passwordReplay.response.status, 400);
+  const attempts = await Promise.all([submit(cookie), submit(cookie)]);
+  assert.deepEqual(attempts.map(x => x.response.status).sort(), [200, 409]);
+  const success = attempts.find(x => x.response.status === 200)!;
+  assert.equal(success.json.portalLinked, false);
+  const created = await prisma.case.findUnique({ where: { publicRequestNumber: success.json.publicRequestNumber }, include: { attachments: true } });
+  assert.equal(created.customerName, 'Guest retained name');
+  assert.equal(created.serviceLocation, 'Berlin test location');
+  assert.equal(created.attachments.length, 1);
+  assert.equal((await submit(cookie)).response.status, 409, 'one use only');
+  assert.equal(await prisma.portalUser.count(), before.users);
+  assert.equal(await prisma.portalCaseAccess.count(), before.grants);
+  assert.deepEqual(await prisma.session.findUnique({ where: { tokenHash: sha256(fixture.strongAToken) } }), before.oldSession);
+  assert.deepEqual(await prisma.message.findMany({ where: { caseId: fixture.caseAId }, orderBy: { id: 'asc' } }), before.messages);
+  assert.deepEqual(await prisma.attachment.findMany({ where: { caseId: fixture.caseAId }, orderBy: { id: 'asc' } }), before.attachments);
+});
+
+test('intake codes enforce expiry, attempt and resend limits, CSRF and localized email', { timeout: 180_000 }, async () => {
+  const endpoint = '/api/contact/verification';
+  const csrf = await fetch(`${BASE_URL}${endpoint}`, { method: 'POST', headers: {
+    'Content-Type': 'application/json', origin: 'https://other.invalid', 'sec-fetch-site': 'cross-site',
+  }, body: JSON.stringify({ action: 'start', email: `csrf-${RUN_ID}@pixelring.test` }) });
+  assert.equal(csrf.status, 403);
+  for (const locale of ['de', 'en', 'ru', 'tr', 'pl', 'ar']) {
+    const email = `intake-${locale}-${RUN_ID}@pixelring.test`;
+    const start = await postJson(endpoint, { action: 'start', email, locale }, { tag: 'intake-locale', sameOrigin: true });
+    assert.equal(start.response.status, 200, JSON.stringify(start.json));
+    const token = readCookie(start.response, 'pixelring_intake_verification')!;
+    const cookie = `pixelring_intake_verification=${token}`;
+    const mail = emailFor(email);
+    assert.match(mail, new RegExp(`lang="${locale}"`));
+    if (locale === 'ar') assert.match(mail, /dir="rtl"/);
+    const second = await postJson(endpoint, { action: 'start', email, locale }, { tag: 'intake-resend', sameOrigin: true });
+    assert.equal(second.response.status, 429);
+    assert.ok(Number(second.response.headers.get('retry-after')) > 0);
+    const record = await prisma.intakeEmailVerification.findUnique({ where: { tokenHash: sha256(token) } });
+    const code = codeFor(email);
+    if (locale === 'de') {
+      const wrongCode = code === '000000' ? '000001' : '000000';
+      const guesses = await Promise.all(Array.from({ length: 8 }, () => postJson(endpoint, { action: 'verify', email, code: wrongCode }, { cookie, tag: 'intake-wrong', sameOrigin: true })));
+      assert.ok(guesses.every(x => x.response.status === 400));
+      assert.equal((await prisma.intakeEmailVerification.findUnique({ where: { id: record.id } })).attempts, 5);
+    } else {
+      await prisma.intakeEmailVerification.update({ where: { id: record.id }, data: { expiresAt: pastDate() } });
+    }
+    const invalid = await postJson(endpoint, { action: 'verify', email, code }, { cookie, tag: 'intake-expired', sameOrigin: true });
+    assert.equal(invalid.response.status, 400);
+  }
+});
+
+test('intake delivery failure never reports sent; resend yields a usable replacement code', { timeout: 60_000 }, async () => {
+  const endpoint = '/api/contact/verification';
+  const failed = await postJson(endpoint, { action: 'start', email: `delivery-fail-${RUN_ID}@pixelring.test` }, { tag: 'intake-delivery-fail', sameOrigin: true });
+  assert.equal(failed.response.status, 503);
+  assert.equal(failed.json.code, 'delivery_failed');
+  assert.equal(failed.json.sent, undefined);
+  assert.equal(readCookie(failed.response, 'pixelring_intake_verification'), null);
+  const email = `resend-${RUN_ID}@pixelring.test`;
+  const first = await postJson(endpoint, { action: 'start', email }, { tag: 'intake-first-code', sameOrigin: true });
+  assert.equal(first.response.status, 200);
+  await prisma.intakeEmailVerification.updateMany({ where: { emailNormalized: email }, data: { createdAt: new Date(Date.now() - 61_000) } });
+  const resent = await postJson(endpoint, { action: 'start', email }, { tag: 'intake-resend-code', sameOrigin: true });
+  assert.equal(resent.response.status, 200);
+  const token = readCookie(resent.response, 'pixelring_intake_verification')!;
+  assert.notEqual(token, readCookie(first.response, 'pixelring_intake_verification'));
+  const cookie = `pixelring_intake_verification=${token}; ${CASE_COOKIE}=${fixture.strongAToken}`;
+  const verified = await postJson(endpoint, { action: 'verify', email, code: codeFor(email) }, { cookie, tag: 'intake-resent-verify', sameOrigin: true });
+  assert.equal(verified.response.status, 200);
+  await prisma.intakeEmailVerification.updateMany({ where: { tokenHash: sha256(token) }, data: { expiresAt: pastDate() } });
+  const state = await postJson(endpoint, { action: 'state', email }, { cookie, tag: 'intake-expired-proof', sameOrigin: true });
+  assert.equal(state.json.required, true);
+  assert.equal(state.json.verified, false);
 });

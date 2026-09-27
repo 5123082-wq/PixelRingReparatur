@@ -22,6 +22,8 @@ Read first:
 
 Task-specific docs:
 
+- Repeat guest intake with inline email verification, implemented locally on 2026-09-25 and pending migration/release: latest entry in `client_portal_implementation_plan.md`.
+
 - Public request linking, three receipt scenarios and latest validation: latest entry in `client_portal_implementation_plan.md`.
 - Future mass-submission protection options, not implemented: [research](request_intake_abuse_protection_options_2026-09-11.md).
 

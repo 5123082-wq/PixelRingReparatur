@@ -1,4 +1,15 @@
 {
+  "HomeEntry": {
+    "hero": {
+      "titlePrefix": "",
+      "titleAccent": "Reparatur und Service",
+      "titleSuffix": "für Werbeanlagen und Lichtwerbung.",
+      "intro": "Wir reparieren und warten LED-Schilder, Leuchtkästen und Fassadenwerbung für Unternehmen. Auch bei Folienarbeiten und Demontage helfen wir weiter. Senden Sie eine kurze Beschreibung oder Fotos – wir prüfen Ihre Angaben und klären den nächsten Schritt.",
+      "ctaPrimary": "Service anfragen",
+      "ctaSecondary": "Leistungen ansehen",
+      "imageAlt": "Reparatur einer beleuchteten Werbeanlage"
+    }
+  },
   "HomePage": {
     "title": "PixelRing Reparatur",
     "hero_title_prefix": "PixelRing:",
@@ -298,6 +309,26 @@
     ]
   },
   "ContactModal": {
+    "compact": {
+      "title": "Anfrage senden",
+      "intro": "Erzählen Sie uns, was zu tun ist.",
+      "email_label": "E-Mail-Adresse",
+      "message_label": "Beschreibung der Aufgabe",
+      "message_placeholder": "Zum Beispiel: Das Schild flackert nach Regen.",
+      "attach": "Foto hinzufügen",
+      "optional_details": "Name, Telefon und Adresse — optional",
+      "reply_hint": "Die Antwort auf Ihre Anfrage erhalten Sie per E-Mail.",
+      "assistant_title": "Sie wissen nicht, wo Sie anfangen sollen?",
+      "assistant_description": "Der KI-Assistent hilft, das Problem zu beschreiben und Details zu klären.",
+      "assistant_hint": "Erst der Dialog, dann die Anfrage.",
+      "assistant_action": "Mit dem Assistenten starten",
+      "human_service": "Die Arbeiten übernehmen die Fachleute von PixelRing.",
+      "other_channels": "Weitere Kontaktmöglichkeiten",
+      "email_channel": "E-Mail",
+      "close": "Schließen",
+      "remove_file": "Datei entfernen: {name}",
+      "sending": "Wird gesendet…"
+    },
     "title": "Kontaktieren Sie uns",
     "subtitle": "Wählen Sie Ihren bevorzugten Kommunikationskanal oder hinterlassen Sie eine Anfrage.",
     "sidebar_desc": "Kontaktieren Sie uns auf dem für Sie bequemsten Weg. Schnelle Kanäle sind separat hervorgehoben, und das Formular fragt nur nach den notwendigen Feldern.",
@@ -491,9 +522,9 @@
     },
     "features": {
       "nationwide": "Deutschlandweite Koordination",
-      "express": "Schnelle Ersteinschaetzung",
+      "express": "Schnelle Ersteinschätzung",
       "guaranteed": "Garantie nach Arbeitstyp",
-      "experts": "Spezialisten fuer Werbeanlagen"
+      "experts": "Spezialisten für Werbeanlagen"
     }
   },
   "Support": {

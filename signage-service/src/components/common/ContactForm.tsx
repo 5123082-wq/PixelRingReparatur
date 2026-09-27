@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useId, useRef, useState, useEffect } from 'react';
+import { ArrowRightIcon, ChevronDownIcon, PaperClipIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { getRequestReceiptCopy } from '@/lib/request-receipt-copy';
@@ -11,6 +12,7 @@ import {
   type CalculationSnapshot,
 } from '@/lib/calculation-snapshot';
 import LocationPicker, { type SelectedLocation } from './LocationPicker';
+import RequestEmailVerification, { useRequestEmailVerification } from './RequestEmailVerification';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -23,6 +25,7 @@ interface ContactFormProps {
   initialMessage?: string;
   calculationSnapshot?: CalculationSnapshot | null;
   containedScroll?: boolean;
+  compact?: boolean;
 }
 
 const ContactForm = ({
@@ -34,6 +37,7 @@ const ContactForm = ({
   initialMessage = '',
   calculationSnapshot = null,
   containedScroll = false,
+  compact = false,
 }: ContactFormProps) => {
   const t = useTranslations('ContactModal');
   const locale = useLocale();
@@ -45,6 +49,7 @@ const ContactForm = ({
   const [errorMessage, setErrorMessage] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const verification = useRequestEmailVerification(email, locale, false);
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState(initialMessage);
   const [issueType, setIssueType] = useState(initialIssueType);
@@ -109,6 +114,7 @@ const ContactForm = ({
     setIsSubmitting(true);
 
     try {
+      if (!await verification.ensureAllowed()) return;
       const formData = new FormData();
       formData.append('name', cleanName);
       formData.append('contact', cleanEmail);
@@ -146,10 +152,9 @@ const ContactForm = ({
       };
 
       if (!response.ok) {
+        if (data.code === 'verification_required') { verification.requireVerification(); return; }
         const translatedError =
-          data.code === 'verification_required' && data.error
-            ? data.error
-            : response.status === 400
+          response.status === 400
             ? t('error_invalid_contact')
             : t('error_generic');
         throw new Error(data.error ? translatedError : t('error_generic'));
@@ -242,6 +247,58 @@ const ContactForm = ({
     );
   }
 
+  if (compact) {
+    const fieldClass = 'w-full rounded-xl border border-[#DFDCD7] bg-[#F8F7F5] px-4 py-2.5 text-base text-[#0E1A2B] outline-none placeholder:text-[#777D86] focus:border-[#B8643E] focus:ring-2 focus:ring-[#B8643E]/20';
+    const labelClass = 'mb-1.5 block text-sm font-medium text-[#0E1A2B]';
+    return (
+      <form noValidate onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <div>
+          <label htmlFor={emailInputId} className={labelClass}>{t('compact.email_label')} <span className="text-[#A55230]">*</span></label>
+          <input id={emailInputId} type="email" aria-required="true" autoComplete="email" dir="ltr" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="name@company.de" className={fieldClass} />
+        </div>
+        {(verification.state.required || verification.error) && <RequestEmailVerification verification={verification} email={email} onEmailChange={setEmail} locale={locale} />}
+        <div>
+          <label htmlFor={messageInputId} className={labelClass}>{t('compact.message_label')} <span className="text-[#A55230]">*</span></label>
+          <textarea id={messageInputId} ref={textareaRef} rows={3} aria-required="true" value={message} onChange={handleTextChange} placeholder={t('compact.message_placeholder')} className={`${fieldClass} min-h-[96px] resize-y`} />
+        </div>
+        <div onDragOver={(event) => { event.preventDefault(); setIsDragging(true); }} onDragLeave={() => setIsDragging(false)} onDrop={(event) => { event.preventDefault(); setIsDragging(false); handleFiles(event.dataTransfer.files); }} className={`rounded-xl ${isDragging ? 'bg-[#B8643E]/10 ring-2 ring-[#B8643E]' : ''}`}>
+          <button type="button" onClick={() => fileInputRef.current?.click()} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#F2F3F5] px-4 py-2 text-sm font-medium hover:bg-[#E9EBEF] focus-visible:outline-2 focus-visible:outline-[#B8643E]">
+            <PaperClipIcon aria-hidden="true" className="size-5" />{t('compact.attach')}
+          </button>
+          <input id={fileInputId} type="file" ref={fileInputRef} accept="image/*,video/*" multiple aria-label={t('attach_photo_btn')} className="hidden" onChange={(event) => { handleFiles(event.target.files); event.target.value = ''; }} />
+          {files.length > 0 && <ul className="mt-3 space-y-1">
+            {files.map((file, index) => <li key={index} className="flex min-w-0 items-center gap-2 text-sm text-[#596273]">
+              <span className="min-w-0 flex-1 truncate">{file.name}</span>
+              <button type="button" onClick={() => removeFile(index)} aria-label={t('compact.remove_file', { name: file.name })} className="flex size-11 shrink-0 items-center justify-center rounded-lg hover:bg-black/5 focus-visible:outline-2 focus-visible:outline-[#B8643E]"><XMarkIcon aria-hidden="true" className="size-4" /></button>
+            </li>)}
+          </ul>}
+        </div>
+        <details className="group border-y border-[#E1E4E9]">
+          <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 py-3 text-sm text-[#596273] focus-visible:outline-2 focus-visible:outline-[#B8643E] [&::-webkit-details-marker]:hidden">
+            {t('compact.optional_details')}<ChevronDownIcon aria-hidden="true" className="size-4 shrink-0 transition-transform group-open:rotate-180" />
+          </summary>
+          <div className="space-y-4 pb-4">
+            <div><label htmlFor={nameInputId} className={labelClass}>{t('field_name_company')}</label><input id={nameInputId} type="text" autoComplete="name" value={name} onChange={(event) => setName(event.target.value)} className={fieldClass} /></div>
+            <div><label htmlFor={phoneInputId} className={labelClass}>{t('field_phone')}</label><input id={phoneInputId} type="tel" autoComplete="tel" value={phone} onChange={(event) => setPhone(event.target.value)} className={fieldClass} /></div>
+            <div>
+              <label htmlFor={issueTypeInputId} className={labelClass}>{t('field_issue_type')}</label>
+              <select id={issueTypeInputId} value={issueType} onChange={(event) => setIssueType(event.target.value)} className={fieldClass}>
+                <option value="">{t('field_issue_type')}</option>
+                <option value="Repair">{t('issue_repair')}</option><option value="Installation">{t('issue_installation')}</option><option value="Maintenance">{t('issue_maintenance')}</option><option value="Cleaning">{t('issue_cleaning')}</option><option value="IlluminatedValance">{t('issue_illuminated_valance')}</option>
+              </select>
+            </div>
+            <div><label htmlFor={locationInputId} className={labelClass}>{t('field_location')}</label><LocationPicker inputId={locationInputId} ariaLabel={t('field_location')} value={location} onChange={setLocation} onLocationSelect={setSelectedLocation} dropdownPosition="top" className={fieldClass} /></div>
+          </div>
+        </details>
+        {errorMessage && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorMessage}</p>}
+        <button type="submit" disabled={isSubmitting || verification.blocked} aria-busy={isSubmitting} className="inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-2xl bg-[#0E1A2B] px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#1A2E47] disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8643E]">
+          {isSubmitting ? t('compact.sending') : verification.blocked ? verification.copy.pending : t('submit')}<ArrowRightIcon aria-hidden="true" className="size-5 shrink-0 rtl:rotate-180" />
+        </button>
+        <p className="text-xs leading-relaxed text-[#596273]">{t('compact.reply_hint')}</p>
+      </form>
+    );
+  }
+
   return (
     <form
       noValidate
@@ -259,6 +316,7 @@ const ContactForm = ({
             : 'flex flex-col gap-3 sm:gap-4 pr-1 -mr-1 pb-4 overflow-visible'
         }
       >
+        <RequestEmailVerification verification={verification} email={email} onEmailChange={setEmail} locale={locale} />
         {layout === 'two-column' ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -592,14 +650,14 @@ const ContactForm = ({
 
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || verification.blocked}
             className="group flex-[1.5] flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-6 py-3.5 sm:py-4 bg-[#0E1A2B] hover:bg-[#1a2e47] text-white rounded-2xl font-bold transition-all active:scale-[0.98] disabled:opacity-50 shadow-xl"
           >
             {isSubmitting ? (
               <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
             ) : (
               <>
-                <span className="text-[13px] sm:text-[14px]">{t('submit')}</span>
+                <span className="text-[13px] sm:text-[14px]">{verification.blocked ? verification.copy.pending : t('submit')}</span>
                 <div className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center bg-white/10 rounded-lg group-hover:translate-x-1 transition-transform">
                   <svg
                     className="w-3.5 h-3.5 sm:w-4 sm:h-4"

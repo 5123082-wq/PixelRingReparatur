@@ -4,6 +4,8 @@ Purpose: deployment, monitoring, backups, analytics, partner operations, and mai
 
 Current documents:
 
+- [`release_preparation_2026-09-27.md`](release_preparation_2026-09-27.md) — состав, проверки и порядок сентябрьского выпуска.
+
 - [`google_ads_campaign_setup.md`](google_ads_campaign_setup.md) — audit, exact setup, conversion measurement, and launch controls for the Berlin and Brandenburg repair search campaign.
 - [`marketing_analytics.md`](marketing_analytics.md) — measurement, attribution, privacy, and marketing research framework.
 - [`partner_operations.md`](partner_operations.md) — partner operating model.

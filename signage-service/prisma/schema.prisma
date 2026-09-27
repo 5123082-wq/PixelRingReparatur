@@ -489,6 +489,23 @@ model PortalUser {
   @@map("portal_users")
 }
 
+// A one-use permission to submit a guest request, never an account/access token.
+model IntakeEmailVerification {
+  id              String    @id @default(uuid()) @db.Uuid
+  tokenHash       String    @unique
+  emailNormalized String
+  codeHash        String
+  attempts        Int       @default(0)
+  expiresAt       DateTime
+  verifiedAt      DateTime?
+  consumedAt      DateTime?
+  createdAt       DateTime  @default(now())
+
+  @@index([emailNormalized, createdAt])
+  @@index([expiresAt])
+  @@map("intake_email_verifications")
+}
+
 model PortalEmailCode {
   id                    String                 @id @default(uuid()) @db.Uuid
   email                 String
