@@ -29,10 +29,7 @@ export async function POST(request: NextRequest) {
     if (body.action === 'state') {
       const context = await getIntakeSession(prisma, request, body.isFromChat === true);
       const required = Boolean(context.session?.caseId && !context.portalSession);
-      const previous = required ? await prisma.case.findUnique({
-        where: { id: context.session!.caseId! }, select: { publicRequestNumber: true },
-      }) : null;
-      return reply({ required, verified: required && Boolean(await getIntakeVerification(prisma, token, email)), previousRequestNumber: previous?.publicRequestNumber });
+      return reply({ required, verified: required && Boolean(await getIntakeVerification(prisma, token, email)) });
     }
     if (body.action === 'verify') {
       const code = typeof body.code === 'string' ? body.code.trim() : '';

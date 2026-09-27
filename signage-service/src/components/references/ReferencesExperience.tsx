@@ -7,6 +7,7 @@ import { PhotoIcon, PlayIcon } from '@heroicons/react/24/solid';
 import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestButton';
 import CmsImage from '@/components/common/CmsImage';
 import SectionEyebrow from '@/components/common/SectionEyebrow';
+import ReferencesWorkShowcase from './ReferencesWorkShowcase';
 
 type Locale = 'de' | 'en' | 'ru' | 'tr' | 'pl' | 'ar';
 
@@ -121,9 +122,6 @@ const GALLERY_VIDEO_POSTER = '/images/ex-repair-libitina-leuchtkasten-fassade.we
 
 const SECTION_HEADING_CLASS =
   'max-w-4xl text-[36px] font-extrabold leading-[42px] tracking-[0] text-[#081827] sm:text-[40px] sm:leading-[46px] lg:text-[44px] lg:leading-[50px]';
-const SECTION_INTRO_CLASS = 'mt-6 max-w-[580px] text-[18px] font-normal leading-[1.6] tracking-[0] text-[#526174]';
-const SECTION_INTRO_ACCENT_CLASS =
-  `${SECTION_INTRO_CLASS} border-l-2 border-[#B8643E] pl-4 rtl:border-l-0 rtl:border-r-2 rtl:pl-0 rtl:pr-4`;
 
 function renderReportTitle(title: string) {
   const normalizedTitle = title.trim();
@@ -191,17 +189,12 @@ function HeroImageCarousel({ slides }: { slides: string[] }) {
 }
 
 export default function ReferencesExperience({ content }: ReferencesExperienceProps) {
-  const carouselRef = useRef<HTMLDivElement | null>(null);
-  const carouselPausedRef = useRef(false);
   const galleryCarouselRef = useRef<HTMLDivElement | null>(null);
   const activeDialogRef = useRef<HTMLDivElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const restoreFocusAfterDialogRef = useRef(false);
-  const caseCloseButtonRef = useRef<HTMLButtonElement | null>(null);
   const photoCloseButtonRef = useRef<HTMLButtonElement | null>(null);
   const videoCloseButtonRef = useRef<HTMLButtonElement | null>(null);
-  const [activeCaseId, setActiveCaseId] = useState<string | null>(null);
-  const [activeCaseImage, setActiveCaseImage] = useState(0);
   const [activePhotoId, setActivePhotoId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState(content.viewerAllLabel);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -230,11 +223,11 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
             .filter(Boolean),
     [content.heroSlides, content.cases]
   );
-  const activeCase = useMemo(
-    () => content.cases.find((item) => item.id === activeCaseId) ?? null,
-    [activeCaseId, content.cases]
+  // Temporarily hidden from the selected-work strip at the owner's request.
+  const showcaseCases = useMemo(
+    () => content.cases.filter((item) => item.id !== 'branch-service'),
+    [content.cases]
   );
-
   const photoCategories = useMemo(
     () => [
       content.viewerAllLabel,
@@ -272,68 +265,18 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
     ? Math.max(0, filteredPhotos.findIndex((item) => item.id === activePhoto.id)) + 1
     : 0;
 
-  const activeDialogType = activeCase
-    ? 'case'
-    : activePhoto && activePhotoId
-      ? 'photo'
-      : isVideoModalOpen
-        ? 'video'
-        : null;
+  const activeDialogType = activePhoto && activePhotoId
+    ? 'photo'
+    : isVideoModalOpen
+      ? 'video'
+      : null;
 
   const closeActiveDialog = useCallback(() => {
-    setActiveCaseId(null);
     setActivePhotoId(null);
     setIsVideoModalOpen(false);
   }, []);
 
   useLockBodyScroll(Boolean(activeDialogType));
-
-  useEffect(() => {
-    const carousel = carouselRef.current;
-    if (!carousel) {
-      return;
-    }
-
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (reduceMotion.matches) {
-      return;
-    }
-
-    let frameId = 0;
-    let lastFrame = performance.now();
-    let initialized = false;
-
-    const tick = (now: number) => {
-      const delta = Math.min(now - lastFrame, 34);
-      const loopWidth = carousel.scrollWidth / 3;
-
-      if (!initialized && loopWidth > carousel.clientWidth) {
-        carousel.scrollLeft = loopWidth;
-        initialized = true;
-      }
-
-      if (loopWidth > carousel.clientWidth) {
-        if (carousel.scrollLeft >= loopWidth * 2) {
-          carousel.scrollLeft -= loopWidth;
-        }
-
-        if (carousel.scrollLeft <= 0) {
-          carousel.scrollLeft += loopWidth;
-        }
-      }
-
-      if (!carouselPausedRef.current && loopWidth > carousel.clientWidth) {
-        carousel.scrollLeft += delta * 0.034;
-      }
-
-      lastFrame = now;
-      frameId = requestAnimationFrame(tick);
-    };
-
-    frameId = requestAnimationFrame(tick);
-
-    return () => cancelAnimationFrame(frameId);
-  }, [content.cases]);
 
   const movePhoto = useCallback(
     (direction: number) => {
@@ -407,11 +350,9 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
     previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
     const focusTarget =
-      activeDialogType === 'case'
-        ? caseCloseButtonRef.current
-        : activeDialogType === 'photo'
-          ? photoCloseButtonRef.current
-          : videoCloseButtonRef.current;
+      activeDialogType === 'photo'
+        ? photoCloseButtonRef.current
+        : videoCloseButtonRef.current;
     const shouldRestoreFocus = restoreFocusAfterDialogRef.current;
 
     window.setTimeout(() => focusTarget?.focus(), 0);
@@ -424,25 +365,15 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
     };
   }, [activeDialogType]);
 
-  const openCase = (caseId: string, shouldRestoreFocus = false) => {
-    restoreFocusAfterDialogRef.current = shouldRestoreFocus;
-    setActiveCaseId(caseId);
-    setActivePhotoId(null);
-    setIsVideoModalOpen(false);
-    setActiveCaseImage(0);
-  };
-
   const openPhoto = (photoId: string, shouldRestoreFocus = false) => {
     restoreFocusAfterDialogRef.current = shouldRestoreFocus;
     setActiveFilter(content.viewerAllLabel);
-    setActiveCaseId(null);
     setIsVideoModalOpen(false);
     setActivePhotoId(photoId);
   };
 
   const openVideo = (shouldRestoreFocus = false) => {
     restoreFocusAfterDialogRef.current = shouldRestoreFocus;
-    setActiveCaseId(null);
     setActivePhotoId(null);
     setIsVideoModalOpen(true);
   };
@@ -460,39 +391,6 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
     restoreFocusAfterDialogRef.current = true;
     selectFilter(category);
   };
-
-  const getRecentCardClass = (index: number) => {
-    return index % 3 === 1
-      ? 'h-[390px] w-[390px] sm:h-[420px] sm:w-[420px]'
-      : 'h-[390px] w-[268px] sm:h-[420px] sm:w-[290px]';
-  };
-
-  const renderRecentWorkCard = (item: ReferenceCase, key: string, index: number, isClone = false) => (
-    <button
-      key={key}
-      type="button"
-      aria-hidden={isClone}
-      tabIndex={isClone ? -1 : undefined}
-      onClick={(event) => openCase(item.id, event.detail === 0)}
-      className={`${getRecentCardClass(index)} group relative shrink-0 overflow-hidden rounded-[24px] bg-[#101418] text-left shadow-xl outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B8643E]`}
-    >
-      <Image src={item.afterImage} alt={item.afterAlt ?? item.title} fill sizes="(min-width: 1024px) 420px, 78vw" className="object-cover transition-all duration-500 group-hover:scale-105 group-hover:opacity-0 group-focus-visible:scale-105 group-focus-visible:opacity-0" />
-      <Image src={item.beforeImage} alt={item.beforeAlt ?? item.beforeText} fill sizes="(min-width: 1024px) 420px, 78vw" className="object-cover opacity-0 grayscale transition-all duration-500 group-hover:scale-105 group-hover:opacity-80 group-focus-visible:scale-105 group-focus-visible:opacity-80" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/82 via-black/18 to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-        <p className="text-[12px] font-black uppercase tracking-[0.16em] text-white/70">{item.category}</p>
-        {isClone ? (
-          <div className="mt-2 text-2xl font-black leading-tight">{item.title}</div>
-        ) : (
-          <h3 className="mt-2 text-2xl font-black leading-tight">{item.title}</h3>
-        )}
-        <p className="mt-3 min-h-[56px] text-[14px] font-semibold leading-7 text-white/78">
-          <span className="group-hover:hidden group-focus-visible:hidden">{item.defaultText}</span>
-          <span className="hidden group-hover:inline group-focus-visible:inline">{item.beforeText}</span>
-        </p>
-      </div>
-    </button>
-  );
 
   const getGalleryCardClass = (variant: GalleryCardVariant) => {
     switch (variant) {
@@ -554,7 +452,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
               type="button"
               onClick={(event) => openVideo(event.detail === 0)}
               className="group relative h-[360px] w-[360px] shrink-0 overflow-hidden rounded-[22px] bg-[#101418] text-left text-white shadow-lg outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B8643E] sm:h-[440px] sm:w-[440px]"
-              aria-label={`${content.galleryTitle}: ${content.galleryIntro}`}
+              aria-label={content.galleryTitle}
             >
               <video
                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 group-focus-visible:scale-105"
@@ -576,7 +474,6 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
               </span>
               <div className="absolute inset-x-6 bottom-6 sm:inset-x-8 sm:bottom-8">
                 <div className="text-[30px] font-black leading-[1.02] sm:text-[40px]">{content.galleryTitle}</div>
-                <p className="mt-3 line-clamp-3 text-[13px] font-semibold leading-6 text-white/78 sm:text-[14px]">{content.galleryIntro}</p>
               </div>
             </button>
           ) : null}
@@ -607,7 +504,6 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
                     <span>{content.galleryPromoEyebrow}</span>
                   </div>
                   <div className="mt-2 text-[25px] font-black leading-none sm:text-[31px]">{content.galleryPromoTitle}</div>
-                  <p className="mt-3 line-clamp-2 text-[13px] font-semibold leading-6 text-white/76">{content.galleryPromoText}</p>
                   <p className="mt-3 text-[13px] font-black text-white">{content.galleryPromoCta}</p>
                 </div>
               </button>
@@ -653,7 +549,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
     );
   };
 
-  const showRecent = visibility.recentIntro || (visibility.cases && content.cases.length > 0);
+  const showRecent = visibility.recentIntro || (visibility.cases && showcaseCases.length > 0);
   const showReport =
     visibility.reportIntro &&
     Boolean(content.reportTitle.trim()) &&
@@ -682,49 +578,14 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
       ) : null}
 
       {showRecent ? (
-        <section id="recent-work" className="scroll-mt-32 overflow-hidden bg-white pb-[100px] pt-[44px]">
+        <section id="recent-work" className="scroll-mt-32 overflow-hidden bg-[#EEF3FB] pb-12 pt-[44px] sm:pb-16">
           {visibility.recentIntro ? (
             <div className="pr-site-container">
-              <SectionEyebrow className="mb-[43px]">{content.recentEyebrow}</SectionEyebrow>
-              <h2 className={SECTION_HEADING_CLASS}>{content.recentTitle}</h2>
-              <p className={SECTION_INTRO_ACCENT_CLASS}>{content.recentIntro}</p>
+              <SectionEyebrow>{content.recentEyebrow}</SectionEyebrow>
             </div>
           ) : null}
-          {visibility.cases && content.cases.length > 0 ? (
-            <div
-              ref={carouselRef}
-              onMouseEnter={() => {
-                carouselPausedRef.current = true;
-              }}
-              onMouseLeave={() => {
-                carouselPausedRef.current = false;
-              }}
-              onFocus={() => {
-                carouselPausedRef.current = true;
-              }}
-              onBlur={() => {
-                carouselPausedRef.current = false;
-              }}
-              onPointerDown={() => {
-                carouselPausedRef.current = true;
-              }}
-              onPointerUp={() => {
-                carouselPausedRef.current = false;
-              }}
-              onPointerCancel={() => {
-                carouselPausedRef.current = false;
-              }}
-              className={`${visibility.recentIntro ? 'mt-12' : ''} no-scrollbar overflow-x-auto px-[max(1rem,calc((100vw-80rem)/2+1.5rem))] pb-4`}
-              dir="ltr"
-            >
-              <div className="flex w-max gap-4">
-                {[0, 1, 2].flatMap((cycle) =>
-                  content.cases.map((item, index) =>
-                    renderRecentWorkCard(item, `${item.id}-${cycle}`, index + cycle * content.cases.length, cycle !== 1)
-                  )
-                )}
-              </div>
-            </div>
+          {visibility.cases && showcaseCases.length > 0 ? (
+            <ReferencesWorkShowcase cases={showcaseCases} locale={content.locale} />
           ) : null}
         </section>
       ) : null}
@@ -770,7 +631,7 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
       ) : null}
 
       {showGallery ? (
-        <section id="gallery" className="scroll-mt-32 overflow-hidden bg-white pb-[100px] pt-[44px]">
+        <section id="gallery" className="scroll-mt-32 overflow-hidden bg-[#EEF3FB] pb-12 pt-[44px] sm:pb-16">
           {visibility.galleryIntro ? (
             <div className="pr-site-container">
               <h2 className={SECTION_HEADING_CLASS}>{content.gallerySectionTitle}</h2>
@@ -852,62 +713,6 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
         </div>
       </section>
       ) : null}
-
-      {activeCase && (
-        <div ref={activeDialogRef} className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/72 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="reference-case-title" onMouseDown={(event) => {
-          if (event.target === event.currentTarget) {
-            setActiveCaseId(null);
-          }
-        }}>
-          <div className="grid max-h-[92vh] w-full max-w-6xl overflow-hidden rounded-[28px] bg-white shadow-2xl lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="relative min-h-[320px] bg-[#101418] lg:min-h-[620px]">
-              <Image src={activeCase.gallery[activeCaseImage] ?? activeCase.afterImage} alt={activeCase.galleryAlts?.[activeCaseImage] ?? activeCase.afterAlt ?? activeCase.title} fill sizes="60vw" className="object-cover" />
-              <div className="absolute bottom-4 left-4 right-4 flex gap-2 overflow-x-auto rounded-2xl bg-black/36 p-2 backdrop-blur">
-                {activeCase.gallery.map((src, index) => (
-                  <button
-                    key={`${activeCase.id}-${src}`}
-                    type="button"
-                    onClick={() => setActiveCaseImage(index)}
-                    className={`relative h-16 w-24 shrink-0 overflow-hidden rounded-xl border ${index === activeCaseImage ? 'border-white' : 'border-white/20'}`}
-                    aria-label={`Image ${index + 1}`}
-                  >
-                    <Image src={src} alt={activeCase.galleryAlts?.[index] ?? `${activeCase.title} ${index + 1}`} fill sizes="96px" className="object-cover" />
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="overflow-y-auto p-6 sm:p-8">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-[12px] font-black uppercase tracking-[0.18em] text-[#B8643E]">{activeCase.category}</p>
-                  <h2 id="reference-case-title" className="mt-2 text-3xl font-black leading-tight text-[#0E1A2B]">{activeCase.title}</h2>
-                </div>
-                <button ref={caseCloseButtonRef} type="button" onClick={() => setActiveCaseId(null)} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#D9C7BA] text-2xl leading-none text-[#4A5568]" aria-label={content.viewerCloseLabel}>
-                  ×
-                </button>
-              </div>
-              <div className="mt-8 space-y-5">
-                {[
-                  [content.modalProblemLabel, activeCase.problem],
-                  [content.modalWorkLabel, activeCase.work],
-                  [content.modalResultLabel, activeCase.result],
-                ].map(([label, value]) => (
-                  <section key={label} className="rounded-[18px] border border-[#E7DDD3] bg-[#FFFDF9] p-5">
-                    <h3 className="text-[13px] font-black uppercase tracking-[0.14em] text-[#B8643E]">{label}</h3>
-                    <p className="mt-2 text-[15px] font-medium leading-7 text-[#4A5568]">{value}</p>
-                  </section>
-                ))}
-              </div>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <button type="button" onClick={() => setActiveCaseImage(0)} className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#D9C7BA] bg-white px-5 py-3 text-[15px] font-bold text-[#4E5A5A] hover:border-[#B8643E]">
-                  {content.modalBeforeLabel}
-                </button>
-                <LeistungenRequestButton label={content.modalCta} serviceIntent="diagnose" />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {activePhoto && activePhotoId && (
         <div ref={activeDialogRef} className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/82 p-3 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="reference-photo-title">
@@ -1005,7 +810,6 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
                 playsInline
                 preload="metadata"
               />
-              <p className="mt-4 max-w-3xl text-[14px] font-medium leading-6 text-white/68">{content.galleryIntro}</p>
             </div>
           </div>
         </div>

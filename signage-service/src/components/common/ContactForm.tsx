@@ -13,6 +13,7 @@ import {
 } from '@/lib/calculation-snapshot';
 import LocationPicker, { type SelectedLocation } from './LocationPicker';
 import RequestEmailVerification, { useRequestEmailVerification } from './RequestEmailVerification';
+import RequestAccountNotice, { useRequestAccount } from './RequestAccountNotice';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -48,7 +49,9 @@ const ContactForm = ({
   const receiptCopy = getRequestReceiptCopy(locale);
   const [errorMessage, setErrorMessage] = useState('');
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [guestEmail, setEmail] = useState('');
+  const account = useRequestAccount(guestEmail, locale);
+  const email = account.email;
   const verification = useRequestEmailVerification(email, locale, false);
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState(initialMessage);
@@ -114,7 +117,8 @@ const ContactForm = ({
     setIsSubmitting(true);
 
     try {
-      if (!await verification.ensureAllowed()) return;
+      await account.ensureCurrent();
+      if (!account.accountEmail && !await verification.ensureAllowed()) return;
       const formData = new FormData();
       formData.append('name', cleanName);
       formData.append('contact', cleanEmail);
@@ -152,7 +156,11 @@ const ContactForm = ({
       };
 
       if (!response.ok) {
-        if (data.code === 'verification_required') { verification.requireVerification(); return; }
+        if (data.code === 'verification_required') {
+          await account.ensureCurrent();
+          verification.requireVerification();
+          return;
+        }
         const translatedError =
           response.status === 400
             ? t('error_invalid_contact')
@@ -252,11 +260,11 @@ const ContactForm = ({
     const labelClass = 'mb-1.5 block text-sm font-medium text-[#0E1A2B]';
     return (
       <form noValidate onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <RequestAccountNotice email={account.accountEmail} locale={locale} />
         <div>
           <label htmlFor={emailInputId} className={labelClass}>{t('compact.email_label')} <span className="text-[#A55230]">*</span></label>
-          <input id={emailInputId} type="email" aria-required="true" autoComplete="email" dir="ltr" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="name@company.de" className={fieldClass} />
+          <input id={emailInputId} type="email" aria-required="true" autoComplete="email" dir="ltr" value={email} readOnly={Boolean(account.accountEmail)} onChange={(event) => setEmail(event.target.value)} placeholder="name@company.de" className={fieldClass} />
         </div>
-        {(verification.state.required || verification.error) && <RequestEmailVerification verification={verification} email={email} onEmailChange={setEmail} locale={locale} />}
         <div>
           <label htmlFor={messageInputId} className={labelClass}>{t('compact.message_label')} <span className="text-[#A55230]">*</span></label>
           <textarea id={messageInputId} ref={textareaRef} rows={3} aria-required="true" value={message} onChange={handleTextChange} placeholder={t('compact.message_placeholder')} className={`${fieldClass} min-h-[96px] resize-y`} />
@@ -290,9 +298,10 @@ const ContactForm = ({
             <div><label htmlFor={locationInputId} className={labelClass}>{t('field_location')}</label><LocationPicker inputId={locationInputId} ariaLabel={t('field_location')} value={location} onChange={setLocation} onLocationSelect={setSelectedLocation} dropdownPosition="top" className={fieldClass} /></div>
           </div>
         </details>
+        {!account.accountEmail && <RequestEmailVerification verification={verification} locale={locale} />}
         {errorMessage && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{errorMessage}</p>}
-        <button type="submit" disabled={isSubmitting || verification.blocked} aria-busy={isSubmitting} className="inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-2xl bg-[#0E1A2B] px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#1A2E47] disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8643E]">
-          {isSubmitting ? t('compact.sending') : verification.blocked ? verification.copy.pending : t('submit')}<ArrowRightIcon aria-hidden="true" className="size-5 shrink-0 rtl:rotate-180" />
+        <button type="submit" disabled={isSubmitting || (verification.blocked && !account.accountEmail)} aria-busy={isSubmitting} className="inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-2xl bg-[#0E1A2B] px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#1A2E47] disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8643E]">
+          {isSubmitting ? t('compact.sending') : (verification.blocked && !account.accountEmail) ? verification.copy.pending : t('submit')}<ArrowRightIcon aria-hidden="true" className="size-5 shrink-0 rtl:rotate-180" />
         </button>
         <p className="text-xs leading-relaxed text-[#596273]">{t('compact.reply_hint')}</p>
       </form>
@@ -316,7 +325,7 @@ const ContactForm = ({
             : 'flex flex-col gap-3 sm:gap-4 pr-1 -mr-1 pb-4 overflow-visible'
         }
       >
-        <RequestEmailVerification verification={verification} email={email} onEmailChange={setEmail} locale={locale} />
+        <RequestAccountNotice email={account.accountEmail} locale={locale} dark={variant === 'dark'} />
         {layout === 'two-column' ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -347,7 +356,7 @@ const ContactForm = ({
                   id={emailInputId}
                   type="email"
                   aria-required="true"
-                  value={email}
+                  value={email} readOnly={Boolean(account.accountEmail)}
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
                   placeholder={t('field_email')}
@@ -460,7 +469,7 @@ const ContactForm = ({
                 id={emailInputId}
                 type="email"
                 aria-required="true"
-                value={email}
+                value={email} readOnly={Boolean(account.accountEmail)}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
                 placeholder={t('field_email')}
@@ -582,6 +591,7 @@ const ContactForm = ({
             ))}
           </div>
         )}
+        {!account.accountEmail && <RequestEmailVerification verification={verification} locale={locale} />}
       </div>
 
       <div
@@ -650,14 +660,14 @@ const ContactForm = ({
 
           <button
             type="submit"
-            disabled={isSubmitting || verification.blocked}
+            disabled={isSubmitting || (verification.blocked && !account.accountEmail)}
             className="group flex-[1.5] flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-6 py-3.5 sm:py-4 bg-[#0E1A2B] hover:bg-[#1a2e47] text-white rounded-2xl font-bold transition-all active:scale-[0.98] disabled:opacity-50 shadow-xl"
           >
             {isSubmitting ? (
               <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
             ) : (
               <>
-                <span className="text-[13px] sm:text-[14px]">{verification.blocked ? verification.copy.pending : t('submit')}</span>
+                <span className="text-[13px] sm:text-[14px]">{(verification.blocked && !account.accountEmail) ? verification.copy.pending : t('submit')}</span>
                 <div className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center bg-white/10 rounded-lg group-hover:translate-x-1 transition-transform">
                   <svg
                     className="w-3.5 h-3.5 sm:w-4 sm:h-4"

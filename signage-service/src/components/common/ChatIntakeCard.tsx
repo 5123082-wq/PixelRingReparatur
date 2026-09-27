@@ -6,6 +6,7 @@ import { useLocale } from 'next-intl';
 import { trackGoogleAdsLeadConversion } from '@/lib/google-ads';
 import LocationPicker, { type SelectedLocation } from './LocationPicker';
 import RequestEmailVerification, { useRequestEmailVerification } from './RequestEmailVerification';
+import RequestAccountNotice, { useRequestAccount } from './RequestAccountNotice';
 
 type ContactMode = 'phone' | 'email';
 
@@ -225,7 +226,9 @@ function getPrefillPhone(prefill?: IntakePrefill): string {
 export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
   const locale = useLocale();
   const copy = getChatIntakeCopy(locale);
-  const [email, setEmail] = useState(getPrefillEmail(prefill));
+  const [guestEmail, setEmail] = useState(getPrefillEmail(prefill));
+  const account = useRequestAccount(guestEmail, locale);
+  const email = account.email;
   const verification = useRequestEmailVerification(email, locale, true);
   const [phone, setPhone] = useState(getPrefillPhone(prefill));
   const [name, setName] = useState(prefill?.name ?? '');
@@ -304,7 +307,8 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
     setError('');
 
     try {
-      if (!await verification.ensureAllowed()) return;
+      await account.ensureCurrent();
+      if (!account.accountEmail && !await verification.ensureAllowed()) return;
       const fd = new FormData();
       fd.append('name', name);
       fd.append('contact', cleanEmail);
@@ -331,6 +335,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
 
       if (!res.ok || !data.publicRequestNumber) {
         if (data.code === 'verification_required') {
+          await account.ensureCurrent();
           verification.requireVerification();
           return;
         }
@@ -360,7 +365,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
       onSubmit={handleSubmit}
       className="rounded-[20px] border border-[#B8643E]/20 bg-[#FDF7F0] p-3.5 shadow-sm space-y-2.5 animate-in fade-in slide-in-from-bottom-2 duration-400"
     >
-      <RequestEmailVerification verification={verification} email={email} onEmailChange={setEmail} locale={locale} />
+      <RequestAccountNotice email={account.accountEmail} locale={locale} />
       {/* Header */}
       <div className="flex items-center gap-2">
         <div className="w-6 h-6 rounded-full bg-[#B8643E]/10 flex items-center justify-center">
@@ -402,7 +407,7 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
           <input
             type="email"
             aria-required="true"
-            value={email}
+            value={email} readOnly={Boolean(account.accountEmail)}
             onChange={e => setEmail(e.target.value)}
             onBlur={() => void saveDraft()}
             placeholder="name@example.com"
@@ -474,14 +479,16 @@ export default function ChatIntakeCard({ prefill, onSuccess }: Props) {
 
       {error && <p className="text-[12px] text-red-600 rounded-[10px] bg-red-50 px-3 py-2">{error}</p>}
 
+      {!account.accountEmail && <RequestEmailVerification verification={verification} locale={locale} />}
+
       <button
         type="submit"
-        disabled={submitting || verification.blocked}
+        disabled={submitting || (verification.blocked && !account.accountEmail)}
         className="w-full py-2.5 rounded-[14px] bg-[#0E1A2B] hover:bg-[#1a2e47] text-white text-[13px] font-bold transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
       >
         {submitting
           ? <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-          : verification.blocked ? verification.copy.pending : copy.submit}
+          : (verification.blocked && !account.accountEmail) ? verification.copy.pending : copy.submit}
       </button>
     </form>
   );

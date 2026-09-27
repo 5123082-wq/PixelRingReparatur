@@ -24,6 +24,8 @@ const BASE_URL = `http://127.0.0.1:${PORT}`;
 const CASE_COOKIE = 'pixelring_case_session';
 const CHAT_COOKIE = 'pixelring_chat_session';
 const PORTAL_COOKIE = 'pixelring_portal_session';
+const PORTAL_DEMO_COOKIE = 'pixelring_portal_demo';
+const PORTAL_DEMO_EMAIL = 'portal-demo-e2e@pixelring.test';
 const RUN_ID = `${Date.now()}-${randomUUID().slice(0, 8)}`;
 const USER_AGENT_PREFIX = `pixelring-portal-access-e2e/${RUN_ID}`;
 const PASSWORD = 'PortalAccessE2E-Password-123!';
@@ -163,7 +165,7 @@ async function postJson(
   return { response, json: await readJson(response) };
 }
 
-function startDevServer(): ChildProcessByStdio<null, Readable, Readable> {
+function startDevServer(demoEnabled = false): ChildProcessByStdio<null, Readable, Readable> {
   const child = spawn('npm', ['run', 'dev', '--', '--port', String(PORT)], {
     cwd: projectRoot,
     env: {
@@ -188,7 +190,8 @@ function startDevServer(): ChildProcessByStdio<null, Readable, Readable> {
       TELEGRAM_BOT_TOKEN: '',
       TELEGRAM_ADMIN_CHAT_ID: '',
       TELEGRAM_CHAT_ID: '',
-      PORTAL_DEMO_ENABLED: '',
+      PORTAL_DEMO_ENABLED: demoEnabled ? 'true' : '',
+      PORTAL_DEMO_EMAIL,
     },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -238,18 +241,17 @@ async function waitForServerReady(timeoutMs = 120_000): Promise<void> {
 
 async function stopDevServer(): Promise<void> {
   if (!devServer || devServer.exitCode !== null) return;
+  const child = devServer;
 
   await new Promise<void>((resolve) => {
-    if (!devServer) {
-      resolve();
-      return;
-    }
-
-    devServer.once('exit', () => resolve());
-    devServer.kill('SIGTERM');
-    setTimeout(() => {
-      if (devServer && devServer.exitCode === null) devServer.kill('SIGKILL');
+    const timeout = setTimeout(() => {
+      if (child.exitCode === null) child.kill('SIGKILL');
     }, 7_000);
+    child.once('exit', () => {
+      clearTimeout(timeout);
+      resolve();
+    });
+    child.kill('SIGTERM');
   });
 }
 
@@ -631,6 +633,50 @@ after(async () => {
   if (smtpServer) await new Promise<void>((resolve) => smtpServer.close(() => resolve()));
   await cleanupFixtures();
   if (prisma) await prisma.$disconnect().catch(() => {});
+});
+
+test('public session state exposes identity only for a current production portal session', { timeout: 60_000 }, async () => {
+  const expiredToken = `expired-profile-${RUN_ID}`;
+  const revokedToken = `revoked-profile-${RUN_ID}`;
+  await createSession({
+    rawToken: expiredToken, scope: 'PORTAL_AUTH', portalUserId: fixture.activePortalUserId,
+    verifiedAt: pastDate(), expiresAt: pastDate(), tag: 'profile-expired',
+  });
+  await createSession({
+    rawToken: revokedToken, scope: 'PORTAL_AUTH', portalUserId: fixture.activePortalUserId,
+    verifiedAt: pastDate(), revokedAt: pastDate(), tag: 'profile-revoked',
+  });
+
+  const sessionBefore = await prisma.session.findUnique({ where: { id: fixture.portalSession.id } });
+  const guestState = { authenticated: false, email: null, mode: null };
+  const demoToken = sha256(`portal-demo:${PORTAL_DEMO_EMAIL}:${PORTAL_DEMO_EMAIL}`);
+  const states = [
+    { tag: 'guest', cookie: undefined, expected: guestState },
+    { tag: 'unknown', cookie: `${PORTAL_COOKIE}=unknown-${RUN_ID}`, expected: guestState },
+    { tag: 'case-scope', cookie: `${PORTAL_COOKIE}=${fixture.strongAToken}`, expected: guestState },
+    { tag: 'expired', cookie: `${PORTAL_COOKIE}=${expiredToken}`, expected: guestState },
+    { tag: 'revoked', cookie: `${PORTAL_COOKIE}=${revokedToken}`, expected: guestState },
+    { tag: 'disabled-user', cookie: `${PORTAL_COOKIE}=${fixture.disabledPortalToken}`, expected: guestState },
+    { tag: 'disabled-demo', cookie: `${PORTAL_DEMO_COOKIE}=${demoToken}`, expected: guestState },
+    {
+      tag: 'production', cookie: `${PORTAL_COOKIE}=${fixture.portalToken}`,
+      expected: { authenticated: true, email: fixture.portalEmail, mode: 'production' },
+    },
+  ];
+  for (const { tag, cookie, expected } of states) {
+    const response = await fetch(`${BASE_URL}/api/portal/session-state`, {
+      headers: nextRequestHeaders({ cookie, tag: `profile-${tag}` }),
+    });
+    assert.equal(response.status, 200, tag);
+    assert.deepEqual(await readJson(response), expected, tag);
+    assert.match(response.headers.get('cache-control') ?? '', /private.*no-store/);
+    assert.match(response.headers.get('vary') ?? '', /\bCookie\b/i);
+  }
+  assert.deepEqual(
+    await prisma.session.findUnique({ where: { id: fixture.portalSession.id } }),
+    sessionBefore,
+    'Displaying the profile does not refresh session activity'
+  );
 });
 
 test('S-01/S-02 access boundaries hold through real HTTP routes', { timeout: 180_000 }, async () => {
@@ -1093,7 +1139,7 @@ test('S-01/S-02 access boundaries hold through real HTTP routes', { timeout: 180
     }),
   });
   assert.equal(disabledStateResponse.status, 200);
-  assert.deepEqual(await readJson(disabledStateResponse), { authenticated: false });
+  assert.deepEqual(await readJson(disabledStateResponse), { authenticated: false, email: null, mode: null });
 
   const disabledPortalWrite = await postJson(
     `/api/portal/requests/${encodeURIComponent(fixture.caseANumber)}/messages`,
@@ -1436,7 +1482,7 @@ test('guest repeat request confirms email inline without creating or granting an
   }
   const state = await step({ action: 'state' });
   assert.equal(state.json.required, true); assert.equal(state.json.verified, false);
-  assert.equal(state.json.previousRequestNumber, fixture.caseANumber);
+  assert.equal(Object.hasOwn(state.json, 'previousRequestNumber'), false);
   assert.match(state.response.headers.get('cache-control')!, /no-store/);
   assert.equal((await submit(oldCookie)).response.status, 409);
   const start = await step({ action: 'start', locale: 'ru' });
@@ -1533,4 +1579,33 @@ test('intake delivery failure never reports sent; resend yields a usable replace
   const state = await postJson(endpoint, { action: 'state', email }, { cookie, tag: 'intake-expired-proof', sameOrigin: true });
   assert.equal(state.json.required, true);
   assert.equal(state.json.verified, false);
+});
+
+test('demo session presentation exposes no customer email and production takes precedence', { timeout: 120_000 }, async () => {
+  await stopDevServer();
+  devServer = startDevServer(true);
+  await waitForServerReady();
+
+  const demoToken = sha256(`portal-demo:${PORTAL_DEMO_EMAIL}:${PORTAL_DEMO_EMAIL}`);
+  const demoCookie = `${PORTAL_DEMO_COOKIE}=${demoToken}`;
+  for (const { cookie, expected } of [
+    { cookie: demoCookie, expected: { authenticated: true, email: null, mode: 'demo' } },
+    { cookie: `${PORTAL_DEMO_COOKIE}=invalid`, expected: { authenticated: false, email: null, mode: null } },
+    {
+      cookie: `${demoCookie}; ${PORTAL_COOKIE}=${fixture.portalToken}`,
+      expected: { authenticated: true, email: fixture.portalEmail, mode: 'production' },
+    },
+    {
+      cookie: `${demoCookie}; ${PORTAL_COOKIE}=${fixture.disabledPortalToken}`,
+      expected: { authenticated: true, email: null, mode: 'demo' },
+    },
+  ]) {
+    const response = await fetch(`${BASE_URL}/api/portal/session-state`, {
+      headers: nextRequestHeaders({ cookie, tag: 'profile-demo' }),
+    });
+    assert.equal(response.status, 200);
+    assert.deepEqual(await readJson(response), expected);
+    assert.match(response.headers.get('cache-control') ?? '', /private.*no-store/);
+    assert.match(response.headers.get('vary') ?? '', /\bCookie\b/i);
+  }
 });

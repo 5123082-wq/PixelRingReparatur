@@ -6,19 +6,20 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/i18n/routing';
 import ChatModal from '../common/ChatModal';
 import ContactModal from '../common/ContactModal';
+import { usePortalSession } from '../common/usePortalSession';
 import DesktopNav from './DesktopNav';
 import HeaderActions from './HeaderActions';
 import MobileNav from './MobileNav';
 import type { HeaderContent, HeaderLocale, NavLink, NavMenuLink } from './Header.types';
 import { isActiveNavPath } from './headerNavUtils';
 
-const PORTAL_CTA_LABELS: Record<HeaderLocale, string> = {
-  de: 'Zum Portal',
-  en: 'Go to portal',
-  ru: 'В кабинет',
-  tr: 'Portala git',
-  pl: 'Do portalu',
-  ar: 'إلى البوابة',
+const PORTAL_ACCOUNT_LABELS: Record<HeaderLocale, { account: string; signedIn: string; demo: string }> = {
+  de: { account: 'Mein Konto', signedIn: 'Mein Konto – angemeldet', demo: 'Demokonto' },
+  en: { account: 'My account', signedIn: 'My account – signed in', demo: 'Demo account' },
+  ru: { account: 'Мой кабинет', signedIn: 'Мой кабинет — вы вошли', demo: 'Демокабинет' },
+  tr: { account: 'Hesabım', signedIn: 'Hesabım – oturum açık', demo: 'Demo hesabı' },
+  pl: { account: 'Moje konto', signedIn: 'Moje konto – zalogowano', demo: 'Konto demo' },
+  ar: { account: 'حسابي', signedIn: 'حسابي – تم تسجيل الدخول', demo: 'حساب تجريبي' },
 };
 
 const SERVICES_MENU_LABELS: Record<HeaderLocale, Record<string, string>> = {
@@ -96,46 +97,8 @@ const Header = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
   const [isDesktopNavVisible, setIsDesktopNavVisible] = useState(true);
-  const [portalSessionState, setPortalSessionState] = useState<
-    'checking' | 'authenticated' | 'anonymous'
-  >('checking');
+  const { status: portalSessionState, isProduction } = usePortalSession();
   const scrollAnchorRef = useRef(0);
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    async function loadPortalSessionState() {
-      try {
-        const response = await fetch('/api/portal/session-state', {
-          cache: 'no-store',
-          credentials: 'same-origin',
-          signal: controller.signal,
-          headers: {
-            Accept: 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          setPortalSessionState('anonymous');
-          return;
-        }
-
-        const payload = (await response.json()) as { authenticated?: unknown };
-        setPortalSessionState(
-          payload.authenticated === true ? 'authenticated' : 'anonymous'
-        );
-      } catch (error) {
-        if (error instanceof DOMException && error.name === 'AbortError') {
-          return;
-        }
-
-        setPortalSessionState('anonymous');
-      }
-    }
-
-    void loadPortalSessionState();
-    return () => controller.abort();
-  }, []);
 
   const fallbackNavLinks = [
     { name: t('services'), href: '/leistungen' },
@@ -196,9 +159,13 @@ const Header = ({
     ? content.accountStatusLabel ?? t('account_status')
     : t('account_status');
   const hasPortalAccess = portalSessionState === 'authenticated';
+  const portalAccountCopy = PORTAL_ACCOUNT_LABELS[locale as HeaderLocale] ?? PORTAL_ACCOUNT_LABELS.de;
   const accountStatusLabel = hasPortalAccess
-    ? PORTAL_CTA_LABELS[locale as HeaderLocale] ?? PORTAL_CTA_LABELS.de
+    ? isProduction ? portalAccountCopy.account : portalAccountCopy.demo
     : accountStatusBaseLabel;
+  const accountStatusAccessibleLabel = hasPortalAccess && isProduction
+    ? portalAccountCopy.signedIn
+    : accountStatusLabel;
   const accountStatusHref = hasPortalAccess
     ? '/portal'
     : content?.accountStatusHref || '/status';
@@ -293,7 +260,7 @@ const Header = ({
                   width={520}
                   height={132}
                   priority
-                  className="block h-[43px] w-auto [@media(min-width:390px)]:h-[47px] sm:hidden"
+                  className="block h-[43px] w-auto max-w-full object-contain ltr:object-left rtl:object-right [@media(min-width:390px)]:h-[47px] sm:hidden"
                 />
               </Link>
             </div>
@@ -302,6 +269,9 @@ const Header = ({
               accountStatusBaseLabel={accountStatusBaseLabel}
               accountStatusHref={accountStatusHref}
               accountStatusLabel={accountStatusLabel}
+              accountStatusAccessibleLabel={accountStatusAccessibleLabel}
+              hasPortalAccess={hasPortalAccess}
+              isProductionPortalSession={isProduction}
               requestHref={requestHref}
               requestLabel={requestLabel}
               isMenuOpen={isMenuOpen}
