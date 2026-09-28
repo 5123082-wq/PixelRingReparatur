@@ -1,5 +1,6 @@
 import { createHash, randomInt, randomBytes, timingSafeEqual } from 'node:crypto';
 import type { Prisma, PrismaClient } from '@prisma/client';
+import { createPortalSession } from './portal/auth';
 
 export const INTAKE_VERIFICATION_COOKIE = 'pixelring_intake_verification';
 export const INTAKE_VERIFICATION_TTL_SECONDS = 15 * 60;
@@ -52,22 +53,48 @@ export async function getIntakeVerification(db: Db, token: string | undefined, e
   }, select: { id: true } });
 }
 
-export async function verifyIntakeCode(db: PrismaClient, token: string | undefined, emailInput: string, code: string, now = new Date()) {
-  if (!token || !/^\d{6}$/.test(code)) return false;
+export async function verifyIntakeCode(db: PrismaClient, token: string | undefined, emailInput: string, code: string, context: {
+  alreadyAuthenticated?: boolean;
+  userAgent?: string | null;
+  ipAddress?: string | null;
+} = {}, now = new Date()) {
+  if (!token || !/^\d{6}$/.test(code)) return { verified: false as const };
   const email = normalizeIntakeEmail(emailInput);
-  // Reserve an attempt atomically before comparing, including concurrent guesses.
-  const attempt = await db.intakeEmailVerification.updateMany({ where: {
-    tokenHash: hash(token), emailNormalized: email, consumedAt: null,
-    verifiedAt: null, expiresAt: { gt: now }, attempts: { lt: MAX_ATTEMPTS },
-  }, data: { attempts: { increment: 1 } } });
-  if (attempt.count !== 1) return false;
-  const record = await db.intakeEmailVerification.findUnique({ where: { tokenHash: hash(token) } });
-  if (!record || !timingSafeEqual(Buffer.from(record.codeHash), Buffer.from(codeHash(token, email, code)))) return false;
-  const verified = await db.intakeEmailVerification.updateMany({
-    where: { id: record.id, verifiedAt: null, consumedAt: null, expiresAt: { gt: now } },
-    data: { verifiedAt: now },
+  return db.$transaction(async (tx) => {
+    // Reserve an attempt atomically before comparing, including concurrent guesses.
+    const attempt = await tx.intakeEmailVerification.updateMany({ where: {
+      tokenHash: hash(token), emailNormalized: email, consumedAt: null,
+      verifiedAt: null, expiresAt: { gt: now }, attempts: { lt: MAX_ATTEMPTS },
+    }, data: { attempts: { increment: 1 } } });
+    if (attempt.count !== 1) return { verified: false as const };
+    const record = await tx.intakeEmailVerification.findUnique({ where: { tokenHash: hash(token) } });
+    if (!record || !timingSafeEqual(Buffer.from(record.codeHash), Buffer.from(codeHash(token, email, code)))) return { verified: false as const };
+    const verified = await tx.intakeEmailVerification.updateMany({
+      where: { id: record.id, verifiedAt: null, consumedAt: null, expiresAt: { gt: now } },
+      data: { verifiedAt: now },
+    });
+    if (verified.count !== 1) return { verified: false as const };
+
+    // Account lookup is allowed only after proving ownership of this email.
+    // Never replace an account that signed in while this form was open.
+    const account = context.alreadyAuthenticated ? null : await tx.portalUser.findFirst({
+      where: { status: 'ACTIVE', OR: [
+        { primaryEmailNormalized: email },
+        { emails: { some: { emailNormalized: email } } },
+      ] },
+      select: { id: true },
+    });
+    if (!account) return { verified: true as const, sessionToken: null };
+
+    // Verification and login commit together; a verified guest proof cannot later
+    // be replayed to create a login, and concurrent code submissions issue one session.
+    await tx.intakeEmailVerification.update({ where: { id: record.id }, data: { consumedAt: now } });
+    const sessionToken = await createPortalSession(tx, {
+      portalUserId: account.id, email, userAgent: context.userAgent, ipAddress: context.ipAddress, now,
+    });
+    await tx.portalUser.update({ where: { id: account.id }, data: { lastLoginAt: now }, select: { id: true } });
+    return { verified: true as const, sessionToken };
   });
-  return verified.count === 1;
 }
 
 export async function consumeIntakeVerification(db: Db, token: string, email: string, now = new Date()) {

@@ -34,7 +34,7 @@ type PortalEmailPayload = {
   subject: string;
   text: string;
   html: string;
-  logMode: 'code' | 'activation-invite';
+  logMode: 'code' | 'activation-invite' | 'work-result';
   expiresAt: Date;
 };
 
@@ -416,6 +416,16 @@ async function sendPortalEmailPayload(input: PortalEmailPayload): Promise<Portal
   }
 
   throw new Error('Unsupported portal email provider.');
+}
+
+export async function sendWorkResultEmail(input: { to: string; subject: string; body: string; url: string; linkLabel: string; locale: string }) {
+  const url = escapeHtml(input.url);
+  return sendPortalEmailPayload({
+    to: input.to, subject: input.subject, logMode: 'work-result', expiresAt: new Date(),
+    text: input.body + '\n\n' + input.url,
+    html: '<html lang="' + escapeHtml(input.locale) + '" dir="' + (input.locale === 'ar' ? 'rtl' : 'ltr') +
+      '"><body><p>' + escapeHtml(input.body) + '</p><a href="' + url + '">' + escapeHtml(input.linkLabel) + '</a></body></html>',
+  });
 }
 
 export async function sendPortalCodeEmail(

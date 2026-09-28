@@ -502,16 +502,20 @@
         "description": "We are waiting for parts or additional customer approval."
       },
       "READY_FOR_PICKUP": {
-        "label": "Ready",
-        "description": "The case is ready for handoff, pickup, or the next operational step."
+        "label": "Ready for pickup",
+        "description": "The repaired item is ready for collection or handover."
       },
       "COMPLETED": {
-        "label": "Completed",
-        "description": "The request has been completed and is waiting for closure handling."
+        "label": "Request closed",
+        "description": "The request has been closed."
       },
       "CANCELLED": {
         "label": "Closed",
         "description": "The request is no longer active."
+      },
+      "WORK_COMPLETED": {
+        "label": "Repair completed",
+        "description": "The repair is complete. The request remains open."
       }
     },
     "cabinet_title": "Personal Cabinet",
@@ -528,7 +532,10 @@
     "chat_online": "Online",
     "chat_manager": "Manager",
     "chat_you": "You",
-    "chat_open_button": "Open Chat",
+    "request_received": "Request received",
+    "chat_open_button": "Open messages",
+    "portal_connect_request": "Connect request to your account",
+    "portal_connect_help": "How do I connect my request?",
     "chat_placeholder": "Write your message here...",
     "chat_auth_hint": "Log in to start correspondence",
     "chat_session_hint": "Chat access is active for this request",
@@ -723,8 +730,10 @@
       "UNDER_REVIEW": "Under review",
       "IN_PROGRESS": "In progress",
       "WAITING_FOR_CUSTOMER": "Waiting for customer",
-      "COMPLETED": "Completed",
-      "PLANNED": "Planned"
+      "COMPLETED": "Request closed",
+      "PLANNED": "Planned",
+      "WORK_COMPLETED": "Repair completed",
+      "READY_FOR_PICKUP": "Ready for pickup"
     },
     "assetStatus": {
       "OK": "OK",

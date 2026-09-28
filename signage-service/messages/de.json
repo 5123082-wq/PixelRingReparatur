@@ -423,16 +423,20 @@
         "description": "Wir warten auf Ersatzteile oder eine zusätzliche Freigabe des Kunden."
       },
       "READY_FOR_PICKUP": {
-        "label": "Bereit",
-        "description": "Der Fall ist für Übergabe, Abholung oder den nächsten operativen Schritt bereit."
+        "label": "Abholbereit",
+        "description": "Die reparierte Anlage ist zur Abholung oder Übergabe bereit."
       },
       "COMPLETED": {
-        "label": "Abgeschlossen",
-        "description": "Die Anfrage wurde abgeschlossen und wartet auf den formalen Abschluss."
+        "label": "Anfrage geschlossen",
+        "description": "Die Bearbeitung der Anfrage ist abgeschlossen."
       },
       "CANCELLED": {
         "label": "Geschlossen",
         "description": "Die Anfrage ist nicht mehr aktiv."
+      },
+      "WORK_COMPLETED": {
+        "label": "Reparatur abgeschlossen",
+        "description": "Die Reparatur ist abgeschlossen. Die Anfrage bleibt offen."
       }
     },
     "cabinet_title": "Kundenportal",
@@ -449,7 +453,10 @@
     "chat_online": "Online",
     "chat_manager": "Manager",
     "chat_you": "Sie",
-    "chat_open_button": "Chat öffnen",
+    "request_received": "Anfrage angenommen",
+    "chat_open_button": "Nachrichten öffnen",
+    "portal_connect_request": "Anfrage mit dem Kundenkonto verbinden",
+    "portal_connect_help": "Wie verbinde ich meine Anfrage?",
     "chat_placeholder": "Ihre Nachricht...",
     "chat_auth_hint": "Melden Sie sich an, um den Chat zu starten",
     "chat_session_hint": "Der Chatzugang ist fuer diese Anfrage aktiv",
@@ -723,8 +730,10 @@
       "UNDER_REVIEW": "In Prüfung",
       "IN_PROGRESS": "In Bearbeitung",
       "WAITING_FOR_CUSTOMER": "Wartet auf Kunde",
-      "COMPLETED": "Abgeschlossen",
-      "PLANNED": "Geplant"
+      "COMPLETED": "Anfrage geschlossen",
+      "PLANNED": "Geplant",
+      "WORK_COMPLETED": "Reparatur abgeschlossen",
+      "READY_FOR_PICKUP": "Abholbereit"
     },
     "assetStatus": {
       "OK": "OK",

@@ -14,6 +14,7 @@ import {
   portalDemoOrganization,
 } from '@/lib/portal/demo-data';
 import { getPortalRequestDetailForUser } from '@/lib/portal/production-data';
+import { getPublicWorkResult } from '@/lib/work-results/service';
 
 import PortalAccessRequired from './PortalAccessRequired';
 import PortalDemoGate from './PortalDemoGate';
@@ -43,7 +44,8 @@ export default async function PortalRequestDetailRoute({
     );
 
     if (result?.detail) {
-      return <PortalRequestDetail {...result.detail} canPostMessages presentation={presentation} />;
+      const workResult = await getPublicWorkResult(portalSession.portalUserId, publicRequestNumber);
+      return <PortalRequestDetail {...result.detail} workResult={workResult} canPostMessages presentation={presentation} />;
     }
 
     if (result?.organization) {

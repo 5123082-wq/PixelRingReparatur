@@ -125,11 +125,11 @@ export function parseAdminLoginInput(payload: unknown): AdminLoginInput | null {
 
 export async function authenticateAdminLogin(
   prisma: AdminClient,
-  role: AdminRole,
+  role: AdminRole | readonly AdminRole[],
   input: AdminLoginInput
 ): Promise<{ user: AuthenticatedAdminUser } | null> {
   const user = await findAdminUserByEmail(prisma, input.email);
-  if (!user || user.role !== role || user.status !== 'ACTIVE') {
+  if (!user || !(Array.isArray(role) ? role.includes(user.role) : user.role === role) || user.status !== 'ACTIVE') {
     return null;
   }
 

@@ -423,16 +423,20 @@
         "description": "Parçaları veya ek müşteri onayını bekliyoruz."
       },
       "READY_FOR_PICKUP": {
-        "label": "Hazır",
-        "description": "Kayıt teslim, alım veya sonraki operasyon adımı için hazır."
+        "label": "Teslim alınmaya hazır",
+        "description": "Onarılan ürün teslim alınmaya veya teslim edilmeye hazır."
       },
       "COMPLETED": {
-        "label": "Tamamlandı",
-        "description": "Talep tamamlandı ve kapanış işlemini bekliyor."
+        "label": "Talep kapatıldı",
+        "description": "Talebin işlenmesi tamamlandı."
       },
       "CANCELLED": {
         "label": "Kapalı",
         "description": "Talep artık aktif değil."
+      },
+      "WORK_COMPLETED": {
+        "label": "Onarım tamamlandı",
+        "description": "Onarım tamamlandı. Talep açık kalır."
       }
     },
     "cabinet_title": "Müşteri Portalı",
@@ -449,7 +453,10 @@
     "chat_online": "Çevrimiçi",
     "chat_manager": "Yönetici",
     "chat_you": "Siz",
-    "chat_open_button": "Sohbeti aç",
+    "request_received": "Talep alındı",
+    "chat_open_button": "Yazışmaları aç",
+    "portal_connect_request": "Talebi hesabınıza bağlayın",
+    "portal_connect_help": "Talebimi nasıl bağlarım?",
     "chat_placeholder": "Mesajınızı buraya yazın...",
     "chat_auth_hint": "Yazışmayı başlatmak için giriş yapın",
     "chat_session_hint": "Bu talep için sohbet erişimi aktif",
@@ -723,8 +730,10 @@
       "UNDER_REVIEW": "İncelemede",
       "IN_PROGRESS": "Devam ediyor",
       "WAITING_FOR_CUSTOMER": "Müşteri bekleniyor",
-      "COMPLETED": "Tamamlandı",
-      "PLANNED": "Planlandı"
+      "COMPLETED": "Talep kapatıldı",
+      "PLANNED": "Planlandı",
+      "WORK_COMPLETED": "Onarım tamamlandı",
+      "READY_FOR_PICKUP": "Teslim alınmaya hazır"
     },
     "assetStatus": {
       "OK": "OK",

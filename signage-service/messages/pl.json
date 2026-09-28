@@ -423,16 +423,20 @@
         "description": "Czekamy na części lub dodatkową akceptację klienta."
       },
       "READY_FOR_PICKUP": {
-        "label": "Gotowe",
-        "description": "Sprawa jest gotowa do przekazania, odbioru lub kolejnego kroku operacyjnego."
+        "label": "Gotowe do odbioru",
+        "description": "Naprawiony element jest gotowy do odbioru lub przekazania."
       },
       "COMPLETED": {
-        "label": "Zakończone",
-        "description": "Zgłoszenie zostało zrealizowane i czeka na formalne zamknięcie."
+        "label": "Zgłoszenie zamknięte",
+        "description": "Obsługa zgłoszenia została zakończona."
       },
       "CANCELLED": {
         "label": "Zamknięte",
         "description": "Zgłoszenie nie jest już aktywne."
+      },
+      "WORK_COMPLETED": {
+        "label": "Naprawa zakończona",
+        "description": "Naprawa została zakończona. Zgłoszenie pozostaje otwarte."
       }
     },
     "cabinet_title": "Panel klienta",
@@ -449,7 +453,10 @@
     "chat_online": "Online",
     "chat_manager": "Menedżer",
     "chat_you": "Ty",
-    "chat_open_button": "Otwórz chat",
+    "request_received": "Zgłoszenie przyjęte",
+    "chat_open_button": "Otwórz korespondencję",
+    "portal_connect_request": "Połącz zgłoszenie z kontem",
+    "portal_connect_help": "Jak połączyć zgłoszenie?",
     "chat_placeholder": "Napisz wiadomość tutaj...",
     "chat_auth_hint": "Zaloguj się, aby rozpocząć korespondencję",
     "chat_session_hint": "Dostęp do chatu jest aktywny dla tego zgłoszenia",
@@ -723,8 +730,10 @@
       "UNDER_REVIEW": "W analizie",
       "IN_PROGRESS": "W realizacji",
       "WAITING_FOR_CUSTOMER": "Czeka na klienta",
-      "COMPLETED": "Zakończone",
-      "PLANNED": "Planowane"
+      "COMPLETED": "Zgłoszenie zamknięte",
+      "PLANNED": "Planowane",
+      "WORK_COMPLETED": "Naprawa zakończona",
+      "READY_FOR_PICKUP": "Gotowe do odbioru"
     },
     "assetStatus": {
       "OK": "OK",

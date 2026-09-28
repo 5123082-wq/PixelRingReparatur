@@ -1,4 +1,5 @@
 'use client';
+import { getWorkResultCopy } from '@/lib/work-results/copy';
 
 import type {
   PortalAsset,
@@ -26,6 +27,8 @@ type PortalActionType = 'APPROVE_ESTIMATE' | 'CONFIRM_VISIT_WINDOW' | 'UPLOAD_MI
 const statusTone = {
   UNDER_REVIEW: 'bg-amber-100 text-amber-800 border-amber-200',
   IN_PROGRESS: 'bg-blue-100 text-blue-800 border-blue-200',
+  WORK_COMPLETED: 'bg-teal-100 text-teal-800 border-teal-200',
+  READY_FOR_PICKUP: 'bg-teal-100 text-teal-800 border-teal-200',
   WAITING_FOR_CUSTOMER: 'bg-orange-100 text-orange-800 border-orange-200',
   COMPLETED: 'bg-emerald-100 text-emerald-800 border-emerald-200',
   PLANNED: 'bg-slate-100 text-slate-700 border-slate-200',
@@ -1128,7 +1131,7 @@ function RequestsTable({
                 </td>
                 <td className="py-3 pe-3 text-[#6F665D]">{request.nextStep}</td>
                 <td className="py-3">
-                  {request.status === 'COMPLETED' ? (
+                  {['WORK_COMPLETED', 'READY_FOR_PICKUP', 'COMPLETED'].includes(request.status) ? (
                     <button type="button" onClick={() => onTabChange('reports')} className="rounded-lg border border-[#DCE3EA] px-3 py-1.5 text-[11px] font-black">
                       {copy.report}
                     </button>
@@ -1811,6 +1814,7 @@ function DocumentCards({
   compact?: boolean;
 }) {
   const t = useTranslations('Portal');
+  const reportCopy = getWorkResultCopy(useLocale());
 
   return (
     <section className="rounded-xl border border-[#DCE3EA] bg-white p-4 shadow-sm">
@@ -1825,7 +1829,7 @@ function DocumentCards({
               <span className="rounded-full bg-[#EEF3FB] px-2.5 py-0.5 text-[10px] font-black text-[#42526B]">{t(`documentType.${document.type}`)}</span>
               <h3 className="mt-2 text-[13px] font-black">{document.title}</h3>
               <p className="mt-1 text-[12px] leading-5 text-[#6F665D]">{document.description || document.relatedTo}</p>
-              <button type="button" className="mt-3 rounded-lg border border-[#DCE3EA] px-3 py-1.5 text-[11px] font-black">PDF preview</button>
+              {document.href ? <Link href={document.href} className="mt-3 inline-block rounded-lg border border-[#DCE3EA] px-3 py-1.5 text-[11px] font-black">{reportCopy.open}</Link> : null}
             </article>
           ))}
         </div>

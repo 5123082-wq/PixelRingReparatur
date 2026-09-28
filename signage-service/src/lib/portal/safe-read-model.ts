@@ -1,3 +1,4 @@
+import { getWorkResultCopy } from '../work-results/copy.ts';
 import type { CaseStatus, MessageAuthorRole } from '@prisma/client';
 
 const INTERNAL_PORTAL_ACCESS_MESSAGE_RE = /Kundenportal-Link:|\/portal\/claim\?token=/i;
@@ -68,6 +69,9 @@ export function customerSafePortalCaseSummary(messages: CustomerVisibleMessageSo
 }
 
 export function customerSafeTimelineDescriptionForStatus(status: CaseStatus, locale?: string | null): string {
+  if (status === 'WORK_COMPLETED') return getWorkResultCopy(locale).next;
+  if (status === 'READY_FOR_PICKUP') return getWorkResultCopy(locale).ready;
+  if (status === 'COMPLETED') return getWorkResultCopy(locale).closed;
   if (locale === 'ru') {
     switch (status) {
       case 'WAITING_FOR_CUSTOMER':
@@ -76,10 +80,6 @@ export function customerSafeTimelineDescriptionForStatus(status: CaseStatus, loc
         return 'PixelRing обрабатывает заявку и координирует следующие шаги.';
       case 'ON_HOLD':
         return 'Заявка временно на паузе. PixelRing сообщит следующий безопасный шаг.';
-      case 'READY_FOR_PICKUP':
-        return 'Следующий рабочий шаг подготовлен.';
-      case 'COMPLETED':
-        return 'Заявка завершена.';
       case 'CANCELLED':
         return 'Заявка закрыта.';
       case 'DRAFT':
@@ -97,10 +97,6 @@ export function customerSafeTimelineDescriptionForStatus(status: CaseStatus, loc
       return 'PixelRing bearbeitet die Anfrage und koordiniert die naechsten operativen Schritte.';
     case 'ON_HOLD':
       return 'Die Anfrage ist pausiert. PixelRing meldet sich mit dem naechsten sicheren Schritt.';
-    case 'READY_FOR_PICKUP':
-      return 'Der naechste operative Schritt ist vorbereitet.';
-    case 'COMPLETED':
-      return 'Die Anfrage wurde abgeschlossen.';
     case 'CANCELLED':
       return 'Die Anfrage wurde geschlossen.';
     case 'DRAFT':

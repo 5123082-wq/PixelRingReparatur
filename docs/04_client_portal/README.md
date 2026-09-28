@@ -9,7 +9,7 @@ Purpose: fast orientation for client-portal work without loading every long plan
 Current implemented boundary:
 
 - The application has a first production portal identity foundation for request-bound access: claim links, verified e-mail, HTTP-only portal sessions, request-scoped access, portal registration/login/password reset, portal request detail/chat, and portal-created request flow.
-- This is not the full future client portal. Do not assume organizations, customer employees, full RBAC, billing, invoices, structured photo-report downloads, warranties, broad document archive, Bitrix24 sync, or deletion/export workflows exist unless code proves it.
+- This is not the full future client portal. Do not assume organizations, customer employees, full RBAC, billing, invoices, warranties, broad document archive, Bitrix24 sync, or deletion/export workflows exist unless code proves it.
 - Public request number alone must never expose private request data or work as a login method.
 - Customer-facing tracking must use customer-safe status/read models and must not expose raw CRM internals, internal notes, internal IDs, audit logs, assignment data, or operator-only metadata.
 - German remains canonical-first. MVP languages are DE, EN, RU, TR, PL, and AR; Arabic requires RTL-aware UI/content handling.
@@ -22,7 +22,11 @@ Read first:
 
 Task-specific docs:
 
-- Повторная гостевая заявка с подтверждением почты при отправке и заметный вход в кабинет подготовлены к разрешённому выпуску 2026-09-27; рабочая миграция уже применена: последняя запись в `client_portal_implementation_plan.md`.
+- [Завершение ремонта и фотоотчёты](../06_crm/repair_completion_photo_reports.md): реализованы локально 2026-09-28, включая отдельный открытый статус, защищённый просмотр и печать; гарантия остаётся будущим отдельным блоком. Миграция и выпуск разрешены 2026-09-28: [журнал выпуска](../11_operations/crm_portal_release_2026-09-28.md).
+
+- Вход по коду в форме и автоматическая привязка новой заявки к существующему аккаунту реализованы локально 2026-09-28; код обязателен при любой отправке без входа, новый пользователь остаётся гостем. Выпуск отдельно: последняя запись в `client_portal_implementation_plan.md`.
+
+- Повторная гостевая заявка с подтверждением почты при отправке и заметный вход в кабинет выпущены ранее; миграция подтверждений уже применена: последняя запись в `client_portal_implementation_plan.md`.
 
 - Public request linking, three receipt scenarios and latest validation: latest entry in `client_portal_implementation_plan.md`.
 - Future mass-submission protection options, not implemented: [research](request_intake_abuse_protection_options_2026-09-11.md).

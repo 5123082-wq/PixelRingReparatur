@@ -75,7 +75,7 @@ const COPY = {
       createAccount: 'Konto erstellen',
       existingTitle: 'Bestehende Anfrage pruefen',
       existingText: 'Wenn Sie schon eine PR-Nummer haben, pruefen Sie den Status mit der Telefonnummer oder E-Mail aus der Anfrage.',
-      existingLabel: 'Anfrage-Status pruefen',
+      existingLabel: 'Anfrage-Status prüfen',
       newTitle: 'Neue Anfrage starten',
       newText: 'Sie koennen den Service direkt starten. Die Anfrage bekommt erst nach Kontaktangabe eine PR-Nummer.',
       newLabel: 'Service starten',

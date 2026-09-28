@@ -620,7 +620,7 @@ assertDoesNotInclude(
 
 const adminAuth = readProjectFile('src/app/api/admin/auth/route.ts');
 assertMatches(adminAuth, /parseAdminLoginInput\s*\(/, 'CRM auth must parse password login input');
-assertMatches(adminAuth, /authenticateAdminLogin\s*\(\s*prisma,\s*'MANAGER'/, 'CRM auth must authenticate named MANAGER users');
+assertMatches(adminAuth, /authenticateAdminLogin\s*\(\s*prisma,\s*\[\s*'MANAGER',\s*'OWNER'\s*\]/, 'CRM auth must authenticate named MANAGER and OWNER users');
 assertMatches(adminAuth, /createAdminSession\([\s\S]*adminUserId:\s*authResult\.user\.id[\s\S]*role:\s*authResult\.user\.role/, 'CRM auth must create sessions linked to the named admin user');
 assertMatches(adminAuth, /ADMIN_LOGIN_FAILED/, 'CRM auth must audit failed login attempts');
 assertMatches(adminAuth, /ADMIN_LOGIN_SUCCEEDED/, 'CRM auth must audit successful logins');

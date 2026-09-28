@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { validatePortalMutationRequest } from '@/lib/portal/mutation-guard';
 import { getIntakeSession } from '@/lib/intake-session';
+import { getPortalSessionContext, PORTAL_SESSION_COOKIE_NAME, PORTAL_SESSION_MAX_AGE_SECONDS } from '@/lib/portal/auth';
 import { getIntakeVerification, INTAKE_VERIFICATION_COOKIE, INTAKE_VERIFICATION_TTL_SECONDS, startIntakeVerification, verifyIntakeCode } from '@/lib/intake-verification';
 import { sendIntakeCodeEmail } from '@/lib/email/portal-claim-email';
 import { checkRateLimit, getClientIP } from '@/lib/rate-limit';
@@ -28,13 +29,28 @@ export async function POST(request: NextRequest) {
   try {
     if (body.action === 'state') {
       const context = await getIntakeSession(prisma, request, body.isFromChat === true);
-      const required = Boolean(context.session?.caseId && !context.portalSession);
+      const required = !context.portalSession;
       return reply({ required, verified: required && Boolean(await getIntakeVerification(prisma, token, email)) });
     }
     if (body.action === 'verify') {
       const code = typeof body.code === 'string' ? body.code.trim() : '';
-      return await verifyIntakeCode(prisma, token, email, code)
-        ? reply({ verified: true }) : reply({ code: 'invalid_code' }, 400);
+      const portalSession = await getPortalSessionContext(prisma,
+        request.cookies.get(PORTAL_SESSION_COOKIE_NAME)?.value, { touchLastSeen: false });
+      const result = await verifyIntakeCode(prisma, token, email, code, {
+        alreadyAuthenticated: Boolean(portalSession),
+        userAgent: request.headers.get('user-agent'), ipAddress: getClientIP(request),
+      });
+      if (!result.verified) return reply({ code: 'invalid_code' }, 400);
+      const response = reply({ verified: true, authenticated: Boolean(portalSession || result.sessionToken) });
+      if (result.sessionToken) {
+        response.cookies.set(PORTAL_SESSION_COOKIE_NAME, result.sessionToken, {
+          httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax',
+          path: '/', maxAge: PORTAL_SESSION_MAX_AGE_SECONDS,
+        });
+        response.cookies.set(INTAKE_VERIFICATION_COOKIE, '', { httpOnly: true,
+          secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/', maxAge: 0 });
+      }
+      return response;
     }
     const challenge = await startIntakeVerification(prisma, email);
     if (!challenge.ok) return challenge.reason === 'rate_limited'

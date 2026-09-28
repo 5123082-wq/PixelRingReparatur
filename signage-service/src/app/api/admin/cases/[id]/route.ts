@@ -7,7 +7,9 @@ import { prisma } from '@/lib/prisma';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
 import type { AdminPermission } from '@/lib/admin-permissions';
 import {
+  CASE_STATUS_TRANSITIONS,
   canTransitionCaseStatus,
+  caseStatusTargets,
   normalizeTransitionReason,
   requiresTransitionReason,
 } from '@/lib/case-status-machine';
@@ -18,6 +20,9 @@ import {
 } from '@/lib/realtime';
 import { ensurePublicRequestNumberForCase } from '@/lib/request-number';
 import { createCaseStatusAccessLink } from '@/lib/status-access-link';
+import { lockWorkResultCase, requirePublishedWorkResult } from '@/lib/work-results/service';
+import { WorkResultError } from '@/lib/work-results/types';
+import { workResultFailure } from '@/lib/work-results/access';
 import { sendTelegramMessage } from '@/lib/telegram';
 import { tryNormalizeCalculationSnapshot } from '@/lib/calculation-snapshot';
 
@@ -215,7 +220,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           },
         },
         statusEvents: {
-          orderBy: { createdAt: 'desc' },
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
           select: {
             id: true,
             actorRole: true,
@@ -238,6 +243,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           where: {
             action: {
               in: [
+                'WORK_RESULT_DRAFT_SAVED',
+                'WORK_RESULT_PUBLISHED',
                 'CASE_STATUS_CHANGED',
                 'CASE_OPERATOR_MESSAGE_SENT',
                 'CASE_OPERATOR_TAKEOVER_CHANGED',
@@ -309,6 +316,14 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({
       case: {
         ...caseRecord,
+        canManage: actor.role === 'MANAGER',
+        allowedStatuses: CASE_STATUS_TRANSITIONS[caseRecord.status],
+        allowedTargetStatuses: caseRecord.publicRequestNumber ? caseStatusTargets(caseRecord.status) : [],
+        statusState: {
+          status: caseRecord.status,
+          statusUpdatedAt: caseRecord.statusUpdatedAt,
+          lastEventId: caseRecord.statusEvents[0]?.id ?? null,
+        },
         calculationSnapshot: tryNormalizeCalculationSnapshot(
           caseRecord.calculationSnapshot
         ),
@@ -820,6 +835,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       select: {
         id: true,
         status: true,
+        statusUpdatedAt: true,
         assignedOperator: true,
         customerName: true,
         customerEmail: true,
@@ -929,6 +945,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     }
 
     const updated = await prisma.$transaction(async (tx) => {
+      const lockedCase = await lockWorkResultCase(tx, id, actor);
+      if (lockedCase.status !== currentCase.status || lockedCase.statusUpdatedAt?.getTime() !== currentCase.statusUpdatedAt?.getTime()) throw new WorkResultError('status_conflict', 409);
+      if (statusChanged && nextStatus) await requirePublishedWorkResult(tx, id, nextStatus);
       const caseRecord = await tx.case.update({
         where: { id },
         data: updateData,
@@ -1051,6 +1070,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json({ success: true, case: updated });
   } catch (error) {
+    if (error instanceof WorkResultError) return workResultFailure(error);
     console.error('Admin case update error:', error);
 
     return NextResponse.json(
