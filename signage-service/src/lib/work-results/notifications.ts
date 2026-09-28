@@ -37,6 +37,8 @@ export async function deliverWorkResultNotifications(caseId: string, retryStale 
       const url = new URL('/' + locale + '/portal/requests/' + encodeURIComponent(record.publicRequestNumber || '') + '/report', SITE_BASE_URL).toString();
       const sent = await sendWorkResultEmail({
         to: row.email, subject: copy.emailSubject + ' · ' + record.publicRequestNumber,
+        portalLabel: copy.emailPortalLabel, heading: copy.title,
+        publicRequestNumber: record.publicRequestNumber || '',
         body: copy.emailBody, url, linkLabel: copy.open, locale,
       });
       await prisma.workResultNotification.updateMany({ where: claim,
