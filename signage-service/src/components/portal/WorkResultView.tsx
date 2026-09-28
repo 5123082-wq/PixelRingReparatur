@@ -21,7 +21,7 @@ export default function WorkResultView({ result, locale, publicRequestNumber, pr
         <h2 className="text-lg font-black">{copy.title}</h2>
         {result && !preview && (printVersion ?
           <button type="button" disabled={!readyToPrint} onClick={() => window.print()} className="report-controls rounded-xl border px-4 py-2 text-sm font-bold disabled:opacity-40">{copy.print}{!readyToPrint ? ' …' : ''}</button> :
-          <Link href={'/portal/requests/' + encodeURIComponent(publicRequestNumber) + '/report'} className="report-controls rounded-xl border px-4 py-2 text-sm font-bold">{copy.print}</Link>)}
+          <Link href={'/portal/requests/' + encodeURIComponent(publicRequestNumber) + '/report/print'} target="_blank" rel="noopener noreferrer" className="report-controls rounded-xl border px-4 py-2 text-sm font-bold">{copy.print}</Link>)}
       </div>
       {!result ? <p className="mt-4 text-sm text-slate-600">{copy.empty}</p> : <>
         {printVersion && <p className="mt-3 font-bold">PixelRing · <span dir="ltr">{publicRequestNumber}</span></p>}

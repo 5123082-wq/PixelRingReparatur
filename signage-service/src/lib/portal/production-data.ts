@@ -296,7 +296,7 @@ function buildOrganization(input: {
       return [{ id: revision.id, type: 'REPORT' as const, title: record.publicRequestNumber || '',
         relatedTo: record.publicRequestNumber || '', requestId: record.id,
         issuedAt: formatDate(revision.publishedAt, locale), status: 'available' as const,
-        href: '/portal/requests/' + encodeURIComponent(record.publicRequestNumber || '') + '/report' }];
+        href: '/portal/requests/' + encodeURIComponent(record.publicRequestNumber || '') + '#repair-report' }];
     }),
     requiredActions: [],
   };
