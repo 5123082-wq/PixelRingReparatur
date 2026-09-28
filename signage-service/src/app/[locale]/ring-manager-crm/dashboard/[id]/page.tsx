@@ -6,6 +6,11 @@ import { useState, useEffect, use, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import WorkResultEditor from '@/components/admin/WorkResultEditor';
+import StageWindow from '@/components/admin/StageWindow';
+import useCaseStatusTransition from '@/components/admin/useCaseStatusTransition';
+import type { CaseStatus } from '@prisma/client';
+import type { CaseStatusSnapshot } from '@/lib/case-transition-types';
 import { adminFetch } from '@/lib/admin-fetch';
 import { withLocalePath } from '../../../admin-route';
 
@@ -23,6 +28,10 @@ type CaseDetail = {
   id: string;
   publicRequestNumber: string | null;
   status: string;
+  canManage: boolean;
+  allowedStatuses: string[];
+  allowedTargetStatuses: string[];
+  statusState: CaseStatusSnapshot;
   originChannel: string;
   customerName: string | null;
   customerEmail: string | null;
@@ -94,7 +103,7 @@ type TimelineEvent =
   | { timestamp: number; type: 'message' | 'note'; data: CaseMessage }
   | { timestamp: number; type: 'status'; data: CaseStatusEvent };
 type StatusOption = { value: string; label: string; variant: string };
-type ActiveTab = 'client' | 'master' | 'history';
+type ActiveTab = 'client' | 'master' | 'history' | 'result';
 type ReplyMode = 'customer' | 'internal';
 
 const STATUS_OPTIONS: StatusOption[] = [
@@ -105,8 +114,9 @@ const STATUS_OPTIONS: StatusOption[] = [
   { value: 'IN_PROGRESS', label: 'Ремонт', variant: 'warning' },
   { value: 'ON_HOLD', label: 'Отложено', variant: 'neutral' },
   { value: 'WAITING_FOR_CUSTOMER', label: 'Ожидает клиента', variant: 'warning' },
-  { value: 'READY_FOR_PICKUP', label: 'Готов', variant: 'success' },
-  { value: 'COMPLETED', label: 'Выдан / Гарантия', variant: 'success' },
+  { value: 'WORK_COMPLETED', label: 'Ремонт завершён', variant: 'success' },
+  { value: 'READY_FOR_PICKUP', label: 'Готово к выдаче', variant: 'success' },
+  { value: 'COMPLETED', label: 'Заявка закрыта', variant: 'success' },
   { value: 'CANCELLED', label: 'Отказ', variant: 'error' },
 ];
 
@@ -115,7 +125,7 @@ const CHANNEL_ICONS: Record<string, string> = {
 };
 
 const ACTOR_ROLE_LABELS: Record<string, string> = { CUSTOMER: 'Клиент', OPERATOR: 'Оператор', SYSTEM: 'Система' };
-const ACTIVE_TABS: ActiveTab[] = ['client', 'master', 'history'];
+const ACTIVE_TABS: ActiveTab[] = ['client', 'result', 'master', 'history'];
 const REPLY_MODES: ReplyMode[] = ['customer', 'internal'];
 const REALTIME_EVENT_NAME = 'case.updated';
 
@@ -162,9 +172,9 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
   const previousMessageCountRef = useRef(0);
   const shouldStickToBottomRef = useRef(false);
 
-  const [updating, setUpdating] = useState(false);
   const [newStatus, setNewStatus] = useState('');
   const [statusReason, setStatusReason] = useState('');
+  const [reasonError, setReasonError] = useState('');
   const [assignedOperatorDraft, setAssignedOperatorDraft] = useState('');
   const [updatingAssignment, setUpdatingAssignment] = useState(false);
 
@@ -192,7 +202,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
     });
   }, []);
 
-  const fetchCase = useCallback(async (options: { silent?: boolean } = {}) => {
+  const fetchCase = useCallback(async (options: { silent?: boolean; syncStatus?: boolean } = {}) => {
     if (!options.silent) {
       setLoading(true);
     }
@@ -207,7 +217,11 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
       setCaseData(data.case);
       if (!options.silent) {
         setAssignedOperatorDraft(data.case.assignedOperator || '');
+      }
+      if (!options.silent || options.syncStatus) {
         setNewStatus(data.case.status);
+      } else {
+        setNewStatus((current) => current === data.case.status || data.case.allowedTargetStatuses.includes(current) ? current : data.case.status);
       }
     } catch {
       if (!options.silent) {
@@ -219,6 +233,8 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
       }
     }
   }, [id]);
+
+  const transition = useCaseStatusTransition(id, () => fetchCase({ silent: true }));
 
   useEffect(() => {
     fetchCase();
@@ -322,15 +338,17 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
     };
   }, [id, refreshCaseFromRealtime]);
 
-  async function updateStatus() {
-    setUpdating(true);
-    try {
-      const res = await adminFetch(`/api/admin/cases/${id}`, {
-        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus, statusReason: statusReason.trim() || undefined }),
-      });
-      if (res.ok) { setStatusReason(''); await fetchCase(); }
-    } finally { setUpdating(false); }
+  function updateStatus() {
+    if (!caseData) return;
+    setStatusReason(''); setReasonError('');
+    transition.start(newStatus as CaseStatus, caseData.statusState);
+  }
+
+  async function confirmReason() {
+    if (!statusReason.trim()) { setReasonError('Укажите причину изменения статуса.'); return; }
+    setReasonError('');
+    try { await transition.submitReason(statusReason.trim()); }
+    catch (error) { setReasonError(error instanceof Error ? error.message : 'Не удалось сохранить причину.'); }
   }
 
   async function sendReply() {
@@ -562,27 +580,29 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
           <section className="space-y-5">
              <h3 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.15em]">Control Panel</h3>
              <div className="space-y-4">
-                <Select value={newStatus} onChange={(e) => setNewStatus(e.target.value)} className="bg-transparent border-white/[0.05] h-9 text-xs font-semibold text-white">
-                  {STATUS_OPTIONS.map(opt => <option key={opt.value} value={opt.value} className="bg-zinc-900">{opt.label}</option>)}
+                <Select data-status-transition-trigger aria-label="Статус заявки" disabled={!caseData.canManage || Boolean(transition.target)} value={newStatus} onChange={(e) => setNewStatus(e.target.value)} className="bg-transparent border-white/[0.05] h-9 text-xs font-semibold text-white">
+                  {STATUS_OPTIONS.filter(opt => opt.value === caseData.status || caseData.allowedTargetStatuses.includes(opt.value)).map(opt => <option key={opt.value} value={opt.value} className="bg-zinc-900">{opt.label}</option>)}
                 </Select>
                 {newStatus !== caseData.status && (
                   <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-2">
-                     <Textarea value={statusReason} onChange={(e) => setStatusReason(e.target.value)} placeholder="Reason for change..." className="bg-zinc-900/50 border-white/[0.05] text-[11px] min-h-[60px]" />
-                     <Button onClick={updateStatus} disabled={updating} variant="primary" size="sm" className="w-full font-black text-[10px] h-8 uppercase">Update Status</Button>
+                     <Button onClick={updateStatus} disabled={!caseData.canManage || Boolean(transition.target)} variant="primary" size="sm" className="w-full font-black text-[10px] h-8 uppercase">{transition.busy ? 'Переход…' : 'Изменить статус'}</Button>
                   </motion.div>
                 )}
+                {transition.feedback && <div role="status" className="rounded-xl bg-amber-500/10 p-3 text-xs text-amber-200"><p>{transition.feedback}</p>
+                  {transition.retryable && <div className="mt-2 flex flex-wrap gap-3"><button onClick={transition.retry} className="font-bold underline">Повторить шаг</button><button onClick={transition.stop} className="font-bold underline">Остановить переход</button></div>}
+                </div>}
                 <div className="relative">
-                  <Input value={assignedOperatorDraft} onChange={(e) => setAssignedOperatorDraft(e.target.value)} placeholder="Assign operator..." className="bg-transparent border-white/[0.05] h-8 text-[11px] pr-12" />
-                  <button onClick={updateAssignment} disabled={updatingAssignment} className="absolute right-2 top-1.5 text-[10px] font-black text-indigo-500 uppercase">Save</button>
+                  <Input disabled={!caseData.canManage} value={assignedOperatorDraft} onChange={(e) => setAssignedOperatorDraft(e.target.value)} placeholder="Assign operator..." className="bg-transparent border-white/[0.05] h-8 text-[11px] pr-12" />
+                  <button onClick={updateAssignment} disabled={updatingAssignment || !caseData.canManage} className="absolute right-2 top-1.5 text-[10px] font-black text-indigo-500 uppercase">Save</button>
                 </div>
                 {!caseData.publicRequestNumber && telegramConversation && (
-                  <Button onClick={issuePublicRequestNumber} disabled={issuingPr} variant="primary" size="sm" className="w-full font-black text-[10px] h-8 uppercase">
+                  <Button onClick={issuePublicRequestNumber} disabled={issuingPr || !caseData.canManage} variant="primary" size="sm" className="w-full font-black text-[10px] h-8 uppercase">
                     {issuingPr ? 'Issuing...' : 'Issue PR'}
                   </Button>
                 )}
                 {caseData.publicRequestNumber && (
                   <div className="space-y-2">
-                    <Button onClick={createPortalClaimLink} disabled={creatingPortalLink} variant="primary" size="sm" className="w-full font-black text-[10px] h-8 uppercase">
+                    <Button onClick={createPortalClaimLink} disabled={creatingPortalLink || !caseData.canManage} variant="primary" size="sm" className="w-full font-black text-[10px] h-8 uppercase">
                       {creatingPortalLink ? 'Creating...' : 'Create portal link'}
                     </Button>
                     {portalClaimUrl && (
@@ -720,13 +740,27 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                  key={tid} onClick={() => setActiveTab(tid)}
                  className={`relative h-full flex items-center text-[10px] font-black uppercase tracking-[0.2em] transition-all ${activeTab === tid ? 'text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
                >
-                 {tid === 'client' ? 'Chat with client' : tid === 'master' ? 'Communication Master' : 'Event Timeline'}
+                 {tid === 'result' ? 'Результат ремонта' : tid === 'client' ? 'Chat with client' : tid === 'master' ? 'Communication Master' : 'Event Timeline'}
                  {activeTab === tid && <motion.div layoutId="nav-line" className="absolute bottom-0 left-0 right-0 h-[2px] bg-indigo-500" />}
                </button>
              ))}
           </nav>
 
           <div className="flex flex-1 min-h-0 flex-col overflow-hidden">
+            <div className={activeTab === 'result' || transition.requirement?.kind === 'work_result' ? 'min-h-0 flex-1 overflow-y-auto' : 'hidden'}>
+              <WorkResultEditor caseId={id} caseStatus={caseData.status} publicRequestNumber={caseData.publicRequestNumber} attachments={caseData.attachments}
+                transition={transition.requirement?.kind === 'work_result' ? { targetLabel: formatStatusLabel(transition.target), publish: transition.publishReport, stop: transition.stop } : undefined}
+                onPublished={() => fetchCase({ silent: true })} />
+            </div>
+            <StageWindow open={transition.requirement?.kind === 'reason'} title={'Переход к статусу «' + formatStatusLabel(transition.target) + '»'} onClose={transition.stop}>
+              <form className="space-y-4 p-5" onSubmit={(event) => { event.preventDefault(); void confirmReason(); }}>
+                <label className="block text-sm">Причина изменения статуса · обязательно
+                  <Textarea autoFocus required maxLength={500} disabled={transition.busy} value={statusReason} onChange={(event) => setStatusReason(event.target.value)} className="mt-2 min-h-28 bg-zinc-900 text-white" />
+                </label>
+                {reasonError && <p role="alert" className="text-sm text-red-300">{reasonError}</p>}
+                <Button type="submit" disabled={transition.busy} variant="primary">{transition.busy ? 'Сохранение…' : 'Сохранить причину и продолжить'}</Button>
+              </form>
+            </StageWindow>
             <AnimatePresence mode="wait">
               {activeTab === 'client' && (
                 <motion.div key="chat" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-1 min-h-0 flex-col">
@@ -774,18 +808,18 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                                  {m === 'customer' ? (telegramConversation ? 'Reply via Telegram' : 'Reply to client') : 'Internal Note'}
                               </button>
                             ))}
-                            <button onClick={() => updateAiControl(!aiAutomationEnabled)} className={`ml-auto text-[8px] font-black px-2 py-0.5 rounded border ${aiAutomationEnabled ? 'border-emerald-500/30 text-emerald-500' : 'border-red-500/30 text-red-500'} uppercase`}>
+                            <button disabled={!caseData.canManage} onClick={() => updateAiControl(!aiAutomationEnabled)} className={`ml-auto text-[8px] font-black px-2 py-0.5 rounded border ${aiAutomationEnabled ? 'border-emerald-500/30 text-emerald-500' : 'border-red-500/30 text-red-500'} uppercase`}>
                                AI: {aiAutomationEnabled ? 'ON' : 'OFF'}
                             </button>
                          </div>
                          <div className="flex items-end p-2 gap-2">
                             <textarea 
-                               value={replyText} onChange={(e) => setReplyText(e.target.value)}
+                               disabled={!caseData.canManage} value={replyText} onChange={(e) => setReplyText(e.target.value)}
                                placeholder="Type your message..."
                                className="flex-1 bg-transparent px-4 py-3 text-sm text-white outline-none resize-none min-h-[44px] max-h-[200px]"
                             />
                             <button 
-                               onClick={sendReply} disabled={!replyText.trim() || sendingReply}
+                               onClick={sendReply} disabled={!caseData.canManage || !replyText.trim() || sendingReply}
                                className={`w-9 h-9 shrink-0 flex items-center justify-center rounded-full transition-all ${replyText.trim() ? (replyMode === 'customer' ? 'bg-indigo-600' : 'bg-amber-600') : 'bg-zinc-800'}`}
                             >
                                {sendingReply ? <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <span className="text-white text-lg">↑</span>}

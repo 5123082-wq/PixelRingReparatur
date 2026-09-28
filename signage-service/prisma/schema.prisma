@@ -13,6 +13,7 @@ enum CaseStatus {
   UNDER_REVIEW
   WAITING_FOR_CUSTOMER
   IN_PROGRESS
+  WORK_COMPLETED
   ON_HOLD
   READY_FOR_PICKUP
   COMPLETED
@@ -178,6 +179,8 @@ model Case {
   statusEvents             CaseStatusEvent[]
   auditLogs                AdminAuditLog[]
   readStates               CaseReadState[]
+  workResult               WorkResult?
+  workResultUploads        WorkResultUpload[]
 
   @@index([status, updatedAt])
   @@index([originChannel, createdAt])
@@ -323,11 +326,92 @@ model Attachment {
   case                Case?                     @relation(fields: [caseId], references: [id], onDelete: Cascade)
   message             Message?                  @relation(fields: [messageId], references: [id], onDelete: SetNull)
   uploadedBySession   Session?                  @relation("SessionUploads", fields: [uploadedBySessionId], references: [id], onDelete: SetNull)
+  workResultPhotos    WorkResultPhoto[]
+  workResultUpload    WorkResultUpload?
 
   @@index([caseId, createdAt])
   @@index([messageId])
   @@index([uploadedBySessionId])
   @@map("attachments")
+}
+
+model WorkResult {
+  id               String               @id @default(uuid()) @db.Uuid
+  caseId           String               @unique @db.Uuid
+  version          Int                  @default(0)
+  publishedVersion Int                  @default(0)
+  draft            Json?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  case             Case                 @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  revisions        WorkResultRevision[]
+
+  @@map("work_results")
+}
+
+model WorkResultRevision {
+  id               String                   @id @default(uuid()) @db.Uuid
+  workResultId     String                   @db.Uuid
+  number           Int
+  content          Json
+  correctionReason String?
+  noPhotoReason    String?
+  publishedById    String                   @db.Uuid
+  publishedAt      DateTime                 @default(now())
+  workResult       WorkResult               @relation(fields: [workResultId], references: [id], onDelete: Cascade)
+  photos           WorkResultPhoto[]
+  notifications    WorkResultNotification[]
+
+  @@unique([workResultId, number])
+  @@map("work_result_revisions")
+}
+
+model WorkResultPhoto {
+  id           String             @id @default(uuid()) @db.Uuid
+  revisionId   String             @db.Uuid
+  attachmentId String             @db.Uuid
+  position     Int
+  category     String
+  caption      String?
+  revision     WorkResultRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+  attachment   Attachment         @relation(fields: [attachmentId], references: [id], onDelete: Restrict)
+
+  @@unique([revisionId, attachmentId])
+  @@map("work_result_photos")
+}
+
+model WorkResultUpload {
+  id           String      @id @default(uuid()) @db.Uuid
+  caseId       String      @db.Uuid
+  adminUserId  String      @db.Uuid
+  pathname     String      @unique
+  mimeType     String
+  filename     String
+  expiresAt    DateTime
+  attachmentId String?     @unique @db.Uuid
+  createdAt    DateTime    @default(now())
+  case         Case        @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  attachment   Attachment? @relation(fields: [attachmentId], references: [id], onDelete: SetNull)
+
+  @@index([caseId, expiresAt])
+  @@map("work_result_uploads")
+}
+
+model WorkResultNotification {
+  id           String             @id @default(uuid()) @db.Uuid
+  revisionId   String             @db.Uuid
+  portalUserId String             @db.Uuid
+  email        String
+  state        String             @default("PENDING")
+  attempts     Int                @default(0)
+  lastError    String?
+  startedAt    DateTime?
+  sentAt       DateTime?
+  createdAt    DateTime           @default(now())
+  revision     WorkResultRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+
+  @@unique([revisionId, email])
+  @@map("work_result_notifications")
 }
 
 model Session {
@@ -489,7 +573,8 @@ model PortalUser {
   @@map("portal_users")
 }
 
-// A one-use permission to submit a guest request, never an account/access token.
+// A browser-bound email challenge. Successful verification can sign in an
+// existing account; the proof itself is never a portal session token.
 model IntakeEmailVerification {
   id              String    @id @default(uuid()) @db.Uuid
   tokenHash       String    @unique

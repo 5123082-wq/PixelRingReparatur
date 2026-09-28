@@ -11,7 +11,8 @@ Exists now:
 - internal CMS/admin platform starter for content, media, SEO, and AI configuration;
 - persisted AI chat and knowledge-backed assistant starter;
 - first request-bound client-portal production identity foundation;
-- security and audit starter.
+- security and audit starter;
+- implemented repair completion, structured photo reports, and sequential status transitions with stage-specific confirmation; the production migration is applied and the authorized release is tracked in the [current execution guide](../06_crm/repair_completion_photo_reports.md).
 
 Do not assume these exist unless verified in code:
 
@@ -19,7 +20,7 @@ Do not assume these exist unless verified in code:
 - user accounts beyond the implemented portal identity foundation;
 - organizations or customer employees/members;
 - invoices, payments, or billing;
-- structured photo reports;
+- broader report/archive workflows beyond the implemented repair-result report;
 - warranty module;
 - full RBAC;
 - Bitrix24 production sync;
@@ -142,6 +143,7 @@ Implemented:
 - CRM case detail view.
 - Manual case creation.
 - Case status changes.
+- Implemented open `WORK_COMPLETED` stage and atomic report publication, private draft/revisions, owner-only photo exception, portal print view, and notification retry; authorized production release tracked in the [release log](../11_operations/crm_portal_release_2026-09-28.md).
 - Assigned operator starter field.
 - Customer-visible operator replies.
 - Internal note starter flow.
@@ -350,7 +352,7 @@ Still incomplete:
 - standalone portal login without a request claim;
 - organization/member portal access;
 - object/location/asset persistence for portal views;
-- customer-visible document/report/warranty downloads;
+- broad document and warranty downloads; the request-bound repair report and protected browser print view are implemented; see the [release log](../11_operations/crm_portal_release_2026-09-28.md) for deployment status;
 - portal-created request flow;
 - SMS/voice or operator-assisted phone recovery;
 - server deployment, migration application, and rollout testing.
@@ -509,20 +511,21 @@ Not implemented now:
 
 ### Photo Reports And Warranties
 
-Future/open scope:
+Implemented on 2026-09-28; production migration applied and authorized deployment tracked in the [release log](../11_operations/crm_portal_release_2026-09-28.md):
 
-- structured photo reports;
-- customer-visible service reports;
-- warranty documents;
-- warranty claims;
-- warranty file access.
+- one repair result per case, editable draft and immutable published revisions;
+- separate open repair-completed status, without mandatory warranty or payment checks;
+- manager workflow and owner-only exception without a final photo;
+- protected customer report/photo routes, browser printing and six-language publication emails;
+- legacy ready/closed cases retain their statuses and history.
 
-Not implemented now:
+See [repair completion and photo reports](../06_crm/repair_completion_photo_reports.md) for the active scope, tests and rollout boundary.
 
-- `PhotoReport` model;
-- `Warranty` model;
-- customer-facing report route;
-- structured warranty workflow.
+Future scope:
+
+- warranty model, documents, claims and protected warranty files;
+- a new final-closure form with an optional warranty field;
+- broader document/archive workflows.
 
 ### Bitrix24 CRM Integration
 

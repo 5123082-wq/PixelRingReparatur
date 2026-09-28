@@ -1,4 +1,5 @@
 import 'server-only';
+import { getWorkResultCopy } from '@/lib/work-results/copy';
 
 import type { CaseStatus, MessageAuthorRole, Prisma, PrismaClient } from '@prisma/client';
 
@@ -56,6 +57,7 @@ type PortalCaseRecord = {
     mimeType: string;
     createdAt: Date;
   }[];
+  workResult?: { publishedVersion: number; revisions: { id: string; number: number; publishedAt: Date }[] } | null;
   statusEvents: {
     id: string;
     toStatus: CaseStatus;
@@ -97,8 +99,11 @@ function mapStatus(status: CaseStatus): PortalRequestStatus {
       return 'WAITING_FOR_CUSTOMER';
     case 'IN_PROGRESS':
     case 'ON_HOLD':
-    case 'READY_FOR_PICKUP':
       return 'IN_PROGRESS';
+    case 'WORK_COMPLETED':
+      return 'WORK_COMPLETED';
+    case 'READY_FOR_PICKUP':
+      return 'READY_FOR_PICKUP';
     case 'COMPLETED':
     case 'CANCELLED':
       return 'COMPLETED';
@@ -111,6 +116,9 @@ function mapStatus(status: CaseStatus): PortalRequestStatus {
 }
 
 function nextStepForStatus(status: CaseStatus, locale?: string | null): string {
+  if (status === 'WORK_COMPLETED') return getWorkResultCopy(locale).next;
+  if (status === 'READY_FOR_PICKUP') return getWorkResultCopy(locale).ready;
+  if (status === 'COMPLETED') return getWorkResultCopy(locale).closed;
   if (locale === 'ru') {
     switch (status) {
       case 'WAITING_FOR_CUSTOMER':
@@ -119,10 +127,6 @@ function nextStepForStatus(status: CaseStatus, locale?: string | null): string {
         return 'Заявка в работе. PixelRing координирует следующие шаги.';
       case 'ON_HOLD':
         return 'Заявка временно на паузе. Ваш контакт сообщит следующий шаг.';
-      case 'READY_FOR_PICKUP':
-        return 'Следующий рабочий шаг подготовлен.';
-      case 'COMPLETED':
-        return 'Заявка завершена.';
       case 'CANCELLED':
         return 'Заявка закрыта.';
       case 'DRAFT':
@@ -140,10 +144,6 @@ function nextStepForStatus(status: CaseStatus, locale?: string | null): string {
       return 'Die Anfrage ist in Bearbeitung. PixelRing koordiniert die naechsten Schritte.';
     case 'ON_HOLD':
       return 'Die Anfrage ist voruebergehend pausiert. Ihr Ansprechpartner meldet sich mit dem naechsten Schritt.';
-    case 'READY_FOR_PICKUP':
-      return 'Die Anfrage ist fuer den naechsten operativen Schritt vorbereitet.';
-    case 'COMPLETED':
-      return 'Die Anfrage ist abgeschlossen.';
     case 'CANCELLED':
       return 'Die Anfrage wurde geschlossen.';
     case 'DRAFT':
@@ -290,7 +290,14 @@ function buildOrganization(input: {
     ),
     requestTimeline: input.cases.flatMap(mapTimeline),
     customerAttachments: input.cases.flatMap(mapAttachments),
-    documents: [],
+    documents: input.cases.flatMap((record) => {
+      const revision = record.workResult?.revisions[0];
+      if (!revision || revision.number !== record.workResult?.publishedVersion) return [];
+      return [{ id: revision.id, type: 'REPORT' as const, title: record.publicRequestNumber || '',
+        relatedTo: record.publicRequestNumber || '', requestId: record.id,
+        issuedAt: formatDate(revision.publishedAt, locale), status: 'available' as const,
+        href: '/portal/requests/' + encodeURIComponent(record.publicRequestNumber || '') + '/report' }];
+    }),
     requiredActions: [],
   };
 }
@@ -371,6 +378,10 @@ async function getPortalUserWithCases(db: PortalDb, portalUserId: string) {
                   createdAt: true,
                 },
               },
+              workResult: { select: { publishedVersion: true, revisions: {
+                orderBy: { number: 'desc' }, take: 1,
+                select: { id: true, number: true, publishedAt: true },
+              } } },
               statusEvents: {
                 orderBy: {
                   createdAt: 'asc',
@@ -403,7 +414,7 @@ export async function getPortalOrganizationForUser(
 
   const cases = portalUser.caseAccesses
     .map((access) => access.case)
-    .filter((caseRecord): caseRecord is PortalCaseRecord => Boolean(caseRecord.publicRequestNumber));
+    .filter((caseRecord) => Boolean(caseRecord.publicRequestNumber));
 
   return buildOrganization({
     portalUserId: portalUser.id,

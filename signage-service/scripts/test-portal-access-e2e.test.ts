@@ -61,9 +61,17 @@ async function startSmtpSink() {
         if (dataMode) {
           const end = buffer.indexOf('\r\n.\r\n');
           if (end < 0) break;
-          const raw = buffer.slice(0, end).replace(/=\r\n/g, '');
-          emails.push(Buffer.from(raw.replace(/=([0-9A-F]{2})/gi, (_, hex) =>
-            String.fromCharCode(parseInt(hex, 16))), 'latin1').toString('utf8'));
+          const raw = buffer.slice(0, end);
+          // Nodemailer chooses quoted-printable or base64 depending on the text.
+          emails.push(raw.split(/(?=^--)/m).map((part) => {
+            const separator = part.indexOf('\r\n\r\n');
+            const header = part.slice(0, separator);
+            if (separator >= 0 && /Content-Transfer-Encoding: base64/i.test(header)) {
+              return header + '\r\n\r\n' + Buffer.from(part.slice(separator + 4).replace(/\s/g, ''), 'base64').toString('utf8');
+            }
+            return Buffer.from(part.replace(/=\r\n/g, '').replace(/=([0-9A-F]{2})/gi, (_, hex) =>
+              String.fromCharCode(parseInt(hex, 16))), 'latin1').toString('utf8');
+          }).join(''));
           buffer = buffer.slice(end + 5);
           dataMode = false;
           socket.write('250 accepted\r\n');
@@ -165,6 +173,25 @@ async function postJson(
   return { response, json: await readJson(response) };
 }
 
+// Exercise the real code flow against the local SMTP sink. Age only this
+// fixture's earlier challenges so independent scenarios do not share cooldowns.
+async function confirmIntakeEmail(email: string, cookie = '') {
+  await prisma.intakeEmailVerification.updateMany({
+    where: { emailNormalized: email }, data: { createdAt: pastDate() },
+  });
+  const start = await postJson('/api/contact/verification', { action: 'start', email },
+    { cookie, tag: 'confirm-intake-start', sameOrigin: true });
+  assert.equal(start.response.status, 200, JSON.stringify(start.json));
+  const token = readCookie(start.response, 'pixelring_intake_verification');
+  assert.ok(token);
+  const proofCookie = `${cookie}; pixelring_intake_verification=${token}`;
+  const verified = await postJson('/api/contact/verification', { action: 'verify', email, code: codeFor(email) },
+    { cookie: proofCookie, tag: 'confirm-intake-verify', sameOrigin: true });
+  assert.equal(verified.response.status, 200, JSON.stringify(verified.json));
+  const portalToken = readCookie(verified.response, PORTAL_COOKIE);
+  return portalToken ? `${PORTAL_COOKIE}=${portalToken}` : proofCookie;
+}
+
 function startDevServer(demoEnabled = false): ChildProcessByStdio<null, Readable, Readable> {
   const child = spawn('npm', ['run', 'dev', '--', '--port', String(PORT)], {
     cwd: projectRoot,
@@ -226,7 +253,7 @@ async function waitForServerReady(timeoutMs = 120_000): Promise<void> {
       const response = await fetch(`${BASE_URL}/api/portal/session-state`, {
         headers: nextRequestHeaders({ tag: 'readiness' }),
       });
-      if (response.status >= 100 && response.status < 600) return;
+      if (response.status === 200) return;
     } catch {
       // Keep polling until Next.js is ready.
     }
@@ -974,7 +1001,7 @@ test('S-01/S-02 access boundaries hold through real HTTP routes', { timeout: 180
   issuedRequestForm.set('message', fixture.issuedRequestMarker);
   const issuedRequestResponse = await fetch(`${BASE_URL}/api/contact`, {
     method: 'POST',
-    headers: nextRequestHeaders({ tag: 'issued-request' }),
+    headers: nextRequestHeaders({ cookie: await confirmIntakeEmail(issuedEmail), tag: 'issued-request' }),
     body: issuedRequestForm,
   });
   const issuedRequest = await readJson(issuedRequestResponse);
@@ -1254,9 +1281,14 @@ test('S-01/S-02 access boundaries hold through real HTTP routes', { timeout: 180
   assert.ok(consumedPhoneClaim?.consumedAt);
 });
 
-test('website receipts link only authenticated users or explicitly confirmed email claims', { timeout: 180_000 }, async () => {
+test('website receipts link after inline login and retain optional guest account creation', { timeout: 180_000 }, async () => {
   const email = `receipt-${RUN_ID}@pixelring.test`;
-  async function submit(contact: string, cookie?: string, extra?: Record<string, string>, locale = 'de') {
+  async function submit(contact: string, cookie?: string, extra?: Record<string, string>, locale = 'de', verifyEmail = true) {
+    if (verifyEmail) {
+      const state = await postJson('/api/contact/verification', { action: 'state', email: contact },
+        { cookie, tag: 'receipt-state', sameOrigin: true });
+      if (state.json.required) cookie = await confirmIntakeEmail(contact, cookie);
+    }
     const form = new FormData();
     form.set('email', contact);
     form.set('message', 'Receipt integration test');
@@ -1265,12 +1297,13 @@ test('website receipts link only authenticated users or explicitly confirmed ema
       method: 'POST', headers: { ...nextRequestHeaders({ cookie, tag: 'receipt-submit', sameOrigin: true }), referer: `${BASE_URL}/${locale}` }, body: form,
     });
     const json = await readJson(response);
+    if (!verifyEmail) return { response, json, record: null, cookie };
     assert.equal(response.status, 200, JSON.stringify(json));
     const record = await prisma.case.findUnique({ where: { publicRequestNumber: json.publicRequestNumber } });
     assert.ok(record);
     ids.cases.push(record.id);
     assert.equal(json.portalClaimUrl, undefined);
-    return { response, json, record };
+    return { response, json, record, cookie };
   }
   async function assertUnlinked(caseId: string) {
     assert.equal(await prisma.portalCaseAccess.count({ where: { caseId } }), 0);
@@ -1310,25 +1343,17 @@ test('website receipts link only authenticated users or explicitly confirmed ema
   const passwordHash = user.passwordHash;
   assert.equal(await prisma.portalCaseAccess.count({ where: { caseId: first.record.id, portalUserId: user.id } }), 1);
 
-  // Existing account, no login: public receipt identical; different private email; no automatic grant.
+  // Existing account, no login: the inline code signs in, then intake links
+  // the new request without a second verification or an activation email.
   const second = await submit(email);
-  assert.deepEqual(Object.keys(second.json).sort(), Object.keys(first.json).sort());
-  assert.equal(second.json.portalLinked, false);
-  assert.match(emailFor(email), /Anfrage zum Kundenportal hinzufügen/);
-  assert.doesNotMatch(emailFor(email), /Kundenkonto erstellen/);
-  await assertUnlinked(second.record.id);
-  const secondLink = claimUrl(email);
-  const existingVerification = await verifyClaim(email, secondLink, true);
-  await assertUnlinked(second.record.id);
-  const confirmed = await postJson('/api/portal/claim/set-password', { verificationToken: existingVerification }, { tag: 'receipt-confirm', sameOrigin: true });
-  assert.equal(confirmed.response.status, 200, JSON.stringify(confirmed.json));
-  assert.equal((await prisma.portalUser.findUnique({ where: { id: user.id } })).passwordHash, passwordHash);
+  assert.equal(second.json.portalLinked, true);
+  assert.equal(await prisma.portalClaimLink.count({ where: { caseId: second.record.id } }), 0);
   assert.equal(await prisma.portalCaseAccess.count({ where: { caseId: second.record.id, portalUserId: user.id } }), 1);
-  const replay = await postJson('/api/portal/claim/set-password', { verificationToken: existingVerification }, { tag: 'receipt-replay', sameOrigin: true });
-  assert.equal(replay.response.status, 400);
+  assert.equal((await prisma.portalUser.findUnique({ where: { id: user.id } })).passwordHash, passwordHash);
+  assert.doesNotMatch(emailFor(email), /Link: https?:/);
 
   // Logged in: account comes from session, never from the contact field.
-  const portalToken = readCookie(confirmed.response, PORTAL_COOKIE);
+  const portalToken = second.cookie?.match(/pixelring_portal_session=([^;]+)/)?.[1];
   assert.ok(portalToken);
   const cookie = `${PORTAL_COOKIE}=${portalToken}`;
   const mailCount = emails.length;
@@ -1344,9 +1369,8 @@ test('website receipts link only authenticated users or explicitly confirmed ema
   assert.equal(detail.status, 200);
 
   // Invalid portal cookies cannot grant access based on email alone.
-  const invalid = await submit(email, `${PORTAL_COOKIE}=invalid`);
-  assert.equal(invalid.json.portalLinked, false);
-  await assertUnlinked(invalid.record.id);
+  const invalid = await submit(email, `${PORTAL_COOKIE}=invalid`, undefined, 'de', false);
+  assert.equal(invalid.response.status, 409);
 
   // Existing chat drafts and files migrate only into the new request, with portal access granted.
   const chatStart = await fetch(`${BASE_URL}/api/chat/messages`, { headers: nextRequestHeaders({ tag: 'receipt-chat-start' }) });
@@ -1386,7 +1410,7 @@ test('website receipts link only authenticated users or explicitly confirmed ema
   assert.equal(await prisma.message.count({ where: { caseId: nextChatRequest.record.id, authorRole: 'CUSTOMER', body: 'New independent chat request' } }), 1);
   assert.equal(await prisma.message.count({ where: { caseId: nextChatRequest.record.id, body: 'Receipt chat draft' } }), 0);
   await assertHistoryReceipt(nextChatRequest.response, nextChatRequest.json.publicRequestNumber, true);
-  const guestChatRequest = await submit(email, undefined, { isFromChat: 'true' });
+  const guestChatRequest = await submit(`guest-chat-${RUN_ID}@pixelring.test`, undefined, { isFromChat: 'true' });
   await assertUnlinked(guestChatRequest.record.id);
   await assertHistoryReceipt(guestChatRequest.response, guestChatRequest.json.publicRequestNumber, false);
 
@@ -1401,9 +1425,8 @@ test('website receipts link only authenticated users or explicitly confirmed ema
       expiresAt: token.startsWith('expired') ? pastDate() : futureDate(),
       revokedAt: token.startsWith('revoked') ? pastDate() : undefined, tag: 'receipt-invalid-session',
     });
-    const unlinked = await submit(email, `${PORTAL_COOKIE}=${token}`);
-    assert.equal(unlinked.json.portalLinked, false);
-    await assertUnlinked(unlinked.record.id);
+    const blocked = await submit(email, `${PORTAL_COOKIE}=${token}`, undefined, 'de', false);
+    assert.equal(blocked.response.status, 409);
   }
 
   for (const locale of ['de', 'en', 'ru', 'tr', 'pl', 'ar']) {
@@ -1490,7 +1513,7 @@ test('guest repeat request confirms email inline without creating or granting an
   assert.deepEqual(start.json, { sent: true, retryAfter: 60 });
   const token = readCookie(start.response, verificationCookie)!;
   assert.ok(token); assert.match(start.response.headers.get('set-cookie')!, /HttpOnly/);
-  assert.match(emailFor(email), /Личный кабинет создан не будет/);
+  assert.match(emailFor(email), /Новый личный кабинет создан не будет/);
   const cookie = `${oldCookie}; ${verificationCookie}=${token}`;
   const code = codeFor(email);
   assert.equal((await step({ action: 'verify', code })).response.status, 400, 'code without its browser cookie');
@@ -1579,6 +1602,113 @@ test('intake delivery failure never reports sent; resend yields a usable replace
   const state = await postJson(endpoint, { action: 'state', email }, { cookie, tag: 'intake-expired-proof', sameOrigin: true });
   assert.equal(state.json.required, true);
   assert.equal(state.json.verified, false);
+});
+
+test('inline email verification logs in once and links only the submitted request', { timeout: 180_000 }, async () => {
+  const email = `inline-login-${RUN_ID}@pixelring.test`;
+  const alias = `inline-alias-${RUN_ID}@pixelring.test`;
+  const user = await prisma.portalUser.create({ data: {
+    primaryEmail: email, primaryEmailNormalized: email, status: 'ACTIVE',
+    emails: { create: { email: alias, emailNormalized: alias, verifiedAt: new Date() } },
+  } });
+  ids.portalUsers.push(user.id);
+  const endpoint = '/api/contact/verification';
+  const step = (body: Record<string, unknown>, cookie?: string) => postJson(endpoint,
+    { email: alias, ...body }, { cookie, tag: 'inline-login', sameOrigin: true });
+  // Fresh browsers receive the same challenge for existing and unknown addresses.
+  const existingState = await step({ action: 'state' });
+  const guestState = await step({ action: 'state', email: `unknown-${RUN_ID}@pixelring.test` });
+  assert.deepEqual(existingState.json, { required: true, verified: false });
+  assert.deepEqual(existingState.json, guestState.json);
+  const start = await step({ action: 'start', locale: 'ru' });
+  assert.equal(start.response.status, 200);
+  assert.deepEqual(start.json, { sent: true, retryAfter: 60 });
+  assert.match(emailFor(alias), /ввод кода выполнит вход/);
+  const proof = readCookie(start.response, 'pixelring_intake_verification')!;
+  const cookie = `pixelring_intake_verification=${proof}`;
+  const code = codeFor(alias);
+  const sessionsBefore = await prisma.session.count({ where: { portalUserId: user.id } });
+  for (const invalid of [
+    await step({ action: 'verify', code }),
+    await step({ action: 'verify', code, email }),
+    await step({ action: 'verify', code: code === '000000' ? '000001' : '000000' }, cookie),
+  ]) {
+    assert.equal(invalid.response.status, 400);
+    assert.equal(readCookie(invalid.response, PORTAL_COOKIE), null);
+  }
+  assert.equal(await prisma.session.count({ where: { portalUserId: user.id } }), sessionsBefore);
+  const verified = await Promise.all([step({ action: 'verify', code }, cookie), step({ action: 'verify', code }, cookie)]);
+  assert.deepEqual(verified.map(x => x.response.status).sort(), [200, 400]);
+  const success = verified.find(x => x.response.ok)!;
+  assert.deepEqual(success.json, { verified: true, authenticated: true });
+  assert.match(success.response.headers.get('set-cookie')!, /HttpOnly/i);
+  assert.match(success.response.headers.get('set-cookie')!, /SameSite=lax/i);
+  const portalToken = readCookie(success.response, PORTAL_COOKIE)!;
+  const portalCookie = `${PORTAL_COOKIE}=${portalToken}`;
+  const session = await prisma.session.findUnique({ where: { tokenHash: sha256(portalToken) } });
+  assert.equal(session.scope, 'PORTAL_AUTH');
+  assert.equal(session.portalUserId, user.id);
+  assert.equal(await prisma.session.count({ where: { portalUserId: user.id } }), sessionsBefore + 1);
+  assert.ok((await prisma.intakeEmailVerification.findUnique({ where: { tokenHash: sha256(proof) } })).consumedAt);
+  assert.equal((await step({ action: 'verify', code }, cookie)).response.status, 400);
+  assert.equal((await step({ action: 'state' }, cookie)).json.verified, false);
+  assert.equal(await prisma.portalCaseAccess.count({ where: { portalUserId: user.id } }), 0, 'login does not claim previous requests');
+  const profile = await fetch(`${BASE_URL}/api/portal/session-state`, { headers: nextRequestHeaders({ cookie: portalCookie, tag: 'inline-profile' }) });
+  assert.deepEqual(await readJson(profile), { authenticated: true, email: alias, mode: 'production' });
+  const mailCount = emails.length;
+  for (const isFromChat of [false, true]) {
+    const form = new FormData();
+    form.set('email', alias); form.set('message', 'Inline login request');
+    form.set('name', 'Preserved name'); form.set('location', 'Preserved address');
+    form.set('isFromChat', String(isFromChat));
+    form.set('files', new Blob([Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a3ioAAAAASUVORK5CYII=', 'base64')], { type: 'image/png' }), 'inline.png');
+    const response = await fetch(`${BASE_URL}/api/contact`, { method: 'POST', body: form,
+      headers: nextRequestHeaders({ cookie: portalCookie, tag: 'inline-submit', sameOrigin: true }) });
+    const result = await readJson(response);
+    assert.equal(response.status, 200, JSON.stringify(result));
+    assert.equal(result.portalLinked, true);
+    const record = await prisma.case.findUnique({ where: { publicRequestNumber: result.publicRequestNumber }, include: { attachments: true } });
+    ids.cases.push(record.id);
+    assert.equal(record.customerName, 'Preserved name');
+    assert.equal(record.serviceLocation, 'Preserved address');
+    assert.equal(record.attachments.length, 1);
+    assert.equal(await prisma.portalClaimLink.count({ where: { caseId: record.id } }), 0);
+    assert.equal(await prisma.portalCaseAccess.count({ where: { portalUserId: user.id, caseId: record.id, revokedAt: null } }), 1);
+    const detail = await fetch(`${BASE_URL}/de/portal/requests/${result.publicRequestNumber}`, { headers: nextRequestHeaders({ cookie: portalCookie, tag: 'inline-detail' }) });
+    assert.equal(detail.status, 200);
+  }
+  assert.equal(emails.length, mailCount, 'no second invitation email');
+});
+
+test('inline login preserves active sessions and never promotes disabled users or old guest proofs', { timeout: 120_000 }, async () => {
+  const endpoint = '/api/contact/verification';
+  for (const mode of ['disabled', 'already-signed-in', 'guest-proof'] as const) {
+    const email = `inline-${mode}-${RUN_ID}@pixelring.test`;
+    let user: any = null;
+    if (mode !== 'guest-proof') {
+      user = await prisma.portalUser.create({ data: {
+        primaryEmail: email, primaryEmailNormalized: email, status: mode === 'disabled' ? 'DISABLED' : 'ACTIVE',
+      } });
+      ids.portalUsers.push(user.id);
+    }
+    const start = await postJson(endpoint, { action: 'start', email }, { tag: 'inline-guard-start', sameOrigin: true });
+    assert.equal(start.response.status, 200);
+    const proof = readCookie(start.response, 'pixelring_intake_verification')!;
+    const cookie = `pixelring_intake_verification=${proof}${mode === 'already-signed-in' ? `; ${PORTAL_COOKIE}=${fixture.portalToken}` : ''}`;
+    const code = codeFor(email);
+    const verified = await postJson(endpoint, { action: 'verify', email, code }, { cookie, tag: 'inline-guard-verify', sameOrigin: true });
+    assert.equal(verified.response.status, 200);
+    assert.equal(readCookie(verified.response, PORTAL_COOKIE), null);
+    assert.equal(verified.json.authenticated, mode === 'already-signed-in');
+    if (user) assert.equal(await prisma.session.count({ where: { portalUserId: user.id } }), 0);
+    if (mode === 'guest-proof') {
+      user = await prisma.portalUser.create({ data: { primaryEmail: email, primaryEmailNormalized: email, status: 'ACTIVE' } });
+      ids.portalUsers.push(user.id);
+      const replay = await postJson(endpoint, { action: 'verify', email, code }, { cookie, tag: 'inline-old-proof', sameOrigin: true });
+      assert.equal(replay.response.status, 400);
+      assert.equal(await prisma.session.count({ where: { portalUserId: user.id } }), 0);
+    }
+  }
 });
 
 test('demo session presentation exposes no customer email and production takes precedence', { timeout: 120_000 }, async () => {

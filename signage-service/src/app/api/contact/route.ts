@@ -128,9 +128,9 @@ export async function POST(request: NextRequest) {
     }
 
     const resolvedContact = resolveWebsiteRequestContact({ contact, email, phone });
-    const intakeVerificationToken = session?.caseId && !portalSession
+    const intakeVerificationToken = !portalSession
       ? request.cookies.get(INTAKE_VERIFICATION_COOKIE)?.value : undefined;
-    if (session?.caseId && !portalSession && !await getIntakeVerification(prisma, intakeVerificationToken, resolvedContact.customerEmail ?? '')) {
+    if (!portalSession && !await getIntakeVerification(prisma, intakeVerificationToken, resolvedContact.customerEmail ?? '')) {
       return verificationRequiredResponse(locale);
     }
 

@@ -66,6 +66,12 @@ function refreshWhenVisible() {
   if (document.visibilityState === 'visible') void refreshPortalSession();
 }
 
+export async function refreshPortalSessionAfterLogin() {
+  // A pre-login request already in flight must not mask the newly set cookie.
+  if (pendingRefresh) await pendingRefresh;
+  return refreshPortalSession();
+}
+
 function subscribe(listener: () => void) {
   listeners.add(listener);
   if (listeners.size === 1) {

@@ -13,7 +13,7 @@ export default async function DashboardLayout({
 }) {
   const cookieStore = await cookies();
   const token = cookieStore.get(CRM_SESSION_COOKIE_NAME)?.value;
-  const actor = await requireAdminSession(prisma, token, ['MANAGER']);
+  const actor = await requireAdminSession(prisma, token, ['MANAGER', 'OWNER']);
 
   if (!actor) {
     notFound();

@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       return notFoundResponse();
     }
 
-    const authResult = await authenticateAdminLogin(prisma, 'MANAGER', loginInput);
+    const authResult = await authenticateAdminLogin(prisma, ['MANAGER', 'OWNER'], loginInput);
 
     if (!authResult) {
       await createAdminAuditLog(prisma, {

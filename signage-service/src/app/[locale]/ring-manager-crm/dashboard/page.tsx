@@ -53,8 +53,9 @@ const STATUS_LABELS: Record<string, { label: string; variant: string }> = {
   IN_PROGRESS: { label: 'Ремонт', variant: 'warning' },
   ON_HOLD: { label: 'Отложено', variant: 'default' },
   WAITING_FOR_CUSTOMER: { label: 'Ожидает клиента', variant: 'pink' },
-  READY_FOR_PICKUP: { label: 'Готов', variant: 'success' },
-  COMPLETED: { label: 'Выдан / Гарантия', variant: 'success' },
+  WORK_COMPLETED: { label: 'Ремонт завершён', variant: 'success' },
+  READY_FOR_PICKUP: { label: 'Готово к выдаче', variant: 'success' },
+  COMPLETED: { label: 'Заявка закрыта', variant: 'success' },
   CANCELLED: { label: 'Отказ', variant: 'error' },
 };
 
@@ -95,6 +96,8 @@ export default function AdminDashboardPage() {
   const [channelFilter, setChannelFilter] = useState('');
   const [search, setSearch] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [canCreate, setCanCreate] = useState(false);
+  useEffect(() => { void fetch('/api/admin/verify').then((res) => res.json()).then((data) => setCanCreate(data.actor?.role === 'MANAGER')).catch(() => undefined); }, []);
   const [lastLiveUpdateAt, setLastLiveUpdateAt] = useState<string | null>(null);
 
   const fetchCases = useCallback(async (page = 1, options: { silent?: boolean } = {}) => {
@@ -200,7 +203,7 @@ export default function AdminDashboardPage() {
             )}
           </p>
         </div>
-        <Button onClick={() => setShowCreateForm(true)} className="w-full sm:w-auto">
+        <Button disabled={!canCreate} onClick={() => setShowCreateForm(true)} className="w-full sm:w-auto">
           + Новая заявка
         </Button>
       </div>

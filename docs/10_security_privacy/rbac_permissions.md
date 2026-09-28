@@ -44,7 +44,9 @@ Current intent:
 
 - full CMS control;
 - sensitive config control;
-- read visibility into CRM data when needed.
+- CRM login and read visibility;
+- narrow repair-result editing/publication capability, including the owner-only exception without a final photo;
+- no additional ordinary manager mutation permissions.
 
 Current code-level grants:
 
@@ -69,6 +71,7 @@ Current code-level grants:
 - `CMS_KNOWLEDGE_BASE_READ`
 - `CRM_CASE_READ`
 - `CRM_ATTACHMENT_READ`
+- `CRM_WORK_RESULT_WRITE`
 
 ### `MANAGER`
 
@@ -85,6 +88,7 @@ Current code-level grants:
 - `CRM_CASE_MESSAGE_WRITE`
 - `CRM_CASE_TAKEOVER_WRITE`
 - `CRM_ATTACHMENT_READ`
+- `CRM_WORK_RESULT_WRITE`
 
 ## Current Permission Meanings
 
@@ -121,6 +125,7 @@ Current code-level grants:
 - `CRM_CASE_MESSAGE_WRITE`: send operator messages and internal notes on CRM cases
 - `CRM_CASE_TAKEOVER_WRITE`: toggle operator takeover on live CRM sessions when not implied by an operator message
 - `CRM_ATTACHMENT_READ`: download private request attachments through the protected admin route
+- `CRM_WORK_RESULT_WRITE`: prepare/upload/publish/correct repair results and retry their notifications; owner can access all cases, manager retains assigned/unassigned case scope. Only owner may confirm a no-result-photo exception. Publication can atomically complete repair without granting general case-update rights.
 
 ## Current Route Coverage
 
@@ -129,6 +134,9 @@ The following routes already use explicit permission guards instead of only coar
 - `/api/admin/verify`
 - `/api/admin/cases`
 - `/api/admin/cases/[id]`
+- `/api/admin/cases/[id]/work-result`
+- `/api/admin/cases/[id]/work-result/uploads`
+- `/api/admin/cases/[id]/work-result/uploads/token`
 - `/api/admin/attachments/[id]`
 - `/api/cms/ai`
 - `/api/cms/seo`
@@ -147,7 +155,9 @@ The following routes already use explicit permission guards instead of only coar
 
 Important detail:
 
+- CRM login accepts named owner and manager accounts; CMS login remains owner-only;
 - CRM case list/detail `GET` routes require read permission;
+- repair-result mutations require the dedicated permission and request scope, with CSRF validation, optimistic versions and audit records;
 - CRM case collection `POST` requires create permission;
 - CRM case detail `PATCH` requires update permission;
 - CRM case detail `POST` requires message permission for operator messages/internal notes and takeover permission for standalone takeover toggles;

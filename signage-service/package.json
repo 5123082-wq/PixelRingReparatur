@@ -16,6 +16,7 @@
     "test:db-guard": "node --experimental-strip-types --experimental-specifier-resolution=node --test scripts/test-db-test-guard.test.ts",
     "test:portal-mvp": "node --experimental-strip-types --experimental-specifier-resolution=node --test scripts/test-portal-mvp.test.ts",
     "test:portal-access-e2e": "node --experimental-strip-types --experimental-specifier-resolution=node --test scripts/test-portal-access-e2e.test.ts",
+    "test:work-results-e2e": "node --experimental-strip-types --test scripts/test-work-results-e2e.test.ts",
     "test:ai-readiness": "node --experimental-strip-types --experimental-specifier-resolution=node --test scripts/test-ai-readiness.test.ts",
     "test:cms-public-audit": "node --experimental-strip-types --experimental-specifier-resolution=node --test scripts/test-cms-public-audit.test.mjs",
     "audit:cms-public": "node --experimental-strip-types --experimental-specifier-resolution=node scripts/audit-cms-public-content.mjs",
@@ -55,7 +56,8 @@
     "nodemailer": "^8.0.7",
     "pg": "^8.20.0",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

@@ -423,16 +423,20 @@
         "description": "ننتظر قطع الغيار أو موافقة إضافية من العميل."
       },
       "READY_FOR_PICKUP": {
-        "label": "جاهز",
-        "description": "أصبحت الحالة جاهزة للتسليم أو الاستلام أو للخطوة التشغيلية التالية."
+        "label": "جاهز للاستلام",
+        "description": "العنصر الذي تم إصلاحه جاهز للاستلام أو التسليم."
       },
       "COMPLETED": {
-        "label": "مكتمل",
-        "description": "تم إكمال الطلب وهو بانتظار الإغلاق النهائي."
+        "label": "أُغلق الطلب",
+        "description": "اكتملت معالجة الطلب."
       },
       "CANCELLED": {
         "label": "مغلق",
         "description": "لم يعد الطلب نشطاً."
+      },
+      "WORK_COMPLETED": {
+        "label": "اكتمل الإصلاح",
+        "description": "اكتمل الإصلاح. يظل الطلب مفتوحًا."
       }
     },
     "cabinet_title": "بوابة العميل",
@@ -449,7 +453,10 @@
     "chat_online": "متصل",
     "chat_manager": "المدير",
     "chat_you": "أنت",
-    "chat_open_button": "فتح الدردشة",
+    "request_received": "تم استلام الطلب",
+    "chat_open_button": "فتح المراسلات",
+    "portal_connect_request": "ربط الطلب بحسابك",
+    "portal_connect_help": "كيف أربط طلبي بحسابي؟",
     "chat_placeholder": "اكتب رسالتك هنا...",
     "chat_auth_hint": "سجّل الدخول لبدء المراسلة",
     "chat_session_hint": "الوصول إلى الدردشة نشط لهذا الطلب",
@@ -723,8 +730,10 @@
       "UNDER_REVIEW": "قيد المراجعة",
       "IN_PROGRESS": "قيد التنفيذ",
       "WAITING_FOR_CUSTOMER": "بانتظار العميل",
-      "COMPLETED": "مكتمل",
-      "PLANNED": "مخطط"
+      "COMPLETED": "أُغلق الطلب",
+      "PLANNED": "مخطط",
+      "WORK_COMPLETED": "اكتمل الإصلاح",
+      "READY_FOR_PICKUP": "جاهز للاستلام"
     },
     "assetStatus": {
       "OK": "OK",

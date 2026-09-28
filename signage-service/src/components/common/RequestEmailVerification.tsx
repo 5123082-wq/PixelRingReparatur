@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from 'react';
 import { getIntakeVerificationCopy } from '@/lib/intake-verification-copy';
+import { refreshPortalSessionAfterLogin } from './usePortalSession';
 
 type State = { required: boolean; verified: boolean; email: string };
 type Challenge = { email: string; sent: boolean; code: string; seconds: number; generation: number };
@@ -64,8 +65,8 @@ export function useRequestEmailVerification(email: string, locale: string, isFro
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action, email: address, code, locale }),
       });
-      if (!isCurrent(address, startedAtRevision)) return;
       if (!response.ok) {
+        if (!isCurrent(address, startedAtRevision)) return;
         if (response.status === 429) {
           const retry = Math.max(1, Number(response.headers.get('Retry-After')) || 60);
           setChallenge((previous) => ({
@@ -77,7 +78,13 @@ export function useRequestEmailVerification(email: string, locale: string, isFro
         if (action === 'verify' && response.status === 400) actionError = copy.invalidCode;
         throw new Error(actionError);
       }
-      const result = await response.json() as { sent?: boolean; verified?: boolean; retryAfter?: number };
+      const result = await response.json() as { sent?: boolean; verified?: boolean; authenticated?: boolean; retryAfter?: number };
+      if (action === 'verify' && result.verified && result.authenticated) {
+        // The cookie affects the whole browser, even if the address was edited
+        // while the verification response was on its way.
+        const session = await refreshPortalSessionAfterLogin();
+        if (session.status === 'error') throw new Error(copy.checkError);
+      }
       if (!isCurrent(address, startedAtRevision)) return;
       if (action === 'start') {
         if (result.sent !== true) throw new Error(copy.deliveryError);

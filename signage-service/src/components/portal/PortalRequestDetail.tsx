@@ -14,6 +14,8 @@ import type {
 } from '@/lib/portal/types';
 
 import PortalRequestChat from './PortalRequestChat';
+import WorkResultView from './WorkResultView';
+import type { PublicWorkResult } from '@/lib/work-results/types';
 import PortalRequestDetailsEditor from './PortalRequestDetailsEditor';
 import PortalRequestModalShell from './PortalRequestModalShell';
 import { getPortalRequestDetailCopy, type PortalRequestDetailCopy } from './portal-request-detail-copy';
@@ -23,6 +25,8 @@ export type PortalRequestDetailPresentation = 'page' | 'modal';
 const statusTone = {
   UNDER_REVIEW: 'border-amber-200 bg-amber-50 text-amber-800',
   IN_PROGRESS: 'border-blue-200 bg-blue-50 text-blue-800',
+  WORK_COMPLETED: 'border-teal-200 bg-teal-50 text-teal-800',
+  READY_FOR_PICKUP: 'border-teal-200 bg-teal-50 text-teal-800',
   WAITING_FOR_CUSTOMER: 'border-orange-200 bg-orange-50 text-orange-800',
   COMPLETED: 'border-emerald-200 bg-emerald-50 text-emerald-800',
   PLANNED: 'border-slate-200 bg-slate-50 text-slate-700',
@@ -183,6 +187,7 @@ export default async function PortalRequestDetail({
   customerAttachments,
   documents,
   requiredActions,
+  workResult = null,
   canPostMessages = false,
   presentation = 'page',
 }: {
@@ -195,6 +200,7 @@ export default async function PortalRequestDetail({
   customerAttachments: PortalCustomerAttachment[];
   documents: PortalDocument[];
   requiredActions: PortalRequiredAction[];
+  workResult?: PublicWorkResult | null;
   canPostMessages?: boolean;
   presentation?: PortalRequestDetailPresentation;
 }) {
@@ -213,7 +219,6 @@ export default async function PortalRequestDetail({
   const requestContactPerson = nonEmpty(request.customerName) || copy.notSpecified;
   const requestContactDetails = joinValues([request.contactPhone, request.contactEmail], copy.notSpecified);
   const safeTitle = safeRequestTitle(request.title, request.publicRequestNumber, copy.requestFallback);
-  const publishedReports = documents.filter((document) => document.type === 'REPORT' && document.status === 'available');
   const otherDocuments = documents.filter((document) => document.type !== 'REPORT');
 
   return (
@@ -295,23 +300,7 @@ export default async function PortalRequestDetail({
               <p className="mt-3 whitespace-pre-line text-[15px] leading-7 text-[#3D4A5C]">{request.summary}</p>
             </section>
 
-            <section className="rounded-[22px] border border-[#E5EAF0] bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="text-[18px] font-black text-[#172033]">{copy.photoReport}</h2>
-                <span className="rounded-full bg-[#F3F6FA] px-3 py-1 text-[11px] font-black text-[#667085]">
-                  {publishedReports.length}
-                </span>
-              </div>
-              {publishedReports.length > 0 ? (
-                <div className="mt-4 grid gap-3">
-                  {publishedReports.map((document) => (
-                    <DocumentRow key={document.id} document={document} copy={copy} />
-                  ))}
-                </div>
-              ) : (
-                <p className="mt-3 rounded-2xl bg-[#F6F8FB] p-4 text-[14px] leading-6 text-[#667085]">{copy.noResult}</p>
-              )}
-            </section>
+            <WorkResultView result={workResult} locale={locale} publicRequestNumber={request.publicRequestNumber} />
 
             <section className="rounded-[22px] border border-[#E5EAF0] bg-white p-5 shadow-sm">
               <div className="flex items-center justify-between gap-3">

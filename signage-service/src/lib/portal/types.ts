@@ -1,6 +1,8 @@
 export type PortalRequestStatus =
   | 'UNDER_REVIEW'
   | 'IN_PROGRESS'
+  | 'WORK_COMPLETED'
+  | 'READY_FOR_PICKUP'
   | 'WAITING_FOR_CUSTOMER'
   | 'COMPLETED'
   | 'PLANNED';
@@ -108,6 +110,7 @@ export type PortalRequest = {
 };
 
 export type PortalDocument = {
+  href?: string;
   id: string;
   type: PortalDocumentType;
   title: string;

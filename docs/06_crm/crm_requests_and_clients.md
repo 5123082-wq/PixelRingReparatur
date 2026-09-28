@@ -25,7 +25,8 @@ Implemented now:
 - persistent admin audit log starter for CRM actions;
 - basic customer profile extraction/linking starter;
 - attachment metadata and admin attachment endpoint;
-- status lookup for customers.
+- status lookup for customers;
+- implemented repair completion, structured report revisions, private portal viewing/printing and notification retry; see [repair completion](repair_completion_photo_reports.md). Production migration is applied; see the [authorized release log](../11_operations/crm_portal_release_2026-09-28.md) for deployment status.
 
 Known gaps:
 
@@ -209,7 +210,7 @@ Rules:
 
 ### Status Flow
 
-Status transitions should become a server-side state machine.
+Последовательные переходы зарегистрированных заявок реализованы: сотрудник выбирает цель, сервер выполняет этапы по очереди и запрашивает отдельное подтверждение обязательных данных. [Описание процесса и проверки](repair_completion_photo_reports.md#статусы).
 
 Current statuses:
 
@@ -220,16 +221,19 @@ Current statuses:
 - `WAITING_FOR_CUSTOMER`;
 - `IN_PROGRESS`;
 - `ON_HOLD`;
+- `WORK_COMPLETED` (ремонт завершён, заявка остаётся открытой);
 - `READY_FOR_PICKUP`;
 - `COMPLETED`;
 - `CANCELLED`.
 
-Target behavior:
+Действующее поведение:
 
-- allowlist valid transitions server-side;
-- require reason for risky transitions;
-- write status event history with actor, from, to, reason, timestamp;
-- expose only safe status descriptions on the public status page.
+- отдельные списки непосредственных переходов и достижимых конечных статусов;
+- подтверждение публикации результата ремонта даже при заполненном черновике; отдельное окно причины отложения или отмены;
+- каждый выполненный шаг записывается в историю; повтор запроса не создаёт дубликат, конфликт останавливает цепочку;
+- готовность к выдаче необязательна; ожидание, отложенное состояние и отмена не включаются автоматически в основной путь;
+- клиентские страницы показывают только безопасные описания статусов;
+- создание заявки, выдача номера, старые статусы и история сохраняются.
 
 ### Attachments
 
@@ -279,6 +283,15 @@ The next CRM milestone should continue operational reliability hardening:
 - object-level authorization tests for case, message, attachment, and customer profile access.
 
 ## Progress Log
+
+### 2026-09-28
+
+- Current sprint/block: repair completion and structured photo reports.
+- Done: local implementation of separate open repair-completed status, draft/publication/correction workflow, owner exception, protected portal report and print view, six-language notification delivery with retry.
+- In progress: local implementation and validation complete; owner review pending. Detailed checkpoint in [repair completion](repair_completion_photo_reports.md#progress-log-журнал-прогресса).
+- Next action: owner review, then separately approve migration and deployment.
+- Blockers/risks: cloud private upload and real email delivery need a release smoke check; no production data or real request was used.
+- Updated documents: repair completion guide, CRM and portal indexes, current-state map, permission contract, global journal.
 
 ### 2026-05-11
 

@@ -21,9 +21,11 @@ type ApiResponse = {
 export default function PortalEntry({
   demoEnabled = false,
   demoEmail = '',
+  returnTo,
 }: {
   demoEnabled?: boolean;
   demoEmail?: string;
+  returnTo?: string;
 }) {
   const router = useRouter();
   const copy = getPortalStandaloneCopy(useLocale());
@@ -77,7 +79,7 @@ export default function PortalEntry({
       });
       const data = await readApiResponse(response, copy.entry.loginError);
 
-      router.push(data.redirectTo || '/portal');
+      router.push(returnTo || data.redirectTo || '/portal');
       router.refresh();
     } catch (error) {
       setError(error instanceof Error ? error.message : copy.entry.loginError);
@@ -164,7 +166,7 @@ export default function PortalEntry({
       });
       const data = await readApiResponse(response, copy.entry.passwordError);
 
-      router.push(data.redirectTo || '/portal');
+      router.push(returnTo || data.redirectTo || '/portal');
       router.refresh();
     } catch (error) {
       setError(error instanceof Error ? error.message : copy.entry.passwordError);
@@ -199,49 +201,126 @@ export default function PortalEntry({
 
   return (
     <main className="min-h-screen bg-[#F4EEE5] text-[#121826]">
-      <div className="pr-site-container py-4">
-      <CustomerStandaloneNav showPortal={false} />
-      <section className="mx-auto grid min-h-[calc(100vh-104px)] w-full max-w-6xl content-center gap-6 py-6">
-        <div className="rounded-[28px] border border-[#E4D8CA] bg-white p-6 shadow-2xl shadow-[#3E2715]/10 sm:p-8 lg:p-10">
-          <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
-            <div>
-              <p className="text-[12px] font-black uppercase tracking-[0.22em] text-[#B8643E]">
-                {copy.common.portal}
+      <div className="pr-site-container">
+      <CustomerStandaloneNav appearance="portal-entry" showPortal={false} />
+      <section className="mx-auto flex min-h-[calc(100svh-80px)] w-full max-w-[460px] flex-col justify-center gap-5 py-8 sm:py-12">
+        <div className="rounded-[28px] border border-[#E4D8CA] bg-white p-6 shadow-xl shadow-[#3E2715]/5 sm:p-8">
+          <h1 className="mb-6 text-center text-[28px] font-bold tracking-tight text-[#121826] sm:text-[32px]">
+            {copy.common.portal}
+          </h1>
+          <div className="grid grid-cols-2 gap-1 rounded-2xl bg-[#F4EEE5] p-1">
+            <ModeButton active={mode === 'login'} onClick={() => resetFlow('login')}>
+              {copy.entry.login}
+            </ModeButton>
+            <ModeButton active={mode === 'register'} onClick={() => resetFlow('register')}>
+              {copy.entry.register}
+            </ModeButton>
+          </div>
+
+          {mode === 'login' && (
+            <form onSubmit={login} className="mt-5 grid gap-3">
+              <EmailInput label={copy.common.email} email={email} setEmail={setEmail} disabled={isSubmitting} />
+              <PasswordInput
+                id="portal-login-password"
+                label={copy.common.password}
+                value={password}
+                onChange={setPassword}
+                disabled={isSubmitting}
+                autoComplete="current-password"
+                showLabel={copy.common.showPassword}
+                hideLabel={copy.common.hidePassword}
+                showAriaLabel={copy.common.showPasswordAria}
+                hideAriaLabel={copy.common.hidePasswordAria}
+              />
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="mt-2 h-12 w-full rounded-2xl bg-[#B8643E] px-5 text-[15px] font-black text-white shadow-lg shadow-[#B8643E]/20 transition hover:bg-[#A65835] disabled:opacity-60"
+              >
+                {isSubmitting ? copy.entry.loginLoading : copy.entry.login}
+              </button>
+              <button
+                type="button"
+                onClick={() => resetFlow('reset')}
+                className="text-start text-[13px] font-black text-[#B8643E] underline"
+              >
+                {copy.entry.forgotPassword}
+              </button>
+            </form>
+          )}
+
+          {(mode === 'register' || mode === 'reset') && (
+            <div className="mt-5">
+              <p className="text-[13px] font-black text-[#344054]">
+                {mode === 'reset' ? copy.entry.resetTitle : copy.entry.registerTitle}
               </p>
-              <h1 className="mt-4 max-w-3xl text-[34px] font-black leading-tight text-[#121826] sm:text-[44px]">
-                {copy.entry.title}
-              </h1>
-              <p className="mt-4 max-w-2xl text-[15px] leading-7 text-[#667085]">
-                {copy.entry.body}
-              </p>
-
-              <div className="mt-7 grid gap-3 sm:grid-cols-3">
-                {copy.entry.steps.map((step) => (
-                  <EntryStep key={step.title} title={step.title} text={step.text} />
-                ))}
-              </div>
-            </div>
-
-            <section className="rounded-3xl border border-[#E9DED2] bg-[#FBF8F3] p-5 sm:p-6">
-              <div className="grid grid-cols-2 gap-2 rounded-2xl bg-white p-1">
-                <ModeButton active={mode === 'login'} onClick={() => resetFlow('login')}>
-                  {copy.entry.login}
-                </ModeButton>
-                <ModeButton active={mode === 'register'} onClick={() => resetFlow('register')}>
-                  {copy.entry.register}
-                </ModeButton>
-              </div>
-
-              {mode === 'login' && (
-                <form onSubmit={login} className="mt-5 grid gap-3">
+              {codeStep === 'email' && (
+                <form onSubmit={startCodeFlow} className="mt-3 grid gap-3">
                   <EmailInput label={copy.common.email} email={email} setEmail={setEmail} disabled={isSubmitting} />
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="mt-2 h-12 w-full rounded-2xl bg-[#B8643E] px-5 text-[15px] font-black text-white shadow-lg shadow-[#B8643E]/20 transition hover:bg-[#A65835] disabled:opacity-60"
+                  >
+                    {isSubmitting ? copy.entry.sendCodeLoading : copy.entry.sendCode}
+                  </button>
+                </form>
+              )}
+
+              {codeStep === 'code' && (
+                <form onSubmit={verifyCode} className="mt-3 grid gap-3">
+                  <label className="block text-[13px] font-black text-[#344054]" htmlFor="portal-code">
+                    {copy.common.codeFromEmail}
+                  </label>
+                  <input
+                    id="portal-code"
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    value={code}
+                    onChange={(event) => setCode(event.target.value)}
+                    disabled={isSubmitting}
+                    required
+                    className="h-12 w-full rounded-2xl border border-[#D9CCBD] bg-white px-4 text-[18px] font-black tracking-[0.22em] text-[#121826] outline-none transition focus:border-[#B8643E] focus:ring-4 focus:ring-[#B8643E]/10 disabled:opacity-60"
+                  />
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="mt-2 h-12 w-full rounded-2xl bg-[#B8643E] px-5 text-[15px] font-black text-white shadow-lg shadow-[#B8643E]/20 transition hover:bg-[#A65835] disabled:opacity-60"
+                  >
+                    {isSubmitting ? copy.entry.verifyCodeLoading : copy.entry.verifyCode}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCodeStep('email')}
+                    className="text-start text-[13px] font-black text-[#B8643E] underline"
+                  >
+                    {copy.entry.resendCode}
+                  </button>
+                </form>
+              )}
+
+              {codeStep === 'password' && (
+                <form onSubmit={setAccountPassword} className="mt-3 grid gap-3">
                   <PasswordInput
-                    id="portal-login-password"
-                    label={copy.common.password}
+                    id="portal-new-password"
+                    label={mode === 'reset' ? copy.common.newPassword : copy.common.password}
                     value={password}
                     onChange={setPassword}
                     disabled={isSubmitting}
-                    autoComplete="current-password"
+                    autoComplete="new-password"
+                    showLabel={copy.common.showPassword}
+                    hideLabel={copy.common.hidePassword}
+                    showAriaLabel={copy.common.showPasswordAria}
+                    hideAriaLabel={copy.common.hidePasswordAria}
+                  />
+                  <PasswordInput
+                    id="portal-new-password-repeat"
+                    label={copy.common.passwordRepeat}
+                    value={passwordRepeat}
+                    onChange={setPasswordRepeat}
+                    disabled={isSubmitting}
+                    autoComplete="new-password"
                     showLabel={copy.common.showPassword}
                     hideLabel={copy.common.hidePassword}
                     showAriaLabel={copy.common.showPasswordAria}
@@ -252,144 +331,48 @@ export default function PortalEntry({
                     disabled={isSubmitting}
                     className="mt-2 h-12 w-full rounded-2xl bg-[#B8643E] px-5 text-[15px] font-black text-white shadow-lg shadow-[#B8643E]/20 transition hover:bg-[#A65835] disabled:opacity-60"
                   >
-                    {isSubmitting ? copy.entry.loginLoading : copy.entry.login}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => resetFlow('reset')}
-                    className="text-start text-[13px] font-black text-[#B8643E] underline"
-                  >
-                    {copy.entry.forgotPassword}
+                    {isSubmitting ? copy.entry.saveLoading : mode === 'reset' ? copy.entry.savePassword : copy.entry.createAccount}
                   </button>
                 </form>
               )}
+            </div>
+          )}
 
-              {(mode === 'register' || mode === 'reset') && (
-                <div className="mt-5">
-                  <p className="text-[13px] font-black text-[#344054]">
-                    {mode === 'reset' ? copy.entry.resetTitle : copy.entry.registerTitle}
-                  </p>
-                  {codeStep === 'email' && (
-                    <form onSubmit={startCodeFlow} className="mt-3 grid gap-3">
-                      <EmailInput label={copy.common.email} email={email} setEmail={setEmail} disabled={isSubmitting} />
-                      <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="mt-2 h-12 w-full rounded-2xl bg-[#B8643E] px-5 text-[15px] font-black text-white shadow-lg shadow-[#B8643E]/20 transition hover:bg-[#A65835] disabled:opacity-60"
-                      >
-                        {isSubmitting ? copy.entry.sendCodeLoading : copy.entry.sendCode}
-                      </button>
-                    </form>
-                  )}
-
-                  {codeStep === 'code' && (
-                    <form onSubmit={verifyCode} className="mt-3 grid gap-3">
-                      <label className="block text-[13px] font-black text-[#344054]" htmlFor="portal-code">
-                        {copy.common.codeFromEmail}
-                      </label>
-                      <input
-                        id="portal-code"
-                        type="text"
-                        inputMode="numeric"
-                        autoComplete="one-time-code"
-                        value={code}
-                        onChange={(event) => setCode(event.target.value)}
-                        disabled={isSubmitting}
-                        required
-                        className="h-12 w-full rounded-2xl border border-[#D9CCBD] bg-white px-4 text-[18px] font-black tracking-[0.22em] text-[#121826] outline-none transition focus:border-[#B8643E] focus:ring-4 focus:ring-[#B8643E]/10 disabled:opacity-60"
-                      />
-                      <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="mt-2 h-12 w-full rounded-2xl bg-[#B8643E] px-5 text-[15px] font-black text-white shadow-lg shadow-[#B8643E]/20 transition hover:bg-[#A65835] disabled:opacity-60"
-                      >
-                        {isSubmitting ? copy.entry.verifyCodeLoading : copy.entry.verifyCode}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setCodeStep('email')}
-                        className="text-start text-[13px] font-black text-[#B8643E] underline"
-                      >
-                        {copy.entry.resendCode}
-                      </button>
-                    </form>
-                  )}
-
-                  {codeStep === 'password' && (
-                    <form onSubmit={setAccountPassword} className="mt-3 grid gap-3">
-                      <PasswordInput
-                        id="portal-new-password"
-                        label={mode === 'reset' ? copy.common.newPassword : copy.common.password}
-                        value={password}
-                        onChange={setPassword}
-                        disabled={isSubmitting}
-                        autoComplete="new-password"
-                        showLabel={copy.common.showPassword}
-                        hideLabel={copy.common.hidePassword}
-                        showAriaLabel={copy.common.showPasswordAria}
-                        hideAriaLabel={copy.common.hidePasswordAria}
-                      />
-                      <PasswordInput
-                        id="portal-new-password-repeat"
-                        label={copy.common.passwordRepeat}
-                        value={passwordRepeat}
-                        onChange={setPasswordRepeat}
-                        disabled={isSubmitting}
-                        autoComplete="new-password"
-                        showLabel={copy.common.showPassword}
-                        hideLabel={copy.common.hidePassword}
-                        showAriaLabel={copy.common.showPasswordAria}
-                        hideAriaLabel={copy.common.hidePasswordAria}
-                      />
-                      <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="mt-2 h-12 w-full rounded-2xl bg-[#B8643E] px-5 text-[15px] font-black text-white shadow-lg shadow-[#B8643E]/20 transition hover:bg-[#A65835] disabled:opacity-60"
-                      >
-                        {isSubmitting ? copy.entry.saveLoading : mode === 'reset' ? copy.entry.savePassword : copy.entry.createAccount}
-                      </button>
-                    </form>
-                  )}
-                </div>
-              )}
-
-              {message && (
-                <p className="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[13px] font-semibold text-emerald-800">
-                  {message}
-                </p>
-              )}
-              {devCode && (
-                <p className="mt-3 rounded-2xl border border-[#E9DED2] bg-white px-4 py-3 text-[13px] font-black text-[#121826]">
-                  {copy.common.localCode} <span className="tracking-[0.16em]">{devCode}</span>
-                </p>
-              )}
-              {error && (
-                <p className="mt-3 rounded-2xl border border-[#F2C5BB] bg-[#FFF1EF] px-4 py-3 text-[13px] font-semibold text-[#A94732]">
-                  {error}
-                </p>
-              )}
-            </section>
-          </div>
+          {message && (
+            <p role="status" className="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[13px] font-semibold text-emerald-800">
+              {message}
+            </p>
+          )}
+          {devCode && (
+            <p className="mt-3 rounded-2xl border border-[#E9DED2] bg-white px-4 py-3 text-[13px] font-black text-[#121826]">
+              {copy.common.localCode} <span className="tracking-[0.16em]">{devCode}</span>
+            </p>
+          )}
+          {error && (
+            <p role="alert" className="mt-3 rounded-2xl border border-[#F2C5BB] bg-[#FFF1EF] px-4 py-3 text-[13px] font-semibold text-[#A94732]">
+              {error}
+            </p>
+          )}
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <ActionCard
-            title={copy.entry.existingTitle}
-            text={copy.entry.existingText}
+        <div className="flex flex-col items-center gap-1 text-center">
+          <Link
             href="/status"
-            label={copy.entry.existingLabel}
-          />
-          <ActionCard
-            title={copy.entry.newTitle}
-            text={copy.entry.newText}
+            className="inline-flex min-h-11 items-center rounded-lg px-3 text-[14px] font-semibold text-[#344054] underline decoration-[#D9C7BA] underline-offset-4 transition hover:text-[#B8643E] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8643E]"
+          >
+            {copy.entry.existingLabel}
+          </Link>
+          <Link
             href="/#kontakt"
-            label={copy.entry.newLabel}
-          />
+            className="inline-flex min-h-11 items-center rounded-lg px-3 text-[14px] font-semibold text-[#344054] underline decoration-[#D9C7BA] underline-offset-4 transition hover:text-[#B8643E] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8643E]"
+          >
+            {copy.entry.newTitle}
+          </Link>
         </div>
 
         {demoEnabled && (
           <form onSubmit={openDemo} className="rounded-3xl border border-dashed border-[#D8C7B7] bg-white/70 p-5">
-            <div className="grid gap-3 md:grid-cols-[1fr_260px_auto] md:items-end">
+            <div className="grid gap-3">
               <div>
                 <p className="text-[12px] font-black uppercase tracking-[0.18em] text-[#B8643E]">{copy.entry.demoEyebrow}</p>
                 <p className="mt-1 text-[13px] text-[#667085]">{copy.entry.demoHint.replace('{email}', demoEmail)}</p>
@@ -430,7 +413,8 @@ function ModeButton({
     <button
       type="button"
       onClick={onClick}
-      className={`h-10 rounded-xl text-[13px] font-black transition ${
+      aria-pressed={active}
+      className={`min-h-11 rounded-xl px-2 text-[13px] font-bold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8643E] ${
         active ? 'bg-[#121826] text-white' : 'text-[#667085] hover:bg-[#F4EEE5] hover:text-[#121826]'
       }`}
     >
@@ -523,39 +507,5 @@ function PasswordInput({
         </button>
       </div>
     </>
-  );
-}
-
-function EntryStep({ title, text }: { title: string; text: string }) {
-  return (
-    <div className="rounded-2xl border border-[#EFE6DC] bg-[#FFFDFC] p-4">
-      <strong className="block text-[14px] font-black text-[#121826]">{title}</strong>
-      <span className="mt-2 block text-[13px] leading-5 text-[#667085]">{text}</span>
-    </div>
-  );
-}
-
-function ActionCard({
-  title,
-  text,
-  href,
-  label,
-}: {
-  title: string;
-  text: string;
-  href: string;
-  label: string;
-}) {
-  return (
-    <article className="rounded-[24px] border border-[#E4D8CA] bg-white p-6 shadow-lg shadow-[#3E2715]/5">
-      <h2 className="text-[22px] font-black text-[#121826]">{title}</h2>
-      <p className="mt-2 min-h-[52px] text-[14px] leading-6 text-[#667085]">{text}</p>
-      <Link
-        href={href}
-        className="mt-5 inline-flex h-11 items-center justify-center rounded-2xl bg-[#121826] px-5 text-[14px] font-black text-white transition hover:bg-[#263247]"
-      >
-        {label}
-      </Link>
-    </article>
   );
 }
