@@ -229,7 +229,7 @@ export default async function PortalRequestDetail({
       subtitle={`${copy.task} ${request.publicRequestNumber}`}
       presentation={presentation}
     >
-      <div className={`grid flex-1 bg-[#F3F6FA] ${
+      <div className={`grid grid-cols-1 flex-1 bg-[#F3F6FA] ${
         presentation === 'modal'
           ? 'lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]'
           : 'lg:grid-cols-[minmax(420px,0.92fr)_minmax(520px,1.08fr)]'
