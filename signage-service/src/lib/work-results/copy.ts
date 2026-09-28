@@ -1,5 +1,6 @@
 const copies = {
   de: {
+    emailPortalLabel: 'PixelRing Kundenportal',
     title: 'Reparaturbericht', date: 'Ausgeführt am', updated: 'Aktualisiert am',
     empty: 'Der Reparaturbericht wurde noch nicht veröffentlicht.', noPhotos: 'Keine Fotos beigefügt.',
     print: 'Drucken / speichern', open: 'Bericht öffnen', back: 'Zur Anfrage',
@@ -11,6 +12,7 @@ const copies = {
     emailBody: 'Ein Reparaturbericht zu Ihrer Anfrage wurde veröffentlicht oder aktualisiert. Melden Sie sich im Kundenportal an, um ihn anzusehen.',
   },
   en: {
+    emailPortalLabel: 'PixelRing customer portal',
     title: 'Repair report', date: 'Work completed on', updated: 'Updated on',
     empty: 'The repair report has not been published yet.', noPhotos: 'No photos attached.',
     print: 'Print / save', open: 'Open report', back: 'Back to request',
@@ -22,6 +24,7 @@ const copies = {
     emailBody: 'A repair report for your request has been published or updated. Sign in to your customer portal to view it.',
   },
   ru: {
+    emailPortalLabel: 'PixelRing · Личный кабинет',
     title: 'Результат ремонта', date: 'Дата выполнения', updated: 'Обновлено',
     empty: 'Результат ремонта ещё не опубликован.', noPhotos: 'Фотографии не приложены.',
     print: 'Распечатать / сохранить', open: 'Открыть отчёт', back: 'Вернуться к заявке',
@@ -33,6 +36,7 @@ const copies = {
     emailBody: 'Фотоотчёт по вашей заявке опубликован или обновлён. Войдите в личный кабинет, чтобы посмотреть результат ремонта.',
   },
   tr: {
+    emailPortalLabel: 'PixelRing müşteri portalı',
     title: 'Onarım raporu', date: 'İşin tamamlandığı tarih', updated: 'Güncelleme tarihi',
     empty: 'Onarım raporu henüz yayımlanmadı.', noPhotos: 'Fotoğraf eklenmedi.',
     print: 'Yazdır / kaydet', open: 'Raporu aç', back: 'Talebe dön',
@@ -44,6 +48,7 @@ const copies = {
     emailBody: 'Talebinize ait onarım raporu yayımlandı veya güncellendi. Görüntülemek için müşteri portalınıza giriş yapın.',
   },
   pl: {
+    emailPortalLabel: 'PixelRing · Portal klienta',
     title: 'Raport z naprawy', date: 'Data wykonania', updated: 'Zaktualizowano',
     empty: 'Raport z naprawy nie został jeszcze opublikowany.', noPhotos: 'Nie dołączono zdjęć.',
     print: 'Drukuj / zapisz', open: 'Otwórz raport', back: 'Wróć do zgłoszenia',
@@ -55,6 +60,7 @@ const copies = {
     emailBody: 'Raport z naprawy dotyczący Twojego zgłoszenia został opublikowany lub zaktualizowany. Zaloguj się do portalu klienta, aby go zobaczyć.',
   },
   ar: {
+    emailPortalLabel: 'PixelRing · بوابة العميل',
     title: 'تقرير الإصلاح', date: 'تاريخ إنجاز العمل', updated: 'تاريخ التحديث',
     empty: 'لم يُنشر تقرير الإصلاح بعد.', noPhotos: 'لم تُرفق صور.',
     print: 'طباعة / حفظ', open: 'فتح التقرير', back: 'العودة إلى الطلب',

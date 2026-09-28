@@ -418,13 +418,40 @@ async function sendPortalEmailPayload(input: PortalEmailPayload): Promise<Portal
   throw new Error('Unsupported portal email provider.');
 }
 
-export async function sendWorkResultEmail(input: { to: string; subject: string; body: string; url: string; linkLabel: string; locale: string }) {
-  const url = escapeHtml(input.url);
+export async function sendWorkResultEmail(input: {
+  to: string;
+  subject: string;
+  portalLabel: string;
+  heading: string;
+  publicRequestNumber: string;
+  body: string;
+  url: string;
+  linkLabel: string;
+  locale: string;
+}) {
+  const direction = input.locale === 'ar' ? 'rtl' : 'ltr';
+  const alignment = direction === 'rtl' ? 'right' : 'left';
   return sendPortalEmailPayload({
     to: input.to, subject: input.subject, logMode: 'work-result', expiresAt: new Date(),
-    text: input.body + '\n\n' + input.url,
-    html: '<html lang="' + escapeHtml(input.locale) + '" dir="' + (input.locale === 'ar' ? 'rtl' : 'ltr') +
-      '"><body><p>' + escapeHtml(input.body) + '</p><a href="' + url + '">' + escapeHtml(input.linkLabel) + '</a></body></html>',
+    text: [input.portalLabel, input.heading, input.publicRequestNumber, '', input.body, '', input.url].join('\n'),
+    html: `<!doctype html>
+<html lang="${escapeHtml(input.locale)}" dir="${direction}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body dir="${direction}" style="margin:0;background:#f6f1ea;font-family:Arial,sans-serif;color:#111827;">
+    <div style="max-width:560px;margin:0 auto;padding:32px 20px;text-align:${alignment};">
+      <div style="background:#ffffff;border:1px solid #eadfd4;border-radius:20px;padding:28px;">
+        <p style="margin:0 0 12px;color:#b8643e;font-size:12px;font-weight:700;letter-spacing:${direction === 'rtl' ? 'normal' : '.14em'};text-transform:uppercase;">${escapeHtml(input.portalLabel)}</p>
+        <h1 style="margin:0 0 16px;font-size:24px;line-height:1.2;color:#111827;">${escapeHtml(input.heading)}</h1>
+        <p dir="ltr" style="display:inline-block;margin:0 0 20px;border:1px solid #eadfd4;background:#fbf8f3;border-radius:10px;padding:8px 12px;font-size:14px;line-height:1.4;font-weight:700;color:#4b5563;unicode-bidi:isolate;">${escapeHtml(input.publicRequestNumber)}</p>
+        <p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#4b5563;">${escapeHtml(input.body)}</p>
+        <a href="${escapeHtml(input.url)}" style="display:inline-block;margin-top:8px;border-radius:14px;background:#b8643e;color:#ffffff;text-decoration:none;font-size:15px;font-weight:800;line-height:1.4;padding:13px 18px;">${escapeHtml(input.linkLabel)}</a>
+      </div>
+    </div>
+  </body>
+</html>`,
   });
 }
 
