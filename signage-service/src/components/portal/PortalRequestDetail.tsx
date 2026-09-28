@@ -15,6 +15,7 @@ import type {
 
 import PortalRequestChat from './PortalRequestChat';
 import WorkResultView from './WorkResultView';
+import { getWorkResultCopy } from '@/lib/work-results/copy';
 import type { PublicWorkResult } from '@/lib/work-results/types';
 import PortalRequestDetailsEditor from './PortalRequestDetailsEditor';
 import PortalRequestModalShell from './PortalRequestModalShell';
@@ -208,6 +209,7 @@ export default async function PortalRequestDetail({
   const locale = await getLocale();
   const copy = getPortalRequestDetailCopy(locale);
   const statusLabel = t(`requestStatus.${request.status}`);
+  const reportCopy = getWorkResultCopy(locale);
   const address = nonEmpty(request.serviceLocation) || nonEmpty(object.address) || copy.notSpecified;
   const addressHref = address !== copy.notSpecified
     ? buildGoogleMapsUrl({
@@ -227,7 +229,7 @@ export default async function PortalRequestDetail({
       subtitle={`${copy.task} ${request.publicRequestNumber}`}
       presentation={presentation}
     >
-      <div className={`grid flex-1 bg-[#F3F6FA] ${
+      <div className={`grid grid-cols-1 flex-1 bg-[#F3F6FA] ${
         presentation === 'modal'
           ? 'lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]'
           : 'lg:grid-cols-[minmax(420px,0.92fr)_minmax(520px,1.08fr)]'
@@ -242,6 +244,7 @@ export default async function PortalRequestDetail({
                   <p className="font-mono text-[12px] font-black uppercase tracking-[0.16em] text-[#B8643E]">{request.publicRequestNumber}</p>
                   <h2 className="mt-2 text-[22px] font-black text-[#172033]">{copy.nextStep}</h2>
                   <p className="mt-2 max-w-2xl text-[14px] leading-6 text-[#667085]">{request.nextStep}</p>
+                  {workResult && <a href="#repair-report" className="mt-3 inline-flex min-h-11 items-center rounded-xl border border-[#E5D1C2] bg-[#FFF8F2] px-4 py-2 text-sm font-bold text-[#B8643E] hover:bg-[#F6EBDD] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8643E]">{reportCopy.open}</a>}
                 </div>
                 <span className={`rounded-full border px-3 py-1 text-[11px] font-black ${statusTone[request.status]}`}>
                   {statusLabel}

@@ -284,6 +284,10 @@ test('revoked grants and disabled accounts lose report and photo access immediat
   await db.portalCaseAccess.update({ where: { portalUserId_caseId: { portalUserId: customer.id, caseId: sample.id } }, data: { revokedAt: new Date() } });
   assert.equal((await request(publicRoute(sample), portalCookie)).status, 404);
   assert.equal((await request(sample.photoUrl, portalCookie)).status, 404);
+  for (const suffix of ['', '/report/print']) {
+    const denied = await request('/ru/portal/requests/' + sample.publicRequestNumber + suffix, portalCookie);
+    assert(!denied.text.includes('Updated repair explanation'));
+  }
   await db.portalCaseAccess.update({ where: { portalUserId_caseId: { portalUserId: customer.id, caseId: sample.id } }, data: { revokedAt: null } });
   await db.portalUser.update({ where: { id: customer.id }, data: { status: 'DISABLED' } });
   assert.equal((await request(publicRoute(sample), portalCookie)).status, 404);
@@ -304,9 +308,19 @@ test('owner CRM login works without general manager mutation powers; legacy requ
   assert.equal((await request('/api/admin/cases/' + sample.id, managerCookie, 'PATCH', { status: 'READY_FOR_PICKUP' })).status, 200);
 });
 
-test('published report, print page and dashboard render on all six locales', async () => {
+test('request links, legacy report links, protected print and dashboard work on all six locales', async () => {
   for (const locale of ['de', 'en', 'ru', 'tr', 'pl', 'ar']) {
-    const page = await request('/' + locale + '/portal/requests/' + sample.publicRequestNumber + '/report', portalCookie);
+    const path = '/' + locale + '/portal/requests/' + sample.publicRequestNumber;
+    const detail = await request(path, portalCookie);
+    assert.equal(detail.status, 200, locale);
+    assert(detail.text.includes('Updated repair explanation'), locale);
+    assert(detail.text.includes('href="#repair-report"'), locale);
+    assert(detail.text.includes(path + '/report/print'), locale);
+    assert(!detail.text.includes('Internal correction explanation'), locale);
+    const legacy = await fetch(base + path + '/report', { headers: { cookie: portalCookie }, redirect: 'manual' });
+    assert.equal(legacy.status, 307, locale);
+    assert.equal(new URL(legacy.headers.get('location')!, base).pathname, path, locale);
+    const page = await request(path + '/report/print', portalCookie);
     assert.equal(page.status, 200, locale);
     assert(page.text.includes('Updated repair explanation'), locale);
     assert(!page.text.includes('Internal correction explanation'), locale);
@@ -314,10 +328,14 @@ test('published report, print page and dashboard render on all six locales', asy
     const dashboard = await request('/' + locale + '/portal', portalCookie);
     assert.equal(dashboard.status, 200);
     assert(dashboard.text.includes(sample.publicRequestNumber));
+    assert(dashboard.text.includes('/portal/requests/' + sample.publicRequestNumber + '#repair-report'), locale);
   }
-  const unauthenticated = await request('/ru/portal/requests/' + sample.publicRequestNumber + '/report');
-  assert.equal(unauthenticated.status, 200);
-  assert(!unauthenticated.text.includes('Updated repair explanation'));
+  for (const suffix of ['', '/report', '/report/print']) {
+    const unauthenticated = await request('/ru/portal/requests/' + sample.publicRequestNumber + suffix);
+    assert.equal(unauthenticated.status, 200);
+    assert(unauthenticated.text.includes('portal-login-password'));
+    assert(!unauthenticated.text.includes('Updated repair explanation'));
+  }
   if (process.env.WORK_RESULT_FIXTURE_FILE) await writeFile(process.env.WORK_RESULT_FIXTURE_FILE, JSON.stringify({
     caseId: sample.id, publicRequestNumber: sample.publicRequestNumber,
     uiCase: await makeCase(),

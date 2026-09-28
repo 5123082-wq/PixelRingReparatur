@@ -17,6 +17,7 @@ import { getPortalRequestDetailForUser } from '@/lib/portal/production-data';
 import { getPublicWorkResult } from '@/lib/work-results/service';
 
 import PortalAccessRequired from './PortalAccessRequired';
+import PortalEntry from './PortalEntry';
 import PortalDemoGate from './PortalDemoGate';
 import PortalRequestDetail, { PortalRequestNotFound, type PortalRequestDetailPresentation } from './PortalRequestDetail';
 
@@ -65,6 +66,9 @@ export default async function PortalRequestDetailRoute({
   }
 
   if (!hasDemoAccess) {
+    if (!portalSession) {
+      return <PortalEntry returnTo={'/portal/requests/' + encodeURIComponent(publicRequestNumber)} />;
+    }
     return <PortalAccessRequired locale={locale} />;
   }
 
