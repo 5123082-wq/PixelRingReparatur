@@ -24,10 +24,12 @@ import PortalRequestDetail, { PortalRequestNotFound, type PortalRequestDetailPre
 export default async function PortalRequestDetailRoute({
   publicRequestNumber,
   locale,
+  attentionId,
   presentation = 'page',
 }: {
   publicRequestNumber: string;
   locale?: string | null;
+  attentionId?: string;
   presentation?: PortalRequestDetailPresentation;
 }) {
   const cookieStore = await cookies();
@@ -41,7 +43,8 @@ export default async function PortalRequestDetailRoute({
       prisma,
       portalSession.portalUserId,
       portalSession.email,
-      publicRequestNumber
+      publicRequestNumber,
+      locale || 'de'
     );
 
     if (result?.detail) {
@@ -67,7 +70,7 @@ export default async function PortalRequestDetailRoute({
 
   if (!hasDemoAccess) {
     if (!portalSession) {
-      return <PortalEntry returnTo={'/portal/requests/' + encodeURIComponent(publicRequestNumber)} />;
+      return <PortalEntry returnTo={'/portal/requests/' + encodeURIComponent(publicRequestNumber) + (attentionId && /^[a-zA-Z0-9-]{1,80}$/.test(attentionId) ? '?attention=' + encodeURIComponent(attentionId) + '#attention-' + encodeURIComponent(attentionId) : '')} />;
     }
     return <PortalAccessRequired locale={locale} />;
   }

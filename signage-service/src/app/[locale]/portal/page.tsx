@@ -1,3 +1,4 @@
+import { getLocale } from 'next-intl/server';
 import { cookies } from 'next/headers';
 
 import PortalDashboard from '@/components/portal/PortalDashboard';
@@ -23,7 +24,8 @@ export default async function PortalPage() {
     const organization = await getPortalOrganizationForUser(
       prisma,
       portalSession.portalUserId,
-      portalSession.email
+      portalSession.email,
+      await getLocale()
     );
 
     if (organization) {

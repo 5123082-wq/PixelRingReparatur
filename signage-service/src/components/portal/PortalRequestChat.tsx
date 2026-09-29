@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useRouter } from '@/i18n/routing';
 import { useLocale } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
+import type { AttentionItem } from '@/lib/portal-attention/types';
+import { getAttentionCopy } from '@/lib/portal-attention/copy';
 import type { PortalDemoOrganization, PortalRequest } from '@/lib/portal/types';
 import { getPortalRequestDetailCopy, type PortalChatAuthorRole, type PortalRequestDetailCopy } from './portal-request-detail-copy';
 
@@ -202,6 +205,12 @@ export default function PortalRequestChat({
   const locale = useLocale();
   const copy = getPortalRequestDetailCopy(locale);
   const router = useRouter();
+  const attentionCopy = getAttentionCopy(locale);
+  const searchParams = useSearchParams();
+  const attentionId = searchParams.get('attention');
+  const [selectedAction, setSelectedAction] = useState<AttentionItem | null>(null);
+  const [pendingEvidence, setPendingEvidence] = useState<{ id: string; messageId: string; attachmentId?: string } | null>(null);
+  const [actionNotice, setActionNotice] = useState('');
   const [chatMessages, setChatMessages] = useState<PortalChatMessage[]>(() => mapInitialMessages(messages));
   const [inputText, setInputText] = useState('');
   const [pendingFiles, setPendingFiles] = useState<AttachmentPreview[]>([]);
@@ -213,6 +222,33 @@ export default function PortalRequestChat({
   useEffect(() => {
     setChatMessages(mapInitialMessages(messages));
   }, [messages]);
+
+  useEffect(() => {
+    let active = true;
+    const accept = (item: AttentionItem) => {
+      if (item.publicRequestNumber === request.publicRequestNumber && item.state === 'OPEN' && ['REPLY', 'UPLOAD'].includes(item.mode)) {
+        setSelectedAction(item); setActionNotice('');
+      }
+    };
+    const select = (event: Event) => { if (!isSending && !pendingEvidence) accept((event as CustomEvent<AttentionItem>).detail); };
+    window.addEventListener('portal-attention-select', select);
+    if (attentionId && canPostMessages) {
+      void fetch('/api/portal/attention?locale=' + encodeURIComponent(locale) + '&publicRequestNumber=' + encodeURIComponent(request.publicRequestNumber), { cache: 'no-store' })
+        .then(async (response) => { if (!response.ok) return; const data = await response.json(); const item = data.items.find((row: AttentionItem) => row.id === attentionId); if (active && item) accept(item); }).catch(() => undefined);
+    }
+    return () => { active = false; window.removeEventListener('portal-attention-select', select); };
+  }, [attentionId, canPostMessages, locale, request.publicRequestNumber, isSending, pendingEvidence]);
+
+  async function submitEvidence(evidence: { id: string; messageId: string; attachmentId?: string }) {
+    try {
+      const response = await fetch('/api/portal/attention/' + evidence.id, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'submit', messageId: evidence.messageId, attachmentId: evidence.attachmentId }) });
+      if (!response.ok) throw new Error();
+      setPendingEvidence(null); setSelectedAction(null); setActionNotice(attentionCopy.responseSaved);
+      window.dispatchEvent(new Event('portal-attention-updated'));
+    } catch {
+      setPendingEvidence(evidence); setActionNotice(attentionCopy.responseLinkFailed);
+    }
+  }
 
   const scrollToBottom = useCallback(() => {
     const scrollContainer = scrollRef.current;
@@ -268,6 +304,9 @@ export default function PortalRequestChat({
     const messageToSubmit = inputText.trim();
     if ((!messageToSubmit && pendingFiles.length === 0) || isSending || !canPostMessages) return;
 
+    if (selectedAction?.mode === 'UPLOAD' && pendingFiles.length === 0) { setErrorMessage(attentionCopy.uploadRequired); return; }
+    if (pendingEvidence) return;
+    const respondingAction = selectedAction;
     const currentFiles = [...pendingFiles];
     const messageText = messageToSubmit || copy.chat.photoFallback;
     const optimistic: PortalChatMessage = {
@@ -292,6 +331,7 @@ export default function PortalRequestChat({
     try {
       const formData = new FormData();
       formData.append('message', messageText);
+      if (respondingAction) formData.append('attentionId', respondingAction.id);
       currentFiles.forEach((file) => formData.append('files', file.file));
 
       const response = await fetch(`/api/portal/requests/${encodeURIComponent(request.publicRequestNumber)}/messages`, {
@@ -343,6 +383,9 @@ export default function PortalRequestChat({
         ]);
       }
 
+      if (respondingAction && typeof data.message === 'object') {
+        await submitEvidence({ id: respondingAction.id, messageId: data.message.id, attachmentId: data.message.attachments?.[0]?.id });
+      }
       router.refresh();
     } catch (error) {
       setChatMessages((current) => current.filter((message) => message.id !== optimistic.id));
@@ -355,9 +398,11 @@ export default function PortalRequestChat({
   }
 
   return (
-    <section className={`flex h-[580px] min-h-[520px] min-w-0 flex-col lg:min-h-0 bg-[#F7F1E8]/95 ${
+    <section id="request-chat" className={`flex h-[580px] min-h-[520px] min-w-0 flex-col lg:min-h-0 bg-[#F7F1E8]/95 ${
       presentation === 'modal' ? 'lg:h-full' : 'lg:h-[calc(100vh-164px)]'
     }`}>
+      {selectedAction && <div className="shrink-0 border-b border-[#E5D1C2] bg-[#FFF8F2] p-3 text-sm text-[#27364A]"><p className="font-semibold">{attentionCopy.respondingTo}: {selectedAction.title}</p><button type="button" disabled={isSending || !!pendingEvidence} onClick={() => setSelectedAction(null)} className="mt-1 underline disabled:opacity-40">{attentionCopy.cancelReply}</button></div>}
+      {actionNotice && <div role="status" className="shrink-0 bg-white p-3 text-sm text-[#27364A]">{actionNotice}{pendingEvidence && <button type="button" disabled={isSending} onClick={async () => { setIsSending(true); await submitEvidence(pendingEvidence); setIsSending(false); }} className="ms-3 underline disabled:opacity-40">{attentionCopy.retrySubmit}</button>}</div>}
       <div ref={scrollRef} className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-4 sm:p-5">
         {chatMessages.length === 0 && (
           <div className="rounded-[20px] border border-dashed border-black/10 bg-white/45 px-4 py-4 text-[13px] text-[#72665D]">

@@ -1,3 +1,6 @@
+export const maxDuration = 60;
+import { after } from 'next/server';
+import { deliverAttentionEmails } from '@/lib/portal-attention/delivery';
 import { NextRequest, NextResponse } from 'next/server';
 import { CRM_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
 import { requireAdminPermissionActor } from '@/lib/admin-audit';
@@ -19,6 +22,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     limitWorkResultMutation(actor.adminUserId);
     const result = await advanceCaseStatus(id, actor, await request.json());
     if (result.outcome !== 'requires_input') {
+      after(() => deliverAttentionEmails({ caseId: id }).then(() => undefined));
       await publishCaseRealtimeEvent({ caseId: id, reason: 'status.changed' }).catch(() => undefined);
       if (result.state.status === 'WORK_COMPLETED') await deliverWorkResultNotifications(id).catch(() => undefined);
     }

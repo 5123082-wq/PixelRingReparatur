@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import CaseDocuments from '@/components/admin/CaseDocuments';
+import CaseAttention from '@/components/admin/CaseAttention';
 import WorkResultEditor from '@/components/admin/WorkResultEditor';
 import StageWindow from '@/components/admin/StageWindow';
 import useCaseStatusTransition from '@/components/admin/useCaseStatusTransition';
@@ -104,7 +105,7 @@ type TimelineEvent =
   | { timestamp: number; type: 'message' | 'note'; data: CaseMessage }
   | { timestamp: number; type: 'status'; data: CaseStatusEvent };
 type StatusOption = { value: string; label: string; variant: string };
-type ActiveTab = 'documents' | 'client' | 'master' | 'history' | 'result';
+type ActiveTab = 'actions' | 'documents' | 'client' | 'master' | 'history' | 'result';
 type ReplyMode = 'customer' | 'internal';
 
 const STATUS_OPTIONS: StatusOption[] = [
@@ -126,7 +127,7 @@ const CHANNEL_ICONS: Record<string, string> = {
 };
 
 const ACTOR_ROLE_LABELS: Record<string, string> = { CUSTOMER: 'Клиент', OPERATOR: 'Оператор', SYSTEM: 'Система' };
-const ACTIVE_TABS: ActiveTab[] = ['client', 'documents', 'result', 'master', 'history'];
+const ACTIVE_TABS: ActiveTab[] = ['client', 'documents', 'actions', 'result', 'master', 'history'];
 const REPLY_MODES: ReplyMode[] = ['customer', 'internal'];
 const REALTIME_EVENT_NAME = 'case.updated';
 
@@ -741,13 +742,14 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                  key={tid} onClick={() => setActiveTab(tid)}
                  className={`relative h-full flex items-center text-[10px] font-black uppercase tracking-[0.2em] transition-all ${activeTab === tid ? 'text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
                >
-                 {tid === 'documents' ? 'Документы клиенту' : tid === 'result' ? 'Результат ремонта' : tid === 'client' ? 'Chat with client' : tid === 'master' ? 'Communication Master' : 'Event Timeline'}
+                 {tid === 'actions' ? 'Действия клиента' : tid === 'documents' ? 'Документы клиенту' : tid === 'result' ? 'Результат ремонта' : tid === 'client' ? 'Chat with client' : tid === 'master' ? 'Communication Master' : 'Event Timeline'}
                  {activeTab === tid && <motion.div layoutId="nav-line" className="absolute bottom-0 left-0 right-0 h-[2px] bg-indigo-500" />}
                </button>
              ))}
           </nav>
 
           <div className="flex flex-1 min-h-0 flex-col overflow-hidden">
+            {activeTab === 'actions' && <div className="min-h-0 flex-1 overflow-y-auto"><CaseAttention caseId={id} /></div>}
             {activeTab === 'documents' && <div className="min-h-0 flex-1 overflow-y-auto"><CaseDocuments caseId={id} onPublished={() => fetchCase({ silent: true })} /></div>}
             <div className={activeTab === 'result' || transition.requirement?.kind === 'work_result' ? 'min-h-0 flex-1 overflow-y-auto' : 'hidden'}>
               <WorkResultEditor caseId={id} caseStatus={caseData.status} publicRequestNumber={caseData.publicRequestNumber} attachments={caseData.attachments}

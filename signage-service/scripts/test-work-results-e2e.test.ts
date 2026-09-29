@@ -23,7 +23,7 @@ let photo: Buffer;
 let sample: any;
 const fixtureIds: string[] = [];
 const mutationTimes = new Map<string, number[]>();
-const csrf = { 'x-pixelring-admin-csrf': '1', origin: base };
+const csrf = { 'x-pixelring-admin-csrf': '1', origin: base, 'x-forwarded-for': `192.0.2.${1 + Math.floor(Math.random() * 250)}` };
 const draft = (attachmentId?: string) => ({
   completedOn: '2026-09-28', note: '', items: [], noPhotoReason: '', correctionReason: '',
   photos: attachmentId ? [{ attachmentId, category: 'RESULT', caption: '' }] : [],
@@ -74,6 +74,20 @@ async function publish(record: any, version: number, cookie = managerCookie) {
   return request(route(record), cookie, 'POST', { action: 'publish', version });
 }
 async function emails() { return (await fetch(mailBase)).json(); }
+async function attentionMail(record: any, state?: string) {
+  const deadline = Date.now() + 10_000;
+  while (true) {
+    const row = await db.portalAttentionEmail.findFirst({ where: { attention: { caseId: record.id, kind: 'REPORT' } }, orderBy: { createdAt: 'desc' } });
+    if (row && (!state || row.state === state)) return row;
+    if (Date.now() > deadline) assert.fail(`Report email expected ${state ?? 'row'}, got ${row?.state ?? 'absent'}`);
+    await new Promise(resolve => setTimeout(resolve, 75));
+  }
+}
+async function retryAttentionMail(record: any) {
+  const row = await attentionMail(record);
+  return request('/api/admin/cases/' + record.id + '/attention', managerCookie, 'POST', { action: 'retry-email', id: row.attentionId });
+}
+
 
 beforeEach(async () => {
   // Leave room for a whole scenario within the real 60/minute actor limit.
@@ -187,6 +201,7 @@ test('date and a result photo publish without explanation or warranty; request s
   assert.equal(await db.workResultRevision.count({ where: { workResult: { caseId: sample.id } } }), 1);
   assert.equal((await db.case.findUniqueOrThrow({ where: { id: sample.id } })).status, 'WORK_COMPLETED');
   assert.equal(await db.caseStatusEvent.count({ where: { caseId: sample.id, toStatus: 'WORK_COMPLETED' } }), 1);
+  await attentionMail(sample, 'SENT');
   assert.equal((await emails()).length, prior + 1);
   const report = await request(publicRoute(sample), portalCookie);
   assert.equal(report.status, 200); assert.equal(report.json.note, ''); assert.equal(report.json.photos.length, 1);
@@ -229,19 +244,22 @@ test('failed email leaves publication intact; retry sends only the failed notifi
   const saved = await save(record, draft(loaded.json.attachmentId));
   const published = await publish(record, saved.json.version);
   assert.equal(published.status, 200);
-  assert.equal(published.json.notifications[0].state, 'FAILED');
+  assert.equal((await attentionMail(record, 'FAILED')).state, 'FAILED');
   assert.equal((await db.case.findUniqueOrThrow({ where: { id: record.id } })).status, 'WORK_COMPLETED');
   await fetch(mailBase + '/allow?email=' + encodeURIComponent(customer.primaryEmail));
-  const retried = await request(route(record), managerCookie, 'POST', { action: 'retry-notification' });
-  assert.equal(retried.json.notifications[0].state, 'SENT');
+  const retried = await retryAttentionMail(record);
+  assert.equal(retried.status, 200, retried.text);
+  assert.equal((await attentionMail(record, 'SENT')).state, 'SENT');
   const count = (await emails()).length;
-  await request(route(record), managerCookie, 'POST', { action: 'retry-notification' });
+  await retryAttentionMail(record);
   assert.equal((await emails()).length, count);
-  const notificationId = retried.json.notifications[0].id;
-  await db.workResultNotification.update({ where: { id: notificationId }, data: { state: 'SENDING', startedAt: new Date(), sentAt: null } });
-  assert.equal((await request(route(record), managerCookie, 'POST', { action: 'retry-notification' })).json.notifications[0].state, 'SENDING');
-  await db.workResultNotification.update({ where: { id: notificationId }, data: { startedAt: new Date(Date.now() - 6 * 60_000) } });
-  assert.equal((await request(route(record), managerCookie, 'POST', { action: 'retry-notification' })).json.notifications[0].state, 'SENT');
+  const notificationId = (await attentionMail(record)).id;
+  await db.portalAttentionEmail.update({ where: { id: notificationId }, data: { state: 'SENDING', startedAt: new Date(), sentAt: null } });
+  assert.equal((await retryAttentionMail(record)).status, 200);
+  assert.equal((await attentionMail(record)).state, 'SENDING');
+  await db.portalAttentionEmail.update({ where: { id: notificationId }, data: { startedAt: new Date(Date.now() - 6 * 60_000) } });
+  assert.equal((await retryAttentionMail(record)).status, 200);
+  assert.equal((await attentionMail(record, 'SENT')).state, 'SENT');
   assert.equal((await emails()).length, count + 1);
 });
 
@@ -273,7 +291,8 @@ test('unconnected portal keeps the report, then grants access without exposing i
   await db.portalCaseAccess.delete({ where: { portalUserId_caseId: { portalUserId: customer.id, caseId: record.id } } });
   const saved = await save(record, { ...draft(), noPhotoReason: 'Test exception' }, ownerCookie);
   const published = await publish(record, saved.json.version, ownerCookie);
-  assert.equal(published.status, 200); assert.equal(published.json.notifications.length, 0);
+  assert.equal(published.status, 200);
+  assert.equal(await db.portalAttentionEmail.count({ where: { attention: { caseId: record.id } } }), 0);
   assert.equal((await request(publicRoute(record), portalCookie)).status, 404);
   await db.portalCaseAccess.create({ data: { caseId: record.id, portalUserId: customer.id, source: 'ADMIN' } });
   assert.equal((await request(publicRoute(record), portalCookie)).status, 200);
@@ -397,8 +416,9 @@ test('a complete draft still requires confirmation; repeated publish and close a
   assert.equal(published[0].json.state.status, 'WORK_COMPLETED');
   assert.equal((await step(record, confirmed)).status, 200); // lost-response retry
   assert.equal(await db.workResultRevision.count({ where: { workResult: { caseId: record.id } } }), 1);
+  await attentionMail(record, 'SENT');
   assert.equal((await emails()).length, priorEmails + 1);
-  assert.equal((await request(route(record), managerCookie)).json.notifications[0].state, 'SENT');
+  assert.equal((await attentionMail(record, 'SENT')).state, 'SENT');
   const closing = { targetStatus: 'COMPLETED', expected: published[0].json.state, stepId: randomUUID() };
   const closed = await Promise.all([step(record, closing), step(record, closing)]);
   closed.forEach((result) => { assert.equal(result.status, 200, result.text); assert.equal(result.json.outcome, 'done'); });
@@ -505,15 +525,58 @@ test('notification failure does not block the final step', async () => {
     assert.equal(published.json.state.status, 'WORK_COMPLETED');
     const closed = await step(record, await transitionInput(record, 'COMPLETED'));
     assert.equal(closed.json.outcome, 'done');
-    assert.equal((await request(route(record), managerCookie)).json.notifications[0].state, 'FAILED');
+    assert.equal((await attentionMail(record, 'FAILED')).state, 'FAILED');
     const beforeRetry = (await emails()).length;
     await db.portalUserEmail.deleteMany({ where: { portalUserId: customer.id } });
-    const retry = await request(route(record), managerCookie, 'POST', { action: 'retry-notification' });
+    const retry = await retryAttentionMail(record);
     assert.equal(retry.status, 200, retry.text);
-    assert.equal(retry.json.notifications[0].state, 'SKIPPED');
+    assert.equal((await attentionMail(record, 'SKIPPED')).state, 'SKIPPED');
     assert.equal((await emails()).length, beforeRetry);
   } finally {
     await db.portalUserEmail.createMany({ data: verifiedEmails, skipDuplicates: true });
     await fetch(mailBase + '/allow?email=' + encodeURIComponent(customer.primaryEmail));
   }
+});
+
+
+test('report publication creates one acknowledged action and one unified email without legacy duplication', async () => {
+  const record = await makeCase();
+  const beforeMail = (await emails()).length;
+  const saved = await save(record, { ...draft(), noPhotoReason: 'Explicit owner test exception' }, ownerCookie);
+  const first = await publish(record, saved.json.version, ownerCookie);
+  assert.equal(first.status, 200, first.text);
+  // Delivery runs after the response. Observe the local mail capture before database assertions.
+  const deadline = Date.now() + 10_000;
+  while ((await emails()).length === beforeMail && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 100));
+  const mail = await attentionMail(record, 'SENT');
+  const attention = await db.portalAttention.findUniqueOrThrow({ where: { id: mail.attentionId } });
+  assert.equal(attention.kind, 'REPORT'); assert.equal(attention.mode, 'ACKNOWLEDGE'); assert.equal(attention.state, 'OPEN');
+  assert.equal(attention.readAt, null); assert.equal(attention.portalUserId, customer.id);
+  assert.equal(await db.workResultNotification.count({ where: { revision: { workResult: { caseId: record.id } } } }), 0);
+  assert.equal(await db.portalAttentionEmail.count({ where: { attention: { caseId: record.id } } }), 1);
+  assert.equal((await emails()).length, beforeMail + 1);
+  const retry = await publish(record, saved.json.version, ownerCookie);
+  assert.equal(retry.status, 200, retry.text);
+  assert.equal(await db.portalAttention.count({ where: { caseId: record.id, kind: 'REPORT' } }), 1);
+  assert.equal((await emails()).length, beforeMail + 1);
+});
+
+
+test('new report revision cancels obsolete pending actions and emails but preserves completed history', async () => {
+  const record = await makeCase();
+  await fetch(mailBase + '/reject?email=' + encodeURIComponent(customer.primaryEmail));
+  try {
+    const first = await save(record, { ...draft(), noPhotoReason: 'Owner test exception' }, ownerCookie);
+    assert.equal((await publish(record, first.json.version, ownerCookie)).status, 200);
+    const oldMail = await attentionMail(record, 'FAILED');
+    const completed = await db.portalAttention.create({ data: { caseId: record.id, portalUserId: customer.id, sourceKey: 'historical-' + randomUUID(), sourceId: randomUUID(), kind: 'REPORT', title: '', mode: 'ACKNOWLEDGE', state: 'COMPLETED', completedAt: new Date() } });
+    const second = await save(record, { ...draft(), noPhotoReason: 'Owner test exception', correctionReason: 'Correct the published report' }, ownerCookie);
+    assert.equal((await publish(record, second.json.version, ownerCookie)).status, 200);
+    const newMail = await attentionMail(record, 'FAILED');
+    assert.notEqual(newMail.attentionId, oldMail.attentionId);
+    assert.equal((await db.portalAttention.findUniqueOrThrow({ where: { id: oldMail.attentionId } })).state, 'CANCELLED');
+    assert.equal((await db.portalAttentionEmail.findUniqueOrThrow({ where: { id: oldMail.id } })).state, 'SKIPPED');
+    assert.equal((await db.portalAttention.findUniqueOrThrow({ where: { id: completed.id } })).state, 'COMPLETED');
+    assert.equal(await db.portalAttention.count({ where: { caseId: record.id, kind: 'REPORT', state: 'OPEN' } }), 1);
+  } finally { await fetch(mailBase + '/allow?email=' + encodeURIComponent(customer.primaryEmail)); }
 });

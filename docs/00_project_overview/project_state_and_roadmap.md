@@ -6,6 +6,8 @@ Purpose: current-state boundary and roadmap index. Read this beacon for startup 
 
 Exists now:
 
+- shared client action/notification inbox and document/report email outbox implemented in an isolated working copy; migration and release pending: [execution guide](../04_client_portal/client_notifications_and_actions.md);
+
 - request-bound PDF document delivery is implemented locally; migration applied 2026-09-29, application release pending: [execution guide](../06_crm/customer_documents.md);
 
 - multilingual public website with request intake and status lookup;

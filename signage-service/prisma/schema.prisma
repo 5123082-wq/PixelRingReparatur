@@ -182,6 +182,7 @@ model Case {
   workResult               WorkResult?
   workResultUploads        WorkResultUpload[]
   documents                CaseDocument[]
+  attentionItems           PortalAttention[]
 
   @@index([status, updatedAt])
   @@index([originChannel, createdAt])
@@ -560,6 +561,8 @@ model PortalUser {
   id                     String             @id @default(uuid()) @db.Uuid
   displayName            String?
   primaryEmail           String
+  preferredLocale        String?
+  attentionItems         PortalAttention[]
   primaryEmailNormalized String             @unique
   passwordHash           String?
   passwordSetAt          DateTime?
@@ -861,4 +864,49 @@ model CaseDocument {
 
   @@index([caseId, publishedAt])
   @@map("case_documents")
+}
+
+model PortalAttention {
+  id String @id @default(uuid()) @db.Uuid
+  caseId String @db.Uuid
+  portalUserId String @db.Uuid
+  sourceKey String
+  sourceId String
+  kind String
+  title String
+  body String @default("") @db.Text
+  documentType String?
+  mode String @default("ACKNOWLEDGE")
+  state String @default("OPEN")
+  readAt DateTime?
+  dueAt DateTime?
+  submittedAt DateTime?
+  completedAt DateTime?
+  evidenceId String? @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  case Case @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  portalUser PortalUser @relation(fields: [portalUserId], references: [id], onDelete: Cascade)
+  email PortalAttentionEmail?
+  @@unique([portalUserId, sourceKey])
+  @@index([portalUserId, state, createdAt])
+  @@index([caseId, createdAt])
+  @@map("portal_attention")
+}
+model PortalAttentionEmail {
+  id String @id @default(uuid()) @db.Uuid
+  attentionId String @unique @db.Uuid
+  email String
+  locale String
+  state String @default("PENDING")
+  attempts Int @default(0)
+  nextAttemptAt DateTime @default(now())
+  startedAt DateTime?
+  sentAt DateTime?
+  lastError String?
+  providerId String?
+  createdAt DateTime @default(now())
+  attention PortalAttention @relation(fields: [attentionId], references: [id], onDelete: Cascade)
+  @@index([state, nextAttemptAt])
+  @@map("portal_attention_emails")
 }

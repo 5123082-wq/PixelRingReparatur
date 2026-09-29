@@ -1,3 +1,6 @@
+export const maxDuration = 60;
+import { after } from 'next/server';
+import { deliverAttentionEmails } from '@/lib/portal-attention/delivery';
 import { NextRequest, NextResponse } from 'next/server';
 import { createHash } from 'node:crypto';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
@@ -23,6 +26,7 @@ export async function POST(request: NextRequest, { params }: Context) {
       const body = await request.json().catch(() => null);
       if (body?.action !== 'publish' || typeof body.id !== 'string') throw new DocumentError('invalid_input');
       const result = await publishDocument(id, body.id, actor, body);
+      after(() => deliverAttentionEmails({ caseId: id }).then(() => undefined));
       await publishCaseRealtimeEvent({ caseId: id, reason: 'case.updated' }).catch(() => undefined);
       return NextResponse.json(result);
     }

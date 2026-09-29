@@ -36,6 +36,7 @@ type PortalEmailPayload = {
   html: string;
   logMode: 'code' | 'activation-invite' | 'work-result';
   expiresAt: Date;
+  deliveryKey?: string;
 };
 
 function escapeHtml(value: string): string {
@@ -324,6 +325,9 @@ async function sendViaSmtp(input: PortalEmailPayload): Promise<PortalCodeEmailRe
     port,
     secure,
     requireTLS,
+    connectionTimeout: 5_000,
+    greetingTimeout: 5_000,
+    socketTimeout: 10_000,
     auth: {
       user,
       pass: password,
@@ -332,6 +336,7 @@ async function sendViaSmtp(input: PortalEmailPayload): Promise<PortalCodeEmailRe
 
   const result = await transport.sendMail({
     from,
+    ...(input.deliveryKey ? { messageId: `<portal-attention-${input.deliveryKey}@pixel-ring.com>` } : {}),
     to: input.to,
     subject: input.subject,
     text: input.text,
@@ -362,9 +367,11 @@ async function sendViaResend(input: PortalEmailPayload): Promise<PortalCodeEmail
 
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
+    signal: AbortSignal.timeout(15_000),
     headers: {
       Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
+      ...(input.deliveryKey ? { 'Idempotency-Key': `portal-attention-${input.deliveryKey}` } : {}),
     },
     body: JSON.stringify({
       from,
@@ -428,11 +435,12 @@ export async function sendWorkResultEmail(input: {
   url: string;
   linkLabel: string;
   locale: string;
+  deliveryKey?: string;
 }) {
   const direction = input.locale === 'ar' ? 'rtl' : 'ltr';
   const alignment = direction === 'rtl' ? 'right' : 'left';
   return sendPortalEmailPayload({
-    to: input.to, subject: input.subject, logMode: 'work-result', expiresAt: new Date(),
+    to: input.to, subject: input.subject, logMode: 'work-result', expiresAt: new Date(), deliveryKey: input.deliveryKey,
     text: [input.portalLabel, input.heading, input.publicRequestNumber, '', input.body, '', input.url].join('\n'),
     html: `<!doctype html>
 <html lang="${escapeHtml(input.locale)}" dir="${direction}">

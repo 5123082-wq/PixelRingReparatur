@@ -1,6 +1,8 @@
 'use client';
 import { getWorkResultCopy } from '@/lib/work-results/copy';
 
+import type { AttentionItem } from '@/lib/portal-attention/types';
+import type { ComponentProps } from 'react';
 import type {
   PortalAsset,
   PortalDemoOrganization,
@@ -10,10 +12,12 @@ import type {
 } from '@/lib/portal/types';
 import { Link, useRouter } from '@/i18n/routing';
 import { useLocale, useTranslations } from 'next-intl';
-import { useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import LocationPicker, { type SelectedLocation } from '@/components/common/LocationPicker';
 import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 import Logo from '@/components/common/Logo';
+import PortalAttention, { PortalLocalePreference, clearPortalAttention, usePortalAttention } from './PortalAttention';
+import { getAttentionCopy } from '@/lib/portal-attention/copy';
 
 type TabKey =
   | 'overview'
@@ -744,7 +748,15 @@ export default function PortalDashboard({
   const copy = copyForLocale(locale);
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
+  const [activeOnly, setActiveOnly] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  useEffect(() => {
+    if (!canCreateRequests) return;
+    const refresh = () => { if (document.visibilityState === 'visible') router.refresh(); };
+    window.addEventListener('focus', refresh);
+    const timer = window.setInterval(refresh, 30_000);
+    return () => { window.removeEventListener('focus', refresh); window.clearInterval(timer); };
+  }, [canCreateRequests, router]);
 
   const activeRequests = organization.requests.filter((request) => request.status !== 'COMPLETED');
   const reportDocuments = organization.documents.filter((document) => document.type === 'REPORT');
@@ -757,6 +769,7 @@ export default function PortalDashboard({
 
   async function logout() {
     setIsLoggingOut(true);
+    clearPortalAttention();
     try {
       await fetch('/api/portal/auth/logout', { method: 'POST' });
       await fetch('/api/portal/demo-auth', { method: 'DELETE' });
@@ -767,7 +780,8 @@ export default function PortalDashboard({
   }
 
   return (
-    <main className="min-h-screen bg-[#EEF2F6] text-[#0F1C2B]">
+    <main dir={locale === 'ar' ? 'rtl' : undefined} className="min-h-screen bg-[#EEF2F6] text-[#0F1C2B]">
+      {canCreateRequests && <PortalLocalePreference />}
       <div className="grid min-h-screen lg:grid-cols-[232px_1fr]">
         <aside className="border-b border-white/10 bg-[#0D1B2A] text-white lg:h-screen lg:overflow-y-auto lg:border-b-0">
           <div className="flex min-h-full flex-col p-3">
@@ -777,7 +791,7 @@ export default function PortalDashboard({
 
             <div className="rounded-xl border border-white/10 bg-white/[0.055] p-3">
               <strong className="block text-[13px]">{organization.name}</strong>
-              <span className="mt-1 block text-[11px] leading-4 text-white/55">{t('planLabel', { plan: organization.plan })} · {copy.verifiedEmail}</span>
+              <span className="mt-1 block text-[11px] leading-4 text-white/55">{canCreateRequests ? copy.verifiedEmail : t('planLabel', { plan: organization.plan })}</span>
             </div>
 
             <nav className="mt-4 grid gap-1" aria-label={copy.navLabel}>
@@ -785,7 +799,7 @@ export default function PortalDashboard({
                 <button
                   key={item.key}
                   type="button"
-                  onClick={() => setActiveTab(item.key)}
+                  onClick={() => { setActiveOnly(false); setActiveTab(item.key); }}
                   className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-start text-[12px] font-bold transition ${
                     activeTab === item.key
                       ? 'bg-[#C46E43] text-white shadow-sm'
@@ -799,9 +813,7 @@ export default function PortalDashboard({
             </nav>
 
             <div className="mt-4 grid gap-3 lg:mt-auto">
-              <div className="rounded-xl border border-white/10 bg-white/[0.045] p-3 text-[11px] leading-5 text-white/50">
-                {copy.futureHiddenNote}
-              </div>
+              <>{!canCreateRequests && <div className="rounded-xl border border-white/10 bg-white/[0.045] p-3 text-[11px] leading-5 text-white/50">{copy.futureHiddenNote}</div>}</>
               <button
                 type="button"
                 onClick={logout}
@@ -820,7 +832,7 @@ export default function PortalDashboard({
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#B8643E]">{copy.portalLabel}</p>
                 <h1 className="mt-1 text-[22px] font-black leading-tight sm:text-[28px]">{pageTitle(activeTab, organization.name, copy)}</h1>
-                <p className="mt-1 max-w-3xl text-[13px] text-[#6F665D]">{pageSubtitle(activeTab, copy)}</p>
+                <p className="mt-1 max-w-3xl text-[13px] text-[#6F665D]">{canCreateRequests && activeTab === 'overview' ? copy.overviewIntro : pageSubtitle(activeTab, copy)}</p>
               </div>
               <div className="flex flex-wrap gap-2">
                 <Link
@@ -840,7 +852,8 @@ export default function PortalDashboard({
               </div>
             </header>
 
-            {activeTab === 'overview' && (
+            {activeTab === 'overview' && canCreateRequests && <div className="grid min-w-0 grid-cols-1 gap-4"><PortalAttention accountKey={organization.id} showOverview activeRequests={activeRequests.length} onShowActiveRequests={() => { setActiveOnly(true); setActiveTab('requests'); }} /><div id="latest-requests" className="min-w-0 scroll-mt-4"><LiveRequestsTable title={getAttentionCopy(locale).latestRequests} accountKey={organization.id} copy={copy} requests={organization.requests.slice(0, 5)} objectsById={objectsById} onTabChange={setActiveTab} /></div></div>}
+            {activeTab === 'overview' && !canCreateRequests && (
               <Overview
                 copy={copy}
                 organization={organization}
@@ -850,7 +863,7 @@ export default function PortalDashboard({
                 onTabChange={setActiveTab}
               />
             )}
-            {activeTab === 'requests' && <RequestsTable copy={copy} requests={organization.requests} objectsById={objectsById} onTabChange={setActiveTab} />}
+            {activeTab === 'requests' && (canCreateRequests ? <LiveRequestsTable accountKey={organization.id} copy={copy} requests={activeOnly ? activeRequests : organization.requests} objectsById={objectsById} onTabChange={setActiveTab} /> : <RequestsTable copy={copy} requests={organization.requests} objectsById={objectsById} onTabChange={setActiveTab} />)}
             {activeTab === 'reports' && (
               <DocumentCards
                 title={copy.photoReports}
@@ -1081,25 +1094,34 @@ function actionTitle(type: string, copy: PortalCopy) {
   return copy.actionTitles.UPLOAD_MISSING_PHOTO;
 }
 
+function LiveRequestsTable({ accountKey, ...props }: ComponentProps<typeof RequestsTable> & { accountKey: string }) {
+  const { items } = usePortalAttention(accountKey);
+  return <RequestsTable {...props} attentionItems={items || undefined} />;
+}
+
 function RequestsTable({
   copy,
+  title,
+  attentionItems,
   requests,
-  objectsById,
   compact = false,
   onTabChange,
 }: {
   copy: PortalCopy;
+  title?: string;
+  attentionItems?: AttentionItem[];
   requests: PortalRequest[];
   objectsById: Map<string, PortalObject>;
   compact?: boolean;
   onTabChange: (tab: TabKey) => void;
 }) {
   const t = useTranslations('Portal');
+  const locale = useLocale();
 
   return (
     <section className="min-w-0 overflow-hidden rounded-xl border border-[#DCE3EA] bg-white p-4 shadow-sm">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="text-[17px] font-black">{compact ? copy.activeRequests : copy.nav.requests}</h2>
+        <h2 className="text-[17px] font-black">{title || (compact ? copy.activeRequests : copy.nav.requests)}</h2>
         {!compact && (
           <button type="button" onClick={() => onTabChange('new-request')} className="rounded-lg bg-[#C46E43] px-3 py-2 text-[12px] font-black text-white">
             + {copy.newRequest}
@@ -1114,11 +1136,12 @@ function RequestsTable({
               <th className="py-2 pe-3">{copy.requestTitle}</th>
               <th className="py-2 pe-3">{copy.requestObject}</th>
               <th className="py-2 pe-3">{copy.requestStatus}</th>
-              <th className="py-2 pe-3">{copy.nextStep}</th>
+              <th className="py-2 pe-3">{attentionItems ? getAttentionCopy(locale).actions : copy.nextStep}</th>
               <th className="py-2" />
             </tr>
           </thead>
           <tbody>
+            {requests.length === 0 && <tr><td colSpan={6} className="py-5 text-sm text-[#667085]">{getAttentionCopy(locale).noRequests}</td></tr>}
             {requests.map((request) => (
               <tr key={request.id} className="border-b border-[#EEF2F6] align-top last:border-0">
                 <td className="py-3 pe-3 font-mono font-black text-[#0F1C2B]">
@@ -1131,19 +1154,18 @@ function RequestsTable({
                     {safeRequestTitle(request, copy.requestFallbackTitle)}
                   </Link>
                 </td>
-                <td className="py-3 pe-3 text-[#6F665D]">{objectsById.get(request.objectId)?.name}</td>
+                <td className="py-3 pe-3 text-[#6F665D]">{request.serviceLocation || getAttentionCopy(locale).noAddress}</td>
                 <td className="py-3 pe-3">
                   <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-black ${statusTone[request.status]}`}>
                     {t(`requestStatus.${request.status}`)}
                   </span>
                 </td>
-                <td className="py-3 pe-3 text-[#6F665D]">{request.nextStep}</td>
+                <td className="py-3 pe-3 text-[#6F665D]">{attentionItems ? (() => {
+                  const open = attentionItems.filter((item) => item.publicRequestNumber === request.publicRequestNumber && item.mode !== 'NONE' && ['OPEN', 'SUBMITTED'].includes(item.state));
+                  return open.length ? <Link href={'/portal/requests/' + request.publicRequestNumber + '#request-actions'} className="font-semibold text-[#B8643E] underline">{getAttentionCopy(locale).actions}: {open.length}</Link> : getAttentionCopy(locale).emptyActions;
+                })() : request.nextStep}</td>
                 <td className="py-3">
-                  {['WORK_COMPLETED', 'READY_FOR_PICKUP', 'COMPLETED'].includes(request.status) ? (
-                    <button type="button" onClick={() => onTabChange('reports')} className="rounded-lg border border-[#DCE3EA] px-3 py-1.5 text-[11px] font-black">
-                      {copy.report}
-                    </button>
-                  ) : (
+                  {!['WORK_COMPLETED', 'READY_FOR_PICKUP', 'COMPLETED'].includes(request.status) && (
                     <Link href={`/portal/requests/${request.publicRequestNumber}`} className="inline-flex rounded-lg bg-[#F2E1D5] px-3 py-1.5 text-[11px] font-black text-[#A45531]">
                       {copy.open}
                     </Link>

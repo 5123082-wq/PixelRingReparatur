@@ -1,3 +1,5 @@
+import { DOCUMENT_ID } from '@/lib/case-documents/types';
+import { attentionAccess } from '@/lib/portal-attention/service';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
@@ -78,24 +80,38 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   }
 
   const { publicRequestNumber } = await params;
-  let storedAttachments: StoredAttachmentInput[] = [];
+  const storedAttachments: StoredAttachmentInput[] = [];
 
   try {
     const contentType = request.headers.get('content-type') || '';
     let messageBody: unknown;
+    let attentionId: unknown;
+    let files: File[] = [];
 
     if (contentType.includes('multipart/form-data')) {
       const formData = await request.formData();
       messageBody = formData.get('message') ?? formData.get('body');
-      const files = formData
+      attentionId = formData.get('attentionId');
+      files = formData
         .getAll('files')
         .filter((value): value is File => value instanceof File && value.size > 0);
 
-      storedAttachments = await Promise.all(files.map((file) => storeAttachment(file)));
+
     } else {
-      const body = (await request.json().catch(() => null)) as { body?: unknown } | null;
+      const body = (await request.json().catch(() => null)) as { body?: unknown; attentionId?: unknown } | null;
       messageBody = body?.body;
+      attentionId = body?.attentionId;
     }
+
+    if (attentionId !== undefined && attentionId !== null) {
+      const action = typeof attentionId === 'string' && DOCUMENT_ID.test(attentionId)
+        ? await prisma.portalAttention.findFirst({ where: { id: attentionId, ...attentionAccess(session.portalUserId),
+          state: 'OPEN', mode: { in: ['REPLY', 'UPLOAD'] }, case: { publicRequestNumber, portalCaseAccesses: { some: { portalUserId: session.portalUserId, revokedAt: null } } } } })
+        : null;
+      if (!action || (action.mode === 'UPLOAD' && files.length === 0)) return NextResponse.json({ success: false, error: 'invalid_attention' }, { status: 409 });
+    }
+    // Validate the explicit task before writing any file. Sequential storage allows full cleanup on failure.
+    for (const file of files) storedAttachments.push(await storeAttachment(file));
 
     const result = await createPortalMessageForRequest(prisma, {
       portalUserId: session.portalUserId,
@@ -103,6 +119,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       publicRequestNumber,
       body: messageBody,
       attachments: storedAttachments,
+      attentionId: typeof attentionId === 'string' ? attentionId : undefined,
     });
 
     if (!result.ok) {
@@ -113,7 +130,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
       return NextResponse.json(
         { success: false, message },
-        { status: result.reason === 'invalid_body' ? 400 : 404 }
+        { status: result.reason === 'invalid_attention' ? 409 : result.reason === 'invalid_body' ? 400 : 404 }
       );
     }
 
@@ -126,7 +143,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     let assistantMessage: ReturnType<typeof serializePortalAssistantMessage> | null = null;
 
-    if (result.aiEnabled) {
+    if (result.aiEnabled && !attentionId) {
       const latestCustomerMessage = storedAttachments.length > 0
         ? `${result.message.body}\n\n[System-Notiz: Der Kunde hat ${storedAttachments.length} Foto(s)/Datei(en) an diese Nachricht angehaengt. Bestaetige kurz, dass die Datei angekommen ist, auch wenn du sie noch nicht sehen kannst.]`
         : result.message.body;

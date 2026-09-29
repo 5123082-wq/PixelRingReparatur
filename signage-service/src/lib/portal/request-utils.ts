@@ -1,4 +1,4 @@
-import { CaseOriginChannel, MessageAuthorRole, type Prisma, type PrismaClient } from '@prisma/client';
+import { CaseOriginChannel, MessageAuthorRole, Prisma, type PrismaClient } from '@prisma/client';
 import type { StoredAttachmentInput } from '@/lib/attachments';
 import { syncCaseCustomerProfile } from '../customer-profiles.ts';
 
@@ -64,7 +64,7 @@ export type PortalMessageResult =
     }
   | {
       ok: false;
-      reason: 'not_found' | 'invalid_body';
+      reason: 'not_found' | 'invalid_body' | 'invalid_attention';
     };
 
 export type PortalRequestDetailsInput = {
@@ -484,6 +484,7 @@ export async function createPortalMessageForRequest(
     publicRequestNumber: string;
     body: unknown;
     attachments?: StoredAttachmentInput[];
+    attentionId?: string;
   }
 ): Promise<PortalMessageResult> {
   const body = normalizePortalMessageBody(input.body);
@@ -506,6 +507,13 @@ export async function createPortalMessageForRequest(
       return;
     }
 
+    if (input.attentionId) {
+      await tx.$queryRaw(Prisma.sql`SELECT id FROM cases WHERE id = ${caseRecord.id}::uuid FOR UPDATE`);
+      await tx.$queryRaw(Prisma.sql`SELECT id FROM portal_attention WHERE id = ${input.attentionId}::uuid FOR UPDATE`);
+      const action = await tx.portalAttention.findFirst({ where: { id: input.attentionId, caseId: caseRecord.id,
+        portalUserId: input.portalUserId, state: 'OPEN', mode: { in: ['REPLY', 'UPLOAD'] } } });
+      if (!action || (action.mode === 'UPLOAD' && attachments.length === 0)) { result = { ok: false, reason: 'invalid_attention' }; return; }
+    }
     const now = new Date();
     const message = await tx.message.create({
       data: {

@@ -42,7 +42,10 @@
     "db:seed:article-peeling-film": "node scripts/seed-article-peeling-film-all-locales.mjs",
     "db:seed:article-self-repair-tips": "node scripts/seed-article-self-repair-tips.mjs",
     "db:seed:articles-shaky-urgent-de": "node scripts/seed-articles-shaky-urgent-de.mjs",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "test:portal-attention": "node --experimental-strip-types --test scripts/test-portal-attention.test.ts",
+    "test:attention-email": "node --experimental-strip-types --test scripts/test-attention-email-e2e.test.ts",
+    "test:attention-delivery": "node --experimental-strip-types --test scripts/test-attention-delivery-policy.test.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

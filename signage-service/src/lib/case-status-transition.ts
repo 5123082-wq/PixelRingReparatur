@@ -1,3 +1,4 @@
+import { createAttentionForCase } from '@/lib/portal-attention/service';
 import 'server-only';
 import { createHash } from 'node:crypto';
 import { CaseStatus, type Prisma } from '@prisma/client';
@@ -85,10 +86,11 @@ export async function advanceCaseStatus(caseId: string, actor: AdminRequestActor
     } else {
       const now = new Date(Math.max(Date.now(), (record.statusUpdatedAt?.getTime() ?? 0) + 1));
       await tx.case.update({ where: { id: caseId }, data: { status: next, statusUpdatedAt: now } });
-      await tx.caseStatusEvent.create({ data: {
+      const statusEvent = await tx.caseStatusEvent.create({ data: {
         caseId, actorSessionId: actor.sessionId, actorRole: actor.role, fromStatus: record.status,
         toStatus: next, reason, metadata, createdAt: now,
       } });
+      await createAttentionForCase(tx, { caseId, kind: 'STATUS', sourceId: statusEvent.id, title: next, mode: 'NONE', email: false, createdAt: now });
       await createAdminAuditLog(tx, {
         actorSessionId: actor.sessionId, actorAdminUserId: actor.adminUserId, actorRole: actor.role,
         action: 'CASE_STATUS_CHANGED', resourceType: 'CASE', resourceId: caseId, caseId, reason,

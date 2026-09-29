@@ -2,10 +2,13 @@ import PortalRequestDetailRoute from '@/components/portal/PortalRequestDetailRou
 
 export default async function PortalRequestDetailPage({
   params,
+  searchParams,
 }: {
+  searchParams: Promise<{ attention?: string }>;
   params: Promise<{ locale: string; publicRequestNumber: string }>;
 }) {
   const { locale, publicRequestNumber } = await params;
+  const { attention } = await searchParams;
 
-  return <PortalRequestDetailRoute locale={locale} publicRequestNumber={publicRequestNumber} />;
+  return <PortalRequestDetailRoute attentionId={typeof attention === 'string' ? attention : undefined} locale={locale} publicRequestNumber={publicRequestNumber} />;
 }

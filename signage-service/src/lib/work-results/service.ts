@@ -1,3 +1,4 @@
+import { createAttentionForCase } from '@/lib/portal-attention/service';
 import 'server-only';
 import { Prisma, type Case, type CaseStatus } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
@@ -46,6 +47,10 @@ export async function getAdminWorkResult(caseId: string, db: Prisma.TransactionC
     } },
   });
   const latest = result?.revisions[0];
+  const attentionNotifications = latest ? await db.portalAttentionEmail.findMany({
+    where: { attention: { caseId, kind: 'REPORT', sourceId: latest.id } },
+    select: { id: true, state: true, attempts: true, lastError: true, sentAt: true, startedAt: true },
+  }) : [];
   const draft = result?.draft ? normalizeWorkResultDraft(result.draft) :
     latest ? { ...normalizeWorkResultDraft(latest.content), noPhotoReason: '', correctionReason: '' } : newWorkResultDraft();
   return {
@@ -58,7 +63,7 @@ export async function getAdminWorkResult(caseId: string, db: Prisma.TransactionC
       number: revision.number, publishedAt: revision.publishedAt,
       correctionReason: revision.correctionReason, noPhotoReason: revision.noPhotoReason,
     })) ?? [],
-    notifications: latest?.notifications ?? [],
+    notifications: [...(latest?.notifications ?? []), ...attentionNotifications],
   };
 }
 
@@ -159,19 +164,16 @@ export async function publishWorkResultInTransaction(
     details: { revision: revision.number, photoException: Boolean(draft.noPhotoReason) },
     ipAddress: actor.ipAddress, userAgent: actor.userAgent,
   });
-  const grants = await tx.portalCaseAccess.findMany({
-    where: { caseId, revokedAt: null, portalUser: { status: 'ACTIVE' } },
-    include: { portalUser: { include: { emails: true } } },
+  // A report link displays the latest revision; obsolete pending actions cannot remain actionable.
+  await tx.portalAttention.updateMany({
+    where: { caseId, kind: 'REPORT', sourceId: { not: revision.id }, state: { in: ['OPEN', 'SUBMITTED'] } },
+    data: { state: 'CANCELLED', completedAt: publishedAt },
   });
-  const recipients = new Map<string, string>();
-  for (const { portalUser } of grants) {
-    if (portalUser.emails.some((email) => email.emailNormalized === portalUser.primaryEmailNormalized && email.verifiedAt)) {
-      recipients.set(portalUser.primaryEmailNormalized, portalUser.id);
-    }
-  }
-  if (recipients.size) await tx.workResultNotification.createMany({ data: [...recipients].map(([email, portalUserId]) => ({
-    email, portalUserId, revisionId: revision.id,
-  })), skipDuplicates: true });
+  await tx.portalAttentionEmail.updateMany({
+    where: { state: { in: ['PENDING', 'FAILED'] }, attention: { caseId, kind: 'REPORT', sourceId: { not: revision.id } } },
+    data: { state: 'SKIPPED', lastError: 'report_superseded' },
+  });
+  await createAttentionForCase(tx, { caseId, kind: 'REPORT', sourceId: revision.id, title: '', mode: 'ACKNOWLEDGE', createdAt: publishedAt });
   return { changed: true, revisionId: revision.id };
 }
 

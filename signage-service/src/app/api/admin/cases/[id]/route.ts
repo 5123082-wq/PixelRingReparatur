@@ -1,3 +1,4 @@
+import { createAttentionForCase } from '@/lib/portal-attention/service';
 import { CRM_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
 import { createAdminAuditLog, requireAdminPermissionActor } from '@/lib/admin-audit';
 import { NextRequest, NextResponse } from 'next/server';
@@ -503,7 +504,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     await prisma.$transaction(async (tx) => {
       if (hasMessage) {
-        await tx.message.create({
+        const attentionMessage = await tx.message.create({
           data: {
             caseId: id,
             channel: CaseOriginChannel.CRM,
@@ -514,6 +515,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
             sentAt: now,
           },
         });
+
+        await createAttentionForCase(tx, { caseId: id, kind: 'MESSAGE', sourceId: attentionMessage.id, title: '', body: message, mode: 'NONE', email: false, createdAt: now });
 
         await createAdminAuditLog(tx, {
           actorSessionId: actor.sessionId,
@@ -961,7 +964,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       });
 
       if (statusChanged && nextStatus) {
-        await tx.caseStatusEvent.create({
+        const attentionStatus = await tx.caseStatusEvent.create({
           data: {
             caseId: id,
             actorSessionId: actor.sessionId,
@@ -971,6 +974,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
             reason: transitionReason,
           },
         });
+
+        await createAttentionForCase(tx, { caseId: id, kind: 'STATUS', sourceId: attentionStatus.id, title: nextStatus, mode: 'NONE', email: false });
 
         await createAdminAuditLog(tx, {
           actorSessionId: actor.sessionId,

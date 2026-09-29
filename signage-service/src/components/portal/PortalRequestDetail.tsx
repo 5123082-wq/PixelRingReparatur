@@ -1,4 +1,6 @@
 import CaseDocuments from './CaseDocuments';
+import PortalAttention, { PortalLocalePreference } from './PortalAttention';
+import { getAttentionCopy } from '@/lib/portal-attention/copy';
 import type { ReactNode } from 'react';
 import { getLocale, getTranslations } from 'next-intl/server';
 
@@ -182,6 +184,7 @@ export async function PortalRequestNotFound({
 }
 
 export default async function PortalRequestDetail({
+  organization,
   request,
   object,
   messages,
@@ -239,11 +242,12 @@ export default async function PortalRequestDetail({
           presentation === 'modal' ? 'lg:h-full' : 'lg:h-[calc(100vh-164px)]'
         }`}>
           <div className="grid gap-4">
+            {canPostMessages && <><PortalLocalePreference /><PortalAttention accountKey={organization.id} publicRequestNumber={request.publicRequestNumber} /></>}
             <section className="rounded-[22px] border border-[#E5EAF0] bg-white p-4 shadow-sm">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="font-mono text-[12px] font-semibold uppercase tracking-[0.06em] text-[#B8643E]">{request.publicRequestNumber}</p>
-                  <h2 className="mt-2 text-[16px] font-semibold text-[#172033]">{copy.nextStep}</h2>
+                  <h2 className="mt-2 text-[16px] font-semibold text-[#172033]">{getAttentionCopy(locale).status}</h2>
                   <p className="mt-2 max-w-2xl text-[14px] leading-6 text-[#667085]">{request.nextStep}</p>
                   {workResult && <a href="#repair-report" className="mt-3 inline-flex min-h-11 items-center rounded-xl border border-[#E5D1C2] bg-[#FFF8F2] px-4 py-2 text-sm font-bold text-[#B8643E] hover:bg-[#F6EBDD] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8643E]">{reportCopy.open}</a>}
                 </div>
