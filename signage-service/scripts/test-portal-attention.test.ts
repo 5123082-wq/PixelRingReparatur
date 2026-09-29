@@ -99,7 +99,18 @@ test('a reply requires own real evidence; staff verifies it before completion', 
   assert.equal((await mutate(replyId, { action: 'submit', messageId: response.json.message.id })).status, 200);
   assert.equal((await db.portalAttention.findUniqueOrThrow({ where: { id: replyId } })).state, 'SUBMITTED');
   assert.equal((await request(staff(), otherCookie, 'POST', { action: 'complete', id: replyId })).status, 404);
-  assert.equal((await request(staff(), managerCookie, 'POST', { action: 'complete', id: replyId })).status, 200);
+  const submitted = await db.portalAttention.findUniqueOrThrow({ where: { id: replyId } });
+  assert.equal((await mutate(replyId, { action: 'submit', messageId: response.json.message.id })).status, 200);
+  const replacement = await db.message.create({ data: { caseId: record.id, sessionId, authorRole: 'CUSTOMER', channel: 'WEBSITE_CHAT', isCustomerVisible: true, body: 'Replacement response' } });
+  assert.equal((await mutate(replyId, { action: 'submit', messageId: replacement.id })).status, 409);
+  const unchanged = await db.portalAttention.findUniqueOrThrow({ where: { id: replyId } });
+  assert.equal(unchanged.evidenceId, response.json.message.id);
+  assert.equal(unchanged.submittedAt?.toISOString(), submitted.submittedAt?.toISOString());
+  const staffItem = (await request(staff(), managerCookie)).json.items.find((item: any) => item.id === replyId);
+  assert.deepEqual(staffItem.evidence, { id: response.json.message.id, kind: 'REPLY', body: 'В пятницу после 14:00', createdAt: response.json.message.createdAt });
+  assert.equal((await request(staff(), managerCookie, 'POST', { action: 'complete', id: replyId })).status, 409);
+  assert.equal((await request(staff(), managerCookie, 'POST', { action: 'complete', id: replyId, evidenceId: replacement.id })).status, 409);
+  assert.equal((await request(staff(), managerCookie, 'POST', { action: 'complete', id: replyId, evidenceId: response.json.message.id })).status, 200);
   assert.equal((await request(inbox(), portalCookie)).json.openCount, 1);
 });
 test('informational documents do not create required tasks; photo requests require uploads', async () => {
@@ -112,7 +123,18 @@ test('informational documents do not create required tasks; photo requests requi
   const message = await db.message.create({ data: { caseId: record.id, sessionId, authorRole: 'CUSTOMER', channel: 'WEBSITE_CHAT', isCustomerVisible: true, body: 'Фото' } });
   assert.equal((await mutate(uploadTaskId, { action: 'submit', messageId: message.id })).status, 400);
   const attachment = await db.attachment.create({ data: { caseId: record.id, messageId: message.id, uploadedBySessionId: sessionId, mimeType: 'image/png', kind: 'IMAGE', storageKey: 'isolated-test-image-' + randomUUID(), storageProvider: 'LOCAL', byteSize: 1, isCustomerVisible: true } });
+  for (const [kind, mimeType] of [['VIDEO', 'video/mp4'], ['IMAGE', 'image/svg+xml'], ['VIDEO', 'image/png']]) {
+    const invalid = await db.attachment.create({ data: { caseId: record.id, messageId: message.id, uploadedBySessionId: sessionId, mimeType, kind: kind as any, storageKey: 'invalid-photo-' + randomUUID(), storageProvider: 'LOCAL', byteSize: 1, isCustomerVisible: true } });
+    assert.equal((await mutate(uploadTaskId, { action: 'submit', attachmentId: invalid.id })).status, 400);
+  }
   assert.equal((await mutate(uploadTaskId, { action: 'submit', attachmentId: attachment.id })).status, 200);
+  const staffPhoto = (await request(staff(), managerCookie)).json.items.find((item: any) => item.id === uploadTaskId);
+  assert.equal(staffPhoto.evidence.id, attachment.id);
+  assert.equal(staffPhoto.evidence.href, '/api/admin/attachments/' + attachment.id);
+  assert.equal(JSON.stringify(staffPhoto).includes(attachment.storageKey), false);
+  await db.attachment.update({ where: { id: attachment.id }, data: { isCustomerVisible: false } });
+  assert.equal((await request(staff(), managerCookie)).json.items.find((item: any) => item.id === uploadTaskId).evidence, null);
+  assert.equal((await request(staff(), managerCookie, 'POST', { action: 'complete', id: uploadTaskId, evidenceId: attachment.id })).status, 409);
   assert.equal((await request(staff(), managerCookie, 'POST', { action: 'cancel', id: uploadTaskId })).status, 200);
   assert.equal((await mutate(uploadTaskId, { action: 'submit', attachmentId: attachment.id })).status, 409);
 });

@@ -1,3 +1,4 @@
+import { ATTENTION_IMAGE_MIME_TYPES } from '@/lib/portal-attention/types';
 import { DOCUMENT_ID } from '@/lib/case-documents/types';
 import { attentionAccess } from '@/lib/portal-attention/service';
 import { NextRequest, NextResponse } from 'next/server';
@@ -108,7 +109,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         ? await prisma.portalAttention.findFirst({ where: { id: attentionId, ...attentionAccess(session.portalUserId),
           state: 'OPEN', mode: { in: ['REPLY', 'UPLOAD'] }, case: { publicRequestNumber, portalCaseAccesses: { some: { portalUserId: session.portalUserId, revokedAt: null } } } } })
         : null;
-      if (!action || (action.mode === 'UPLOAD' && files.length === 0)) return NextResponse.json({ success: false, error: 'invalid_attention' }, { status: 409 });
+      if (!action || (action.mode === 'UPLOAD' && !files.some(file => ATTENTION_IMAGE_MIME_TYPES.includes(file.type)))) return NextResponse.json({ success: false, error: 'invalid_attention' }, { status: 409 });
     }
     // Validate the explicit task before writing any file. Sequential storage allows full cleanup on failure.
     for (const file of files) storedAttachments.push(await storeAttachment(file));

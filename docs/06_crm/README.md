@@ -2,7 +2,7 @@
 
 Purpose: internal request management, customer operations, status flow, and external CRM integrations.
 
-Действия клиента и уведомления: [текущий блок](../04_client_portal/client_notifications_and_actions.md). Реализация проходит итоговую проверку; миграция и выпуск отдельно.
+Действия клиента и уведомления: [текущий блок](../04_client_portal/client_notifications_and_actions.md). Реализация проходит итоговую проверку; рабочая миграция применена, планировщик настроен; исправления проверки выпускаются.
 
 Документы клиенту: [передача PDF по заявке](customer_documents.md). Миграция применена 2026-09-29, выпуск приложения подготавливается.
 

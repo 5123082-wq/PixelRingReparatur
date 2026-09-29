@@ -1,15 +1,14 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { adminFetch } from '@/lib/admin-fetch';
-import type { AttentionItem, AttentionMode } from '@/lib/portal-attention/types';
+import type { AdminAttentionItem, AttentionMode } from '@/lib/portal-attention/types';
 
-type AdminItem = AttentionItem & { recipient: { id: string; displayName: string | null; email: string }; email: { state: string; attempts: number; lastError: string | null; sentAt: string | null } | null };
 const field = 'mt-1 w-full rounded-xl border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-indigo-400 outline-none';
 const button = 'min-h-11 rounded-xl border border-zinc-700 px-4 py-2 text-sm font-semibold text-white hover:border-indigo-400 disabled:opacity-40';
 const states: Record<string, string> = { OPEN: 'Ожидает клиента', SUBMITTED: 'Ответ получен · проверьте', COMPLETED: 'Выполнено', CANCELLED: 'Отменено' };
 const mailStates: Record<string, string> = { PENDING: 'Письмо в очереди', SENDING: 'Письмо отправляется', SENT: 'Письмо передано почтовому серверу', FAILED: 'Ошибка отправки письма', SKIPPED: 'Письмо не отправлялось' };
 export default function CaseAttention({ caseId, documentId }: { caseId: string; documentId?: string }) {
-  const [items, setItems] = useState<AdminItem[]>([]);
+  const [items, setItems] = useState<AdminAttentionItem[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -67,8 +66,15 @@ export default function CaseAttention({ caseId, documentId }: { caseId: string; 
       <p className="text-zinc-400">{item.readAt ? 'Уведомление просмотрено' : 'Уведомление ещё не просмотрено'}{item.completedAt ? ' · Подтверждено ' + new Date(item.completedAt).toLocaleString('ru') : ''}</p>
       {item.dueAt && <p className="text-zinc-400">Срок: {new Date(item.dueAt).toLocaleString('ru')}</p>}
       {item.email && <p className="text-zinc-400">{mailStates[item.email.state] || item.email.state}{item.email.sentAt ? ' · ' + new Date(item.email.sentAt).toLocaleString('ru') : ''}</p>}
+      {item.evidence && <div className="space-y-2 rounded-lg bg-zinc-900 p-3">
+        <p className="font-semibold text-white">Материал клиента для этого действия</p>
+        <p className="text-xs text-zinc-400">{new Date(item.evidence.createdAt).toLocaleString('ru')}</p>
+        {item.evidence.kind === 'REPLY' ? <p className="whitespace-pre-wrap break-words text-zinc-200">{item.evidence.body}</p> :
+          <a href={item.evidence.href} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center break-all text-indigo-200 underline">Открыть фото: {item.evidence.filename || 'Фотография клиента'}</a>}
+      </div>}
+      {item.state === 'SUBMITTED' && !item.evidence && <p className="text-amber-200">Материал ответа недоступен. Подтверждение невозможно; отмените запрос и запросите ответ снова.</p>}
       <div className="flex flex-wrap gap-2">
-        {item.state === 'SUBMITTED' && <button disabled={busy} type="button" className={button} onClick={() => void mutate({ action: 'complete', id: item.id })}>Подтвердить выполнение</button>}
+        {item.state === 'SUBMITTED' && <button disabled={busy || !item.evidence} type="button" className={button} onClick={() => void mutate({ action: 'complete', id: item.id, evidenceId: item.evidence?.id })}>Подтвердить выполнение</button>}
         {item.mode !== 'NONE' && ['OPEN', 'SUBMITTED'].includes(item.state) && <button disabled={busy} type="button" className={button} onClick={() => void mutate({ action: 'cancel', id: item.id })}>Отменить запрос</button>}
         {item.email?.state === 'FAILED' && <button disabled={busy} type="button" className={button} onClick={() => void mutate({ action: 'retry-email', id: item.id })}>Повторить письмо</button>}
       </div>
