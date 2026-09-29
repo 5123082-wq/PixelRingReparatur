@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useRouter } from '@/i18n/routing';
 import { useLocale } from 'next-intl';
-import Logo from '@/components/common/Logo';
 import type { PortalDemoOrganization, PortalRequest } from '@/lib/portal/types';
 import { getPortalRequestDetailCopy, type PortalChatAuthorRole, type PortalRequestDetailCopy } from './portal-request-detail-copy';
 
@@ -121,8 +120,8 @@ function ChatAttachmentList({
               </svg>
             </div>
             <div className="min-w-0">
-              <p className="truncate text-[12px] font-black">{att.originalFilename || copy.chat.attachmentFallback}</p>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#72665D]">
+              <p className="truncate text-[12px] font-semibold">{att.originalFilename || copy.chat.attachmentFallback}</p>
+              <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[#72665D]">
                 {copy.chat.attachmentReceived}
               </p>
             </div>
@@ -134,16 +133,20 @@ function ChatAttachmentList({
 }
 
 function renderMessageBody(text: string) {
-  const tokenRegex = /(https?:\/\/[^\s]+|\/portal(?:#[^\s]+|\?[^\s]+)?|[A-Z]{2,8}-[A-Z0-9]{4}-[A-Z0-9]{4})/g;
+  const tokenRegex = /(\/api\/portal\/requests\/[A-Z0-9-]+\/documents\/[0-9a-f-]{36}|https?:\/\/[^\s]+|\/portal(?:#[^\s]+|\?[^\s]+)?|[A-Z]{2,8}-[A-Z0-9]{4}-[A-Z0-9]{4})/g;
   const parts = text.split(tokenRegex);
 
   return parts.map((part, i) => {
+    if (/^\/api\/portal\/requests\/[A-Z0-9-]+\/documents\/[0-9a-f-]{36}$/.test(part)) {
+      return <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="font-semibold underline">PDF</a>;
+    }
+
     if (/^https?:\/\//.test(part)) {
       return (
         <a
           key={i}
           href={part}
-          className="font-black underline decoration-current transition-all hover:opacity-60"
+          className="font-semibold underline decoration-current transition-all hover:opacity-60"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -157,7 +160,7 @@ function renderMessageBody(text: string) {
         <Link
           key={i}
           href={part.startsWith('/portal#new-request') ? '/portal#new-request' : '/portal'}
-          className="font-black underline decoration-current transition-all hover:opacity-60"
+          className="font-semibold underline decoration-current transition-all hover:opacity-60"
         >
           {part}
         </Link>
@@ -172,7 +175,7 @@ function renderMessageBody(text: string) {
             pathname: '/status',
             query: { request: part },
           }}
-          className="font-black underline decoration-current transition-all hover:opacity-60"
+          className="font-semibold underline decoration-current transition-all hover:opacity-60"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -352,35 +355,10 @@ export default function PortalRequestChat({
   }
 
   return (
-    <section className={`flex min-h-[620px] flex-col bg-[#F7F1E8]/95 ${
-      presentation === 'modal' ? 'lg:h-[calc(90vh-132px)]' : 'lg:h-[calc(100vh-164px)]'
+    <section className={`flex h-[580px] min-h-[520px] min-w-0 flex-col lg:min-h-0 bg-[#F7F1E8]/95 ${
+      presentation === 'modal' ? 'lg:h-full' : 'lg:h-[calc(100vh-164px)]'
     }`}>
-      <div className="flex items-center justify-between gap-2 border-b border-black/5 bg-white/80 p-4 sm:p-5">
-        <div className="flex min-w-0 flex-1 items-center gap-4">
-          <Logo className="origin-left scale-75 shrink-0" />
-          <div className="hidden h-6 w-px shrink-0 bg-black/10 sm:block" />
-          <div className="min-w-0">
-            <h3 className="truncate text-[15px] font-black text-[#0E1A2B]">{copy.chat.supportTitle}</h3>
-            <div className="flex items-center gap-1.5">
-              <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-green-500" />
-              <span className="text-[9px] font-bold uppercase tracking-wider text-[#72665D]">{copy.chat.online}</span>
-            </div>
-          </div>
-        </div>
-        <span className="hidden rounded-full border border-black/5 bg-white/70 px-3 py-1 font-mono text-[10px] font-black text-[#72665D] sm:inline-flex">
-          {request.publicRequestNumber}
-        </span>
-        {canPostMessages && (
-          <Link
-            href="/portal#new-request"
-            className="inline-flex h-9 shrink-0 items-center justify-center rounded-[14px] bg-[#B8643E] px-3 text-[12px] font-black text-white transition hover:bg-[#A65835]"
-          >
-            {copy.chat.newRequest}
-          </Link>
-        )}
-      </div>
-
-      <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto overscroll-contain p-4 sm:p-5">
+      <div ref={scrollRef} className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-4 sm:p-5">
         {chatMessages.length === 0 && (
           <div className="rounded-[20px] border border-dashed border-black/10 bg-white/45 px-4 py-4 text-[13px] text-[#72665D]">
             {copy.chat.empty}
@@ -393,16 +371,16 @@ export default function PortalRequestChat({
           return (
             <div key={message.id}>
               <div className={`flex flex-col ${palette.container} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
-                <span className={`mb-1 text-[10px] font-bold uppercase tracking-[0.18em] ${palette.label}`}>
+                <span className={`mb-1 text-[12px] font-medium tracking-[0.04em] ${palette.label}`}>
                   {copy.chat.authors[message.authorRole]}
                 </span>
-                <div className={`max-w-[80%] rounded-[24px] px-5 py-3 text-[14px] shadow-sm whitespace-pre-wrap ${palette.bubble}`}>
+                <div className={`max-w-[90%] break-words rounded-[18px] px-4 py-2.5 text-[14px] leading-6 shadow-sm whitespace-pre-wrap ${palette.bubble}`}>
                   {renderMessageBody(message.body)}
                   {message.attachments && message.attachments.length > 0 && (
                     <ChatAttachmentList attachments={message.attachments} copy={copy} />
                   )}
                 </div>
-                <span className={`mx-2 mt-1.5 text-[9px] font-bold uppercase tracking-widest ${palette.meta}`}>
+                <span className={`mx-2 mt-1.5 text-[12px] font-normal ${palette.meta}`}>
                   {formatTimestamp(message.createdAt, locale)}
                 </span>
               </div>
@@ -412,7 +390,7 @@ export default function PortalRequestChat({
 
         {isSending && (
           <div className="flex flex-col items-start animate-in fade-in duration-300">
-            <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-[#72665D]">
+            <div className="mb-1 text-[12px] font-medium tracking-[0.04em] text-[#72665D]">
               {copy.chat.loading}
             </div>
             <div className="flex gap-1 rounded-[20px] rounded-tl-[4px] border border-black/5 bg-white/40 px-4 py-3">
@@ -448,7 +426,7 @@ export default function PortalRequestChat({
                 <button
                   type="button"
                   onClick={() => removePendingFile(pendingFile.id)}
-                  className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#0E1A2B] text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100"
+                  className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#0E1A2B] text-[12px] text-white opacity-0 transition-opacity group-hover:opacity-100"
                 >
                   x
                 </button>
@@ -504,7 +482,7 @@ export default function PortalRequestChat({
               }
             }}
             placeholder={copy.chat.placeholder}
-            className="max-h-24 min-w-0 flex-1 resize-none border-none bg-transparent py-2 text-[16px] text-[#0E1A2B] placeholder-[#72665D]/40 focus:ring-0"
+            className="max-h-24 min-w-0 flex-1 resize-none border-none bg-transparent py-2 text-[16px] sm:text-[14px] leading-6 text-[#0E1A2B] placeholder-[#72665D]/40 focus:ring-0"
             disabled={!canPostMessages || isSending}
           />
 

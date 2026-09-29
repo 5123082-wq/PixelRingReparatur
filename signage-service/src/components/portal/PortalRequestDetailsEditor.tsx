@@ -83,7 +83,7 @@ export default function PortalRequestDetailsEditor({
 
   if (!isEditing) {
     return (
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[#EEF2F6] pt-4">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-[#EEF2F6] pt-4">
         <div className="min-h-5 flex-1">
           {feedback && <p className="text-[12px] font-bold text-emerald-700">{feedback}</p>}
         </div>
@@ -93,7 +93,7 @@ export default function PortalRequestDetailsEditor({
             resetForm();
             setIsEditing(true);
           }}
-          className="h-10 rounded-2xl border border-[#D9E0EA] bg-white px-4 text-[13px] font-black text-[#27364A] transition hover:border-[#B8643E] hover:text-[#B8643E]"
+          className="h-10 rounded-2xl border border-[#D9E0EA] bg-white px-4 text-[13px] font-semibold text-[#27364A] transition hover:border-[#B8643E] hover:text-[#B8643E]"
         >
           {copy.edit}
         </button>
@@ -102,43 +102,43 @@ export default function PortalRequestDetailsEditor({
   }
 
   return (
-    <form onSubmit={saveDetails} className="mt-5 border-t border-[#EEF2F6] pt-4">
+    <form onSubmit={saveDetails} className="mt-3 border-t border-[#EEF2F6] pt-4">
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="grid gap-1">
-          <span className="text-[12px] font-black text-[#8A96A8]">{copy.name}</span>
+          <span className="text-[12px] font-semibold text-[#667085]">{copy.name}</span>
           <input
             value={form.customerName}
             onChange={(event) => setForm((current) => ({ ...current, customerName: event.target.value }))}
             maxLength={160}
-            className="h-11 rounded-2xl border border-[#D9E0EA] bg-white px-3 text-[14px] font-semibold text-[#172033] outline-none transition focus:border-[#B8643E] focus:ring-4 focus:ring-[#B8643E]/10"
+            className="h-11 rounded-2xl border border-[#D9E0EA] bg-white px-3 min-w-0 w-full text-[16px] sm:text-[14px] font-normal text-[#172033] outline-none transition focus:border-[#B8643E] focus:ring-4 focus:ring-[#B8643E]/10"
           />
         </label>
         <label className="grid gap-1">
-          <span className="text-[12px] font-black text-[#8A96A8]">{copy.email}</span>
+          <span className="text-[12px] font-semibold text-[#667085]">{copy.email}</span>
           <input
             type="email"
             value={form.customerEmail}
             onChange={(event) => setForm((current) => ({ ...current, customerEmail: event.target.value }))}
             maxLength={254}
-            className="h-11 rounded-2xl border border-[#D9E0EA] bg-white px-3 text-[14px] font-semibold text-[#172033] outline-none transition focus:border-[#B8643E] focus:ring-4 focus:ring-[#B8643E]/10"
+            className="h-11 rounded-2xl border border-[#D9E0EA] bg-white px-3 min-w-0 w-full text-[16px] sm:text-[14px] font-normal text-[#172033] outline-none transition focus:border-[#B8643E] focus:ring-4 focus:ring-[#B8643E]/10"
           />
         </label>
         <label className="grid gap-1">
-          <span className="text-[12px] font-black text-[#8A96A8]">{copy.phone}</span>
+          <span className="text-[12px] font-semibold text-[#667085]">{copy.phone}</span>
           <input
             value={form.customerPhone}
             onChange={(event) => setForm((current) => ({ ...current, customerPhone: event.target.value }))}
             maxLength={80}
-            className="h-11 rounded-2xl border border-[#D9E0EA] bg-white px-3 text-[14px] font-semibold text-[#172033] outline-none transition focus:border-[#B8643E] focus:ring-4 focus:ring-[#B8643E]/10"
+            className="h-11 rounded-2xl border border-[#D9E0EA] bg-white px-3 min-w-0 w-full text-[16px] sm:text-[14px] font-normal text-[#172033] outline-none transition focus:border-[#B8643E] focus:ring-4 focus:ring-[#B8643E]/10"
           />
         </label>
         <label className="grid gap-1">
-          <span className="text-[12px] font-black text-[#8A96A8]">{copy.address}</span>
+          <span className="text-[12px] font-semibold text-[#667085]">{copy.address}</span>
           <input
             value={form.serviceLocation}
             onChange={(event) => setForm((current) => ({ ...current, serviceLocation: event.target.value }))}
             maxLength={500}
-            className="h-11 rounded-2xl border border-[#D9E0EA] bg-white px-3 text-[14px] font-semibold text-[#172033] outline-none transition focus:border-[#B8643E] focus:ring-4 focus:ring-[#B8643E]/10"
+            className="h-11 rounded-2xl border border-[#D9E0EA] bg-white px-3 min-w-0 w-full text-[16px] sm:text-[14px] font-normal text-[#172033] outline-none transition focus:border-[#B8643E] focus:ring-4 focus:ring-[#B8643E]/10"
           />
         </label>
       </div>
@@ -152,14 +152,14 @@ export default function PortalRequestDetailsEditor({
             resetForm();
             setIsEditing(false);
           }}
-          className="h-10 rounded-2xl border border-[#D9E0EA] bg-white px-4 text-[13px] font-black text-[#27364A] transition hover:border-[#B8643E] hover:text-[#B8643E]"
+          className="h-10 rounded-2xl border border-[#D9E0EA] bg-white px-4 text-[13px] font-semibold text-[#27364A] transition hover:border-[#B8643E] hover:text-[#B8643E]"
           disabled={isSubmitting}
         >
           {copy.cancel}
         </button>
         <button
           type="submit"
-          className="h-10 rounded-2xl bg-[#B8643E] px-4 text-[13px] font-black text-white transition hover:bg-[#A65835] disabled:opacity-60"
+          className="h-10 rounded-2xl bg-[#B8643E] px-4 text-[13px] font-semibold text-white transition hover:bg-[#A65835] disabled:opacity-60"
           disabled={isSubmitting}
         >
           {isSubmitting ? copy.saving : copy.save}

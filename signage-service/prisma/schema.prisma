@@ -181,6 +181,7 @@ model Case {
   readStates               CaseReadState[]
   workResult               WorkResult?
   workResultUploads        WorkResultUpload[]
+  documents                CaseDocument[]
 
   @@index([status, updatedAt])
   @@index([originChannel, createdAt])
@@ -328,6 +329,7 @@ model Attachment {
   uploadedBySession   Session?                  @relation("SessionUploads", fields: [uploadedBySessionId], references: [id], onDelete: SetNull)
   workResultPhotos    WorkResultPhoto[]
   workResultUpload    WorkResultUpload?
+  caseDocument        CaseDocument?
 
   @@index([caseId, createdAt])
   @@index([messageId])
@@ -841,4 +843,22 @@ model CmsSeoConfig {
   updatedAt DateTime @updatedAt
 
   @@map("cms_seo_configs")
+}
+
+model CaseDocument {
+  id           String     @id @default(uuid()) @db.Uuid
+  caseId       String     @db.Uuid
+  attachmentId String     @unique @db.Uuid
+  type         String     @default("OTHER")
+  title        String
+  comment      String     @default("") @db.Text
+  createdById  String     @db.Uuid
+  publishedById String?   @db.Uuid
+  publishedAt  DateTime?
+  createdAt    DateTime   @default(now())
+  case         Case       @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  attachment   Attachment @relation(fields: [attachmentId], references: [id], onDelete: Restrict)
+
+  @@index([caseId, publishedAt])
+  @@map("case_documents")
 }

@@ -2,6 +2,8 @@
 
 Purpose: internal request management, customer operations, status flow, and external CRM integrations.
 
+Документы клиенту: [передача PDF по заявке](customer_documents.md). Миграция применена 2026-09-29, выпуск приложения подготавливается.
+
 Текущий локальный блок: [завершение ремонта и фотоотчёты](repair_completion_photo_reports.md) — самостоятельное завершение ремонта, приватные редакции, кабинет и печать; последовательные переходы к выбранному статусу с отдельными окнами обязательных этапов. Миграция и отдельный выпуск разрешены владельцем 2026-09-28; [состояние выпуска](../11_operations/crm_portal_release_2026-09-28.md).
 
 Planned base documents:

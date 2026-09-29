@@ -6,6 +6,7 @@ import { useState, useEffect, use, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import CaseDocuments from '@/components/admin/CaseDocuments';
 import WorkResultEditor from '@/components/admin/WorkResultEditor';
 import StageWindow from '@/components/admin/StageWindow';
 import useCaseStatusTransition from '@/components/admin/useCaseStatusTransition';
@@ -103,7 +104,7 @@ type TimelineEvent =
   | { timestamp: number; type: 'message' | 'note'; data: CaseMessage }
   | { timestamp: number; type: 'status'; data: CaseStatusEvent };
 type StatusOption = { value: string; label: string; variant: string };
-type ActiveTab = 'client' | 'master' | 'history' | 'result';
+type ActiveTab = 'documents' | 'client' | 'master' | 'history' | 'result';
 type ReplyMode = 'customer' | 'internal';
 
 const STATUS_OPTIONS: StatusOption[] = [
@@ -125,7 +126,7 @@ const CHANNEL_ICONS: Record<string, string> = {
 };
 
 const ACTOR_ROLE_LABELS: Record<string, string> = { CUSTOMER: 'Клиент', OPERATOR: 'Оператор', SYSTEM: 'Система' };
-const ACTIVE_TABS: ActiveTab[] = ['client', 'result', 'master', 'history'];
+const ACTIVE_TABS: ActiveTab[] = ['client', 'documents', 'result', 'master', 'history'];
 const REPLY_MODES: ReplyMode[] = ['customer', 'internal'];
 const REALTIME_EVENT_NAME = 'case.updated';
 
@@ -740,13 +741,14 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                  key={tid} onClick={() => setActiveTab(tid)}
                  className={`relative h-full flex items-center text-[10px] font-black uppercase tracking-[0.2em] transition-all ${activeTab === tid ? 'text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
                >
-                 {tid === 'result' ? 'Результат ремонта' : tid === 'client' ? 'Chat with client' : tid === 'master' ? 'Communication Master' : 'Event Timeline'}
+                 {tid === 'documents' ? 'Документы клиенту' : tid === 'result' ? 'Результат ремонта' : tid === 'client' ? 'Chat with client' : tid === 'master' ? 'Communication Master' : 'Event Timeline'}
                  {activeTab === tid && <motion.div layoutId="nav-line" className="absolute bottom-0 left-0 right-0 h-[2px] bg-indigo-500" />}
                </button>
              ))}
           </nav>
 
           <div className="flex flex-1 min-h-0 flex-col overflow-hidden">
+            {activeTab === 'documents' && <div className="min-h-0 flex-1 overflow-y-auto"><CaseDocuments caseId={id} onPublished={() => fetchCase({ silent: true })} /></div>}
             <div className={activeTab === 'result' || transition.requirement?.kind === 'work_result' ? 'min-h-0 flex-1 overflow-y-auto' : 'hidden'}>
               <WorkResultEditor caseId={id} caseStatus={caseData.status} publicRequestNumber={caseData.publicRequestNumber} attachments={caseData.attachments}
                 transition={transition.requirement?.kind === 'work_result' ? { targetLabel: formatStatusLabel(transition.target), publish: transition.publishReport, stop: transition.stop } : undefined}
@@ -789,7 +791,10 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                                     {isNote ? 'INTERNAL NOTE' : isAiAssistant ? 'AI ASSISTANT' : (m.authorName || (isCustomer ? 'CLIENT' : 'OPERATOR'))}
                                  </div>
                                  <div className={`max-w-[92%] px-4 py-3 rounded-2xl text-[14px] leading-relaxed sm:max-w-[80%] sm:px-5 sm:py-3.5 ${isNote ? 'bg-amber-500/10 border border-amber-500/20 text-amber-200' : isCustomer ? 'bg-zinc-900 text-zinc-300 border border-white/5' : 'bg-indigo-600 text-white shadow-xl shadow-indigo-950/20'}`}>
-                                    {m.body}
+                                    {m.body.split(/(\/api\/portal\/requests\/[A-Z0-9-]+\/documents\/[0-9a-f-]{36})/g).map((part, index) => {
+                                      const documentLink = part.match(/^\/api\/portal\/requests\/[A-Z0-9-]+\/documents\/([0-9a-f-]{36})$/);
+                                      return documentLink ? <a key={index} className="font-semibold underline" target="_blank" rel="noopener noreferrer" href={'/api/admin/cases/' + id + '/documents/' + documentLink[1]}>Открыть документ</a> : part;
+                                    })}
                                  </div>
                                  <span className="mt-2 text-[8px] font-bold text-zinc-700 uppercase tracking-widest">{new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                               </div>

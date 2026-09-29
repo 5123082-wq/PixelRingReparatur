@@ -6,6 +6,8 @@ Purpose: current-state boundary and roadmap index. Read this beacon for startup 
 
 Exists now:
 
+- request-bound PDF document delivery is implemented locally; migration applied 2026-09-29, application release pending: [execution guide](../06_crm/customer_documents.md);
+
 - multilingual public website with request intake and status lookup;
 - internal CRM starter for request/case operations;
 - internal CMS/admin platform starter for content, media, SEO, and AI configuration;

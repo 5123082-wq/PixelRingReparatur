@@ -43,6 +43,16 @@ export default function WorkResultEditor({ caseId, caseStatus, publicRequestNumb
   const [notice, setNotice] = useState('');
   const [preview, setPreview] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
+  const attachmentButton = useRef<HTMLButtonElement>(null);
+  const [choosingAttachments, setChoosingAttachments] = useState(false);
+  const [selectedAttachments, setSelectedAttachments] = useState<string[]>([]);
+  const [uploadProgress, setUploadProgress] = useState<{ current: number; total: number } | null>(null);
+  const availableAttachments = attachments.filter((file) => ['image/jpeg', 'image/png', 'image/webp'].includes(file.mimeType) && !draft.photos.some((photo) => photo.attachmentId === file.id));
+  const selectedPhotos = availableAttachments.filter((file) => selectedAttachments.includes(file.id));
+  function closeAttachmentPicker() {
+    setChoosingAttachments(false); setSelectedAttachments([]); attachmentButton.current?.focus();
+  }
   const pendingPublication = useRef<number | null>(null);
   const cancelledAt = useRef(0);
   const modalOpen = Boolean(transition) || confirming;
@@ -121,7 +131,8 @@ export default function WorkResultEditor({ caseId, caseStatus, publicRequestNumb
     pendingPublication.current = null;
     setBusy(true); setError(''); setNotice('');
     try {
-      for (const file of Array.from(files)) {
+      for (const [index, file] of Array.from(files).entries()) {
+        setUploadProgress({ current: index + 1, total: files.length });
         const prepared = await read(await adminFetch(endpoint + '/uploads', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'prepare', filename: file.name, mimeType: file.type, size: file.size }),
@@ -145,7 +156,7 @@ export default function WorkResultEditor({ caseId, caseStatus, publicRequestNumb
       await onPublished(false);
       setNotice('Фотографии загружены. Сохраните черновик или опубликуйте отчёт.');
     } catch (failure) { setError(failure instanceof Error ? failure.message : 'Ошибка загрузки. Уже загруженные фотографии сохранены.'); }
-    finally { setBusy(false); }
+    finally { setBusy(false); setUploadProgress(null); }
   }
   async function retryNotification() {
     setBusy(true); setError('');
@@ -171,10 +182,35 @@ export default function WorkResultEditor({ caseId, caseStatus, publicRequestNumb
         <label className="block text-sm text-zinc-200">Пояснение · необязательно<textarea maxLength={12000} rows={4} value={draft.note} onChange={(event) => update({ note: event.target.value })} className={control} /></label>
         <div className={'space-y-3 rounded-xl border border-zinc-800 p-3' + fieldError('photos')}>
           <h3 className="font-bold text-white">Фотографии</h3>
-          <label className="block text-sm text-zinc-300">Загрузить фотографии<input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={(event) => { void uploadFiles(event.target.files); event.target.value = ''; }} className="mt-2 block w-full text-sm" /></label>
-          <label className="block text-sm text-zinc-300">Выбрать из вложений заявки<select value="" className={control} onChange={(event) => {
-            if (event.target.value) update({ photos: [...draft.photos, { attachmentId: event.target.value, category: 'RESULT', caption: '' }] });
-          }}><option value="">Выбрать фотографию</option>{attachments.filter((file) => ['image/jpeg', 'image/png', 'image/webp'].includes(file.mimeType) && !draft.photos.some((photo) => photo.attachmentId === file.id)).map((file) => <option value={file.id} key={file.id}>{file.originalFilename || 'Фотография'}</option>)}</select></label>
+          <input ref={fileInput} type="file" aria-label="Загрузить фото с компьютера" accept="image/jpeg,image/png,image/webp" multiple onChange={(event) => { void uploadFiles(event.target.files); event.target.value = ''; }} className="hidden" />
+          <div className="flex flex-col gap-2">
+            <button type="button" onClick={() => fileInput.current?.click()} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400 disabled:opacity-50">
+              <span aria-hidden="true">＋</span> Загрузить фото с компьютера
+            </button>
+            <button ref={attachmentButton} type="button" aria-expanded={choosingAttachments} aria-controls="work-result-attachments" onClick={() => { setChoosingAttachments(!choosingAttachments); setSelectedAttachments([]); }} className={button + ' min-h-11 w-full bg-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400'}>
+              Выбрать из заявки · {availableAttachments.length}
+            </button>
+          </div>
+          <p className="text-xs leading-5 text-zinc-400">JPEG, PNG или WebP. Можно выбрать несколько фотографий.</p>
+          {uploadProgress && <p role="status" className="flex items-center gap-2 text-sm text-indigo-300"><span aria-hidden="true" className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-indigo-400/30 border-t-indigo-300 motion-reduce:animate-none" />Загрузка фото {uploadProgress.current} из {uploadProgress.total}…</p>}
+          {choosingAttachments && <div id="work-result-attachments" className="space-y-3 rounded-xl border border-zinc-700 bg-zinc-950 p-3" onKeyDown={(event) => { if (event.key === 'Escape') { event.stopPropagation(); closeAttachmentPicker(); } }}>
+            <p className="text-sm font-semibold text-white">Фотографии из заявки</p>
+            {availableAttachments.length === 0 ? <p className="text-sm text-zinc-400">Нет доступных фотографий: они уже добавлены в отчёт или во вложениях нет JPEG, PNG и WebP.</p> : <div className="grid max-h-72 grid-cols-2 gap-2 overflow-y-auto">
+              {availableAttachments.map((file) => <label key={file.id} className={'relative min-w-0 cursor-pointer rounded-xl border p-2 focus-within:ring-2 focus-within:ring-indigo-400 ' + (selectedAttachments.includes(file.id) ? 'border-indigo-400 bg-indigo-500/15' : 'border-zinc-700 bg-zinc-900 hover:border-zinc-500')}>
+                <input type="checkbox" checked={selectedAttachments.includes(file.id)} onChange={(event) => setSelectedAttachments((old) => event.target.checked ? [...old, file.id] : old.filter((id) => id !== file.id))} className="absolute left-3 top-3 h-5 w-5 accent-indigo-500" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={'/api/admin/attachments/' + file.id} alt="" loading="lazy" className="h-24 w-full rounded-lg object-contain" />
+                <span className="mt-2 block break-all text-xs text-zinc-300">{file.originalFilename || 'Фотография'}</span>
+              </label>)}
+            </div>}
+            <div className="flex flex-wrap gap-2">
+              <button type="button" disabled={selectedPhotos.length === 0} onClick={() => {
+                update({ photos: [...draft.photos, ...selectedPhotos.map((file) => ({ attachmentId: file.id, category: 'RESULT' as const, caption: '' }))] });
+                closeAttachmentPicker();
+              }} className="min-h-11 rounded-xl bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400 disabled:opacity-40">Добавить выбранные · {selectedPhotos.length}</button>
+              <button type="button" onClick={closeAttachmentPicker} className={button + ' min-h-11'}>Отмена</button>
+            </div>
+          </div>}
           {draft.photos.map((photo, index) => <div key={photo.attachmentId} className="grid gap-3 rounded-xl bg-zinc-900 p-3 sm:grid-cols-[100px_1fr]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={'/api/admin/attachments/' + photo.attachmentId} alt={'Фото ' + (index + 1)} className="h-24 w-24 rounded-lg object-contain" />
