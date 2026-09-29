@@ -16,9 +16,9 @@ export default function WorkResultView({ result, locale, publicRequestNumber, pr
   const date = (value: string) => new Intl.DateTimeFormat(locale, { dateStyle: 'long', timeZone: 'Europe/Berlin' }).format(new Date(value.length === 10 ? value + 'T12:00:00Z' : value));
   const readyToPrint = !result || result.photos.every((photo) => loaded.includes(photo.id) && !failed.includes(photo.id));
   return (
-    <section id="repair-report" dir={locale === 'ar' ? 'rtl' : 'ltr'} className="work-result-view rounded-[22px] border border-[#E5EAF0] bg-white p-5 text-[#172033] shadow-sm">
+    <section id="repair-report" dir={locale === 'ar' ? 'rtl' : 'ltr'} className="work-result-view rounded-[22px] border border-[#E5EAF0] bg-white p-4 text-[14px] leading-6 text-[#172033] shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-lg font-black">{copy.title}</h2>
+        <h2 className="text-[16px] font-semibold">{copy.title}</h2>
         {result && !preview && (printVersion ?
           <button type="button" disabled={!readyToPrint} onClick={() => window.print()} className="report-controls rounded-xl border px-4 py-2 text-sm font-bold disabled:opacity-40">{copy.print}{!readyToPrint ? ' …' : ''}</button> :
           <Link href={'/portal/requests/' + encodeURIComponent(publicRequestNumber) + '/report/print'} target="_blank" rel="noopener noreferrer" className="report-controls rounded-xl border px-4 py-2 text-sm font-bold">{copy.print}</Link>)}
@@ -27,7 +27,7 @@ export default function WorkResultView({ result, locale, publicRequestNumber, pr
         {printVersion && <p className="mt-3 font-bold">PixelRing · <span dir="ltr">{publicRequestNumber}</span></p>}
         <p className="mt-3 text-sm"><strong>{copy.date}:</strong> {date(result.completedOn)}</p>
         {result.number > 1 && <p className="mt-1 text-xs text-slate-500">{copy.updated}: {date(result.publishedAt)} · № {result.number}</p>}
-        {result.note && <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-7">{result.note}</p>}
+        {result.note && <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-6">{result.note}</p>}
         {result.items.length > 0 && <dl className="mt-4 grid gap-3">{result.items.map((item, index) => <div key={index} className="break-words">{item.title && <dt className="font-bold">{item.title}</dt>}{item.text && <dd className="mt-1 whitespace-pre-wrap text-sm leading-6">{item.text}</dd>}</div>)}</dl>}
         {failed.length > 0 && <div role="alert" className="report-controls mt-4 rounded-xl bg-amber-50 p-3 text-sm text-amber-900"><p>{copy.imageError}</p><button type="button" className="mt-2 font-bold underline" onClick={() => { setLoaded([]); setFailed([]); setRetry((value) => value + 1); }}>{copy.retry}</button></div>}
         {result.photos.length === 0 ? <p className="mt-4 text-sm text-slate-500">{copy.noPhotos}</p> :

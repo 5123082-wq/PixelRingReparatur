@@ -1,5 +1,6 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import CaseAttention from './CaseAttention';
 import { adminFetch } from '@/lib/admin-fetch';
 import { DOCUMENT_TYPES, MAX_DOCUMENT_BYTES, type CustomerDocument, type DocumentType } from '@/lib/case-documents/types';
 import { getDocumentCopy } from '@/lib/case-documents/copy';
@@ -18,6 +19,7 @@ async function read(response: Response): Promise<CustomerDocument> {
   return data;
 }
 export default function CaseDocuments({ caseId, onPublished }: { caseId: string; onPublished: () => Promise<void> }) {
+  const [options, setOptions] = useState<Record<string, { mode: string; due: string }>>({});
   const [documents, setDocuments] = useState<CustomerDocument[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -49,9 +51,9 @@ export default function CaseDocuments({ caseId, onPublished }: { caseId: string;
   async function publish(row: CustomerDocument) {
     setBusy(true); setError(''); setNotice('');
     try {
-      const saved = await read(await adminFetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'publish', id: row.id, type: row.type, title: row.title, comment: row.comment }) }));
+      const saved = await read(await adminFetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'publish', id: row.id, type: row.type, title: row.title, comment: row.comment, attentionMode: options[row.id]?.mode || 'ACKNOWLEDGE', attentionDueAt: options[row.id]?.due ? new Date(options[row.id].due).toISOString() : null }) }));
       setDocuments((old) => old.map((item) => item.id === row.id ? saved : item));
-      setNotice('Документ доступен в кабинете клиента. Сообщение добавлено в переписку.');
+      setNotice('Документ доступен в кабинете. Уведомление создано, письмо поставлено в очередь.');
       await onPublished();
     } catch (failure) { setError((failure as Error).message); }
     finally { setBusy(false); }
@@ -77,10 +79,12 @@ export default function CaseDocuments({ caseId, onPublished }: { caseId: string;
       {documents.length === 0 && <p className="text-sm text-zinc-400">Документов пока нет.</p>}
       {documents.map((row) => <article key={row.id} className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
         <div className="flex flex-wrap items-center justify-between gap-2"><span className={'rounded-full px-3 py-1 text-xs ' + (row.publishedAt ? 'bg-emerald-500/10 text-emerald-300' : 'bg-amber-500/10 text-amber-300')}>{row.publishedAt ? 'Отправлен · ' + new Date(row.publishedAt).toLocaleDateString('ru') : 'Черновик · клиент не видит'}</span><a href={endpoint + '/' + row.id} target="_blank" rel="noopener noreferrer" className="text-sm text-indigo-300 underline">Открыть PDF</a></div>
-        {row.publishedAt ? <><p className="text-xs text-zinc-400">{copy.types[row.type]}</p><h3 className="break-words font-semibold text-white">{row.title}</h3>{row.comment && <p className="whitespace-pre-wrap break-words text-sm text-zinc-300">{row.comment}</p>}</> : <fieldset disabled={busy} className="space-y-3">
+        {row.publishedAt ? <><p className="text-xs text-zinc-400">{copy.types[row.type]}</p><h3 className="break-words font-semibold text-white">{row.title}</h3>{row.comment && <p className="whitespace-pre-wrap break-words text-sm text-zinc-300">{row.comment}</p>}<CaseAttention caseId={caseId} documentId={row.id} /></> : <fieldset disabled={busy} className="space-y-3">
           <label className="block text-sm text-zinc-300">Тип документа<select className={field} value={row.type} onChange={(event) => edit(row.id, { type: event.target.value as DocumentType })}>{DOCUMENT_TYPES.map((type) => <option key={type} value={type}>{copy.types[type]}</option>)}</select></label>
           <label className="block text-sm text-zinc-300">Название для клиента<input maxLength={160} className={field} value={row.title} onChange={(event) => edit(row.id, { title: event.target.value })} /></label>
           <label className="block text-sm text-zinc-300">Комментарий · необязательно<textarea maxLength={2000} rows={3} className={field} value={row.comment} onChange={(event) => edit(row.id, { comment: event.target.value })} /></label>
+          <label className="block text-sm text-zinc-300">Что требуется от клиента<select className={field} value={options[row.id]?.mode || 'ACKNOWLEDGE'} onChange={(event) => setOptions((old) => ({ ...old, [row.id]: { due: old[row.id]?.due || '', mode: event.target.value } }))}><option value="ACKNOWLEDGE">Ознакомиться с документом</option><option value="REPLY">Ответить по документу</option><option value="NONE">Только получить информацию</option></select></label>
+          <label className="block text-sm text-zinc-300">Срок · необязательно<input type="datetime-local" className={field} value={options[row.id]?.due || ''} onChange={(event) => setOptions((old) => ({ ...old, [row.id]: { mode: old[row.id]?.mode || 'ACKNOWLEDGE', due: event.target.value } }))} /></label>
           <p className="text-xs leading-5 text-zinc-400">После отправки PDF, название и комментарий станут доступны клиенту.</p>
           <button type="button" disabled={!row.title.trim()} onClick={() => publish(row)} className={button + ' w-full bg-indigo-600 hover:bg-indigo-500'}>Отправить клиенту</button>
         </fieldset>}

@@ -1,4 +1,5 @@
 import 'server-only';
+import { attentionOptions, createAttentionForCase } from '@/lib/portal-attention/service';
 import { Prisma, type CaseDocument, type Attachment } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
@@ -40,6 +41,7 @@ export async function documentAudit(tx: Prisma.TransactionClient, actor: AdminRe
 export async function publishDocument(caseId: string, id: string, actor: AdminRequestActor, input: unknown) {
   if (!DOCUMENT_ID.test(id)) throw new DocumentError('not_found', 404);
   const metadata = documentMetadata(input);
+  const attention = attentionOptions(input);
   return prisma.$transaction(async (tx) => {
     const record = await lockDocumentCase(tx, caseId, actor);
     const current = await tx.caseDocument.findFirst({ where: { id, caseId }, include: { attachment: true } });
@@ -57,6 +59,7 @@ export async function publishDocument(caseId: string, id: string, actor: AdminRe
         '/api/portal/requests/' + encodeURIComponent(record.publicRequestNumber) + '/documents/' + id,
       isCustomerVisible: true, sentAt: publishedAt } });
     await tx.case.update({ where: { id: caseId }, data: { updatedAt: publishedAt } });
+    await createAttentionForCase(tx, { caseId, kind: 'DOCUMENT', sourceId: id, title: metadata.title, body: metadata.comment, documentType: metadata.type, ...attention, createdAt: publishedAt });
     await documentAudit(tx, actor, 'CASE_DOCUMENT_PUBLISHED', caseId, id);
     return documentView(saved);
   });
