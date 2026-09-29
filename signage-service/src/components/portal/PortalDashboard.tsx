@@ -1121,8 +1121,16 @@ function RequestsTable({
           <tbody>
             {requests.map((request) => (
               <tr key={request.id} className="border-b border-[#EEF2F6] align-top last:border-0">
-                <td className="py-3 pe-3 font-mono font-black text-[#0F1C2B]">{request.publicRequestNumber}</td>
-                <td className="py-3 pe-3 font-bold">{safeRequestTitle(request, copy.requestFallbackTitle)}</td>
+                <td className="py-3 pe-3 font-mono font-black text-[#0F1C2B]">
+                  <Link href={`/portal/requests/${request.publicRequestNumber}`} className="rounded-sm underline decoration-[#C46E43]/50 underline-offset-4 hover:text-[#A45531] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#C46E43]">
+                    {request.publicRequestNumber}
+                  </Link>
+                </td>
+                <td className="py-3 pe-3 font-bold">
+                  <Link href={`/portal/requests/${request.publicRequestNumber}`} className="rounded-sm underline decoration-[#C46E43]/50 underline-offset-4 hover:text-[#A45531] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#C46E43]">
+                    {safeRequestTitle(request, copy.requestFallbackTitle)}
+                  </Link>
+                </td>
                 <td className="py-3 pe-3 text-[#6F665D]">{objectsById.get(request.objectId)?.name}</td>
                 <td className="py-3 pe-3">
                   <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-black ${statusTone[request.status]}`}>

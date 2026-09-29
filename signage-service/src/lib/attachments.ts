@@ -108,9 +108,16 @@ export function getLocalAttachmentPath(storageKey: string): string {
   return absolutePath;
 }
 
-export async function storeAttachmentBuffer(
-  input: StoreAttachmentBufferInput
-): Promise<StoredAttachmentInput> {
+export async function storeAttachmentBuffer(input: StoreAttachmentBufferInput): Promise<StoredAttachmentInput> {
+  return storeValidatedBuffer(input, false);
+}
+
+// Only the document workflow may opt into PDF storage. Public intake stays image/video-only.
+export async function storePdfAttachment(buffer: Buffer, filename: string): Promise<StoredAttachmentInput> {
+  return storeValidatedBuffer({ buffer, mimeType: 'application/pdf', originalFilename: filename, source: 'case-documents' }, true);
+}
+
+async function storeValidatedBuffer(input: StoreAttachmentBufferInput, allowPdf: boolean): Promise<StoredAttachmentInput> {
   if (input.buffer.byteLength <= 0) {
     throw new AttachmentValidationError('Attachment file is empty.');
   }
@@ -125,7 +132,7 @@ export async function storeAttachmentBuffer(
 
   const mimeType = input.mimeType || 'application/octet-stream';
 
-  if (!ALLOWED_TYPES.has(mimeType)) {
+  if (!ALLOWED_TYPES.has(mimeType) && !(allowPdf && mimeType === 'application/pdf')) {
     throw new AttachmentValidationError('Please upload an image or video file.');
   }
 

@@ -1,3 +1,4 @@
+import CaseDocuments from './CaseDocuments';
 import type { ReactNode } from 'react';
 import { getLocale, getTranslations } from 'next-intl/server';
 
@@ -110,19 +111,19 @@ async function RequestWorkspaceFrame({
           : 'min-h-[calc(100vh-24px)] max-w-[1840px] sm:min-h-[calc(100vh-40px)]'
       }`}
     >
-      <header className="flex flex-col gap-3 border-b border-[#E5EAF0] bg-white px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
+      <header className="flex shrink-0 items-start justify-between gap-3 border-b border-[#E5EAF0] bg-white px-4 py-4 sm:px-6">
         <div className="min-w-0">
-          <Link href="/portal" className="text-[13px] font-black text-[#B8643E] transition hover:text-[#944D2F]">
+          <Link href="/portal" className="text-[13px] font-semibold text-[#B8643E] transition hover:text-[#944D2F]">
             {copy.back}
           </Link>
           <div className="mt-2 flex flex-wrap items-center gap-3">
-            <p className="text-[12px] font-black uppercase tracking-[0.18em] text-[#98A2B3]">{subtitle}</p>
+            <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#98A2B3]">{subtitle}</p>
           </div>
-          <h1 className="mt-2 max-w-5xl text-[24px] font-black leading-tight tracking-0 text-[#172033] sm:text-[30px]">
+          <h1 className="mt-2 max-w-5xl text-[22px] font-bold leading-tight tracking-0 text-[#172033] sm:text-[24px]">
             {title}
           </h1>
         </div>
-        <div className="flex items-start justify-end">
+        <div className="flex shrink-0 items-start justify-end">
           <Link
             href="/portal"
             aria-label={copy.close}
@@ -170,7 +171,7 @@ export async function PortalRequestNotFound({
           <p className="mt-3 text-[13px] text-[#98A2B3]">{organization.name}</p>
           <Link
             href="/portal"
-            className="mt-5 inline-flex h-11 items-center rounded-2xl bg-[#B8643E] px-5 text-[14px] font-black text-white transition hover:bg-[#A65835]"
+            className="mt-5 inline-flex h-11 items-center rounded-2xl bg-[#B8643E] px-5 text-[14px] font-semibold text-white transition hover:bg-[#A65835]"
           >
             {t('detail.returnToPortal')}
           </Link>
@@ -229,37 +230,37 @@ export default async function PortalRequestDetail({
       subtitle={`${copy.task} ${request.publicRequestNumber}`}
       presentation={presentation}
     >
-      <div className={`grid grid-cols-1 flex-1 bg-[#F3F6FA] ${
+      <div className={`block min-h-0 flex-1 overflow-y-auto lg:grid bg-[#F3F6FA] lg:overflow-hidden ${
         presentation === 'modal'
           ? 'lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]'
           : 'lg:grid-cols-[minmax(420px,0.92fr)_minmax(520px,1.08fr)]'
       }`}>
-        <section className={`min-h-0 overflow-y-auto border-b border-[#E5EAF0] bg-[#F4F7FA] p-4 lg:border-b-0 lg:border-e sm:p-5 ${
-          presentation === 'modal' ? 'lg:h-[calc(90vh-132px)]' : 'lg:h-[calc(100vh-164px)]'
+        <section className={`min-h-0 lg:overflow-y-auto border-b border-[#E5EAF0] bg-[#F4F7FA] p-4 lg:border-b-0 lg:border-e sm:p-5 ${
+          presentation === 'modal' ? 'lg:h-full' : 'lg:h-[calc(100vh-164px)]'
         }`}>
           <div className="grid gap-4">
-            <section className="rounded-[22px] border border-[#E5EAF0] bg-white p-5 shadow-sm">
+            <section className="rounded-[22px] border border-[#E5EAF0] bg-white p-4 shadow-sm">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="font-mono text-[12px] font-black uppercase tracking-[0.16em] text-[#B8643E]">{request.publicRequestNumber}</p>
-                  <h2 className="mt-2 text-[22px] font-black text-[#172033]">{copy.nextStep}</h2>
+                  <p className="font-mono text-[12px] font-semibold uppercase tracking-[0.06em] text-[#B8643E]">{request.publicRequestNumber}</p>
+                  <h2 className="mt-2 text-[16px] font-semibold text-[#172033]">{copy.nextStep}</h2>
                   <p className="mt-2 max-w-2xl text-[14px] leading-6 text-[#667085]">{request.nextStep}</p>
                   {workResult && <a href="#repair-report" className="mt-3 inline-flex min-h-11 items-center rounded-xl border border-[#E5D1C2] bg-[#FFF8F2] px-4 py-2 text-sm font-bold text-[#B8643E] hover:bg-[#F6EBDD] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8643E]">{reportCopy.open}</a>}
                 </div>
-                <span className={`rounded-full border px-3 py-1 text-[11px] font-black ${statusTone[request.status]}`}>
+                <span className={`rounded-full border px-3 py-1 text-[12px] font-semibold ${statusTone[request.status]}`}>
                   {statusLabel}
                 </span>
               </div>
             </section>
 
             {requiredActions.length > 0 && (
-              <section className="rounded-[22px] border border-[#F0D7C7] bg-[#FFF8F2] p-5 shadow-sm">
-                <h2 className="text-[18px] font-black text-[#172033]">{t('detail.requiresAction')}</h2>
+              <section className="rounded-[22px] border border-[#F0D7C7] bg-[#FFF8F2] p-4 shadow-sm">
+                <h2 className="text-[16px] font-semibold text-[#172033]">{t('detail.requiresAction')}</h2>
                 <div className="mt-4 grid gap-3">
                   {requiredActions.map((action) => (
                     <article key={action.id} className="rounded-2xl border border-[#E5D1C2] bg-white p-4">
                       <p className="text-[14px] leading-6 text-[#6C5B50]">{action.description}</p>
-                      <span className="mt-3 inline-flex rounded-full bg-[#F3F6FA] px-3 py-1 text-[11px] font-black text-[#667085]">
+                      <span className="mt-3 inline-flex rounded-full bg-[#F3F6FA] px-3 py-1 text-[12px] font-semibold text-[#667085]">
                         {action.dueLabel}
                       </span>
                     </article>
@@ -268,9 +269,9 @@ export default async function PortalRequestDetail({
               </section>
             )}
 
-            <section className="rounded-[22px] border border-[#E5EAF0] bg-white p-5 shadow-sm">
-              <h2 className="text-[18px] font-black text-[#172033]">{copy.customerData}</h2>
-              <div className="mt-5 grid gap-3">
+            <section className="rounded-[22px] border border-[#E5EAF0] bg-white p-4 shadow-sm">
+              <h2 className="text-[16px] font-semibold text-[#172033]">{copy.customerData}</h2>
+              <div className="mt-3 grid gap-2">
                 <FactRow label={copy.address} value={address} href={addressHref} />
                 <FactRow label={copy.requestContactPerson} value={requestContactPerson} />
                 <FactRow label={copy.requestContactDetails} value={requestContactDetails} />
@@ -298,17 +299,19 @@ export default async function PortalRequestDetail({
               )}
             </section>
 
-            <section className="rounded-[22px] border border-[#E5EAF0] bg-white p-5 shadow-sm">
-              <h2 className="text-[18px] font-black text-[#172033]">{copy.description}</h2>
-              <p className="mt-3 whitespace-pre-line text-[15px] leading-7 text-[#3D4A5C]">{request.summary}</p>
+            <section className="rounded-[22px] border border-[#E5EAF0] bg-white p-4 shadow-sm">
+              <h2 className="text-[16px] font-semibold text-[#172033]">{copy.description}</h2>
+              <p className="mt-3 whitespace-pre-line text-[14px] leading-6 text-[#3D4A5C]">{request.summary}</p>
             </section>
+
+            {canPostMessages && <CaseDocuments publicRequestNumber={request.publicRequestNumber} locale={locale} />}
 
             <WorkResultView result={workResult} locale={locale} publicRequestNumber={request.publicRequestNumber} />
 
-            <section className="rounded-[22px] border border-[#E5EAF0] bg-white p-5 shadow-sm">
+            <section className="rounded-[22px] border border-[#E5EAF0] bg-white p-4 shadow-sm">
               <div className="flex items-center justify-between gap-3">
-                <h2 className="text-[18px] font-black text-[#172033]">{copy.files}</h2>
-                <span className="rounded-full bg-[#F3F6FA] px-3 py-1 text-[11px] font-black text-[#667085]">
+                <h2 className="text-[16px] font-semibold text-[#172033]">{copy.files}</h2>
+                <span className="rounded-full bg-[#F3F6FA] px-3 py-1 text-[12px] font-semibold text-[#667085]">
                   {customerAttachments.length + otherDocuments.length}
                 </span>
               </div>
@@ -326,14 +329,14 @@ export default async function PortalRequestDetail({
               )}
             </section>
 
-            <section className="rounded-[22px] border border-[#E5EAF0] bg-white p-5 shadow-sm">
-              <h2 className="text-[18px] font-black text-[#172033]">{copy.timeline}</h2>
+            <section className="rounded-[22px] border border-[#E5EAF0] bg-white p-4 shadow-sm">
+              <h2 className="text-[16px] font-semibold text-[#172033]">{copy.timeline}</h2>
               <div className="mt-4 grid gap-3">
                 {timeline.map((item) => (
                   <article key={item.id} className="rounded-2xl border border-[#E5EAF0] bg-[#FBFCFE] p-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <h3 className="text-[14px] font-black text-[#27364A]">{item.title}</h3>
-                      <span className="font-mono text-[11px] font-bold text-[#98A2B3]">{item.occurredAt}</span>
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <h3 className="text-[14px] font-semibold text-[#27364A]">{item.title}</h3>
+                      <span className="font-mono text-[12px] font-bold text-[#98A2B3]">{item.occurredAt}</span>
                     </div>
                     <p className="mt-2 text-[13px] leading-6 text-[#667085]">{item.description}</p>
                   </article>
@@ -357,19 +360,19 @@ export default async function PortalRequestDetail({
 
 function FactRow({ label, value, href }: { label: string; value: string; href?: string | null }) {
   return (
-    <div className="grid gap-1 border-b border-[#EEF2F6] pb-3 last:border-0 last:pb-0 sm:grid-cols-[190px_1fr]">
-      <span className="text-[13px] font-bold text-[#8A96A8]">{label}</span>
+    <div className="grid gap-1 border-b border-[#EEF2F6] pb-2 last:border-0 last:pb-0 sm:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+      <span className="text-[12px] font-medium leading-5 text-[#667085]">{label}</span>
       {href ? (
         <a
           href={href}
           target="_blank"
           rel="noreferrer"
-          className="text-[14px] font-semibold leading-6 text-[#2563EB] underline-offset-4 hover:underline"
+          className="min-w-0 break-words text-[14px] font-normal leading-5 text-[#2563EB] underline-offset-4 hover:underline"
         >
           {value}
         </a>
       ) : (
-        <span className="text-[14px] font-semibold leading-6 text-[#27364A]">{value}</span>
+        <span className="min-w-0 break-words text-[14px] font-normal leading-5 text-[#27364A]">{value}</span>
       )}
     </div>
   );
@@ -379,10 +382,10 @@ function AttachmentRow({ attachment, copy }: { attachment: PortalCustomerAttachm
   return (
     <article className="grid gap-3 rounded-2xl border border-[#E5EAF0] bg-[#FBFCFE] p-4 sm:grid-cols-[1fr_auto] sm:items-center">
       <div className="min-w-0">
-        <h3 className="truncate text-[14px] font-black text-[#27364A]">{attachment.filename}</h3>
+        <h3 className="truncate text-[14px] font-semibold text-[#27364A]">{attachment.filename}</h3>
         <p className="mt-1 text-[12px] text-[#667085]">{attachment.fileType} · {attachment.uploadedAt}</p>
       </div>
-      <span className={`w-fit rounded-full px-3 py-1 text-[11px] font-black ${attachmentTone[attachment.status]}`}>
+      <span className={`w-fit rounded-full px-3 py-1 text-[12px] font-semibold ${attachmentTone[attachment.status]}`}>
         {copy.attachmentStatuses[attachment.status]}
       </span>
     </article>
@@ -392,17 +395,17 @@ function AttachmentRow({ attachment, copy }: { attachment: PortalCustomerAttachm
 function DocumentRow({ document, copy }: { document: PortalDocument; copy: PortalRequestDetailCopy }) {
   return (
     <article className="rounded-2xl border border-[#E5EAF0] bg-[#FBFCFE] p-4">
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[#B8643E]">{copy.documentTypes[document.type]}</p>
-          <h3 className="mt-1 text-[14px] font-black text-[#27364A]">{document.title}</h3>
+          <p className="text-[12px] font-semibold uppercase tracking-[0.06em] text-[#B8643E]">{copy.documentTypes[document.type]}</p>
+          <h3 className="mt-1 text-[14px] font-semibold text-[#27364A]">{document.title}</h3>
         </div>
-        <span className={`w-fit rounded-full px-3 py-1 text-[11px] font-black ${documentTone[document.status]}`}>
+        <span className={`w-fit rounded-full px-3 py-1 text-[12px] font-semibold ${documentTone[document.status]}`}>
           {copy.documentStatuses[document.status]}
         </span>
       </div>
       {document.description && <p className="mt-2 text-[13px] leading-6 text-[#667085]">{document.description}</p>}
-      <p className="mt-3 font-mono text-[11px] font-bold text-[#98A2B3]">{document.issuedAt}</p>
+      <p className="mt-3 font-mono text-[12px] font-bold text-[#98A2B3]">{document.issuedAt}</p>
     </article>
   );
 }

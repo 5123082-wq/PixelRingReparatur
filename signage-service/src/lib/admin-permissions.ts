@@ -25,6 +25,7 @@ export type AdminPermission =
   | 'CRM_CASE_READ'
   | 'CRM_CASE_CREATE'
   | 'CRM_CASE_UPDATE'
+  | 'CRM_DOCUMENT_WRITE'
   | 'CRM_WORK_RESULT_WRITE'
   | 'CRM_CASE_MESSAGE_WRITE'
   | 'CRM_CASE_TAKEOVER_WRITE'
@@ -53,6 +54,7 @@ const ADMIN_ROLE_PERMISSION_MAP: Record<AdminRole, readonly AdminPermission[]> =
     'CMS_KNOWLEDGE_BASE_READ',
     'CRM_CASE_READ',
     'CRM_WORK_RESULT_WRITE',
+    'CRM_DOCUMENT_WRITE',
     'CRM_ATTACHMENT_READ',
   ],
   MANAGER: [
@@ -60,6 +62,7 @@ const ADMIN_ROLE_PERMISSION_MAP: Record<AdminRole, readonly AdminPermission[]> =
     'CRM_CASE_CREATE',
     'CRM_CASE_UPDATE',
     'CRM_WORK_RESULT_WRITE',
+    'CRM_DOCUMENT_WRITE',
     'CRM_CASE_MESSAGE_WRITE',
     'CRM_CASE_TAKEOVER_WRITE',
     'CRM_ATTACHMENT_READ',
