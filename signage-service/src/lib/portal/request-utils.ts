@@ -1,3 +1,4 @@
+import { ATTENTION_IMAGE_MIME_TYPES } from '../portal-attention/types.ts';
 import { CaseOriginChannel, MessageAuthorRole, Prisma, type PrismaClient } from '@prisma/client';
 import type { StoredAttachmentInput } from '@/lib/attachments';
 import { syncCaseCustomerProfile } from '../customer-profiles.ts';
@@ -512,7 +513,7 @@ export async function createPortalMessageForRequest(
       await tx.$queryRaw(Prisma.sql`SELECT id FROM portal_attention WHERE id = ${input.attentionId}::uuid FOR UPDATE`);
       const action = await tx.portalAttention.findFirst({ where: { id: input.attentionId, caseId: caseRecord.id,
         portalUserId: input.portalUserId, state: 'OPEN', mode: { in: ['REPLY', 'UPLOAD'] } } });
-      if (!action || (action.mode === 'UPLOAD' && attachments.length === 0)) { result = { ok: false, reason: 'invalid_attention' }; return; }
+      if (!action || (action.mode === 'UPLOAD' && !attachments.some(file => file.kind === 'IMAGE' && ATTENTION_IMAGE_MIME_TYPES.includes(file.mimeType)))) { result = { ok: false, reason: 'invalid_attention' }; return; }
     }
     const now = new Date();
     const message = await tx.message.create({

@@ -384,7 +384,7 @@ export default function PortalRequestChat({
       }
 
       if (respondingAction && typeof data.message === 'object') {
-        await submitEvidence({ id: respondingAction.id, messageId: data.message.id, attachmentId: data.message.attachments?.[0]?.id });
+        await submitEvidence({ id: respondingAction.id, messageId: data.message.id, attachmentId: data.message.attachments?.find(file => file.mimeType?.startsWith('image/'))?.id });
       }
       router.refresh();
     } catch (error) {

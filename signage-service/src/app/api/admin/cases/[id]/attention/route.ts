@@ -7,14 +7,15 @@ import { prisma } from '@/lib/prisma';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
 import { documentActor, documentFailure, lockDocumentCase } from '@/lib/case-documents/service';
 import { DocumentError, DOCUMENT_ID } from '@/lib/case-documents/types';
-import { attentionOptions, attentionView, attentionJson, createAttentionForCase, adminAttentionAudit } from '@/lib/portal-attention/service';
+import { attentionEvidence, attentionOptions, attentionView, attentionJson, createAttentionForCase, adminAttentionAudit } from '@/lib/portal-attention/service';
 type Context = { params: Promise<{ id: string }> };
 export async function GET(request: NextRequest, { params }: Context) {
   try { const { id } = await params; await documentActor(request, id);
     const rows = await prisma.portalAttention.findMany({ where: { caseId: id }, include: { case: true, portalUser: true, email: true }, orderBy: { createdAt: 'desc' } });
-    return attentionJson({ items: rows.map(row => ({ ...attentionView(row, request.nextUrl.searchParams.get('locale') || 'de'),
+    return attentionJson({ items: await Promise.all(rows.map(async row => ({ ...attentionView(row, request.nextUrl.searchParams.get('locale') || 'de'),
+      evidence: await attentionEvidence(prisma, row),
       recipient: { id: row.portalUserId, displayName: row.portalUser.displayName, email: row.portalUser.primaryEmail },
-      email: row.email ? { state: row.email.state, attempts: row.email.attempts, lastError: row.email.lastError, sentAt: row.email.sentAt?.toISOString() ?? null } : null })) });
+      email: row.email ? { state: row.email.state, attempts: row.email.attempts, lastError: row.email.lastError, sentAt: row.email.sentAt?.toISOString() ?? null } : null }))) });
   } catch (error) { return documentFailure(error); }
 }
 export async function POST(request: NextRequest, { params }: Context) {
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest, { params }: Context) {
           await tx.portalAttentionEmail.updateMany({ where: { attentionId: row.id, state: 'FAILED' }, data: { state: 'PENDING', attempts: 0, nextAttemptAt: new Date(), lastError: null } });
         } else {
           if (row.mode === 'NONE' || ['COMPLETED', 'CANCELLED'].includes(row.state)) throw new DocumentError('invalid_action', 409);
-          if (body.action === 'complete' && row.state !== 'SUBMITTED') throw new DocumentError('response_required', 409);
+          if (body.action === 'complete' && (row.state !== 'SUBMITTED' || body.evidenceId !== row.evidenceId || !(await attentionEvidence(tx, row)))) throw new DocumentError('response_required', 409);
           await tx.portalAttention.update({ where: { id: row.id }, data: { state: body.action === 'complete' ? 'COMPLETED' : 'CANCELLED', completedAt: new Date() } });
         }
       }

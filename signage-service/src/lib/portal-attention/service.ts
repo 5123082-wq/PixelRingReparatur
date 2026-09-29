@@ -8,7 +8,7 @@ import { getPortalSessionContext, PORTAL_SESSION_COOKIE_NAME } from '@/lib/porta
 import { DocumentError, DOCUMENT_ID } from '@/lib/case-documents/types';
 import { createAdminAuditLog, type AdminRequestActor } from '@/lib/admin-audit';
 import { checkRateLimit } from '@/lib/rate-limit';
-import { ATTENTION_LOCALES, ATTENTION_MODES, type AttentionItem, type AttentionKind, type AttentionMode } from './types';
+import { ATTENTION_IMAGE_MIME_TYPES, type AttentionEvidence, ATTENTION_LOCALES, ATTENTION_MODES, type AttentionItem, type AttentionKind, type AttentionMode } from './types';
 
 export function attentionOptions(input: unknown) {
   const value = (input && typeof input === 'object' ? input : {}) as Record<string, unknown>;
@@ -74,6 +74,22 @@ export async function listAttention(portalUserId: string, locale: string, public
   return { items: rows.map(row => attentionView(row, locale)), unreadCount: rows.filter(row => !row.readAt && row.state !== 'CANCELLED').length,
     openCount: rows.filter(row => row.mode !== 'NONE' && ['OPEN', 'SUBMITTED'].includes(row.state)).length };
 }
+export async function attentionEvidence(tx: Pick<Prisma.TransactionClient, 'message' | 'attachment'>, row: PortalAttention): Promise<AttentionEvidence | null> {
+  if (!row.evidenceId) return null;
+  if (row.mode === 'REPLY') {
+    const message = await tx.message.findFirst({ where: { id: row.evidenceId, caseId: row.caseId, authorRole: 'CUSTOMER', isCustomerVisible: true,
+      createdAt: { gte: row.createdAt }, session: { portalUserId: row.portalUserId } }, select: { id: true, body: true, createdAt: true } });
+    return message ? { id: message.id, kind: 'REPLY', body: message.body ?? '', createdAt: message.createdAt.toISOString() } : null;
+  }
+  if (row.mode === 'UPLOAD') {
+    const attachment = await tx.attachment.findFirst({ where: { id: row.evidenceId, caseId: row.caseId, isCustomerVisible: true,
+      kind: 'IMAGE', mimeType: { in: ATTENTION_IMAGE_MIME_TYPES }, createdAt: { gte: row.createdAt }, uploadedBySession: { portalUserId: row.portalUserId } },
+      select: { id: true, originalFilename: true, mimeType: true, createdAt: true } });
+    return attachment ? { id: attachment.id, kind: 'UPLOAD', filename: attachment.originalFilename, mimeType: attachment.mimeType,
+      href: '/api/admin/attachments/' + attachment.id, createdAt: attachment.createdAt.toISOString() } : null;
+  }
+  return null;
+}
 export async function mutateAttention(request: NextRequest, id: string, input: unknown) {
   const session = await attentionSession(request, true);
   if (!DOCUMENT_ID.test(id)) throw new DocumentError('not_found', 404);
@@ -96,9 +112,11 @@ export async function mutateAttention(request: NextRequest, id: string, input: u
       if (!['REPLY', 'UPLOAD'].includes(row.mode) || ['CANCELLED', 'COMPLETED'].includes(row.state)) throw new DocumentError('invalid_action', 409);
       const evidence = row.mode === 'REPLY' ? body.messageId : body.attachmentId;
       if (typeof evidence !== 'string' || !DOCUMENT_ID.test(evidence)) throw new DocumentError('evidence_required');
-      const verified = row.mode === 'REPLY'
-        ? await tx.message.findFirst({ where: { id: evidence, caseId: row.caseId, authorRole: 'CUSTOMER', isCustomerVisible: true, createdAt: { gte: row.createdAt }, session: { portalUserId: session.portalUserId } } })
-        : await tx.attachment.findFirst({ where: { id: evidence, caseId: row.caseId, isCustomerVisible: true, createdAt: { gte: row.createdAt }, uploadedBySession: { portalUserId: session.portalUserId } } });
+      if (row.state === 'SUBMITTED') {
+        if (row.evidenceId !== evidence) throw new DocumentError('invalid_action', 409);
+        return attentionView(row, request.nextUrl.searchParams.get('locale') || 'de');
+      }
+      const verified = await attentionEvidence(tx, { ...row, evidenceId: evidence });
       if (!verified) throw new DocumentError('evidence_required');
       data.state = 'SUBMITTED'; data.submittedAt = row.submittedAt ?? now; data.evidenceId = evidence;
     }
