@@ -152,6 +152,7 @@ export async function GET(request: NextRequest) {
             where: { adminUserId: actor.adminUserId },
             select: {
               lastReadAt: true,
+              portalReadVersion: true,
             },
             take: 1,
           },
@@ -177,7 +178,10 @@ export async function GET(request: NextRequest) {
             caseId: caseRecord.id,
             authorRole: MessageAuthorRole.CUSTOMER,
             isCustomerVisible: true,
-            createdAt: { gt: lastReadAt },
+            OR: [
+              { portalAttentionVersion: { gt: caseRecord.readStates[0]?.portalReadVersion ?? 0 } },
+              { portalAttentionVersion: null, createdAt: { gt: lastReadAt } },
+            ],
           },
         });
 

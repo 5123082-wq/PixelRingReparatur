@@ -2,6 +2,7 @@ import { ATTENTION_IMAGE_MIME_TYPES } from '../portal-attention/types.ts';
 import { CaseOriginChannel, MessageAuthorRole, Prisma, type PrismaClient } from '@prisma/client';
 import type { StoredAttachmentInput } from '@/lib/attachments';
 import { syncCaseCustomerProfile } from '../customer-profiles.ts';
+import { lockCase, registerPortalMessage } from '../portal-operator/state.ts';
 
 type PortalRequestsDb = PrismaClient | Prisma.TransactionClient;
 
@@ -508,13 +509,15 @@ export async function createPortalMessageForRequest(
       return;
     }
 
+    await lockCase(tx, caseRecord.id);
     if (input.attentionId) {
-      await tx.$queryRaw(Prisma.sql`SELECT id FROM cases WHERE id = ${caseRecord.id}::uuid FOR UPDATE`);
       await tx.$queryRaw(Prisma.sql`SELECT id FROM portal_attention WHERE id = ${input.attentionId}::uuid FOR UPDATE`);
       const action = await tx.portalAttention.findFirst({ where: { id: input.attentionId, caseId: caseRecord.id,
         portalUserId: input.portalUserId, state: 'OPEN', mode: { in: ['REPLY', 'UPLOAD'] } } });
       if (!action || (action.mode === 'UPLOAD' && !attachments.some(file => file.kind === 'IMAGE' && ATTENTION_IMAGE_MIME_TYPES.includes(file.mimeType)))) { result = { ok: false, reason: 'invalid_attention' }; return; }
     }
+    const attention = await registerPortalMessage(tx, caseRecord.id);
+    const control = await tx.case.findUniqueOrThrow({ where: { id: caseRecord.id }, select: { aiEnabled: true } });
     const now = new Date();
     const message = await tx.message.create({
       data: {
@@ -523,6 +526,7 @@ export async function createPortalMessageForRequest(
         channel: CaseOriginChannel.WEBSITE_CHAT,
         authorRole: MessageAuthorRole.CUSTOMER,
         authorName: 'Kundenportal',
+        portalAttentionVersion: attention.latestVersion,
         body: body || 'Foto',
         isCustomerVisible: true,
         sentAt: now,
@@ -572,7 +576,7 @@ export async function createPortalMessageForRequest(
       message,
       caseId: caseRecord.id,
       publicRequestNumber: caseRecord.publicRequestNumber,
-      aiEnabled: caseRecord.aiEnabled,
+      aiEnabled: control.aiEnabled,
       locale: caseRecord.locale,
     };
   });

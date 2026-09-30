@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import CaseDocuments from '@/components/admin/CaseDocuments';
 import CaseAttention from '@/components/admin/CaseAttention';
+import useCaseAttention from '@/components/admin/useCaseAttention';
 import WorkResultEditor from '@/components/admin/WorkResultEditor';
 import StageWindow from '@/components/admin/StageWindow';
 import useCaseStatusTransition from '@/components/admin/useCaseStatusTransition';
@@ -56,6 +57,7 @@ type CaseDetail = {
     channel: string;
     authorRole: string;
     authorName: string | null;
+    portalAttentionVersion: number | null;
     body: string;
     isCustomerVisible: boolean;
     createdAt: string;
@@ -187,6 +189,8 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
   const [issuingPr, setIssuingPr] = useState(false);
   const [creatingPortalLink, setCreatingPortalLink] = useState(false);
   const [portalClaimUrl, setPortalClaimUrl] = useState('');
+  const [aiControlError, setAiControlError] = useState('');
+  const [updatingAi, setUpdatingAi] = useState(false);
 
   const isScrolledNearBottom = useCallback(() => {
     const el = scrollRef.current;
@@ -258,13 +262,15 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
     }
   }, [activeTab, caseData?.messages.length, scrollChatToBottom]);
 
-  useEffect(() => {
-    void adminFetch(`/api/admin/cases/${id}/read`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({}),
-    }).catch(() => {});
-  }, [id, caseData?.messages.length]);
+  const visibleMessages = caseData?.messages.filter(message => message.isCustomerVisible) ?? [];
+  const lastVisibleMessage = visibleMessages.at(-1);
+  const lastPortalMessage = visibleMessages.reduce<CaseMessage | undefined>((latest, message) =>
+    (message.portalAttentionVersion ?? 0) > (latest?.portalAttentionVersion ?? 0) ? message : latest, undefined);
+  useCaseAttention({
+    caseId: id, open: !loading && Boolean(caseData) && activeTab === 'client', canReply: Boolean(caseData?.canManage),
+    lastMessageId: lastVisibleMessage?.id ?? null, lastPortalMessageId: lastPortalMessage?.id ?? null,
+    scrollRef, endRef: bottomAnchorRef,
+  });
 
   const refreshCaseFromRealtime = useCallback(async () => {
     if (realtimeRefreshInFlightRef.current) {
@@ -433,17 +439,17 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
   }
 
   async function updateAiControl(nextEnabled: boolean) {
+    if (updatingAi) return;
+    setUpdatingAi(true); setAiControlError('');
     try {
-      const payload = caseData?.externalConversations.some((conversation) => conversation.channel === 'TELEGRAM')
-        ? { aiEnabled: nextEnabled }
-        : { operatorTakeover: !nextEnabled };
-
-      await adminFetch(`/api/admin/cases/${id}`, {
+      const response = await adminFetch(`/api/admin/cases/${id}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ aiEnabled: nextEnabled }),
       });
+      if (!response.ok) throw new Error('AI control update failed');
       await fetchCase();
-    } catch {}
+    } catch { setAiControlError('Не удалось изменить режим ИИ. Повторите попытку.'); }
+    finally { setUpdatingAi(false); }
   }
 
   const caseId = caseData?.id;
@@ -469,10 +475,9 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
   if (!caseData) return null;
 
   const currentStatusObj = STATUS_OPTIONS.find((s) => s.value === caseData.status);
-  const operatorTakeover = caseData.sessions.some((session) => session.operatorTakeover);
   const hasCustomerSession = caseData.sessions.length > 0;
   const telegramConversation = caseData.externalConversations.find((conversation) => conversation.channel === 'TELEGRAM');
-  const aiAutomationEnabled = telegramConversation ? caseData.aiEnabled : !operatorTakeover;
+  const aiAutomationEnabled = caseData.aiEnabled;
   const telegramHandle = telegramConversation?.username
     ? `@${telegramConversation.username}`
     : telegramConversation
@@ -540,6 +545,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
         </div>
       </header>
 
+      {aiControlError && <p role="alert" className="bg-red-950 px-6 py-3 text-sm text-red-200">{aiControlError}</p>}
       <div className="flex flex-1 flex-col overflow-hidden md:flex-row">
 
         <aside className="shrink-0 border-b border-white/[0.03] bg-zinc-950 flex max-h-[40vh] flex-col z-30 overflow-y-auto no-scrollbar px-4 py-5 space-y-6 md:max-h-none md:w-[320px] md:border-b-0 md:border-r md:pb-20 md:pt-8 md:px-8 md:space-y-10">
@@ -815,7 +821,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                                  {m === 'customer' ? (telegramConversation ? 'Reply via Telegram' : 'Reply to client') : 'Internal Note'}
                               </button>
                             ))}
-                            <button disabled={!caseData.canManage} onClick={() => updateAiControl(!aiAutomationEnabled)} className={`ml-auto text-[8px] font-black px-2 py-0.5 rounded border ${aiAutomationEnabled ? 'border-emerald-500/30 text-emerald-500' : 'border-red-500/30 text-red-500'} uppercase`}>
+                            <button disabled={!caseData.canManage || updatingAi} onClick={() => updateAiControl(!aiAutomationEnabled)} className={`ml-auto text-[8px] font-black px-2 py-0.5 rounded border ${aiAutomationEnabled ? 'border-emerald-500/30 text-emerald-500' : 'border-red-500/30 text-red-500'} uppercase`}>
                                AI: {aiAutomationEnabled ? 'ON' : 'OFF'}
                             </button>
                          </div>

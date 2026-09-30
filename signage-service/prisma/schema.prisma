@@ -157,6 +157,7 @@ model Case {
   calculationSnapshot      Json?                     @map("calculation_snapshot")
   locale                   String?
   aiEnabled                Boolean                   @default(true)
+  aiControlVersion         Int                       @default(0)
   aiPausedAt               DateTime?
   aiPausedReason           String?
   crmLeadId                String?
@@ -179,6 +180,8 @@ model Case {
   statusEvents             CaseStatusEvent[]
   auditLogs                AdminAuditLog[]
   readStates               CaseReadState[]
+  crmPresences             CrmCasePresence[]
+  portalOperatorAlert      PortalOperatorAlertState?
   workResult               WorkResult?
   workResultUploads        WorkResultUpload[]
   documents                CaseDocument[]
@@ -226,6 +229,7 @@ model Message {
   authorRole        MessageAuthorRole
   authorName        String?
   body              String            @db.Text
+  portalAttentionVersion Int?
   externalChatId    String?
   externalMessageId String?
   isCustomerVisible Boolean           @default(true)
@@ -296,6 +300,7 @@ model CaseReadState {
   caseId      String    @db.Uuid
   adminUserId String    @db.Uuid
   lastReadAt  DateTime
+  portalReadVersion Int @default(0)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   case        Case      @relation(fields: [caseId], references: [id], onDelete: Cascade)
@@ -503,6 +508,7 @@ model AdminSession {
   statusEvents     CaseStatusEvent[] @relation("CaseStatusEventActor")
   auditLogs        AdminAuditLog[]   @relation("AdminAuditLogActor")
   portalClaimLinks PortalClaimLink[] @relation("PortalClaimLinkCreatedBy")
+  crmPresences     CrmCasePresence[]
 
   @@index([expiresAt])
   @@index([role])
@@ -909,4 +915,40 @@ model PortalAttentionEmail {
   attention PortalAttention @relation(fields: [attentionId], references: [id], onDelete: Cascade)
   @@index([state, nextAttemptAt])
   @@map("portal_attention_emails")
+}
+
+// Short leases; each browser tab is independent. No customer-facing presence data.
+model CrmCasePresence {
+  id             String       @id @default(uuid()) @db.Uuid
+  caseId         String       @db.Uuid
+  adminSessionId String       @db.Uuid
+  tabId          String       @db.Uuid
+  sequence       Int
+  expiresAt      DateTime
+  updatedAt      DateTime     @updatedAt
+  case           Case         @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  adminSession   AdminSession @relation(fields: [adminSessionId], references: [id], onDelete: Cascade)
+
+  @@unique([caseId, adminSessionId, tabId])
+  @@index([caseId, expiresAt])
+  @@map("crm_case_presences")
+}
+
+// One unread episode per case; versions refer only to portal customer messages.
+model PortalOperatorAlertState {
+  caseId         String    @id @db.Uuid
+  latestVersion  Int       @default(0)
+  readVersion    Int       @default(0)
+  generation     Int       @default(0)
+  pendingVersion Int       @default(0)
+  pendingReason  String?
+  sentAt         DateTime?
+  attemptId      String?   @db.Uuid
+  leaseUntil     DateTime?
+  deliveryState  String    @default("IDLE")
+  lastErrorCode  String?
+  updatedAt      DateTime  @updatedAt
+  case           Case      @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@map("portal_operator_alert_states")
 }

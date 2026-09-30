@@ -3,6 +3,8 @@ import { requireAdminPermissionActor } from '@/lib/admin-audit';
 import { validateAdminCsrf } from '@/lib/admin-csrf';
 import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
+import { markCaseRead } from '@/lib/portal-operator/state';
+import { notifyPortalOperator } from '@/lib/portal-operator/notify';
 
 function isUuidLike(value: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
@@ -57,24 +59,16 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
-  const now = new Date();
-
-  await prisma.caseReadState.upsert({
-    where: {
-      caseId_adminUserId: {
-        caseId: id,
-        adminUserId: actor.adminUserId,
-      },
-    },
-    create: {
-      caseId: id,
-      adminUserId: actor.adminUserId,
-      lastReadAt: now,
-    },
-    update: {
-      lastReadAt: now,
-    },
+  const body = await request.json().catch(() => null) as { lastMessageId?: unknown; lastPortalMessageId?: unknown } | null;
+  if (typeof body?.lastMessageId !== 'string' || !isUuidLike(body.lastMessageId) ||
+    (body.lastPortalMessageId != null && (typeof body.lastPortalMessageId !== 'string' || !isUuidLike(body.lastPortalMessageId)))) {
+    return NextResponse.json({ error: 'Visible message is required' }, { status: 400 });
+  }
+  const lastReadAt = await markCaseRead(prisma, {
+    caseId: id, actor, lastMessageId: body.lastMessageId,
+    lastPortalMessageId: body.lastPortalMessageId as string | null | undefined,
   });
-
-  return NextResponse.json({ success: true, lastReadAt: now.toISOString() });
+  if (!lastReadAt) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  await notifyPortalOperator(id);
+  return NextResponse.json({ success: true, lastReadAt: lastReadAt.toISOString() });
 }
