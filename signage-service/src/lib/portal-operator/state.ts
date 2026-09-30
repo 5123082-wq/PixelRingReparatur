@@ -8,7 +8,9 @@ type Db = PrismaClient;
 type Tx = Prisma.TransactionClient;
 type Actor = { adminUserId: string; sessionId: string; role: AdminRole; email: string; displayName: string | null };
 export const PRESENCE_TTL_MS = 45_000;
+export const PRESENCE_GRACE_MS = 1_500;
 const SEND_LEASE_MS = 30_000;
+const RECOVERY_SEND_PACE_MS = 3_100;
 
 // The same case lock is used for receipt, read acknowledgements, AI publication and
 // operator takeover. Never hold it during a provider/network request.
@@ -112,28 +114,34 @@ export async function requireOperatorForMessage(db: Db, caseId: string, messageI
 export async function dispatchOperatorAlert(db: Db, caseId: string,
   send: (input: { caseId: string; publicRequestNumber: string; reason: OperatorReason }) => Promise<DeliveryResult>
 ) {
-  const claim = await db.$transaction(async (tx) => {
+  async function claimAlert(ignorePresence: boolean) { return db.$transaction(async (tx) => {
     await lockCase(tx, caseId);
     const state = await tx.portalOperatorAlertState.findUnique({ where: { caseId } });
     const record = await tx.case.findUnique({ where: { id: caseId }, select: { publicRequestNumber: true, assignedOperator: true } });
     const now = new Date();
     if (!state || !record?.publicRequestNumber || !state.pendingReason || state.pendingVersion <= state.readVersion ||
-      state.sentAt || (state.leaseUntil && state.leaseUntil > now) ||
-      await hasEligiblePresence(tx, caseId, record.assignedOperator, now)) return null;
+      state.sentAt || (state.leaseUntil && state.leaseUntil > now)) return null;
+    // Presence grants time for the rendered chat to acknowledge this message.
+    // It cannot suppress an unread alert for the whole lease: the tab may be stale.
+    if (!ignorePresence && await hasEligiblePresence(tx, caseId, record.assignedOperator, now)) return 'grace' as const;
     const attemptId = randomUUID();
     await tx.portalOperatorAlertState.update({ where: { caseId }, data: {
       attemptId, leaseUntil: new Date(now.getTime() + SEND_LEASE_MS), deliveryState: 'SENDING', lastErrorCode: null,
     } });
     return { attemptId, generation: state.generation, publicRequestNumber: record.publicRequestNumber, reason: state.pendingReason as OperatorReason };
-  });
-  if (!claim) return;
-  // Recheck after claiming, before sending. Read/presence may have changed meanwhile.
+  }); }
+  let claim = await claimAlert(false);
+  if (claim === 'grace') {
+    await new Promise((resolve) => setTimeout(resolve, PRESENCE_GRACE_MS));
+    claim = await claimAlert(true);
+  }
+  if (!claim || claim === 'grace') return;
+  // Recheck after claiming, before sending. A read may have changed the episode.
   const stillNeeded = await db.$transaction(async (tx) => {
     await lockCase(tx, caseId);
     const state = await tx.portalOperatorAlertState.findUnique({ where: { caseId } });
-    const record = await tx.case.findUnique({ where: { id: caseId }, select: { assignedOperator: true } });
-    if (!state || !record || state.attemptId !== claim.attemptId || state.generation !== claim.generation) return false;
-    if (state.pendingVersion <= state.readVersion || await hasEligiblePresence(tx, caseId, record.assignedOperator, new Date())) {
+    if (!state || state.attemptId !== claim.attemptId || state.generation !== claim.generation) return false;
+    if (state.pendingVersion <= state.readVersion) {
       await tx.portalOperatorAlertState.update({ where: { caseId }, data: { attemptId: null, leaseUntil: null, deliveryState: 'IDLE' } });
       return false;
     }
@@ -147,4 +155,46 @@ export async function dispatchOperatorAlert(db: Db, caseId: string,
     deliveryState: result, sentAt: result === 'SENT' ? new Date() : null,
     lastErrorCode: result === 'SENT' ? null : result.toLowerCase(),
   } });
+}
+
+export async function scanPendingOperatorAlerts(db: Db,
+  send: (input: { caseId: string; publicRequestNumber: string; reason: OperatorReason }) => Promise<DeliveryResult>
+) {
+  const startedAt = new Date();
+  const deadline = Date.now() + 35_000;
+  let cursorTime = new Date(0);
+  let cursorId = '00000000-0000-0000-0000-000000000000';
+  let checked = 0;
+  let failed = 0;
+  scan: while (Date.now() < deadline) {
+    const rows = await db.$queryRaw<{ caseId: string; updatedAt: Date }[]>`
+      SELECT "caseId", "updatedAt" FROM portal_operator_alert_states
+      WHERE "pendingReason" IS NOT NULL AND "pendingVersion" > "readVersion" AND "sentAt" IS NULL
+        AND ("leaseUntil" IS NULL OR "leaseUntil" <= NOW()) AND "updatedAt" <= ${startedAt}
+        AND ("updatedAt", "caseId") > (${cursorTime}::timestamp, ${cursorId}::uuid)
+      ORDER BY "updatedAt", "caseId" LIMIT 5
+    `;
+    if (!rows.length) break;
+    for (const row of rows) {
+      if (checked) {
+        // All recovery messages target one group. Stay below Telegram's 20/minute group limit.
+        if (Date.now() + RECOVERY_SEND_PACE_MS >= deadline) break scan;
+        await new Promise(resolve => setTimeout(resolve, RECOVERY_SEND_PACE_MS));
+      }
+      if (Date.now() >= deadline) break scan;
+      try { await dispatchOperatorAlert(db, row.caseId, send); }
+      catch { failed++; }
+      checked++;
+      cursorTime = row.updatedAt;
+      cursorId = row.caseId;
+    }
+    if (rows.length < 5) break;
+  }
+  const [backlog] = await db.$queryRaw<{ remaining: bigint; oldest: Date | null }[]>`
+    SELECT COUNT(*)::bigint AS remaining, MIN("updatedAt") AS oldest
+    FROM portal_operator_alert_states
+    WHERE "pendingReason" IS NOT NULL AND "pendingVersion" > "readVersion" AND "sentAt" IS NULL
+  `;
+  return { checked, failed, remaining: Number(backlog.remaining),
+    oldestPendingSeconds: backlog.oldest ? Math.max(0, Math.floor((Date.now() - backlog.oldest.getTime()) / 1_000)) : null };
 }

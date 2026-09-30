@@ -46,11 +46,14 @@ Object.assign(process.env, {
   POSTGRES_PRISMA_URL: 'postgresql://test:test@127.0.0.1:55447/portal_operator_test',
   ALLOW_DB_TESTS: '1', TELEGRAM_BOT_TOKEN: 'fixture-token', TELEGRAM_ADMIN_CHAT_ID: 'fixture-admin',
   OPENAI_API_KEY: 'fixture-key', AI_ENDPOINT: 'http://127.0.0.1:55549/mock-ai', ABLY_API_KEY: '',
+  CRON_SECRET: 'fixture-operator-cron-secret',
   ATTACHMENT_STORAGE_DIR: '/private/tmp/pixelring-operator-test-files', BLOB_READ_WRITE_TOKEN: '',
 });
 let aiMode = 'success', telegramMode = 'success';
 let aiBeforeReturn = null;
 const alerts = [];
+const alertTimes = [];
+let lastTelegramAt = 0;
 const actualFetch = globalThis.fetch;
 globalThis.fetch = async (url, options) => {
   const target = String(url);
@@ -63,7 +66,13 @@ globalThis.fetch = async (url, options) => {
   if (target.startsWith('https://api.telegram.org/botfixture-token/')) {
     if (telegramMode === 'unknown') throw new TypeError('Simulated network disconnect');
     if (telegramMode === 'fail') return Response.json({ ok: false, description: 'fixture failure' }, { status: 503 });
+    const now = Date.now();
+    if (telegramMode === 'rate_limited' && now - lastTelegramAt < 3_000) {
+      return Response.json({ ok: false, description: 'Too Many Requests' }, { status: 429 });
+    }
+    lastTelegramAt = now;
     alerts.push(JSON.parse(options.body));
+    alertTimes.push(now);
     return Response.json({ ok: true, result: { message_id: alerts.length, chat: { id: 1 }, date: 1, text: 'fixture' } });
   }
   throw new Error('Unexpected network request in isolated suite: ' + new URL(target).hostname);
@@ -79,6 +88,7 @@ const readRoute = await import('../src/app/api/admin/cases/[id]/read/route.ts');
 const presenceRoute = await import('../src/app/api/admin/cases/[id]/presence/route.ts');
 const adminRoute = await import('../src/app/api/admin/cases/[id]/route.ts');
 const listRoute = await import('../src/app/api/admin/cases/route.ts');
+const cronRoute = await import('../src/app/api/cron/portal-attention/route.ts');
 const stateLib = await import('../src/lib/portal-operator/state.ts');
 const { hashAdminPassword } = await import('../src/lib/admin-password.ts');
 const { createPortalMessageForRequest } = await import('../src/lib/portal/request-utils.ts');
@@ -150,14 +160,90 @@ test('partial/stale read cannot consume a newer message or rearm a sent series',
   await read(c, b.message.id); await read(c, a.message.id);
   assert.equal((await state(c)).readVersion, 2);
 });
-test('two active tabs suppress alerts; leaving one keeps the other active; last leave dispatches', async () => {
+test('stale active tabs grant only a bounded grace and cannot suppress an unread alert', async () => {
   const c = await makeCase(), count = alerts.length, a = randomUUID(), b = randomUUID();
   assert.equal((await presence(c, a, 1, true)).status, 200);
-  await presence(c, b, 1, true); await message(c); assert.equal(alerts.length, count);
-  await presence(c, a, 2, false); assert.equal(alerts.length, count);
-  await presence(c, b, 2, false); assert.equal(alerts.length, count + 1);
+  await presence(c, b, 1, true); await message(c); assert.equal(alerts.length, count + 1);
+  assert.equal((await state(c)).readVersion, 0);
+  await presence(c, a, 2, false); await presence(c, b, 2, false);
+  assert.equal(alerts.length, count + 1);
   await presence(c, b, 1, true); // Late stale heartbeat cannot resurrect a left tab.
   assert((await db.crmCasePresence.findFirst({ where: { caseId: c.id, tabId: b } })).expiresAt <= new Date());
+});
+test('a visible read during the bounded presence grace cancels the alert', async () => {
+  const c = await makeCase(), count = alerts.length, tab = randomUUID();
+  await presence(c, tab, 1, true);
+  const posting = message(c);
+  let saved;
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const pending = await db.portalOperatorAlertState.findUnique({ where: { caseId: c.id } });
+    saved = pending?.pendingReason ? await db.message.findFirst({ where: { caseId: c.id, portalAttentionVersion: pending.pendingVersion } }) : null;
+    if (saved) break;
+    await new Promise(resolve => setTimeout(resolve, 10));
+  }
+  assert(saved, 'portal message must be pending during the grace');
+  assert.equal((await read(c, saved.id)).status, 200);
+  await posting;
+  assert.equal(alerts.length, count);
+  assert.equal((await state(c)).readVersion, 1);
+});
+test('scheduled recovery sends an orphaned pending alert after presence expires', async () => {
+  const c = await makeCase(), count = alerts.length, tab = randomUUID();
+  await presence(c, tab, 1, true);
+  const saved = await createPortalMessageForRequest(db, { portalUserId: customer.id, portalSessionId: portalSession.id,
+    publicRequestNumber: c.publicRequestNumber, body: 'Unseen while device sleeps' });
+  await stateLib.requireOperatorForMessage(db, c.id, saved.message.id, 'ai_disabled');
+  await db.crmCasePresence.updateMany({ where: { caseId: c.id }, data: { expiresAt: new Date(0) } });
+  assert.equal((await cronRoute.GET(new Request('http://localhost:3000/api/cron/portal-attention'))).status, 401);
+  assert.equal(alerts.length, count);
+  const response = await cronRoute.GET(new Request('http://localhost:3000/api/cron/portal-attention', {
+    headers: { authorization: `Bearer ${process.env.CRON_SECRET}` },
+  }));
+  assert.equal(response.status, 200);
+  assert.equal(alerts.length, count + 1);
+  assert.equal((await state(c)).deliveryState, 'SENT');
+});
+test('scheduled recovery drains more than one batch of pending cases', async () => {
+  const count = alerts.length;
+  const cases = await Promise.all(Array.from({ length: 6 }, () => makeCase()));
+  for (const c of cases) {
+    const saved = await createPortalMessageForRequest(db, { portalUserId: customer.id, portalSessionId: portalSession.id,
+      publicRequestNumber: c.publicRequestNumber, body: 'Pending operator recovery' });
+    await stateLib.requireOperatorForMessage(db, c.id, saved.message.id, 'ai_disabled');
+  }
+  telegramMode = 'rate_limited';
+  lastTelegramAt = 0;
+  try {
+    const response = await cronRoute.GET(new Request('http://localhost:3000/api/cron/portal-attention', {
+      headers: { authorization: `Bearer ${process.env.CRON_SECRET}` },
+    }));
+    assert.equal(response.status, 200);
+    const result = (await response.json()).operatorAlerts;
+    assert.equal(result.checked, 6);
+    assert.equal(result.remaining, 0);
+    assert.equal(alerts.length, count + 6);
+    for (let i = count + 1; i < alertTimes.length; i++) assert(alertTimes[i] - alertTimes[i - 1] >= 3_000);
+  } finally {
+    telegramMode = 'success';
+  }
+});
+test('scheduled recovery waits for an active send lease, then reclaims it', async () => {
+  const c = await makeCase(), count = alerts.length;
+  const saved = await createPortalMessageForRequest(db, { portalUserId: customer.id, portalSessionId: portalSession.id,
+    publicRequestNumber: c.publicRequestNumber, body: 'Interrupted Telegram attempt' });
+  await stateLib.requireOperatorForMessage(db, c.id, saved.message.id, 'ai_disabled');
+  await db.portalOperatorAlertState.update({ where: { caseId: c.id }, data: {
+    attemptId: randomUUID(), leaseUntil: new Date(Date.now() + 60_000), deliveryState: 'SENDING',
+  } });
+  const runCron = () => cronRoute.GET(new Request('http://localhost:3000/api/cron/portal-attention', {
+    headers: { authorization: `Bearer ${process.env.CRON_SECRET}` },
+  }));
+  assert.equal((await runCron()).status, 200);
+  assert.equal(alerts.length, count);
+  await db.portalOperatorAlertState.update({ where: { caseId: c.id }, data: { leaseUntil: new Date(0) } });
+  assert.equal((await runCron()).status, 200);
+  assert.equal(alerts.length, count + 1);
+  assert.equal((await state(c)).deliveryState, 'SENT');
 });
 test('presence on another case and expired leases do not suppress', async () => {
   const c = await makeCase(), d = await makeCase(), count = alerts.length;
