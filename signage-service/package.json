@@ -45,7 +45,8 @@
     "postinstall": "prisma generate",
     "test:portal-attention": "node --experimental-strip-types --test scripts/test-portal-attention.test.ts",
     "test:attention-email": "node --experimental-strip-types --test scripts/test-attention-email-e2e.test.ts",
-    "test:attention-delivery": "node --experimental-strip-types --test scripts/test-attention-delivery-policy.test.ts"
+    "test:attention-delivery": "node --experimental-strip-types --test scripts/test-attention-delivery-policy.test.ts",
+    "test:portal-operator": "node --test scripts/test-portal-operator-alerts.test.mjs"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -64,6 +65,8 @@
     "sharp": "^0.34.5"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.4.1",
+    "@electric-sql/pglite-socket": "0.1.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/nodemailer": "^8.0.0",

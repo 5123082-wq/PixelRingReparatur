@@ -1,5 +1,6 @@
 import { SITE_BASE_URL } from '@/lib/seo';
-import { sendTelegramMessage } from '@/lib/telegram';
+import { sendTelegramMessage, TelegramDeliveryError } from '@/lib/telegram';
+import type { DeliveryResult, OperatorReason } from './portal-operator/state';
 
 const DEFAULT_ADMIN_LOCALE = 'de';
 const MESSAGE_PREVIEW_LENGTH = 700;
@@ -113,4 +114,27 @@ export async function sendAdminTelegramNotification(
       ]],
     },
   });
+}
+
+export async function sendPortalOperatorNotification(input: {
+  caseId: string; publicRequestNumber: string; reason: OperatorReason;
+}): Promise<DeliveryResult> {
+  const chatId = getAdminTelegramChatId();
+  if (!chatId || chatId === 'PLACEHOLDER_CHAT_ID' || !process.env.TELEGRAM_BOT_TOKEN?.trim()) return 'NOT_CONFIGURED';
+  const reason = {
+    ai_disabled: 'ИИ отключён: требуется ответ оператора.',
+    human_requested: 'Клиент запросил оператора.',
+    ai_failed: 'ИИ не смог подготовить ответ: требуется оператор.',
+  }[input.reason];
+  try {
+    await sendTelegramMessage({
+      chatId,
+      text: `<b>Сообщение из личного кабинета</b>\n\nЗаявка: ${escapeTelegramHtml(input.publicRequestNumber)}\n${reason}`,
+      parseMode: 'HTML', signal: AbortSignal.timeout(8_000),
+      replyMarkup: { inline_keyboard: [[{ text: 'Открыть CRM', url: buildCrmCaseUrl(input.caseId) }]] },
+    });
+    return 'SENT';
+  } catch (error) {
+    return error instanceof TelegramDeliveryError ? 'FAILED' : 'UNKNOWN';
+  }
 }

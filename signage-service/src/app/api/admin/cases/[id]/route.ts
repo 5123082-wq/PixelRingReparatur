@@ -1,4 +1,5 @@
 import { createAttentionForCase } from '@/lib/portal-attention/service';
+import { lockCase } from '@/lib/portal-operator/state';
 import { CRM_SESSION_COOKIE_NAME } from '@/lib/admin-auth';
 import { createAdminAuditLog, requireAdminPermissionActor } from '@/lib/admin-audit';
 import { NextRequest, NextResponse } from 'next/server';
@@ -175,8 +176,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         numberIssuedAt: true,
         formalizedAt: true,
         messages: {
-          orderBy: { createdAt: 'asc' },
+          orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
           select: {
+            portalAttentionVersion: true,
             id: true,
             channel: true,
             authorRole: true,
@@ -414,7 +416,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const [caseRecord, activeSessionCount, takeoverEnabledCount] = await Promise.all([
+    const [caseRecord, takeoverEnabledCount] = await Promise.all([
       prisma.case.findUnique({
         where: { id },
         select: {
@@ -442,12 +444,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
             },
             take: 1,
           },
-        },
-      }),
-      prisma.session.count({
-        where: {
-          caseId: id,
-          revokedAt: null,
         },
       }),
       prisma.session.count({
@@ -484,18 +480,19 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const currentOperatorTakeover = takeoverEnabledCount > 0;
     const nextOperatorTakeover = hasMessage
       ? true
-      : hasTakeoverUpdate
-        ? body?.operatorTakeover ?? currentOperatorTakeover
-        : currentOperatorTakeover;
-    const takeoverChanged =
-      activeSessionCount > 0 && currentOperatorTakeover !== nextOperatorTakeover;
+      : hasAiEnabledUpdate
+        ? !body!.aiEnabled
+        : hasTakeoverUpdate
+          ? body!.operatorTakeover!
+          : currentOperatorTakeover;
     const nextCaseAiEnabled =
       hasMessage
         ? false
         : hasAiEnabledUpdate
           ? body?.aiEnabled ?? caseRecord.aiEnabled
-          : caseRecord.aiEnabled;
-    const caseAiChanged = caseRecord.aiEnabled !== nextCaseAiEnabled;
+          : hasTakeoverUpdate
+            ? !body!.operatorTakeover
+            : caseRecord.aiEnabled;
     let telegramReplyChatId: string | null = null;
     let telegramPrChatId: string | null = null;
     let issuedPublicRequestNumber: string | null = null;
@@ -503,6 +500,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const realtimeReasons = new Set<CaseRealtimeReason>();
 
     await prisma.$transaction(async (tx) => {
+      await lockCase(tx, id);
       if (hasMessage) {
         const attentionMessage = await tx.message.create({
           data: {
@@ -570,7 +568,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         realtimeReasons.add('internal_note.created');
       }
 
-      if (takeoverChanged) {
+      if (hasMessage || hasTakeoverUpdate || hasAiEnabledUpdate) {
         await tx.session.updateMany({
           where: {
             caseId: id,
@@ -605,7 +603,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         realtimeReasons.add('takeover.changed');
       }
 
-      if (caseAiChanged) {
+      if (hasMessage || hasTakeoverUpdate || hasAiEnabledUpdate) {
         const aiPausedReason = nextCaseAiEnabled
           ? null
           : hasMessage
@@ -616,6 +614,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           where: { id },
           data: {
             aiEnabled: nextCaseAiEnabled,
+            aiControlVersion: { increment: 1 },
             aiPausedAt: nextCaseAiEnabled ? null : now,
             aiPausedReason,
           },

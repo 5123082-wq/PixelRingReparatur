@@ -6,7 +6,9 @@ Purpose: current-state boundary and roadmap index. Read this beacon for startup 
 
 Exists now:
 
-- shared client action/notification inbox and document/report email outbox merged through PR #85; production migration and historical-material backfill applied, scheduler secret configured; review corrections are being released: [execution guide](../04_client_portal/client_notifications_and_actions.md);
+- shared client action/notification inbox and document/report email outbox merged through PR #85, with review corrections merged through PR #86; production migration and historical-material backfill applied, scheduler secret configured: [execution guide](../04_client_portal/client_notifications_and_actions.md);
+
+- locally implemented operator alerts for portal messages, with presence-aware delivery and precise read acknowledgement; production migration applied 2026-09-30, application release pending: [execution guide](../04_client_portal/portal_operator_alerts.md);
 
 - request-bound PDF document delivery is implemented locally; migration applied 2026-09-29, application release pending: [execution guide](../06_crm/customer_documents.md);
 

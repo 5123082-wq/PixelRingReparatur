@@ -64,6 +64,7 @@ export type GenerateChatReplyResult = {
   provider: 'openai' | 'fallback';
   model?: string;
   refused?: boolean;
+  technicalFailure?: boolean;
   suggestIntake?: boolean;
   suggestStatus?: boolean;
   intakePrefill?: IntakePrefill;
@@ -340,6 +341,7 @@ export async function generateChatReply(
     };
   }
 
+  let technicalFailure = true;
   try {
     const config = await getAiRuntimeConfig();
     const history = normalizeHistory(input.history, config.maxContextMessages);
@@ -367,6 +369,7 @@ export async function generateChatReply(
     );
 
     if (aiText) {
+      technicalFailure = false;
       const outputVerdict = guardChatReply(
         aiText,
         input.locale,
@@ -407,6 +410,7 @@ export async function generateChatReply(
       text: buildPortalNewRequestRedirect(input.locale, input.newRequestUrl || '/portal'),
       intent: incomingVerdict.intent,
       provider: 'fallback',
+      technicalFailure,
       suggestIntake: false,
     };
   }
@@ -415,6 +419,7 @@ export async function generateChatReply(
     text: buildFallbackReply(incomingVerdict.intent, input.locale),
     intent: incomingVerdict.intent,
     provider: 'fallback',
+    technicalFailure,
     refused: incomingVerdict.intent === 'refusal',
   };
 }

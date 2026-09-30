@@ -153,13 +153,17 @@ function getMimeTypeFromTelegramPath(filePath: string): string {
   }
 }
 
+export class TelegramDeliveryError extends Error {}
+
 export async function sendTelegramMessage(input: {
   chatId: string;
   text: string;
   parseMode?: 'HTML';
   replyMarkup?: TelegramInlineKeyboardMarkup;
+  signal?: AbortSignal;
 }): Promise<TelegramSendMessageResult> {
   const response = await fetch(getTelegramApiUrl('sendMessage'), {
+    signal: input.signal,
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -176,7 +180,7 @@ export async function sendTelegramMessage(input: {
     | null;
 
   if (!response.ok || !data?.ok || !data.result) {
-    throw new Error(data?.description || `Telegram sendMessage failed (${response.status}).`);
+    throw new TelegramDeliveryError(data?.description || `Telegram sendMessage failed (${response.status}).`);
   }
 
   return data.result;

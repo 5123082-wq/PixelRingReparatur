@@ -86,7 +86,10 @@ function buildFakePortalMessageDb() {
         };
       },
     },
+    $queryRaw: async () => [],
+    portalOperatorAlertState: { upsert: async () => ({ latestVersion: messages.length + 1 }) },
     case: {
+      findUniqueOrThrow: async () => ({ aiEnabled: true }),
       update: async ({ where }: any) => ({ id: where.id }),
     },
   };

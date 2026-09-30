@@ -1,4 +1,5 @@
 import 'server-only';
+import { lockCase } from '../portal-operator/state';
 
 import { CaseOriginChannel, MessageAuthorRole, type PrismaClient } from '@prisma/client';
 
@@ -42,6 +43,7 @@ export type RunAssistantTurnResult = {
   provider: 'openai' | 'fallback';
   model?: string;
   messageId: string | null;
+  outcome: 'answered' | 'handoff' | 'failed' | 'suppressed';
 };
 
 function mapHistoryRole(authorRole: MessageAuthorRole): ChatHistoryItem['role'] {
@@ -101,6 +103,12 @@ export async function runAssistantTurn(
   db: PrismaClient,
   input: RunAssistantTurnInput
 ): Promise<RunAssistantTurnResult | null> {
+  const control = input.requestBoundPortal ? await db.case.findUnique({
+    where: { id: input.caseId }, select: { aiEnabled: true, aiControlVersion: true },
+  }) : null;
+  if (input.requestBoundPortal && !control?.aiEnabled) {
+    return { text: '', actions: [], provider: 'fallback', messageId: null, outcome: 'suppressed' };
+  }
   const messages = await db.message.findMany({
     where: {
       caseId: input.caseId,
@@ -139,20 +147,19 @@ export async function runAssistantTurn(
     return null;
   }
 
-  const assistantMessage = await db.message.create({
-    data: {
-      caseId: input.caseId,
-      channel: input.channel,
-      authorRole: MessageAuthorRole.SYSTEM,
-      authorName: 'AI Assistant',
-      body: text,
-      isCustomerVisible: true,
-      sentAt: new Date(),
-    },
-    select: {
-      id: true,
-    },
-  });
+  const data = {
+    caseId: input.caseId, channel: input.channel, authorRole: MessageAuthorRole.SYSTEM,
+    authorName: 'AI Assistant', body: text, isCustomerVisible: true, sentAt: new Date(),
+  };
+  const assistantMessage = input.requestBoundPortal ? await db.$transaction(async (tx) => {
+    await lockCase(tx, input.caseId);
+    const current = await tx.case.findUnique({ where: { id: input.caseId }, select: { aiEnabled: true, aiControlVersion: true } });
+    if (!current?.aiEnabled || current.aiControlVersion !== control?.aiControlVersion) return null;
+    return tx.message.create({ data, select: { id: true } });
+  }) : await db.message.create({ data, select: { id: true } });
+  if (!assistantMessage) {
+    return { text: '', actions: [], provider: reply.provider, messageId: null, outcome: 'suppressed' };
+  }
 
   return {
     text,
@@ -166,5 +173,6 @@ export async function runAssistantTurn(
     provider: reply.provider,
     model: reply.model,
     messageId: assistantMessage.id,
+    outcome: reply.intent === 'human' ? 'handoff' : reply.technicalFailure ? 'failed' : 'answered',
   };
 }

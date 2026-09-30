@@ -4,6 +4,8 @@ import { attentionAccess } from '@/lib/portal-attention/service';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
+import { requireOperatorForMessage, type OperatorReason } from '@/lib/portal-operator/state';
+import { notifyPortalOperator } from '@/lib/portal-operator/notify';
 import { runAssistantTurn } from '@/lib/ai/assistant-orchestrator';
 import {
   getPortalSessionContext,
@@ -82,6 +84,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
   const { publicRequestNumber } = await params;
   const storedAttachments: StoredAttachmentInput[] = [];
+  let messagePersisted = false;
 
   try {
     const contentType = request.headers.get('content-type') || '';
@@ -135,6 +138,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       );
     }
 
+    messagePersisted = true;
     await publishCaseRealtimeEvent({
       caseId: result.caseId,
       reason: 'message.created',
@@ -143,6 +147,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     });
 
     let assistantMessage: ReturnType<typeof serializePortalAssistantMessage> | null = null;
+    let operatorReason: OperatorReason | null = attentionId ? 'human_requested' : result.aiEnabled ? null : 'ai_disabled';
 
     if (result.aiEnabled && !attentionId) {
       const latestCustomerMessage = storedAttachments.length > 0
@@ -161,6 +166,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           newRequestUrl: '/portal#new-request',
           capabilities: ['attachments'],
         });
+
+        operatorReason = !assistant || assistant.outcome === 'failed' ? 'ai_failed'
+          : assistant.outcome === 'handoff' ? 'human_requested'
+          : assistant.outcome === 'suppressed' ? 'ai_disabled' : null;
 
         if (assistant?.messageId) {
           const createdAssistantMessage = await prisma.message.findUnique({
@@ -199,8 +208,16 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           });
         }
       } catch (error) {
-        console.error('Portal assistant reply failed:', error);
+        operatorReason = 'ai_failed';
+        console.error('Portal assistant reply failed', { caseId: result.caseId, errorType: error instanceof Error ? error.name : 'unknown' });
       }
+    }
+
+    try {
+      if (operatorReason) await requireOperatorForMessage(prisma, result.caseId, result.message.id, operatorReason);
+      await notifyPortalOperator(result.caseId);
+    } catch {
+      console.error('Portal operator attention update failed', { caseId: result.caseId });
     }
 
     return NextResponse.json({
@@ -220,7 +237,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       assistantMessage,
     });
   } catch (error) {
-    await Promise.allSettled(storedAttachments.map((attachment) => deleteAttachment(attachment)));
+    if (!messagePersisted) await Promise.allSettled(storedAttachments.map((attachment) => deleteAttachment(attachment)));
 
     const message = error instanceof AttachmentValidationError
       ? error.message
