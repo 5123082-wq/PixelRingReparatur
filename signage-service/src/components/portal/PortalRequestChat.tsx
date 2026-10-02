@@ -211,10 +211,10 @@ export default function PortalRequestChat({
   const locale = useLocale();
   const copy = getPortalRequestDetailCopy(locale);
   const performanceCopy = getPerformanceCopy(locale);
-  const attention = usePortalAttention(accountKey);
   const attentionCopy = getAttentionCopy(locale);
   const searchParams = useSearchParams();
   const attentionId = searchParams.get('attention');
+  const attention = usePortalAttention(accountKey, 'actions', request.publicRequestNumber, attentionId);
   const [selectedAction, setSelectedAction] = useState<AttentionItem | null>(null);
   const [pendingEvidence, setPendingEvidence] = useState<{ id: string; messageId: string; attachmentId?: string } | null>(null);
   const [actionNotice, setActionNotice] = useState('');
@@ -256,10 +256,10 @@ export default function PortalRequestChat({
     const select = (event: Event) => { if (!isSending && !pendingEvidence) accept((event as CustomEvent<AttentionItem>).detail); };
     window.addEventListener('portal-attention-select', select);
     if (attentionId && canPostMessages) {
-      const item = attention.items?.find(row => row.id === attentionId); if (item && !isSending && !pendingEvidence) accept(item);
+      const item = attention.selectedItem || attention.items?.find(row => row.id === attentionId); if (item && !isSending && !pendingEvidence) accept(item);
     }
     return () => { window.removeEventListener('portal-attention-select', select); };
-  }, [attentionId, canPostMessages, locale, request.publicRequestNumber, isSending, pendingEvidence, attention.items]);
+  }, [attentionId, canPostMessages, locale, request.publicRequestNumber, isSending, pendingEvidence, attention.items, attention.selectedItem]);
 
   async function submitEvidence(evidence: { id: string; messageId: string; attachmentId?: string }) {
     try {

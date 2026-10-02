@@ -18,3 +18,8 @@ export type AdminAttentionItem = AttentionItem & {
 };
 export const ATTENTION_MODES: AttentionMode[] = ['ACKNOWLEDGE', 'REPLY', 'UPLOAD', 'NONE'];
 export const ATTENTION_LOCALES = ['de', 'en', 'ru', 'tr', 'pl', 'ar'];
+
+export const ATTENTION_PAGE_SIZE = 50;
+export const ATTENTION_FILTERS = ['all', 'actions', 'notifications', 'history', 'materials'] as const;
+export type AttentionFilter = typeof ATTENTION_FILTERS[number];
+export type AttentionSnapshot = { items: AttentionItem[]; unreadCount: number; openCount: number; nextCursor: string | null; selectedItem: AttentionItem | null };

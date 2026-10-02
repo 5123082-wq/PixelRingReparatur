@@ -1,5 +1,5 @@
 export type ResourceState<T> = { data: T; error: boolean };
-type Resource = { value: ResourceState<unknown>; listeners: Set<() => void>; load: () => Promise<unknown>; chat: boolean; last: number; pending?: Promise<void>; again: boolean };
+type Resource = { value: ResourceState<unknown>; listeners: Set<() => void>; load: () => Promise<unknown>; chat: boolean; last: number; pending?: Promise<void>; again: boolean; observed: boolean };
 // One registry per mounted, authenticated portal. No cache survives an account change.
 export class PortalSync {
   connected = false;
@@ -10,11 +10,23 @@ export class PortalSync {
   constructor(now = () => Date.now()) { this.now = now; }
   resource<T>(key: string, seed: T, load: () => Promise<T>, chat = false) {
     let row = this.resources.get(key);
-    if (!row) { row = { value: { data: seed, error: false }, listeners: new Set(), load, chat, last: this.now(), again: false }; this.resources.set(key, row); }
+    if (!row) { row = { value: { data: seed, error: false }, listeners: new Set(), load, chat, last: this.now(), again: false, observed: false }; this.resources.set(key, row); }
     row.load = load;
     return row;
   }
-  subscribe(key: string, listener: () => void) { const row = this.resources.get(key)!; row.listeners.add(listener); return () => { row.listeners.delete(listener); }; }
+  subscribe(key: string, listener: () => void) {
+    const row = this.resources.get(key)!;
+    const resuming = row.observed && row.listeners.size === 0;
+    row.listeners.add(listener); row.observed = true;
+    // A hidden/unmounted resource missed invalidations. Catch up on reopening,
+    // while the first server-seeded subscription keeps hydration free of reads.
+    if (resuming) {
+      if (row.pending) {
+        if (!row.again) { row.again = true; void row.pending.then(() => { row.again = false; if (row.listeners.size) return this.refresh(key); }); }
+      } else void this.refresh(key);
+    }
+    return () => { row.listeners.delete(listener); };
+  }
   snapshot<T>(key: string) { return this.resources.get(key)!.value as ResourceState<T>; }
   async refresh(key: string): Promise<void> {
     const row = this.resources.get(key); if (!row || !this.active) return;

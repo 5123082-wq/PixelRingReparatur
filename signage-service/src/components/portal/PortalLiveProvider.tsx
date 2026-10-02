@@ -3,10 +3,11 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, u
 import { useLocale } from 'next-intl';
 import Link, { clearPortalPrefetch } from './PortalLink';
 import { getAttentionCopy } from '@/lib/portal-attention/copy';
-import type { AttentionItem } from '@/lib/portal-attention/types';
+import type { AttentionSnapshot } from '@/lib/portal-attention/types';
 import * as Ably from 'ably';
 import { PortalSync, type ResourceState } from '@/lib/portal/sync';
-export type AttentionSeed = { items: AttentionItem[]; unreadCount: number; openCount: number };
+import { PortalRealtimeLifecycle } from '@/lib/portal/realtime-lifecycle';
+export type AttentionSeed = AttentionSnapshot;
 const SeedContext = createContext<AttentionSeed | undefined>(undefined);
 export function useAttentionSeed() { return useContext(SeedContext); }
 const Context = createContext<{ accountKey: string; sync: PortalSync; invalidate: () => void } | null>(null);
@@ -20,14 +21,17 @@ export default function PortalLiveProvider({ accountKey, attentionSeed, children
   useEffect(() => {
     if (!accountKey) return;
     clearPortalPrefetch();
-    let closed = false, everConnected = false, tokenPending = false, lastTokenAttempt = 0;
+    let closed = false, everConnected = false;
     let batch: ReturnType<typeof setTimeout> | undefined;
     let lastForeground = 0;
-    let realtime: Ably.Realtime | undefined;
     const refresh = () => { if (!closed && document.visibilityState === 'visible') void sync.refreshActive(true); };
     const invalidation = () => { if (!batch) batch = setTimeout(() => { batch = undefined; refresh(); }, 250); };
     const foreground = () => { if (document.visibilityState === 'visible' && Date.now() - lastForeground > 500) { lastForeground = Date.now(); refresh(); } };
-    const clear = () => { closed = true; realtime?.close(); clearPortalPrefetch(); setInvalid(true); sync.clear(); };
+    const connection = new PortalRealtimeLifecycle<Ably.Realtime>((ready) => {
+      const recovered = ready && !sync.connected; sync.connected = ready;
+      if (recovered) { if (everConnected) invalidation(); everConnected = true; }
+    });
+    const clear = () => { closed = true; connection.stop(); clearPortalPrefetch(); setInvalid(true); sync.clear(); };
     const signedToken = async () => {
       const response = await fetch('/api/portal/realtime-token', { method: 'POST', cache: 'no-store' });
       if (response.status === 401 || response.status === 403) clearPortalData();
@@ -37,29 +41,35 @@ export default function PortalLiveProvider({ accountKey, attentionSeed, children
       return data as { tokenRequest: Ably.TokenRequest; channel: string; portalUserId: string };
     };
     const connect = async () => {
-      if (tokenPending || realtime || closed) return;
-      tokenPending = true; lastTokenAttempt = Date.now();
+      if (closed || !connection.begin()) return;
       try {
         const first = await signedToken(); if (closed) return;
         let initialToken: Ably.TokenRequest | undefined = first.tokenRequest;
-        realtime = new Ably.Realtime({ autoConnect: false, authCallback: async (_params, done) => {
+        const client = new Ably.Realtime({ autoConnect: false, authCallback: async (_params, done) => {
           try {
             if (initialToken) { const token = initialToken; initialToken = undefined; done(null, token); return; }
             const next = await signedToken(); if (next.channel !== first.channel) { clearPortalData(); throw new Error('account_changed'); }
             done(null, next.tokenRequest);
           } catch { done('realtime_unavailable', null); }
         } });
-        realtime.connection.on('connected', () => { sync.connected = true; if (everConnected) invalidation(); everConnected = true; });
-        for (const state of ['disconnected', 'suspended', 'failed', 'closed'] as const) realtime.connection.on(state, () => { sync.connected = false; });
-        void realtime.channels.get(first.channel).subscribe('invalidate', invalidation).catch(() => undefined);
-        realtime.connect();
-      } catch { /* The common scheduler supplies the fallback. */ }
-      finally { tokenPending = false; }
+        if (!connection.install(client)) return;
+        client.connection.on('connected', () => connection.transportState(client, true));
+        for (const state of ['disconnected', 'suspended'] as const) client.connection.on(state, () => connection.transportState(client, false));
+        for (const state of ['failed', 'closed'] as const) client.connection.on(state, () => connection.retire(client));
+        const channel = client.channels.get(first.channel);
+        channel.on('attached', () => connection.channelState(client, true));
+        for (const state of ['detached', 'suspended'] as const) channel.on(state, () => connection.channelState(client, false));
+        channel.on('failed', () => connection.retire(client));
+        void channel.subscribe('invalidate', () => { if (connection.current(client)) invalidation(); })
+          .then(() => connection.channelState(client, true)).catch(() => connection.retire(client));
+        client.connect();
+      } catch { if (connection.client) connection.retire(connection.client); /* The common scheduler supplies the fallback. */ }
+      finally { connection.finish(); }
     };
     const timer = setInterval(() => {
       if (!closed && document.visibilityState === 'visible') {
         void sync.refreshActive();
-        if (!realtime && Date.now() - lastTokenAttempt >= 120_000) void connect();
+        void connect();
       }
     }, 10_000);
     window.addEventListener('portal-data-updated', invalidation);
@@ -68,7 +78,7 @@ export default function PortalLiveProvider({ accountKey, attentionSeed, children
     window.addEventListener('focus', foreground);
     document.addEventListener('visibilitychange', foreground);
     void connect();
-    return () => { closed = true; clearInterval(timer); clearTimeout(batch); realtime?.close();
+    return () => { closed = true; clearInterval(timer); clearTimeout(batch); connection.stop();
       window.removeEventListener('portal-data-updated', invalidation); window.removeEventListener('portal-attention-updated', invalidation); window.removeEventListener('portal-auth-cleared', clear);
       window.removeEventListener('focus', foreground); document.removeEventListener('visibilitychange', foreground); };
   }, [accountKey, sync]);

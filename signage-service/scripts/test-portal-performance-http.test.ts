@@ -148,3 +148,49 @@ test('twenty warmed reads per scenario produce repeatable p95 and response size 
     }
   }
 });
+
+test('large attention history is paged, counters stay complete and old direct links stay scoped', async () => {
+  const group = groups[2], record = group.cases[0], selected = randomUUID();
+  const rows = [
+    ...Array.from({ length: 60 }, (_, i) => ({ id: i === 0 ? selected : randomUUID(), caseId: record.id, portalUserId: group.user.id,
+      sourceKey: 'action-' + randomUUID(), sourceId: randomUUID(), kind: 'REQUEST' as const, mode: 'REPLY' as const, state: 'OPEN' as const,
+      title: 'OLD-OPEN-' + i, createdAt: new Date('2020-01-01') })),
+    ...Array.from({ length: 900 }, (_, i) => ({ id: randomUUID(), caseId: record.id, portalUserId: group.user.id,
+      sourceKey: 'history-' + randomUUID(), sourceId: randomUUID(), kind: 'REQUEST' as const, mode: 'ACKNOWLEDGE' as const, state: 'COMPLETED' as const,
+      title: 'HISTORY-BULK-' + i, readAt: new Date(), completedAt: new Date(), createdAt: new Date('2026-01-01') })),
+    ...Array.from({ length: 65 }, (_, i) => ({ id: randomUUID(), caseId: record.id, portalUserId: group.user.id,
+      sourceKey: 'material-' + randomUUID(), sourceId: randomUUID(), kind: 'REPORT' as const, mode: 'NONE' as const, state: 'OPEN' as const,
+      title: 'MATERIAL-BULK-' + i, createdAt: new Date('2026-02-01') })),
+  ];
+  await db.portalAttention.createMany({ data: rows });
+  const endpoint = '/api/portal/attention?locale=ru&publicRequestNumber=' + record.publicRequestNumber;
+  try {
+    const actions = await read(endpoint + '&filter=actions', group);
+    assert.equal(actions.response.status, 200); assert.equal(actions.data.items.length, 50);
+    assert.equal(actions.data.openCount, 60); assert.equal(actions.data.unreadCount, 125);
+    for (const [filter, total] of [['actions', 60], ['history', 900], ['materials', 65], ['notifications', 125]] as const) {
+      const ids = new Set<string>(); let cursor: string | null = null;
+      do {
+        const page = await read(endpoint + '&filter=' + filter + (cursor ? '&before=' + cursor : ''), group);
+        assert.equal(page.response.status, 200); assert(page.data.items.length <= 50);
+        for (const item of page.data.items) { assert(!ids.has(item.id)); ids.add(item.id); }
+        cursor = page.data.nextCursor;
+      } while (cursor);
+      assert.equal(ids.size, total);
+    }
+    const selectedItem = await read(endpoint + '&filter=materials&selected=' + selected, group);
+    assert.equal(selectedItem.data.selectedItem.id, selected); assert.equal(selectedItem.data.items.length, 50);
+    const foreign = await read('/api/portal/attention?selected=' + selected, groups[1]); assert.equal(foreign.data.selectedItem, null);
+    assert.equal((await read('/api/portal/attention?before=' + selected, groups[1])).response.status, 404);
+    assert.equal((await read(endpoint + '&filter=invalid', group)).response.status, 400);
+    assert.equal((await read(endpoint + '&before=invalid', group)).response.status, 400);
+    const rendered = await fetch(base + '/ru/portal', { headers: { cookie: group.cookie } }); const html = await rendered.text();
+    assert.equal(rendered.status, 200); assert(html.includes('OLD-OPEN-')); assert(!html.includes('HISTORY-BULK-')); assert(!html.includes('MATERIAL-BULK-'));
+    await db.portalCaseAccess.update({ where: { portalUserId_caseId: { portalUserId: group.user.id, caseId: record.id } }, data: { revokedAt: new Date() } });
+    const revoked = await read(endpoint + '&selected=' + selected, group);
+    assert.equal(revoked.data.items.length, 0); assert.equal(revoked.data.selectedItem, null); assert.equal(revoked.data.openCount, 0);
+  } finally {
+    await db.portalCaseAccess.update({ where: { portalUserId_caseId: { portalUserId: group.user.id, caseId: record.id } }, data: { revokedAt: null } });
+    await db.portalAttention.deleteMany({ where: { id: { in: rows.map(row => row.id) } } });
+  }
+});

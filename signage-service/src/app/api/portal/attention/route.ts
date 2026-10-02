@@ -1,13 +1,16 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { attentionSession, attentionJson, listAttention } from '@/lib/portal-attention/service';
-import { ATTENTION_LOCALES } from '@/lib/portal-attention/types';
+import { ATTENTION_FILTERS, ATTENTION_LOCALES, type AttentionFilter } from '@/lib/portal-attention/types';
 import { documentFailure } from '@/lib/case-documents/service';
-import { DocumentError } from '@/lib/case-documents/types';
+import { DOCUMENT_ID, DocumentError } from '@/lib/case-documents/types';
 import { validatePortalMutationRequest } from '@/lib/portal/mutation-guard';
 export async function GET(request: NextRequest) {
   try { const session = await attentionSession(request);
-    return attentionJson({ ...(await listAttention(session.portalUserId, request.nextUrl.searchParams.get('locale') || 'de', request.nextUrl.searchParams.get('publicRequestNumber'))), portalUserId: session.portalUserId });
+    const query = request.nextUrl.searchParams;
+    const filter = query.get('filter') || 'all', before = query.get('before'), selected = query.get('selected');
+    if (!ATTENTION_FILTERS.includes(filter as AttentionFilter) || (before && !DOCUMENT_ID.test(before)) || (selected && !DOCUMENT_ID.test(selected))) throw new DocumentError('invalid_input');
+    return attentionJson({ ...(await listAttention(session.portalUserId, query.get('locale') || 'de', query.get('publicRequestNumber'), { filter: filter as AttentionFilter, before, selected })), portalUserId: session.portalUserId });
   } catch (error) { return documentFailure(error); }
 }
 export async function POST(request: NextRequest) {

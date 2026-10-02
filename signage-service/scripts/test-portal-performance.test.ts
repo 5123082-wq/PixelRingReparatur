@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { PortalRealtimeLifecycle } from '../src/lib/portal/realtime-lifecycle.ts';
 import { PortalSync } from '../src/lib/portal/sync.ts';
 import { savedMessageStream, readMessageEvents, mergeChatMessages, historyCursorAfterUpdate, type MessageResult } from '../src/lib/portal/message-stream.ts';
 import { portalChannel, portalTokenOptions } from '../src/lib/portal/realtime-policy.ts';
@@ -71,4 +72,45 @@ test('foreground resync retains a cursor into a missing history window', () => {
   assert.equal(historyCursorAfterUpdate(['old-1', 'old-2'], ['new-100', 'new-101'], 'older-cursor', 'gap-cursor'), 'gap-cursor');
   assert.equal(historyCursorAfterUpdate(['new-100', 'new-101'], ['new-101', 'new-102'], 'gap-cursor', 'new-101'), 'gap-cursor');
   assert.equal(historyCursorAfterUpdate([], ['first'], null, null), null);
+});
+
+test('reopening a resource catches up once while initial hydration performs no read', async () => {
+  const sync = new PortalSync(); let reads = 0; const gate = deferred<string>();
+  sync.resource('detail', 'old', async () => { reads++; return gate.promise; });
+  const stop = sync.subscribe('detail', () => {}); assert.equal(reads, 0); stop();
+  await sync.refreshActive(true); assert.equal(reads, 0);
+  sync.subscribe('detail', () => {}); sync.subscribe('detail', () => {});
+  assert.equal(reads, 1); gate.resolve('fresh'); await sync.refresh('detail');
+  assert.equal(reads, 1); assert.equal(sync.snapshot('detail').data, 'fresh');
+});
+test('reopening during an old in-flight read schedules one fresh follow-up', async () => {
+  const sync = new PortalSync(); let reads = 0; const gate = deferred<string>();
+  sync.resource('detail', 'seed', async () => ++reads === 1 ? gate.promise : 'fresh');
+  const stop = sync.subscribe('detail', () => {}); const pending = sync.refresh('detail'); stop();
+  sync.subscribe('detail', () => {}); sync.subscribe('detail', () => {}); gate.resolve('old');
+  await pending; await new Promise(resolve => setTimeout(resolve, 0));
+  assert.equal(reads, 2); assert.equal(sync.snapshot('detail').data, 'fresh');
+});
+
+test('a terminal token failure is replaced after backoff and the new subscribed client recovers', () => {
+  let now = 0, ready = false, closes = 0;
+  const lifecycle = new PortalRealtimeLifecycle<{ close(): void }>(value => { ready = value; }, () => now);
+  const first = { close: () => { closes++; } }, replacement = { close: () => { closes++; } };
+  assert(lifecycle.begin()); assert(!lifecycle.begin()); lifecycle.install(first); lifecycle.finish();
+  lifecycle.transportState(first, true); assert.equal(ready, false); // transport alone is insufficient
+  lifecycle.channelState(first, true); assert.equal(ready, true);
+  lifecycle.retire(first); assert.equal(ready, false); assert.equal(closes, 1);
+  assert(!lifecycle.begin()); now = 10_000; assert(lifecycle.begin()); lifecycle.install(replacement); lifecycle.finish();
+  lifecycle.transportState(replacement, true); lifecycle.channelState(replacement, true); assert.equal(ready, true);
+  lifecycle.retire(first); lifecycle.transportState(first, false); assert.equal(ready, true); assert.equal(lifecycle.client, replacement);
+  lifecycle.channelState(replacement, false); assert.equal(ready, false);
+  lifecycle.stop(); assert.equal(closes, 2); assert(!lifecycle.begin());
+});
+test('failed signing backs off to two minutes and a stopped account closes late clients', () => {
+  let now = 0, closes = 0; const lifecycle = new PortalRealtimeLifecycle(() => {}, () => now);
+  for (const delay of [10_000, 20_000, 40_000, 80_000, 120_000, 120_000]) {
+    assert(lifecycle.begin()); lifecycle.finish(); assert(!lifecycle.begin()); now += delay - 1; assert(!lifecycle.begin()); now++;
+  }
+  assert(lifecycle.begin()); lifecycle.stop(); assert(!lifecycle.install({ close: () => { closes++; } })); lifecycle.finish();
+  assert.equal(closes, 1); assert.equal(lifecycle.client, undefined);
 });

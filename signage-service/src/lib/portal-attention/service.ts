@@ -9,7 +9,7 @@ import { getPortalSessionContext, PORTAL_SESSION_COOKIE_NAME } from '@/lib/porta
 import { DocumentError, DOCUMENT_ID } from '@/lib/case-documents/types';
 import { createAdminAuditLog, type AdminRequestActor } from '@/lib/admin-audit';
 import { checkRateLimit } from '@/lib/rate-limit';
-import { ATTENTION_IMAGE_MIME_TYPES, type AttentionEvidence, ATTENTION_LOCALES, ATTENTION_MODES, type AttentionItem, type AttentionKind, type AttentionMode } from './types';
+import { ATTENTION_PAGE_SIZE, type AttentionFilter, type AttentionSnapshot, ATTENTION_IMAGE_MIME_TYPES, type AttentionEvidence, ATTENTION_LOCALES, ATTENTION_MODES, type AttentionItem, type AttentionKind, type AttentionMode } from './types';
 
 export function attentionOptions(input: unknown) {
   const value = (input && typeof input === 'object' ? input : {}) as Record<string, unknown>;
@@ -69,11 +69,28 @@ export async function attentionSession(request: NextRequest, mutation = false) {
 export function attentionAccess(portalUserId: string): Prisma.PortalAttentionWhereInput {
   return { portalUserId, portalUser: { status: 'ACTIVE' }, case: { portalCaseAccesses: { some: { portalUserId, revokedAt: null } } } };
 }
-export async function listAttention(portalUserId: string, locale: string, publicRequestNumber?: string | null) {
+export async function listAttention(portalUserId: string, locale: string, publicRequestNumber?: string | null,
+  options: { filter?: AttentionFilter; before?: string | null; selected?: string | null } = {}): Promise<AttentionSnapshot> {
   const where: Prisma.PortalAttentionWhereInput = { ...attentionAccess(portalUserId), ...(publicRequestNumber ? { case: { publicRequestNumber, portalCaseAccesses: { some: { portalUserId, revokedAt: null } } } } : {}) };
-  const rows = await prisma.portalAttention.findMany({ where, include: { case: { select: { publicRequestNumber: true } } }, orderBy: { createdAt: 'desc' } });
-  return { items: rows.map(row => attentionView(row, locale)), unreadCount: rows.filter(row => !row.readAt && row.state !== 'CANCELLED').length,
-    openCount: rows.filter(row => row.mode !== 'NONE' && ['OPEN', 'SUBMITTED'].includes(row.state)).length };
+  const actions: Prisma.PortalAttentionWhereInput = { mode: { not: 'NONE' }, state: { in: ['OPEN', 'SUBMITTED'] } };
+  const notifications: Prisma.PortalAttentionWhereInput = { readAt: null, state: { not: 'CANCELLED' } };
+  const filters: Record<AttentionFilter, Prisma.PortalAttentionWhereInput> = { all: {}, actions, notifications,
+    history: { mode: { not: 'NONE' }, state: { in: ['COMPLETED', 'CANCELLED'] } }, materials: { kind: { in: ['DOCUMENT', 'REPORT'] } } };
+  // Resolve the boundary inside the current grants, so a foreign id cannot expose data.
+  const cursor = options.before ? await prisma.portalAttention.findFirst({ where: { AND: [where, { id: options.before }] }, select: { id: true, createdAt: true } }) : null;
+  if (options.before && !cursor) throw new DocumentError('not_found', 404);
+  const include = { case: { select: { publicRequestNumber: true } } } as const;
+  const [rows, unreadCount, openCount, selected] = await Promise.all([
+    prisma.portalAttention.findMany({ where: { AND: [where, filters[options.filter || 'all'], ...(cursor ? [{ OR: [
+      { createdAt: { lt: cursor.createdAt } }, { createdAt: cursor.createdAt, id: { lt: cursor.id } },
+    ] }] : [])] }, include, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], take: ATTENTION_PAGE_SIZE + 1 }),
+    prisma.portalAttention.count({ where: { AND: [where, notifications] } }),
+    prisma.portalAttention.count({ where: { AND: [where, actions] } }),
+    options.selected ? prisma.portalAttention.findFirst({ where: { AND: [where, { id: options.selected }] }, include }) : null,
+  ]);
+  const page = rows.slice(0, ATTENTION_PAGE_SIZE);
+  return { items: page.map(row => attentionView(row, locale)), unreadCount, openCount,
+    nextCursor: rows.length > ATTENTION_PAGE_SIZE ? page.at(-1)!.id : null, selectedItem: selected ? attentionView(selected, locale) : null };
 }
 export async function attentionEvidence(tx: Pick<Prisma.TransactionClient, 'message' | 'attachment'>, row: PortalAttention): Promise<AttentionEvidence | null> {
   if (!row.evidenceId) return null;

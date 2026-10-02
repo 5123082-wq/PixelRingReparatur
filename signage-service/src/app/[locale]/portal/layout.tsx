@@ -22,7 +22,7 @@ export default async function PortalLayout({
   modal: ReactNode;
 }) {
   const session = await getCachedPortalSessionContext(prisma, (await cookies()).get(PORTAL_SESSION_COOKIE_NAME)?.value);
-  const attentionSeed = session ? await listAttention(session.portalUserId, await getLocale()) : undefined;
+  const attentionSeed = session ? await listAttention(session.portalUserId, await getLocale(), undefined, { filter: 'actions' }) : undefined;
   return (
     <PortalLiveProvider key={session?.portalUserId || 'anonymous'} accountKey={session?.portalUserId} attentionSeed={attentionSeed}>
       {children}

@@ -2,19 +2,30 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocale } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
+import { getPerformanceCopy } from '@/lib/portal/performance-copy';
 import { clearPortalData, portalMutationFetch, portalFetch, useAttentionSeed, usePortalResource } from './PortalLiveProvider';
 import Link from './PortalLink';
 import { getAttentionCopy } from '@/lib/portal-attention/copy';
 import { getDocumentCopy } from '@/lib/case-documents/copy';
-import type { AttentionItem } from '@/lib/portal-attention/types';
+import type { AttentionItem, AttentionFilter, AttentionSnapshot } from '@/lib/portal-attention/types';
 
-type Snapshot = { items: AttentionItem[] | null; unreadCount: number; openCount: number };
-const initial: Snapshot = { items: null, unreadCount: 0, openCount: 0 };
-export function usePortalAttention(accountKey: string) {
+type Snapshot = Omit<AttentionSnapshot, 'items'> & { items: AttentionItem[] | null };
+const initial: Snapshot = { items: null, unreadCount: 0, openCount: 0, nextCursor: null, selectedItem: null };
+export function usePortalAttention(accountKey: string, filter: AttentionFilter = 'actions', publicRequestNumber?: string, selected?: string | null, before?: string | null) {
   const locale = useLocale();
   const seed = useAttentionSeed();
-  const load = useCallback(() => portalFetch<Snapshot>('/api/portal/attention?locale=' + encodeURIComponent(locale), accountKey), [locale, accountKey]);
-  const resource = usePortalResource('attention:' + locale, seed || initial, load);
+  const query = new URLSearchParams({ locale, filter });
+  if (publicRequestNumber) query.set('publicRequestNumber', publicRequestNumber);
+  if (selected) query.set('selected', selected);
+  if (before) query.set('before', before);
+  const url = '/api/portal/attention?' + query;
+  const load = useCallback(() => portalFetch<Snapshot>(url, accountKey), [url, accountKey]);
+  const seeded = filter === 'actions' && !publicRequestNumber && !selected && !before;
+  const resource = usePortalResource('attention:' + query, (seeded && seed) || initial, load);
+  // Lazy pages have no server seed; the shared registry still deduplicates consumers.
+  const loadedItems = resource.data?.items, reload = resource.reload;
+  useEffect(() => { if (!loadedItems) void reload(); }, [loadedItems, reload]);
   return { ...(resource.data || initial), error: resource.error, reload: resource.reload };
 }
 export function clearPortalAttention() { clearPortalData(); }
@@ -33,30 +44,32 @@ export default function PortalAttention({ accountKey, publicRequestNumber, showO
   const locale = useLocale();
   const copy = getAttentionCopy(locale);
   const documentCopy = getDocumentCopy(locale);
-  const data = usePortalAttention(accountKey);
-  const [filter, setFilter] = useState<'actions' | 'notifications' | 'history' | 'materials'>('actions');
+  const [filter, setFilter] = useState<Exclude<AttentionFilter, 'all'>>('actions');
+  const [cursors, setCursors] = useState<(string | null)[]>([null]);
+  const selected = useSearchParams().get('attention');
+  const data = usePortalAttention(accountKey, filter, publicRequestNumber, showOverview ? null : selected, cursors.at(-1));
+  const performanceCopy = getPerformanceCopy(locale);
+  function selectFilter(next: Exclude<AttentionFilter, 'all'>) { setFilter(next); setCursors([null]); }
   const [pending, setPending] = useState<string | null>(null);
   const [mutationError, setMutationError] = useState(false);
   const focusedAttention = useRef<string | null>(null);
-  const items = (data.items || []).filter((item) => !publicRequestNumber || item.publicRequestNumber === publicRequestNumber);
-  const actions = items.filter((item) => item.mode !== 'NONE' && ['OPEN', 'SUBMITTED'].includes(item.state));
-  const notifications = items.filter((item) => !item.readAt && item.state !== 'CANCELLED');
-  const history = items.filter((item) => item.mode !== 'NONE' && ['COMPLETED', 'CANCELLED'].includes(item.state));
-  const materials = items.filter((item) => item.kind === 'DOCUMENT' || item.kind === 'REPORT');
-  const visible = { actions, notifications, history, materials }[filter];
+  const selectedItem = data.selectedItem;
+  const selectedFilter = selectedItem ? (selectedItem.state === 'COMPLETED' || selectedItem.state === 'CANCELLED') && selectedItem.mode !== 'NONE' ? 'history'
+    : selectedItem.mode !== 'NONE' && ['OPEN', 'SUBMITTED'].includes(selectedItem.state) ? 'actions'
+    : selectedItem.kind === 'DOCUMENT' || selectedItem.kind === 'REPORT' ? 'materials' : 'notifications' : null;
+  const visible = [...(data.items || [])];
+  if (selectedItem && selectedFilter === filter && !visible.some(row => row.id === selectedItem.id)) visible.unshift(selectedItem);
   const empty = { actions: copy.emptyActions, notifications: copy.emptyNotifications, history: copy.emptyHistory, materials: copy.emptyMaterials }[filter];
   useEffect(() => {
     if (!data.items) return;
     if (showOverview) return;
-    const selected = new URLSearchParams(window.location.search).get('attention');
     if (!selected || focusedAttention.current === selected) return;
-    const item = data.items.find((row) => row.id === selected);
+    const item = data.selectedItem || data.items.find((row) => row.id === selected);
     if (!item || (publicRequestNumber && item.publicRequestNumber !== publicRequestNumber)) return;
+    if (selectedFilter && filter !== selectedFilter) { setFilter(selectedFilter); setCursors([null]); return; }
     focusedAttention.current = selected;
-    if (item.state === 'COMPLETED' || item.state === 'CANCELLED') setFilter('history');
-    else if (item.mode === 'NONE') setFilter(item.kind === 'DOCUMENT' || item.kind === 'REPORT' ? 'materials' : 'notifications');
     if (!window.location.hash || window.location.hash.startsWith('#attention-')) requestAnimationFrame(() => document.getElementById('attention-' + selected)?.scrollIntoView({ block: 'nearest' }));
-  }, [data.items, publicRequestNumber, showOverview]);
+  }, [data.items, data.selectedItem, publicRequestNumber, showOverview, selected, selectedFilter, filter]);
   async function mutate(item: AttentionItem, action: 'read' | 'acknowledge') {
     setPending(item.id); setMutationError(false);
     try {
@@ -73,12 +86,12 @@ export default function PortalAttention({ accountKey, publicRequestNumber, showO
   }
   return <section id={publicRequestNumber ? 'request-actions' : 'portal-attention'} dir={locale === 'ar' ? 'rtl' : undefined} className="min-w-0 space-y-4">
     {showOverview && <div className="grid gap-3 sm:grid-cols-3">
-      {([{ key: 'actions', count: data.items ? data.openCount : '—', label: copy.actions }, { key: 'notifications', count: data.items ? data.unreadCount : '—', label: copy.notifications }] as const).map((metric) => <button key={metric.key} onClick={() => setFilter(metric.key)} className="rounded-2xl border border-[#DCE3EA] bg-white p-5 text-start shadow-sm hover:border-[#B8643E]"><strong className="block text-3xl text-[#172033]">{metric.count}</strong><span className="mt-2 block text-sm font-semibold text-[#667085]">{metric.label}</span></button>)}
+      {([{ key: 'actions', count: data.items ? data.openCount : '—', label: copy.actions }, { key: 'notifications', count: data.items ? data.unreadCount : '—', label: copy.notifications }] as const).map((metric) => <button key={metric.key} onClick={() => selectFilter(metric.key)} className="rounded-2xl border border-[#DCE3EA] bg-white p-5 text-start shadow-sm hover:border-[#B8643E]"><strong className="block text-3xl text-[#172033]">{metric.count}</strong><span className="mt-2 block text-sm font-semibold text-[#667085]">{metric.label}</span></button>)}
       <button type="button" onClick={onShowActiveRequests} className="rounded-2xl border border-[#DCE3EA] bg-white p-5 text-start shadow-sm hover:border-[#B8643E]"><strong className="block text-3xl text-[#172033]">{activeRequests}</strong><span className="mt-2 block text-sm font-semibold text-[#667085]">{copy.activeRequests}</span></button>
     </div>}
     <div className="min-w-0 rounded-2xl border border-[#DCE3EA] bg-white p-4 shadow-sm sm:p-5">
       <div className="flex flex-wrap gap-2" role="group" aria-label={copy.actions}>
-        {(['actions', 'notifications', 'materials', 'history'] as const).map((key) => <button type="button" key={key} aria-pressed={filter === key} onClick={() => setFilter(key)} className={'min-h-11 rounded-xl px-3 py-2 text-sm font-semibold ' + (filter === key ? 'bg-[#172033] text-white' : 'bg-[#F3F6FA] text-[#475467] hover:bg-[#E8EDF2]')}>{copy[key]}{key === 'actions' || key === 'notifications' ? ` · ${data.items ? (key === 'actions' ? actions.length : notifications.length) : '—'}` : ''}</button>)}
+        {(['actions', 'notifications', 'materials', 'history'] as const).map((key) => <button type="button" key={key} aria-pressed={filter === key} onClick={() => selectFilter(key)} className={'min-h-11 rounded-xl px-3 py-2 text-sm font-semibold ' + (filter === key ? 'bg-[#172033] text-white' : 'bg-[#F3F6FA] text-[#475467] hover:bg-[#E8EDF2]')}>{copy[key]}{key === 'actions' || key === 'notifications' ? ` · ${data.items ? (key === 'actions' ? data.openCount : data.unreadCount) : '—'}` : ''}</button>)}
       </div>
       <h2 className="mt-5 text-lg font-bold text-[#172033]">{copy[filter]}</h2>
       {(data.error || mutationError) && <div role="alert" className="mt-3 rounded-xl bg-red-50 p-3 text-sm text-red-800">{copy.error}<button type="button" className="ms-2 underline" onClick={() => { setMutationError(false); void data.reload(); }}>{copy.retry}</button></div>}
@@ -99,6 +112,10 @@ export default function PortalAttention({ accountKey, publicRequestNumber, showO
         </div>
         {item.mode === 'ACKNOWLEDGE' && item.state === 'OPEN' && <p className="mt-2 text-xs leading-5 text-[#667085]">{copy.acknowledgeHint}</p>}
       </article>)}</div>
+      {(cursors.length > 1 || data.nextCursor) && <nav aria-label={copy[filter]} className="mt-4 flex flex-wrap gap-2">
+        <button type="button" className={buttonClass} disabled={cursors.length === 1} onClick={() => setCursors(current => current.slice(0, -1))}>{performanceCopy.previous}</button>
+        <button type="button" className={buttonClass} disabled={!data.nextCursor} onClick={() => { if (data.nextCursor) setCursors(current => [...current, data.nextCursor]); }}>{performanceCopy.next}</button>
+      </nav>}
     </div>
   </section>;
 }
