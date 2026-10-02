@@ -487,6 +487,7 @@ export async function createPortalMessageForRequest(
     body: unknown;
     attachments?: StoredAttachmentInput[];
     attentionId?: string;
+    messageId?: string;
   }
 ): Promise<PortalMessageResult> {
   const body = normalizePortalMessageBody(input.body);
@@ -521,6 +522,7 @@ export async function createPortalMessageForRequest(
     const now = new Date();
     const message = await tx.message.create({
       data: {
+        ...(input.messageId ? { id: input.messageId } : {}),
         caseId: caseRecord.id,
         sessionId: input.portalSessionId,
         channel: CaseOriginChannel.WEBSITE_CHAT,

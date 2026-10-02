@@ -114,14 +114,15 @@ export async function runAssistantTurn(
       caseId: input.caseId,
       isCustomerVisible: true,
     },
-    orderBy: { createdAt: 'asc' },
+    orderBy: { createdAt: input.requestBoundPortal ? 'desc' : 'asc' },
+    ...(input.requestBoundPortal ? { take: 101 } : {}),
     select: {
       id: true,
       authorRole: true,
       body: true,
     },
   });
-  const history = messages
+  const history = (input.requestBoundPortal ? messages.reverse() : messages)
     .filter((message) => message.id !== input.latestMessageId)
     .map((message): ChatHistoryItem => ({
       role: mapHistoryRole(message.authorRole),

@@ -1,7 +1,11 @@
 'use client';
 
+import { readMessageEvents, mergeChatMessages, historyCursorAfterUpdate, type MessageEvent } from '@/lib/portal/message-stream';
+import { getPerformanceCopy } from '@/lib/portal/performance-copy';
+import { portalFetch, usePortalResource, invalidatePortal, portalMutationFetch } from './PortalLiveProvider';
+import { usePortalAttention } from './PortalAttention';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Link, useRouter } from '@/i18n/routing';
+import { Link } from '@/i18n/routing';
 import { useLocale } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import type { AttentionItem } from '@/lib/portal-attention/types';
@@ -196,53 +200,72 @@ export default function PortalRequestChat({
   messages,
   canPostMessages,
   presentation = 'page',
+  accountKey, messageBefore = null,
 }: {
   request: PortalRequest;
+  accountKey: string; messageBefore?: string | null;
   messages: PortalDemoOrganization['messages'];
   canPostMessages: boolean;
   presentation?: PortalRequestDetailPresentation;
 }) {
   const locale = useLocale();
   const copy = getPortalRequestDetailCopy(locale);
-  const router = useRouter();
+  const performanceCopy = getPerformanceCopy(locale);
   const attentionCopy = getAttentionCopy(locale);
   const searchParams = useSearchParams();
   const attentionId = searchParams.get('attention');
+  const attention = usePortalAttention(accountKey, 'actions', request.publicRequestNumber, attentionId);
   const [selectedAction, setSelectedAction] = useState<AttentionItem | null>(null);
   const [pendingEvidence, setPendingEvidence] = useState<{ id: string; messageId: string; attachmentId?: string } | null>(null);
   const [actionNotice, setActionNotice] = useState('');
+  const answeredActions = useRef(new Set<string>());
+  const retryRequest = useRef<{ key: string; id: string } | null>(null);
   const [chatMessages, setChatMessages] = useState<PortalChatMessage[]>(() => mapInitialMessages(messages));
   const [inputText, setInputText] = useState('');
   const [pendingFiles, setPendingFiles] = useState<AttachmentPreview[]>([]);
   const [isSending, setIsSending] = useState(false);
+  const [awaitingAssistant, setAwaitingAssistant] = useState(false);
+  const [earlier, setEarlier] = useState(messageBefore);
+  const lastWindow = useRef(messages.map(row => row.id));
+  const [loadingEarlier, setLoadingEarlier] = useState(false);
+  const nearBottom = useRef(true);
+  const previews = useRef<AttachmentPreview[]>([]);
+  const mounted = useRef(true);
+  const endpoint = '/api/portal/requests/' + encodeURIComponent(request.publicRequestNumber) + '/messages';
+  const loader = useCallback(() => portalFetch<{ messages: PortalChatMessage[]; before: string | null }>(endpoint, accountKey), [endpoint, accountKey]);
+  const history = usePortalResource('chat:' + request.publicRequestNumber, { messages: mapInitialMessages(messages), before: messageBefore }, loader, true);
   const [errorMessage, setErrorMessage] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    setChatMessages(mapInitialMessages(messages));
-  }, [messages]);
+  const mergeWindow = useCallback((incoming: PortalChatMessage[], before: string | null) => {
+    const previous = lastWindow.current; const next = incoming.map(row => row.id);
+    setEarlier(current => historyCursorAfterUpdate(previous, next, current, before));
+    lastWindow.current = next;
+    setChatMessages(current => mergeChatMessages(current, incoming));
+  }, []);
+  useEffect(() => { mergeWindow(mapInitialMessages(messages), messageBefore); }, [messages, messageBefore, mergeWindow]);
+  useEffect(() => { if (history.data) mergeWindow(history.data.messages, history.data.before); }, [history.data, mergeWindow]);
 
   useEffect(() => {
-    let active = true;
     const accept = (item: AttentionItem) => {
-      if (item.publicRequestNumber === request.publicRequestNumber && item.state === 'OPEN' && ['REPLY', 'UPLOAD'].includes(item.mode)) {
+      if (!answeredActions.current.has(item.id) && item.publicRequestNumber === request.publicRequestNumber && item.state === 'OPEN' && ['REPLY', 'UPLOAD'].includes(item.mode)) {
         setSelectedAction(item); setActionNotice('');
       }
     };
     const select = (event: Event) => { if (!isSending && !pendingEvidence) accept((event as CustomEvent<AttentionItem>).detail); };
     window.addEventListener('portal-attention-select', select);
     if (attentionId && canPostMessages) {
-      void fetch('/api/portal/attention?locale=' + encodeURIComponent(locale) + '&publicRequestNumber=' + encodeURIComponent(request.publicRequestNumber), { cache: 'no-store' })
-        .then(async (response) => { if (!response.ok) return; const data = await response.json(); const item = data.items.find((row: AttentionItem) => row.id === attentionId); if (active && item) accept(item); }).catch(() => undefined);
+      const item = attention.selectedItem || attention.items?.find(row => row.id === attentionId); if (item && !isSending && !pendingEvidence) accept(item);
     }
-    return () => { active = false; window.removeEventListener('portal-attention-select', select); };
-  }, [attentionId, canPostMessages, locale, request.publicRequestNumber, isSending, pendingEvidence]);
+    return () => { window.removeEventListener('portal-attention-select', select); };
+  }, [attentionId, canPostMessages, locale, request.publicRequestNumber, isSending, pendingEvidence, attention.items, attention.selectedItem]);
 
   async function submitEvidence(evidence: { id: string; messageId: string; attachmentId?: string }) {
     try {
-      const response = await fetch('/api/portal/attention/' + evidence.id, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'submit', messageId: evidence.messageId, attachmentId: evidence.attachmentId }) });
+      const response = await portalMutationFetch('/api/portal/attention/' + evidence.id, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'submit', messageId: evidence.messageId, attachmentId: evidence.attachmentId }) });
       if (!response.ok) throw new Error();
+      answeredActions.current.add(evidence.id);
       setPendingEvidence(null); setSelectedAction(null); setActionNotice(attentionCopy.responseSaved);
       window.dispatchEvent(new Event('portal-attention-updated'));
     } catch {
@@ -267,16 +290,20 @@ export default function PortalRequestChat({
   }, [scrollToBottom]);
 
   useEffect(() => {
-    return scheduleScrollToBottom();
+    if (nearBottom.current) return scheduleScrollToBottom();
   }, [chatMessages, isSending, scheduleScrollToBottom]);
 
-  useEffect(() => {
-    return () => {
-      pendingFiles.forEach((file) => {
-        if (file.previewUrl) URL.revokeObjectURL(file.previewUrl);
-      });
-    };
-  }, [pendingFiles]);
+  useEffect(() => { previews.current = pendingFiles; }, [pendingFiles]);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; previews.current.forEach(file => { if (file.previewUrl) URL.revokeObjectURL(file.previewUrl); }); }; }, []);
+  async function loadEarlier() {
+    if (!earlier || loadingEarlier) return;
+    setLoadingEarlier(true);
+    const container = scrollRef.current; const height = container?.scrollHeight || 0; const top = container?.scrollTop || 0;
+    try { const data = await portalFetch<{ messages: PortalChatMessage[]; before: string | null }>(endpoint + '?before=' + encodeURIComponent(earlier), accountKey);
+      nearBottom.current = false; setChatMessages(current => mergeChatMessages(current, data.messages)); setEarlier(data.before);
+      requestAnimationFrame(() => { if (container) container.scrollTop = top + container.scrollHeight - height; });
+    } catch { setErrorMessage(copy.chat.unavailable); } finally { setLoadingEarlier(false); }
+  }
 
   function handleFiles(fileList: FileList | null) {
     if (!fileList) return;
@@ -302,7 +329,7 @@ export default function PortalRequestChat({
 
   async function handleSend() {
     const messageToSubmit = inputText.trim();
-    if ((!messageToSubmit && pendingFiles.length === 0) || isSending || !canPostMessages) return;
+    if ((!messageToSubmit && pendingFiles.length === 0) || isSending || awaitingAssistant || !canPostMessages) return;
 
     if (selectedAction?.mode === 'UPLOAD' && pendingFiles.length === 0) { setErrorMessage(attentionCopy.uploadRequired); return; }
     if (pendingEvidence) return;
@@ -322,78 +349,65 @@ export default function PortalRequestChat({
       })),
     };
 
+    nearBottom.current = true;
     setInputText('');
     setPendingFiles([]);
     setChatMessages((current) => [...current, optimistic]);
     setErrorMessage('');
     setIsSending(true);
 
+    const payloadKey = JSON.stringify([messageText, currentFiles.map(file => file.id), respondingAction?.id]);
+    const isRetry = retryRequest.current?.key === payloadKey;
+    const outgoingId = isRetry ? retryRequest.current!.id : crypto.randomUUID();
+    retryRequest.current = { key: payloadKey, id: outgoingId };
+    let saved = false;
+    let rejected = false;
     try {
       const formData = new FormData();
       formData.append('message', messageText);
+      formData.append('messageId', outgoingId);
+      if (isRetry) formData.append('retry', '1');
       if (respondingAction) formData.append('attentionId', respondingAction.id);
       currentFiles.forEach((file) => formData.append('files', file.file));
 
-      const response = await fetch(`/api/portal/requests/${encodeURIComponent(request.publicRequestNumber)}/messages`, {
+      const response = await portalMutationFetch(`/api/portal/requests/${encodeURIComponent(request.publicRequestNumber)}/messages`, {
         method: 'POST',
+        headers: { Accept: 'application/x-ndjson' },
         body: formData,
       });
 
-      const data = (await response.json().catch(() => null)) as {
-        success?: boolean;
-        message?: string | {
-          id: string;
-          body: string;
-          authorRole: ChatAuthorRole;
-          createdAt: string;
-          attachments?: PortalChatMessage['attachments'];
-        };
-        assistantMessage?: {
-          id: string;
-          body: string;
-          authorRole: ChatAuthorRole;
-          createdAt: string;
-          attachments?: PortalChatMessage['attachments'];
-        } | null;
-      } | null;
-
-      if (!response.ok || !data?.success) {
-        throw new Error(copy.chat.unavailable);
-      }
-
-      const assistantMessage = data.assistantMessage;
-
-      if (assistantMessage) {
-        setChatMessages((current) => [
-          ...current.filter((message) => message.id !== optimistic.id),
-          {
-            id: typeof data.message === 'object' ? data.message.id : optimistic.id,
-            authorRole: 'CUSTOMER',
-            body: typeof data.message === 'object' ? data.message.body : optimistic.body,
-            createdAt: typeof data.message === 'object' ? data.message.createdAt : optimistic.createdAt,
-            attachments: typeof data.message === 'object' ? data.message.attachments : optimistic.attachments,
-          },
-          {
-            id: assistantMessage.id,
-            authorRole: assistantMessage.authorRole,
-            body: assistantMessage.body,
-            createdAt: assistantMessage.createdAt,
-            attachments: assistantMessage.attachments,
-          },
-        ]);
-      }
-
-      if (respondingAction && typeof data.message === 'object') {
-        await submitEvidence({ id: respondingAction.id, messageId: data.message.id, attachmentId: data.message.attachments?.find(file => file.mimeType?.startsWith('image/'))?.id });
-      }
-      router.refresh();
+      if (!response.ok) { const failure = await response.json().catch(() => null); rejected = response.status < 500 || failure?.saved === false; throw new Error(copy.chat.unavailable); }
+      const accept = async (event: MessageEvent) => {
+        saved = true; retryRequest.current = null;
+        if (!mounted.current) return;
+        const message = event.result.message;
+        setChatMessages(current => mergeChatMessages(current.filter(row => row.id !== optimistic.id), [message, ...(event.result.assistantMessage ? [event.result.assistantMessage] : [])]));
+        setIsSending(false); setAwaitingAssistant(Boolean(event.result.assistantPending));
+        if (event.result.assistantFailed) setErrorMessage(copy.chat.unavailable);
+        if (event.type === 'saved') {
+          currentFiles.forEach(file => { if (file.previewUrl) URL.revokeObjectURL(file.previewUrl); });
+          if (respondingAction) await submitEvidence({ id: respondingAction.id, messageId: message.id, attachmentId: message.attachments?.find(file => file.mimeType?.startsWith('image/'))?.id });
+        }
+      };
+      if (response.headers.get('content-type')?.includes('application/x-ndjson')) await readMessageEvents(response, accept);
+      else { const data = await response.json(); if (!data?.success) { rejected = true; throw new Error(copy.chat.unavailable); } await accept({ type: 'saved', result: data }); }
+      invalidatePortal();
     } catch (error) {
-      setChatMessages((current) => current.filter((message) => message.id !== optimistic.id));
-      setInputText(messageToSubmit);
-      setPendingFiles(currentFiles);
-      setErrorMessage(error instanceof Error ? error.message : copy.chat.unavailable);
+      if (!saved && mounted.current) {
+        setChatMessages(current => current.filter(message => message.id !== optimistic.id));
+        setInputText(current => current || messageToSubmit); setPendingFiles(current => [...currentFiles, ...current]);
+        if (rejected) retryRequest.current = null;
+      }
+      if (rejected && !saved) setErrorMessage(error instanceof Error ? error.message : copy.chat.unavailable);
+      else {
+        // Reconcile without automatically resending. A manual retry keeps the UUID,
+        // so a committed message cannot be duplicated even when its ack was lost.
+        setErrorMessage(saved ? performanceCopy.saved + ' ' + copy.chat.unavailable : performanceCopy.uncertain);
+        await history.reload(); invalidatePortal();
+        if (saved) currentFiles.forEach(file => { if (file.previewUrl) URL.revokeObjectURL(file.previewUrl); });
+      }
     } finally {
-      setIsSending(false);
+      if (mounted.current) { setIsSending(false); setAwaitingAssistant(false); }
     }
   }
 
@@ -403,7 +417,8 @@ export default function PortalRequestChat({
     }`}>
       {selectedAction && <div className="shrink-0 border-b border-[#E5D1C2] bg-[#FFF8F2] p-3 text-sm text-[#27364A]"><p className="font-semibold">{attentionCopy.respondingTo}: {selectedAction.title}</p><button type="button" disabled={isSending || !!pendingEvidence} onClick={() => setSelectedAction(null)} className="mt-1 underline disabled:opacity-40">{attentionCopy.cancelReply}</button></div>}
       {actionNotice && <div role="status" className="shrink-0 bg-white p-3 text-sm text-[#27364A]">{actionNotice}{pendingEvidence && <button type="button" disabled={isSending} onClick={async () => { setIsSending(true); await submitEvidence(pendingEvidence); setIsSending(false); }} className="ms-3 underline disabled:opacity-40">{attentionCopy.retrySubmit}</button>}</div>}
-      <div ref={scrollRef} className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-4 sm:p-5">
+      <div ref={scrollRef} onScroll={() => { const row = scrollRef.current; if (row) nearBottom.current = row.scrollHeight - row.scrollTop - row.clientHeight < 100; }} className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-4 sm:p-5">
+        {earlier && <button type="button" disabled={loadingEarlier} onClick={() => void loadEarlier()} className="w-full rounded-xl border bg-white p-2 text-sm">{performanceCopy.earlier}</button>}
         {chatMessages.length === 0 && (
           <div className="rounded-[20px] border border-dashed border-black/10 bg-white/45 px-4 py-4 text-[13px] text-[#72665D]">
             {copy.chat.empty}
@@ -433,10 +448,10 @@ export default function PortalRequestChat({
           );
         })}
 
-        {isSending && (
+        {(isSending || awaitingAssistant) && (
           <div className="flex flex-col items-start animate-in fade-in duration-300">
             <div className="mb-1 text-[12px] font-medium tracking-[0.04em] text-[#72665D]">
-              {copy.chat.loading}
+              {awaitingAssistant ? performanceCopy.saved : copy.chat.loading}
             </div>
             <div className="flex gap-1 rounded-[20px] rounded-tl-[4px] border border-black/5 bg-white/40 px-4 py-3">
               <div className="h-1 w-1 animate-bounce rounded-full bg-[#B8643E] [animation-delay:-0.3s]" />
@@ -533,7 +548,7 @@ export default function PortalRequestChat({
 
           <button
             onClick={() => void handleSend()}
-            disabled={(!inputText.trim() && pendingFiles.length === 0) || !canPostMessages || isSending}
+            disabled={(!inputText.trim() && pendingFiles.length === 0) || !canPostMessages || isSending || awaitingAssistant}
             className="shrink-0 rounded-[18px] bg-[#0E1A2B] p-2.5 text-white shadow-lg transition-all hover:bg-[#1a2e47] active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
             type="button"
           >

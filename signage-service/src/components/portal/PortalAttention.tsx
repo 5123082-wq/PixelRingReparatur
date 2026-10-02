@@ -1,66 +1,42 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocale } from 'next-intl';
-import { Link } from '@/i18n/routing';
+import { useSearchParams } from 'next/navigation';
+import { getPerformanceCopy } from '@/lib/portal/performance-copy';
+import { clearPortalData, portalMutationFetch, portalFetch, useAttentionSeed, usePortalResource } from './PortalLiveProvider';
+import Link from './PortalLink';
 import { getAttentionCopy } from '@/lib/portal-attention/copy';
 import { getDocumentCopy } from '@/lib/case-documents/copy';
-import type { AttentionItem } from '@/lib/portal-attention/types';
+import type { AttentionItem, AttentionFilter, AttentionSnapshot } from '@/lib/portal-attention/types';
 
-type Snapshot = { items: AttentionItem[] | null; unreadCount: number; openCount: number; error: boolean };
-const initial: Snapshot = { items: null, unreadCount: 0, openCount: 0, error: false };
-const stores = new Map<string, { value: Snapshot; listeners: Set<() => void>; request: number }>();
-function storeFor(locale: string) {
-  if (!stores.has(locale)) stores.set(locale, { value: initial, listeners: new Set(), request: 0 });
-  return stores.get(locale)!;
-}
-async function refresh(locale: string, accountKey: string) {
-  const store = storeFor(accountKey + ':' + locale);
-  const sequence = ++store.request;
-  try {
-    const response = await fetch('/api/portal/attention?locale=' + encodeURIComponent(locale), { cache: 'no-store' });
-    if (!response.ok) {
-      if ((response.status === 401 || response.status === 403) && sequence === store.request) store.value = initial;
-      throw new Error();
-    }
-    const data = await response.json() as Omit<Snapshot, 'error'> & { portalUserId: string };
-    if (data.portalUserId !== accountKey) {
-      if (sequence === store.request) store.value = initial;
-      throw new Error();
-    }
-    if (sequence === store.request) store.value = { ...data, error: false };
-  } catch {
-    if (sequence === store.request) store.value = { ...store.value, error: true };
-  }
-  store.listeners.forEach((listener) => listener());
-}
-export function usePortalAttention(accountKey: string) {
+type Snapshot = Omit<AttentionSnapshot, 'items'> & { items: AttentionItem[] | null };
+const initial: Snapshot = { items: null, unreadCount: 0, openCount: 0, nextCursor: null, selectedItem: null };
+export function usePortalAttention(accountKey: string, filter: AttentionFilter = 'actions', publicRequestNumber?: string, selected?: string | null, before?: string | null) {
   const locale = useLocale();
-  const subscribe = useCallback((listener: () => void) => {
-    const store = storeFor(accountKey + ':' + locale);
-    store.listeners.add(listener);
-    return () => { store.listeners.delete(listener); if (store.listeners.size === 0) { store.value = initial; store.request++; } };
-  }, [locale, accountKey]);
-  const snapshot = useSyncExternalStore(subscribe, () => storeFor(accountKey + ':' + locale).value, () => initial);
-  useEffect(() => {
-    void refresh(locale, accountKey);
-    const reload = () => { if (document.visibilityState === 'visible') void refresh(locale, accountKey); };
-    window.addEventListener('focus', reload);
-    window.addEventListener('portal-attention-updated', reload);
-    document.addEventListener('visibilitychange', reload);
-    const timer = window.setInterval(reload, 30_000);
-    return () => { window.clearInterval(timer); window.removeEventListener('focus', reload); window.removeEventListener('portal-attention-updated', reload); document.removeEventListener('visibilitychange', reload); };
-  }, [locale, accountKey]);
-  return { ...snapshot, reload: () => refresh(locale, accountKey) };
+  const seed = useAttentionSeed();
+  const query = new URLSearchParams({ locale, filter });
+  if (publicRequestNumber) query.set('publicRequestNumber', publicRequestNumber);
+  if (selected) query.set('selected', selected);
+  if (before) query.set('before', before);
+  const url = '/api/portal/attention?' + query;
+  const load = useCallback(() => portalFetch<Snapshot>(url, accountKey), [url, accountKey]);
+  const seeded = filter === 'actions' && !publicRequestNumber && !selected && !before;
+  const resource = usePortalResource('attention:' + query, (seeded && seed) || initial, load);
+  // Lazy pages have no server seed; the shared registry still deduplicates consumers.
+  const loadedItems = resource.data?.items, reload = resource.reload;
+  useEffect(() => { if (!loadedItems) void reload(); }, [loadedItems, reload]);
+  return { ...(resource.data || initial), error: resource.error, reload: resource.reload };
 }
-export function clearPortalAttention() {
-  stores.forEach((store) => { store.value = initial; store.request++; store.listeners.forEach((listener) => listener()); });
-}
-export function PortalLocalePreference() {
+export function clearPortalAttention() { clearPortalData(); }
+const savedLocales = new Map<string, string>();
+export function PortalLocalePreference({ accountKey }: { accountKey: string }) {
   const locale = useLocale();
   useEffect(() => {
-    void fetch('/api/portal/attention', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ locale }) }).catch(() => undefined);
-  }, [locale]);
+    if (savedLocales.get(accountKey) === locale) return;
+    savedLocales.set(accountKey, locale);
+    void portalMutationFetch('/api/portal/attention', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ locale }) }).then(response => { if (!response.ok) savedLocales.delete(accountKey); }).catch(() => savedLocales.delete(accountKey));
+  }, [locale, accountKey]);
   return null;
 }
 const buttonClass = 'inline-flex min-h-11 items-center justify-center rounded-xl border border-[#D0D5DD] bg-white px-3 py-2 text-sm font-semibold text-[#172033] hover:border-[#B8643E] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8643E] disabled:opacity-50';
@@ -68,37 +44,39 @@ export default function PortalAttention({ accountKey, publicRequestNumber, showO
   const locale = useLocale();
   const copy = getAttentionCopy(locale);
   const documentCopy = getDocumentCopy(locale);
-  const data = usePortalAttention(accountKey);
-  const [filter, setFilter] = useState<'actions' | 'notifications' | 'history' | 'materials'>('actions');
+  const [filter, setFilter] = useState<Exclude<AttentionFilter, 'all'>>('actions');
+  const [cursors, setCursors] = useState<(string | null)[]>([null]);
+  const selected = useSearchParams().get('attention');
+  const data = usePortalAttention(accountKey, filter, publicRequestNumber, showOverview ? null : selected, cursors.at(-1));
+  const performanceCopy = getPerformanceCopy(locale);
+  function selectFilter(next: Exclude<AttentionFilter, 'all'>) { setFilter(next); setCursors([null]); }
   const [pending, setPending] = useState<string | null>(null);
   const [mutationError, setMutationError] = useState(false);
   const focusedAttention = useRef<string | null>(null);
-  const items = (data.items || []).filter((item) => !publicRequestNumber || item.publicRequestNumber === publicRequestNumber);
-  const actions = items.filter((item) => item.mode !== 'NONE' && ['OPEN', 'SUBMITTED'].includes(item.state));
-  const notifications = items.filter((item) => !item.readAt && item.state !== 'CANCELLED');
-  const history = items.filter((item) => item.mode !== 'NONE' && ['COMPLETED', 'CANCELLED'].includes(item.state));
-  const materials = items.filter((item) => item.kind === 'DOCUMENT' || item.kind === 'REPORT');
-  const visible = { actions, notifications, history, materials }[filter];
+  const selectedItem = data.selectedItem;
+  const selectedFilter = selectedItem ? (selectedItem.state === 'COMPLETED' || selectedItem.state === 'CANCELLED') && selectedItem.mode !== 'NONE' ? 'history'
+    : selectedItem.mode !== 'NONE' && ['OPEN', 'SUBMITTED'].includes(selectedItem.state) ? 'actions'
+    : selectedItem.kind === 'DOCUMENT' || selectedItem.kind === 'REPORT' ? 'materials' : 'notifications' : null;
+  const visible = [...(data.items || [])];
+  if (selectedItem && selectedFilter === filter && !visible.some(row => row.id === selectedItem.id)) visible.unshift(selectedItem);
   const empty = { actions: copy.emptyActions, notifications: copy.emptyNotifications, history: copy.emptyHistory, materials: copy.emptyMaterials }[filter];
   useEffect(() => {
     if (!data.items) return;
     if (showOverview) return;
-    const selected = new URLSearchParams(window.location.search).get('attention');
     if (!selected || focusedAttention.current === selected) return;
-    const item = data.items.find((row) => row.id === selected);
+    const item = data.selectedItem || data.items.find((row) => row.id === selected);
     if (!item || (publicRequestNumber && item.publicRequestNumber !== publicRequestNumber)) return;
+    if (selectedFilter && filter !== selectedFilter) { setFilter(selectedFilter); setCursors([null]); return; }
     focusedAttention.current = selected;
-    if (item.state === 'COMPLETED' || item.state === 'CANCELLED') setFilter('history');
-    else if (item.mode === 'NONE') setFilter(item.kind === 'DOCUMENT' || item.kind === 'REPORT' ? 'materials' : 'notifications');
     if (!window.location.hash || window.location.hash.startsWith('#attention-')) requestAnimationFrame(() => document.getElementById('attention-' + selected)?.scrollIntoView({ block: 'nearest' }));
-  }, [data.items, publicRequestNumber, showOverview]);
+  }, [data.items, data.selectedItem, publicRequestNumber, showOverview, selected, selectedFilter, filter]);
   async function mutate(item: AttentionItem, action: 'read' | 'acknowledge') {
     setPending(item.id); setMutationError(false);
     try {
-      const response = await fetch('/api/portal/attention/' + encodeURIComponent(item.id), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action }) });
+      const response = await portalMutationFetch('/api/portal/attention/' + encodeURIComponent(item.id), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action }) });
       if (!response.ok) throw new Error();
       await data.reload();
-      window.dispatchEvent(new Event('portal-attention-updated'));
+
     } catch { setMutationError(true); }
     finally { setPending(null); }
   }
@@ -108,12 +86,12 @@ export default function PortalAttention({ accountKey, publicRequestNumber, showO
   }
   return <section id={publicRequestNumber ? 'request-actions' : 'portal-attention'} dir={locale === 'ar' ? 'rtl' : undefined} className="min-w-0 space-y-4">
     {showOverview && <div className="grid gap-3 sm:grid-cols-3">
-      {([{ key: 'actions', count: data.items ? data.openCount : '—', label: copy.actions }, { key: 'notifications', count: data.items ? data.unreadCount : '—', label: copy.notifications }] as const).map((metric) => <button key={metric.key} onClick={() => setFilter(metric.key)} className="rounded-2xl border border-[#DCE3EA] bg-white p-5 text-start shadow-sm hover:border-[#B8643E]"><strong className="block text-3xl text-[#172033]">{metric.count}</strong><span className="mt-2 block text-sm font-semibold text-[#667085]">{metric.label}</span></button>)}
+      {([{ key: 'actions', count: data.items ? data.openCount : '—', label: copy.actions }, { key: 'notifications', count: data.items ? data.unreadCount : '—', label: copy.notifications }] as const).map((metric) => <button key={metric.key} onClick={() => selectFilter(metric.key)} className="rounded-2xl border border-[#DCE3EA] bg-white p-5 text-start shadow-sm hover:border-[#B8643E]"><strong className="block text-3xl text-[#172033]">{metric.count}</strong><span className="mt-2 block text-sm font-semibold text-[#667085]">{metric.label}</span></button>)}
       <button type="button" onClick={onShowActiveRequests} className="rounded-2xl border border-[#DCE3EA] bg-white p-5 text-start shadow-sm hover:border-[#B8643E]"><strong className="block text-3xl text-[#172033]">{activeRequests}</strong><span className="mt-2 block text-sm font-semibold text-[#667085]">{copy.activeRequests}</span></button>
     </div>}
     <div className="min-w-0 rounded-2xl border border-[#DCE3EA] bg-white p-4 shadow-sm sm:p-5">
       <div className="flex flex-wrap gap-2" role="group" aria-label={copy.actions}>
-        {(['actions', 'notifications', 'materials', 'history'] as const).map((key) => <button type="button" key={key} aria-pressed={filter === key} onClick={() => setFilter(key)} className={'min-h-11 rounded-xl px-3 py-2 text-sm font-semibold ' + (filter === key ? 'bg-[#172033] text-white' : 'bg-[#F3F6FA] text-[#475467] hover:bg-[#E8EDF2]')}>{copy[key]}{key === 'actions' || key === 'notifications' ? ` · ${data.items ? (key === 'actions' ? actions.length : notifications.length) : '—'}` : ''}</button>)}
+        {(['actions', 'notifications', 'materials', 'history'] as const).map((key) => <button type="button" key={key} aria-pressed={filter === key} onClick={() => selectFilter(key)} className={'min-h-11 rounded-xl px-3 py-2 text-sm font-semibold ' + (filter === key ? 'bg-[#172033] text-white' : 'bg-[#F3F6FA] text-[#475467] hover:bg-[#E8EDF2]')}>{copy[key]}{key === 'actions' || key === 'notifications' ? ` · ${data.items ? (key === 'actions' ? data.openCount : data.unreadCount) : '—'}` : ''}</button>)}
       </div>
       <h2 className="mt-5 text-lg font-bold text-[#172033]">{copy[filter]}</h2>
       {(data.error || mutationError) && <div role="alert" className="mt-3 rounded-xl bg-red-50 p-3 text-sm text-red-800">{copy.error}<button type="button" className="ms-2 underline" onClick={() => { setMutationError(false); void data.reload(); }}>{copy.retry}</button></div>}
@@ -134,6 +112,10 @@ export default function PortalAttention({ accountKey, publicRequestNumber, showO
         </div>
         {item.mode === 'ACKNOWLEDGE' && item.state === 'OPEN' && <p className="mt-2 text-xs leading-5 text-[#667085]">{copy.acknowledgeHint}</p>}
       </article>)}</div>
+      {(cursors.length > 1 || data.nextCursor) && <nav aria-label={copy[filter]} className="mt-4 flex flex-wrap gap-2">
+        <button type="button" className={buttonClass} disabled={cursors.length === 1} onClick={() => setCursors(current => current.slice(0, -1))}>{performanceCopy.previous}</button>
+        <button type="button" className={buttonClass} disabled={!data.nextCursor} onClick={() => { if (data.nextCursor) setCursors(current => [...current, data.nextCursor]); }}>{performanceCopy.next}</button>
+      </nav>}
     </div>
   </section>;
 }

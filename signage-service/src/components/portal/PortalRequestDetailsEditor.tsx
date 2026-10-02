@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
-import { useRouter } from '@/i18n/routing';
+import { invalidatePortal, portalMutationFetch } from './PortalLiveProvider';
 
 import type { PortalRequest } from '@/lib/portal/types';
 
@@ -26,7 +26,6 @@ export default function PortalRequestDetailsEditor({
   request: PortalRequest;
   copy: EditorCopy;
 }) {
-  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState('');
@@ -56,7 +55,7 @@ export default function PortalRequestDetailsEditor({
     setFeedback('');
 
     try {
-      const response = await fetch(`/api/portal/requests/${encodeURIComponent(request.publicRequestNumber)}`, {
+      const response = await portalMutationFetch(`/api/portal/requests/${encodeURIComponent(request.publicRequestNumber)}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
@@ -73,7 +72,7 @@ export default function PortalRequestDetailsEditor({
 
       setFeedback(data.changed ? copy.saved : copy.unchanged);
       setIsEditing(false);
-      router.refresh();
+      invalidatePortal();
     } catch (error) {
       setError(error instanceof Error ? error.message : copy.saveError);
     } finally {

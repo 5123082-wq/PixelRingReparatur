@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+import PortalLoading from '@/components/portal/PortalLoading';
 import { getLocale } from 'next-intl/server';
 import { cookies } from 'next/headers';
 
@@ -7,15 +9,15 @@ import { prisma } from '@/lib/prisma';
 import {
   PORTAL_DEMO_COOKIE_NAME,
   PORTAL_SESSION_COOKIE_NAME,
-  getPortalSessionContext,
+  getCachedPortalSessionContext,
   verifyPortalDemoCookie,
 } from '@/lib/portal/auth';
 import { getPortalDemoEmail, isPortalDemoEnabled, portalDemoOrganization } from '@/lib/portal/demo-data';
 import { getPortalOrganizationForUser } from '@/lib/portal/production-data';
 
-export default async function PortalPage() {
+async function PortalContent() {
   const cookieStore = await cookies();
-  const portalSession = await getPortalSessionContext(
+  const portalSession = await getCachedPortalSessionContext(
     prisma,
     cookieStore.get(PORTAL_SESSION_COOKIE_NAME)?.value
   );
@@ -46,3 +48,5 @@ export default async function PortalPage() {
     />
   );
 }
+
+export default function PortalPage() { return <Suspense fallback={<PortalLoading />}><PortalContent /></Suspense>; }

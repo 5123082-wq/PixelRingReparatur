@@ -10,13 +10,16 @@ import type {
   PortalObject,
   PortalRequest,
 } from '@/lib/portal/types';
-import { Link, useRouter } from '@/i18n/routing';
+import { useRouter } from '@/i18n/routing';
+import Link from './PortalLink';
 import { useLocale, useTranslations } from 'next-intl';
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import LocationPicker, { type SelectedLocation } from '@/components/common/LocationPicker';
 import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 import Logo from '@/components/common/Logo';
 import PortalAttention, { PortalLocalePreference, clearPortalAttention, usePortalAttention } from './PortalAttention';
+import { getPerformanceCopy } from '@/lib/portal/performance-copy';
+import { usePortalResource, portalFetch, portalMutationFetch } from './PortalLiveProvider';
 import { getAttentionCopy } from '@/lib/portal-attention/copy';
 
 type TabKey =
@@ -737,7 +740,7 @@ function safeRequestTitle(request: PortalRequest, fallback: string): string {
 }
 
 export default function PortalDashboard({
-  organization,
+  organization: initialOrganization,
   canCreateRequests = false,
 }: {
   organization: PortalDemoOrganization;
@@ -750,13 +753,56 @@ export default function PortalDashboard({
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const [activeOnly, setActiveOnly] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [page, setPage] = useState(1);
+  const contentRef = useRef<HTMLElement>(null);
+  const restored = useRef(false);
+  const restoreScroll = useRef<{ top: number; key: string } | null>(null);
+  const storageKey = 'portal-view:' + initialOrganization.id + ':' + locale;
+  const queryPage = activeTab === 'overview' ? 1 : page;
+  const reportsOnly = activeTab === 'reports';
+  const filterActive = activeTab === 'requests' && activeOnly;
+  const seed = queryPage === 1 && !reportsOnly && !filterActive ? initialOrganization : null;
+  const loader = useCallback(async () => {
+    const data = await portalFetch<{ organization: PortalDemoOrganization }>('/api/portal/requests?locale=' + locale + '&page=' + queryPage + (filterActive ? '&active=1' : '') + (reportsOnly ? '&reports=1' : ''), initialOrganization.id);
+    return data.organization;
+  }, [initialOrganization.id, locale, queryPage, filterActive, reportsOnly]);
+  const resourceKey = 'requests:' + locale + ':' + queryPage + ':' + filterActive + ':' + reportsOnly;
+  const live = usePortalResource(resourceKey, seed, loader);
+  const organization = canCreateRequests ? live.data || { ...initialOrganization, requests: [], documents: [] } : initialOrganization;
+  const performanceCopy = getPerformanceCopy(locale);
+  const { reload: reloadList } = live;
+  useEffect(() => { if (canCreateRequests && !seed) void reloadList(); }, [canCreateRequests, seed, reloadList]);
+  const storeView = useCallback(() => {
+    if (!restored.current || restoreScroll.current) return;
+    try { sessionStorage.setItem(storageKey, JSON.stringify({ tab: activeTab, active: activeOnly, page, scroll: contentRef.current?.scrollTop || window.scrollY })); }
+    catch { /* Storage is optional. */ }
+  }, [activeTab, activeOnly, page, storageKey]);
   useEffect(() => {
-    if (!canCreateRequests) return;
-    const refresh = () => { if (document.visibilityState === 'visible') router.refresh(); };
-    window.addEventListener('focus', refresh);
-    const timer = window.setInterval(refresh, 30_000);
-    return () => { window.removeEventListener('focus', refresh); window.clearInterval(timer); };
-  }, [canCreateRequests, router]);
+    restored.current = false; restoreScroll.current = null;
+    try {
+      const state = JSON.parse(sessionStorage.getItem(storageKey) || 'null');
+      if (state && ['overview', 'requests', 'reports', 'new-request'].includes(state.tab)) {
+        const savedPage = Math.max(1, Math.min(10_000, Math.floor(Number(state.page) || 1)));
+        setActiveTab(state.tab); setActiveOnly(Boolean(state.active)); setPage(savedPage);
+        restoreScroll.current = { top: Math.max(0, Number(state.scroll) || 0), key: 'requests:' + locale + ':' + (state.tab === 'overview' ? 1 : savedPage) + ':' + (state.tab === 'requests' && Boolean(state.active)) + ':' + (state.tab === 'reports') };
+      }
+    } catch { /* Storage can be unavailable. */ }
+    restored.current = true;
+  }, [storageKey, locale]);
+  useEffect(() => {
+    if (!live.data || restoreScroll.current?.key !== resourceKey) return;
+    const target = restoreScroll.current;
+    const frame = requestAnimationFrame(() => {
+      const pane = contentRef.current;
+      if (pane && getComputedStyle(pane).overflowY === 'auto') pane.scrollTop = target.top;
+      else window.scrollTo(0, target.top);
+      restoreScroll.current = null;
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [live.data, resourceKey]);
+  useEffect(storeView, [storeView]);
+  useEffect(() => { window.addEventListener('scroll', storeView, { passive: true }); return () => window.removeEventListener('scroll', storeView); }, [storeView]);
+  useEffect(() => { const pages = Math.max(1, Math.ceil((live.data?.pagination?.total || 0) / 20)); if (live.data && queryPage > pages) setPage(pages); }, [live.data, queryPage]);
 
   const activeRequests = organization.requests.filter((request) => request.status !== 'COMPLETED');
   const reportDocuments = organization.documents.filter((document) => document.type === 'REPORT');
@@ -781,7 +827,7 @@ export default function PortalDashboard({
 
   return (
     <main dir={locale === 'ar' ? 'rtl' : undefined} className="min-h-screen bg-[#EEF2F6] text-[#0F1C2B]">
-      {canCreateRequests && <PortalLocalePreference />}
+      {canCreateRequests && <PortalLocalePreference accountKey={organization.id} />}
       <div className="grid min-h-screen lg:grid-cols-[232px_1fr]">
         <aside className="border-b border-white/10 bg-[#0D1B2A] text-white lg:h-screen lg:overflow-y-auto lg:border-b-0">
           <div className="flex min-h-full flex-col p-3">
@@ -799,7 +845,7 @@ export default function PortalDashboard({
                 <button
                   key={item.key}
                   type="button"
-                  onClick={() => { setActiveOnly(false); setActiveTab(item.key); }}
+                  onClick={() => { setPage(1); setActiveOnly(false); setActiveTab(item.key); }}
                   className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-start text-[12px] font-bold transition ${
                     activeTab === item.key
                       ? 'bg-[#C46E43] text-white shadow-sm'
@@ -826,7 +872,7 @@ export default function PortalDashboard({
           </div>
         </aside>
 
-        <section className="min-w-0 lg:h-screen lg:overflow-y-auto">
+        <section ref={contentRef} onScroll={storeView} className="min-w-0 lg:h-screen lg:overflow-y-auto">
           <div className="mx-auto max-w-none p-3 sm:p-4 lg:p-5">
             <header className="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
@@ -852,7 +898,7 @@ export default function PortalDashboard({
               </div>
             </header>
 
-            {activeTab === 'overview' && canCreateRequests && <div className="grid min-w-0 grid-cols-1 gap-4"><PortalAttention accountKey={organization.id} showOverview activeRequests={activeRequests.length} onShowActiveRequests={() => { setActiveOnly(true); setActiveTab('requests'); }} /><div id="latest-requests" className="min-w-0 scroll-mt-4"><LiveRequestsTable title={getAttentionCopy(locale).latestRequests} accountKey={organization.id} copy={copy} requests={organization.requests.slice(0, 5)} objectsById={objectsById} onTabChange={setActiveTab} /></div></div>}
+            {activeTab === 'overview' && canCreateRequests && <div className="grid min-w-0 grid-cols-1 gap-4"><PortalAttention accountKey={organization.id} showOverview activeRequests={organization.pagination?.activeRequests ?? activeRequests.length} onShowActiveRequests={() => { setPage(1); setActiveOnly(true); setActiveTab('requests'); }} /><div id="latest-requests" className="min-w-0 scroll-mt-4"><LiveRequestsTable title={getAttentionCopy(locale).latestRequests} accountKey={organization.id} copy={copy} requests={organization.requests.slice(0, 5)} objectsById={objectsById} onTabChange={setActiveTab} /></div></div>}
             {activeTab === 'overview' && !canCreateRequests && (
               <Overview
                 copy={copy}
@@ -863,6 +909,8 @@ export default function PortalDashboard({
                 onTabChange={setActiveTab}
               />
             )}
+            {canCreateRequests && live.error && <p role="alert" className="mb-3 text-sm text-red-700">{getAttentionCopy(locale).error}<button onClick={() => void live.reload()} className="ms-2 underline">{getAttentionCopy(locale).retry}</button></p>}
+            {canCreateRequests && !live.data && !live.error && <p role="status" className="mb-3 text-sm">{getAttentionCopy(locale).loading}</p>}
             {activeTab === 'requests' && (canCreateRequests ? <LiveRequestsTable accountKey={organization.id} copy={copy} requests={activeOnly ? activeRequests : organization.requests} objectsById={objectsById} onTabChange={setActiveTab} /> : <RequestsTable copy={copy} requests={organization.requests} objectsById={objectsById} onTabChange={setActiveTab} />)}
             {activeTab === 'reports' && (
               <DocumentCards
@@ -872,6 +920,11 @@ export default function PortalDashboard({
                 intro={copy.reportsIntro}
               />
             )}
+            {canCreateRequests && (activeTab === 'requests' || activeTab === 'reports') && <nav aria-label={copy.nav.requests} className="mt-4 flex items-center gap-3">
+              <button type="button" disabled={page <= 1 || !live.data} onClick={() => setPage(current => current - 1)} className="rounded-xl border bg-white px-4 py-2 disabled:opacity-40">{performanceCopy.previous}</button>
+              <span className="text-sm">{page} / {Math.max(1, Math.ceil((organization.pagination?.total || 0) / 20))}</span>
+              <button type="button" disabled={!live.data || page * 20 >= (organization.pagination?.total || 0)} onClick={() => setPage(current => current + 1)} className="rounded-xl border bg-white px-4 py-2 disabled:opacity-40">{performanceCopy.next}</button>
+            </nav>}
             {activeTab === 'new-request' && <NewRequestForm organization={organization} canCreateRequests={canCreateRequests} />}
           </div>
         </section>
@@ -1211,7 +1264,7 @@ function NewRequestForm({
     setError('');
 
     try {
-      const response = await fetch('/api/portal/requests', {
+      const response = await portalMutationFetch('/api/portal/requests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -1,3 +1,5 @@
+import { getPortalOrganizationForUser } from '@/lib/portal/production-data';
+import { portalReadTiming } from '@/lib/portal/performance';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { sendAdminTelegramNotification } from '@/lib/admin-telegram-notifications';
@@ -170,4 +172,18 @@ export async function POST(request: NextRequest) {
       { status: isValidationError ? 400 : 500 }
     );
   }
+}
+
+export async function GET(request: NextRequest) {
+  const timing = portalReadTiming('requests');
+  const session = await getPortalSessionContext(prisma, request.cookies.get(PORTAL_SESSION_COOKIE_NAME)?.value);
+  timing.authenticated();
+  if (!session) return NextResponse.json({ error: 'unauthorized' }, { status: 401, headers: timing.headers() });
+  const query = request.nextUrl.searchParams;
+  const page = Number(query.get('page') || 1);
+  if (!Number.isSafeInteger(page) || page < 1 || page > 10_000) return NextResponse.json({ error: 'invalid_page' }, { status: 400, headers: timing.headers() });
+  try {
+    const organization = await getPortalOrganizationForUser(prisma, session.portalUserId, session.email, query.get('locale') || 'de', { page, activeOnly: query.get('active') === '1', reportsOnly: query.get('reports') === '1' });
+    return NextResponse.json({ portalUserId: session.portalUserId, organization }, { headers: timing.headers() });
+  } catch { return NextResponse.json({ error: 'unavailable' }, { status: 503, headers: timing.headers() }); }
 }

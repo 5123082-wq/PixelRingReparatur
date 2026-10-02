@@ -1,10 +1,14 @@
+'use client';
+import { useCallback } from 'react';
+import { usePortalResource, portalFetch } from './PortalLiveProvider';
+import type { CustomerDocument } from '@/lib/case-documents/types';
 import CaseDocuments from './CaseDocuments';
 import PortalAttention, { PortalLocalePreference } from './PortalAttention';
 import { getAttentionCopy } from '@/lib/portal-attention/copy';
 import type { ReactNode } from 'react';
-import { getLocale, getTranslations } from 'next-intl/server';
+import { useLocale, useTranslations } from 'next-intl';
 
-import { Link } from '@/i18n/routing';
+import Link from './PortalLink';
 import type {
   PortalAsset,
   PortalCustomerAttachment,
@@ -87,7 +91,7 @@ function safeRequestTitle(title: string, publicRequestNumber: string, fallbackLa
   return cleanTitle.length > 110 ? `${cleanTitle.slice(0, 107)}...` : cleanTitle;
 }
 
-async function RequestWorkspaceFrame({
+function RequestWorkspaceFrame({
   title,
   subtitle,
   presentation = 'page',
@@ -98,7 +102,7 @@ async function RequestWorkspaceFrame({
   presentation?: PortalRequestDetailPresentation;
   children: ReactNode;
 }) {
-  const locale = await getLocale();
+  const locale = useLocale();
   const copy = getPortalRequestDetailCopy(locale);
   const isModal = presentation === 'modal';
 
@@ -154,15 +158,15 @@ async function RequestWorkspaceFrame({
   );
 }
 
-export async function PortalRequestNotFound({
+export function PortalRequestNotFound({
   organization,
   presentation = 'page',
 }: {
   organization: PortalDemoOrganization;
   presentation?: PortalRequestDetailPresentation;
 }) {
-  const t = await getTranslations('Portal');
-  const locale = await getLocale();
+  const t = useTranslations('Portal');
+  const locale = useLocale();
   const copy = getPortalRequestDetailCopy(locale);
 
   return (
@@ -183,34 +187,24 @@ export async function PortalRequestNotFound({
   );
 }
 
-export default async function PortalRequestDetail({
-  organization,
-  request,
-  object,
-  messages,
-  timeline,
-  customerAttachments,
-  documents,
-  requiredActions,
-  workResult = null,
-  canPostMessages = false,
-  presentation = 'page',
-}: {
-  organization: PortalDemoOrganization;
-  request: PortalRequest;
-  object: PortalObject;
-  assets: PortalAsset[];
-  messages: PortalDemoOrganization['messages'];
-  timeline: PortalRequestTimelineItem[];
-  customerAttachments: PortalCustomerAttachment[];
-  documents: PortalDocument[];
-  requiredActions: PortalRequiredAction[];
-  workResult?: PublicWorkResult | null;
-  canPostMessages?: boolean;
-  presentation?: PortalRequestDetailPresentation;
-}) {
-  const t = await getTranslations('Portal');
-  const locale = await getLocale();
+type DetailProps = {
+  organization: PortalDemoOrganization; request: PortalRequest; object: PortalObject; assets: PortalAsset[];
+  messages: PortalDemoOrganization['messages']; timeline: PortalRequestTimelineItem[];
+  customerAttachments: PortalCustomerAttachment[]; documents: PortalDocument[]; requiredActions: PortalRequiredAction[];
+  workResult?: PublicWorkResult | null; initialDocuments?: CustomerDocument[]; messageBefore?: string | null;
+  canPostMessages?: boolean; presentation?: PortalRequestDetailPresentation;
+};
+export default function PortalRequestDetail(props: DetailProps) {
+  const currentLocale = useLocale();
+  const loader = useCallback(async () => {
+    const result = await portalFetch<{ detail: DetailProps }>('/api/portal/requests/' + encodeURIComponent(props.request.publicRequestNumber) + '?locale=' + currentLocale, props.organization.id);
+    return result.detail;
+  }, [props.request.publicRequestNumber, props.organization.id, currentLocale]);
+  const live = usePortalResource('detail:' + props.request.publicRequestNumber + ':' + currentLocale, props, loader);
+  const { organization, request, object, messages, timeline, customerAttachments, documents, requiredActions, workResult = null, messageBefore } = live.data || props;
+  const { canPostMessages = false, presentation = 'page' } = props;
+  const t = useTranslations('Portal');
+  const locale = useLocale();
   const copy = getPortalRequestDetailCopy(locale);
   const statusLabel = t(`requestStatus.${request.status}`);
   const reportCopy = getWorkResultCopy(locale);
@@ -242,7 +236,7 @@ export default async function PortalRequestDetail({
           presentation === 'modal' ? 'lg:h-full' : 'lg:h-[calc(100vh-164px)]'
         }`}>
           <div className="grid gap-4">
-            {canPostMessages && <><PortalLocalePreference /><PortalAttention accountKey={organization.id} publicRequestNumber={request.publicRequestNumber} /></>}
+            {canPostMessages && <><PortalLocalePreference accountKey={organization.id} /><PortalAttention accountKey={organization.id} publicRequestNumber={request.publicRequestNumber} /></>}
             <section className="rounded-[22px] border border-[#E5EAF0] bg-white p-4 shadow-sm">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
@@ -308,7 +302,7 @@ export default async function PortalRequestDetail({
               <p className="mt-3 whitespace-pre-line text-[14px] leading-6 text-[#3D4A5C]">{request.summary}</p>
             </section>
 
-            {canPostMessages && <CaseDocuments publicRequestNumber={request.publicRequestNumber} locale={locale} />}
+            {canPostMessages && <CaseDocuments publicRequestNumber={request.publicRequestNumber} locale={locale} initialDocuments={props.initialDocuments} />}
 
             <WorkResultView result={workResult} locale={locale} publicRequestNumber={request.publicRequestNumber} />
 
@@ -354,6 +348,8 @@ export default async function PortalRequestDetail({
         <PortalRequestChat
           request={request}
           messages={messages}
+          accountKey={organization.id}
+          messageBefore={messageBefore}
           canPostMessages={canPostMessages}
           presentation={presentation}
         />

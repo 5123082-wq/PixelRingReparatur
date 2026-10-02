@@ -6,9 +6,11 @@ Purpose: current-state boundary and roadmap index. Read this beacon for startup 
 
 Exists now:
 
+- Ускорение кабинета реализовано и проверено в отдельной рабочей копии поверх выпуска №87; публикация ещё не выполнена: [отчёт и проверка](../04_client_portal/portal_performance_implementation_2026-10-02.md).
+
 - shared client action/notification inbox and document/report email outbox merged through PR #85, with review corrections merged through PR #86; production migration and historical-material backfill applied, scheduler secret configured: [execution guide](../04_client_portal/client_notifications_and_actions.md);
 
-- locally implemented operator alerts for portal messages, with presence-aware delivery and precise read acknowledgement; production migration applied 2026-09-30, application release pending: [execution guide](../04_client_portal/portal_operator_alerts.md);
+- Уведомления оператору о сообщениях кабинета опубликованы через запрос на слияние №87; рабочая миграция применена 2026-09-30. Выпуск кода подтверждён сверкой развёртывания 2026-10-02; настоящая доставка Telegram (мессенджера) в этой задаче не проверялась: [журнал](../04_client_portal/portal_operator_alerts.md).
 
 - request-bound PDF document delivery is implemented locally; migration applied 2026-09-29, application release pending: [execution guide](../06_crm/customer_documents.md);
 

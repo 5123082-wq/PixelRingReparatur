@@ -1,3 +1,4 @@
+import { publishPortalInvalidation } from '@/lib/portal/realtime';
 import * as Ably from 'ably';
 import type { TokenRequest } from 'ably';
 
@@ -94,6 +95,10 @@ export async function publishCaseRealtimeEvent(input: {
 
   if (!client) {
     return;
+  }
+
+  if (['message.created', 'status.changed', 'case.updated', 'public_request_number.issued'].includes(input.reason)) {
+    await publishPortalInvalidation(input.caseId).catch(() => console.error('Portal invalidation publish failed'));
   }
 
   const event: CaseRealtimeEvent = {

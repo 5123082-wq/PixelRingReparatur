@@ -1,27 +1,15 @@
 'use client';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
+import { portalFetch, usePortalResource } from './PortalLiveProvider';
 import { getDocumentCopy } from '@/lib/case-documents/copy';
 import type { CustomerDocument } from '@/lib/case-documents/types';
-export default function CaseDocuments({ publicRequestNumber, locale }: { publicRequestNumber: string; locale: string }) {
-  const [documents, setDocuments] = useState<CustomerDocument[] | null>(null);
-  const [error, setError] = useState(false);
+export default function CaseDocuments({ publicRequestNumber, locale, initialDocuments }: { publicRequestNumber: string; locale: string; initialDocuments?: CustomerDocument[] }) {
   const scrolledTarget = useRef<string | null>(null);
   const copy = getDocumentCopy(locale);
   const endpoint = '/api/portal/requests/' + encodeURIComponent(publicRequestNumber) + '/documents';
-  const load = useCallback(async () => {
-    try {
-      const response = await fetch(endpoint, { cache: 'no-store' });
-      if (!response.ok) throw new Error();
-      setDocuments(await response.json()); setError(false);
-    } catch { setError(true); }
-  }, [endpoint]);
-  useEffect(() => {
-    void load();
-    const refresh = () => { if (document.visibilityState === 'visible') void load(); };
-    window.addEventListener('focus', refresh);
-    const timer = window.setInterval(refresh, 30_000);
-    return () => { window.removeEventListener('focus', refresh); window.clearInterval(timer); };
-  }, [load]);
+  const loader = useCallback(() => portalFetch<CustomerDocument[]>(endpoint), [endpoint]);
+  const resource = usePortalResource('documents:' + publicRequestNumber, initialDocuments ?? null, loader);
+  const documents = resource.data; const error = resource.error; const load = resource.reload;
   useEffect(() => {
     if (!documents) return;
     const target = window.location.hash.slice(1);

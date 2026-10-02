@@ -1,3 +1,4 @@
+import { publishPortalInvalidation } from '@/lib/portal/realtime';
 export const maxDuration = 60;
 import { Prisma } from '@prisma/client';
 import { after } from 'next/server';
@@ -44,6 +45,7 @@ export async function POST(request: NextRequest, { params }: Context) {
       }
       await adminAttentionAudit(tx, actor, id, body.id, 'ATTENTION_' + body.action.toUpperCase());
     });
+    await publishPortalInvalidation(id).catch(() => console.error('Portal invalidation publish failed'));
     after(() => deliverAttentionEmails({ caseId: id }).then(() => undefined));
     return attentionJson({ success: true });
   } catch (error) { return documentFailure(error); }

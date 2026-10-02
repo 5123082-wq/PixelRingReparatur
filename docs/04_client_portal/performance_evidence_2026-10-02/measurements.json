@@ -1,0 +1,171 @@
+{
+  "baselineCommit": "1a27b6b33cd07146589104aa4b5ac6b8c61f165a",
+  "environment": "Disposable local PostgreSQL, compiled local application; not production or browser paint timings",
+  "readFunctions": [
+    {
+      "count": 0,
+      "kind": "summary",
+      "version": "before",
+      "samples": 20,
+      "p50Ms": 1,
+      "p95Ms": 3,
+      "bytes": 592,
+      "firstSampleMs": 77
+    },
+    {
+      "count": 0,
+      "kind": "summary",
+      "version": "after",
+      "samples": 20,
+      "p50Ms": 1,
+      "p95Ms": 1,
+      "bytes": 677,
+      "firstSampleMs": 8
+    },
+    {
+      "count": 3,
+      "kind": "summary",
+      "version": "before",
+      "samples": 20,
+      "p50Ms": 2,
+      "p95Ms": 3,
+      "bytes": 5816,
+      "firstSampleMs": 16
+    },
+    {
+      "count": 3,
+      "kind": "summary",
+      "version": "after",
+      "samples": 20,
+      "p50Ms": 2,
+      "p95Ms": 2,
+      "bytes": 2386,
+      "firstSampleMs": 3
+    },
+    {
+      "count": 3,
+      "kind": "detail",
+      "version": "before",
+      "samples": 20,
+      "p50Ms": 2,
+      "p95Ms": 2,
+      "bytes": 14799,
+      "firstSampleMs": 2
+    },
+    {
+      "count": 3,
+      "kind": "detail",
+      "version": "after",
+      "samples": 20,
+      "p50Ms": 2,
+      "p95Ms": 2,
+      "bytes": 10220,
+      "firstSampleMs": 5
+    },
+    {
+      "count": 100,
+      "kind": "summary",
+      "version": "before",
+      "samples": 20,
+      "p50Ms": 250,
+      "p95Ms": 448,
+      "bytes": 1295448,
+      "firstSampleMs": 240
+    },
+    {
+      "count": 100,
+      "kind": "summary",
+      "version": "after",
+      "samples": 20,
+      "p50Ms": 3,
+      "p95Ms": 4,
+      "bytes": 10435,
+      "firstSampleMs": 4
+    },
+    {
+      "count": 100,
+      "kind": "detail",
+      "version": "before",
+      "samples": 20,
+      "p50Ms": 246,
+      "p95Ms": 262,
+      "bytes": 2642207,
+      "firstSampleMs": 236
+    },
+    {
+      "count": 100,
+      "kind": "detail",
+      "version": "after",
+      "samples": 20,
+      "p50Ms": 2,
+      "p95Ms": 3,
+      "bytes": 35111,
+      "firstSampleMs": 4
+    }
+  ],
+  "http": [
+    {
+      "count": 0,
+      "bytes": 748
+    },
+    {
+      "count": 3,
+      "bytes": 2509
+    },
+    {
+      "count": 100,
+      "bytes": 10506
+    },
+    {
+      "messageSaveAckMs": 8,
+      "aiCompletionMs": 3535
+    },
+    {
+      "count": 0,
+      "kind": "summary",
+      "samples": 20,
+      "p50Ms": 2,
+      "p95Ms": 3,
+      "bytes": 748
+    },
+    {
+      "count": 3,
+      "kind": "summary",
+      "samples": 20,
+      "p50Ms": 3,
+      "p95Ms": 3,
+      "bytes": 2457
+    },
+    {
+      "count": 3,
+      "kind": "detail",
+      "samples": 20,
+      "p50Ms": 4,
+      "p95Ms": 6,
+      "bytes": 6783
+    },
+    {
+      "count": 100,
+      "kind": "summary",
+      "samples": 20,
+      "p50Ms": 5,
+      "p95Ms": 5,
+      "bytes": 10506
+    },
+    {
+      "count": 100,
+      "kind": "detail",
+      "samples": 20,
+      "p50Ms": 4,
+      "p95Ms": 4,
+      "bytes": 23387
+    }
+  ],
+  "realtime": {
+    "samples": 20,
+    "p50Ms": 341,
+    "p95Ms": 445,
+    "maxMs": 541,
+    "measure": "empty broker event to completed browser messages GET"
+  }
+}

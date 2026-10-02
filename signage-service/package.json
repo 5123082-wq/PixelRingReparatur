@@ -46,7 +46,9 @@
     "test:portal-attention": "node --experimental-strip-types --test scripts/test-portal-attention.test.ts",
     "test:attention-email": "node --experimental-strip-types --test scripts/test-attention-email-e2e.test.ts",
     "test:attention-delivery": "node --experimental-strip-types --test scripts/test-attention-delivery-policy.test.ts",
-    "test:portal-operator": "node --test scripts/test-portal-operator-alerts.test.mjs"
+    "test:portal-operator": "node --test scripts/test-portal-operator-alerts.test.mjs",
+    "test:portal-performance": "node --experimental-strip-types --test scripts/test-portal-performance.test.ts",
+    "test:portal-performance-http": "node --experimental-strip-types --test scripts/test-portal-performance-http.test.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

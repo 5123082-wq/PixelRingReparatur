@@ -1,10 +1,11 @@
+import { documentView } from '@/lib/case-documents/service';
 import { cookies } from 'next/headers';
 
 import { prisma } from '@/lib/prisma';
 import {
   PORTAL_DEMO_COOKIE_NAME,
   PORTAL_SESSION_COOKIE_NAME,
-  getPortalSessionContext,
+  getCachedPortalSessionContext,
   verifyPortalDemoCookie,
 } from '@/lib/portal/auth';
 import {
@@ -33,23 +34,23 @@ export default async function PortalRequestDetailRoute({
   presentation?: PortalRequestDetailPresentation;
 }) {
   const cookieStore = await cookies();
-  const portalSession = await getPortalSessionContext(
+  const portalSession = await getCachedPortalSessionContext(
     prisma,
     cookieStore.get(PORTAL_SESSION_COOKIE_NAME)?.value
   );
 
   if (portalSession) {
-    const result = await getPortalRequestDetailForUser(
+    const [result, workResult] = await Promise.all([getPortalRequestDetailForUser(
       prisma,
       portalSession.portalUserId,
       portalSession.email,
       publicRequestNumber,
       locale || 'de'
-    );
+    ), getPublicWorkResult(portalSession.portalUserId, publicRequestNumber)]);
 
     if (result?.detail) {
-      const workResult = await getPublicWorkResult(portalSession.portalUserId, publicRequestNumber);
-      return <PortalRequestDetail {...result.detail} workResult={workResult} canPostMessages presentation={presentation} />;
+      const documents = await prisma.caseDocument.findMany({ where: { caseId: result.detail.request.id, publishedAt: { not: null } }, include: { attachment: true }, orderBy: { publishedAt: 'desc' } });
+      return <PortalRequestDetail {...result.detail} workResult={workResult} initialDocuments={documents.map(documentView)} canPostMessages presentation={presentation} />;
     }
 
     if (result?.organization) {
