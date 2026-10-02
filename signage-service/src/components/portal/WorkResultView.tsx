@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Link } from '@/i18n/routing';
+import Link from './PortalLink';
 import { getWorkResultCopy } from '@/lib/work-results/copy';
 import type { PublicWorkResult } from '@/lib/work-results/types';
 

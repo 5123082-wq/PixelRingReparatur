@@ -1,5 +1,6 @@
 'use client';
 
+import { clearPortalData } from './PortalLiveProvider';
 import { useRouter } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -11,6 +12,7 @@ export default function PortalLogoutButton() {
 
   async function logout() {
     setIsLoggingOut(true);
+    clearPortalData();
     try {
       await fetch('/api/portal/auth/logout', { method: 'POST' });
       await fetch('/api/portal/demo-auth', { method: 'DELETE' });

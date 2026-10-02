@@ -1,8 +1,9 @@
 import 'server-only';
+import { portalDataTiming } from './performance';
 import { getAttentionCopy } from '@/lib/portal-attention/copy';
 import { getWorkResultCopy } from '@/lib/work-results/copy';
 
-import type { CaseStatus, MessageAuthorRole, Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, type CaseStatus, type MessageAuthorRole, type PrismaClient } from '@prisma/client';
 
 import type {
   PortalCustomerAttachment,
@@ -22,6 +23,7 @@ import {
 type PortalDb = PrismaClient | Prisma.TransactionClient;
 
 type PortalCaseRecord = {
+  titleMessages?: { authorRole: MessageAuthorRole; body: string }[];
   id: string;
   publicRequestNumber: string | null;
   status: CaseStatus;
@@ -136,19 +138,19 @@ function mapMessageAuthor(role: MessageAuthorRole): PortalMessageAuthor {
     case 'OPERATOR':
       return 'PixelRing Manager';
     case 'SYSTEM':
-      return 'PixelRing Manager';
+      return 'PixelRing AI';
   }
 }
 
 function titleForCase(caseRecord: PortalCaseRecord): string {
   return customerSafePortalCaseTitle({
     publicRequestNumber: caseRecord.publicRequestNumber,
-    messages: caseRecord.messages,
+    messages: caseRecord.titleMessages ?? caseRecord.messages,
   });
 }
 
 function summaryForCase(caseRecord: PortalCaseRecord): string {
-  return customerSafePortalCaseSummary(caseRecord.messages);
+  return customerSafePortalCaseSummary(caseRecord.titleMessages ?? caseRecord.messages);
 }
 
 function mapCaseToPortalRequest(caseRecord: PortalCaseRecord, locale = 'de'): PortalRequest {
@@ -216,6 +218,7 @@ function buildOrganization(input: {
   displayName: string | null;
   cases: PortalCaseRecord[];
   locale: string;
+  includeHistory?: boolean;
 }): PortalDemoOrganization {
   const contactName = customerNameForPortal(input.email, input.displayName);
   const locale = input.locale;
@@ -257,12 +260,12 @@ function buildOrganization(input: {
           id: message.id,
           requestId: caseRecord.id,
           author: mapMessageAuthor(message.authorRole),
-          sentAt: formatDate(message.sentAt || message.createdAt, locale),
+          sentAt: (message.sentAt || message.createdAt).toISOString(),
           body: customerSafePortalMessageBody(message.body),
           attachments: message.attachments,
         }))
     ),
-    requestTimeline: input.cases.flatMap((record) => mapTimeline(record, locale)),
+    requestTimeline: input.includeHistory === false ? [] : input.cases.flatMap((record) => mapTimeline(record, locale)),
     customerAttachments: input.cases.flatMap((record) => mapAttachments(record, locale)),
     documents: input.cases.flatMap((record) => {
       const revision = record.workResult?.revisions[0];
@@ -276,167 +279,123 @@ function buildOrganization(input: {
   };
 }
 
-async function getPortalUserWithCases(db: PortalDb, portalUserId: string) {
-  return db.portalUser.findUnique({
-    where: {
-      id: portalUserId,
-      status: 'ACTIVE',
-    },
-    select: {
-      id: true,
-      displayName: true,
-      primaryEmailNormalized: true,
-      caseAccesses: {
-        where: {
-          revokedAt: null,
-        },
-        orderBy: {
-          case: { updatedAt: 'desc' },
-        },
-        select: {
-          case: {
-            select: {
-              id: true,
-              publicRequestNumber: true,
-              status: true,
-              customerName: true,
-              customerEmail: true,
-              customerPhone: true,
-              serviceLocation: true,
-              serviceLatitude: true,
-              serviceLongitude: true,
-              serviceLocationSource: true,
-              locale: true,
-              numberIssuedAt: true,
-              statusUpdatedAt: true,
-              createdAt: true,
-              updatedAt: true,
-              messages: {
-                where: {
-                  isCustomerVisible: true,
-                },
-                orderBy: {
-                  createdAt: 'asc',
-                },
-                select: {
-                  id: true,
-                  authorRole: true,
-                  authorName: true,
-                  body: true,
-                  sentAt: true,
-                  createdAt: true,
-                  attachments: {
-                    where: {
-                      isCustomerVisible: true,
-                    },
-                    select: {
-                      id: true,
-                      storageKey: true,
-                      originalFilename: true,
-                      mimeType: true,
-                    },
-                  },
-                },
-              },
-              attachments: {
-                where: {
-                  isCustomerVisible: true,
-                },
-                orderBy: {
-                  createdAt: 'asc',
-                },
-                select: {
-                  id: true,
-                  originalFilename: true,
-                  mimeType: true,
-                  createdAt: true,
-                },
-              },
-              workResult: { select: { publishedVersion: true, revisions: {
-                orderBy: { number: 'desc' }, take: 1,
-                select: { id: true, number: true, publishedAt: true },
-              } } },
-              statusEvents: {
-                orderBy: {
-                  createdAt: 'asc',
-                },
-                select: {
-                  id: true,
-                  toStatus: true,
-                  reason: true,
-                  createdAt: true,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  });
-}
+// Summary reads deliberately omit correspondence, attachment lists and status history.
+const caseSummarySelect = {
+  id: true, publicRequestNumber: true, status: true, customerName: true,
+  customerEmail: true, customerPhone: true, serviceLocation: true,
+  serviceLatitude: true, serviceLongitude: true, serviceLocationSource: true,
+  locale: true, numberIssuedAt: true, statusUpdatedAt: true, createdAt: true, updatedAt: true,
+  workResult: { select: { publishedVersion: true, revisions: {
+    orderBy: { number: 'desc' }, take: 1, select: { id: true, number: true, publishedAt: true },
+  } } },
+} satisfies Prisma.CaseSelect;
+const messageSelect = {
+  id: true, authorRole: true, authorName: true, body: true, sentAt: true, createdAt: true,
+  attachments: { where: { isCustomerVisible: true }, select: {
+    id: true, storageKey: true, originalFilename: true, mimeType: true,
+  } },
+} satisfies Prisma.MessageSelect;
+const visibleMessageWhere = {
+  isCustomerVisible: true,
+  NOT: [{ body: { contains: 'Kundenportal-Link:', mode: 'insensitive' } },
+    { body: { contains: '/portal/claim?token=', mode: 'insensitive' } }],
+} satisfies Prisma.MessageWhereInput;
+export const PORTAL_PAGE_SIZE = 20;
+export const PORTAL_MESSAGE_PAGE_SIZE = 50;
 
+async function identity(db: PortalDb, id: string) {
+  return db.portalUser.findUnique({ where: { id, status: 'ACTIVE' },
+    select: { id: true, displayName: true, primaryEmailNormalized: true } });
+}
+function accessibleCases(portalUserId: string): Prisma.CaseWhereInput {
+  return { publicRequestNumber: { not: null }, portalCaseAccesses: { some: {
+    portalUserId, revokedAt: null, portalUser: { status: 'ACTIVE' },
+  } } };
+}
+// A lateral lookup uses the existing (caseId, createdAt) index. It returns exactly
+// one safe opening message per selected case, including when recent chat is paged.
+async function openingMessages(db: PortalDb, caseIds: string[]) {
+  if (!caseIds.length) return new Map<string, { authorRole: MessageAuthorRole; body: string }[]>();
+  const rows = await db.$queryRaw<{ caseId: string; body: string }[]>(Prisma.sql`
+    SELECT c.id AS "caseId", m.body FROM cases c
+    JOIN LATERAL (
+      SELECT body FROM messages WHERE "caseId" = c.id AND "isCustomerVisible" = true
+      AND "authorRole" = 'CUSTOMER' AND body ~ '[^[:space:]]'
+      AND body NOT ILIKE '%Kundenportal-Link:%' AND body NOT ILIKE '%/portal/claim?token=%'
+      ORDER BY "createdAt" ASC, id ASC LIMIT 1
+    ) m ON true WHERE c.id IN (${Prisma.join(caseIds.map(id => Prisma.sql`${id}::uuid`))})`);
+  return new Map(rows.map(row => [row.caseId, [{ authorRole: 'CUSTOMER' as const, body: row.body }]]));
+}
 export async function getPortalOrganizationForUser(
-  db: PortalDb,
-  portalUserId: string,
-  email: string,
-  locale = 'de'
+  db: PortalDb, portalUserId: string, email: string, locale = 'de',
+  options: { page?: number; activeOnly?: boolean; reportsOnly?: boolean } = {}
 ): Promise<PortalDemoOrganization | null> {
-  const portalUser = await getPortalUserWithCases(db, portalUserId);
-
-  if (!portalUser) {
-    return null;
-  }
-
-  const cases = portalUser.caseAccesses
-    .map((access) => access.case)
-    .filter((caseRecord) => Boolean(caseRecord.publicRequestNumber));
-
-  return buildOrganization({
-    portalUserId: portalUser.id,
-    email: portalUser.primaryEmailNormalized || email,
-    displayName: portalUser.displayName,
-    cases,
-    locale,
+  const timing = portalDataTiming('summary');
+  const page = Math.max(1, Math.min(10_000, Math.floor(options.page || 1)));
+  const access = accessibleCases(portalUserId);
+  const active = { status: { notIn: ['COMPLETED', 'CANCELLED'] } } satisfies Prisma.CaseWhereInput;
+  const where: Prisma.CaseWhereInput = { ...access, ...(options.activeOnly ? active : {}),
+    ...(options.reportsOnly ? { workResult: { publishedVersion: { gt: 0 } } } : {}) };
+  const [user, rows, total, activeCount, filteredTotal] = await Promise.all([
+    identity(db, portalUserId),
+    db.case.findMany({ where, orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
+      skip: (page - 1) * PORTAL_PAGE_SIZE, take: PORTAL_PAGE_SIZE, select: caseSummarySelect }),
+    db.case.count({ where: access }), db.case.count({ where: { ...access, ...active } }),
+    options.activeOnly || options.reportsOnly ? db.case.count({ where }) : Promise.resolve(null),
+  ]);
+  if (!user) return null;
+  const titles = await openingMessages(db, rows.map(row => row.id));
+  timing.queried();
+  const organization = buildOrganization({ portalUserId: user.id,
+    email: user.primaryEmailNormalized || email, displayName: user.displayName, locale, includeHistory: false,
+    cases: rows.map(row => ({ ...row, messages: [], attachments: [], statusEvents: [], titleMessages: titles.get(row.id) || [] })),
   });
+  organization.pagination = { page, pageSize: PORTAL_PAGE_SIZE, total: filteredTotal ?? total, totalRequests: total, activeRequests: activeCount };
+  timing.complete();
+  return organization;
 }
-
+export async function getPortalMessagesForUser(db: PortalDb, portalUserId: string, publicRequestNumber: string, before?: string | null) {
+  const timing = portalDataTiming('messages');
+  const record = await db.case.findFirst({ where: { ...accessibleCases(portalUserId), publicRequestNumber: publicRequestNumber.trim().toUpperCase() }, select: { id: true } });
+  if (!record) return null;
+  // Resolve the cursor inside the authorized case; never accept arbitrary timestamps or another case's id.
+  const cursor = before ? await db.message.findFirst({ where: { id: before, caseId: record.id, ...visibleMessageWhere }, select: { id: true, createdAt: true } }) : null;
+  if (before && !cursor) return null;
+  const rows = await db.message.findMany({ where: { caseId: record.id, ...visibleMessageWhere,
+    ...(cursor ? { OR: [{ createdAt: { lt: cursor.createdAt } }, { createdAt: cursor.createdAt, id: { lt: cursor.id } }] } : {}) },
+    orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], take: PORTAL_MESSAGE_PAGE_SIZE + 1, select: messageSelect });
+  const selected = rows.slice(0, PORTAL_MESSAGE_PAGE_SIZE).reverse();
+  timing.queried();
+  const result = { messages: selected.map(message => ({ id: message.id, authorRole: message.authorRole,
+    body: customerSafePortalMessageBody(message.body), createdAt: (message.sentAt || message.createdAt).toISOString(), attachments: message.attachments })),
+    before: rows.length > PORTAL_MESSAGE_PAGE_SIZE ? selected[0]?.id ?? null : null };
+  timing.complete();
+  return result;
+}
 export async function getPortalRequestDetailForUser(
-  db: PortalDb,
-  portalUserId: string,
-  email: string,
-  publicRequestNumber: string,
-  locale = 'de'
+  db: PortalDb, portalUserId: string, email: string, publicRequestNumber: string, locale = 'de'
 ) {
-  const organization = await getPortalOrganizationForUser(db, portalUserId, email, locale);
-
-  if (!organization) {
-    return null;
-  }
-
-  const normalizedRequestNumber = publicRequestNumber.trim().toUpperCase();
-  const request = organization.requests.find((item) => item.publicRequestNumber === normalizedRequestNumber);
-
-  if (!request) {
-    return {
-      organization,
-      detail: null,
-    };
-  }
-
-  const object = organization.objects.find((item) => item.id === request.objectId) || organization.objects[0];
-
-  return {
-    organization,
-    detail: {
-      organization,
-      request,
-      object,
-      assets: organization.assets.filter((asset) => asset.objectId === request.objectId),
-      messages: organization.messages.filter((message) => message.requestId === request.id),
-      timeline: organization.requestTimeline.filter((item) => item.requestId === request.id),
-      customerAttachments: organization.customerAttachments.filter((attachment) => attachment.requestId === request.id),
-      documents: organization.documents.filter((document) => document.requestId === request.id),
-      requiredActions: organization.requiredActions.filter((action) => action.requestId === request.id),
-    },
-  };
+  const timing = portalDataTiming('detail');
+  const [user, record] = await Promise.all([
+    identity(db, portalUserId),
+    db.case.findFirst({ where: { ...accessibleCases(portalUserId), publicRequestNumber: publicRequestNumber.trim().toUpperCase() }, select: {
+      ...caseSummarySelect,
+      messages: { where: visibleMessageWhere, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], take: PORTAL_MESSAGE_PAGE_SIZE + 1, select: messageSelect },
+      attachments: { where: { isCustomerVisible: true }, orderBy: { createdAt: 'asc' }, select: { id: true, originalFilename: true, mimeType: true, createdAt: true } },
+      statusEvents: { orderBy: { createdAt: 'asc' }, select: { id: true, toStatus: true, reason: true, createdAt: true } },
+    } }),
+  ]);
+  if (!user) return null;
+  const titles = record ? await openingMessages(db, [record.id]) : new Map();
+  timing.queried();
+  const selected = record?.messages.slice(0, PORTAL_MESSAGE_PAGE_SIZE).reverse() || [];
+  const organization = buildOrganization({ portalUserId: user.id, email: user.primaryEmailNormalized || email,
+    displayName: user.displayName, locale, cases: record ? [{ ...record, messages: selected, titleMessages: titles.get(record.id) || [] }] : [] });
+  timing.complete();
+  if (!record) return { organization, detail: null };
+  return { organization, detail: { organization, request: organization.requests[0], object: organization.objects[0],
+    assets: [], messages: organization.messages, timeline: organization.requestTimeline,
+    customerAttachments: organization.customerAttachments, documents: organization.documents, requiredActions: [],
+    messageBefore: record.messages.length > PORTAL_MESSAGE_PAGE_SIZE ? selected[0]?.id ?? null : null,
+  } };
 }

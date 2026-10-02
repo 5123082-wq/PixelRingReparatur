@@ -1,66 +1,31 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocale } from 'next-intl';
-import { Link } from '@/i18n/routing';
+import { clearPortalData, portalMutationFetch, portalFetch, useAttentionSeed, usePortalResource } from './PortalLiveProvider';
+import Link from './PortalLink';
 import { getAttentionCopy } from '@/lib/portal-attention/copy';
 import { getDocumentCopy } from '@/lib/case-documents/copy';
 import type { AttentionItem } from '@/lib/portal-attention/types';
 
-type Snapshot = { items: AttentionItem[] | null; unreadCount: number; openCount: number; error: boolean };
-const initial: Snapshot = { items: null, unreadCount: 0, openCount: 0, error: false };
-const stores = new Map<string, { value: Snapshot; listeners: Set<() => void>; request: number }>();
-function storeFor(locale: string) {
-  if (!stores.has(locale)) stores.set(locale, { value: initial, listeners: new Set(), request: 0 });
-  return stores.get(locale)!;
-}
-async function refresh(locale: string, accountKey: string) {
-  const store = storeFor(accountKey + ':' + locale);
-  const sequence = ++store.request;
-  try {
-    const response = await fetch('/api/portal/attention?locale=' + encodeURIComponent(locale), { cache: 'no-store' });
-    if (!response.ok) {
-      if ((response.status === 401 || response.status === 403) && sequence === store.request) store.value = initial;
-      throw new Error();
-    }
-    const data = await response.json() as Omit<Snapshot, 'error'> & { portalUserId: string };
-    if (data.portalUserId !== accountKey) {
-      if (sequence === store.request) store.value = initial;
-      throw new Error();
-    }
-    if (sequence === store.request) store.value = { ...data, error: false };
-  } catch {
-    if (sequence === store.request) store.value = { ...store.value, error: true };
-  }
-  store.listeners.forEach((listener) => listener());
-}
+type Snapshot = { items: AttentionItem[] | null; unreadCount: number; openCount: number };
+const initial: Snapshot = { items: null, unreadCount: 0, openCount: 0 };
 export function usePortalAttention(accountKey: string) {
   const locale = useLocale();
-  const subscribe = useCallback((listener: () => void) => {
-    const store = storeFor(accountKey + ':' + locale);
-    store.listeners.add(listener);
-    return () => { store.listeners.delete(listener); if (store.listeners.size === 0) { store.value = initial; store.request++; } };
-  }, [locale, accountKey]);
-  const snapshot = useSyncExternalStore(subscribe, () => storeFor(accountKey + ':' + locale).value, () => initial);
-  useEffect(() => {
-    void refresh(locale, accountKey);
-    const reload = () => { if (document.visibilityState === 'visible') void refresh(locale, accountKey); };
-    window.addEventListener('focus', reload);
-    window.addEventListener('portal-attention-updated', reload);
-    document.addEventListener('visibilitychange', reload);
-    const timer = window.setInterval(reload, 30_000);
-    return () => { window.clearInterval(timer); window.removeEventListener('focus', reload); window.removeEventListener('portal-attention-updated', reload); document.removeEventListener('visibilitychange', reload); };
-  }, [locale, accountKey]);
-  return { ...snapshot, reload: () => refresh(locale, accountKey) };
+  const seed = useAttentionSeed();
+  const load = useCallback(() => portalFetch<Snapshot>('/api/portal/attention?locale=' + encodeURIComponent(locale), accountKey), [locale, accountKey]);
+  const resource = usePortalResource('attention:' + locale, seed || initial, load);
+  return { ...(resource.data || initial), error: resource.error, reload: resource.reload };
 }
-export function clearPortalAttention() {
-  stores.forEach((store) => { store.value = initial; store.request++; store.listeners.forEach((listener) => listener()); });
-}
-export function PortalLocalePreference() {
+export function clearPortalAttention() { clearPortalData(); }
+const savedLocales = new Map<string, string>();
+export function PortalLocalePreference({ accountKey }: { accountKey: string }) {
   const locale = useLocale();
   useEffect(() => {
-    void fetch('/api/portal/attention', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ locale }) }).catch(() => undefined);
-  }, [locale]);
+    if (savedLocales.get(accountKey) === locale) return;
+    savedLocales.set(accountKey, locale);
+    void portalMutationFetch('/api/portal/attention', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ locale }) }).then(response => { if (!response.ok) savedLocales.delete(accountKey); }).catch(() => savedLocales.delete(accountKey));
+  }, [locale, accountKey]);
   return null;
 }
 const buttonClass = 'inline-flex min-h-11 items-center justify-center rounded-xl border border-[#D0D5DD] bg-white px-3 py-2 text-sm font-semibold text-[#172033] hover:border-[#B8643E] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8643E] disabled:opacity-50';
@@ -95,10 +60,10 @@ export default function PortalAttention({ accountKey, publicRequestNumber, showO
   async function mutate(item: AttentionItem, action: 'read' | 'acknowledge') {
     setPending(item.id); setMutationError(false);
     try {
-      const response = await fetch('/api/portal/attention/' + encodeURIComponent(item.id), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action }) });
+      const response = await portalMutationFetch('/api/portal/attention/' + encodeURIComponent(item.id), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action }) });
       if (!response.ok) throw new Error();
       await data.reload();
-      window.dispatchEvent(new Event('portal-attention-updated'));
+
     } catch { setMutationError(true); }
     finally { setPending(null); }
   }

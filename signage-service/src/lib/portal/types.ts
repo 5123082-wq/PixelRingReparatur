@@ -122,6 +122,7 @@ export type PortalDocument = {
 };
 
 export type PortalDemoOrganization = {
+  pagination?: { page: number; pageSize: number; total: number; totalRequests: number; activeRequests: number };
   id: string;
   name: string;
   plan: 'Start' | 'Growth' | 'Enterprise';

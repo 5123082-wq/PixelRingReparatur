@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+import PortalLoading from '@/components/portal/PortalLoading';
 import PortalRequestDetailRoute from '@/components/portal/PortalRequestDetailRoute';
 
 export default async function PortalRequestDetailPage({
@@ -10,5 +12,5 @@ export default async function PortalRequestDetailPage({
   const { locale, publicRequestNumber } = await params;
   const { attention } = await searchParams;
 
-  return <PortalRequestDetailRoute attentionId={typeof attention === 'string' ? attention : undefined} locale={locale} publicRequestNumber={publicRequestNumber} />;
+  return <Suspense fallback={<PortalLoading />}><PortalRequestDetailRoute attentionId={typeof attention === 'string' ? attention : undefined} locale={locale} publicRequestNumber={publicRequestNumber} /></Suspense>;
 }

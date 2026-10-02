@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { cache } from 'react';
 import { SessionScope, type Prisma, type PrismaClient } from '@prisma/client';
 
 import { getPortalDemoEmail, isPortalDemoEnabled } from './demo-data';
@@ -111,6 +112,7 @@ export async function getPortalSessionContext(
       id: true,
       scope: true,
       revokedAt: true,
+      lastSeenAt: true,
       expiresAt: true,
       caseId: true,
       portalUserId: true,
@@ -137,11 +139,11 @@ export async function getPortalSessionContext(
   }
 
   if (options.touchLastSeen !== false) {
-    await db.session.update({
-      where: { id: session.id },
-      data: { lastSeenAt: new Date() },
-      select: { id: true },
-    });
+    const now = new Date();
+    const cutoff = new Date(now.getTime() - 5 * 60_000);
+    if (!session.lastSeenAt || session.lastSeenAt < cutoff) {
+      await db.session.updateMany({ where: { id: session.id, OR: [{ lastSeenAt: null }, { lastSeenAt: { lt: cutoff } }] }, data: { lastSeenAt: now } });
+    }
   }
 
   return {
@@ -170,3 +172,6 @@ export async function revokePortalSessionCookie(
     },
   });
 }
+
+// React cache is scoped to the current server render; API requests always validate anew.
+export const getCachedPortalSessionContext = cache(getPortalSessionContext);

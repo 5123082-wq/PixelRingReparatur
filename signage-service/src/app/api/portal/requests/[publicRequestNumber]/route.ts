@@ -1,3 +1,6 @@
+import { getPortalRequestDetailForUser } from '@/lib/portal/production-data';
+import { getPublicWorkResult } from '@/lib/work-results/service';
+import { portalReadTiming } from '@/lib/portal/performance';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
@@ -102,4 +105,20 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       { status: 500 }
     );
   }
+}
+
+export async function GET(request: NextRequest, { params }: RouteParams) {
+  const timing = portalReadTiming('detail');
+  const session = await getPortalSessionContext(prisma, request.cookies.get(PORTAL_SESSION_COOKIE_NAME)?.value);
+  timing.authenticated();
+  if (!session) return NextResponse.json({ error: 'unauthorized' }, { status: 401, headers: timing.headers() });
+  const { publicRequestNumber } = await params;
+  try {
+    const [result, workResult] = await Promise.all([
+      getPortalRequestDetailForUser(prisma, session.portalUserId, session.email, publicRequestNumber, request.nextUrl.searchParams.get('locale') || 'de'),
+      getPublicWorkResult(session.portalUserId, publicRequestNumber),
+    ]);
+    if (!result?.detail) return NextResponse.json({ error: 'not_found' }, { status: 404, headers: timing.headers() });
+    return NextResponse.json({ portalUserId: session.portalUserId, detail: { ...result.detail, workResult } }, { headers: timing.headers() });
+  } catch { return NextResponse.json({ error: 'unavailable' }, { status: 503, headers: timing.headers() }); }
 }

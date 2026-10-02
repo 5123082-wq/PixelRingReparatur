@@ -1,3 +1,4 @@
+import { publishPortalUserInvalidation } from '@/lib/portal/realtime';
 import 'server-only';
 import { getAttentionCopy } from './copy';
 import { getWorkResultCopy } from '@/lib/work-results/copy';
@@ -95,7 +96,7 @@ export async function mutateAttention(request: NextRequest, id: string, input: u
   if (!DOCUMENT_ID.test(id)) throw new DocumentError('not_found', 404);
   const body = input as { action?: unknown; messageId?: unknown; attachmentId?: unknown } | null;
   if (!body || !['read', 'acknowledge', 'submit'].includes(String(body.action))) throw new DocumentError('invalid_input');
-  return prisma.$transaction(async tx => {
+  const result = await prisma.$transaction(async tx => {
     const accessible = await tx.portalAttention.findFirst({ where: { id, ...attentionAccess(session.portalUserId) }, select: { caseId: true } });
     if (!accessible) throw new DocumentError('not_found', 404);
     await tx.$queryRaw(Prisma.sql`SELECT id FROM cases WHERE id = ${accessible.caseId}::uuid FOR UPDATE`);
@@ -124,6 +125,8 @@ export async function mutateAttention(request: NextRequest, id: string, input: u
     await tx.adminAuditLog.create({ data: { action: 'PORTAL_ATTENTION_' + String(body.action).toUpperCase(), resourceType: 'PORTAL_ATTENTION', resourceId: id, caseId: row.caseId, details: { portalUserId: session.portalUserId, portalSessionId: session.sessionId } } });
     return attentionView(saved, request.nextUrl.searchParams.get('locale') || 'de');
   });
+  await publishPortalUserInvalidation(session.portalUserId).catch(() => console.error('Portal invalidation publish failed'));
+  return result;
 }
 export async function adminAttentionAudit(tx: Prisma.TransactionClient, actor: AdminRequestActor, caseId: string, id: string, action: string) {
   await createAdminAuditLog(tx, { actorSessionId: actor.sessionId, actorAdminUserId: actor.adminUserId, actorRole: actor.role,
