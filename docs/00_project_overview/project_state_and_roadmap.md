@@ -6,7 +6,7 @@ Purpose: current-state boundary and roadmap index. Read this beacon for startup 
 
 Exists now:
 
-- Ускорение кабинета реализовано и проверено в отдельной рабочей копии поверх выпуска №87; публикация ещё не выполнена: [отчёт и проверка](../04_client_portal/portal_performance_implementation_2026-10-02.md).
+- Ускорение кабинета опубликовано через запрос №88; рабочая сборка, страницы входа и защита закрытых данных проверены. Замеры авторизованного аккаунта ожидают входа владельца: [отчёт и проверка](../04_client_portal/portal_performance_implementation_2026-10-02.md).
 
 - shared client action/notification inbox and document/report email outbox merged through PR #85, with review corrections merged through PR #86; production migration and historical-material backfill applied, scheduler secret configured: [execution guide](../04_client_portal/client_notifications_and_actions.md);
 
