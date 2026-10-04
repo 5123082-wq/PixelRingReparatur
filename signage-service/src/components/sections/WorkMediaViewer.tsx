@@ -23,6 +23,7 @@ export type WorkMediaItem = {
   video?: string;
   poster?: string;
   videoLabel?: string;
+  videoHasAudio?: boolean;
   serviceHref: string;
 };
 
@@ -149,7 +150,7 @@ function ViewerVideo({
         src={active ? item.video : undefined}
         poster={item.poster || item.image}
         aria-label={item.videoLabel || item.imageAlt || item.title}
-        muted={muted}
+        muted={item.videoHasAudio === false || muted}
         loop
         playsInline
         preload={active ? 'auto' : 'none'}
@@ -165,9 +166,11 @@ function ViewerVideo({
         <button type="button" onClick={togglePlayback} className={CONTROL_CLASS} aria-label={playing ? labels.pause : labels.play} title={playing ? labels.pause : labels.play}>
           {playing ? <PauseIcon className="h-5 w-5" aria-hidden="true" /> : <PlayIcon className="h-5 w-5" aria-hidden="true" />}
         </button>
-        <button type="button" onClick={onToggleMuted} className={CONTROL_CLASS} aria-label={muted ? labels.unmute : labels.mute} title={muted ? labels.unmute : labels.mute}>
-          {muted ? <SpeakerXMarkIcon className="h-5 w-5" aria-hidden="true" /> : <SpeakerWaveIcon className="h-5 w-5" aria-hidden="true" />}
-        </button>
+        {item.videoHasAudio !== false && (
+          <button type="button" onClick={onToggleMuted} className={CONTROL_CLASS} aria-label={muted ? labels.unmute : labels.mute} title={muted ? labels.unmute : labels.mute}>
+            {muted ? <SpeakerXMarkIcon className="h-5 w-5" aria-hidden="true" /> : <SpeakerWaveIcon className="h-5 w-5" aria-hidden="true" />}
+          </button>
+        )}
       </div>
     </div>
   );

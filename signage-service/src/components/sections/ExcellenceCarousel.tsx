@@ -30,6 +30,7 @@ type WorkCardConfig = {
   video?: string;
   poster?: string;
   videoLabel?: string;
+  videoHasAudio?: boolean;
   serviceHref: string;
 };
 
@@ -149,10 +150,11 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'Branding & Druck',
       tag: 'Branding',
       description: 'Folien, Druckdaten, Beschriftungen und Werbematerialien für einen klaren Standortauftritt.',
-      image: '/images/ex-branding-print-folienmontage-poster.webp',
+      image: '/images/pixelring-folienmontage-reel-20261004.webp',
       imageAlt: 'Montage von Schaufensterfolie und Branding-Elementen an einem Geschäftsstandort',
-      video: '/videos/ex-branding-print-folienmontage.mp4',
-      poster: '/images/ex-branding-print-folienmontage-poster.webp',
+      videoHasAudio: false,
+      video: '/videos/pixelring-folienmontage-reel-20261004.mp4',
+      poster: '/images/pixelring-folienmontage-reel-20261004.webp',
       videoLabel: 'Video einer Folienmontage und Branding-Arbeit an einer Geschäftsfassade',
       serviceHref: '/leistungen/druckprodukte-branding-werbematerialien',
     },
@@ -168,10 +170,11 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'Markisenreinigung & Aufarbeitung',
       tag: 'Sichtbarer Werbeauftritt',
       description: 'Reinigung, Pflege und Aufarbeitung von Markisen an Cafés, Restaurants und Geschäftsfassaden – für einen gepflegten, sichtbaren Auftritt.',
-      image: '/images/ex-awning-cleaning-poster.jpg',
+      image: '/images/pixelring-markisenreinigung-reel-20261004.webp',
       imageAlt: 'Fachkraft reinigt eine Markise vor einem Café an einer Geschäftsstraße',
-      video: '/videos/ex-awning-cleaning.mp4',
-      poster: '/images/ex-awning-cleaning-poster.jpg',
+      videoHasAudio: false,
+      video: '/videos/pixelring-markisenreinigung-reel-20261004.mp4',
+      poster: '/images/pixelring-markisenreinigung-reel-20261004.webp',
       videoLabel: 'Video einer fachgerechten Markisenreinigung vor einem Café',
       serviceHref: '/leistungen/werbeanlagen-reinigung',
     },
@@ -205,10 +208,11 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'Branding & Print',
       tag: 'Branding',
       description: 'Films, print files, lettering, and advertising materials for a clear site presence.',
-      image: '/images/ex-branding-print-folienmontage-poster.webp',
+      image: '/images/pixelring-folienmontage-reel-20261004.webp',
       imageAlt: 'Installation of window film and branding elements on a storefront',
-      video: '/videos/ex-branding-print-folienmontage.mp4',
-      poster: '/images/ex-branding-print-folienmontage-poster.webp',
+      videoHasAudio: false,
+      video: '/videos/pixelring-folienmontage-reel-20261004.mp4',
+      poster: '/images/pixelring-folienmontage-reel-20261004.webp',
       videoLabel: 'Video of window film installation and branding work on a storefront facade',
       serviceHref: '/leistungen/druckprodukte-branding-werbematerialien',
     },
@@ -224,10 +228,11 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'Awning Cleaning & Restoration',
       tag: 'Visible Brand Presence',
       description: 'Cleaning, care, and restoration of awnings at cafés, restaurants, and business facades—for a well-kept, visible presence.',
-      image: '/images/ex-awning-cleaning-poster.jpg',
+      image: '/images/pixelring-markisenreinigung-reel-20261004.webp',
       imageAlt: 'Specialist cleaning an awning in front of a café on a business street',
-      video: '/videos/ex-awning-cleaning.mp4',
-      poster: '/images/ex-awning-cleaning-poster.jpg',
+      videoHasAudio: false,
+      video: '/videos/pixelring-markisenreinigung-reel-20261004.mp4',
+      poster: '/images/pixelring-markisenreinigung-reel-20261004.webp',
       videoLabel: 'Video of professional awning cleaning in front of a café',
       serviceHref: '/leistungen/werbeanlagen-reinigung',
     },
@@ -261,10 +266,11 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'Брендинг и печать',
       tag: 'Брендинг',
       description: 'Пленки, печатные материалы, надписи и брендирование для коммерческого объекта.',
-      image: '/images/ex-branding-print-folienmontage-poster.webp',
+      image: '/images/pixelring-folienmontage-reel-20261004.webp',
       imageAlt: 'Монтаж витринной пленки и бренд-элементов на фасаде коммерческого объекта',
-      video: '/videos/ex-branding-print-folienmontage.mp4',
-      poster: '/images/ex-branding-print-folienmontage-poster.webp',
+      videoHasAudio: false,
+      video: '/videos/pixelring-folienmontage-reel-20261004.mp4',
+      poster: '/images/pixelring-folienmontage-reel-20261004.webp',
       videoLabel: 'Видео монтажа витринной пленки и брендирования фасада коммерческого объекта',
       serviceHref: '/leistungen/druckprodukte-branding-werbematerialien',
     },
@@ -280,10 +286,11 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'Чистка и восстановление маркиз',
       tag: 'Видимый рекламный облик',
       description: 'Чистка, уход и восстановление маркиз для кафе, ресторанов и коммерческих фасадов — чтобы объект выглядел ухоженно и заметно.',
-      image: '/images/ex-awning-cleaning-poster.jpg',
+      image: '/images/pixelring-markisenreinigung-reel-20261004.webp',
       imageAlt: 'Специалист очищает маркизу перед кафе на городской улице',
-      video: '/videos/ex-awning-cleaning.mp4',
-      poster: '/images/ex-awning-cleaning-poster.jpg',
+      videoHasAudio: false,
+      video: '/videos/pixelring-markisenreinigung-reel-20261004.mp4',
+      poster: '/images/pixelring-markisenreinigung-reel-20261004.webp',
       videoLabel: 'Видео профессиональной чистки маркизы перед кафе',
       serviceHref: '/leistungen/werbeanlagen-reinigung',
     },
@@ -317,10 +324,11 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'Markalama ve Baskı',
       tag: 'Markalama',
       description: 'İşyeri görünümü için folyolar, baskı dosyaları, yazılar ve reklam malzemeleri.',
-      image: '/images/ex-branding-print-folienmontage-poster.webp',
+      image: '/images/pixelring-folienmontage-reel-20261004.webp',
       imageAlt: 'Bir mağaza cephesine vitrin filmi ve marka öğeleri uygulanması',
-      video: '/videos/ex-branding-print-folienmontage.mp4',
-      poster: '/images/ex-branding-print-folienmontage-poster.webp',
+      videoHasAudio: false,
+      video: '/videos/pixelring-folienmontage-reel-20261004.mp4',
+      poster: '/images/pixelring-folienmontage-reel-20261004.webp',
       videoLabel: 'Bir mağaza cephesinde vitrin filmi montajı ve markalama çalışması videosu',
       serviceHref: '/leistungen/druckprodukte-branding-werbematerialien',
     },
@@ -336,10 +344,11 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'Tente Temizliği ve Yenileme',
       tag: 'Görünür Marka İmajı',
       description: 'Kafe, restoran ve iş yeri cephelerindeki tentelerin temizliği, bakımı ve yenilenmesi — bakımlı ve görünür bir marka imajı için.',
-      image: '/images/ex-awning-cleaning-poster.jpg',
+      image: '/images/pixelring-markisenreinigung-reel-20261004.webp',
       imageAlt: 'Uzman, şehir caddesindeki bir kafenin önünde tente temizliği yapıyor',
-      video: '/videos/ex-awning-cleaning.mp4',
-      poster: '/images/ex-awning-cleaning-poster.jpg',
+      videoHasAudio: false,
+      video: '/videos/pixelring-markisenreinigung-reel-20261004.mp4',
+      poster: '/images/pixelring-markisenreinigung-reel-20261004.webp',
       videoLabel: 'Bir kafenin önünde profesyonel tente temizliği videosu',
       serviceHref: '/leistungen/werbeanlagen-reinigung',
     },
@@ -373,10 +382,11 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'Branding i druk',
       tag: 'Branding',
       description: 'Folie, pliki do druku, napisy i materiały reklamowe dla spójnego wyglądu lokalu.',
-      image: '/images/ex-branding-print-folienmontage-poster.webp',
+      image: '/images/pixelring-folienmontage-reel-20261004.webp',
       imageAlt: 'Montaż folii okiennej i elementów brandingu na witrynie firmowej',
-      video: '/videos/ex-branding-print-folienmontage.mp4',
-      poster: '/images/ex-branding-print-folienmontage-poster.webp',
+      videoHasAudio: false,
+      video: '/videos/pixelring-folienmontage-reel-20261004.mp4',
+      poster: '/images/pixelring-folienmontage-reel-20261004.webp',
       videoLabel: 'Film z montażu folii okiennej i brandingu na fasadzie firmowej',
       serviceHref: '/leistungen/druckprodukte-branding-werbematerialien',
     },
@@ -392,10 +402,11 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'Czyszczenie i renowacja markiz',
       tag: 'Widoczny wizerunek marki',
       description: 'Czyszczenie, pielęgnacja i renowacja markiz przy kawiarniach, restauracjach i fasadach firmowych — dla zadbanego, widocznego wizerunku.',
-      image: '/images/ex-awning-cleaning-poster.jpg',
+      image: '/images/pixelring-markisenreinigung-reel-20261004.webp',
       imageAlt: 'Specjalista czyści markizę przed kawiarnią przy miejskiej ulicy',
-      video: '/videos/ex-awning-cleaning.mp4',
-      poster: '/images/ex-awning-cleaning-poster.jpg',
+      videoHasAudio: false,
+      video: '/videos/pixelring-markisenreinigung-reel-20261004.mp4',
+      poster: '/images/pixelring-markisenreinigung-reel-20261004.webp',
       videoLabel: 'Film z profesjonalnego czyszczenia markizy przed kawiarnią',
       serviceHref: '/leistungen/werbeanlagen-reinigung',
     },
@@ -429,10 +440,11 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'الهوية والطباعة',
       tag: 'هوية بصرية',
       description: 'أفلام ونماذج طباعة وكتابات ومواد إعلانية لظهور واضح لموقع العمل.',
-      image: '/images/ex-branding-print-folienmontage-poster.webp',
+      image: '/images/pixelring-folienmontage-reel-20261004.webp',
       imageAlt: 'تركيب فيلم واجهة وعناصر هوية بصرية على واجهة متجر',
-      video: '/videos/ex-branding-print-folienmontage.mp4',
-      poster: '/images/ex-branding-print-folienmontage-poster.webp',
+      videoHasAudio: false,
+      video: '/videos/pixelring-folienmontage-reel-20261004.mp4',
+      poster: '/images/pixelring-folienmontage-reel-20261004.webp',
       videoLabel: 'فيديو لتركيب فيلم واجهة وعمل هوية بصرية على واجهة متجر',
       serviceHref: '/leistungen/druckprodukte-branding-werbematerialien',
     },
@@ -448,10 +460,11 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'تنظيف وتجديد المظلات',
       tag: 'حضور بصري واضح للعلامة التجارية',
       description: 'تنظيف وصيانة وتجديد المظلات للمقاهي والمطاعم وواجهات الأعمال — لمظهر مهني واضح وجذاب.',
-      image: '/images/ex-awning-cleaning-poster.jpg',
+      image: '/images/pixelring-markisenreinigung-reel-20261004.webp',
       imageAlt: 'مختص ينظف مظلة أمام مقهى في شارع تجاري',
-      video: '/videos/ex-awning-cleaning.mp4',
-      poster: '/images/ex-awning-cleaning-poster.jpg',
+      videoHasAudio: false,
+      video: '/videos/pixelring-markisenreinigung-reel-20261004.mp4',
+      poster: '/images/pixelring-markisenreinigung-reel-20261004.webp',
       videoLabel: 'فيديو لتنظيف احترافي لمظلة أمام مقهى',
       serviceHref: '/leistungen/werbeanlagen-reinigung',
     },
@@ -538,7 +551,7 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
     '/images/ex-mounting-dietz-autohaus-werbepylon.webp',
     '/images/ex-repair-libitina-leuchtkasten-fassade.webp',
     '/images/ex-maintenance.png',
-    '/images/ex-branding-print-folienmontage-poster.webp',
+    '/images/pixelring-folienmontage-reel-20261004.webp',
     '/images/baeckerei-biesewski-lichtkasten-led-umruestung-nachher.jpg',
     '/images/ex-dismantling.png',
   ];
@@ -560,6 +573,7 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
       video: config.video,
       poster: config.poster,
       videoLabel: config.videoLabel,
+      videoHasAudio: config.videoHasAudio,
       serviceHref: config.serviceHref,
     };
   });
@@ -724,7 +738,7 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
                     src={item.video}
                     label={item.videoLabel || item.imageAlt}
                     poster={item.poster || item.image}
-                    className="pointer-events-none absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="pointer-events-none absolute inset-0 h-full w-full object-cover"
                   />
                 ) : (
                   <Image
@@ -735,9 +749,9 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/58 via-black/10 to-black/42" />
+                {!item.video && <div className="absolute inset-0 bg-gradient-to-b from-black/58 via-black/10 to-black/42" />}
 
-                <div className="absolute inset-x-0 top-0 flex flex-col gap-3 p-7 text-white sm:p-8">
+                <div className={item.video ? 'sr-only' : 'absolute inset-x-0 top-0 flex flex-col gap-3 p-7 text-white sm:p-8'}>
                   <span className="self-start text-[13px] font-bold leading-none text-white/90">
                     #{item.tag}
                   </span>
@@ -746,8 +760,8 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
                   </h3>
                 </div>
 
-                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-5 p-7 text-white sm:p-8">
-                  <p className="max-w-[15.5rem] text-[14px] font-medium leading-6 text-white/84 sm:text-[15px]">
+                <div className={`absolute inset-x-0 bottom-0 flex items-end gap-5 p-7 text-white sm:p-8 ${item.video ? 'justify-end' : 'justify-between'}`}>
+                  <p className={item.video ? 'sr-only' : 'max-w-[15.5rem] text-[14px] font-medium leading-6 text-white/84 sm:text-[15px]'}>
                     {item.description}
                   </p>
                   <span
