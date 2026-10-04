@@ -183,7 +183,7 @@ const CONTENT = {
   de: {
     metaTitle: 'Referenzen für Schilder-Reparatur & Werbetechnik | PixelRing',
     metaDescription:
-      'Ausgewaehlte Referenzen von PixelRing: Leuchtkästen, LED-Buchstaben, Neon, Folien, Fassadenmontage und Filialservice ohne private Kundendaten.',
+      'Ausgewählte Referenzen von PixelRing: Leuchtkästen, LED-Buchstaben, Neon, Folien, Fassadenmontage und Filialservice ohne private Kundendaten.',
     badge: 'Referenzen',
     heroTitle: 'Unsere Arbeiten',
     heroIntro:
@@ -194,7 +194,7 @@ const CONTENT = {
     heroNoteTitle: 'Proof statt Galerie',
     heroNoteText:
       'Jede Referenz ist als kurzer Reparaturbericht gedacht: Ausgangszustand, Arbeitsschritt, Ergebnis. Der Fokus bleibt auf Ausfuehrung und Vertrauen.',
-    recentEyebrow: 'Ausgewaehlte Arbeiten',
+    recentEyebrow: 'Ausgewählte Arbeiten',
     recentTitle: 'Visuelles Ergebnis und Arbeitsumfang',
     recentIntro:
       'Jede Karte zeigt den Standort vor und nach der Arbeit. Im Bericht stehen Problem, ausgefuehrte Arbeiten und Ergebnis.',
@@ -232,7 +232,7 @@ const CONTENT = {
     modalBeforeLabel: 'Vorher ansehen',
     modalCta: 'Aehnliche Anfrage',
     viewerAllLabel: 'Alle',
-    viewerCloseLabel: 'Schliessen',
+    viewerCloseLabel: 'Schließen',
   },
   en: {
     metaTitle: 'References for Sign Repair & Visual Service | PixelRing',

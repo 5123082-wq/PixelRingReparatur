@@ -262,20 +262,20 @@ const CONTENT: Record<Locale, LeistungenContent> = {
   de: {
     metaTitle: 'Leistungen für Reparatur, Wartung & Werbetechnik | PixelRing',
     metaDescription:
-      'PixelRing unterstützt Unternehmen bei Reparatur, Diagnose, Montage, Wartung, Lichtwerbung, Branding, Druckprodukten und Servicevertraegen für Werbeanlagen.',
+      'PixelRing unterstützt Unternehmen bei Reparatur, Diagnose, Montage, Wartung, Lichtwerbung, Branding, Druckprodukten und Serviceverträgen für Werbeanlagen.',
     heroSlides: [
       {
         id: 'repair',
         title: 'Reparatur & Wartung von Außenwerbung',
         description: 'Professionelle Instandsetzung von Werbeanlagen, Leuchtwerbung und Außenwerbung.',
-        image: '/images/leistungen/werbeanlagen-reparatur-led-module-pruefung.png',
+        image: '/images/leistungen/werbeanlagen-reparatur-led-module-prüfung.png',
         imageAlt: 'LED-Module in einem geöffneten Leuchtkasten werden mit einem Multimeter geprüft',
         cta: 'Service starten',
       },
       {
         id: 'led',
         title: 'Moderne Lichtwerbung & LED-Service',
-        description: 'Lichtwerbung, die auffaellt. Wir reparieren LED-Module, Netzteile und Neonröhren fachgerecht.',
+        description: 'Lichtwerbung, die auffällt. Wir reparieren LED-Module, Netzteile und Neonröhren fachgerecht.',
         image: '/images/leistungen/lichtwerbung-led-modernisierung-lichtkasten-led-module.webp',
         imageAlt: 'Geöffneter Lichtkasten mit installierten LED-Modulen während der LED-Modernisierung einer Lichtwerbung auf einem Gebäudedach',
         cta: 'Service starten',
@@ -284,7 +284,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         id: 'audit',
         title: 'Inspektion, Audit & Diagnose',
         description: 'Zustand, Ursache, Umfang und sichtbare Risiken werden strukturiert erfasst.',
-        image: '/images/leistungen/werbeanlagen-audit-diagnose-ladenfassade-vor-ort-pruefung.webp',
+        image: '/images/leistungen/werbeanlagen-audit-diagnose-ladenfassade-vor-ort-prüfung.webp',
         imageAlt: 'Techniker prüft eine Werbeanlage an einer Ladenfassade während Inspektion und Diagnose vor Ort',
         cta: 'Diagnose anfragen',
       },
@@ -293,7 +293,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Montage, Demontage & Versetzung',
         description: 'Koordinierte Umsetzung für neue, bestehende oder zu versetzende Werbeanlagen.',
         image: '/images/leistungen/werbeanlagen-montage-demontage-sportzentrum-fassade.webp',
-        imageAlt: 'Techniker montieren einen Leuchtkasten an einer Geschaeftsfassade mit Arbeitsplattform',
+        imageAlt: 'Techniker montieren einen Leuchtkasten an einer Geschäftsfassade mit Arbeitsplattform',
         cta: 'Service anfragen',
       },
       {
@@ -314,7 +314,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Reparatur & Wartung von Außenwerbung',
         description:
           'Professionelle Instandsetzung von Werbeanlagen, Leuchtwerbung und Außenwerbung. Wir erhalten bestehende Systeme durch gezielte Reparatur, Pflege und visuelle Wiederherstellung.',
-        image: '/images/leistungen/werbeanlagen-reparatur-led-module-pruefung.png',
+        image: '/images/leistungen/werbeanlagen-reparatur-led-module-prüfung.png',
         imageAlt: 'LED-Module in einem geöffneten Leuchtkasten werden mit einem Multimeter geprüft',
         eyebrow: 'Werbeanlagen-Reparatur',
         cta: 'Mehr zur Reparatur',
@@ -333,7 +333,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         description:
           'PixelRing koordiniert Reinigung und Pflege von Werbeanlagen, Markisen und Außenwerbung in Berlin & Brandenburg - mit einem verantwortlichen Ansprechpartner für den gesamten Ablauf.',
         image: '/images/leistungen/werbeanlagen-reinigung/werbeanlagen-reinigung-markise-service.webp',
-        imageAlt: 'Beispielhafte Darstellung eines PixelRing Teams bei der Reinigung einer blauen Markise an einer Geschäftsfront',
+        imageAlt: 'Beispielhafte Darstellung eines PixelRing-Teams bei der Reinigung einer blauen Markise an einer Geschäftsfront',
         cta: 'Reinigung ansehen',
         details: [
           { label: 'Region', value: 'Berlin & Brandenburg als Kerngebiet' },
@@ -364,7 +364,7 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         title: 'Inspektion, Audit & Diagnose von Werbeanlagen',
         description:
           'Wir erfassen Zustand, Ursache, Umfang und sichtbare Risiken einer Anlage. Daraus entsteht eine nachvollziehbare Empfehlung für Reparatur, Wartung oder den nächsten Schritt.',
-        image: '/images/leistungen/werbeanlagen-audit-diagnose-ladenfassade-vor-ort-pruefung.webp',
+        image: '/images/leistungen/werbeanlagen-audit-diagnose-ladenfassade-vor-ort-prüfung.webp',
         imageAlt: 'Techniker prüft eine Werbeanlage an einer Ladenfassade während Inspektion und Diagnose vor Ort',
         cta: 'Mehr zur Diagnose',
         details: [
@@ -379,9 +379,9 @@ const CONTENT: Record<Locale, LeistungenContent> = {
         intent: 'montage-demontage',
         title: 'Montage, Demontage & Versetzung von Werbeanlagen',
         description:
-          'Koordination für neue, bestehende oder zu versetzende Werbeanlagen. PixelRing plant die nächsten Schritte und stimmt die benötigten Fachleute ab.',
+          'Koordination für neue, bestehende oder zu versetzende Werbeanlagen. PixelRing plant die nächsten Schritte und stimmt den Einsatz der benötigten Fachleute ab.',
         image: '/images/leistungen/werbeanlagen-montage-demontage-sportzentrum-fassade.webp',
-        imageAlt: 'Techniker montieren einen Leuchtkasten an einer Geschaeftsfassade mit Arbeitsplattform',
+        imageAlt: 'Techniker montieren einen Leuchtkasten an einer Geschäftsfassade mit Arbeitsplattform',
         cta: 'Mehr zur Montage',
         details: [
           { label: 'Montage', value: 'Einbau und Befestigung neuer oder bestehender Anlagen' },
@@ -526,12 +526,12 @@ const CONTENT: Record<Locale, LeistungenContent> = {
     trustPoints: [
       'Keine Vermittlungsplattform: Ihre Anfrage geht direkt an PixelRing.',
       'Berlin & Brandenburg als Kerngebiet - weitere Regionen in Deutschland auf Anfrage.',
-      'Garantie bis zu 24 Monate, abhaengig von Leistung, Material und Einsatzbedingungen.',
+      'Garantie bis zu 24 Monate, abhängig von Leistung, Material und Einsatzbedingungen.',
       'Umsetzung durch Fachteam und qualifizierte Partner unter zentraler PixelRing-Koordination.',
     ],
     finalHeadline: 'Nicht sicher, ob Ihre Aufgabe passt?',
     finalText:
-      'Senden Sie uns eine kurze Beschreibung oder ein Foto. PixelRing prüft den Umfang und klaert die nächsten sinnvollen Schritte.',
+      'Senden Sie uns eine kurze Beschreibung oder ein Foto. PixelRing prüft den Umfang und klärt die nächsten sinnvollen Schritte.',
   },
   en: {
     metaTitle: 'Services for Repair, Maintenance & Signage | PixelRing',

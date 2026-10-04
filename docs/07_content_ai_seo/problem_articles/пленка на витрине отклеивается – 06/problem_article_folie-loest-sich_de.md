@@ -263,7 +263,7 @@ Nassverklebung ist eine professionelle Methode, aber nicht für jede Folie geeig
 
 Bei bestimmten Materialien, zum Beispiel perforierter Fensterfolie, kann Nassverklebung besonders problematisch sein: Flüssigkeit bleibt in den Öffnungen stehen und verzögert die Trocknung.
 
-### 4. Glas oder Paneel wurden nicht sauber vorbereitet
+### 4. Der Untergrund wurde nicht sorgfältig vorbereitet
 
 Folie haftet schlecht auf Staub, Fett, altem Kleber, Wachs, Polituren, Silikonspuren, ammoniakhaltigen Reinigern und alten Aufkleberresten. Schon eine kleine Verschmutzung an der Kante kann den Beginn einer Ablösung auslösen.
 
@@ -289,7 +289,7 @@ Bei großen Schaufenstern zeigt sich das besonders an langen unteren und seitlic
 
 ### 8. Folie wurde gedehnt oder überhitzt
 
-Wenn Folie stark gezogen, überhitzt oder unter Spannung verarbeitet wurde, kann sie versuchen, in ihre ursprüngliche Form zurückzukehren. Dann heben sich Ecken, feine Elemente lösen sich und Kanten beginnen zu wellen.
+Wenn Folie stark gezogen, überhitzt oder unter Spannung verarbeitet wurde, kann sie versuchen, in ihre ursprüngliche Form zurückzukehren. Dann heben sich Ecken, feine Elemente lösen sich und die Kanten wellen sich.
 
 Das sieht man häufig an kleinen Buchstaben, spitzen Ecken, langen Streifen und komplexer Grafik.
 

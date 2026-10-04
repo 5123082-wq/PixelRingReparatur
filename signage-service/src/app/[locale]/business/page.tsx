@@ -442,7 +442,7 @@ const MOCKUP_CONTENT: Record<Locale, BusinessMockupContent> = {
     targetEyebrow: 'BRANCHEN',
     partnerEyebrow: 'PARTNER-SERVICE',
     partnerDeskLabel: 'PixelRing Service-Desk',
-    partnerImageAlt: 'PixelRing Techniker prueft eine geoeffnete Lichtwerbung an einem Kundenobjekt',
+    partnerImageAlt: 'PixelRing-Techniker prüft eine geöffnete Lichtwerbung an einem Kundenobjekt',
     auditEyebrow: 'Service-Abo',
     platformEyebrow: 'Kundenportal & Reports',
     finalEyebrow: 'NÄCHSTER SCHRITT',
@@ -452,7 +452,7 @@ const MOCKUP_CONTENT: Record<Locale, BusinessMockupContent> = {
     auditStatuses: { ok: 'OK', planned: 'Planen', urgent: 'Dringend' },
     auditCompleteLabel: 'Audit abgeschlossen',
     auditStats: { assets: 'Anlagen geprüft', print: 'Print-Updates', risks: 'Risiken markiert' },
-    portalLiveLabel: 'Live Übersicht',
+    portalLiveLabel: 'Live-Übersicht',
     portalKpis: [
       { label: 'Markenstatus', value: '86%', sub: '+12% seit Audit', color: 'text-[#35b47a]' },
       { label: 'Offene Tasks', value: '7', sub: '3 priorisiert', color: 'text-[#d99a35]' },

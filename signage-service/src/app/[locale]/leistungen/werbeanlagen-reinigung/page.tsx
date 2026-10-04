@@ -469,7 +469,7 @@ const CLEANING_CASES_BY_LOCALE: Record<Locale, CleaningCase[]> = {
 
 const ISSUE_LINKS_BY_LOCALE: Record<Locale, LinkCard[]> = {
   de: [
-    { title: 'Folie löst sich', text: 'Wenn Schmutz alte Folienkanten, Blasen oder UV-Schäden sichtbar macht.', href: '/probleme-loesungen/folie-loest-sich', tag: 'Folie' },
+    { title: 'Folie löst sich', text: 'Wenn Schmutz alte Folienkanten, Blasen oder UV-Schäden sichtbar macht.', href: '/probleme-loesungen/folie-löst-sich', tag: 'Folie' },
     { title: 'Nach Regen schaltet die Anlage ab', text: 'Wenn Feuchtigkeit oder Reinigung zeigt, dass die Leuchtwerbung technisch geprüft werden muss.', href: '/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab', tag: 'Feuchtigkeit' },
     { title: 'Buchstabe leuchtet nicht', text: 'Wenn bei der Sichtprüfung einzelne Buchstaben dunkel bleiben oder ungleichmäßig wirken.', href: '/probleme-loesungen/buchstabe-leuchtet-nicht', tag: 'Licht' },
     { title: 'Werbeanlage flackert', text: 'Wenn die Anlage nicht nur verschmutzt ist, sondern Lichttechnik oder Netzteil auffällig reagieren.', href: '/probleme-loesungen/werbeanlage-flackert', tag: 'Diagnose' },
@@ -579,8 +579,7 @@ const ISSUE_LINKS_COPY_BY_LOCALE: Record<Locale, { eyebrow: string; title: strin
 };
 
 const REQUEST_PREFILL_BY_LOCALE: Record<Locale, string> = {
-  de:
-    'Reinigungsanfrage: Bitte prüfen Sie Fotos und Standort für Werbeanlagen- oder Markisenreinigung in Berlin und Brandenburg. Objekt, Material, Zugang und sichtbare Schäden sollen eingeordnet werden.',
+  de: 'Reinigungsanfrage: Bitte prüfen Sie Fotos und Standort für Werbeanlagen- oder Markisenreinigung in Berlin und Brandenburg. Objekt, Material, Zugang und sichtbare Schäden sollen eingeordnet werden.',
   en:
     'Cleaning request: please review photos and location for signage or awning cleaning in Berlin and Brandenburg. Object, material, access and visible damage should be assessed.',
   ru:
@@ -699,7 +698,7 @@ const CONTENT: Record<Locale, CleaningPageContent> = {
     heroSubline:
       'PixelRing reinigt Schilder, Leuchtkästen und Außenwerbung an Geschäftsfronten in Berlin & Brandenburg. Wir prüfen vorab Fotos, Material und Zugang für eine materialschonende Reinigung oder die passende Reparatur-Empfehlung.',
     heroImageAlt:
-      'Beispielhafte Darstellung eines PixelRing Teams bei der Reinigung einer blauen Markise an einer Geschäftsfront',
+      'Beispielhafte Darstellung eines PixelRing-Teams bei der Reinigung einer blauen Markise an einer Geschäftsfront',
     heroPrimaryCta: 'Reinigung anfragen',
     heroSecondaryCta: 'Welche Fotos helfen?',
     heroSecondaryHref: '#cleaning-photos',
@@ -768,7 +767,7 @@ const CONTENT: Record<Locale, CleaningPageContent> = {
     scopeEyebrow: 'Reinigung & Pflege',
     scopeTitle: 'Was PixelRing reinigen und prüfen kann',
     scopeIntro:
-      'PixelRing kann Reinigung und Pflege rund um gewerbliche Außenwerbung in Berlin & Brandenburg einordnen: Leuchtkästen, Schilder, Profilbuchstaben, Folienflächen, Glasbeschriftung, Markisen und angrenzende sichtbare Bereiche. Dabei geht es nicht nur um Sauberkeit, sondern auch um Material, Alterung, Befestigung, Zugang und mögliche Folgeschäden.',
+      'PixelRing prüft, welche Reinigung und Pflege für Ihre gewerbliche Außenwerbung in Berlin & Brandenburg sinnvoll ist: Leuchtkästen, Schilder, Profilbuchstaben, Folienflächen, Glasbeschriftung, Markisen und angrenzende sichtbare Bereiche. Dabei geht es nicht nur um Sauberkeit, sondern auch um Material, Alterung, Befestigung, Zugang und mögliche Folgeschäden.',
     scopeCards: [
       {
         title: 'Leuchtkästen und Schilder',
@@ -815,7 +814,7 @@ const CONTENT: Record<Locale, CleaningPageContent> = {
       },
       {
         title: 'Elektrische Werbeanlagen',
-        text: 'Leuchtwerbung wird beim Reinigen nicht als elektrisch instand gesetzt. Ausfälle, Flackern oder Feuchtigkeitsspuren werden in die Reparaturprüfung geleitet.',
+        text: 'Durch die Reinigung wird die elektrische Anlage nicht instand gesetzt. Ausfälle, Flackern oder Feuchtigkeitsspuren werden in die Reparaturprüfung geleitet.',
       },
     ],
     boundaryTitle: 'Was diese Seite bewusst nicht verspricht',
@@ -904,7 +903,7 @@ const CONTENT: Record<Locale, CleaningPageContent> = {
       {
         question: 'Arbeitet PixelRing nur in Berlin oder auch in Brandenburg?',
         answer:
-          'PixelRing richtet die Seite auf Berlin und Brandenburg aus. Ob ein Termin sinnvoll planbar ist, hängt von Standort, Umfang, Zugang und Aufgabe ab.',
+          'Unser Schwerpunkt liegt auf Berlin und Brandenburg. Ob ein Termin sinnvoll planbar ist, hängt von Standort, Umfang, Zugang und Aufgabe ab.',
       },
     ],
     offerCatalog: [

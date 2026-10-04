@@ -44,10 +44,9 @@ const Logo: React.FC<LogoProps> = ({
         className="w-11 h-11 flex-shrink-0"
         viewBox="0 0 160 160"
         role="img"
-        aria-labelledby={`title-${id} desc-${id}`}
+        aria-labelledby={`title-${id}`}
       >
         <title id={`title-${id}`}>PixelRing</title>
-        <desc id={`desc-${id}`}>Rounded square logo mark with gradient ring and pixel node.</desc>
         <defs>
           <linearGradient id={markBgId} x1="18" y1="18" x2="142" y2="142" gradientUnits="userSpaceOnUse">
             <stop stopColor={bgStop1} />

@@ -118,7 +118,7 @@ const DOCUMENT_TYPES = {
 
 const DOCUMENT_STATUSES = {
   de: {
-    available: 'Verfuegbar',
+    available: 'Verfügbar',
     planned: 'Geplant',
     locked: 'Gesperrt',
   },
@@ -152,8 +152,8 @@ const DOCUMENT_STATUSES = {
 const ATTACHMENT_STATUSES = {
   de: {
     received: 'Empfangen',
-    reviewed: 'Geprueft',
-    needs_more_context: 'Weitere Angaben noetig',
+    reviewed: 'Geprüft',
+    needs_more_context: 'Weitere Angaben nötig',
   },
   en: {
     received: 'Received',
@@ -184,11 +184,11 @@ const ATTACHMENT_STATUSES = {
 
 const DETAIL_COPY: Record<PortalLocale, PortalRequestDetailCopy> = {
   de: {
-    back: 'Zurueck zum Portal',
+    back: 'Zurück zum Portal',
     task: 'Anfrage',
     requestFallback: 'Anfrage',
     details: 'Details',
-    description: 'Urspruengliche Beschreibung',
+    description: 'Ursprüngliche Beschreibung',
     address: 'Adresse / Objekt',
     requestContactPerson: 'Kontaktperson zur Anfrage',
     requestContactDetails: 'Kontaktdaten zur Anfrage',
@@ -197,10 +197,10 @@ const DETAIL_COPY: Record<PortalLocale, PortalRequestDetailCopy> = {
     created: 'Erstellt',
     updated: 'Aktualisiert',
     result: 'Ergebnis der Arbeiten',
-    noResult: 'Noch kein Ergebnis freigegeben. PixelRing ergaenzt diesen Bereich nach Abschluss oder Zwischenstand.',
+    noResult: 'Noch kein Ergebnis freigegeben. PixelRing ergänzt diesen Bereich nach Abschluss oder Zwischenstand.',
     files: 'Ihre Fotos und Dateien',
-    noFiles: 'Noch keine Fotos oder Dateien fuer diese Anfrage.',
-    nextStep: 'Naechster Schritt',
+    noFiles: 'Noch keine Fotos oder Dateien für diese Anfrage.',
+    nextStep: 'Nächster Schritt',
     photoReport: 'Fotobericht PixelRing',
     customerData: 'Ihre Angaben',
     timeline: 'Statusverlauf',
@@ -232,18 +232,18 @@ const DETAIL_COPY: Record<PortalLocale, PortalRequestDetailCopy> = {
       newRequest: 'Neue Anfrage',
       empty: 'Beschreiben Sie Ihr Anliegen oder senden Sie ein Foto.',
       loading: 'Laden ...',
-      attachTitle: 'Foto/Video anhaengen',
-      voiceTitle: 'Sprachnachricht (demnaechst)',
+      attachTitle: 'Foto/Video anhängen',
+      voiceTitle: 'Sprachnachricht (demnächst)',
       placeholder: 'Ihre Nachricht ...',
-      unavailable: 'Chat ist derzeit nicht verfuegbar.',
+      unavailable: 'Chat ist derzeit nicht verfügbar.',
       photoFallback: 'Foto',
       attachmentFallback: 'Anhang',
       attachmentReceived: 'Datei empfangen',
     },
     messageForm: {
       label: 'Nachricht an PixelRing',
-      placeholder: 'Schreiben Sie eine Rueckfrage oder ergaenzende Information zu dieser Anfrage.',
-      attachmentNote: 'Dateianhaenge folgen in einem separaten sicheren Schritt.',
+      placeholder: 'Schreiben Sie eine Rückfrage oder ergänzende Information zu dieser Anfrage.',
+      attachmentNote: 'Dateianhänge folgen in einem separaten sicheren Schritt.',
       sending: 'Wird gesendet ...',
       send: 'Nachricht senden',
       saved: 'Nachricht wurde gespeichert.',

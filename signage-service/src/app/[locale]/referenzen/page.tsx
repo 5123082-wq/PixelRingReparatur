@@ -183,11 +183,11 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     heroTags: ['LED-Service', 'Leuchtkästen', 'Neon', 'Folien', 'Fassaden', 'Filialservice'],
     heroNoteTitle: 'Proof statt Galerie',
     heroNoteText:
-      'Jede Referenz ist als kurzer Reparaturbericht gedacht: Ausgangszustand, Arbeitsschritt, Ergebnis. Der Fokus bleibt auf Ausfuehrung und Vertrauen.',
-    recentEyebrow: 'Ausgewaehlte Arbeiten',
+      'Jede Referenz ist als kurzer Reparaturbericht gedacht: Ausgangszustand, Arbeitsschritt, Ergebnis. Der Fokus bleibt auf Ausführung und Vertrauen.',
+    recentEyebrow: 'Ausgewählte Arbeiten',
     recentTitle: 'Visuelles Ergebnis und Arbeitsumfang',
     recentIntro:
-      'Jede Karte zeigt den Standort vor und nach der Arbeit. Im Bericht stehen Problem, ausgefuehrte Arbeiten und Ergebnis.',
+      'Jede Karte zeigt den Standort vor und nach der Arbeit. Im Bericht stehen Problem, ausgeführte Arbeiten und Ergebnis.',
     reportTitle: 'Ein Schild darf nicht müde aussehen',
     reportIntro:
       'Dunkle Buchstaben, Flackern, ein verschmutzter Leuchtkasten oder lose Folie sind nicht nur ein Defekt. Für Menschen auf der Straße wirkt der Standort schnell geschlossen, vernachlässigt oder unsicher.',
@@ -196,10 +196,10 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
       { id: 'trust', title: 'Schlechtes Licht kostet Vertrauen.', text: '52% der Menschen gehen weniger gern in ein Geschäft mit schlecht gemachten Schildern. Die Sign Research Foundation nennt Fälle, in denen gezielte Updates der Außenbeschilderung bis zu 16% mehr Wochenumsatz brachten.' },
     ],
     reports: [
-      { id: 'r1', type: 'LED-Buchstaben', issue: 'Einzelne Elemente waren dunkel, die Wortmarke wirkte unvollstaendig.', outcome: 'Module ersetzt, Helligkeit angeglichen, Lesbarkeit wiederhergestellt.' },
-      { id: 'r2', type: 'Leuchtkasten', issue: 'Unregelmaessige Ausleuchtung und verschmutzte Innenflächen.', outcome: 'Innen gereinigt, LED-Strecke geprüft, Lichtfeld stabilisiert.' },
+      { id: 'r1', type: 'LED-Buchstaben', issue: 'Einzelne Elemente waren dunkel, die Wortmarke wirkte unvollständig.', outcome: 'Module ersetzt, Helligkeit angeglichen, Lesbarkeit wiederhergestellt.' },
+      { id: 'r2', type: 'Leuchtkasten', issue: 'Unregelmäßige Ausleuchtung und verschmutzte Innenflächen.', outcome: 'Innen gereinigt, LED-Strecke geprüft, Lichtfeld stabilisiert.' },
       { id: 'r3', type: 'Folierung', issue: 'Kanten lösten sich, Farben wirkten nicht mehr markengerecht.', outcome: 'Untergrund vorbereitet und Sichtfläche neu foliert.' },
-      { id: 'r4', type: 'Filialservice', issue: 'Mehrere kleine Mängel lagen verteilt ueber Standorte vor.', outcome: 'Ein Servicebericht mit priorisierten nächsten Schritten erstellt.' },
+      { id: 'r4', type: 'Filialservice', issue: 'Mehrere kleine Mängel lagen verteilt über Standorte vor.', outcome: 'Ein Servicebericht mit priorisierten nächsten Schritten erstellt.' },
     ],
     galleryEyebrow: 'Projektvideo',
     galleryTitle: 'Arbeit im Projekt',
@@ -214,7 +214,7 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     typeBandLines: ['Repair evidence', 'LED · Neon · Folie · Montage', 'Ein Partner. Ein Auftrag. Ein Ergebnis.'],
     finalTitle: 'Zeigen Sie uns Ihr Schild, Ihre Fassade oder Ihr Werbeelement.',
     finalText:
-      'Ein Foto reicht oft für die erste Einschätzung. PixelRing prüft den sichtbaren Zustand und klaert den nächsten sinnvollen Schritt.',
+      'Ein Foto reicht oft für die erste Einschätzung. PixelRing prüft den sichtbaren Zustand und klärt den nächsten sinnvollen Schritt.',
     finalCta: 'Service starten',
     modalProblemLabel: 'Ausgangslage',
     modalWorkLabel: 'Umsetzung',
@@ -222,7 +222,7 @@ const CONTENT: Record<Locale, LocalizedPageContent> = {
     modalBeforeLabel: 'Vorher ansehen',
     modalCta: 'Ähnlichen Fall starten',
     viewerAllLabel: 'Alle',
-    viewerCloseLabel: 'Schliessen',
+    viewerCloseLabel: 'Schließen',
   },
   en: {
     metaTitle: 'References for Sign Repair & Visual Service | PixelRing',

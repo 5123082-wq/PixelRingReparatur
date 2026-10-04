@@ -15,10 +15,10 @@
     "hero_title_prefix": "PixelRing:",
     "hero_title_accent": "Reparatur und Service",
     "hero_title_suffix": "für Werbeanlagen und Lichtwerbung.",
-    "description": "PixelRing hilft Unternehmen bei defekten LED-Schildern, Leuchtkaesten, Fassadenwerbung, Folien und Demontage. Senden Sie eine kurze Beschreibung oder Fotos - wir pruefen die Angaben und nennen den naechsten sinnvollen Schritt.",
+    "description": "PixelRing hilft Unternehmen bei defekten LED-Schildern, Leuchtkästen, Fassadenwerbung, Folien und Demontage. Senden Sie eine kurze Beschreibung oder Fotos - wir prüfen die Angaben und nennen den nächsten sinnvollen Schritt.",
     "cta_primary": "Service starten",
     "cta_secondary": "Problem übergeben",
-    "trust_badge": "Ein Kontakt. Fotos reichen oft fuer den Start. Klare Einschaetzung vor den Arbeiten.",
+    "trust_badge": "Ein Kontakt. Fotos reichen oft für den Start. Klare Einschätzung vor den Arbeiten.",
     "badge_label": "Reaktionszeit für dringende Fälle"
   },
   "Nav": {
@@ -64,47 +64,47 @@
   "Trust": {
     "pretitle": "VERTRAUEN",
     "titleStart": "Warum Unternehmen",
-    "titleAccent": "PixelRing waehlen",
+    "titleAccent": "PixelRing wählen",
     "titleEnd": "",
-    "description": "Bei ausgefallenen LEDs, dunklen Leuchtkaesten, beschaedigten Buchstaben oder geloester Folie brauchen Unternehmen keine anonyme Suche. PixelRing nimmt den Fall an, prueft Fotos und Angaben, koordiniert die Ausfuehrung und bleibt ein klarer Ansprechpartner.",
+    "description": "Bei ausgefallenen LEDs, dunklen Leuchtkästen, beschädigten Buchstaben oder gelöster Folie brauchen Unternehmen keine anonyme Suche. PixelRing nimmt den Fall an, prüft Fotos und Angaben, koordiniert die Ausführung und bleibt ein klarer Ansprechpartner.",
     "cta_label": "Service starten",
     "cta_subtext": "Starten Sie mit Foto, Adresse und kurzer Beschreibung.",
     "stats": [
       {
         "label": "START",
-        "value": "Fotos reichen oft fuer den ersten Schritt",
-        "description": "Gesamtansicht, Schadstelle und Zugang helfen, LED-Ausfall, dunkle Leuchtkaesten, geloeste Folie oder beschaedigte Buchstaben schneller einzuordnen.",
-        "highlight": "Keine technische Vorbereitung noetig."
+        "value": "Fotos reichen oft für den ersten Schritt",
+        "description": "Gesamtansicht, Schadstelle und Zugang helfen, LED-Ausfall, dunkle Leuchtkästen, gelöste Folie oder beschädigte Buchstaben schneller einzuordnen.",
+        "highlight": "Keine technische Vorbereitung nötig."
       },
       {
-        "label": "EINSCHAETZUNG",
+        "label": "EINSCHÄTZUNG",
         "value": "Klare Bewertung vor den Arbeiten",
-        "description": "Vor dem Einsatz klaert PixelRing, was wahrscheinlich zu pruefen ist: Netzteil, LED-Module, Folie, Befestigung, Demontageweg oder Hoehenzugang.",
-        "highlight": "Sie wissen, welcher Schritt als Naechstes sinnvoll ist."
+        "description": "Vor dem Einsatz klärt PixelRing, was wahrscheinlich zu prüfen ist: Netzteil, LED-Module, Folie, Befestigung, Demontageweg oder Höhenzugang.",
+        "highlight": "Sie wissen, welcher Schritt als Nächstes sinnvoll ist."
       },
       {
         "label": "KONTAKT",
-        "value": "Ein Ansprechpartner fuer den Fall",
-        "description": "Die Anfrage laeuft ueber PixelRing. Sie muessen nicht mehrere Monteure, Lieferanten oder Standorte selbst zusammenfuehren.",
+        "value": "Ein Ansprechpartner für den Fall",
+        "description": "Die Anfrage läuft über PixelRing. Sie müssen nicht mehrere Monteure, Lieferanten oder Standorte selbst zusammenführen.",
         "highlight": "Ein Kontakt statt verstreuter Abstimmung."
       },
       {
         "label": "ERGEBNIS",
         "value": "Dokumentierter Abschluss",
-        "description": "Der sichtbare Zustand, ausgefuehrte Arbeiten und offene Punkte werden festgehalten, damit Reparatur, Montage oder Demontage nachvollziehbar bleiben.",
+        "description": "Der sichtbare Zustand, ausgeführte Arbeiten und offene Punkte werden festgehalten, damit Reparatur, Montage oder Demontage nachvollziehbar bleiben.",
         "highlight": "Vorher, Arbeit, Ergebnis - klar dokumentiert."
       },
       {
         "label": "GARANTIE",
         "value": "Garantie und Servicehistorie",
-        "description": "Ausgefuehrte Arbeiten werden mit passenden Garantiebedingungen begleitet, und der Fall bleibt fuer spaetere Rueckfragen nachvollziehbar.",
+        "description": "Ausgeführte Arbeiten werden mit passenden Garantiebedingungen begleitet, und der Fall bleibt für spätere Rückfragen nachvollziehbar.",
         "highlight": "Das Objekt verschwindet nach dem Einsatz nicht aus dem Blick."
       },
       {
         "label": "FILIALEN",
-        "value": "Geeignet fuer mehrere Standorte",
-        "description": "Filialen, Shops, Praxen, Restaurants oder Bueros koennen mehrere Objekte mit Fotos, Adressen und Prioritaeten in einem Ablauf klaeren.",
-        "highlight": "Ein Prozess fuer einzelne Standorte oder Filialnetze."
+        "value": "Geeignet für mehrere Standorte",
+        "description": "Filialen, Shops, Praxen, Restaurants oder Büros können mehrere Objekte mit Fotos, Adressen und Prioritäten in einem Ablauf klären.",
+        "highlight": "Ein Prozess für einzelne Standorte oder Filialnetze."
       }
     ],
     "features": [
@@ -126,11 +126,11 @@
       }
     ],
     "antiTitle": "Kein anonymes Portal. Ein verantwortlicher Serviceprozess.",
-    "antiText": "PixelRing verantwortet Aufnahme, Koordination, Qualitaetskontrolle und Ergebnis. Der Kunde sieht einen Kontakt, eine PR-Nummer und einen nachvollziehbaren Ablauf - nicht eine Liste zufaelliger Anbieter.",
+    "antiText": "PixelRing verantwortet Aufnahme, Koordination, Qualitätskontrolle und Ergebnis. Der Kunde sieht einen Kontakt, eine PR-Nummer und einen nachvollziehbaren Ablauf - nicht eine Liste zufälliger Anbieter.",
     "visualEyebrow": "Service am Objekt",
-    "visualTitle": "Fotos, Zugang und Ergebnis werden zusammengefuehrt",
-    "visualText": "Leuchtkasten, LED-Module, Folie oder Demontage werden als ein Fall betrachtet: Was ist sichtbar defekt, welcher Zugang ist moeglich, was muss vor Ort geprueft werden?",
-    "visualImageAlt": "PixelRing Serviceeinsatz an einer Geschaeftsfassade mit Lichtwerbung"
+    "visualTitle": "Fotos, Zugang und Ergebnis werden zusammengeführt",
+    "visualText": "Leuchtkasten, LED-Module, Folie oder Demontage werden als ein Fall betrachtet: Was ist sichtbar defekt, welcher Zugang ist möglich, was muss vor Ort geprüft werden?",
+    "visualImageAlt": "PixelRing Serviceeinsatz an einer Geschäftsfassade mit Lichtwerbung"
   },
   "Intake": {
     "eyebrow": "Anfrage",
@@ -179,27 +179,27 @@
     "steps": [
       {
         "title": "Fotos oder Beschreibung senden",
-        "description": "Zeigen Sie LED-Schild, Leuchtkasten, Buchstaben, Folie, Fassade oder Demontagebedarf. Auch wenige Fotos reichen oft fuer den Start.",
+        "description": "Zeigen Sie LED-Schild, Leuchtkasten, Buchstaben, Folie, Fassade oder Demontagebedarf. Auch wenige Fotos reichen oft für den Start.",
         "highlight": "Gesamtansicht, Schadstelle und Zugang sind am wichtigsten."
       },
       {
         "title": "Erste Einordnung erhalten",
-        "description": "PixelRing prueft, ob es eher um Elektrik, LED-Module, Netzteil, Folie, Befestigung, Hoehenzugang oder Demontage geht.",
-        "highlight": "Sie bekommen eine verstaendliche Richtung statt Fachjargon."
+        "description": "PixelRing prüft, ob es eher um Elektrik, LED-Module, Netzteil, Folie, Befestigung, Höhenzugang oder Demontage geht.",
+        "highlight": "Sie bekommen eine verständliche Richtung statt Fachjargon."
       },
       {
-        "title": "Angebot und Ablauf klaeren",
-        "description": "Vor den Arbeiten werden Umfang, Zugang, moegliche Ersatzteile, Zeitfenster und die naechste Freigabe abgestimmt.",
+        "title": "Angebot und Ablauf klären",
+        "description": "Vor den Arbeiten werden Umfang, Zugang, mögliche Ersatzteile, Zeitfenster und die nächste Freigabe abgestimmt.",
         "highlight": "Keine Arbeit ohne nachvollziehbare Abstimmung."
       },
       {
-        "title": "Reparatur, Montage oder Demontage ausfuehren",
-        "description": "Nach Freigabe wird der Einsatz koordiniert: LED-Service, Leuchtkasten-Reparatur, Folie, Buchstaben, Fassadenwerbung oder Rueckbau.",
+        "title": "Reparatur, Montage oder Demontage ausführen",
+        "description": "Nach Freigabe wird der Einsatz koordiniert: LED-Service, Leuchtkasten-Reparatur, Folie, Buchstaben, Fassadenwerbung oder Rückbau.",
         "highlight": "PixelRing bleibt der zentrale Kontakt."
       },
       {
         "title": "Ergebnis dokumentieren",
-        "description": "Nach Abschluss bleiben Zustand, ausgefuehrte Arbeiten, Garantiehinweise und offene Empfehlungen im Serviceverlauf nachvollziehbar.",
+        "description": "Nach Abschluss bleiben Zustand, ausgeführte Arbeiten, Garantiehinweise und offene Empfehlungen im Serviceverlauf nachvollziehbar.",
         "highlight": "Der Fall endet mit einem dokumentierten Ergebnis."
       }
     ]
@@ -216,7 +216,7 @@
       {
         "title": "Lichtwerbung-Reparatur",
         "tag": "Reparatur",
-        "description": "Instandsetzung von Neon, LED-Technik, Leuchtkästen und sichtbaren Defekten."
+        "description": "Instandsetzung von Neonanlagen, LED-Technik und Leuchtkästen sowie Beseitigung sichtbarer Defekte."
       },
       {
         "title": "Wartung & Audit",
@@ -243,67 +243,67 @@
   "Roadmap": {
     "subtitle": "Nach dem Absenden",
     "title": "Was passiert nach dem Absenden der Anfrage?",
-    "description": "Nach dem Formular landet die Anfrage im PixelRing-Serviceprozess: Wir sichern die Angaben, vergeben eine PR-Nummer, pruefen den Fall und nennen den naechsten Schritt.",
+    "description": "Nach dem Formular landet die Anfrage im PixelRing-Serviceprozess: Wir sichern die Angaben, vergeben eine PR-Nummer, prüfen den Fall und nennen den nächsten Schritt.",
     "steps": [
       {
         "title": "Anfrage im System",
-        "description": "PixelRing speichert Aufgabenbeschreibung, Fotos, Objektadresse und Kontakt fuer Rueckfragen."
+        "description": "PixelRing speichert Aufgabenbeschreibung, Fotos, Objektadresse und Kontakt für Rückfragen."
       },
       {
         "title": "PR-Nummer",
         "description": "Sie erhalten eine Anfragenummer. Damit finden Sie Status und Kommunikation zu diesem Fall wieder."
       },
       {
-        "title": "Anfragepruefung",
-        "description": "Ein Spezialist prueft Beschreibung, Fotos und Objektangaben: was ist passiert, wo ist die Anlage, welche Details fehlen?"
+        "title": "Anfrageprüfung",
+        "description": "Ein Spezialist prüft Beschreibung, Fotos und Objektangaben: was ist passiert, wo ist die Anlage, welche Details fehlen?"
       },
       {
-        "title": "Naechster Schritt",
-        "description": "PixelRing sagt, was als Naechstes noetig ist: Angaben klaeren, Einschaetzung vorbereiten, Angebot abstimmen oder Einsatz organisieren."
+        "title": "Nächster Schritt",
+        "description": "PixelRing sagt, was als Nächstes nötig ist: Angaben klären, Einschätzung vorbereiten, Angebot abstimmen oder Einsatz organisieren."
       }
     ]
   },
   "FAQ": {
-    "title": "Haeufige Fragen vor der Anfrage",
+    "title": "Häufige Fragen vor der Anfrage",
     "items": [
       {
         "question": "Wie schnell kann PixelRing reagieren?",
-        "answer": "Das haengt von Stadt, Zugang, Dringlichkeit und Art der Anlage ab. Mit Fotos und Adresse kann PixelRing schneller einschaetzen, ob ein kurzfristiger Einsatz, eine Vorpruefung oder ein geplanter Termin sinnvoll ist."
+        "answer": "Das hängt von Stadt, Zugang, Dringlichkeit und Art der Anlage ab. Mit Fotos und Adresse kann PixelRing schneller einschätzen, ob ein kurzfristiger Einsatz, eine Vorprüfung oder ein geplanter Termin sinnvoll ist."
       },
       {
-        "question": "Reichen Fotos fuer den Start?",
+        "question": "Reichen Fotos für den Start?",
         "answer": "Oft ja. Hilfreich sind Gesamtansicht, Nahaufnahme des Schadens, Zugang zur Fassade oder zum Leuchtkasten und, falls sichtbar, Netzteil oder Anschlussbereich. Wenn etwas fehlt, fragt PixelRing gezielt nach."
       },
       {
         "question": "Welche Werbeanlagen repariert PixelRing?",
-        "answer": "Typische Faelle sind LED-Schilder, Leuchtkaesten, Profilbuchstaben, Neon- oder Konturlicht, Fassadenwerbung, Schaufensterfolie, Beschriftungen und sichtbare Branding-Elemente an Geschaeftsstandorten."
+        "answer": "Typische Fälle sind LED-Schilder, Leuchtkästen, Profilbuchstaben, Neon- oder Konturlicht, Fassadenwerbung, Schaufensterfolie, Beschriftungen und sichtbare Branding-Elemente an Geschäftsstandorten."
       },
       {
         "question": "Arbeitet PixelRing in ganz Deutschland?",
-        "answer": "Ja, Anfragen koennen deutschlandweit geprueft und koordiniert werden. Berlin ist der zentrale Ausgangspunkt; fuer andere Regionen wird der passende Serviceweg je nach Aufgabe, Zugang und Verfuegbarkeit geklaert."
+        "answer": "Ja, Anfragen können deutschlandweit geprüft und koordiniert werden. Berlin ist der zentrale Ausgangspunkt; für andere Regionen wird der passende Serviceweg je nach Aufgabe, Zugang und Verfügbarkeit geklärt."
       },
       {
         "question": "Bekomme ich ein Angebot, bevor gearbeitet wird?",
-        "answer": "Ja. Vor der Ausfuehrung werden Umfang, naechster Schritt und Bedingungen abgestimmt. Bei unklaren Schaeden kann zuerst eine Diagnose oder Vor-Ort-Pruefung noetig sein."
+        "answer": "Ja. Vor der Ausführung werden Umfang, nächster Schritt und Bedingungen abgestimmt. Bei unklaren Schäden kann zuerst eine Diagnose oder Vor-Ort-Prüfung nötig sein."
       },
       {
         "question": "Gibt es Garantie auf die Arbeiten?",
-        "answer": "Ausgefuehrte Arbeiten werden mit passenden Garantiebedingungen begleitet. Details haengen von Arbeit, Bauteilen, Herstellerbedingungen und Zustand der bestehenden Anlage ab."
+        "answer": "Ausgeführte Arbeiten werden mit passenden Garantiebedingungen begleitet. Details hängen von Arbeit, Bauteilen, Herstellerbedingungen und Zustand der bestehenden Anlage ab."
       },
       {
-        "question": "Koennen mehrere Filialen betreut werden?",
-        "answer": "Ja. PixelRing kann mehrere Standorte mit Adresse, Fotos, Prioritaet und Aufgabenart zusammenfassen, damit dringende Schaeden und geplante Arbeiten getrennt koordiniert werden."
+        "question": "Können mehrere Filialen betreut werden?",
+        "answer": "Ja. PixelRing kann mehrere Standorte mit Adresse, Fotos, Priorität und Aufgabenart zusammenfassen, damit dringende Schäden und geplante Arbeiten getrennt koordiniert werden."
       },
       {
         "question": "Uebernimmt PixelRing auch Demontage?",
-        "answer": "Ja. Demontage, Rueckbau, Standortwechsel oder Vorbereitung einer neuen Flaeche koennen geprueft werden. Wichtig sind Fotos, Hoehe, Befestigung, Untergrund und Zugang."
+        "answer": "Ja. Demontage, Rückbau, Standortwechsel oder Vorbereitung einer neuen Fläche können geprüft werden. Wichtig sind Fotos, Höhe, Befestigung, Untergrund und Zugang."
       },
       {
-        "question": "Was passiert, wenn Ersatzteile benoetigt werden?",
-        "answer": "PixelRing klaert, ob LED-Module, Netzteile, Folien, Buchstaben oder andere Komponenten verfuegbar sind oder ob eine technische Alternative sinnvoller ist."
+        "question": "Was passiert, wenn Ersatzteile benötigt werden?",
+        "answer": "PixelRing klärt, ob LED-Module, Netzteile, Folien, Buchstaben oder andere Komponenten verfügbar sind oder ob eine technische Alternative sinnvoller ist."
       },
       {
-        "question": "Was gilt bei dringenden Faellen?",
+        "question": "Was gilt bei dringenden Fällen?",
         "answer": "Bei lockeren Teilen, Brandgeruch, Funken, Wassereintritt oder elektrischen Risiken sollte die Anlage nicht weiter betrieben werden. Senden Sie Fotos und Adresse, damit die Dringlichkeit eingeordnet werden kann."
       }
     ]
@@ -349,14 +349,14 @@
     "field_contact": "E-Mail für die Anfrage",
     "field_email": "E-Mail für die Anfrage",
     "field_phone": "Telefon (optional)",
-    "field_message": "Beschreiben Sie kurz die Aufgabe. Beispiele: LED-Schild flackert, Leuchtkasten dunkel, Buchstaben beschaedigt, Folie loest sich, Schild demontieren.",
+    "field_message": "Beschreiben Sie kurz die Aufgabe. Beispiele: LED-Schild flackert, Leuchtkasten dunkel, Buchstaben beschädigt, Folie löst sich, Schild demontieren.",
     "field_photo": "📎 Foto anhängen",
     "attach_photo_btn": "Foto beifügen (optional)",
-    "form_footer": "Wir erstellen die Anfrage, vergeben eine PR-Nummer, und Sie können mit Status weitermachen.",
+    "form_footer": "Wir erstellen Ihre Anfrage und vergeben eine PR-Nummer. Mit dieser Nummer können Sie den Status Ihrer Anfrage prüfen.",
     "submit": "Anfrage senden",
     "success_title": "Anfrage erstellt!",
     "success_number_label": "Ihre PR-Nummer",
-    "success_message": "Nutzen Sie Status mit dieser Nummer, um fortzufahren.",
+    "success_message": "Mit dieser Nummer können Sie den Status Ihrer Anfrage prüfen.",
     "open_status": "Status öffnen",
     "error_invalid_contact": "Bitte geben Sie eine gültige E-Mail-Adresse an, damit wir die Anfrage erstellen und den Zugang zum Kundenportal vorbereiten können. Telefon ist optional.",
     "error_required_message": "Bitte beschreiben Sie kurz, was passiert ist.",
@@ -447,7 +447,7 @@
       "photo_reports": "Foto-Reports",
       "payment": "Direktzahlung",
       "history": "Verlauf & Garantie",
-      "chat": "Direkt-Chat mit Techniker"
+      "chat": "Direkter Chat mit einem Techniker"
     },
     "chat_header": "Auftragskorrespondenz",
     "chat_online": "Online",
@@ -459,16 +459,16 @@
     "portal_connect_help": "Wie verbinde ich meine Anfrage?",
     "chat_placeholder": "Ihre Nachricht...",
     "chat_auth_hint": "Melden Sie sich an, um den Chat zu starten",
-    "chat_session_hint": "Der Chatzugang ist fuer diese Anfrage aktiv",
+    "chat_session_hint": "Der Chatzugang ist für diese Anfrage aktiv",
     "chat_gate_title": "Chat im Kundenportal öffnen",
     "chat_gate_body": "Damit Korrespondenz, Dokumente und nächste Schritte sicher sichtbar werden, müssen Sie sich registrieren und den Zugriff verifizieren. Danach bleiben Chat und Serviceverlauf an einem Ort.",
     "chat_gate_primary": "Zum Portal",
     "chat_gate_secondary": "Später",
     "portal_activation_title": "Kundenportal aktivieren",
-    "portal_activation_body": "Sichern Sie den Zugriff auf diese Anfrage, Verlauf und spaetere Dokumente. Der Link startet die E-Mail-Code-Bestaetigung und oeffnet allein keine privaten Daten.",
+    "portal_activation_body": "Sichern Sie den Zugriff auf diese Anfrage, Verlauf und spätere Dokumente. Der Link startet die E-Mail-Code-Bestätigung und öffnet allein keine privaten Daten.",
     "portal_activation_activate": "Kundenportal aktivieren",
     "portal_activation_session_title": "Kundenportal ist aktiv",
-    "portal_activation_session_body": "Diese Anfrage ist bereits mit Ihrer Portal-Sitzung verknuepft. Oeffnen Sie das Kundenportal fuer den sicheren Langzeitzugriff.",
+    "portal_activation_session_body": "Diese Anfrage ist bereits mit Ihrer Portal-Sitzung verknüpft. Öffnen Sie das Kundenportal für den sicheren Langzeitzugriff.",
     "portal_activation_open": "Zum Portal",
     "portal_activation_unavailable_body": "Der Aktivierungslink ist nicht mehr aktiv. PixelRing kann bei Bedarf einen neuen sicheren Link senden.",
     "progress_steps": {
@@ -484,12 +484,12 @@
     }
   },
   "FooterCTA": {
-    "title": "Defekte LED, dunkler Leuchtkasten oder beschaedigte Beschriftung?",
-    "subtitle": "Senden Sie Fotos, Adresse und eine kurze Beschreibung. PixelRing prueft den Fall und meldet den naechsten sinnvollen Schritt.",
+    "title": "Defekte LED, dunkler Leuchtkasten oder beschädigte Beschriftung?",
+    "subtitle": "Senden Sie Fotos, Adresse und eine kurze Beschreibung. PixelRing prüft den Fall und meldet den nächsten sinnvollen Schritt.",
     "connect_label": "SCHNELLER KONTAKT ÜBER MESSENGER",
     "write_us": "Schreiben Sie uns",
     "form_title": "Service starten",
-    "form_subtitle": "Beschreiben Sie LED-Schild, Leuchtkasten, Folie, Buchstaben, Montage oder Demontage und fuegen Sie nach Moeglichkeit Fotos hinzu."
+    "form_subtitle": "Beschreiben Sie LED-Schild, Leuchtkasten, Folie, Buchstaben, Montage oder Demontage und fügen Sie nach Möglichkeit Fotos hinzu."
   },
   "Reviews": {
     "title": "Typische Servicefälle",
@@ -514,7 +514,7 @@
   },
   "Coverage": {
     "title": "Service in ganz Deutschland",
-    "description": "Von Berlin aus koordiniert PixelRing Anfragen fuer LED-Schilder, Leuchtkaesten, Fassadenwerbung, Folie, Montage und Demontage in Deutschland.",
+    "description": "Von Berlin aus koordiniert PixelRing Anfragen für LED-Schilder, Leuchtkästen, Fassadenwerbung, Folie, Montage und Demontage in Deutschland.",
     "hq": "Hauptsitz",
     "serviceCity": "Service-Stadt",
     "cities": {
@@ -729,7 +729,7 @@
     "requestStatus": {
       "UNDER_REVIEW": "In Prüfung",
       "IN_PROGRESS": "In Bearbeitung",
-      "WAITING_FOR_CUSTOMER": "Wartet auf Kunde",
+      "WAITING_FOR_CUSTOMER": "Warten auf Ihre Rückmeldung",
       "COMPLETED": "Anfrage geschlossen",
       "PLANNED": "Geplant",
       "WORK_COMPLETED": "Reparatur abgeschlossen",

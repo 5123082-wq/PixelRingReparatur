@@ -140,9 +140,9 @@ Aus diesen Merkmalen lässt sich ableiten, wo die Störung am wahrscheinlichsten
 
 Das Netzteil muss nicht nur zur Gesamtleistung der LED-Module passen, sondern auch zu Systemspannung, Leitungslängen, Anschlussschema und Betriebsbedingungen.
 
-Wenn die Beleuchtung beispielsweise rund 100 W aufnimmt, aber nur ein 90-W-Netzteil verbaut ist, arbeitet das System überlastet. In dieser Situation kann die Anlage nicht nur schwächer leuchten – das Netzteil kann überhitzen, die Spannung einbrechen, kurzzeitig abschalten oder zyklisch neu starten.
+Wenn die Beleuchtung beispielsweise rund 100 W aufnimmt, aber nur ein 90-W-Netzteil verbaut ist, arbeitet das System überlastet. In dieser Situation kann die Anlage nicht nur schwächer leuchten – das Netzteil kann überhitzen, kurzzeitig abschalten oder zyklisch neu starten; außerdem kann die Spannung einbrechen.
 
-Selbst wenn das Netzteil von der Leistung her „knapp passt", sollte es nicht am Limit betrieben werden. Für stabilen Betrieb braucht es eine Leistungsreserve und korrekte Abstimmung auf Spannung, Strom, Lasttyp, IP-Schutzart und Temperaturbereich.
+Selbst wenn das Netzteil von der Leistung her „knapp passt“, sollte es nicht am Limit betrieben werden. Für stabilen Betrieb braucht es eine Leistungsreserve und korrekte Abstimmung auf Spannung, Strom, Lasttyp, IP-Schutzart und Temperaturbereich.
 
 ### 2. Netzteil geht in Schutzabschaltung
 
@@ -199,7 +199,7 @@ Sehr hilfreich ist ein kurzes Video. Am besten zwei Aufnahmen: eine Gesamtansich
 - Gehäuse der Anlage unter Spannung öffnen
 - Feuchte Bauteile berühren
 - Bei eingeschalteter Versorgung Kabel bewegen
-- Netzteil eigenständig „gegen ein ähnliches" tauschen ohne Berechnung
+- Netzteil eigenständig „gegen ein ähnliches“ tauschen ohne Berechnung
 - Stärkeres Netzteil einbauen ohne Prüfung von Schaltung und Schutzeinrichtung
 - Kabel mit Lüsterklemmen oder Verdrillung ohne passende Klemmen und Abdichtung verbinden
 - Schutzeinrichtungen überbrücken
@@ -217,13 +217,13 @@ Anlage sofort stromlos schalten und Fachpersonal kontaktieren bei: Funkenbildung
 
 Die Erstbewertung erfolgt häufig aus der Ferne. Anhand von Fotos, Video und Beschreibung lässt sich einschätzen, wo die Ursache am wahrscheinlichsten liegt.
 
-1. Charakter des Flackerns – flackert die gesamte Anlage synchron oder nur ein Abschnitt.
-2. Wann ist das Problem aufgetreten – nach Regen, Wind, Frost, Spannungsstoß oder ohne erkennbare Ursache.
-3. Was genau passiert mit dem Licht – pulsiert es, ändert sich die Helligkeit, fällt es kurzzeitig aus.
-4. Zugänglichkeit des Netzteils – sind die Parameter sicher ablesbar.
-5. Zustand des Anschlusses – gibt es Anzeichen von Feuchtigkeit, Korrosion, Überhitzung.
-6. Überlastungswahrscheinlichkeit – entspricht das Netzteil der tatsächlichen Last.
-7. Spannungsabfall – ist die Speiseleitung zu lang.
+1. Charakter des Flackerns: Flackert die gesamte Anlage synchron oder nur ein Abschnitt?
+2. Zeitpunkt: Ist das Problem nach Regen, Wind, Frost, einem Spannungsstoß oder ohne erkennbare Ursache aufgetreten?
+3. Lichtverhalten: Pulsiert das Licht, ändert sich die Helligkeit oder fällt es kurzzeitig aus?
+4. Zugänglichkeit des Netzteils: Sind die Parameter sicher ablesbar?
+5. Zustand des Anschlusses: Gibt es Anzeichen von Feuchtigkeit, Korrosion oder Überhitzung?
+6. Überlastungswahrscheinlichkeit: Entspricht das Netzteil der tatsächlichen Last?
+7. Spannungsabfall: Ist die Speiseleitung zu lang?
 8. Funktion von Controllern und Timern.
 
 ---

@@ -116,7 +116,7 @@ Bei Leuchtkästen kommt ein zweiter Effekt dazu: Die Folie wird nicht nur bei Ta
 
 ## Was Ausbleichen meistens bedeutet
 
-Ausbleichen bedeutet normalerweise: Das Material oder der Druck hat seine optische Lebensdauer teilweise erreicht. Das heißt nicht automatisch, dass die gesamte Anlage defekt ist. Oft betrifft es nur die Folie, den Druck oder den Schutzlaminat.
+Ausbleichen bedeutet normalerweise: Das Material oder der Druck hat seine optische Lebensdauer teilweise erreicht. Das heißt nicht automatisch, dass die gesamte Anlage defekt ist. Oft betrifft es nur die Folie, den Druck oder das Schutzlaminat.
 
 Wichtig ist die Unterscheidung zwischen drei Fällen:
 
@@ -227,7 +227,7 @@ Wenn die Folie bereits reißt, klebt, sich hebt oder der Untergrund empfindlich 
 
 Ausgeblichene Folie ist meistens kein Notfall. Zeitnah sollte man handeln, wenn die Folie zusätzlich reißt, sich ablöst, scharfe Kanten bildet, Klebereste sichtbar werden oder die Fläche den Eingangsbereich deutlich ungepflegt wirken lässt.
 
-Bei Schaufenstern und Filialen lohnt sich eine schnelle Prüfung besonders vor Neueröffnungen, saisonalen Aktionen, Rebranding, Fotoshootings, Vermietung, Übergabe oder wenn die Fläche stark kunden sichtbar ist.
+Bei Schaufenstern und Filialen lohnt sich eine schnelle Prüfung besonders vor Neueröffnungen, saisonalen Aktionen, Rebranding, Fotoshootings, Vermietung, Übergabe oder wenn die Fläche für Kunden gut sichtbar ist.
 
 Wenn sich die Folie an einer hohen Fläche, an einem Leuchtkasten oder an einem schwer zugänglichen Element befindet, sollte die Arbeit nicht spontan selbst begonnen werden. Dann spielen Zugang, Untergrund und sichere Demontage eine größere Rolle.
 
@@ -304,12 +304,10 @@ Das hängt von der Anwendung ab. Für Schaufenster, Leuchtkästen, Glasdekor, So
 - Werbeanlage muss modernisiert werden
 - Dringende Reparatur der Werbeanlage
 
-## CTA-Block
-
-**Folie ausgeblichen?**
+## Folie ausgeblichen?
 Senden Sie ein Foto der Fläche, ein Nahfoto und, falls vorhanden, ein älteres Referenzbild. PixelRing prüft, ob Teilersatz, komplette Erneuerung oder eine andere Lösung sinnvoll ist.
 
-**CTA:** Foto senden und Erneuerung prüfen lassen
+Foto senden und Erneuerung prüfen lassen
 
 ---
 

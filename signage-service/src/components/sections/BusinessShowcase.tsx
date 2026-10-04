@@ -149,7 +149,7 @@ const SECTORS_LOCALES: Record<Locale, Record<SectorKey, SectorData>> = {
           label: 'Pylone & Außenwerbung',
           dot: { x: 25, y: 50 },
           pill: { x: 12, y: 25 },
-          description: 'Wir warten und instandhalten meterhohe Werbepylone, Fahnensysteme und Fassaden-Markenlogos. Wir beheben Witterungsschäden, tauschen windbeschädigte Elemente aus und stellen die Stromversorgung im Außenbereich sicher — damit Ihr Standort weithin sichtbar bleibt.'
+          description: 'Wir warten meterhohe Werbepylone, Fahnensysteme und Fassaden-Markenlogos und halten sie instand. Wir beheben Witterungsschäden, tauschen windbeschädigte Elemente aus und stellen die Stromversorgung im Außenbereich sicher — damit Ihr Standort weithin sichtbar bleibt.'
         },
         {
           id: 'interior',
@@ -236,7 +236,7 @@ const SECTORS_LOCALES: Record<Locale, Record<SectorKey, SectorData>> = {
           label: 'Eingang & Kanzleischilder',
           dot: { x: 25, y: 50 },
           pill: { x: 12, y: 25 },
-          description: 'Wir warten Mieterdirektories aus Messing, Gebäudenamensschilder und Außenbeleuchtung am Eingang. Wir polieren angelaufene Oberflächen, aktualisieren Unternehmenseinträge und sichern lose Wandbefestigungen — für einen seriösen ersten Eindruck.'
+          description: 'Wir warten Mieterverzeichnisse auf Messingschildern, Gebäudenamensschilder und Außenbeleuchtung am Eingang. Wir polieren angelaufene Oberflächen, aktualisieren Unternehmenseinträge und sichern lose Wandbefestigungen — für einen seriösen ersten Eindruck.'
         },
         {
           id: 'interior',
@@ -1398,19 +1398,28 @@ export default function BusinessShowcase({ locale }: BusinessShowcaseProps) {
 
 
   const getSectorImages = (sector: SectorKey) => {
+    const germanSectorNames: Record<SectorKey, string> = {
+      restaurants: 'eines Restaurants',
+      retail: 'eines Geschäfts',
+      salons: 'eines Salons',
+      dealers: 'eines Autohauses',
+      clinics: 'einer Praxis',
+      hotels: 'eines Hotels',
+      offices: 'eines Büros',
+    };
     if (sector === 'restaurants') {
       return {
         exterior: '/images/business/restaurant_exterior.png',
         interior: '/images/business/restaurant_lightbox.png',
-        exteriorAlt: 'Restaurant Exterior',
-        interiorAlt: 'Restaurant Interior',
+        exteriorAlt: currentLocale === 'de' ? 'Außenwerbung eines Restaurants' : 'Restaurant Exterior',
+        interiorAlt: currentLocale === 'de' ? 'Innenwerbung eines Restaurants' : 'Restaurant Interior',
       };
     }
     return {
       exterior: `/images/business/${sector}_exterior.png`,
       interior: `/images/business/${sector}_interior.png`,
-      exteriorAlt: `${sector} exterior signage`,
-      interiorAlt: `${sector} interior signage`,
+      exteriorAlt: currentLocale === 'de' ? `Außenwerbung ${germanSectorNames[sector]}` : `${sector} exterior signage`,
+      interiorAlt: currentLocale === 'de' ? `Innenwerbung ${germanSectorNames[sector]}` : `${sector} interior signage`,
     };
   };
 

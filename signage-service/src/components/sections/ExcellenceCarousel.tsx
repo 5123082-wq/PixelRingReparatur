@@ -132,7 +132,7 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
     {
       title: 'Lichtwerbung-Reparatur',
       tag: 'Reparatur',
-      description: 'Instandsetzung von Neon, LED-Technik, Leuchtkästen und sichtbaren Defekten.',
+      description: 'Instandsetzung von Neonanlagen, LED-Technik und Leuchtkästen sowie Beseitigung sichtbarer Defekte.',
       image: '/images/ex-repair-libitina-leuchtkasten-fassade.webp',
       imageAlt: 'Beleuchtete Fassadenwerbung eines Geschäftsstandorts bei Nacht',
       serviceHref: '/leistungen/werbeanlagen-reparatur',

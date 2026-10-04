@@ -729,10 +729,10 @@ export default function ReferencesExperience({ content }: ReferencesExperiencePr
             <div className="relative min-h-0 flex-1">
               <div className="relative h-[min(58vh,620px)] bg-black">
                 <Image src={activePhoto.image} alt={activePhoto.imageAlt ?? activePhoto.title} fill sizes="100vw" className="object-contain" />
-                <button type="button" onClick={() => movePhoto(isRtl ? 1 : -1)} className="absolute left-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/14 text-2xl backdrop-blur hover:bg-white/22" aria-label="Previous photo">
+                <button type="button" onClick={() => movePhoto(isRtl ? 1 : -1)} className="absolute left-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/14 text-2xl backdrop-blur hover:bg-white/22" aria-label={content.locale === 'de' ? 'Vorheriges Foto' : 'Previous photo'}>
                   ‹
                 </button>
-                <button type="button" onClick={() => movePhoto(isRtl ? -1 : 1)} className="absolute right-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/14 text-2xl backdrop-blur hover:bg-white/22" aria-label="Next photo">
+                <button type="button" onClick={() => movePhoto(isRtl ? -1 : 1)} className="absolute right-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/14 text-2xl backdrop-blur hover:bg-white/22" aria-label={content.locale === 'de' ? 'Nächstes Foto' : 'Next photo'}>
                   ›
                 </button>
               </div>

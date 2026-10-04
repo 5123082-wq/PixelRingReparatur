@@ -4,6 +4,7 @@ import { Link, usePathname } from '@/i18n/routing';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 import ServiceActionButton from '../common/ServiceActionButton';
 import type { HeaderLocale } from './Header.types';
+import { useLocale } from 'next-intl';
 
 export default function HeaderActions({
   accountStatusBaseLabel,
@@ -37,6 +38,7 @@ export default function HeaderActions({
   onToggleMenu: (openServices: boolean) => void;
 }) {
   const pathname = usePathname();
+  const locale = useLocale();
   const isAccountStatusActive =
     pathname === accountStatusHref || pathname.startsWith(`${accountStatusHref}/`);
 
@@ -102,7 +104,8 @@ export default function HeaderActions({
           onToggleMenu(nextIsMenuOpen && activeNavHref === '/leistungen');
         }}
         className="lg:hidden p-2 text-[#72665D] hover:text-[#C86E4A] transition-colors"
-        aria-label="Toggle menu"
+        aria-label={locale === 'de' ? (isMenuOpen ? 'Menü schließen' : 'Menü öffnen') : 'Toggle menu'}
+        aria-expanded={isMenuOpen}
       >
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           {isMenuOpen ? (

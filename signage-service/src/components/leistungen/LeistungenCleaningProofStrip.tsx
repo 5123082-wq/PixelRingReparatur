@@ -25,10 +25,10 @@ const CLEANING_IMAGE =
 
 const CONTENT: Record<Locale, CleaningProofContent> = {
   de: {
-    eyebrow: 'Fertige Servicebilder',
+    eyebrow: 'Gepflegte Außenwerbung',
     title: 'Beispiele für gepflegte Außenwerbung',
     intro:
-      'Die Fotos zeigen typische fertige Servicebilder rund um Markisen, Leuchtkästen und Geschäftsfronten. Für konkrete Projektbeispiele öffnen Sie die Referenzen.',
+      'Die Fotos zeigen Beispiele für gepflegte Markisen, Leuchtkästen und Geschäftsfronten. Für konkrete Projektbeispiele öffnen Sie die Referenzen.',
     secondaryCta: 'Weitere Beispiele ansehen',
     cases: [
       {

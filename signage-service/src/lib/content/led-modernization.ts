@@ -22,7 +22,7 @@ const COPY: Record<LedLocale, LedVisualCopy> = {
     demoNote: 'Schematische Darstellung. Lichtwirkung und Aufbau hängen von der jeweiligen Anlage ab.',
     stages: ['Bestand', 'LED-Technik', 'Lichtbild'],
     stageTitles: ['Erst verstehen. Dann verändern.', 'Das Zusammenspiel macht den Unterschied.', 'Ein stimmiger Auftritt. Auch am Abend.'],
-    stageTexts: ['Wir prüfen Gehäuse, Front und Befestigung. Was weiter nutzbar ist, kann bleiben. Ältere Röhrentechnik wird als Teil des gesamten Systems bewertet.', 'Modulabstände, Netzteil und Verkabelung werden auf Tiefe, Format und Front abgestimmt. Einfach mehr LEDs einzubauen ist nicht immer die Lösung.', 'Zum Abschluss zählen gleichmäßige Ausleuchtung, passende Lichtfarbe und gute Lesbarkeit. Das Ergebnis wird an der Anlage geprüft.'],
+    stageTexts: ['Wir prüfen Gehäuse, Front und Befestigung. Was weiter nutzbar ist, kann bleiben. Ältere Röhrentechnik wird als Teil des gesamten Systems bewertet.', 'Modulabstände, Netzteil und Verkabelung werden auf Tiefe, Format und Front abgestimmt. Einfach mehr LEDs einzubauen, ist nicht immer die Lösung.', 'Zum Abschluss zählen gleichmäßige Ausleuchtung, passende Lichtfarbe und gute Lesbarkeit. Das Ergebnis wird an der Anlage geprüft.'],
     layers: ['Gehäuse & Befestigung', 'Module & Stromversorgung', 'Front & Lichtwirkung'], sign: 'IHRE MARKE',
     servicesEyebrow: 'Ihre Aufgabe', servicesTitle: 'Lichtwerbung gezielt modernisieren',
     services: [

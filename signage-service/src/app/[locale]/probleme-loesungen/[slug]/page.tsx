@@ -79,8 +79,8 @@ const RELATED_MAP: Record<string, string[]> = {
   'dringende-reparatur-werbeanlage': ['werbeanlage-wackelt', 'werbeanlage-leuchtet-nicht'],
 };
 
-function buildGermanFallbackDescription(title: string): string {
-  return `Erfahren Sie, warum ${title} auftreten kann, was Sie sicher prüfen können und wie PixelRing die nächsten Schritte koordiniert.`;
+function buildGermanFallbackDescription(): string {
+  return 'Erfahren Sie mehr über mögliche Ursachen, sichere erste Schritte und die Unterstützung durch PixelRing.';
 }
 
 function safeJsonLd(data: unknown): string {
@@ -153,7 +153,7 @@ export async function generateMetadata({
   const description =
     article.seoDescription ??
     (locale === 'de'
-      ? buildGermanFallbackDescription(article.title)
+      ? buildGermanFallbackDescription()
       : article.shortAnswer ?? article.title);
   const articlePath = `/probleme-loesungen/${article.publicSlug}`;
 

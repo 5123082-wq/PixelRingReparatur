@@ -314,7 +314,7 @@ const SERVICE_DETAIL_CONTENT: Record<Locale, Record<ServiceDetailSlug, ServiceDe
       processTitle: 'Ablauf',
       process: [
         {
-          title: 'Fotos, Video oder Ziel senden',
+          title: 'Fotos oder ein Video senden und Ihr Ziel beschreiben',
           text: 'Sie senden Bilder, Standortangaben und kurze Hinweise zum Fehlerbild oder gewünschten Lichtbild.',
         },
         {
@@ -453,7 +453,7 @@ const SERVICE_DETAIL_CONTENT: Record<Locale, Record<ServiceDetailSlug, ServiceDe
         'Der Check bleibt praxisnah: sichtbare Schäden, technische Hinweise und Standortbedingungen werden strukturiert zusammengeführt.',
       checks: [
         'Gehäuse, Acryl, Folien, Rahmen und sichtbare Schäden',
-        'Lichtbild, Elektrik-Hinweise, Feuchtigkeit und Ausfälle',
+        'Lichtbild, Hinweise auf elektrische Störungen, Feuchtigkeit und Ausfälle',
         'Montagepunkte, Unterkonstruktion und Zugänglichkeit',
         'Priorität: sofort handeln, planen oder beobachten',
       ],
@@ -469,7 +469,7 @@ const SERVICE_DETAIL_CONTENT: Record<Locale, Record<ServiceDetailSlug, ServiceDe
         },
         {
           title: 'Empfehlung erhalten',
-          text: 'Sie erhalten den nächsten sinnvollen Schritt: Reparatur, Wartung, Modernisierung oder weitere Prüfung.',
+          text: 'Sie erhalten eine Empfehlung für den nächsten sinnvollen Schritt: Reparatur, Wartung, Modernisierung oder eine weitere Prüfung.',
         },
       ],
       boundaryTitle: 'Klarer Rahmen',
@@ -506,14 +506,14 @@ const SERVICE_DETAIL_CONTENT: Record<Locale, Record<ServiceDetailSlug, ServiceDe
       heroEyebrow: 'Montage & Rückbau',
       heroTitle: 'Montage, Demontage & Versetzung von Werbeanlagen',
       heroIntro:
-        'PixelRing koordiniert neue, bestehende oder zu versetzende Werbeanlagen: von der Prüfung der Fläche bis zur Abstimmung der passenden Fachleute und nächsten Schritte.',
+        'PixelRing koordiniert die Montage, Demontage und Versetzung neuer oder bestehender Werbeanlagen: von der Prüfung der Fläche bis zur Abstimmung der passenden Fachleute und nächsten Schritte.',
       image: '/images/leistungen/werbeanlagen-montage-demontage-sportzentrum-fassade.webp',
       imageAlt: 'Montage und Demontage von Werbeanlagen an einem Geschäftsstandort',
       primaryCta: 'Montage anfragen',
       secondaryCta: 'Alle Leistungen',
       tasksTitle: 'Typische Montage- und Demontagefälle',
       tasksIntro:
-        'Die Seite deckt koordinierte Arbeiten an bestehenden Geschäftsstandorten ab, ohne PixelRing als Marktplatz oder Fremdfirmenverzeichnis darzustellen.',
+        'Wir koordinieren Montage, Demontage und Versetzung an bestehenden Geschäftsstandorten – mit einem zentralen Ansprechpartner für den gesamten Ablauf.',
       tasks: [
         {
           title: 'Neue Anlage montieren',
@@ -539,7 +539,7 @@ const SERVICE_DETAIL_CONTENT: Record<Locale, Record<ServiceDetailSlug, ServiceDe
         'Maße, Gewicht, Untergrund und Befestigungspunkte',
         'Zugänglichkeit, Höhe, Arbeitsbereich und Terminfenster',
         'Elektrische Anschlüsse und bestehende Leitungen',
-        'Ob Genehmigungen, Hausverwaltung oder weitere Abstimmungen nötig sind',
+        'Ob Genehmigungen oder Abstimmungen mit der Hausverwaltung und weiteren Beteiligten nötig sind',
       ],
       processTitle: 'Ablauf',
       process: [
@@ -558,7 +558,7 @@ const SERVICE_DETAIL_CONTENT: Record<Locale, Record<ServiceDetailSlug, ServiceDe
       ],
       boundaryTitle: 'Klarer Rahmen',
       boundaryText:
-        'PixelRing bleibt die zentrale Koordination. Arbeiten an Elektrik, Höhe oder Fassade werden nur im passenden fachlichen Rahmen geplant.',
+        'PixelRing bleibt die zentrale Koordination. Elektroarbeiten, Höhenarbeiten und Arbeiten an der Fassade werden nur im passenden fachlichen Rahmen geplant.',
       boundaries: [
         'Berlin & Brandenburg als Kerngebiet; weitere Regionen in Deutschland auf Anfrage.',
         'Bei Sonderzugang, Höhenarbeiten oder Genehmigungen wird der Aufwand separat geprüft.',
@@ -586,7 +586,7 @@ const SERVICE_DETAIL_CONTENT: Record<Locale, Record<ServiceDetailSlug, ServiceDe
       intent: 'druckprodukte-branding',
       metaTitle: 'Druckprodukte, Branding & Werbematerialien | PixelRing',
       metaDescription:
-        'PixelRing unterstützt Druckdaten, Folierung, Beschriftung, Banner, Poster, Aufkleber und Standort-Branding für Unternehmen.',
+        'PixelRing unterstützt Unternehmen bei der Aufbereitung von Druckdaten, Folierung, Beschriftung sowie bei Bannern, Postern, Aufklebern und Standort-Branding.',
       heroEyebrow: 'Branding & Werbematerialien',
       heroTitle: 'Druckprodukte, Branding & Werbematerialien',
       heroIntro:
@@ -605,7 +605,7 @@ const SERVICE_DETAIL_CONTENT: Record<Locale, Record<ServiceDetailSlug, ServiceDe
         },
         {
           title: 'Folierung und Beschriftung',
-          text: 'Fenster, Flächen, Türen oder Hinweispunkte werden mit sichtbaren Markenelementen geplant.',
+          text: 'Wir planen Beschriftungen und Markenelemente für Fenster, Türen, weitere Flächen und Hinweisschilder.',
         },
         {
           title: 'Poster, Banner und Aufkleber',
@@ -642,10 +642,10 @@ const SERVICE_DETAIL_CONTENT: Record<Locale, Record<ServiceDetailSlug, ServiceDe
       ],
       boundaryTitle: 'Klarer Rahmen',
       boundaryText:
-        'PixelRing kommuniziert Branding als Service rund um Geschäftsstandorte, nicht als unkontrollierten Online-Druckshop.',
+        'PixelRing unterstützt Sie bei der Gestaltung und Umsetzung von Werbematerialien für Ihren Geschäftsstandort.',
       boundaries: [
         'Design, Druckdaten, Folierung und Werbematerialien sind bestätigte Servicebereiche.',
-        'Eigene Produktion wird nicht behauptet, solange der konkrete Produktionsumfang nicht bestätigt ist.',
+        'Produktion, Material und Ausführung stimmen wir passend zu Ihrer Anfrage ab.',
         'Farb-, Material- und Haltbarkeitsaussagen hängen von Einsatzort und Freigabe ab.',
       ],
       faqTitle: 'FAQ zu Branding & Werbematerialien',

@@ -190,7 +190,7 @@ const CONTENT: Record<Locale, SolutionsContent> = {
         intent: "peeling-film",
         title: "Folie an der Schaufensterfläche hat sich gelöst",
         symptom:
-          "Beschriftung oder Folie löst sich, wirft Kanten oder haftet nicht mehr sauber.",
+          "Die Beschriftung oder Folie löst sich, hebt sich an den Kanten ab oder haftet nicht mehr richtig.",
         solution:
           "PixelRing prüft Untergrund, Alterung, Haftung und ob Reinigung, Teilersatz oder Neufolierung sinnvoll ist.",
       },

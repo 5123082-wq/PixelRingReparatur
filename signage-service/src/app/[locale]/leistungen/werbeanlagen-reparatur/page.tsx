@@ -134,7 +134,7 @@ const CONTENT: Record<Locale, LandingPageContent> = {
     metaTitle: 'Werbeanlagen-Reparatur Berlin & Brandenburg | PixelRing',
     metaDescription: 'Werbeanlagen-Reparatur in Berlin & Brandenburg: PixelRing prüft Leuchtkästen, LED-Module, Buchstaben, Folien und Befestigungen per Foto oder vor Ort.',
     heroTitle: 'Werbeanlagen-Reparatur in Berlin & Brandenburg',
-    heroSubline: 'Wenn eine Werbeanlage dunkel bleibt, flackert, Folie sich löst oder eine Befestigung unsicher wirkt, senden Sie einfach ein Foto. PixelRing ordnet den sichtbaren Defekt, Zugang und den sicheren nächsten Schritt ein.',
+    heroSubline: 'Wenn eine Werbeanlage dunkel bleibt, flackert, Folie sich löst oder eine Befestigung unsicher wirkt, senden Sie einfach ein Foto. PixelRing beurteilt den sichtbaren Defekt und die Zugänglichkeit und schlägt einen sicheren nächsten Schritt vor.',
     heroImage: '/images/leistungen/hero-repair.png',
     heroPrimaryCta: 'Foto der Werbeanlage senden',
     heroSecondaryCta: 'Reparaturergebnisse ansehen',
@@ -191,7 +191,7 @@ const CONTENT: Record<Locale, LandingPageContent> = {
         title: 'Neon-Reparatur & Gasentladung',
         cardText: 'Klassische Leuchtröhren flackern, glimmen nur rötlich oder sind gebrochen. Glasbruch oder Trafoschaden.',
         reassuringText: 'Echtes Neon ist Handarbeit. Wir reparieren die Glassegmente in unserer Werkstatt oder tauschen die Hochspannungstransformatoren fachgerecht aus.',
-        prefillMessage: 'Defekt: Reparatur klassische Neon-Werbung.',
+        prefillMessage: 'Anfrage: Reparatur klassischer Neonwerbung.',
       },
       {
         id: 'mounting',
@@ -663,9 +663,9 @@ const REPAIR_FAQ_BY_LOCALE: Record<Locale, RepairFaqContent> = {
       { question: 'Kann eine Reparatur anhand von Fotos eingeschätzt werden?', answer: 'Ja, Fotos oder ein kurzes Video helfen oft, Symptome wie dunkle Buchstaben, flackernde LED, gelöste Folie, Feuchtigkeit oder lockere Befestigung einzuordnen. Es bleibt eine erste Einschätzung; die finale Entscheidung hängt von Zugang, Material und Prüfung vor Ort ab.' },
       { question: 'Prüft PixelRing auch Outdoor-Displays und digitale Werbeanlagen?', answer: 'Ja, PixelRing nimmt auch Anfragen zu digitalen Außenflächen, LED-Displays und Media-Player-/Controller-Störungen an. Wichtig sind Fotos vom Bildschirm, Gehäuse, Zugang, Fehlermeldung und der Hinweis, ob die Störung dauerhaft oder nur zeitweise auftritt.' },
       { question: 'Was tun bei Funken, Brandgeruch, Feuchtigkeit oder lockeren Teilen?', answer: 'Wenn es gefahrlos möglich ist, schalten Sie die Anlage spannungsfrei. Halten Sie Abstand zu offenen Leitungen, feuchten Gehäusen und losen Teilen. Senden Sie Fotos und Beschreibung, damit PixelRing zuerst den sicheren nächsten Schritt einordnet.' },
-      { question: 'Führt PixelRing selbst aus oder vermittelt PixelRing nur?', answer: 'PixelRing arbeitet als eine verantwortliche Servicefirma. Die Anfrage geht direkt an PixelRing, nicht an eine Börse oder ein Verzeichnis von Handwerkern. Formular und AI helfen beim Sammeln der Daten, die Arbeit wird durch PixelRing Spezialisten koordiniert und ausgeführt.' },
+      { question: 'Führt PixelRing selbst aus oder vermittelt PixelRing nur?', answer: 'PixelRing arbeitet als eine verantwortliche Servicefirma. Die Anfrage geht direkt an PixelRing, nicht an eine Börse oder ein Verzeichnis von Handwerkern. Formular und AI helfen beim Sammeln der Daten, die Arbeit wird durch PixelRing-Spezialisten koordiniert und ausgeführt.' },
       { question: 'Gibt es Garantie auf die Reparatur?', answer: 'Ja, die Gewährleistung kann bis zu 24 Monate betragen, abhängig von ausgeführter Arbeit, Material und Einsatzbedingungen. Der konkrete Umfang wird nach Bewertung des Defekts und Abstimmung der Arbeiten geklärt.' },
-      { question: 'Muss ich die Werbeanlage vorab öffnen?', answer: 'Nein. Öffnen Sie kein Gehäuse, berühren Sie keine elektrischen Teile und steigen Sie nicht in die Höhe. Für die erste Einschätzung reichen sichere Fotos aus Abstand, Symptombeschreibung, Standort und ungefähre Montagehöhe.' },
+      { question: 'Muss ich die Werbeanlage vorab öffnen?', answer: 'Nein. Öffnen Sie kein Gehäuse, berühren Sie keine elektrischen Teile und klettern Sie für die Fotos nicht auf Leitern oder auf die Anlage. Für die erste Einschätzung reichen Fotos aus sicherem Abstand, Symptombeschreibung, Standort und ungefähre Montagehöhe.' },
     ],
   },
   en: {
@@ -1013,7 +1013,7 @@ const REPAIR_PROBLEM_LINKS_BY_LOCALE: Record<Locale, RepairProblemLinksContent> 
     eyebrow: 'Mehr dazu',
     title: 'Den Defekt genauer verstehen',
     intro:
-      'Wenn Sie erst lesen möchten, was hinter einem Symptom stecken kann, führen diese kurzen Problemseiten tiefer.',
+      'Wenn Sie erst lesen möchten, was hinter einem Symptom stecken kann, finden Sie auf diesen Seiten weitere Informationen zu den möglichen Ursachen.',
     links: [
       {
         title: 'Werbeanlage flackert',
@@ -1030,7 +1030,7 @@ const REPAIR_PROBLEM_LINKS_BY_LOCALE: Record<Locale, RepairProblemLinksContent> 
       {
         title: 'Folie löst sich',
         text: 'Warum Folien Blasen werfen, sich ablösen oder durch UV und Wetter sichtbar altern.',
-        href: '/probleme-loesungen/folie-loest-sich',
+        href: '/probleme-loesungen/folie-löst-sich',
         tag: 'Folie',
       },
       {
@@ -1211,15 +1211,15 @@ const REPAIR_NEXT_STEP_BY_LOCALE: Record<Locale, RepairNextStepContent> = {
       'Sie müssen den Defekt nicht technisch benennen. Ein Foto, Standort oder Bezirk und eine kurze Beschreibung reichen für den Start.',
     requestTitle: 'Starten Sie mit Foto oder Beschreibung',
     requestText:
-      'PixelRing prüft den sichtbaren Zustand, Zugang und Sicherheitslage und meldet sich mit dem nächsten sinnvollen Schritt.',
+      'PixelRing prüft den sichtbaren Zustand, die Zugänglichkeit und die Sicherheitslage und meldet sich mit dem nächsten sinnvollen Schritt.',
     requestCta: 'Foto und Reparaturfall senden',
     servicesTitle: 'Vielleicht ist es ein Nachbarservice',
     servicesText: 'Diese Servicebereiche passen, wenn Modernisierung, Diagnose, Montage oder Branding Teil der Aufgabe wird.',
     links: [
       { title: 'LED-Modernisierung', text: 'Wenn Beleuchtung, Module, Netzteile oder Neon technisch aktualisiert werden sollen.', href: '/leistungen/lichtwerbung-led-modernisierung', tag: 'Licht' },
-      { title: 'Audit & Diagnose', text: 'Wenn Zustand, Prioritaet oder mehrere Standorte zuerst strukturiert geprueft werden sollen.', href: '/leistungen/werbeanlagen-audit-diagnose', tag: 'Check' },
-      { title: 'Montage & Demontage', text: 'Wenn Zugang, Rueckbau, Versetzung oder neue Befestigung zur Aufgabe gehoeren.', href: '/leistungen/montage-demontage-werbeanlagen', tag: 'Montage' },
-      { title: 'Druck & Branding', text: 'Wenn Folien, Beschriftungen, Druckdaten oder Werbematerial erneuert werden muessen.', href: '/leistungen/druckprodukte-branding-werbematerialien', tag: 'Branding' },
+      { title: 'Audit & Diagnose', text: 'Wenn Zustand, Priorität oder mehrere Standorte zuerst strukturiert geprüft werden sollen.', href: '/leistungen/werbeanlagen-audit-diagnose', tag: 'Check' },
+      { title: 'Montage & Demontage', text: 'Wenn Zugang, Rückbau, Versetzung oder neue Befestigung zur Aufgabe gehoeren.', href: '/leistungen/montage-demontage-werbeanlagen', tag: 'Montage' },
+      { title: 'Druck & Branding', text: 'Wenn Folien, Beschriftungen, Druckdaten oder Werbematerial erneuert werden müssen.', href: '/leistungen/druckprodukte-branding-werbematerialien', tag: 'Branding' },
     ],
   },
   en: {

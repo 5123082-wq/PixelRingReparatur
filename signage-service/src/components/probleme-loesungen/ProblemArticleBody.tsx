@@ -31,7 +31,7 @@ function getArticleBodyLabels(locale: string) {
       relatedTitle: 'Ähnliche Probleme',
       navTitle: 'Alle Probleme & Lösungen',
       hubEyebrow: 'Probleme & Lösungen',
-      fallbackNotice: 'Dieser Artikel ist vorübergehend auf Englisch verfügbar. Anfrage und Service bleiben auf Ihrer Sprache möglich.',
+      fallbackNotice: 'Dieser Artikel ist vorübergehend auf Englisch verfügbar. Sie können Ihre Anfrage stellen und unseren Service weiterhin in Ihrer Sprache nutzen.',
     };
   }
 
