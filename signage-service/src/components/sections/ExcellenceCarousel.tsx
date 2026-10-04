@@ -160,8 +160,8 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'LED-Modernisierung',
       tag: 'LED-Service',
       description: 'Modernisierung von Leuchtkästen, LED-Modulen und Lichtwerbung für gleichmäßige Sichtbarkeit.',
-      image: '/images/ex-lightbox.png',
-      imageAlt: 'Moderner beleuchteter Leuchtkasten an einer Geschäftsfassade',
+      image: '/images/baeckerei-biesewski-lichtkasten-led-umruestung-nachher.jpg',
+      imageAlt: 'Lichtkasten der Bäckerei M. Biesewski nach der Umrüstung auf LED-Beleuchtung',
       serviceHref: '/leistungen/lichtwerbung-led-modernisierung',
     },
     {
@@ -216,8 +216,8 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'LED Modernization',
       tag: 'LED Service',
       description: 'Modernization of lightboxes, LED modules, and light advertising for even visibility.',
-      image: '/images/ex-lightbox.png',
-      imageAlt: 'Modern illuminated lightbox on a business facade',
+      image: '/images/baeckerei-biesewski-lichtkasten-led-umruestung-nachher.jpg',
+      imageAlt: 'Lichtkasten der Bäckerei M. Biesewski nach der Umrüstung auf LED-Beleuchtung',
       serviceHref: '/leistungen/lichtwerbung-led-modernisierung',
     },
     {
@@ -272,8 +272,8 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'LED-модернизация',
       tag: 'LED-сервис',
       description: 'Модернизация световых коробов, LED-модулей и световой рекламы для ровной видимости.',
-      image: '/images/ex-lightbox.png',
-      imageAlt: 'Современный световой короб на фасаде коммерческого здания',
+      image: '/images/baeckerei-biesewski-lichtkasten-led-umruestung-nachher.jpg',
+      imageAlt: 'Lichtkasten der Bäckerei M. Biesewski nach der Umrüstung auf LED-Beleuchtung',
       serviceHref: '/leistungen/lichtwerbung-led-modernisierung',
     },
     {
@@ -328,8 +328,8 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'LED Modernizasyonu',
       tag: 'LED Servisi',
       description: 'Işıklı kutular, LED modüller ve ışıklı reklamların dengeli görünürlük için yenilenmesi.',
-      image: '/images/ex-lightbox.png',
-      imageAlt: 'İşletme cephesinde modern ışıklı kutu',
+      image: '/images/baeckerei-biesewski-lichtkasten-led-umruestung-nachher.jpg',
+      imageAlt: 'Lichtkasten der Bäckerei M. Biesewski nach der Umrüstung auf LED-Beleuchtung',
       serviceHref: '/leistungen/lichtwerbung-led-modernisierung',
     },
     {
@@ -384,8 +384,8 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'Modernizacja LED',
       tag: 'Serwis LED',
       description: 'Modernizacja kasetonów, modułów LED i reklamy świetlnej dla równomiernej widoczności.',
-      image: '/images/ex-lightbox.png',
-      imageAlt: 'Nowoczesny podświetlany kaseton na fasadzie firmy',
+      image: '/images/baeckerei-biesewski-lichtkasten-led-umruestung-nachher.jpg',
+      imageAlt: 'Lichtkasten der Bäckerei M. Biesewski nach der Umrüstung auf LED-Beleuchtung',
       serviceHref: '/leistungen/lichtwerbung-led-modernisierung',
     },
     {
@@ -440,8 +440,8 @@ const WORK_CARD_CONFIG: Record<Locale, WorkCardConfig[]> = {
       title: 'تحديث LED',
       tag: 'خدمة LED',
       description: 'تحديث الصناديق المضيئة ووحدات LED والإعلانات المضيئة لرؤية متوازنة.',
-      image: '/images/ex-lightbox.png',
-      imageAlt: 'صندوق مضيء حديث على واجهة تجارية',
+      image: '/images/baeckerei-biesewski-lichtkasten-led-umruestung-nachher.jpg',
+      imageAlt: 'Lichtkasten der Bäckerei M. Biesewski nach der Umrüstung auf LED-Beleuchtung',
       serviceHref: '/leistungen/lichtwerbung-led-modernisierung',
     },
     {
@@ -539,20 +539,24 @@ const ExcellenceCarousel = ({ content }: ExcellenceCarouselProps) => {
     '/images/ex-repair-libitina-leuchtkasten-fassade.webp',
     '/images/ex-maintenance.png',
     '/images/ex-branding-print-folienmontage-poster.webp',
-    '/images/ex-lightbox.png',
+    '/images/baeckerei-biesewski-lichtkasten-led-umruestung-nachher.jpg',
     '/images/ex-dismantling.png',
   ];
 
   const items = (content?.items || []).map((cmsItem, idx) => {
     const config = WORK_CARD_CONFIG[locale]?.[idx] ?? WORK_CARD_CONFIG.de[idx % WORK_CARD_CONFIG.de.length];
     const isLegacyItem = LEGACY_WORK_TITLES.has(cmsItem.title || '');
+    const isLedCard = config.serviceHref === '/leistungen/lichtwerbung-led-modernisierung';
+    const useUpdatedLedPhoto = isLedCard && (!cmsItem.image || cmsItem.image === '/images/ex-lightbox.png');
+    const hasCustomLedPhoto = isLedCard && Boolean(cmsItem.image) && !useUpdatedLedPhoto;
+    const useDefaultMedia = useUpdatedLedPhoto || (isLegacyItem && !hasCustomLedPhoto);
 
     return {
       title: isLegacyItem ? config.title : cmsItem.title || config.title,
       tag: isLegacyItem ? config.tag : cmsItem.tag || config.tag,
       description: isLegacyItem ? config.description : cmsItem.description || config.description,
-      image: isLegacyItem ? config.image : cmsItem.image || config.image || DEFAULT_IMAGES[idx % DEFAULT_IMAGES.length],
-      imageAlt: isLegacyItem ? config.imageAlt : cmsItem.imageAlt || config.imageAlt || cmsItem.title || '',
+      image: useDefaultMedia ? config.image : cmsItem.image || config.image || DEFAULT_IMAGES[idx % DEFAULT_IMAGES.length],
+      imageAlt: useDefaultMedia ? config.imageAlt : cmsItem.imageAlt || (hasCustomLedPhoto ? config.title : config.imageAlt) || cmsItem.title || '',
       video: config.video,
       poster: config.poster,
       videoLabel: config.videoLabel,
