@@ -40,3 +40,37 @@ docs/04_client_portal/prototype/index.html
 
 # Local Uploads
 signage-service/public/uploads/
+
+# Keep only the website and its build/maintenance files in Git.
+/*
+!/.gitignore
+!/signage-service/
+!signage-service/.env.example
+
+# Local documentation, agent instructions and review artifacts.
+/signage-service/artifacts/
+/signage-service/README.md
+/signage-service/AGENTS.md
+/signage-service/CLAUDE.md
+
+# One-off diagnostics and local content-editing helpers.
+/signage-service/scripts/check-*.ts
+/signage-service/scripts/debug-*.ts
+/signage-service/scripts/fetch-preview.ts
+/signage-service/scripts/find-test-asset.ts
+/signage-service/scripts/prepare-upload-test.ts
+/signage-service/scripts/test-page-data.mjs
+/signage-service/scripts/test-prisma.ts
+/signage-service/scripts/fix-admin-imports.mjs
+/signage-service/scripts/fix-support-links.mjs
+/signage-service/scripts/force-delete-media.ts
+/signage-service/scripts/cleanup-global-footer-legal-links.mjs
+/signage-service/scripts/repair-chat-case-history.ts
+/signage-service/scripts/repair-referenzen-cms-content.mjs
+/signage-service/scripts/replace-referenzen-cms-images.mjs
+/signage-service/scripts/update-pasternak-reference.mjs
+/signage-service/scripts/update-referenzen-hero-title.mjs
+/signage-service/scripts/update-referenzen-slogan-card.mjs
+/signage-service/scripts/apply-de-language-corrections.mjs
+/signage-service/scripts/preview-de-language-corrections.mjs
+/signage-service/scripts/de-language-corrections-2026-10-04.json
