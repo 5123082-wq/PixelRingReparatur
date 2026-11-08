@@ -165,6 +165,8 @@ model Case {
   numberIssuedAt           DateTime?
   formalizedAt             DateTime?
   statusUpdatedAt          DateTime?
+  cancellationRequestedAt  DateTime?
+  cancellationReason       String?                   @db.Text
   createdAt                DateTime                  @default(now())
   updatedAt                DateTime                  @updatedAt
   messages                 Message[]

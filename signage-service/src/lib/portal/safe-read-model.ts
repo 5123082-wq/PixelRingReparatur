@@ -1,3 +1,4 @@
+import { getCancellationCopy } from './cancellation-copy.ts';
 import { getWorkResultCopy } from '../work-results/copy.ts';
 import type { CaseStatus, MessageAuthorRole } from '@prisma/client';
 
@@ -81,7 +82,7 @@ export function customerSafeTimelineDescriptionForStatus(status: CaseStatus, loc
       case 'ON_HOLD':
         return 'Заявка временно на паузе. PixelRing сообщит следующий безопасный шаг.';
       case 'CANCELLED':
-        return 'Заявка закрыта.';
+        return getCancellationCopy(locale).cancelledDescription;
       case 'DRAFT':
       case 'FORMALIZED':
       case 'NUMBER_ISSUED':
@@ -98,7 +99,7 @@ export function customerSafeTimelineDescriptionForStatus(status: CaseStatus, loc
     case 'ON_HOLD':
       return 'Die Anfrage ist pausiert. PixelRing meldet sich mit dem naechsten sicheren Schritt.';
     case 'CANCELLED':
-      return 'Die Anfrage wurde geschlossen.';
+      return getCancellationCopy(locale).cancelledDescription;
     case 'DRAFT':
     case 'FORMALIZED':
     case 'NUMBER_ISSUED':

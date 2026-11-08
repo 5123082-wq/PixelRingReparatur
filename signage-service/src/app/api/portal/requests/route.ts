@@ -1,5 +1,6 @@
 import { getPortalOrganizationForUser } from '@/lib/portal/production-data';
 import { portalReadTiming } from '@/lib/portal/performance';
+import { isRequestFilter } from '@/lib/portal/request-filters';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { sendAdminTelegramNotification } from '@/lib/admin-telegram-notifications';
@@ -180,10 +181,12 @@ export async function GET(request: NextRequest) {
   timing.authenticated();
   if (!session) return NextResponse.json({ error: 'unauthorized' }, { status: 401, headers: timing.headers() });
   const query = request.nextUrl.searchParams;
+  const filter = query.get('filter') || (query.get('active') === '1' ? 'active' : 'all');
+  if (!isRequestFilter(filter)) return NextResponse.json({ error: 'invalid_filter' }, { status: 400, headers: timing.headers() });
   const page = Number(query.get('page') || 1);
   if (!Number.isSafeInteger(page) || page < 1 || page > 10_000) return NextResponse.json({ error: 'invalid_page' }, { status: 400, headers: timing.headers() });
   try {
-    const organization = await getPortalOrganizationForUser(prisma, session.portalUserId, session.email, query.get('locale') || 'de', { page, activeOnly: query.get('active') === '1', reportsOnly: query.get('reports') === '1' });
+    const organization = await getPortalOrganizationForUser(prisma, session.portalUserId, session.email, query.get('locale') || 'de', { page, filter, reportsOnly: query.get('reports') === '1' });
     return NextResponse.json({ portalUserId: session.portalUserId, organization }, { headers: timing.headers() });
   } catch { return NextResponse.json({ error: 'unavailable' }, { status: 503, headers: timing.headers() }); }
 }

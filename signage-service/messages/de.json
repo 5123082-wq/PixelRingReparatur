@@ -730,7 +730,8 @@
       "UNDER_REVIEW": "In Prüfung",
       "IN_PROGRESS": "In Bearbeitung",
       "WAITING_FOR_CUSTOMER": "Warten auf Ihre Rückmeldung",
-      "COMPLETED": "Anfrage geschlossen",
+      "COMPLETED": "Abgeschlossen",
+      "CANCELLED": "Storniert",
       "PLANNED": "Geplant",
       "WORK_COMPLETED": "Reparatur abgeschlossen",
       "READY_FOR_PICKUP": "Abholbereit"

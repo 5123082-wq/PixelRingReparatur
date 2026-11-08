@@ -32,6 +32,8 @@ type CaseDetail = {
   id: string;
   publicRequestNumber: string | null;
   status: string;
+  cancellationRequestedAt?: string | null;
+  cancellationReason?: string | null;
   canManage: boolean;
   allowedStatuses: string[];
   allowedTargetStatuses: string[];
@@ -614,6 +616,18 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
           </div>
         </details>
       </nav>
+
+      {caseData.cancellationRequestedAt && !['COMPLETED', 'CANCELLED'].includes(caseData.status) && <section className="shrink-0 border-b border-amber-500/20 bg-amber-950/40 px-4 py-3 text-sm text-amber-100" aria-label="Запрос отмены">
+        <p className="font-bold">Клиент запросил отмену заявки</p>
+        {caseData.cancellationReason && <p className="mt-1 max-h-20 overflow-y-auto whitespace-pre-wrap break-words">{caseData.cancellationReason}</p>}
+        <div className="mt-2 flex flex-wrap items-center gap-3">
+          {caseData.canManage && <button type="button" disabled={Boolean(transition.target)} onClick={() => {
+            setStatusReason('По запросу клиента'); setReasonError('');
+            transition.start('CANCELLED', caseData.statusState);
+          }} className="min-h-11 rounded-lg bg-amber-100 px-3 font-semibold text-amber-950 disabled:opacity-50">Подтвердить отмену</button>}
+          <button type="button" onClick={() => selectMobileSection('client')} className="min-h-11 underline">Уточнить в переписке</button>
+        </div>
+      </section>}
 
       {aiControlError && <p role="alert" className="bg-red-950 px-6 py-3 text-sm text-red-200">{aiControlError}</p>}
       <div className={`flex flex-1 flex-col overflow-hidden md:flex-row ${styles.caseBody}`}>

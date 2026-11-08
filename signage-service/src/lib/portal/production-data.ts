@@ -2,6 +2,8 @@ import 'server-only';
 import { portalDataTiming } from './performance';
 import { getAttentionCopy } from '@/lib/portal-attention/copy';
 import { getWorkResultCopy } from '@/lib/work-results/copy';
+import { getCancellationCopy } from './cancellation-copy';
+import { isTerminalRequest, requestFilterWhere, type RequestFilter } from './request-filters';
 
 import { Prisma, type CaseStatus, type MessageAuthorRole, type PrismaClient } from '@prisma/client';
 
@@ -27,6 +29,7 @@ type PortalCaseRecord = {
   id: string;
   publicRequestNumber: string | null;
   status: CaseStatus;
+  cancellationRequestedAt?: Date | null;
   customerName: string | null;
   customerEmail: string | null;
   customerPhone: string | null;
@@ -107,8 +110,9 @@ function mapStatus(status: CaseStatus): PortalRequestStatus {
     case 'READY_FOR_PICKUP':
       return 'READY_FOR_PICKUP';
     case 'COMPLETED':
-    case 'CANCELLED':
       return 'COMPLETED';
+    case 'CANCELLED':
+      return 'CANCELLED';
     case 'DRAFT':
     case 'FORMALIZED':
     case 'NUMBER_ISSUED':
@@ -126,7 +130,7 @@ function nextStepForStatus(status: CaseStatus, locale?: string | null): string {
     case 'WAITING_FOR_CUSTOMER': return copy.waitingStatus;
     case 'IN_PROGRESS': return copy.progressStatus;
     case 'ON_HOLD': return copy.holdStatus;
-    case 'CANCELLED': return copy.closedStatus;
+    case 'CANCELLED': return getCancellationCopy(locale).cancelledDescription;
     default: return copy.reviewStatus;
   }
 }
@@ -160,6 +164,7 @@ function mapCaseToPortalRequest(caseRecord: PortalCaseRecord, locale = 'de'): Po
     objectId: VIRTUAL_OBJECT_ID,
     title: titleForCase(caseRecord),
     status: mapStatus(caseRecord.status),
+    cancellationRequestedAt: !isTerminalRequest(caseRecord.status) ? caseRecord.cancellationRequestedAt?.toISOString() || null : null,
     priority: caseRecord.status === 'WAITING_FOR_CUSTOMER' ? 'high' : 'normal',
     openedAt: formatDate(caseRecord.numberIssuedAt || caseRecord.createdAt, locale),
     updatedAt: formatDate(new Date(Math.max(caseRecord.updatedAt.getTime(), caseRecord.statusUpdatedAt?.getTime() || 0)), locale),
@@ -282,6 +287,7 @@ function buildOrganization(input: {
 // Summary reads deliberately omit correspondence, attachment lists and status history.
 const caseSummarySelect = {
   id: true, publicRequestNumber: true, status: true, customerName: true,
+  cancellationRequestedAt: true,
   customerEmail: true, customerPhone: true, serviceLocation: true,
   serviceLatitude: true, serviceLongitude: true, serviceLocationSource: true,
   locale: true, numberIssuedAt: true, statusUpdatedAt: true, createdAt: true, updatedAt: true,
@@ -328,20 +334,21 @@ async function openingMessages(db: PortalDb, caseIds: string[]) {
 }
 export async function getPortalOrganizationForUser(
   db: PortalDb, portalUserId: string, email: string, locale = 'de',
-  options: { page?: number; activeOnly?: boolean; reportsOnly?: boolean } = {}
+  options: { page?: number; activeOnly?: boolean; reportsOnly?: boolean; filter?: RequestFilter } = {}
 ): Promise<PortalDemoOrganization | null> {
   const timing = portalDataTiming('summary');
   const page = Math.max(1, Math.min(10_000, Math.floor(options.page || 1)));
   const access = accessibleCases(portalUserId);
   const active = { status: { notIn: ['COMPLETED', 'CANCELLED'] } } satisfies Prisma.CaseWhereInput;
-  const where: Prisma.CaseWhereInput = { ...access, ...(options.activeOnly ? active : {}),
+  const filter = options.filter || (options.activeOnly ? 'active' : 'all');
+  const where: Prisma.CaseWhereInput = { ...access, ...requestFilterWhere(filter),
     ...(options.reportsOnly ? { workResult: { publishedVersion: { gt: 0 } } } : {}) };
   const [user, rows, total, activeCount, filteredTotal] = await Promise.all([
     identity(db, portalUserId),
     db.case.findMany({ where, orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
       skip: (page - 1) * PORTAL_PAGE_SIZE, take: PORTAL_PAGE_SIZE, select: caseSummarySelect }),
     db.case.count({ where: access }), db.case.count({ where: { ...access, ...active } }),
-    options.activeOnly || options.reportsOnly ? db.case.count({ where }) : Promise.resolve(null),
+    filter !== 'all' || options.reportsOnly ? db.case.count({ where }) : Promise.resolve(null),
   ]);
   if (!user) return null;
   const titles = await openingMessages(db, rows.map(row => row.id));

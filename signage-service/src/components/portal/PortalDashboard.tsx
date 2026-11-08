@@ -1,4 +1,7 @@
 'use client';
+
+import { getCancellationCopy } from '@/lib/portal/cancellation-copy';
+import { REQUEST_FILTERS, isRequestFilter, isTerminalRequest, type RequestFilter } from '@/lib/portal/request-filters';
 import { getWorkResultCopy } from '@/lib/work-results/copy';
 
 import type { AttentionItem } from '@/lib/portal-attention/types';
@@ -38,6 +41,7 @@ const statusTone = {
   READY_FOR_PICKUP: 'bg-teal-100 text-teal-800 border-teal-200',
   WAITING_FOR_CUSTOMER: 'bg-orange-100 text-orange-800 border-orange-200',
   COMPLETED: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+  CANCELLED: 'bg-slate-100 text-slate-700 border-slate-200',
   PLANNED: 'bg-slate-100 text-slate-700 border-slate-200',
 };
 
@@ -751,7 +755,8 @@ export default function PortalDashboard({
   const copy = copyForLocale(locale);
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
-  const [activeOnly, setActiveOnly] = useState(false);
+  const [requestFilter, setRequestFilter] = useState<RequestFilter>('active');
+  const filterCopy = getCancellationCopy(locale);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [page, setPage] = useState(1);
   const contentRef = useRef<HTMLElement>(null);
@@ -760,13 +765,13 @@ export default function PortalDashboard({
   const storageKey = 'portal-view:' + initialOrganization.id + ':' + locale;
   const queryPage = activeTab === 'overview' ? 1 : page;
   const reportsOnly = activeTab === 'reports';
-  const filterActive = activeTab === 'requests' && activeOnly;
-  const seed = queryPage === 1 && !reportsOnly && !filterActive ? initialOrganization : null;
+  const appliedFilter = activeTab === 'requests' ? requestFilter : 'all';
+  const seed = queryPage === 1 && !reportsOnly && appliedFilter === 'all' ? initialOrganization : null;
   const loader = useCallback(async () => {
-    const data = await portalFetch<{ organization: PortalDemoOrganization }>('/api/portal/requests?locale=' + locale + '&page=' + queryPage + (filterActive ? '&active=1' : '') + (reportsOnly ? '&reports=1' : ''), initialOrganization.id);
+    const data = await portalFetch<{ organization: PortalDemoOrganization }>('/api/portal/requests?locale=' + locale + '&page=' + queryPage + '&filter=' + appliedFilter + (reportsOnly ? '&reports=1' : ''), initialOrganization.id);
     return data.organization;
-  }, [initialOrganization.id, locale, queryPage, filterActive, reportsOnly]);
-  const resourceKey = 'requests:' + locale + ':' + queryPage + ':' + filterActive + ':' + reportsOnly;
+  }, [initialOrganization.id, locale, queryPage, appliedFilter, reportsOnly]);
+  const resourceKey = 'requests:' + locale + ':' + queryPage + ':' + appliedFilter + ':' + reportsOnly;
   const live = usePortalResource(resourceKey, seed, loader);
   const organization = canCreateRequests ? live.data || { ...initialOrganization, requests: [], documents: [] } : initialOrganization;
   const performanceCopy = getPerformanceCopy(locale);
@@ -774,17 +779,18 @@ export default function PortalDashboard({
   useEffect(() => { if (canCreateRequests && !seed) void reloadList(); }, [canCreateRequests, seed, reloadList]);
   const storeView = useCallback(() => {
     if (!restored.current || restoreScroll.current) return;
-    try { sessionStorage.setItem(storageKey, JSON.stringify({ tab: activeTab, active: activeOnly, page, scroll: contentRef.current?.scrollTop || window.scrollY })); }
+    try { sessionStorage.setItem(storageKey, JSON.stringify({ tab: activeTab, filter: requestFilter, page, scroll: contentRef.current?.scrollTop || window.scrollY })); }
     catch { /* Storage is optional. */ }
-  }, [activeTab, activeOnly, page, storageKey]);
+  }, [activeTab, requestFilter, page, storageKey]);
   useEffect(() => {
     restored.current = false; restoreScroll.current = null;
     try {
       const state = JSON.parse(sessionStorage.getItem(storageKey) || 'null');
       if (state && ['overview', 'requests', 'reports', 'new-request'].includes(state.tab)) {
         const savedPage = Math.max(1, Math.min(10_000, Math.floor(Number(state.page) || 1)));
-        setActiveTab(state.tab); setActiveOnly(Boolean(state.active)); setPage(savedPage);
-        restoreScroll.current = { top: Math.max(0, Number(state.scroll) || 0), key: 'requests:' + locale + ':' + (state.tab === 'overview' ? 1 : savedPage) + ':' + (state.tab === 'requests' && Boolean(state.active)) + ':' + (state.tab === 'reports') };
+        const savedFilter = isRequestFilter(state.filter) ? state.filter : 'active';
+        setActiveTab(state.tab); setRequestFilter(savedFilter); setPage(savedPage);
+        restoreScroll.current = { top: Math.max(0, Number(state.scroll) || 0), key: 'requests:' + locale + ':' + (state.tab === 'overview' ? 1 : savedPage) + ':' + (state.tab === 'requests' ? savedFilter : 'all') + ':' + (state.tab === 'reports') };
       }
     } catch { /* Storage can be unavailable. */ }
     restored.current = true;
@@ -804,7 +810,7 @@ export default function PortalDashboard({
   useEffect(() => { window.addEventListener('scroll', storeView, { passive: true }); return () => window.removeEventListener('scroll', storeView); }, [storeView]);
   useEffect(() => { const pages = Math.max(1, Math.ceil((live.data?.pagination?.total || 0) / 20)); if (live.data && queryPage > pages) setPage(pages); }, [live.data, queryPage]);
 
-  const activeRequests = organization.requests.filter((request) => request.status !== 'COMPLETED');
+  const activeRequests = organization.requests.filter((request) => !isTerminalRequest(request.status));
   const reportDocuments = organization.documents.filter((document) => document.type === 'REPORT');
   const availableReports = reportDocuments.filter((document) => document.status === 'available');
   const navItems = getNavItems(copy);
@@ -845,7 +851,7 @@ export default function PortalDashboard({
                 <button
                   key={item.key}
                   type="button"
-                  onClick={() => { setPage(1); setActiveOnly(false); setActiveTab(item.key); }}
+                  onClick={() => { setPage(1); setRequestFilter('active'); setActiveTab(item.key); }}
                   className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-start text-[12px] font-bold transition ${
                     activeTab === item.key
                       ? 'bg-[#C46E43] text-white shadow-sm'
@@ -898,7 +904,7 @@ export default function PortalDashboard({
               </div>
             </header>
 
-            {activeTab === 'overview' && canCreateRequests && <div className="grid min-w-0 grid-cols-1 gap-4"><PortalAttention accountKey={organization.id} showOverview activeRequests={organization.pagination?.activeRequests ?? activeRequests.length} onShowActiveRequests={() => { setPage(1); setActiveOnly(true); setActiveTab('requests'); }} /><div id="latest-requests" className="min-w-0 scroll-mt-4"><LiveRequestsTable title={getAttentionCopy(locale).latestRequests} accountKey={organization.id} copy={copy} requests={organization.requests.slice(0, 5)} objectsById={objectsById} onTabChange={setActiveTab} /></div></div>}
+            {activeTab === 'overview' && canCreateRequests && <div className="grid min-w-0 grid-cols-1 gap-4"><PortalAttention accountKey={organization.id} showOverview activeRequests={organization.pagination?.activeRequests ?? activeRequests.length} onShowActiveRequests={() => { setPage(1); setRequestFilter('active'); setActiveTab('requests'); }} /><div id="latest-requests" className="min-w-0 scroll-mt-4"><LiveRequestsTable title={getAttentionCopy(locale).latestRequests} accountKey={organization.id} copy={copy} requests={organization.requests.slice(0, 5)} objectsById={objectsById} onTabChange={setActiveTab} /></div></div>}
             {activeTab === 'overview' && !canCreateRequests && (
               <Overview
                 copy={copy}
@@ -911,7 +917,15 @@ export default function PortalDashboard({
             )}
             {canCreateRequests && live.error && <p role="alert" className="mb-3 text-sm text-red-700">{getAttentionCopy(locale).error}<button onClick={() => void live.reload()} className="ms-2 underline">{getAttentionCopy(locale).retry}</button></p>}
             {canCreateRequests && !live.data && !live.error && <p role="status" className="mb-3 text-sm">{getAttentionCopy(locale).loading}</p>}
-            {activeTab === 'requests' && (canCreateRequests ? <LiveRequestsTable accountKey={organization.id} copy={copy} requests={activeOnly ? activeRequests : organization.requests} objectsById={objectsById} onTabChange={setActiveTab} /> : <RequestsTable copy={copy} requests={organization.requests} objectsById={objectsById} onTabChange={setActiveTab} />)}
+            {activeTab === 'requests' && canCreateRequests && <>
+              <div role="group" aria-label={filterCopy.filtersLabel} className="mb-4 flex flex-wrap gap-2">
+                {REQUEST_FILTERS.map(filter => <button key={filter} type="button" aria-pressed={requestFilter === filter}
+                  onClick={() => { setPage(1); setRequestFilter(filter); }}
+                  className={`min-h-11 rounded-xl border px-4 py-2 text-sm font-semibold ${requestFilter === filter ? 'border-[#172033] bg-[#172033] text-white' : 'border-[#DCE3EA] bg-white text-[#667085]'}`}>{filterCopy[filter]}</button>)}
+              </div>
+              {live.data && !live.error && requestFilter === 'active' && organization.requests.length === 0 && <button type="button" onClick={() => { setPage(1); setRequestFilter('all'); }} className="mb-3 min-h-11 text-sm font-semibold text-[#A45531] underline">{filterCopy.showHistory}</button>}
+            </>}
+            {activeTab === 'requests' && (canCreateRequests ? <LiveRequestsTable accountKey={organization.id} copy={copy} requests={organization.requests} emptyMessage={filterCopy[({ active: 'emptyActive', completed: 'emptyCompleted', cancelled: 'emptyCancelled', all: 'emptyAll' } as const)[requestFilter]]} objectsById={objectsById} onTabChange={setActiveTab} /> : <RequestsTable copy={copy} requests={organization.requests} objectsById={objectsById} onTabChange={setActiveTab} />)}
             {activeTab === 'reports' && (
               <DocumentCards
                 title={copy.photoReports}
@@ -1156,6 +1170,7 @@ function RequestsTable({
   copy,
   title,
   attentionItems,
+  emptyMessage,
   requests,
   compact = false,
   onTabChange,
@@ -1163,6 +1178,7 @@ function RequestsTable({
   copy: PortalCopy;
   title?: string;
   attentionItems?: AttentionItem[];
+  emptyMessage?: string;
   requests: PortalRequest[];
   objectsById: Map<string, PortalObject>;
   compact?: boolean;
@@ -1194,7 +1210,7 @@ function RequestsTable({
             </tr>
           </thead>
           <tbody>
-            {requests.length === 0 && <tr><td colSpan={6} className="py-5 text-sm text-[#667085]">{getAttentionCopy(locale).noRequests}</td></tr>}
+            {requests.length === 0 && <tr><td colSpan={6} className="py-5 text-sm text-[#667085]">{emptyMessage || getAttentionCopy(locale).noRequests}</td></tr>}
             {requests.map((request) => (
               <tr key={request.id} className="border-b border-[#EEF2F6] align-top last:border-0">
                 <td className="py-3 pe-3 font-mono font-black text-[#0F1C2B]">
@@ -1212,17 +1228,16 @@ function RequestsTable({
                   <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-black ${statusTone[request.status]}`}>
                     {t(`requestStatus.${request.status}`)}
                   </span>
+                  {request.cancellationRequestedAt && <span className="mt-2 block text-xs font-semibold text-amber-800">{getCancellationCopy(locale).pending}</span>}
                 </td>
                 <td className="py-3 pe-3 text-[#6F665D]">{attentionItems ? (() => {
                   const open = attentionItems.filter((item) => item.publicRequestNumber === request.publicRequestNumber && item.mode !== 'NONE' && ['OPEN', 'SUBMITTED'].includes(item.state));
                   return open.length ? <Link href={'/portal/requests/' + request.publicRequestNumber + '#request-actions'} className="font-semibold text-[#B8643E] underline">{getAttentionCopy(locale).actions}: {open.length}</Link> : getAttentionCopy(locale).emptyActions;
                 })() : request.nextStep}</td>
                 <td className="py-3">
-                  {!['WORK_COMPLETED', 'READY_FOR_PICKUP', 'COMPLETED'].includes(request.status) && (
-                    <Link href={`/portal/requests/${request.publicRequestNumber}`} className="inline-flex rounded-lg bg-[#F2E1D5] px-3 py-1.5 text-[11px] font-black text-[#A45531]">
-                      {copy.open}
-                    </Link>
-                  )}
+                  <Link href={`/portal/requests/${request.publicRequestNumber}`} className="inline-flex rounded-lg bg-[#F2E1D5] px-3 py-1.5 text-[11px] font-black text-[#A45531]">
+                    {copy.open}
+                  </Link>
                 </td>
               </tr>
             ))}

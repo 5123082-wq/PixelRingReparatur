@@ -730,7 +730,8 @@
       "UNDER_REVIEW": "Under review",
       "IN_PROGRESS": "In progress",
       "WAITING_FOR_CUSTOMER": "Waiting for customer",
-      "COMPLETED": "Request closed",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled",
       "PLANNED": "Planned",
       "WORK_COMPLETED": "Repair completed",
       "READY_FOR_PICKUP": "Ready for pickup"
