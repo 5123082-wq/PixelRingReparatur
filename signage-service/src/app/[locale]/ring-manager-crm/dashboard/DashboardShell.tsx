@@ -1,7 +1,9 @@
 'use client';
 
 import { useRouter, usePathname, useParams } from 'next/navigation';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { useCrmMobileViewport } from '@/components/admin/useCrmMobileViewport';
+import styles from './mobile-crm.module.css';
 
 import {
   getLocaleSegment,
@@ -20,6 +22,9 @@ export default function CrmDashboardShell({
   const params = useParams();
   const locale = getLocaleSegment(params?.locale);
   const [loggingOut, setLoggingOut] = useState(false);
+  const shellRef = useRef<HTMLDivElement>(null);
+  const isCaseDetail = Boolean(params?.id);
+  useCrmMobileViewport(shellRef, isCaseDetail);
 
   async function handleLogout() {
     setLoggingOut(true);
@@ -34,7 +39,7 @@ export default function CrmDashboardShell({
   ];
 
   return (
-    <div className="flex min-h-screen w-full bg-zinc-950 text-zinc-100 font-sans selection:bg-blue-500/30 selection:text-white">
+    <div ref={shellRef} className={`flex min-h-screen w-full bg-zinc-950 text-zinc-100 font-sans selection:bg-blue-500/30 selection:text-white ${isCaseDetail ? styles.detailShell : styles.listShell}`}>
       <header className="fixed inset-x-0 top-0 z-30 flex h-14 items-center justify-between border-b border-zinc-800 bg-zinc-950/95 px-4 backdrop-blur md:hidden">
         <button
           onClick={() => router.push(withLocalePath(locale, '/ring-manager-crm/dashboard'))}

@@ -1,0 +1,52 @@
+/* Desktop styles remain in the original components. These rules only own phones. */
+.mobileCaseHeader, .mobileCaseNav, .mobileCopy { display: none; }
+
+@media (max-width: 767px) {
+  .listShell > main { padding-top: 72px; }
+  .list { gap: 12px; }
+  .listHeading { flex-direction: row; align-items: center; justify-content: space-between; gap: 12px; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+  .listHeading > button { width: auto; flex-shrink: 0; padding-inline: 12px; font-size: 13px; }
+  .detailShell { position: fixed; inset-inline: 0; top: var(--crm-top, 0px); height: var(--crm-height, 100dvh); min-height: 0; overflow: hidden; }
+  .detailShell > header { display: none; }
+  .detailShell > main { height: 100%; min-height: 0; padding: 0; overflow: hidden; }
+  .detailShell > main > div { height: 100%; }
+  .caseDetail { height: 100%; min-height: 0; border: 0; border-radius: 0; }
+  .caseBody, .caseWorkspace { min-height: 0; }
+  .mobileCaseHeader { display: flex; flex-shrink: 0; align-items: center; gap: 8px; min-height: 76px; padding: 12px; padding-top: max(12px, env(safe-area-inset-top)); border-bottom: 1px solid #27272a; }
+  .mobileCaseNav { position: relative; z-index: 45; display: flex; height: 48px; flex-shrink: 0; gap: 8px; padding-inline: 16px; border-bottom: 1px solid #27272a; }
+  .mobileCaseNav > button, .moreMenu { flex: 1; min-width: 0; }
+  .mobileCaseNav > button, .moreMenu > summary { display: flex; height: 48px; align-items: center; justify-content: center; gap: 8px; border-bottom: 2px solid transparent; font-size: 14px; font-weight: 500; color: #a1a1aa; cursor: pointer; }
+  .mobileCaseNav > button[aria-pressed='true'], .moreMenu > .moreActive { border-bottom-color: #6366f1; color: #fff; }
+  .moreMenu > summary { list-style: none; }
+  .moreMenu > summary::-webkit-details-marker { display: none; }
+  .moreMenu > div { position: absolute; inset-inline-end: 16px; top: 44px; width: min(248px, calc(100vw - 32px)); padding: 8px; border: 1px solid #3f3f46; border-radius: 12px; background: #18181b; box-shadow: 0 12px 24px #0008; }
+  .moreMenu > div > button { display: block; width: 100%; min-height: 44px; padding: 10px 12px; border-radius: 6px; text-align: start; font-size: 13px; color: #f4f4f5; }
+  .moreMenu > div > button:hover, .moreMenu > div > button[aria-pressed='true'] { background: #27272a; }
+  .caseSidebar { display: none; min-height: 0; max-height: none; flex: 1; padding: 16px; overflow-y: auto; overscroll-behavior-y: contain; }
+  .dataOpen .caseSidebar { display: flex; }
+  .dataOpen .caseWorkspace { display: none; }
+  .caseSidebar > section { order: 4; margin-block: 0 20px; }
+  .caseSidebar > .caseManagement { order: 0; }
+  .caseSidebar > .caseCustomer { order: 1; }
+  .caseSidebar > .caseDescription { order: 2; }
+  .caseSidebar > .caseContext { order: 3; }
+  .caseSidebar h3 { font-size: 14px; text-transform: none; letter-spacing: normal; color: #f4f4f5; }
+  .caseSidebar input, .caseSidebar select { min-height: 44px; font-size: 16px; }
+  .caseSidebar button { min-height: 44px; }
+  .caseSidebar input { padding-inline-end: 88px; }
+  .caseSidebar button[class~='absolute'] { top: 24px; }
+  .caseSidebar section:last-child > div { font-size: 14px; }
+  .chatScroll { padding: 16px; overscroll-behavior-y: contain; scroll-behavior: auto; }
+  .chatScroll > div { display: flex; flex-direction: column; gap: 20px; }
+  .chatScroll > div > * { margin-block: 0; }
+  .composer { padding: 10px 16px max(12px, env(safe-area-inset-bottom)); border-top: 1px solid #27272a; background: #111113; }
+  .composer > div > div { border: 0; border-radius: 0; background: transparent; box-shadow: none; backdrop-filter: none; }
+  .composer > div > div > div:first-child { min-height: 30px; gap: 12px; padding: 0 0 8px; border: 0; }
+  .composer > div > div > div:first-child > button { min-height: 28px; font-size: 11px; font-weight: 500; text-transform: none; letter-spacing: normal; }
+  .composer > div > div > div:first-child > button:last-child { padding: 0; border: 0; font-size: 10px; }
+  .composer > div > div > div:nth-child(2) { padding: 0; }
+  .composer textarea { min-width: 0; min-height: 48px; max-height: 112px; padding: 12px; border: 1px solid #3f3f46; border-radius: 10px; background: #18181b; font-size: 16px; }
+  .composer > div > div > div:nth-child(2) > button { width: 48px; height: 48px; border-radius: 10px; }
+  .mobileCopy { display: inline; }
+  .desktopCopy { display: none; }
+}

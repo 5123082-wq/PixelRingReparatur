@@ -11,6 +11,8 @@ import { getLocaleSegment, withLocalePath } from '../../admin-route';
 import { Button } from '@/components/admin/ui/Button';
 import { Input, Select, Textarea } from '@/components/admin/ui/Input';
 import { Badge } from '@/components/admin/ui/Badge';
+import { MagnifyingGlassIcon, AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
+import styles from './mobile-crm.module.css';
 
 type CaseItem = {
   id: string;
@@ -99,6 +101,9 @@ export default function AdminDashboardPage() {
   const [canCreate, setCanCreate] = useState(false);
   useEffect(() => { void fetch('/api/admin/verify').then((res) => res.json()).then((data) => setCanCreate(data.actor?.role === 'MANAGER')).catch(() => undefined); }, []);
   const [lastLiveUpdateAt, setLastLiveUpdateAt] = useState<string | null>(null);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [draftStatuses, setDraftStatuses] = useState(DEFAULT_VISIBLE_STATUS_KEYS);
+  const [draftChannel, setDraftChannel] = useState('');
 
   const fetchCases = useCallback(async (page = 1, options: { silent?: boolean } = {}) => {
     if (!options.silent) {
@@ -189,12 +194,12 @@ export default function AdminDashboardPage() {
   }, [fetchCases]);
 
   return (
-    <div className="flex flex-col gap-4 md:gap-6">
+    <div className={`flex flex-col gap-4 md:gap-6 ${styles.list}`}>
       {/* Header */}
-      <div className="flex flex-col gap-4 bg-zinc-900 border border-zinc-800 p-4 rounded-xl shadow-sm sm:flex-row sm:items-center sm:justify-between md:p-6">
+      <div className={`flex flex-col gap-4 bg-zinc-900 border border-zinc-800 p-4 rounded-xl shadow-sm sm:flex-row sm:items-center sm:justify-between md:p-6 ${styles.listHeading}`}>
         <div className="min-w-0">
           <h1 className="text-2xl font-bold text-white tracking-tight">Заявки</h1>
-          <p className="text-sm text-zinc-400 mt-1">
+          <p className="hidden text-sm text-zinc-400 mt-1 md:block">
             Управление заявками и коммуникация CRM
             {lastLiveUpdateAt && (
               <span className="mt-1 block text-[11px] font-semibold uppercase tracking-wider text-emerald-400 sm:ml-3 sm:mt-0 sm:inline">
@@ -208,8 +213,37 @@ export default function AdminDashboardPage() {
         </Button>
       </div>
 
+      <div className="flex gap-2 md:hidden">
+        <div className="relative min-w-0 flex-1">
+          <MagnifyingGlassIcon aria-hidden="true" className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-zinc-400" />
+          <Input aria-label="Поиск по номеру, имени, почте или телефону" placeholder="Поиск заявок…"
+            className="h-11 bg-zinc-900 pl-9" value={search} onChange={(event) => setSearch(event.target.value)}
+            onKeyDown={(event) => { if (event.key === 'Enter') void fetchCases(); }} />
+        </div>
+        <Button variant="secondary" className="h-11 gap-1.5 px-3 text-[13px]" aria-expanded={mobileFiltersOpen}
+          aria-controls="crm-mobile-filters" onClick={() => {
+            if (!mobileFiltersOpen) { setDraftStatuses(statusFilters); setDraftChannel(channelFilter); }
+            setMobileFiltersOpen(!mobileFiltersOpen);
+          }}>
+          <AdjustmentsHorizontalIcon aria-hidden="true" className="h-4 w-4" />Фильтры
+        </Button>
+      </div>
+      {mobileFiltersOpen && <div id="crm-mobile-filters" className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-900 p-4 md:hidden">
+        <h2 className="font-semibold text-white">Фильтры</h2>
+        <div className="space-y-2"><p className="text-xs text-zinc-400">Статус заявки</p>
+          <StatusChecklistFilter selectedStatuses={draftStatuses} onChange={setDraftStatuses} />
+        </div>
+        <Select label="Канал обращения" aria-label="Канал обращения" value={draftChannel} onChange={(event) => setDraftChannel(event.target.value)} className="h-11">
+          <option value="">Все каналы</option>
+          {Object.entries(CHANNEL_LABELS).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
+        </Select>
+        <Button className="h-11 w-full" onClick={() => {
+          setStatusFilters(draftStatuses); setChannelFilter(draftChannel); setMobileFiltersOpen(false);
+        }}>Применить</Button>
+      </div>}
+
       {/* Filters */}
-      <div className="grid gap-3 bg-zinc-900/50 border border-zinc-800/50 p-4 rounded-xl md:grid-cols-[minmax(240px,1fr)_16rem_12rem_auto] md:items-end md:gap-4">
+      <div className="hidden gap-3 bg-zinc-900/50 border border-zinc-800/50 p-4 rounded-xl md:grid md:grid-cols-[minmax(240px,1fr)_16rem_12rem_auto] md:items-end md:gap-4">
         <div className="min-w-0">
           <Input
             placeholder="Поиск по PR, имени, email, телефону..."
