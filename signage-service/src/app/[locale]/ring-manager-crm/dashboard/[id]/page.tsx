@@ -2,7 +2,7 @@
 
 import * as Ably from 'ably';
 import type { RealtimeChannel, TokenParams, TokenRequest } from 'ably';
-import { useState, useEffect, use, useRef, useCallback } from 'react';
+import { useState, useEffect, useLayoutEffect, use, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -20,6 +20,7 @@ import { withLocalePath } from '../../../admin-route';
 import { Button } from '@/components/admin/ui/Button';
 import { Input, Textarea, Select } from '@/components/admin/ui/Input';
 import { Badge } from '@/components/admin/ui/Badge';
+import styles from '../mobile-crm.module.css';
 import type { CalculationSnapshot } from '@/lib/calculation-snapshot';
 import {
   formatCalculationSnapshotNetTotal,
@@ -191,6 +192,52 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
   const [portalClaimUrl, setPortalClaimUrl] = useState('');
   const [aiControlError, setAiControlError] = useState('');
   const [updatingAi, setUpdatingAi] = useState(false);
+  const [mobileDataOpen, setMobileDataOpen] = useState(false);
+  const moreMenuRef = useRef<HTMLDetailsElement>(null);
+  const savedChatScroll = useRef<number | null>(null);
+
+  function selectMobileSection(tab: ActiveTab | 'data') {
+    if (scrollRef.current && !mobileDataOpen && activeTab === 'client') savedChatScroll.current = scrollRef.current.scrollTop;
+    setMobileDataOpen(tab === 'data');
+    if (tab !== 'data') setActiveTab(tab);
+    if (moreMenuRef.current) moreMenuRef.current.open = false;
+  }
+
+  const attachChatScroll = useCallback((node: HTMLDivElement | null) => {
+    scrollRef.current = node;
+    if (node && savedChatScroll.current !== null) node.scrollTo({ top: savedChatScroll.current, behavior: 'instant' });
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!mobileDataOpen && activeTab === 'client' && scrollRef.current && savedChatScroll.current !== null) {
+      scrollRef.current.scrollTo({ top: savedChatScroll.current, behavior: 'instant' });
+    }
+  }, [mobileDataOpen, activeTab]);
+
+  useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 768px)');
+    const resetMobile = () => {
+      if (desktop.matches) {
+        setMobileDataOpen(false);
+        if (moreMenuRef.current) moreMenuRef.current.open = false;
+      }
+    };
+    const closeMenu = (event: PointerEvent | KeyboardEvent) => {
+      const menu = moreMenuRef.current;
+      if (!menu?.open) return;
+      if ('key' in event) {
+        if (event.key === 'Escape') { menu.open = false; menu.querySelector('summary')?.focus(); }
+      } else if (!menu.contains(event.target as Node)) menu.open = false;
+    };
+    desktop.addEventListener('change', resetMobile);
+    document.addEventListener('pointerdown', closeMenu);
+    document.addEventListener('keydown', closeMenu);
+    return () => {
+      desktop.removeEventListener('change', resetMobile);
+      document.removeEventListener('pointerdown', closeMenu);
+      document.removeEventListener('keydown', closeMenu);
+    };
+  }, []);
 
   const isScrolledNearBottom = useCallback(() => {
     const el = scrollRef.current;
@@ -267,7 +314,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
   const lastPortalMessage = visibleMessages.reduce<CaseMessage | undefined>((latest, message) =>
     (message.portalAttentionVersion ?? 0) > (latest?.portalAttentionVersion ?? 0) ? message : latest, undefined);
   useCaseAttention({
-    caseId: id, open: !loading && Boolean(caseData) && activeTab === 'client', canReply: Boolean(caseData?.canManage),
+    caseId: id, open: !loading && Boolean(caseData) && activeTab === 'client' && !mobileDataOpen, canReply: Boolean(caseData?.canManage),
     lastMessageId: lastVisibleMessage?.id ?? null, lastPortalMessageId: lastPortalMessage?.id ?? null,
     scrollRef, endRef: bottomAnchorRef,
   });
@@ -517,10 +564,12 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
     ? formatCalculationSnapshotNetTotal(caseData.calculationSnapshot)
     : null;
 
+  const showMobileData = mobileDataOpen && !transition.requirement;
+
   return (
-    <div className="flex min-h-[calc(100vh-96px)] flex-col overflow-hidden rounded-xl border border-white/[0.03] bg-zinc-950 font-sans selection:bg-indigo-500/30 md:h-[calc(100vh-64px)] md:rounded-none md:border-0">
+    <div className={`${styles.caseDetail} ${showMobileData ? styles.dataOpen : ''} flex min-h-[calc(100vh-96px)] flex-col overflow-hidden rounded-xl border border-white/[0.03] bg-zinc-950 font-sans selection:bg-indigo-500/30 md:h-[calc(100vh-64px)] md:rounded-none md:border-0`}>
       
-      <header className="shrink-0 flex flex-col gap-3 bg-zinc-950/40 backdrop-blur-xl px-4 py-4 border-b border-white/[0.03] z-40 sm:px-8 md:flex-row md:items-center md:justify-between">
+      <header className="hidden shrink-0 flex-col gap-3 bg-zinc-950/40 backdrop-blur-xl px-4 py-4 border-b border-white/[0.03] z-40 sm:px-8 md:flex md:flex-row md:items-center md:justify-between">
         <div className="flex min-w-0 items-center gap-3 sm:gap-6">
           <button
             onClick={() => router.push(withLocalePath(locale, '/ring-manager-crm/dashboard'))}
@@ -545,28 +594,49 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
         </div>
       </header>
 
-      {aiControlError && <p role="alert" className="bg-red-950 px-6 py-3 text-sm text-red-200">{aiControlError}</p>}
-      <div className="flex flex-1 flex-col overflow-hidden md:flex-row">
+      <header className={styles.mobileCaseHeader}>
+        <button type="button" aria-label="Назад к заявкам" onClick={() => router.push(withLocalePath(locale, '/ring-manager-crm/dashboard'))} className="flex h-11 w-9 shrink-0 items-center justify-center text-xl text-zinc-300">←</button>
+        <div className="min-w-0 flex-1">
+          <h1 className="truncate text-base font-bold text-white">{caseData.publicRequestNumber || 'Заявка #' + caseData.id.slice(0, 6)}</h1>
+          <p className="truncate text-xs text-zinc-400">{caseData.customerName || 'Без имени'}</p>
+        </div>
+        {currentStatusObj && <Badge variant={currentStatusObj.variant} className="max-w-[120px] text-center text-[11px]">{currentStatusObj.label}</Badge>}
+      </header>
+      <nav aria-label="Разделы заявки" className={styles.mobileCaseNav}>
+        <button type="button" aria-pressed={!showMobileData && activeTab === 'client'} onClick={() => selectMobileSection('client')}>Чат</button>
+        <button type="button" aria-pressed={showMobileData} onClick={() => selectMobileSection('data')}>Данные</button>
+        <details ref={moreMenuRef} className={styles.moreMenu}>
+          <summary className={!showMobileData && activeTab !== 'client' ? styles.moreActive : undefined}>Ещё <span aria-hidden="true">⌄</span></summary>
+          <div>
+            {(['documents', 'actions', 'result', 'master', 'history'] as const).map(tab => <button key={tab} type="button" aria-pressed={!showMobileData && activeTab === tab} onClick={() => selectMobileSection(tab)}>
+              {{ documents: 'Документы клиенту', actions: 'Действия клиента', result: 'Результат ремонта', master: 'Связь с мастером', history: 'История событий' }[tab]}
+            </button>)}
+          </div>
+        </details>
+      </nav>
 
-        <aside className="shrink-0 border-b border-white/[0.03] bg-zinc-950 flex max-h-[40vh] flex-col z-30 overflow-y-auto no-scrollbar px-4 py-5 space-y-6 md:max-h-none md:w-[320px] md:border-b-0 md:border-r md:pb-20 md:pt-8 md:px-8 md:space-y-10">
+      {aiControlError && <p role="alert" className="bg-red-950 px-6 py-3 text-sm text-red-200">{aiControlError}</p>}
+      <div className={`flex flex-1 flex-col overflow-hidden md:flex-row ${styles.caseBody}`}>
+
+        <aside className={`${styles.caseSidebar} shrink-0 border-b border-white/[0.03] bg-zinc-950 flex max-h-[40vh] flex-col z-30 overflow-y-auto no-scrollbar px-4 py-5 space-y-6 md:max-h-none md:w-[320px] md:border-b-0 md:border-r md:pb-20 md:pt-8 md:px-8 md:space-y-10`}>
 
           {/* Section: Project Context (DETECTED) */}
           {(detectedType || detectedLocation) && (
-            <section className="space-y-4">
+            <section className={`space-y-4 ${styles.caseContext}`}>
               <h3 className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.15em] flex items-center gap-2">
                 <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse"></span>
-                Project Context
+                <span className={styles.desktopCopy}>Project Context</span><span className={styles.mobileCopy}>Объект</span>
               </h3>
               <div className="space-y-4 bg-white/[0.01] border border-white/[0.03] rounded-lg p-3">
                  {detectedType && (
                    <div className="flex justify-between items-baseline">
-                      <span className="text-[10px] font-bold text-zinc-500 uppercase">Type</span>
+                      <span className="text-[10px] font-bold text-zinc-500 uppercase"><span className={styles.desktopCopy}>Type</span><span className={styles.mobileCopy}>Тип</span></span>
                       <span className="text-xs font-semibold text-white">{detectedType}</span>
                    </div>
                  )}
                  {detectedLocation && (
                    <div className="flex justify-between items-baseline">
-                      <span className="text-[10px] font-bold text-zinc-500 uppercase">Location</span>
+                      <span className="text-[10px] font-bold text-zinc-500 uppercase"><span className={styles.desktopCopy}>Location</span><span className={styles.mobileCopy}>Адрес</span></span>
                       {detectedLocationHref ? (
                         <a
                           href={detectedLocationHref}
@@ -585,10 +655,11 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
             </section>
           )}
 
-          <section className="space-y-5">
-             <h3 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.15em]">Control Panel</h3>
+          <section className={`space-y-5 ${styles.caseManagement}`}>
+             <h3 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.15em]"><span className={styles.desktopCopy}>Control Panel</span><span className={styles.mobileCopy}>Управление</span></h3>
              <div className="space-y-4">
-                <Select data-status-transition-trigger aria-label="Статус заявки" disabled={!caseData.canManage || Boolean(transition.target)} value={newStatus} onChange={(e) => setNewStatus(e.target.value)} className="bg-transparent border-white/[0.05] h-9 text-xs font-semibold text-white">
+                <label htmlFor="crm-case-status" className="mb-1 block text-xs text-zinc-400 md:hidden">Статус заявки</label>
+                <Select id="crm-case-status" data-status-transition-trigger aria-label="Статус заявки" disabled={!caseData.canManage || Boolean(transition.target)} value={newStatus} onChange={(e) => setNewStatus(e.target.value)} className="bg-transparent border-white/[0.05] h-9 text-xs font-semibold text-white">
                   {STATUS_OPTIONS.filter(opt => opt.value === caseData.status || caseData.allowedTargetStatuses.includes(opt.value)).map(opt => <option key={opt.value} value={opt.value} className="bg-zinc-900">{opt.label}</option>)}
                 </Select>
                 {newStatus !== caseData.status && (
@@ -600,8 +671,9 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                   {transition.retryable && <div className="mt-2 flex flex-wrap gap-3"><button onClick={transition.retry} className="font-bold underline">Повторить шаг</button><button onClick={transition.stop} className="font-bold underline">Остановить переход</button></div>}
                 </div>}
                 <div className="relative">
-                  <Input disabled={!caseData.canManage} value={assignedOperatorDraft} onChange={(e) => setAssignedOperatorDraft(e.target.value)} placeholder="Assign operator..." className="bg-transparent border-white/[0.05] h-8 text-[11px] pr-12" />
-                  <button onClick={updateAssignment} disabled={updatingAssignment || !caseData.canManage} className="absolute right-2 top-1.5 text-[10px] font-black text-indigo-500 uppercase">Save</button>
+                  <label htmlFor="crm-case-operator" className="mb-2 block text-xs text-zinc-400 md:hidden">Ответственный</label>
+                  <Input id="crm-case-operator" aria-label="Ответственный" disabled={!caseData.canManage} value={assignedOperatorDraft} onChange={(e) => setAssignedOperatorDraft(e.target.value)} placeholder="Assign operator..." className="bg-transparent border-white/[0.05] h-8 text-[11px] pr-12" />
+                  <button onClick={updateAssignment} disabled={updatingAssignment || !caseData.canManage} className="absolute right-2 top-1.5 text-[10px] font-black text-indigo-500 uppercase"><span className={styles.desktopCopy}>Save</span><span className={styles.mobileCopy}>Сохранить</span></button>
                 </div>
                 {!caseData.publicRequestNumber && telegramConversation && (
                   <Button onClick={issuePublicRequestNumber} disabled={issuingPr || !caseData.canManage} variant="primary" size="sm" className="w-full font-black text-[10px] h-8 uppercase">
@@ -611,7 +683,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                 {caseData.publicRequestNumber && (
                   <div className="space-y-2">
                     <Button onClick={createPortalClaimLink} disabled={creatingPortalLink || !caseData.canManage} variant="primary" size="sm" className="w-full font-black text-[10px] h-8 uppercase">
-                      {creatingPortalLink ? 'Creating...' : 'Create portal link'}
+                      <span className={styles.desktopCopy}>{creatingPortalLink ? 'Creating...' : 'Create portal link'}</span><span className={styles.mobileCopy}>{creatingPortalLink ? 'Создание…' : 'Создать ссылку в кабинет'}</span>
                     </Button>
                     {portalClaimUrl && (
                       <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-2 text-[10px] leading-relaxed text-emerald-200">
@@ -626,8 +698,8 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
              </div>
           </section>
 
-          <section className="space-y-5">
-            <h3 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.15em]">Customer Info</h3>
+          <section className={`space-y-5 ${styles.caseCustomer}`}>
+            <h3 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.15em]"><span className={styles.desktopCopy}>Customer Info</span><span className={styles.mobileCopy}>Клиент</span></h3>
             <div className="space-y-4">
                {[
                  { label: 'Name', value: caseData.customerName || 'None' },
@@ -636,7 +708,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                  ...(telegramHandle ? [{ label: 'Telegram', value: telegramHandle, mono: true }] : [])
                ].map((item, idx) => (
                  <div key={idx} className="flex justify-between items-baseline border-b border-white/[0.02] pb-2">
-                    <span className="text-[10px] font-bold text-zinc-500 uppercase">{item.label}</span>
+                    <span className="text-[10px] font-bold text-zinc-500 uppercase"><span className={styles.desktopCopy}>{item.label}</span><span className={styles.mobileCopy}>{{ Name: 'Имя', Contact: 'Контакт', Source: 'Канал', Telegram: 'Telegram' }[item.label as 'Name' | 'Contact' | 'Source' | 'Telegram']}</span></span>
                     <span className={`text-xs font-semibold text-zinc-200 truncate max-w-[160px] ${item.mono ? 'font-mono' : ''}`}>{item.value}</span>
                  </div>
                ))}
@@ -733,16 +805,16 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
             </section>
           )}
 
-          <section className="space-y-4">
-            <h3 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Description</h3>
+          <section className={`space-y-4 ${styles.caseDescription}`}>
+            <h3 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest"><span className={styles.desktopCopy}>Description</span><span className={styles.mobileCopy}>Описание заявки</span></h3>
             <div className="bg-white/[0.02] p-4 rounded-xl border border-white/[0.03] text-[11px] text-zinc-300 leading-relaxed whitespace-pre-wrap">
               {caseData.description || caseData.summary || 'No description provided.'}
             </div>
           </section>
         </aside>
 
-        <main className="flex flex-1 min-h-[60vh] flex-col bg-zinc-950 overflow-hidden md:min-h-0">
-          <nav className="shrink-0 flex h-14 items-center gap-6 overflow-x-auto border-b border-white/[0.03] px-4 no-scrollbar md:h-16 md:px-8 md:gap-10">
+        <main className={`flex flex-1 min-h-[60vh] flex-col bg-zinc-950 overflow-hidden md:min-h-0 ${styles.caseWorkspace}`}>
+          <nav className="hidden shrink-0 h-14 items-center gap-6 overflow-x-auto border-b border-white/[0.03] px-4 no-scrollbar md:flex md:h-16 md:px-8 md:gap-10">
              {ACTIVE_TABS.map((tid) => (
                <button
                  key={tid} onClick={() => setActiveTab(tid)}
@@ -755,6 +827,8 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
           </nav>
 
           <div className="flex flex-1 min-h-0 flex-col overflow-hidden">
+            {activeTab !== 'client' && <h2 className="shrink-0 px-4 pt-4 text-base font-semibold md:hidden">{{ actions: 'Действия клиента', documents: 'Документы клиенту', result: 'Результат ремонта', master: 'Связь с мастером', history: 'История событий' }[activeTab]}</h2>}
+            {activeTab === 'master' && <p className="p-4 text-sm text-zinc-400 md:hidden">Раздел связи с мастером пока не подключён.</p>}
             {activeTab === 'actions' && <div className="min-h-0 flex-1 overflow-y-auto"><CaseAttention caseId={id} /></div>}
             {activeTab === 'documents' && <div className="min-h-0 flex-1 overflow-y-auto"><CaseDocuments caseId={id} onPublished={() => fetchCase({ silent: true })} /></div>}
             <div className={activeTab === 'result' || transition.requirement?.kind === 'work_result' ? 'min-h-0 flex-1 overflow-y-auto' : 'hidden'}>
@@ -774,7 +848,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
             <AnimatePresence mode="wait">
               {activeTab === 'client' && (
                 <motion.div key="chat" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-1 min-h-0 flex-col">
-                   <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-4 py-6 no-scrollbar scroll-smooth sm:px-12 sm:py-10">
+                   <div ref={attachChatScroll} className={`${styles.chatScroll} min-h-0 flex-1 overflow-y-auto px-4 py-6 no-scrollbar scroll-smooth sm:px-12 sm:py-10`}>
                       <div className="max-w-3xl mx-auto w-full space-y-10">
                          {timelineEvents.map((event) => {
                             if (event.type === 'status') {
@@ -812,27 +886,35 @@ export default function CaseDetailPage({ params }: { params: Promise<{ locale: s
                       </div>
                    </div>
 
-                   <div className="shrink-0 px-3 pb-3 pt-3 sm:px-6 sm:pb-6 sm:pt-4">
+                   <div className={`${styles.composer} shrink-0 px-3 pb-3 pt-3 sm:px-6 sm:pb-6 sm:pt-4`}>
                      <div className="mx-auto w-full max-w-2xl">
                       <div className={`rounded-3xl border ${replyMode === 'internal' ? 'bg-amber-950/30 border-amber-500/20' : 'bg-zinc-900 border-white/5'} backdrop-blur-3xl overflow-hidden shadow-2xl`}>
                          <div className="flex min-h-10 flex-wrap border-b border-white/5 px-4 py-2 items-center gap-x-5 gap-y-2 sm:px-6">
                             {REPLY_MODES.map(m => (
                               <button key={m} onClick={() => setReplyMode(m)} className={`text-[8px] font-black tracking-widest uppercase ${replyMode === m ? 'text-indigo-500' : 'text-zinc-600'}`}>
-                                 {m === 'customer' ? (telegramConversation ? 'Reply via Telegram' : 'Reply to client') : 'Internal Note'}
+                                 <span className={styles.desktopCopy}>{m === 'customer' ? (telegramConversation ? 'Reply via Telegram' : 'Reply to client') : 'Internal Note'}</span><span className={styles.mobileCopy}>{m === 'customer' ? (telegramConversation ? 'Клиенту · Telegram' : 'Клиенту') : 'Заметка'}</span>
                               </button>
                             ))}
                             <button disabled={!caseData.canManage || updatingAi} onClick={() => updateAiControl(!aiAutomationEnabled)} className={`ml-auto text-[8px] font-black px-2 py-0.5 rounded border ${aiAutomationEnabled ? 'border-emerald-500/30 text-emerald-500' : 'border-red-500/30 text-red-500'} uppercase`}>
-                               AI: {aiAutomationEnabled ? 'ON' : 'OFF'}
+                               <span className={styles.desktopCopy}>AI: {aiAutomationEnabled ? 'ON' : 'OFF'}</span><span className={styles.mobileCopy}>ИИ {aiAutomationEnabled ? 'вкл.' : 'выкл.'}</span>
                             </button>
                          </div>
                          <div className="flex items-end p-2 gap-2">
-                            <textarea 
+                            <textarea className="min-w-0 flex-1 resize-none text-white outline-none md:hidden" rows={1}
+                               aria-label={replyMode === 'customer' ? 'Ответ клиенту' : 'Внутренняя заметка'}
+                               placeholder={replyMode === 'customer' ? 'Написать клиенту…' : 'Внутренняя заметка…'}
+                               disabled={!caseData.canManage} value={replyText} onChange={(event) => {
+                                 setReplyText(event.target.value);
+                                 event.target.style.height = 'auto';
+                                 event.target.style.height = Math.min(event.target.scrollHeight, 112) + 'px';
+                               }} />
+                            <textarea
                                disabled={!caseData.canManage} value={replyText} onChange={(e) => setReplyText(e.target.value)}
-                               placeholder="Type your message..."
-                               className="flex-1 bg-transparent px-4 py-3 text-sm text-white outline-none resize-none min-h-[44px] max-h-[200px]"
+                               aria-label={replyMode === 'customer' ? 'Ответ клиенту' : 'Внутренняя заметка'} placeholder="Type your message..."
+                               className="hidden flex-1 bg-transparent px-4 py-3 text-sm text-white outline-none resize-none min-h-[44px] max-h-[200px] md:block"
                             />
                             <button 
-                               onClick={sendReply} disabled={!caseData.canManage || !replyText.trim() || sendingReply}
+                               aria-label="Отправить сообщение" onClick={sendReply} disabled={!caseData.canManage || !replyText.trim() || sendingReply}
                                className={`w-9 h-9 shrink-0 flex items-center justify-center rounded-full transition-all ${replyText.trim() ? (replyMode === 'customer' ? 'bg-indigo-600' : 'bg-amber-600') : 'bg-zinc-800'}`}
                             >
                                {sendingReply ? <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <span className="text-white text-lg">↑</span>}
