@@ -140,6 +140,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         id: true,
         publicRequestNumber: true,
         status: true,
+        cancellationRequestedAt: true,
+        cancellationReason: true,
         originChannel: true,
         customerName: true,
         customerEmail: true,

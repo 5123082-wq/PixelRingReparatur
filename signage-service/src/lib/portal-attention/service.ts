@@ -1,3 +1,4 @@
+import { getCancellationCopy } from '../portal/cancellation-copy';
 import { publishPortalUserInvalidation } from '@/lib/portal/realtime';
 import 'server-only';
 import { getAttentionCopy } from './copy';
@@ -24,7 +25,7 @@ export function attentionView(row: PortalAttention & { case: { publicRequestNumb
   const language = ATTENTION_LOCALES.includes(locale) ? locale : 'de';
   const copy = getAttentionCopy(language);
   const reportCopy = getWorkResultCopy(language);
-  const statusTitles: Record<string, string> = { WAITING_FOR_CUSTOMER: copy.waitingStatus, IN_PROGRESS: copy.progressStatus, ON_HOLD: copy.holdStatus, COMPLETED: copy.closedStatus, CANCELLED: copy.closedStatus, WORK_COMPLETED: reportCopy.next, READY_FOR_PICKUP: reportCopy.ready };
+  const statusTitles: Record<string, string> = { WAITING_FOR_CUSTOMER: copy.waitingStatus, IN_PROGRESS: copy.progressStatus, ON_HOLD: copy.holdStatus, COMPLETED: copy.closedStatus, CANCELLED: getCancellationCopy(locale).cancelledDescription, WORK_COMPLETED: reportCopy.next, READY_FOR_PICKUP: reportCopy.ready };
   const title = row.kind === 'STATUS' ? statusTitles[row.title] || copy.reviewStatus : row.kind === 'REPORT' ? reportCopy.title : row.kind === 'MESSAGE' ? copy.MESSAGE : row.title;
   const requestNumber = row.case.publicRequestNumber || '';
   const base = `/portal/requests/${encodeURIComponent(requestNumber)}`;

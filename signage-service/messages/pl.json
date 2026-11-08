@@ -730,7 +730,8 @@
       "UNDER_REVIEW": "W analizie",
       "IN_PROGRESS": "W realizacji",
       "WAITING_FOR_CUSTOMER": "Czeka na klienta",
-      "COMPLETED": "Zgłoszenie zamknięte",
+      "COMPLETED": "Zakończone",
+      "CANCELLED": "Anulowane",
       "PLANNED": "Planowane",
       "WORK_COMPLETED": "Naprawa zakończona",
       "READY_FOR_PICKUP": "Gotowe do odbioru"

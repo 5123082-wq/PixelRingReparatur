@@ -730,7 +730,8 @@
       "UNDER_REVIEW": "قيد المراجعة",
       "IN_PROGRESS": "قيد التنفيذ",
       "WAITING_FOR_CUSTOMER": "بانتظار العميل",
-      "COMPLETED": "أُغلق الطلب",
+      "COMPLETED": "مكتمل",
+      "CANCELLED": "ملغى",
       "PLANNED": "مخطط",
       "WORK_COMPLETED": "اكتمل الإصلاح",
       "READY_FOR_PICKUP": "جاهز للاستلام"

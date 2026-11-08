@@ -730,7 +730,8 @@
       "UNDER_REVIEW": "İncelemede",
       "IN_PROGRESS": "Devam ediyor",
       "WAITING_FOR_CUSTOMER": "Müşteri bekleniyor",
-      "COMPLETED": "Talep kapatıldı",
+      "COMPLETED": "Tamamlandı",
+      "CANCELLED": "İptal edildi",
       "PLANNED": "Planlandı",
       "WORK_COMPLETED": "Onarım tamamlandı",
       "READY_FOR_PICKUP": "Teslim alınmaya hazır"

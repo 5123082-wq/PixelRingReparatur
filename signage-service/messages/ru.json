@@ -730,7 +730,8 @@
       "UNDER_REVIEW": "На проверке",
       "IN_PROGRESS": "В работе",
       "WAITING_FOR_CUSTOMER": "Ждет клиента",
-      "COMPLETED": "Заявка закрыта",
+      "COMPLETED": "Завершена",
+      "CANCELLED": "Отменена",
       "PLANNED": "Запланировано",
       "WORK_COMPLETED": "Ремонт завершён",
       "READY_FOR_PICKUP": "Готово к выдаче"

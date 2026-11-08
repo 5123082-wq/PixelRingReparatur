@@ -5,6 +5,7 @@ export type PortalRequestStatus =
   | 'READY_FOR_PICKUP'
   | 'WAITING_FOR_CUSTOMER'
   | 'COMPLETED'
+  | 'CANCELLED'
   | 'PLANNED';
 
 export type PortalAssetStatus = 'OK' | 'WATCH' | 'SERVICE_NEEDED' | 'WARRANTY';
@@ -95,6 +96,7 @@ export type PortalRequest = {
   objectId: string;
   title: string;
   status: PortalRequestStatus;
+  cancellationRequestedAt?: string | null;
   priority: 'normal' | 'high';
   openedAt: string;
   updatedAt: string;

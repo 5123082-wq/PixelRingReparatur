@@ -1,4 +1,6 @@
 'use client';
+
+import PortalCancellation from './PortalCancellation';
 import { useCallback } from 'react';
 import { usePortalResource, portalFetch } from './PortalLiveProvider';
 import type { CustomerDocument } from '@/lib/case-documents/types';
@@ -37,6 +39,7 @@ const statusTone = {
   READY_FOR_PICKUP: 'border-teal-200 bg-teal-50 text-teal-800',
   WAITING_FOR_CUSTOMER: 'border-orange-200 bg-orange-50 text-orange-800',
   COMPLETED: 'border-emerald-200 bg-emerald-50 text-emerald-800',
+  CANCELLED: 'border-slate-200 bg-slate-50 text-slate-700',
   PLANNED: 'border-slate-200 bg-slate-50 text-slate-700',
 };
 
@@ -249,6 +252,7 @@ export default function PortalRequestDetail(props: DetailProps) {
                   {statusLabel}
                 </span>
               </div>
+              {canPostMessages && <PortalCancellation key={request.publicRequestNumber} request={request} />}
             </section>
 
             {requiredActions.length > 0 && (
