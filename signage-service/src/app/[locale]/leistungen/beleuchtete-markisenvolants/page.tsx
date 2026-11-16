@@ -12,10 +12,10 @@ import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestBu
 import FAQSection from '@/components/sections/FAQSection';
 import LeistungenFooterCTA from '@/components/sections/LeistungenFooterCTA';
 import { getGlobalPageCmsContent } from '@/lib/cms/pages';
-import { routing } from '@/i18n/routing';
+import { Link, routing } from '@/i18n/routing';
 import { buildLanguageAlternates, buildLocaleUrl } from '@/lib/seo';
 
-import { getIlluminatedValanceCopy } from './copy';
+import { getIlluminatedValanceCopy, getIlluminatedValanceInstallationCopy } from './copy';
 
 export const revalidate = 3600;
 
@@ -108,6 +108,7 @@ export default async function BeleuchteteMarkisenVolantsPage({
 
   const copy = getIlluminatedValanceCopy(locale);
   const globalCms = await getGlobalPageCmsContent(locale);
+  const installationCopy = getIlluminatedValanceInstallationCopy(locale);
   const headerContent = globalCms?.header ? { ...globalCms.header, links: undefined } : null;
 
   return (
@@ -220,6 +221,21 @@ export default async function BeleuchteteMarkisenVolantsPage({
           locale={locale}
           content={copy.calculator}
         />
+
+        {installationCopy ? (
+          <div className="pr-site-container pb-10 sm:pb-14">
+            <div className="max-w-3xl border-t border-[#0E1A2B]/12 pt-6 text-start">
+              <p className="text-[15px] leading-7 text-[#526174]">{installationCopy.intro}</p>
+              <Link
+                href="/leistungen/montage-demontage-werbeanlagen"
+                locale={locale}
+                className="mt-3 inline-block text-[15px] font-bold leading-7 text-[#99502F] underline decoration-[#99502F]/40 underline-offset-4 hover:decoration-current focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#99502F]"
+              >
+                {installationCopy.linkLabel}
+              </Link>
+            </div>
+          </div>
+        ) : null}
 
         <FAQSection
           content={{

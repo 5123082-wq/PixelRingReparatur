@@ -332,6 +332,17 @@ function ArticleContextLinks({ locale, articleSlug }: { locale: string; articleS
           ))}
         </ul>
       </nav>
+      {contextLinks.conditionalServices.map((link) => (
+        <p key={link.href} className="mt-4 text-[15px] leading-7 text-[#4E5A5A]">
+          {link.description}{' '}
+          <Link
+            href={link.href}
+            className="font-bold text-[#8F4F34] underline underline-offset-4 hover:text-[#0E1A2B]"
+          >
+            {link.label}
+          </Link>
+        </p>
+      ))}
     </section>
   );
 }

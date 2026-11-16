@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
 import { getHomeWorkContent } from '@/lib/content/home-work';
@@ -26,6 +27,13 @@ export default function ReferencesWorkShowcase({ cases, locale }: {
   const controls = CONTROLS[locale];
   const isRtl = locale === 'ar';
   const selected = cases.find((item) => item.id === selectedId) ?? cases[0];
+  const repairLinkLabel = selected?.id === 'mounting-review'
+    ? locale === 'de'
+      ? 'Fassadenbeschriftung und Werbeanlagen instand setzen lassen'
+      : locale === 'en'
+        ? 'Arrange restoration of facade lettering and signage'
+        : null
+    : null;
 
   useEffect(() => {
     const rail = railRef.current;
@@ -84,6 +92,11 @@ export default function ReferencesWorkShowcase({ cases, locale }: {
           <div className="px-6 pb-8 pt-5 sm:px-8 sm:pb-10 lg:px-10" aria-live="polite" aria-atomic="true">
             <h2 id="selected-reference-title" className="text-xl font-semibold leading-snug text-[#0E1A2B] sm:text-2xl">{selected.title}</h2>
             <p className="mt-3 max-w-3xl text-base leading-relaxed text-[#4A5568]">{[selected.problem, selected.work, selected.result].filter(Boolean).join(' ') || selected.defaultText}</p>
+            {repairLinkLabel ? (
+              <Link href={`/${locale}/leistungen/werbeanlagen-reparatur`} className="mt-4 inline-block text-sm font-semibold text-[#854526] underline decoration-[#B8643E]/40 underline-offset-4 hover:decoration-current focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B8643E]">
+                {repairLinkLabel}
+              </Link>
+            ) : null}
           </div>
         </article>
       </div>

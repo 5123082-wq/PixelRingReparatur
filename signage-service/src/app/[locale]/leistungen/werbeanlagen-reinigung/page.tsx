@@ -469,7 +469,7 @@ const CLEANING_CASES_BY_LOCALE: Record<Locale, CleaningCase[]> = {
 
 const ISSUE_LINKS_BY_LOCALE: Record<Locale, LinkCard[]> = {
   de: [
-    { title: 'Folie löst sich', text: 'Wenn Schmutz alte Folienkanten, Blasen oder UV-Schäden sichtbar macht.', href: '/probleme-loesungen/folie-löst-sich', tag: 'Folie' },
+    { title: 'Folie löst sich', text: 'Wenn Schmutz alte Folienkanten, Blasen oder UV-Schäden sichtbar macht.', href: '/probleme-loesungen/folie-loest-sich', tag: 'Folie' },
     { title: 'Nach Regen schaltet die Anlage ab', text: 'Wenn Feuchtigkeit oder Reinigung zeigt, dass die Leuchtwerbung technisch geprüft werden muss.', href: '/probleme-loesungen/werbeanlage-schaltet-nach-regen-ab', tag: 'Feuchtigkeit' },
     { title: 'Buchstabe leuchtet nicht', text: 'Wenn bei der Sichtprüfung einzelne Buchstaben dunkel bleiben oder ungleichmäßig wirken.', href: '/probleme-loesungen/buchstabe-leuchtet-nicht', tag: 'Licht' },
     { title: 'Werbeanlage flackert', text: 'Wenn die Anlage nicht nur verschmutzt ist, sondern Lichttechnik oder Netzteil auffällig reagieren.', href: '/probleme-loesungen/werbeanlage-flackert', tag: 'Diagnose' },

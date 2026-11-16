@@ -68,6 +68,35 @@ test('unsupported locale and slug use the English services overview safely', () 
   assert.equal(model.direction, 'ltr');
 });
 
+test('DE and EN lighting problems lead to repair with conditional alternatives', () => {
+  for (const locale of ['de', 'en']) {
+    for (const slug of ['werbeanlage-flackert', 'led-leuchtet-ungleichmaessig']) {
+      const model = buildProblemArticleContextLinks(locale, slug);
+      assert.equal(model.links.find((link) => link.kind === 'service')?.href,
+        `/${locale}/leistungen/werbeanlagen-reparatur`);
+      assert.deepEqual(model.conditionalServices.map((link) => link.href), [
+        `/${locale}/leistungen/lichtwerbung-led-modernisierung`,
+        ...(slug === 'led-leuchtet-ungleichmaessig'
+          ? [`/${locale}/leistungen/werbeanlagen-reinigung`]
+          : []),
+      ]);
+      assert.ok(model.conditionalServices.every((link) => link.description.length > 30));
+    }
+  }
+});
+
+test('priority lighting changes do not alter other languages or other problems', () => {
+  for (const locale of ['ru', 'tr', 'pl', 'ar']) {
+    for (const slug of ['werbeanlage-flackert', 'led-leuchtet-ungleichmaessig']) {
+      const model = buildProblemArticleContextLinks(locale, slug);
+      assert.equal(model.links.find((link) => link.kind === 'service')?.href,
+        `/${locale}/leistungen/lichtwerbung-led-modernisierung`);
+      assert.deepEqual(model.conditionalServices, []);
+    }
+  }
+  assert.deepEqual(buildProblemArticleContextLinks('de', 'werbeanlage-leuchtet-nicht').conditionalServices, []);
+});
+
 test('the server-rendered article component emits Link hrefs from the central model', () => {
   const source = readFileSync(
     resolve(__dirname, '../src/components/probleme-loesungen/ProblemArticleBody.tsx'),

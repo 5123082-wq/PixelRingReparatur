@@ -10,6 +10,7 @@ import LeistungenDiagnosticPrototype from '@/components/leistungen/LeistungenDia
 import LeistungenRepairProofStrip from '@/components/leistungen/LeistungenRepairProofStrip';
 import LeistungenRequestButton from '@/components/leistungen/LeistungenRequestButton';
 import FAQSection from '@/components/sections/FAQSection';
+import HomeWorkSection from '@/components/sections/HomeWorkSection';
 import LeistungenFooterCTA from '@/components/sections/LeistungenFooterCTA';
 import { SITE_CONFIG } from '@/lib/site-config';
 import { SITE_BASE_URL, buildLanguageAlternates, buildLocaleUrl, buildSiteUrl } from '@/lib/seo';
@@ -96,6 +97,11 @@ type RepairScopeContent = {
   coverageTitle: string;
   coverageIntro: string;
   coverageCards: RepairScopeCard[];
+  repairDecision?: {
+    title: string;
+    text: string;
+    linkLabel: string;
+  };
   digitalEyebrow: string;
   digitalTitle: string;
   digitalText: string;
@@ -115,6 +121,11 @@ type RepairProblemLinksContent = {
   title: string;
   intro: string;
   links: RepairLinkCard[];
+  additionalLink?: {
+    text: string;
+    label: string;
+    href: string;
+  };
 };
 
 type RepairNextStepContent = {
@@ -147,8 +158,8 @@ const CONTENT: Record<Locale, LandingPageContent> = {
       {
         id: 'flackern',
         title: 'Flackern & Lichtausfall',
-        cardText: 'LED-Module blinken, flackern oder leuchten unregelmäßig. Meist liegt der Fehler an defekten Netzteilen oder eindringender Feuchtigkeit.',
-        reassuringText: 'Keine Sorge, das ist ein typisches Problem. In 90% der Fälle liegt es am Netzteil (Konverter) oder an feuchten Kabeln. Wir tauschen das defekte Bauteil direkt vor Ort aus.',
+        cardText: 'LED-Module blinken, flackern oder leuchten unregelmäßig. Mögliche Ursachen sind Netzteile, Verbindungen, Feuchtigkeit oder die LED-Module selbst.',
+        reassuringText: 'Wir prüfen Stromversorgung, Verbindungen und LED-Module, bevor ein Austausch empfohlen wird. Fotos und ein kurzes Video helfen bei der Vorbereitung; die genaue Ursache klärt die technische Prüfung.',
         prefillMessage: 'Defekt: Flackern & Lichtausfall bei der Werbeanlage.',
       },
       {
@@ -305,8 +316,8 @@ const CONTENT: Record<Locale, LandingPageContent> = {
       {
         id: 'flackern',
         title: 'Flickering & Light Failure',
-        cardText: 'LED modules blinking, flickering, or glowing unevenly. Usually caused by faulty power supplies or water ingress.',
-        reassuringText: "Don't worry, this is a typical problem. In 90% of cases, it's the power supply (converter) or wet cables. We replace the faulty component directly on-site.",
+        cardText: 'LED modules blink, flicker, or glow unevenly. Possible causes include power supplies, connections, moisture, or the LED modules themselves.',
+        reassuringText: 'We check the power supply, connections, and LED modules before recommending replacement. Photos and a short video help prepare the assessment; a technical inspection identifies the exact cause.',
         prefillMessage: 'Defect: Flickering & Light Failure of the sign.',
       },
       {
@@ -741,6 +752,11 @@ const REPAIR_SCOPE_BY_LOCALE: Record<Locale, RepairScopeContent> = {
     coverageTitle: 'Womit wir arbeiten',
     coverageIntro:
       'Nicht jede Störung sieht technisch gleich aus. PixelRing ordnet zuerst Konstruktion, Material, Zugang und sichtbaren Defekt ein, bevor ein Reparaturweg empfohlen wird.',
+    repairDecision: {
+      title: 'Reparieren oder modernisieren?',
+      text: 'Die Prüfung klärt, ob sich ein einzelnes Bauteil ersetzen oder eine Oberfläche erneuern lässt und welche Teile sicher weiterverwendet werden können. Wenn Zustand, wiederkehrende Ausfälle oder die vorhandene Lichttechnik eine größere Änderung nahelegen, besprechen wir eine Modernisierung. Der Umfang wird nach dem Befund abgestimmt.',
+      linkLabel: 'Mehr zur LED-Modernisierung',
+    },
     coverageCards: [
       { title: 'Leuchtkästen', text: 'Acrylfronten, LED-Flächen, Innenverkabelung, Netzteile, Dichtungen und gealterte Gehäuse.' },
       { title: 'Profilbuchstaben & LED-Module', text: 'Einzelbuchstaben, Logo-Elemente, LED-Ketten, Treiber, Farb- und Helligkeitsabweichungen.' },
@@ -786,6 +802,11 @@ const REPAIR_SCOPE_BY_LOCALE: Record<Locale, RepairScopeContent> = {
     coverageTitle: 'What we work with',
     coverageIntro:
       'Not every failure has the same technical cause. PixelRing first clarifies the construction, material, access and visible damage before recommending a repair path.',
+    repairDecision: {
+      title: 'Repair or modernize?',
+      text: 'The inspection establishes whether an individual component can be replaced or a surface renewed, and which parts can safely remain in use. If the condition, recurring failures, or existing lighting technology call for a broader change, we discuss modernization. The scope is agreed after the findings are clear.',
+      linkLabel: 'Explore LED modernization',
+    },
     coverageCards: [
       { title: 'Lightboxes', text: 'Acrylic faces, LED surfaces, internal wiring, power supplies, seals and aged housings.' },
       { title: 'Channel letters & LED modules', text: 'Single letters, logo elements, LED strings, drivers, colour and brightness differences.' },
@@ -1014,6 +1035,11 @@ const REPAIR_PROBLEM_LINKS_BY_LOCALE: Record<Locale, RepairProblemLinksContent> 
     title: 'Den Defekt genauer verstehen',
     intro:
       'Wenn Sie erst lesen möchten, was hinter einem Symptom stecken kann, finden Sie auf diesen Seiten weitere Informationen zu den möglichen Ursachen.',
+    additionalLink: {
+      text: 'Bleibt das Licht an, zeigt aber dunkle Stellen oder sichtbare LED-Punkte?',
+      label: 'Ursachen für ungleichmäßige LED-Beleuchtung',
+      href: '/probleme-loesungen/led-leuchtet-ungleichmaessig',
+    },
     links: [
       {
         title: 'Werbeanlage flackert',
@@ -1030,7 +1056,7 @@ const REPAIR_PROBLEM_LINKS_BY_LOCALE: Record<Locale, RepairProblemLinksContent> 
       {
         title: 'Folie löst sich',
         text: 'Warum Folien Blasen werfen, sich ablösen oder durch UV und Wetter sichtbar altern.',
-        href: '/probleme-loesungen/folie-löst-sich',
+        href: '/probleme-loesungen/folie-loest-sich',
         tag: 'Folie',
       },
       {
@@ -1046,6 +1072,11 @@ const REPAIR_PROBLEM_LINKS_BY_LOCALE: Record<Locale, RepairProblemLinksContent> 
     title: 'Understand the defect more precisely',
     intro:
       'If you want to read first, these short problem pages explain what may be behind a visible symptom.',
+    additionalLink: {
+      text: 'Does the light stay on, but show dark patches or visible LED points?',
+      label: 'Causes of uneven LED sign lighting',
+      href: '/probleme-loesungen/led-leuchtet-ungleichmaessig',
+    },
     links: [
       {
         title: 'Signage is flickering',
@@ -1681,6 +1712,17 @@ function RepairProblemLinksSection({ content }: { content: RepairProblemLinksCon
             </Link>
           ))}
         </div>
+        {content.additionalLink ? (
+          <p className="mt-5 max-w-4xl text-start text-[14px] leading-7 text-[#526174]">
+            {content.additionalLink.text}{' '}
+            <Link
+              href={content.additionalLink.href}
+              className="font-semibold text-[#8F4C2F] underline underline-offset-4 hover:text-[#0E1A2B]"
+            >
+              {content.additionalLink.label}
+            </Link>
+          </p>
+        ) : null}
       </div>
     </section>
   );
@@ -1719,6 +1761,19 @@ function RepairCoverageSection({ content }: { content: RepairScopeContent }) {
             </article>
           ))}
         </div>
+
+        {content.repairDecision ? (
+          <div className="mt-6 max-w-4xl text-start">
+            <h3 className="text-xl font-extrabold text-[#0E1A2B]">{content.repairDecision.title}</h3>
+            <p className="mt-3 text-[15px] leading-7 text-[#526174]">{content.repairDecision.text}</p>
+            <Link
+              href="/leistungen/lichtwerbung-led-modernisierung"
+              className="mt-3 inline-block font-semibold text-[#8F4C2F] underline underline-offset-4 hover:text-[#0E1A2B]"
+            >
+              {content.repairDecision.linkLabel}
+            </Link>
+          </div>
+        ) : null}
 
         <details className="mt-6 overflow-hidden rounded-[22px] border border-[#1B2D42]/10 bg-[#0E1A2B] text-white shadow-[0_18px_45px_rgba(13,27,42,0.12)]">
           <summary className="cursor-pointer list-none p-5 text-start marker:hidden sm:p-6">
@@ -1852,7 +1907,11 @@ export default async function WerbeanlagenReparaturPage({
           formTitle={content.formTitle}
         />
 
-        <LeistungenRepairProofStrip locale={safeLocale} />
+        {safeLocale === 'de' || safeLocale === 'en' ? (
+          <HomeWorkSection locale={safeLocale} />
+        ) : (
+          <LeistungenRepairProofStrip locale={safeLocale} />
+        )}
 
         <RepairProblemLinksSection content={problemLinksContent} />
 

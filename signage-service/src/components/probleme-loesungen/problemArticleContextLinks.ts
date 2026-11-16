@@ -43,6 +43,7 @@ export type ProblemArticleContextLinks = {
   description: string;
   navLabel: string;
   links: ProblemArticleContextLink[];
+  conditionalServices: Array<{ description: string; href: string; label: string }>;
 };
 
 const SUPPORTED_LOCALES: ContextLinkLocale[] = ['de', 'en', 'ru', 'tr', 'pl', 'ar'];
@@ -186,8 +187,37 @@ export function buildProblemArticleContextLinks(
 ): ProblemArticleContextLinks {
   const resolvedLocale = resolveLocale(locale);
   const copy = CONTEXT_LINK_COPY[resolvedLocale];
-  const servicePath = getProblemArticleServicePath(articleSlug);
+  const isPriorityLightingArticle =
+    (resolvedLocale === 'de' || resolvedLocale === 'en') &&
+    (articleSlug === 'werbeanlage-flackert' || articleSlug === 'led-leuchtet-ungleichmaessig');
+  const servicePath = isPriorityLightingArticle
+    ? '/leistungen/werbeanlagen-reparatur'
+    : getProblemArticleServicePath(articleSlug);
   const localePrefix = `/${resolvedLocale}`;
+  const conditionalServices: ProblemArticleContextLinks['conditionalServices'] = [];
+
+  if (isPriorityLightingArticle) {
+    conditionalServices.push({
+      description: resolvedLocale === 'de'
+        ? 'Wenn die Prüfung zeigt, dass eine umfassendere Erneuerung sinnvoll ist:'
+        : 'If inspection shows that a wider upgrade would be appropriate:',
+      href: `${localePrefix}/leistungen/lichtwerbung-led-modernisierung`,
+      label: resolvedLocale === 'de'
+        ? 'Möglichkeiten der LED-Modernisierung ansehen'
+        : 'Explore LED modernization options',
+    });
+    if (articleSlug === 'led-leuchtet-ungleichmaessig') {
+      conditionalServices.push({
+        description: resolvedLocale === 'de'
+          ? 'Wenn Verschmutzungen die Lichtwirkung beeinträchtigen, kann eine fachgerechte Reinigung zum Arbeitsumfang gehören:'
+          : 'If dirt is affecting the light output, professional cleaning may form part of the work:',
+        href: `${localePrefix}/leistungen/werbeanlagen-reinigung`,
+        label: resolvedLocale === 'de'
+          ? 'Reinigung von Werbeanlagen ansehen'
+          : 'Explore sign cleaning',
+      });
+    }
+  }
 
   return {
     direction: resolvedLocale === 'ar' ? 'rtl' : 'ltr',
@@ -195,6 +225,7 @@ export function buildProblemArticleContextLinks(
     title: copy.title,
     description: copy.description,
     navLabel: copy.navLabel,
+    conditionalServices,
     links: [
       {
         kind: 'hub',
@@ -206,7 +237,11 @@ export function buildProblemArticleContextLinks(
         kind: 'service',
         href: `${localePrefix}${servicePath}`,
         eyebrow: copy.linkEyebrows.service,
-        label: copy.serviceLabels[servicePath],
+        label: isPriorityLightingArticle
+          ? resolvedLocale === 'de'
+            ? 'Werbeanlage prüfen und reparieren lassen'
+            : 'Get your sign inspected and repaired'
+          : copy.serviceLabels[servicePath],
       },
       {
         kind: 'references',
