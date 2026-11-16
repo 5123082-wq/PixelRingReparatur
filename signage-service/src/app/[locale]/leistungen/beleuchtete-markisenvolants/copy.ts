@@ -226,7 +226,7 @@ const DE_COPY: IlluminatedValancePageCopy = {
     eyebrow: 'Online-Rechner',
     title: 'So kann Ihr neuer Volant aussehen',
     intro:
-      'Passen Sie Maße und Gestaltung an – die Vorschau und der vorläufige Preis aktualisieren sich sofort.',
+      'Passen Sie Maße, Leuchtmotiv und Stückzahl an. Der Rechner schätzt den Produktpreis für die gewählte Ausführung. Montage, Lieferung, Elektroarbeiten und Genehmigungen sind nicht enthalten und werden separat geprüft.',
     dimensionsTitle: 'Volantmaße',
     designTitle: 'Leuchtmotiv',
     valanceLengthLabel: 'Volantlänge',
@@ -660,7 +660,7 @@ const EN_COPY: IlluminatedValancePageCopy = {
     eyebrow: 'Online calculator',
     title: 'See how your new valance could look',
     intro:
-      'Adjust the dimensions and design — the preview and preliminary price update instantly.',
+      'Adjust the dimensions, illuminated design and quantity. The calculator estimates the product price for your chosen configuration. Installation, delivery, electrical work and permits are excluded and assessed separately.',
     dimensionsTitle: 'Valance dimensions',
     designTitle: 'Illuminated design',
     valanceLengthLabel: 'Valance length',
@@ -1415,4 +1415,21 @@ const COPY_BY_LOCALE: Record<string, IlluminatedValancePageCopy> = {
 
 export function getIlluminatedValanceCopy(locale: string): IlluminatedValancePageCopy {
   return COPY_BY_LOCALE[locale] ?? DE_COPY;
+}
+
+const INSTALLATION_COPY: Record<string, { intro: string; linkLabel: string }> = {
+  de: {
+    intro:
+      'Den fertigen Leuchtvolant liefern wir deutschlandweit. Wenn Sie auch die Montage wünschen, prüfen wir Befestigung, Zugang und die nötigen Facharbeiten separat. Unsere reguläre Montagezone ist Berlin und Brandenburg; andere Regionen prüfen wir individuell.',
+    linkLabel: 'Montage und Austausch von Werbeanlagen in Berlin & Brandenburg',
+  },
+  en: {
+    intro:
+      'We deliver the finished illuminated valance across Germany. If you also need installation, we assess the fixing, access and required specialist work separately. Our regular installation area is Berlin and Brandenburg; other regions are considered individually.',
+    linkLabel: 'Signage installation and replacement in Berlin & Brandenburg',
+  },
+};
+
+export function getIlluminatedValanceInstallationCopy(locale: string) {
+  return INSTALLATION_COPY[locale] ?? null;
 }

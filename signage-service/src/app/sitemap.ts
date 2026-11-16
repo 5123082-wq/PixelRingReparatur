@@ -3,6 +3,7 @@ import type { MetadataRoute } from 'next';
 import {
   DEFAULT_SITE_LOCALE,
   PUBLIC_SITEMAP_LAST_MODIFIED_BY_PATH,
+  PUBLIC_SITEMAP_LAST_MODIFIED_BY_LOCALE,
   PUBLIC_SITEMAP_PATHS,
   PROBLEM_ARTICLE_PUBLIC_SLUGS,
   SITE_LOCALES,
@@ -118,7 +119,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const path of PUBLIC_SITEMAP_PATHS) {
       entries.push(
         buildEntry(locale, path, {
-          lastModified: PUBLIC_SITEMAP_LAST_MODIFIED_BY_PATH[path],
+          lastModified: PUBLIC_SITEMAP_LAST_MODIFIED_BY_LOCALE[locale]?.[path]
+            ?? PUBLIC_SITEMAP_LAST_MODIFIED_BY_PATH[path],
         })
       );
     }

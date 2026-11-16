@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "locale": "de",
+      "slug": "flicking",
+      "shortAnswer": {
+        "before": "Flackern entsteht in den meisten Fällen nicht durch defekte LEDs selbst, sondern durch eine instabile Stromversorgung: ein überlastetes oder gealtertes Netzteil, ein loser Kontakt, Spannungsabfall auf der Leitung, Feuchtigkeit im Gehäuse oder ein defekter LED-Treiber. Wenn das Problem nach Regen, Wind, einem Spannungsstoß aufgetreten ist oder sich mit der Zeit verstärkt, ist eine Diagnose notwendig.",
+        "after": "Eine flackernde Werbeanlage kann auf Probleme mit Netzteil, Verbindungen, Feuchtigkeit, Steuerung oder LED-Modulen hinweisen. Entscheidend ist, ob die ganze Anlage oder nur ein Abschnitt betroffen ist und wann das Flackern auftritt. Die genaue Ursache lässt sich erst durch eine fachliche Prüfung bestätigen."
+      },
+      "content": {
+        "before": "## Kurzantwort\n\nWenn eine beleuchtete Werbeanlage flackert, blinkt, pulsiert, kurzzeitig ausfällt oder instabil leuchtet, liegt das Problem in den meisten Fällen nicht an den LEDs selbst, sondern an der Stromversorgung.\n\nDie häufigsten Ursachen sind ein instabiles oder überlastetes Netzteil, ein loser Kontakt, Spannungsabfall auf der Leitung, Feuchtigkeit im Gehäuse, Korrosion an Verbindungen, ein defekter LED-Treiber, ein Controller oder beschädigte LED-Module.\n\nWenn das Flackern nach Regen, Schnee, Wind, Fassadenreinigung, einem Spannungsstoß oder mehreren Jahren Betrieb aufgetreten ist, sollte man einen vollständigen Ausfall nicht abwarten. Instabiler Betrieb kann LED-Module, Verbindungen, Treiber und die interne Elektrik der Konstruktion allmählich beschädigen.\n\nIn vielen Fällen wird das Problem durch einen Netzteiltausch, die Wiederherstellung von Kontakten oder die Abdichtung von Verbindungen gelöst. Vor dem Austausch sollten jedoch Last, Spannung unter Last, Leitungslänge, Kabelzustand, Feuchtigkeitsspuren und die Funktion der LED-Komponenten geprüft werden.\n\n---\n\n",
+        "after": "## Vor dem Austausch: das Flackern eingrenzen\n\nBeobachten Sie aus sicherer Entfernung, ob die gesamte Anlage gleichzeitig flackert oder nur ein Buchstabe betroffen ist. Notieren Sie, wann die Störung begann und ob sie mit Regen, Wind, Einschalten oder längerer Betriebsdauer zusammenhängt. Ein kurzes Video hilft, diese Unterschiede zu zeigen.\n\nWelche Teile repariert oder ersetzt werden müssen, entscheidet sich nach der Prüfung von Last, Spannung unter Last, Leitungen, Verbindungen, Feuchtigkeitsspuren und LED-Komponenten. Das sichtbare Flackern allein ist kein ausreichender Grund, ein Netzteil oder die gesamte Beleuchtung auszutauschen.\n\n---\n\n"
+      }
+    },
+    {
+      "locale": "de",
+      "slug": "uneven-light",
+      "shortAnswer": {
+        "before": "Ungleichmäßige LED-Ausleuchtung entsteht häufig durch gealterte Module, Schmutz, Feuchtigkeit, falsche Modulwahl, zu großen Abstand, Schatten im Inneren oder Probleme mit Stromversorgung und Spannungsabfall. Die genaue Ursache sollte anhand von Lichtbild, Fotos und fachlicher Prüfung eingegrenzt werden.",
+        "after": "Bleiben dunkle Flecken oder Helligkeitsunterschiede an derselben Stelle, geht es um ungleichmäßige Ausleuchtung. Ändert sich das Licht dagegen laufend oder fällt kurz aus, ist auch Flackern zu prüfen. Hinter beiden Bildern können unterschiedliche Ursachen stehen; Fotos und eine fachliche Prüfung helfen bei der Eingrenzung."
+      },
+      "content": {
+        "before": "Wenn eine LED-Werbeanlage ungleichmäßig leuchtet, ist das nicht nur ein optisches Problem. Dunkle Flecken, sichtbare LED-Punkte oder unterschiedlich helle Bereiche verändern die Wirkung der Marke am Standort. Eine Anlage, die tagsüber ordentlich aussieht, kann abends plötzlich billig, beschädigt oder ungepflegt wirken.\n\nDie Ursache ist nicht immer ein einzelnes defektes LED-Modul. Ungleichmäßige Ausleuchtung kann durch Alterung, Feuchtigkeit, Schmutz, falsche Module, zu große Abstände, eine ungünstige Kastentiefe, Schatten im Inneren oder Probleme mit der Stromversorgung entstehen. Deshalb sollte man das sichtbare Bild zuerst sauber einordnen, bevor Teile ausgetauscht werden.\n\n",
+        "after": "Dunkle Flecken, sichtbare LED-Punkte und unterschiedlich helle Bereiche beschreiben zunächst das Lichtbild, noch nicht die Ursache. Achten Sie darauf, ob das Muster an derselben Stelle bleibt oder sich die Helligkeit mit der Zeit verändert.\n\nEin gleichbleibender dunkler Bereich kann beispielsweise mit Modulen, Verschmutzung, Abschattung oder der Anordnung der Beleuchtung zusammenhängen. Wenn das Licht pulsiert oder kurz aussetzt, ist zusätzlich das Flackermuster wichtig. Fotos der gesamten Anlage bei Tag und bei eingeschalteter Beleuchtung helfen bei der ersten Einordnung; bei Veränderungen ist ein kurzes Video sinnvoll. Die fachliche Prüfung klärt, ob Reinigung, Reparatur oder eine Anpassung der Beleuchtung erforderlich ist.\n\n"
+      }
+    },
+    {
+      "locale": "en",
+      "slug": "flicking",
+      "shortAnswer": {
+        "before": "Flickering usually has nothing to do with the LEDs themselves — it is almost always a power-supply issue. The most common culpr2its are an overloaded or ageing driver, a loose terminal, voltage drop along the cable run, moisture inside the housing, or a failing LED driver. If the problem appeared after rain, wind, a power surge, or has been getting worse over time, it needs proper diagnosis before the backlight fails entirely.",
+        "after": "A flickering sign can point to a problem with the power supply, connections, moisture, controls, or LED modules. Whether the whole sign or just one section is affected, and when the flickering occurs, helps narrow the diagnosis. A professional inspection is needed to confirm the cause."
+      },
+      "content": {
+        "before": "## Short answer\n\nWhen a lit sign flickers, blinks, pulses, briefly goes dark, or behaves erratically, the problem is almost never the LEDs themselves — it is how they are being powered.\n\nThe most common causes are an unstable or overloaded power supply, a loose connection, voltage drop along the cable run, moisture inside the housing, corroded terminals, a faulty LED driver or controller, or damaged LED modules.\n\nIf the flickering started after rain, snow, wind, facade cleaning, a power surge, or several years of continuous operation, do not wait for a complete blackout. Unstable operation can gradually damage LED modules, wiring, drivers, and the sign's internal electrics.\n\nIn many cases, the fix is a power supply swap, restoring connections, or re-sealing joints. But before replacing anything, the load, voltage under load, cable length, wiring condition, moisture traces, and LED component health all need checking.\n\n---\n\n",
+        "after": "## Before replacing parts: identify the flicker pattern\n\nFrom a safe position, observe whether the whole sign flickers together or only one letter is affected. Note when the issue began and whether it relates to rain, wind, switching on, or longer operating periods. A short video helps show these differences.\n\nThe repair scope depends on checks of the load, voltage under load, wiring, connections, moisture traces, and LED components. Visible flickering alone is not enough to justify replacing the power supply or the entire lighting system.\n\n---\n\n"
+      }
+    },
+    {
+      "locale": "en",
+      "slug": "uneven-light",
+      "shortAnswer": {
+        "before": "Uneven LED illumination is often caused by aged modules, dirt, moisture, wrong module selection, excessive spacing, internal shadows, voltage drop, or power supply issues. The exact cause should be narrowed down through the visible light pattern, photos, and professional inspection.",
+        "after": "Dark patches or brightness differences that stay in the same place indicate uneven illumination. If the light keeps changing or briefly cuts out, flickering also needs to be considered. These patterns can have different causes; photos and professional inspection help narrow them down."
+      },
+      "content": {
+        "before": "Uneven LED lighting on a sign is not only a cosmetic issue. Dark patches, visible LED points, or areas with different brightness change how the brand looks at the location. A sign that looks acceptable during the day can look damaged, cheap, or neglected in the evening.\n\nThe cause is not always one failed LED module. Uneven lighting can come from aging, moisture, dirt, wrong modules, excessive spacing, insufficient box depth, internal shadows, or power supply issues. The visible pattern should be understood before parts are replaced.\n\n",
+        "after": "Dark patches, visible LED points, and areas of different brightness describe the light pattern, not yet its cause. First observe whether the pattern stays in the same place or whether brightness changes over time.\n\nA persistent dark area may relate to modules, dirt, internal shadows, or the lighting layout. If the light pulses or briefly cuts out, the flicker pattern also matters. Photos of the whole sign in daylight and with the lighting on help with the initial assessment; a short video is useful when the light changes. Professional inspection establishes whether cleaning, repair, or an adjustment to the lighting is appropriate.\n\n"
+      }
+    }
+  ]
+}

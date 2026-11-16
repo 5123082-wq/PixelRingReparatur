@@ -41,6 +41,20 @@ export const PUBLIC_SITEMAP_LAST_MODIFIED_BY_PATH: Partial<
   '/leistungen/beleuchtete-markisenvolants': '2026-07-17',
 };
 
+// Significant content updates apply only to the locales actually revised.
+export const PUBLIC_SITEMAP_LAST_MODIFIED_BY_LOCALE: Partial<
+  Record<SiteLocale, Partial<Record<(typeof PUBLIC_SITEMAP_PATHS)[number], string>>>
+> = {
+  de: {
+    '/leistungen/werbeanlagen-reparatur': '2026-11-16',
+    '/leistungen/beleuchtete-markisenvolants': '2026-11-16',
+  },
+  en: {
+    '/leistungen/werbeanlagen-reparatur': '2026-11-16',
+    '/leistungen/beleuchtete-markisenvolants': '2026-11-16',
+  },
+};
+
 export const PROBLEM_ARTICLE_PUBLIC_SLUGS = [
   'werbeanlage-leuchtet-nicht',
   'werbeanlage-flackert',
